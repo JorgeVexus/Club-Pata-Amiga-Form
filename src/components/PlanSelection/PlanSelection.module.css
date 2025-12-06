@@ -1,0 +1,218 @@
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.title {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #666;
+    font-size: 1.1rem;
+}
+
+/* Grid de Tarjetas */
+.plansGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+@media (max-width: 768px) {
+    .plansGrid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Tarjeta Individual */
+.planCard {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    border: 4px solid transparent;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.planCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.planCard.selected {
+    border-color: #FF8C00;
+    background-color: #fffbf5;
+    /* Muy sutil fondo naranja */
+    box-shadow: 0 8px 30px rgba(255, 140, 0, 0.15);
+}
+
+/* Contenido de la Tarjeta */
+.price {
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: #000;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.planName {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #000;
+    margin-bottom: 1.5rem;
+}
+
+.description {
+    color: #555;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+    flex-grow: 1;
+    /* Para que los botones se alineen abajo */
+}
+
+/* Botón de Selección en Tarjeta */
+.selectButton {
+    background-color: #f0f0f0;
+    /* Default gris */
+    color: #555;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    max-width: 200px;
+}
+
+.planCard.selected .selectButton {
+    background-color: #FF8C00;
+    color: white;
+}
+
+/* Información Adicional Footer */
+.footerInfo {
+    text-align: center;
+    color: #888;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    max-width: 700px;
+    margin: 0 auto 3rem auto;
+}
+
+/* Botones de Navegación */
+.navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 2rem;
+    border-top: 1px solid #eee;
+}
+
+.cancelButton {
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem 1rem;
+}
+
+.cancelButton:hover {
+    text-decoration: underline;
+}
+
+.rightButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+.previousButton {
+    background-color: #4ECDC4;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.previousButton:hover {
+    background-color: #3dbdb4;
+}
+
+.nextButton {
+    background-color: #FF8C00;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nextButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.nextButton:not(:disabled):hover {
+    background-color: #e67e00;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+}
+
+/* Toast/Error Alert */
+.errorAlert {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff4444;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translate(-50%, 100%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translate(-50%, 0);
+        opacity: 1;
+    }
+}

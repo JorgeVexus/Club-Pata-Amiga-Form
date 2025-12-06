@@ -13,7 +13,7 @@ import FileUpload from '@/components/FormFields/FileUpload';
 import PostalCodeInput from '@/components/FormFields/PostalCodeInput';
 import PhoneInput from '@/components/FormFields/PhoneInput';
 import { checkCurpAvailability, registerUserInSupabase } from '@/app/actions/user.actions';
-import { createMemberstackUser } from '@/services/memberstack.service';
+import { createMemberstackUser, completeMemberProfile } from '@/services/memberstack.service';
 import { uploadMultipleFiles, uploadFile } from '@/services/supabase.service';
 import { validateCURP, formatCURP } from '@/utils/curp-validator';
 import { validateBirthDate, getMaxBirthDateForAdult } from '@/utils/age-validator';
@@ -22,6 +22,34 @@ import type { RegistrationFormData } from '@/types/form.types';
 import styles from './RegistrationForm.module.css';
 
 export default function RegistrationForm() {
+    const [member, setMember] = useState<any>(null); // Store current member
+
+    // Check auth on mount
+    React.useEffect(() => {
+        const checkAuth = async () => {
+            // Pequeño delay para asegurar carga script
+            await new Promise(r => setTimeout(r, 1000));
+
+            if (window.$memberstackDom) {
+                const { data: member } = await window.$memberstackDom.getCurrentMember();
+                if (!member) {
+                    // Si no hay usuario, mandar al login
+                    window.location.href = '/';
+                } else {
+                    setMember(member);
+                    setFormData(prev => ({
+                        ...prev,
+                        email: member.auth.email,
+                        // Pre-fill name if available (e.g. from Google)
+                        firstName: member.customFields?.['first-name'] || prev.firstName || '',
+                        paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
+                    }));
+                }
+            }
+        };
+        checkAuth();
+    }, []);
+
     const [formData, setFormData] = useState<Partial<RegistrationFormData>>({
         firstName: '',
         paternalLastName: '',
@@ -94,7 +122,8 @@ export default function RegistrationForm() {
         if (!formData.colony?.trim()) newErrors.colony = 'La colonia es requerida';
         if (!formData.email?.trim()) newErrors.email = 'El correo electrónico es requerido';
         if (!formData.phone?.trim()) newErrors.phone = 'El número de teléfono es requerido';
-        if (!formData.password?.trim()) newErrors.password = 'La contraseña es requerida';
+        if (!formData.phone?.trim()) newErrors.phone = 'El número de teléfono es requerido';
+        // Password validation removed as it is handled in auth step
 
         // Validar formato de email
         if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
@@ -240,8 +269,8 @@ export default function RegistrationForm() {
                 throw new Error('Error al subir los archivos');
             }
 
-            // 2. Crear usuario en Memberstack con URLs de archivos
-            const memberstackResponse = await createMemberstackUser(
+            // 2. ACTUALIZAR usuario en Memberstack (Completar perfil)
+            const memberstackResponse = await completeMemberProfile(
                 formData as RegistrationFormData,
                 {
                     ineUrls: ineUploads.map(u => u.publicUrl || ''),
@@ -250,19 +279,24 @@ export default function RegistrationForm() {
             );
 
             if (!memberstackResponse.success) {
-                throw new Error(memberstackResponse.error || 'Error al crear el usuario');
+                throw new Error(memberstackResponse.error || 'Error al actualizar el perfil');
             }
 
             // 3. Guardar respaldo en Supabase (Base de datos real)
             try {
+                const finalMemberId = memberstackResponse.member?.id || member?.id || tempUserId;
+                console.log('📤 Enviando respaldo a Supabase. ID:', finalMemberId);
+
                 const supabaseResult = await registerUserInSupabase(
                     formData,
-                    memberstackResponse.member?.id || tempUserId
+                    finalMemberId
                 );
 
                 if (!supabaseResult.success) {
                     console.warn('⚠️ Usuario creado en Memberstack pero falló respaldo en Supabase:', supabaseResult.error);
                     // No lanzamos error para no detener el flujo, el usuario ya existe en Memberstack
+                } else {
+                    console.log('✅ Respaldo en Supabase completado.');
                 }
             } catch (sbError) {
                 console.error('Error no crítico guardando en Supabase:', sbError);
@@ -303,6 +337,29 @@ export default function RegistrationForm() {
                 </p>
                 <p className={styles.privacyNote}>
                     Toda tu información es privada y se usa solo para fines de verificación.
+                </p>
+                {/* Logout Link for Testing/UX */}
+                <p style={{ marginTop: '0.5rem', fontSize: '0.9rem', color: '#666' }}>
+                    ¿No eres tú?{' '}
+                    <button
+                        onClick={async () => {
+                            await window.$memberstackDom.logout();
+                            window.location.href = '/';
+                        }}
+                        style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--primary-color)',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            padding: 0,
+                            fontFamily: 'inherit',
+                            fontSize: 'inherit'
+                        }}
+                        type="button"
+                    >
+                        Cerrar Sesión
+                    </button>
                 </p>
             </div>
 
@@ -459,6 +516,7 @@ export default function RegistrationForm() {
                             helpText="Aquí te enviaremos noticias de tu peludo y de la comunidad"
                             required
                             memberstackField="email"
+                            readOnly
                         />
 
                         <PhoneInput
@@ -472,17 +530,7 @@ export default function RegistrationForm() {
                             memberstackField="phone"
                         />
 
-                        <TextInput
-                            label="🔒 Contraseña"
-                            name="password"
-                            type="password"
-                            value={formData.password || ''}
-                            onChange={(value) => setFormData({ ...formData, password: value })}
-                            placeholder="Mínimo 8 caracteres"
-                            error={errors.password}
-                            required
-                            memberstackField="password"
-                        />
+
                     </div>
                 </div>
 

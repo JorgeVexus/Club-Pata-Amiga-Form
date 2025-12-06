@@ -1,9 +1,5 @@
-import RegistrationForm from '@/components/RegistrationForm/RegistrationForm';
+import AuthLanding from '@/components/Auth/AuthLanding';
 
 export default function Home() {
-    return (
-        <main className="container">
-            <RegistrationForm />
-        </main>
-    );
+    return <AuthLanding />;
 }

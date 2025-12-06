@@ -20,6 +20,7 @@ interface TextInputProps {
     maxLength?: number;
     pattern?: string;
     onBlur?: () => void;
+    readOnly?: boolean;
 }
 
 export default function TextInput({
@@ -36,6 +37,7 @@ export default function TextInput({
     maxLength,
     pattern,
     onBlur,
+    readOnly,
 }: TextInputProps) {
     return (
         <div className={styles.fieldWrapper}>
@@ -52,11 +54,12 @@ export default function TextInput({
                 onChange={(e) => onChange(e.target.value)}
                 onBlur={onBlur}
                 placeholder={placeholder}
-                className={`${styles.input} ${error ? 'input-error' : ''}`}
+                className={`${styles.input} ${error ? 'input-error' : ''} ${readOnly ? styles.readOnly : ''}`}
                 required={required}
                 data-ms-member={memberstackField}
                 maxLength={maxLength}
                 pattern={pattern}
+                readOnly={readOnly}
             />
 
             {helpText && !error && (

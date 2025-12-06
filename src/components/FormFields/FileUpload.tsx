@@ -134,7 +134,6 @@ export default function FileUpload({
                     multiple={maxFiles > 1}
                     onChange={handleFileSelect}
                     className={styles.fileInput}
-                    required={required && selectedFiles.length === 0}
                 />
 
                 <div className={styles.uploadIcon}>

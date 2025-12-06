@@ -51,11 +51,20 @@ export async function checkCurpAvailability(curp: string) {
  * Se usa después de crear el usuario en Memberstack
  */
 export async function registerUserInSupabase(userData: any, memberstackId: string) {
+    console.log('🔄 [Server Action] Intentando registrar usuario en Supabase:', {
+        memberstackId,
+        email: userData.email,
+        curp: userData.curp
+    });
+
     const supabase = getServiceRoleClient()
-    if (!supabase) return { success: false, error: 'Configuración de servidor incompleta' }
+    if (!supabase) {
+        console.error('❌ [Server Action] Cliente Supabase no inicializado (Falta Key)');
+        return { success: false, error: 'Configuración de servidor incompleta' }
+    }
 
     try {
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('users')
             .insert({
                 memberstack_id: memberstackId,
@@ -75,15 +84,17 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 membership_status: 'pending',
                 created_at: new Date().toISOString(),
             })
+            .select() // Seleccionar para confirmar inserción
 
         if (error) {
-            console.error('Error al guardar en Supabase:', error)
+            console.error('❌ [Server Action] Error de Supabase:', error)
             return { success: false, error: error.message }
         }
 
+        console.log('✅ [Server Action] Usuario registrado en Supabase exitosamente:', data)
         return { success: true }
     } catch (error: any) {
-        console.error('Error inesperado al guardar usuario:', error)
+        console.error('❌ [Server Action] Error inesperado:', error)
         return { success: false, error: error.message }
     }
 }

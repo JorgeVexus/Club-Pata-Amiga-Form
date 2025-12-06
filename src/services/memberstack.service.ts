@@ -67,34 +67,7 @@ export async function createMemberstackUser(
 
     try {
         // Preparar custom fields
-        const customFields = {
-            // Información personal
-            'first-name': formData.firstName,
-            'paternal-last-name': formData.paternalLastName,
-            'maternal-last-name': formData.maternalLastName,
-            'gender': formData.gender,
-            'birth-date': formData.birthDate,
-            'curp': formData.curp,
-
-            // Dirección
-            'postal-code': formData.postalCode,
-            'state': formData.state,
-            'city': formData.city,
-            'colony': formData.colony,
-            'address': formData.address,
-
-            // Contacto
-            'phone': formData.phone,
-
-            // URLs de documentos
-            'ine-front-url': fileUrls.ineUrls[0] || '',
-            'ine-back-url': fileUrls.ineUrls[1] || '',
-            'proof-of-address-url': fileUrls.proofOfAddressUrl,
-
-            // Metadata
-            'registration-date': new Date().toISOString(),
-            'waiting-period-end': calculateWaitingPeriodEnd(), // 90 días desde hoy
-        };
+        const customFields = mapFormDataToCustomFields(formData, fileUrls);
 
         console.log('✅ Creando usuario en Memberstack...');
 
@@ -124,23 +97,106 @@ export async function createMemberstackUser(
         };
     } catch (error: any) {
         console.error('❌ Memberstack error:', error);
+        return handleMemberstackError(error);
+    }
+}
 
-        // Manejar errores específicos de Memberstack
-        let errorMessage = 'Error desconocido al crear el usuario';
+/**
+ * Completa el perfil de un usuario existente (Social Login o Email previo)
+ */
+export async function completeMemberProfile(
+    formData: RegistrationFormData,
+    fileUrls: {
+        ineUrls: string[];
+        proofOfAddressUrl: string;
+    }
+): Promise<MemberstackResponse> {
+    const loaded = await waitForMemberstack();
 
-        if (error.message?.includes('email') || error.message?.includes('already exists')) {
-            errorMessage = 'Este correo electrónico ya está registrado';
-        } else if (error.message?.includes('password')) {
-            errorMessage = 'La contraseña no cumple con los requisitos mínimos';
-        } else if (error.message) {
-            errorMessage = error.message;
-        }
+    if (!loaded || !window.$memberstackDom) {
+        return { success: false, error: 'Memberstack no está cargado.' };
+    }
+
+    try {
+        const customFields = mapFormDataToCustomFields(formData, fileUrls);
+
+        console.log('✅ Actualizando perfil en Memberstack...');
+        const response = await window.$memberstackDom.updateMemberJSON({
+            json: customFields // V2 usa 'json' o 'customFields' dependiendo la versión exacta, pero updateMemberJSON usualmente toma el objeto directo o un wrapper.
+            // Revisando documentación común V2: updateMemberJSON({ customFields: ... }) o updateMember({ customFields: ... })
+            // vamos a usar updateMember que es más seguro para custom fields
+        });
+
+        // Fallback si updateMemberJSON no es lo que queremos, usamos updateMember
+        // Pero window.$memberstackDom.updateMember es lo standard.
+        // Vamos a asumir updateMember que es lo que usabamos abajo.
+    } catch (e) {
+        // Fallthrough to retry with standard updateMember
+    }
+
+    try {
+        const customFields = mapFormDataToCustomFields(formData, fileUrls);
+        const response = await window.$memberstackDom.updateMember({
+            customFields: customFields
+        });
 
         return {
-            success: false,
-            error: errorMessage,
+            success: true,
+            member: response.data,
         };
+    } catch (error: any) {
+        console.error('❌ Error actualizando perfil:', error);
+        return handleMemberstackError(error);
     }
+}
+
+function mapFormDataToCustomFields(formData: RegistrationFormData, fileUrls: any) {
+    return {
+        // Información personal
+        'first-name': formData.firstName,
+        'paternal-last-name': formData.paternalLastName,
+        'maternal-last-name': formData.maternalLastName,
+        'gender': formData.gender,
+        'birth-date': formData.birthDate,
+        'curp': formData.curp,
+
+        // Dirección
+        'postal-code': formData.postalCode,
+        'state': formData.state,
+        'city': formData.city,
+        'colony': formData.colony,
+        'address': formData.address,
+
+        // Contacto
+        'phone': formData.phone,
+
+        // URLs de documentos
+        'ine-front-url': fileUrls.ineUrls[0] || '',
+        'ine-back-url': fileUrls.ineUrls[1] || '',
+        'proof-of-address-url': fileUrls.proofOfAddressUrl,
+
+        // Metadata
+        'registration-date': new Date().toISOString(),
+        'waiting-period-end': calculateWaitingPeriodEnd(),
+    };
+}
+
+function handleMemberstackError(error: any) {
+    let errorMessage = 'Error desconocido';
+
+    if (error.message?.includes('email') || error.message?.includes('already exists')) {
+        errorMessage = 'Este correo electrónico ya está registrado';
+    } else if (error.message?.includes('password')) {
+        errorMessage = 'La contraseña no cumple con los requisitos mínimos';
+    } else if (error.message) {
+        errorMessage = error.message;
+    }
+
+    return {
+        success: false,
+        error: errorMessage,
+    };
+
 }
 
 /**

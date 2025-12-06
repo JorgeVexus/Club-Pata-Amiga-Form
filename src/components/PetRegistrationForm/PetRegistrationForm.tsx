@@ -191,8 +191,8 @@ export default function PetRegistrationForm() {
             // 3. Éxito - Redirigir a selección de plan
             alert('¡Mascotas registradas exitosamente! 🐾');
             console.log('✅ Registro de mascotas completado');
-            // TODO: Redirigir a página de selección de plan
-            // window.location.href = '/seleccion-plan';
+            // Redirigir a página de selección de plan
+            window.location.href = '/seleccion-plan';
 
         } catch (error: any) {
             console.error('Error en el registro:', error);
