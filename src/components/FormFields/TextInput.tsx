@@ -19,6 +19,7 @@ interface TextInputProps {
     memberstackField?: string;
     maxLength?: number;
     pattern?: string;
+    onBlur?: () => void;
 }
 
 export default function TextInput({
@@ -34,6 +35,7 @@ export default function TextInput({
     memberstackField,
     maxLength,
     pattern,
+    onBlur,
 }: TextInputProps) {
     return (
         <div className={styles.fieldWrapper}>
@@ -48,6 +50,7 @@ export default function TextInput({
                 type={type}
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
+                onBlur={onBlur}
                 placeholder={placeholder}
                 className={`${styles.input} ${error ? 'input-error' : ''}`}
                 required={required}

@@ -12,6 +12,7 @@ import DatePicker from '@/components/FormFields/DatePicker';
 import FileUpload from '@/components/FormFields/FileUpload';
 import PostalCodeInput from '@/components/FormFields/PostalCodeInput';
 import PhoneInput from '@/components/FormFields/PhoneInput';
+import { checkCurpAvailability, registerUserInSupabase } from '@/app/actions/user.actions';
 import { createMemberstackUser } from '@/services/memberstack.service';
 import { uploadMultipleFiles, uploadFile } from '@/services/supabase.service';
 import { validateCURP, formatCURP } from '@/utils/curp-validator';
@@ -63,7 +64,26 @@ export default function RegistrationForm() {
         if (!formData.paternalLastName?.trim()) newErrors.paternalLastName = 'El apellido paterno es requerido';
         if (!formData.maternalLastName?.trim()) newErrors.maternalLastName = 'El apellido materno es requerido';
         if (!formData.gender) newErrors.gender = 'Selecciona una opción';
-        if (!formData.birthDate) newErrors.birthDate = 'La fecha de nacimiento es requerida';
+        if (!formData.birthDate) {
+            newErrors.birthDate = 'La fecha de nacimiento es requerida';
+        } else {
+            // Validar mayoría de edad (18 años)
+            const birth = new Date(formData.birthDate);
+            const today = new Date();
+            const age = today.getFullYear() - birth.getFullYear(); // Diferencia de años
+            const monthDiff = today.getMonth() - birth.getMonth(); // Diferencia de meses 
+
+            // Si aún no cumple años este año (mes actual < mes nacimiento, o mismo mes pero día actual < día nacimiento)
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+                // Se resta un año a la edad calculada
+                if (age - 1 < 18) {
+                    newErrors.birthDate = 'Debes ser mayor de 18 años para registrarte';
+                }
+            } else if (age < 18) {
+                newErrors.birthDate = 'Debes ser mayor de 18 años para registrarte';
+            }
+        }
+
         if (!formData.curp?.trim()) newErrors.curp = 'El CURP es requerido';
         if (!formData.ineFrontFile) newErrors.ineFrontFile = 'Debes subir el frente de tu INE';
         if (!formData.ineBackFile) newErrors.ineBackFile = 'Debes subir el reverso de tu INE';
@@ -97,20 +117,10 @@ export default function RegistrationForm() {
             }
         }
 
-        // Validar teléfono (10 dígitos)
-        const phoneDigits = formData.phone?.replace(/\D/g, '');
-        if (phoneDigits && phoneDigits.length !== 10) {
-            newErrors.phone = 'El teléfono debe tener 10 dígitos';
-        }
-
-        // Validar contraseña (mínimo 8 caracteres)
-        if (formData.password && formData.password.length < 8) {
-            newErrors.password = 'La contraseña debe tener al menos 8 caracteres';
-        }
-
         setErrors(newErrors);
         return { isValid: Object.keys(newErrors).length === 0, newErrors };
     };
+
 
     const scrollToError = (errorFields: string[], currentErrors: Record<string, string>) => {
         if (errorFields.length > 0) {
@@ -134,6 +144,46 @@ export default function RegistrationForm() {
         }
     };
 
+    const handleCurpBlur = async () => {
+        if (!formData.curp) return;
+
+        // Primero validamos formato localmente
+        const curpValidation = validateCURP(formData.curp);
+        if (!curpValidation.isValid) {
+            // El error ya lo maneja validateForm, pero aquí forcejeamos update
+            // O mejor dejamos que validateForm lo maneje en submit, 
+            // pero para UX en blur es bueno mostrar formato invalido.
+            setErrors(prev => ({ ...prev, curp: curpValidation.error || 'CURP inválida' }));
+            return;
+        }
+
+        // Verificar disponibilidad en servidor
+        try {
+            const { available, error } = await checkCurpAvailability(formData.curp);
+
+            if (error) {
+                // Si hay error de sistema, no bloqueamos pero logueamos
+                console.error('Error verificando CURP:', error);
+                return;
+            }
+
+            if (!available) {
+                const msg = 'Este CURP ya está registrado en nuestra manada.';
+                setErrors(prev => ({ ...prev, curp: msg }));
+                showToast('⚠️ ' + msg, 'warning');
+            } else {
+                // Si es válido y disponible, limpiamos error de CURP si existía
+                setErrors(prev => {
+                    const newErrs = { ...prev };
+                    delete newErrs.curp;
+                    return newErrs;
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -153,6 +203,19 @@ export default function RegistrationForm() {
         }
 
         setIsSubmitting(true);
+
+        // Validar unicidad de CURP antes de enviar
+        if (formData.curp) {
+            const { available, error } = await checkCurpAvailability(formData.curp);
+            if (!available && !error) { // Solo bloqueamos si confirmado no disponible
+                const msg = 'Este CURP ya está registrado.';
+                setErrors(prev => ({ ...prev, curp: msg }));
+                showToast('⚠️ ' + msg, 'warning');
+                scrollToError(['curp'], { curp: msg });
+                setIsSubmitting(false);
+                return;
+            }
+        }
 
         try {
             // Generar un ID temporal para el usuario (se reemplazará con el ID de Memberstack)
@@ -190,7 +253,22 @@ export default function RegistrationForm() {
                 throw new Error(memberstackResponse.error || 'Error al crear el usuario');
             }
 
-            // 3. Éxito - Redirigir a registro de mascotas
+            // 3. Guardar respaldo en Supabase (Base de datos real)
+            try {
+                const supabaseResult = await registerUserInSupabase(
+                    formData,
+                    memberstackResponse.member?.id || tempUserId
+                );
+
+                if (!supabaseResult.success) {
+                    console.warn('⚠️ Usuario creado en Memberstack pero falló respaldo en Supabase:', supabaseResult.error);
+                    // No lanzamos error para no detener el flujo, el usuario ya existe en Memberstack
+                }
+            } catch (sbError) {
+                console.error('Error no crítico guardando en Supabase:', sbError);
+            }
+
+            // 4. Éxito - Redirigir a registro de mascotas
             setSubmitSuccess(true);
 
             // Redirigir después de un breve delay para que el usuario vea el mensaje
@@ -299,6 +377,7 @@ export default function RegistrationForm() {
                             name="curp"
                             value={formData.curp || ''}
                             onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
+                            onBlur={handleCurpBlur}
                             placeholder="ABCD123456HDFRNN09"
                             error={errors.curp}
                             helpText="Para proteger tu identidad y la de toda la manada"
