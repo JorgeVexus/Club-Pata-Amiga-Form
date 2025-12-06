@@ -1,0 +1,61 @@
+.toast {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: white;
+    color: #2D3748;
+    padding: 1rem 1.5rem;
+    border-radius: 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    font-weight: 500;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    min-width: 320px;
+    max-width: 90%;
+}
+
+.toastVisible {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+}
+
+.icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.message {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+/* Tipos de Toast */
+.error {
+    border-left: 4px solid #EF4444;
+}
+
+.success {
+    border-left: 4px solid #10B981;
+}
+
+.warning {
+    border-left: 4px solid #F59E0B;
+}
+
+.iconError {
+    color: #EF4444;
+}
+
+.iconSuccess {
+    color: #10B981;
+}
+
+.iconWarning {
+    color: #F59E0B;
+}

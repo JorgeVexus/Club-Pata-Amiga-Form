@@ -1,0 +1,94 @@
+.fieldWrapper {
+    margin-bottom: var(--spacing-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-sm);
+    display: block;
+}
+
+.required {
+    color: var(--color-error);
+}
+
+.radioGroup {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.75rem 1.25rem;
+    background: rgba(255, 255, 255, var(--opacity-60));
+    border-radius: 25px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.radioLabel:hover {
+    background: rgba(255, 255, 255, 0.75);
+    transform: translateX(5px);
+}
+
+.radioInput {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.radioCustom {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    margin-right: var(--spacing-sm);
+    position: relative;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.radioInput:checked+.radioCustom {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.radioInput:checked+.radioCustom::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+    background: white;
+    border-radius: 50%;
+}
+
+.radioText {
+    font-size: 0.95rem;
+    color: var(--color-text-dark);
+    font-weight: 500;
+}
+
+.radioInput:checked~.radioText {
+    font-weight: 600;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

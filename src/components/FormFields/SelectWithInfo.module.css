@@ -1,0 +1,142 @@
+.fieldWrapper {
+    margin-bottom: var(--spacing-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.labelWrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: var(--spacing-xs);
+    position: relative;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+}
+
+.required {
+    color: var(--color-error);
+}
+
+/* Botón de información */
+.infoButton {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: help;
+    padding: 0.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.infoButton:hover {
+    background: rgba(125, 216, 213, 0.1);
+    transform: scale(1.1);
+}
+
+/* Tooltip */
+.tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 0.5rem;
+    background: #2D3748;
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    max-width: 300px;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.2s ease-out;
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 1rem;
+    border: 6px solid transparent;
+    border-bottom-color: #2D3748;
+}
+
+/* Select wrapper */
+.selectWrapper {
+    position: relative;
+}
+
+.select {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 1.5rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, var(--opacity-60));
+    border: 2px solid transparent;
+    border-radius: var(--radius-input);
+    transition: all 0.3s ease;
+    color: var(--color-text-dark);
+    font-family: var(--font-family);
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.select:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.select:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+    outline: none;
+}
+
+.selectError {
+    border-color: var(--color-error);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Flecha personalizada */
+.arrow {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-primary);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Animación */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para opciones (limitado en navegadores) */
+.select option {
+    padding: 0.5rem;
+    background: white;
+    color: var(--color-text-dark);
+}
+
+.select option:disabled {
+    color: rgba(0, 0, 0, 0.4);
+}

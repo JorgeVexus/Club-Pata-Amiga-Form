@@ -1,0 +1,235 @@
+.formContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    min-height: 100vh;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-size: 1.1rem;
+    color: var(--color-text-light);
+}
+
+.form {
+    width: 100%;
+}
+
+/* Sección de agregar mascota */
+.addPetWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 2rem 0;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.addPetButton {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #38A169;
+    color: white;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.addPetButton:hover {
+    background: #2F855A;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(56, 161, 105, 0.4);
+}
+
+.addPetButton:active {
+    transform: scale(0.95);
+}
+
+.plusIcon {
+    font-size: 2.5rem;
+    line-height: 1;
+}
+
+.addPetText {
+    margin-top: 1rem;
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+}
+
+/* Sección de código de embajador */
+.ambassadorSection {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 30px;
+    padding: 2rem;
+    margin: 2rem 0;
+}
+
+.label {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.input {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, var(--opacity-60));
+    border: 2px solid transparent;
+    border-radius: var(--radius-input);
+    transition: all 0.3s ease;
+    color: var(--color-text-dark);
+    font-family: var(--font-family);
+}
+
+.input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+    font-style: italic;
+}
+
+.input:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+    outline: none;
+}
+
+.helpText {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    line-height: 1.4;
+}
+
+/* Botones de navegación */
+.navigationButtons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    gap: 1rem;
+}
+
+.cancelButton {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.875rem 1.5rem;
+    transition: color 0.2s ease;
+}
+
+.cancelButton:hover {
+    color: var(--color-text-dark);
+    text-decoration: underline;
+}
+
+.previousButton {
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(125, 216, 213, 0.3);
+}
+
+.previousButton:hover {
+    background: #6bc7c4;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(125, 216, 213, 0.4);
+}
+
+.previousButton:active {
+    transform: translateY(0);
+}
+
+.nextButton {
+    background: #FF9500;
+    color: white;
+    border: none;
+    padding: 0.875rem 2.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+}
+
+.nextButton:hover {
+    background: #E68600;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
+}
+
+.nextButton:active {
+    transform: translateY(0);
+}
+
+.nextButton:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .formContainer {
+        padding: 1rem;
+    }
+
+    .title {
+        font-size: 1.8rem;
+    }
+
+    .navigationButtons {
+        flex-direction: column;
+    }
+
+    .cancelButton,
+    .previousButton,
+    .nextButton {
+        width: 100%;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

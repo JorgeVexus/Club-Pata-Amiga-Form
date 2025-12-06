@@ -1,0 +1,113 @@
+.petCard {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 30px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    animation: slideIn 0.4s ease-out;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.cardTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--color-text-dark);
+    margin: 0;
+}
+
+.removeButton {
+    background: #EF4444;
+    color: white;
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.removeButton:hover {
+    background: #DC2626;
+    transform: scale(1.1);
+}
+
+.removeButton:active {
+    transform: scale(0.95);
+}
+
+.columnsWrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.column {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Sección de certificado veterinario */
+.vetCertificateSection {
+    margin-top: 1rem;
+    animation: slideIn 0.4s ease-out;
+}
+
+.ageWarning {
+    background: linear-gradient(135deg, #FFF3CD 0%, #FFE69C 100%);
+    border-left: 4px solid #FF9500;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.warningText {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #856404;
+    margin: 0 0 0.5rem 0;
+    line-height: 1.4;
+}
+
+.warningSubtext {
+    font-size: 0.875rem;
+    color: #856404;
+    margin: 0;
+    line-height: 1.4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .columnsWrapper {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .petCard {
+        padding: 1.5rem;
+    }
+}
+
+/* Animación de entrada */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Membresía - Mascotas</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Memberstack Script -->
+    <script data-memberstack-app="app_cmiqkcuzv00670ssogle4ah3n"
+        src="https://static.memberstack.com/scripts/v2/memberstack.js" type="text/javascript"></script>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-wrapper">
+            <!-- Header Section -->
+            <div class="form-header">
+                <h1 class="form-title">Cuéntanos sobre ti</h1>
+                <p class="form-subtitle">Para formar parte de esta manada, necesitamos conocerte un poquito</p>
+                <p class="form-privacy">Toda tu información es privada y se usa solo para fines de verificación.</p>
+            </div>
+
+            <!-- Form -->
+            <form id="registrationForm" data-ms-form="signup">
+                <div class="form-columns">
+                    <!-- Left Column -->
+                    <div class="form-column left-column">
+                        <!-- Nombre Completo -->
+                        <div class="form-section">
+                            <label class="section-label">👤 Nombre Completo</label>
+
+                            <div class="form-group">
+                                <input type="text" id="firstName" name="firstName" class="form-input"
+                                    placeholder="Nombre(s)" required data-ms-member="first-name">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="lastName" name="lastName" class="form-input"
+                                    placeholder="Apellido paterno" required data-ms-member="last-name">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="motherLastName" name="motherLastName" class="form-input"
+                                    placeholder="Apellido materno" required data-ms-member="apellido-materno">
+                            </div>
+                        </div>
+
+                        <!-- Género -->
+                        <div class="form-section">
+                            <label class="section-label">🧑‍🦰 ¿Cómo te identificas?</label>
+
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Hombre" required data-ms-member="genero">
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Hombre</span>
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Mujer" data-ms-member="genero">
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Mujer</span>
+                                </label>
+
+                                <label class="radio-label">
+                                    <input type="radio" name="gender" value="Prefiero no especificar"
+                                        data-ms-member="genero">
+                                    <span class="radio-custom"></span>
+                                    <span class="radio-text">Prefiero no especificar</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Fecha de Nacimiento -->
+                        <div class="form-section">
+                            <label class="section-label">🎂 Fecha de nacimiento</label>
+
+                            <div class="form-group">
+                                <div class="input-with-icon">
+                                    <input type="date" id="birthDate" name="birthDate" class="form-input date-input"
+                                        required data-ms-member="fecha-nacimiento">
+                                    <span class="input-icon">📅</span>
+                                </div>
+                                <p class="help-text">Para celebrar contigo cuando sea tu día</p>
+                            </div>
+                        </div>
+
+                        <!-- CURP -->
+                        <div class="form-section">
+                            <label class="section-label">🆔 CURP</label>
+
+                            <div class="form-group">
+                                <input type="text" id="curp" name="curp" class="form-input" placeholder="CURP"
+                                    maxlength="18" pattern="[A-Z]{4}[0-9]{6}[HM][A-Z]{5}[0-9]{2}" required
+                                    data-ms-member="curp">
+                                <p class="help-text">Para proteger tu identidad y la de toda la manada</p>
+                            </div>
+                        </div>
+
+                        <!-- INE Upload -->
+                        <div class="form-section">
+                            <label class="section-label">📄 Sube tu INE por ambos lados</label>
+                            <p class="section-instruction">Asegúrate de que se vea clara y completa</p>
+
+                            <div class="form-group">
+                                <div class="file-upload-area" id="ineUploadArea">
+                                    <div class="file-upload-icon">📤</div>
+                                    <p class="file-upload-text">Arrastra y suelta tus imágenes aquí o <span
+                                            class="browse-link">explora</span></p>
+                                    <p class="file-upload-formats">PDF, JPG o PNG - Máx. 5MB</p>
+                                    <input type="file" id="ineFiles" name="ineFiles" accept=".pdf,.jpg,.jpeg,.png"
+                                        multiple class="file-input" data-max-files="2" required>
+                                </div>
+                                <div id="ineFilesList" class="files-list"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column Separator -->
+                    <div class="column-separator"></div>
+
+                    <!-- Right Column -->
+                    <div class="form-column right-column">
+                        <!-- Dirección -->
+                        <div class="form-section">
+                            <label class="section-label">📍 Dirección</label>
+
+                            <div class="form-group">
+                                <input type="text" id="postalCode" name="postalCode" class="form-input"
+                                    placeholder="Código postal" maxlength="5" pattern="[0-9]{5}" required
+                                    data-ms-member="codigo-postal">
+                            </div>
+
+                            <div class="form-group">
+                                <div class="select-wrapper">
+                                    <select id="state" name="state" class="form-input form-select" required disabled
+                                        data-ms-member="estado">
+                                        <option value="">Estado</option>
+                                    </select>
+                                    <span class="select-arrow">✓</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="select-wrapper">
+                                    <select id="city" name="city" class="form-input form-select" required disabled
+                                        data-ms-member="ciudad">
+                                        <option value="">Ciudad</option>
+                                    </select>
+                                    <span class="select-arrow">✓</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="select-wrapper">
+                                    <select id="colony" name="colony" class="form-input form-select" required disabled
+                                        data-ms-member="colonia">
+                                        <option value="">Colonia</option>
+                                    </select>
+                                    <span class="select-arrow">✓</span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="address" name="address" class="form-input"
+                                    placeholder="Dirección (opcional)" data-ms-member="direccion">
+                                <p class="help-text">Orgullosos de ser mexicanos de corazón</p>
+                            </div>
+                        </div>
+
+                        <!-- Comprobante de Domicilio -->
+                        <div class="form-section">
+                            <label class="section-label">✅ Confirma tu dirección</label>
+                            <p class="section-instruction">Carga un comprobante con una antigüedad no mayor a 3 meses.
+                                (Recibo de luz, recibo de agua, recibo de internet, etc)</p>
+
+                            <div class="form-group">
+                                <div class="file-upload-area" id="proofUploadArea">
+                                    <div class="file-upload-icon">📤</div>
+                                    <p class="file-upload-text">Arrastra y suelta tus imágenes aquí o <span
+                                            class="browse-link">explora</span></p>
+                                    <p class="file-upload-formats">PDF, JPG o PNG - Máx. 5MB</p>
+                                    <input type="file" id="proofFile" name="proofFile" accept=".pdf,.jpg,.jpeg,.png"
+                                        class="file-input" data-max-files="1" required>
+                                </div>
+                                <div id="proofFilesList" class="files-list"></div>
+                            </div>
+                        </div>
+
+                        <!-- Email -->
+                        <div class="form-section">
+                            <label class="section-label">📧 Correo electrónico</label>
+
+                            <div class="form-group">
+                                <input type="email" id="email" name="email" class="form-input"
+                                    placeholder="correo@ejemplo.com" required data-ms-member="email">
+                                <p class="help-text">Aquí te enviaremos noticias de tu peludo y de la comunidad</p>
+                            </div>
+                        </div>
+
+                        <!-- Teléfono -->
+                        <div class="form-section">
+                            <label class="section-label">📞 Número de teléfono</label>
+
+                            <div class="form-group">
+                                <div class="phone-input-wrapper">
+                                    <span class="phone-prefix">🇲🇽 +52</span>
+                                    <input type="tel" id="phone" name="phone" class="form-input phone-input"
+                                        placeholder="123 123 1234" pattern="[0-9]{10}" maxlength="10" required
+                                        data-ms-member="telefono">
+                                </div>
+                                <p class="help-text">Para comunicarnos cuando sea importante. Sin spam, lo prometemos
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Contraseña -->
+                        <div class="form-section">
+                            <label class="section-label">🔒 Contraseña</label>
+
+                            <div class="form-group">
+                                <input type="password" id="password" name="password" class="form-input"
+                                    placeholder="Contraseña" minlength="8" required data-ms-member="password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-submit">Siguiente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>

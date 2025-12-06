@@ -1,0 +1,162 @@
+{
+    "perros": [
+        {
+            "name": "Labrador Retriever",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Golden Retriever",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Pastor Alemán",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Pastores Alemanes pueden tener displasia de cadera hereditaria. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 7
+        },
+        {
+            "name": "Bulldog Inglés",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Bulldogs pueden tener problemas respiratorios y de cadera hereditarios. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 5
+        },
+        {
+            "name": "Bulldog Francés",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Bulldogs Franceses pueden tener problemas respiratorios hereditarios. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 5
+        },
+        {
+            "name": "Pug",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Pugs pueden tener problemas respiratorios hereditarios. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 5
+        },
+        {
+            "name": "Chihuahua",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        },
+        {
+            "name": "Poodle",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Yorkshire Terrier",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Beagle",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Dachshund",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Dachshunds pueden tener problemas de columna hereditarios. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 8
+        },
+        {
+            "name": "Schnauzer",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Shih Tzu",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Boxer",
+            "hasGeneticIssues": false,
+            "maxAge": 7
+        },
+        {
+            "name": "Rottweiler",
+            "hasGeneticIssues": false,
+            "maxAge": 7
+        },
+        {
+            "name": "Doberman",
+            "hasGeneticIssues": false,
+            "maxAge": 7
+        },
+        {
+            "name": "Husky Siberiano",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Border Collie",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Cocker Spaniel",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Mestizo",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        }
+    ],
+    "gatos": [
+        {
+            "name": "Persa",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Siamés",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        },
+        {
+            "name": "Maine Coon",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Bengalí",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        },
+        {
+            "name": "Angora",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        },
+        {
+            "name": "Ragdoll",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Británico de Pelo Corto",
+            "hasGeneticIssues": false,
+            "maxAge": 9
+        },
+        {
+            "name": "Sphynx",
+            "hasGeneticIssues": false,
+            "maxAge": 8
+        },
+        {
+            "name": "Scottish Fold",
+            "hasGeneticIssues": true,
+            "warningMessage": "⚠️ Los Scottish Fold pueden tener problemas articulares hereditarios. No cubrimos problemas genéticos ni hereditarios.",
+            "maxAge": 8
+        },
+        {
+            "name": "Mestizo",
+            "hasGeneticIssues": false,
+            "maxAge": 10
+        }
+    ]
+}

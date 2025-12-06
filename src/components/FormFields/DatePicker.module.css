@@ -1,0 +1,116 @@
+.fieldWrapper {
+    margin-bottom: var(--spacing-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+.label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--color-text-dark);
+    margin-bottom: var(--spacing-xs);
+    display: block;
+}
+
+.required {
+    color: var(--color-error);
+}
+
+.inputWrapper {
+    position: relative;
+}
+
+.input {
+    width: 100%;
+    padding: 0.875rem 3.5rem 0.875rem 1.5rem;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, var(--opacity-60));
+    border: 2px solid transparent;
+    border-radius: var(--radius-input);
+    transition: all 0.3s ease;
+    color: var(--color-text-dark);
+    font-family: var(--font-family);
+}
+
+.input::placeholder {
+    color: rgba(0, 0, 0, 0.4);
+    font-style: italic;
+}
+
+.input:hover {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.input:focus {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+    outline: none;
+}
+
+.inputError {
+    border-color: var(--color-error);
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Input de fecha oculto */
+.dateInput {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    height: 0;
+}
+
+/* Botón del calendario */
+.calendarButton {
+    position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.calendarButton:hover {
+    background: rgba(125, 216, 213, 0.1);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.calendarButton:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.calendarButton svg {
+    display: block;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Estilos para el calendario nativo cuando se abre */
+.input::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+/* Mejoras para navegadores que soportan :has() */
+.inputWrapper:has(.input:focus) .calendarButton {
+    color: var(--color-primary);
+}
