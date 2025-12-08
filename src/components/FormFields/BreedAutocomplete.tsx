@@ -8,13 +8,14 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './BreedAutocomplete.module.css';
-import breedsData from '@/data/breeds.json';
+// import breedsData from '@/data/breeds.json'; // Eliminado, ahora usa DB
 
 interface Breed {
+    id: string;
     name: string;
-    hasGeneticIssues: boolean;
-    warningMessage?: string;
-    maxAge: number;
+    has_genetic_issues: boolean; // Snake case from DB
+    warning_message?: string;
+    max_age: number;
 }
 
 interface BreedAutocompleteProps {
@@ -40,14 +41,36 @@ export default function BreedAutocomplete({
     const [suggestions, setSuggestions] = useState<Breed[]>([]);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedBreed, setSelectedBreed] = useState<Breed | null>(null);
+    const [allBreeds, setAllBreeds] = useState<Breed[]>([]);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Obtener razas según el tipo de mascota
-    const breeds: Breed[] = petType === 'perro' ? breedsData.perros : breedsData.gatos;
+    // Cargar razas desde el servidor al montar (o al cambiar tipo)
+    useEffect(() => {
+        const fetchBreeds = async () => {
+            setIsLoading(true);
+            try {
+                // Importación dinámica para evitar error si no se usa
+                const { getBreeds } = await import('@/app/actions/breed.actions');
+                const { breeds, error } = await getBreeds(petType);
+                if (breeds) {
+                    setAllBreeds(breeds);
+                } else {
+                    console.error(error);
+                }
+            } catch (err) {
+                console.error('Error cargando razas:', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchBreeds();
+    }, [petType]);
 
     // Filtrar sugerencias mientras el usuario escribe
     useEffect(() => {
-        if (inputValue.length >= 2) {
-            const filtered = breeds.filter(breed =>
+        if (inputValue.length >= 2 && allBreeds.length > 0) {
+            const filtered = allBreeds.filter(breed =>
                 breed.name.toLowerCase().includes(inputValue.toLowerCase())
             );
             setSuggestions(filtered);
@@ -56,7 +79,7 @@ export default function BreedAutocomplete({
             setSuggestions([]);
             setShowSuggestions(false);
         }
-    }, [inputValue, breeds]);
+    }, [inputValue, allBreeds]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -71,9 +94,9 @@ export default function BreedAutocomplete({
         setShowSuggestions(false);
         onChange(
             breed.name,
-            breed.hasGeneticIssues,
-            breed.warningMessage,
-            breed.maxAge
+            breed.has_genetic_issues, // DB usa snake_case
+            breed.warning_message,    // DB usa snake_case
+            breed.max_age             // DB usa snake_case
         );
     };
 
@@ -93,22 +116,23 @@ export default function BreedAutocomplete({
                     onChange={handleInputChange}
                     onFocus={() => inputValue.length >= 2 && setShowSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    placeholder="Escribe para buscar..."
+                    placeholder={isLoading ? "Cargando razas..." : "Escribe para buscar..."}
                     className={`${styles.input} ${error ? styles.inputError : ''}`}
                     required={required}
                     autoComplete="off"
+                    disabled={isLoading}
                 />
 
                 {showSuggestions && suggestions.length > 0 && (
                     <ul className={styles.suggestionsList}>
-                        {suggestions.map((breed, index) => (
+                        {suggestions.map((breed) => (
                             <li
-                                key={index}
+                                key={breed.id}
                                 className={styles.suggestionItem}
                                 onClick={() => handleSelectBreed(breed)}
                             >
                                 {breed.name}
-                                {breed.hasGeneticIssues && (
+                                {breed.has_genetic_issues && (
                                     <span className={styles.warningIcon}>⚠️</span>
                                 )}
                             </li>
@@ -117,9 +141,9 @@ export default function BreedAutocomplete({
                 )}
             </div>
 
-            {selectedBreed?.hasGeneticIssues && selectedBreed.warningMessage && (
+            {selectedBreed?.has_genetic_issues && selectedBreed.warning_message && (
                 <div className={styles.warningBox}>
-                    {selectedBreed.warningMessage}
+                    {selectedBreed.warning_message}
                 </div>
             )}
 

@@ -6,6 +6,17 @@
             "maxAge": 8
         },
         {
+            "name": "Perro Mágico A (Test)",
+            "hasGeneticIssues": false,
+            "maxAge": 100
+        },
+        {
+            "name": "Perro Mágico B (Test)",
+            "hasGeneticIssues": true,
+            "warningMessage": "Cuidado con los hechizos",
+            "maxAge": 50
+        },
+        {
             "name": "Golden Retriever",
             "hasGeneticIssues": false,
             "maxAge": 8
