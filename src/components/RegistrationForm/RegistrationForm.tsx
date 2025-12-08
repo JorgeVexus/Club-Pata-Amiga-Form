@@ -287,19 +287,30 @@ export default function RegistrationForm() {
                 const finalMemberId = memberstackResponse.member?.id || member?.id || tempUserId;
                 console.log('📤 Enviando respaldo a Supabase. ID:', finalMemberId);
 
+                // LIMPIEZA DE DATOS: Removemos los archivos del objeto para no exceder el límite de 1MB del Server Action
+                // Solo necesitamos los datos de texto para la base de datos
+                const {
+                    ineFrontFile,
+                    ineBackFile,
+                    proofOfAddressFile,
+                    ineFiles,
+                    ...cleanData
+                } = formData;
+
                 const supabaseResult = await registerUserInSupabase(
-                    formData,
+                    cleanData,
                     finalMemberId
                 );
 
                 if (!supabaseResult.success) {
-                    console.warn('⚠️ Usuario creado en Memberstack pero falló respaldo en Supabase:', supabaseResult.error);
-                    // No lanzamos error para no detener el flujo, el usuario ya existe en Memberstack
+                    console.error('❌ ERROR CRÍTICO SUPABASE:', supabaseResult.error);
+                    alert(`Error guardando en base de datos: ${supabaseResult.error}`);
                 } else {
                     console.log('✅ Respaldo en Supabase completado.');
                 }
-            } catch (sbError) {
-                console.error('Error no crítico guardando en Supabase:', sbError);
+            } catch (sbError: any) {
+                console.error('❌ Error no crítico guardando en Supabase:', sbError);
+                alert(`Error inesperado en respaldo: ${sbError.message}`);
             }
 
             // 4. Éxito - Redirigir a registro de mascotas

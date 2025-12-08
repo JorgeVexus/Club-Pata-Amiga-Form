@@ -7,8 +7,15 @@ const getServiceRoleClient = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY
 
+    // Debug log para confirmar carga de variables
+    console.log('🔧 [Server Action] Supabase Auth Init:', {
+        url: !!supabaseUrl,
+        hasServiceKey: !!supabaseServiceKey,
+        keyLength: supabaseServiceKey?.length || 0
+    });
+
     if (!supabaseUrl || !supabaseServiceKey) {
-        console.warn('⚠️ Falta configuración de Supabase Service Role Key')
+        console.error('❌ CRITICAL: Falta configuración de Supabase Service Role Key o URL')
         return null
     }
 

@@ -1,27 +1,21 @@
 import { NextResponse } from 'next/server';
 import { seedBreeds } from '@/app/actions/breed.actions';
-import initialBreedsData from '@/data/breeds.json';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 // Esta ruta permite cargar las razas iniciales o recibir un JSON nuevo
 export async function POST(req: Request) {
     try {
-        // Intentar leer del body por si envían un JSON actualizado
         let dataToSeed;
+
+        // 1. Intentar leer del body
         try {
             const body = await req.json();
             if (body.perros || body.gatos) {
+                console.log('📦 Usando datos recibidos en el body del request');
                 dataToSeed = body;
             }
         } catch (e) {
-            // Si no hay body, usamos el JSON local
-            console.log('Usando data local de breeds.json');
-            dataToSeed = initialBreedsData;
-        }
-
-        const formattedBreeds = [];
-
-        // Transformar Perros
-        if (dataToSeed.perros) {
             formattedBreeds.push(...dataToSeed.perros.map((b: any) => ({
                 name: b.name,
                 type: 'perro',

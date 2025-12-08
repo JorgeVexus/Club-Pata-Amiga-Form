@@ -66,13 +66,20 @@ export default function PetCard({
 
     // Validar edad cuando cambia la edad o la raza
     useEffect(() => {
-        if (petData.age && breedMaxAge !== null) {
+        // Si breedMaxAge es 0, significa que no hay límite definido aún (dato pendiente)
+        if (petData.age && breedMaxAge !== null && breedMaxAge > 0) {
             const selectedAge = ageOptions.find(opt => opt.value === petData.age);
             if (selectedAge && selectedAge.numericAge > breedMaxAge) {
                 setShowVetCertificate(true);
                 onUpdate({ ...petData, exceedsMaxAge: true });
             } else {
                 setShowVetCertificate(false);
+                onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
+            }
+        } else {
+            // Si no hay edad o el límite es 0, limpiamos banderas
+            setShowVetCertificate(false);
+            if (petData.exceedsMaxAge) {
                 onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
             }
         }
