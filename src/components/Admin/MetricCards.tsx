@@ -11,21 +11,18 @@ interface MetricCardsProps {
 export default function MetricCards({ metrics }: MetricCardsProps) {
     return (
         <div className={styles.metricCards}>
-            {/* Reembolsos Aprobados */}
+            {/* Fondo Solidario */}
             <div className={styles.metricCard}>
                 <div className={styles.metricHeader}>
                     <div className={`${styles.metricIcon} ${styles.yellow}`}>
                         💰
-                    </div>
-                    <div className={`${styles.metricChange} ${styles.positive}`}>
-                        +12%
                     </div>
                 </div>
                 <div className={styles.metricValue}>
                     ${metrics.totalRefunds.toLocaleString()}
                 </div>
                 <div className={styles.metricLabel}>
-                    Reembolsos Aprobados
+                    Fondo Solidario
                 </div>
             </div>
 
@@ -34,9 +31,6 @@ export default function MetricCards({ metrics }: MetricCardsProps) {
                 <div className={styles.metricHeader}>
                     <div className={`${styles.metricIcon} ${styles.blue}`}>
                         🏥
-                    </div>
-                    <div className={`${styles.metricChange} ${styles.positive}`}>
-                        +2%
                     </div>
                 </div>
                 <div className={styles.metricValue}>
@@ -53,9 +47,6 @@ export default function MetricCards({ metrics }: MetricCardsProps) {
                     <div className={`${styles.metricIcon} ${styles.green}`}>
                         👥
                     </div>
-                    <div className={`${styles.metricChange} ${styles.positive}`}>
-                        +5%
-                    </div>
                 </div>
                 <div className={styles.metricValue}>
                     {metrics.totalMembers}
@@ -70,9 +61,6 @@ export default function MetricCards({ metrics }: MetricCardsProps) {
                 <div className={styles.metricHeader}>
                     <div className={`${styles.metricIcon} ${styles.orange}`}>
                         🎯
-                    </div>
-                    <div className={`${styles.metricChange} ${styles.positive}`}>
-                        +4%
                     </div>
                 </div>
                 <div className={styles.metricValue}>

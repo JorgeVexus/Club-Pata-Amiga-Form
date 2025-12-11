@@ -153,3 +153,15 @@
         display: block;
     }
 }
+.activitySection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .activitySection {
+        grid-template-columns: 1fr;
+    }
+}

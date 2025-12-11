@@ -13,19 +13,21 @@ interface MemberRequest {
 }
 
 interface RequestsTableProps {
-    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected';
+    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all'; // Initial sort/status filter
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund'; // New Type Filter
     onViewDetails: (memberId: string) => void;
     onViewRejectionReason?: (memberId: string) => void; // Optional for now
     onApprove: (memberId: string) => void;
     onReject: (memberId: string) => void;
 }
 
-export default function RequestsTable({ filter, onViewDetails, onViewRejectionReason, onApprove, onReject }: RequestsTableProps) {
+export default function RequestsTable({ filter, requestType = 'all', onViewDetails, onViewRejectionReason, onApprove, onReject }: RequestsTableProps) {
 
     const [requests, setRequests] = useState<MemberRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected'>('recents');
+
+    const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     useEffect(() => {
@@ -55,6 +57,7 @@ export default function RequestsTable({ filter, onViewDetails, onViewRejectionRe
             let statusParam = 'pending';
             if (sortFilter === 'approved') statusParam = 'approved';
             if (sortFilter === 'rejected') statusParam = 'rejected';
+            if (sortFilter === 'all') statusParam = 'all';
 
             const response = await fetch(`/api/admin/members?status=${statusParam}`);
             const data = await response.json();
@@ -98,6 +101,17 @@ export default function RequestsTable({ filter, onViewDetails, onViewRejectionRe
     // Filter and sort requests
     const filteredRequests = requests
         .filter(req => {
+            // Type Filter Logic
+            // Currently all users are members by default.
+            // If requestType is 'all' or 'member', show everything.
+            // If requestType is 'ambassador' or others, show nothing (until we implement types).
+
+            if (requestType === 'all') return true;
+            if (requestType === 'member') return true;
+
+            return false;
+        })
+        .filter(req => {
             // Search filter
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
@@ -110,10 +124,11 @@ export default function RequestsTable({ filter, onViewDetails, onViewRejectionRe
             return true;
         })
         .filter(req => {
-            // Status filter
+            // Client-side filtering (extra safety or for mixed lists)
             if (sortFilter === 'approved') return req.status === 'approved';
             if (sortFilter === 'rejected') return req.status === 'rejected';
-            return true;
+            if (sortFilter === 'recents' || sortFilter === 'oldest') return req.status === 'pending';
+            return true; // 'all' shows everything
         })
         .sort((a, b) => {
             // Sort by date
@@ -156,10 +171,11 @@ export default function RequestsTable({ filter, onViewDetails, onViewRejectionRe
 
     function getFilterLabel(filter: string): string {
         const labels: Record<string, string> = {
-            recents: 'Recientes',
-            oldest: 'Antiguos',
+            recents: 'Pendientes (Recientes)',
+            oldest: 'Pendientes (Antiguos)',
             approved: 'Aprobados',
-            rejected: 'Rechazados'
+            rejected: 'Rechazados',
+            all: 'Todas'
         };
         return labels[filter] || filter;
     }
@@ -208,6 +224,15 @@ export default function RequestsTable({ filter, onViewDetails, onViewRejectionRe
                         </button>
 
                         <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
+                            <button
+                                className={`${styles.dropdownOption} ${sortFilter === 'all' ? styles.selected : ''}`}
+                                onClick={() => {
+                                    setSortFilter('all');
+                                    setIsDropdownOpen(false);
+                                }}
+                            >
+                                📋 Todas
+                            </button>
                             <button
                                 className={`${styles.dropdownOption} ${sortFilter === 'recents' ? styles.selected : ''}`}
                                 onClick={() => {

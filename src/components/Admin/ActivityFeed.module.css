@@ -1,0 +1,210 @@
+.feedContainer {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    color: #000;
+    font-family: 'Outfit', sans-serif;
+}
+
+.filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.filterButton {
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    border: none;
+    background: transparent;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #666;
+    transition: all 0.2s ease;
+}
+
+.filterButton.active {
+    background: #000;
+    color: white;
+}
+
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.search {
+    display: flex;
+    align-items: center;
+    background: #F5F5F7;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    width: 60%;
+}
+
+.searchInput {
+    border: none;
+    background: transparent;
+    margin-left: 0.5rem;
+    width: 100%;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.sort {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.viewAll {
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: block;
+    color: #000;
+}
+
+/* Activity Items */
+.feedList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    max-height: 500px;
+    padding-right: 0.5rem;
+}
+
+.activityCard {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.activityCard:last-child {
+    border-bottom: none;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #000;
+}
+
+.timeAgo {
+    font-weight: 400;
+    color: #999;
+    font-size: 0.8rem;
+}
+
+.tags {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tag {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.tag.solidarity {
+    background: #FFDada;
+    color: #E63946;
+}
+
+.tag.member {
+    background: #D4F571;
+    /* Brand green */
+    color: #4A5D23;
+}
+
+.tag.medical {
+    background: #E0F7FA;
+    color: #006064;
+}
+
+.tag.rejected {
+    background: #FFF9C4;
+    /* Yellow ish */
+    color: #FBC02D;
+}
+
+.actors {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+    align-items: center;
+}
+
+.actor {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.avatarIcon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+}
+
+.actorInfo {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.roleLabel {
+    font-size: 0.7rem;
+    color: #999;
+}
+
+.nameLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Scrollbar styles */
+.feedList::-webkit-scrollbar {
+    width: 6px;
+}
+
+.feedList::-webkit-scrollbar-thumb {
+    background-color: #ddd;
+    border-radius: 3px;
+}

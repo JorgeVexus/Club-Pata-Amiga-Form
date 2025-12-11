@@ -25,6 +25,9 @@ export async function GET(request: NextRequest) {
         } else if (status === 'approved' || status === 'rejected') {
             // Use the generic listMembers method exposed via the singleton
             result = await memberstackAdmin.listMembers(status);
+        } else if (!status || status === 'all') {
+            // Return all members if no status or 'all'
+            result = await memberstackAdmin.listMembers();
         } else {
             return NextResponse.json(
                 { error: 'Status inválido. Usa: pending, appealed, approved o rejected' },
