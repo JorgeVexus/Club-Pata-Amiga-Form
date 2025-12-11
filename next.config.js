@@ -4,7 +4,11 @@ const nextConfig = {
 
     // Optimización de imágenes
     images: {
-        domains: ['your-supabase-project.supabase.co'], // Actualizar con tu dominio de Supabase
+        domains: [
+            'your-supabase-project.supabase.co',
+            'hjvhntxjkuuobgfslzlf.supabase.co',
+            'cdn.prod.website-files.com'
+        ],
         formats: ['image/avif', 'image/webp'],
     },
 

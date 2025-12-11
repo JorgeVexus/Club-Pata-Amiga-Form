@@ -1,0 +1,155 @@
+/* Reset básico para el dashboard */
+.admin-dashboard * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-dashboard {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #111827;
+    background-color: #fffce7;
+    min-height: 100vh;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fffce7;
+}
+
+.dashboardContent {
+    display: flex;
+    flex: 1;
+}
+
+.mainContent {
+    flex: 1;
+    padding: var(--spacing-xl);
+    min-height: 100vh;
+    overflow-x: auto;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-900);
+}
+
+.pageDate {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    text-transform: capitalize;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.adminBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: var(--brand-yellow);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+}
+
+.adminIcon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.adminInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.adminName {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+}
+
+.adminRole {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboardContent {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .mainContent {
+        padding: var(--spacing-md);
+    }
+
+    .header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .adminBadge {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .pageTitle {
+        font-size: 1.25rem;
+    }
+}
+
+/* Sidebar Overlay */
+.sidebarOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebarOverlay {
+        display: block;
+    }
+}

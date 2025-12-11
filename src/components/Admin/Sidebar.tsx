@@ -1,0 +1,101 @@
+'use client';
+
+import React, { useState } from 'react';
+import styles from './Sidebar.module.css';
+import type { RequestType } from '@/types/admin.types';
+
+interface SidebarProps {
+    activeFilter: RequestType | 'all';
+    onFilterChange: (filter: RequestType | 'all') => void;
+    pendingCounts: Record<RequestType, number>;
+    isMobileOpen?: boolean;
+    onClose?: () => void;
+}
+
+export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, isMobileOpen, onClose }: SidebarProps) {
+    return (
+        <aside className={`${styles.sidebar} ${isMobileOpen ? styles.open : ''}`}>
+            {/* Close Button (Mobile Only) */}
+            <button
+                className={styles.closeButton}
+                onClick={onClose}
+                aria-label="Cerrar menú"
+            >
+                ✕
+            </button>
+
+            {/* Menú Principal */}
+            <nav className={styles.menuSection}>
+                <h3 className={styles.menuTitle}>Gestión General</h3>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'all' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('all')}
+                >
+                    <span className={styles.menuIcon}>📊</span>
+                    <span className={styles.menuLabel}>Gestión general</span>
+                </button>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'member' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('member')}
+                >
+                    <span className={styles.menuIcon}>👥</span>
+                    <span className={styles.menuLabel}>Miembros</span>
+                    {pendingCounts.member > 0 && (
+                        <span className={styles.menuBadge}>{pendingCounts.member}</span>
+                    )}
+                </button>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'ambassador' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('ambassador')}
+                >
+                    <span className={styles.menuIcon}>🎯</span>
+                    <span className={styles.menuLabel}>Embajadores</span>
+                    {pendingCounts.ambassador > 0 && (
+                        <span className={styles.menuBadge}>{pendingCounts.ambassador}</span>
+                    )}
+                </button>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'wellness-center' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('wellness-center')}
+                >
+                    <span className={styles.menuIcon}>🏥</span>
+                    <span className={styles.menuLabel}>Centro de Bienestar</span>
+                    {pendingCounts['wellness-center'] > 0 && (
+                        <span className={styles.menuBadge}>{pendingCounts['wellness-center']}</span>
+                    )}
+                </button>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'solidarity-fund' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('solidarity-fund')}
+                >
+                    <span className={styles.menuIcon}>💰</span>
+                    <span className={styles.menuLabel}>Fondo solidario</span>
+                    {pendingCounts['solidarity-fund'] > 0 && (
+                        <span className={styles.menuBadge}>{pendingCounts['solidarity-fund']}</span>
+                    )}
+                </button>
+            </nav>
+
+            {/* Historial de Actividad */}
+            <nav className={styles.menuSection}>
+                <h3 className={styles.menuTitle}>Historial de Actividad</h3>
+
+                <button className={styles.menuItem}>
+                    <span className={styles.menuIcon}>📋</span>
+                    <span className={styles.menuLabel}>Historial de actividad</span>
+                </button>
+            </nav>
+
+            {/* Botón de Cerrar Sesión */}
+            <button className={styles.logoutButton}>
+                <span>🚪</span>
+                <span>Cerrar sesión</span>
+            </button>
+        </aside>
+    );
+}
