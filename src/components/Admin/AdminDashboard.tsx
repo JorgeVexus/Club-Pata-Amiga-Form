@@ -8,10 +8,12 @@ import MetricCards from './MetricCards';
 import RequestsTable from './RequestsTable';
 import styles from './AdminDashboard.module.css';
 import type { RequestType, DashboardMetrics } from '@/types/admin.types';
+import MemberDetailModal from './MemberDetailModal';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'all'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [selectedMember, setSelectedMember] = useState<any>(null);
     const [metrics, setMetrics] = useState<DashboardMetrics>({
         totalRefunds: 0,
         activeWellnessCenters: 0,
@@ -121,9 +123,17 @@ export default function AdminDashboard() {
                     {/* Requests Table */}
                     <RequestsTable
                         filter={activeFilter === 'all' ? 'recents' : 'recents'}
-                        onViewDetails={(memberId) => {
-                            console.log('View details:', memberId);
-                            // TODO: Open detail modal
+                        onViewDetails={async (memberId) => {
+                            try {
+                                const response = await fetch('/api/admin/members?status=pending');
+                                const data = await response.json();
+                                if (data.success && data.members) {
+                                    const member = data.members.find((m: any) => m.id === memberId);
+                                    if (member) setSelectedMember(member);
+                                }
+                            } catch (error) {
+                                console.error('Error fetching details:', error);
+                            }
                         }}
                         onApprove={async (memberId) => {
                             try {
@@ -150,6 +160,34 @@ export default function AdminDashboard() {
                     />
                 </main>
             </div>
+
+            <MemberDetailModal
+                isOpen={!!selectedMember}
+                onClose={() => setSelectedMember(null)}
+                member={selectedMember}
+                onApprove={async (id) => {
+                    try {
+                        const response = await fetch(`/api/admin/members/${id}/approve`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ adminId: 'current-admin-id' })
+                        });
+
+                        if (response.ok) {
+                            alert('Miembro aprobado exitosamente');
+                            setSelectedMember(null);
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        alert('Error al aprobar miembro');
+                    }
+                }}
+                onReject={(id) => {
+                    console.log('Reject from modal', id);
+                    setSelectedMember(null);
+                    // TODO: Open rejection modal
+                }}
+            />
         </div>
     );
 }
