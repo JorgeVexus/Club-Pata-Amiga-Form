@@ -5,6 +5,7 @@ import '@/styles/admin-globals.css';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import MetricCards from './MetricCards';
+import RequestsTable from './RequestsTable';
 import styles from './AdminDashboard.module.css';
 import type { RequestType, DashboardMetrics } from '@/types/admin.types';
 
@@ -117,12 +118,36 @@ export default function AdminDashboard() {
                     {/* Metric Cards */}
                     <MetricCards metrics={metrics} />
 
-                    {/* TODO: Tabla de solicitudes */}
-                    <div style={{ padding: '2rem', background: 'white', borderRadius: '1rem' }}>
-                        <h2>Solicitudes</h2>
-                        <p>Tabla de solicitudes en construcción...</p>
-                        <p>Filtro activo: <strong>{activeFilter}</strong></p>
-                    </div>
+                    {/* Requests Table */}
+                    <RequestsTable
+                        filter={activeFilter === 'all' ? 'recents' : 'recents'}
+                        onViewDetails={(memberId) => {
+                            console.log('View details:', memberId);
+                            // TODO: Open detail modal
+                        }}
+                        onApprove={async (memberId) => {
+                            try {
+                                const response = await fetch(`/api/admin/members/${memberId}/approve`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ adminId: 'current-admin-id' }) // TODO: Get real admin ID
+                                });
+
+                                if (response.ok) {
+                                    alert('Miembro aprobado exitosamente');
+                                    // Reload data
+                                    loadPendingCounts();
+                                }
+                            } catch (error) {
+                                console.error('Error approving member:', error);
+                                alert('Error al aprobar miembro');
+                            }
+                        }}
+                        onReject={(memberId) => {
+                            console.log('Reject member:', memberId);
+                            // TODO: Open rejection modal
+                        }}
+                    />
                 </main>
             </div>
         </div>

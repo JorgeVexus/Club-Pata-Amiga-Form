@@ -1,0 +1,319 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import styles from './RequestsTable.module.css';
+
+interface MemberRequest {
+    id: string;
+    name: string;
+    email: string;
+    submittedAt: string;
+    status: 'pending' | 'approved' | 'rejected' | 'appealed';
+    petCount?: number;
+}
+
+interface RequestsTableProps {
+    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected';
+    onViewDetails: (memberId: string) => void;
+    onApprove: (memberId: string) => void;
+    onReject: (memberId: string) => void;
+}
+
+export default function RequestsTable({ filter, onViewDetails, onApprove, onReject }: RequestsTableProps) {
+    const [requests, setRequests] = useState<MemberRequest[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+    const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected'>('recents');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+    useEffect(() => {
+        loadRequests();
+    }, [filter]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as HTMLElement;
+            if (!target.closest(`.${styles.filterDropdown}`)) {
+                setIsDropdownOpen(false);
+            }
+        }
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isDropdownOpen]);
+
+    async function loadRequests() {
+        try {
+            setLoading(true);
+            const response = await fetch('/api/admin/members?status=pending');
+            const data = await response.json();
+
+            console.log('API Response:', data);
+            console.log('Data success:', data.success);
+            console.log('Data.members:', data.members);
+
+            if (data.success && data.members) {
+                const formattedRequests: MemberRequest[] = data.members.map((member: any) => {
+                    // Count pets by checking pet-x-name fields
+                    let petCount = 0;
+                    for (let i = 1; i <= 3; i++) { // Max 3 pets
+                        if (member.customFields?.[`pet-${i}-name`]) {
+                            petCount++;
+                        }
+                    }
+
+                    return {
+                        id: member.id,
+                        name: `${member.customFields?.['first-name'] || ''} ${member.customFields?.['last-name'] || ''}`.trim() || 'Sin nombre',
+                        email: member.auth?.email || 'Sin email',
+                        submittedAt: member.customFields?.['submitted-at'] || new Date().toISOString(),
+                        status: member.customFields?.['approval-status'] || 'pending',
+                        petCount: petCount,
+                    };
+                });
+
+                console.log('Formatted requests:', formattedRequests);
+                setRequests(formattedRequests);
+            } else {
+                console.log('No data or not successful');
+            }
+        } catch (error) {
+            console.error('Error loading requests:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    // Filter and sort requests
+    const filteredRequests = requests
+        .filter(req => {
+            // Search filter
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                return (
+                    req.name.toLowerCase().includes(query) ||
+                    req.email.toLowerCase().includes(query) ||
+                    req.id.toLowerCase().includes(query)
+                );
+            }
+            return true;
+        })
+        .filter(req => {
+            // Status filter
+            if (sortFilter === 'approved') return req.status === 'approved';
+            if (sortFilter === 'rejected') return req.status === 'rejected';
+            return true;
+        })
+        .sort((a, b) => {
+            // Sort by date
+            const dateA = new Date(a.submittedAt).getTime();
+            const dateB = new Date(b.submittedAt).getTime();
+
+            if (sortFilter === 'recents') {
+                return dateB - dateA; // Newest first
+            } else {
+                return dateA - dateB; // Oldest first
+            }
+        });
+
+    function getInitials(name: string): string {
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+            return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
+    }
+
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-MX', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function getStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            pending: 'Pendiente',
+            approved: 'Aprobado',
+            rejected: 'Rechazado',
+            appealed: 'Apelado'
+        };
+        return labels[status] || status;
+    }
+
+    function getFilterLabel(filter: string): string {
+        const labels: Record<string, string> = {
+            recents: 'Recientes',
+            oldest: 'Antiguos',
+            approved: 'Aprobados',
+            rejected: 'Rechazados'
+        };
+        return labels[filter] || filter;
+    }
+
+    if (loading) {
+        return (
+            <div className={styles.requestsSection}>
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>⏳</div>
+                    <div className={styles.emptyText}>Cargando solicitudes...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.requestsSection}>
+            {/* Header with Search and Filters */}
+            <div className={styles.requestsHeader}>
+                <h2 className={styles.requestsTitle}>Solicitudes</h2>
+
+                <div className={styles.requestsControls}>
+                    {/* Search Box */}
+                    <div className={styles.searchBox}>
+                        <span className={styles.searchIcon}>🔍</span>
+                        <input
+                            type="text"
+                            className={styles.searchInput}
+                            placeholder="Buscar por nombre, email o ID..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
+
+                    {/* Dropdown Filter */}
+                    <div className={styles.filterDropdown}>
+                        <button
+                            className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
+                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                        >
+                            <span>
+                                <span className={styles.filterLabel}>Filtrar por:</span>
+                                {getFilterLabel(sortFilter)}
+                            </span>
+                            <span className={styles.dropdownArrow}>▼</span>
+                        </button>
+
+                        <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
+                            <button
+                                className={`${styles.dropdownOption} ${sortFilter === 'recents' ? styles.selected : ''}`}
+                                onClick={() => {
+                                    setSortFilter('recents');
+                                    setIsDropdownOpen(false);
+                                }}
+                            >
+                                Recientes
+                            </button>
+                            <button
+                                className={`${styles.dropdownOption} ${sortFilter === 'oldest' ? styles.selected : ''}`}
+                                onClick={() => {
+                                    setSortFilter('oldest');
+                                    setIsDropdownOpen(false);
+                                }}
+                            >
+                                Antiguos
+                            </button>
+                            <button
+                                className={`${styles.dropdownOption} ${sortFilter === 'approved' ? styles.selected : ''}`}
+                                onClick={() => {
+                                    setSortFilter('approved');
+                                    setIsDropdownOpen(false);
+                                }}
+                            >
+                                Aprobados
+                            </button>
+                            <button
+                                className={`${styles.dropdownOption} ${sortFilter === 'rejected' ? styles.selected : ''}`}
+                                onClick={() => {
+                                    setSortFilter('rejected');
+                                    setIsDropdownOpen(false);
+                                }}
+                            >
+                                Rechazados
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Table */}
+            {filteredRequests.length === 0 ? (
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>📋</div>
+                    <div className={styles.emptyText}>No hay solicitudes</div>
+                    <div className={styles.emptySubtext}>
+                        {searchQuery ? 'Intenta con otro término de búsqueda' : 'Las nuevas solicitudes aparecerán aquí'}
+                    </div>
+                </div>
+            ) : (
+                <table className={styles.table}>
+                    <thead className={styles.tableHeader}>
+                        <tr>
+                            <th>Miembro</th>
+                            <th>Fecha de Solicitud</th>
+                            <th>Mascotas</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody className={styles.tableBody}>
+                        {filteredRequests.map((request) => (
+                            <tr key={request.id}>
+                                <td data-label="Miembro">
+                                    <div className={styles.memberInfo}>
+                                        <div className={styles.memberAvatar}>
+                                            {getInitials(request.name)}
+                                        </div>
+                                        <div className={styles.memberDetails}>
+                                            <div className={styles.memberName}>{request.name}</div>
+                                            <div className={styles.memberEmail}>{request.email}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
+                                <td data-label="Mascotas">{request.petCount || 0}</td>
+                                <td data-label="Estado">
+                                    <span className={`${styles.statusBadge} ${styles[request.status]}`}>
+                                        <span className={styles.statusDot}></span>
+                                        {getStatusLabel(request.status)}
+                                    </span>
+                                </td>
+                                <td data-label="Acciones">
+                                    <div className={styles.actionButtons}>
+                                        <button
+                                            className={styles.viewButton}
+                                            onClick={() => onViewDetails(request.id)}
+                                        >
+                                            Ver Detalles
+                                        </button>
+                                        {request.status === 'pending' && (
+                                            <>
+                                                <button
+                                                    className={styles.approveButton}
+                                                    onClick={() => onApprove(request.id)}
+                                                >
+                                                    Aprobar
+                                                </button>
+                                                <button
+                                                    className={styles.rejectButton}
+                                                    onClick={() => onReject(request.id)}
+                                                >
+                                                    Rechazar
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+}
