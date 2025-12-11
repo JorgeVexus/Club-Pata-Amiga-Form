@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { listPendingMembers, listAppealedMembers } from '@/services/memberstack-admin.service';
+import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
 
 /**
  * GET /api/admin/members?status=pending
@@ -13,11 +13,6 @@ import { listPendingMembers, listAppealedMembers } from '@/services/memberstack-
 export async function GET(request: NextRequest) {
     try {
         // TODO: Validar que el usuario sea admin
-        // const adminId = await validateAdminAuth(request);
-        // if (!adminId) {
-        //     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        // }
-
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
 
@@ -27,9 +22,12 @@ export async function GET(request: NextRequest) {
             result = await listPendingMembers();
         } else if (status === 'appealed') {
             result = await listAppealedMembers();
+        } else if (status === 'approved' || status === 'rejected') {
+            // Use the generic listMembers method exposed via the singleton
+            result = await memberstackAdmin.listMembers(status);
         } else {
             return NextResponse.json(
-                { error: 'Status inválido. Usa: pending o appealed' },
+                { error: 'Status inválido. Usa: pending, appealed, approved o rejected' },
                 { status: 400 }
             );
         }

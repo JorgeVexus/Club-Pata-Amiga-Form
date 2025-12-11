@@ -9,11 +9,15 @@ import RequestsTable from './RequestsTable';
 import styles from './AdminDashboard.module.css';
 import type { RequestType, DashboardMetrics } from '@/types/admin.types';
 import MemberDetailModal from './MemberDetailModal';
+import RejectionModal from './RejectionModal';
+import RejectionReasonModal from './RejectionReasonModal';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'all'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
+    const [memberToReject, setMemberToReject] = useState<any>(null); // For rejection action
+    const [rejectionToView, setRejectionToView] = useState<any>(null); // For viewing reason
     const [metrics, setMetrics] = useState<DashboardMetrics>({
         totalRefunds: 0,
         activeWellnessCenters: 0,
@@ -26,6 +30,23 @@ export default function AdminDashboard() {
         'wellness-center': 0,
         'solidarity-fund': 0,
     });
+
+    // Helper to fetch single member details
+    const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
+        try {
+            const response = await fetch(`/api/admin/members/${id}`);
+            const data = await response.json();
+
+            if (data.success && data.member) {
+                customSetter(data.member);
+            } else {
+                alert('No se pudo cargar la información del miembro.');
+            }
+        } catch (error) {
+            console.error('Error fetching member details:', error);
+            alert('Error cargando detalles.');
+        }
+    };
 
     // Cargar métricas al montar
     useEffect(() => {
@@ -123,39 +144,30 @@ export default function AdminDashboard() {
                     {/* Requests Table */}
                     <RequestsTable
                         filter={activeFilter === 'all' ? 'recents' : 'recents'}
-                        onViewDetails={async (memberId) => {
-                            try {
-                                const response = await fetch('/api/admin/members?status=pending');
-                                const data = await response.json();
-                                if (data.success && data.members) {
-                                    const member = data.members.find((m: any) => m.id === memberId);
-                                    if (member) setSelectedMember(member);
-                                }
-                            } catch (error) {
-                                console.error('Error fetching details:', error);
-                            }
-                        }}
-                        onApprove={async (memberId) => {
-                            try {
-                                const response = await fetch(`/api/admin/members/${memberId}/approve`, {
-                                    method: 'POST',
-                                    headers: { 'Content-Type': 'application/json' },
-                                    body: JSON.stringify({ adminId: 'current-admin-id' }) // TODO: Get real admin ID
-                                });
+                        onViewDetails={(id) => fetchMemberDetails(id, setSelectedMember)}
+                        onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
+                        onApprove={async (id) => {
+                            // Quick approve from table without modal
+                            if (confirm('¿Estás seguro de aprobar este miembro?')) {
+                                try {
+                                    const response = await fetch(`/api/admin/members/${id}/approve`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ adminId: 'current-admin-id' })
+                                    });
 
-                                if (response.ok) {
-                                    alert('Miembro aprobado exitosamente');
-                                    // Reload data
-                                    loadPendingCounts();
+                                    if (response.ok) {
+                                        alert('Miembro aprobado');
+                                        window.location.reload();
+                                    }
+                                } catch (error) {
+                                    alert('Error al aprobar');
                                 }
-                            } catch (error) {
-                                console.error('Error approving member:', error);
-                                alert('Error al aprobar miembro');
                             }
                         }}
-                        onReject={(memberId) => {
-                            console.log('Reject member:', memberId);
-                            // TODO: Open rejection modal
+                        onReject={async (memberId) => {
+                            // Fetch basic info to show name in modal if coming from table
+                            fetchMemberDetails(memberId, setMemberToReject);
                         }}
                     />
                 </main>
@@ -183,10 +195,47 @@ export default function AdminDashboard() {
                     }
                 }}
                 onReject={(id) => {
-                    console.log('Reject from modal', id);
-                    setSelectedMember(null);
-                    // TODO: Open rejection modal
+                    setMemberToReject(selectedMember);
+                    setSelectedMember(null); // Close detail modal
                 }}
+            />
+
+            <RejectionModal
+                isOpen={!!memberToReject}
+                onClose={() => setMemberToReject(null)}
+                memberName={`${memberToReject?.customFields?.['first-name'] || ''} ${memberToReject?.customFields?.['paternal-last-name'] || ''}`.trim() || 'Usuario'}
+                onConfirm={async (reason) => {
+                    try {
+                        const response = await fetch(`/api/admin/members/${memberToReject.id}/reject`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                adminId: 'current-admin-id',
+                                reason: reason
+                            })
+                        });
+
+                        if (response.ok) {
+                            alert('Solicitud rechazada correctamente.');
+                            setMemberToReject(null);
+                            window.location.reload();
+                        } else {
+                            alert('Error al rechazar la solicitud.');
+                        }
+                    } catch (error) {
+                        console.error('Error rejecting:', error);
+                        alert('Error de red al rechazar.');
+                    }
+                }}
+            />
+
+            <RejectionReasonModal
+                isOpen={!!rejectionToView}
+                onClose={() => setRejectionToView(null)}
+                memberName={`${rejectionToView?.customFields?.['first-name'] || ''} ${rejectionToView?.customFields?.['paternal-last-name'] || ''}`.trim() || 'Usuario'}
+                rejectionReason={rejectionToView?.customFields?.['rejection-reason'] || ''}
+                rejectedBy={rejectionToView?.customFields?.['rejected-by'] || 'Admin'}
+                rejectedAt={rejectionToView?.customFields?.['rejected-at'] || ''}
             />
         </div>
     );

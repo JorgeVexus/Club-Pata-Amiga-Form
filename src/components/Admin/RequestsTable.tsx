@@ -15,11 +15,13 @@ interface MemberRequest {
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected';
     onViewDetails: (memberId: string) => void;
+    onViewRejectionReason?: (memberId: string) => void; // Optional for now
     onApprove: (memberId: string) => void;
     onReject: (memberId: string) => void;
 }
 
-export default function RequestsTable({ filter, onViewDetails, onApprove, onReject }: RequestsTableProps) {
+export default function RequestsTable({ filter, onViewDetails, onViewRejectionReason, onApprove, onReject }: RequestsTableProps) {
+
     const [requests, setRequests] = useState<MemberRequest[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -28,7 +30,7 @@ export default function RequestsTable({ filter, onViewDetails, onApprove, onReje
 
     useEffect(() => {
         loadRequests();
-    }, [filter]);
+    }, [sortFilter]); // Reload when internal filter changes
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -48,34 +50,40 @@ export default function RequestsTable({ filter, onViewDetails, onApprove, onReje
     async function loadRequests() {
         try {
             setLoading(true);
-            const response = await fetch('/api/admin/members?status=pending');
+
+            // Determine status based on current filter
+            let statusParam = 'pending';
+            if (sortFilter === 'approved') statusParam = 'approved';
+            if (sortFilter === 'rejected') statusParam = 'rejected';
+
+            const response = await fetch(`/api/admin/members?status=${statusParam}`);
             const data = await response.json();
 
-            console.log('API Response:', data);
-            console.log('Data success:', data.success);
-            console.log('Data.members:', data.members);
-
             if (data.success && data.members) {
-                const formattedRequests: MemberRequest[] = data.members.map((member: any) => {
+                let formattedRequests: MemberRequest[] = data.members.map((member: any) => {
                     // Count pets by checking pet-x-name fields
                     let petCount = 0;
-                    for (let i = 1; i <= 3; i++) { // Max 3 pets
-                        if (member.customFields?.[`pet-${i}-name`]) {
-                            petCount++;
-                        }
+                    for (let i = 1; i <= 3; i++) {
+                        if (member.customFields?.[`pet-${i}-name`]) petCount++;
                     }
 
                     return {
                         id: member.id,
-                        name: `${member.customFields?.['first-name'] || ''} ${member.customFields?.['last-name'] || ''}`.trim() || 'Sin nombre',
+                        name: `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim() || 'Sin nombre',
                         email: member.auth?.email || 'Sin email',
-                        submittedAt: member.customFields?.['submitted-at'] || new Date().toISOString(),
+                        submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
                         status: member.customFields?.['approval-status'] || 'pending',
-                        petCount: petCount,
+                        petCount: petCount
                     };
                 });
 
-                console.log('Formatted requests:', formattedRequests);
+                // Apply sorting
+                formattedRequests.sort((a, b) => {
+                    const dateA = new Date(a.submittedAt).getTime();
+                    const dateB = new Date(b.submittedAt).getTime();
+                    return sortFilter === 'oldest' ? dateA - dateB : dateB - dateA;
+                });
+
                 setRequests(formattedRequests);
             } else {
                 console.log('No data or not successful');
@@ -285,12 +293,22 @@ export default function RequestsTable({ filter, onViewDetails, onApprove, onReje
                                 </td>
                                 <td data-label="Acciones">
                                     <div className={styles.actionButtons}>
-                                        <button
-                                            className={styles.viewButton}
-                                            onClick={() => onViewDetails(request.id)}
-                                        >
-                                            Ver Detalles
-                                        </button>
+                                        {request.status === 'rejected' ? (
+                                            <button
+                                                className={styles.rejectButton} // Reusing reject style or create a new 'reason' style
+                                                onClick={() => onViewRejectionReason?.(request.id)}
+                                                style={{ width: '100%', borderRadius: '50px' }}
+                                            >
+                                                Ver Motivo
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className={styles.viewButton}
+                                                onClick={() => onViewDetails(request.id)}
+                                            >
+                                                Ver Detalles
+                                            </button>
+                                        )}
                                         {request.status === 'pending' && (
                                             <>
                                                 <button
