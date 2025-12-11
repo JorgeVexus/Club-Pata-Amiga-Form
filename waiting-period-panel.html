@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Período de Carencia</title>
+    <link rel="stylesheet" href="waiting-period-panel.css">
+</head>
+
+<body>
+    <!-- Panel de Período de Carencia -->
+    <div class="waiting-period-panel" id="waitingPeriodPanel">
+        <!-- Mensaje de bienvenida -->
+        <div class="panel-header">
+            <p class="welcome-message">
+                Nos encanta tenerte aquí. Mientras termina tu período de carencia, sigue explorando lo que Pata Amiga
+                tiene para ti.
+            </p>
+        </div>
+
+        <!-- Contenedor principal del panel -->
+        <div class="panel-content">
+            <!-- Título y progreso -->
+            <div class="period-info">
+                <h2 class="period-title">Período de carencia para <span data-pet-info="pet-name">tu mascota</span></h2>
+
+                <!-- Mensaje motivacional -->
+                <p class="motivational-message" data-pet-info="motivational">
+                    ¡Ya recorriste más de la mitad del camino!
+                </p>
+
+                <!-- Información de días restantes -->
+                <p class="days-info" data-pet-info="days-text">
+                    Faltan <span data-pet-info="days-remaining">53</span> días para activar tu fondo solidario completo
+                </p>
+
+                <!-- Barra de progreso -->
+                <div class="progress-container">
+                    <div class="progress-labels">
+                        <span class="progress-label-start">Día 1</span>
+                        <span class="progress-percentage" data-pet-info="percentage">46% completado</span>
+                        <span class="progress-label-end" data-pet-info="total-days">Día 180</span>
+                    </div>
+
+                    <div class="progress-bar-wrapper">
+                        <div class="progress-bar" data-pet-info="progress-bar" style="width: 46%;">
+                            <!-- Imagen del perrito animado -->
+                            <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png"
+                                alt="Perrito" class="progress-dog">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Icono de reloj (opcional, se puede agregar con CSS o SVG) -->
+                <div class="clock-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="#FF6B35" stroke-width="2" />
+                        <path d="M12 6V12L16 14" stroke="#FF6B35" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Contador de días restantes -->
+            <div class="countdown-box">
+                <p class="countdown-label">Tiempo restante</p>
+                <div class="countdown-number" data-pet-info="countdown">53</div>
+                <p class="countdown-unit">Días</p>
+            </div>
+        </div>
+
+        <!-- Información adicional / RUAC -->
+        <div class="additional-info">
+            <div class="info-icon">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#FF8C42" stroke-width="2" />
+                    <path d="M12 8V12M12 16H12.01" stroke="#FF8C42" stroke-width="2" stroke-linecap="round" />
+                </svg>
+            </div>
+            <div class="info-text">
+                <p data-pet-info="additional-message">
+                    ¿Adoptaste a alguno de tus compañeros o tienes RUAC? Puedes acelerar tu acceso al fondo. Contáctanos
+                    para validar tus documentos.
+                </p>
+            </div>
+        </div>
+
+        <!-- Navegación entre mascotas (se muestra solo si hay más de 1) -->
+        <div class="pet-navigation" id="petNavigation" style="display: none;">
+            <button class="pet-nav-btn active" data-pet-index="0">
+                <span class="pet-icon">🐕</span>
+                <span class="pet-name">Mascota 1</span>
+            </button>
+            <button class="pet-nav-btn" data-pet-index="1">
+                <span class="pet-icon">🐕</span>
+                <span class="pet-name">Mascota 2</span>
+            </button>
+            <button class="pet-nav-btn" data-pet-index="2">
+                <span class="pet-icon">🐕</span>
+                <span class="pet-name">Mascota 3</span>
+            </button>
+        </div>
+
+        <!-- Mensaje de carga -->
+        <div class="loading-message" id="loadingMessage">
+            <p>Cargando información de tu mascota...</p>
+        </div>
+
+        <!-- Mensaje de error -->
+        <div class="error-message" id="errorMessage" style="display: none;">
+            <p>No se pudo cargar la información. Por favor, recarga la página.</p>
+        </div>
+    </div>
+
+    <script src="waiting-period-panel.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,451 @@
+/* ============================================
+   PANEL DE PERÍODO DE CARENCIA - ESTILOS
+   ============================================ */
+
+/* Variables de colores */
+:root {
+    --panel-bg: #00BBB4;
+    --progress-green: #9fd406;
+    --countdown-bg: #C8E600;
+    --text-dark: #1A1A1A;
+    --text-white: #FFFFFF;
+    --border-radius: 16px;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #F5F5F5;
+    padding: 20px;
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+
+.waiting-period-panel {
+    background-color: var(--panel-bg);
+    border-radius: var(--border-radius);
+    padding: 32px;
+    max-width: 920px;
+    margin: 0 auto;
+    box-shadow: var(--shadow);
+    position: relative;
+}
+
+/* ============================================
+   HEADER
+   ============================================ */
+
+.panel-header {
+    margin-bottom: 24px;
+}
+
+.welcome-message {
+    color: var(--text-white);
+    font-size: 16px;
+    line-height: 1.5;
+    font-weight: 400;
+}
+
+/* ============================================
+   CONTENIDO PRINCIPAL
+   ============================================ */
+
+.panel-content {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: center;
+}
+
+.period-info {
+    position: relative;
+}
+
+.period-title {
+    color: var(--text-dark);
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.motivational-message {
+    color: var(--text-dark);
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.days-info {
+    color: var(--text-dark);
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.days-info span {
+    font-weight: 700;
+}
+
+/* ============================================
+   BARRA DE PROGRESO
+   ============================================ */
+
+.progress-container {
+    margin-bottom: 16px;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: var(--text-dark);
+}
+
+.progress-percentage {
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.progress-bar-wrapper {
+    width: 100%;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    overflow: visible;
+    position: relative;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: var(--progress-green);
+    border-radius: 20px;
+    transition: width 1s ease-out;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 60px;
+    /* Para que siempre se vea el perrito */
+}
+
+.progress-dog {
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* ============================================
+   ICONO DE RELOJ
+   ============================================ */
+
+.clock-icon {
+    position: absolute;
+    top: 0;
+    right: -60px;
+}
+
+/* ============================================
+   CONTADOR DE DÍAS
+   ============================================ */
+
+.countdown-box {
+    background-color: var(--countdown-bg);
+    border: 3px dashed var(--text-dark);
+    border-radius: 12px;
+    padding: 24px 32px;
+    text-align: center;
+    min-width: 180px;
+}
+
+.countdown-label {
+    color: var(--text-dark);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.countdown-number {
+    color: var(--text-dark);
+    font-size: 72px;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.countdown-unit {
+    color: var(--text-dark);
+    font-size: 18px;
+    font-weight: 700;
+}
+
+/* ============================================
+   INFORMACIÓN ADICIONAL
+   ============================================ */
+
+.additional-info {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.info-icon {
+    flex-shrink: 0;
+}
+
+.info-text {
+    flex: 1;
+}
+
+.info-text p {
+    color: var(--text-dark);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ============================================
+   NAVEGACIÓN ENTRE MASCOTAS
+   ============================================ */
+
+.pet-navigation {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+}
+
+.pet-nav-btn {
+    background-color: rgba(255, 255, 255, 0.3);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.pet-nav-btn:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px);
+}
+
+.pet-nav-btn.active {
+    background-color: var(--text-white);
+    border-color: var(--progress-green);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pet-icon {
+    font-size: 20px;
+}
+
+/* ============================================
+   MENSAJES DE ESTADO
+   ============================================ */
+
+.loading-message,
+.error-message {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-white);
+    font-size: 18px;
+}
+
+.error-message {
+    background-color: rgba(255, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+/* ============================================
+   ANIMACIONES
+   ============================================ */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.panel-content {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets (768px - 1024px) */
+@media (max-width: 1024px) {
+    .waiting-period-panel {
+        padding: 28px;
+    }
+
+    .period-title {
+        font-size: 28px;
+    }
+
+    .clock-icon {
+        right: -50px;
+    }
+
+    .countdown-number {
+        font-size: 64px;
+    }
+}
+
+/* Tablets pequeñas y móviles grandes (600px - 768px) */
+@media (max-width: 768px) {
+    .panel-content {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .clock-icon {
+        display: none;
+    }
+
+    .countdown-box {
+        margin: 0 auto;
+        max-width: 200px;
+    }
+
+    .period-title {
+        font-size: 24px;
+    }
+
+    .motivational-message {
+        font-size: 16px;
+    }
+}
+
+/* Móviles (hasta 600px) */
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
+
+    .waiting-period-panel {
+        padding: 20px;
+        border-radius: 12px;
+    }
+
+    .welcome-message {
+        font-size: 14px;
+    }
+
+    .period-title {
+        font-size: 22px;
+    }
+
+    .motivational-message {
+        font-size: 15px;
+    }
+
+    .days-info {
+        font-size: 14px;
+    }
+
+    .progress-labels {
+        font-size: 12px;
+    }
+
+    .progress-percentage {
+        font-size: 14px;
+    }
+
+    .progress-bar-wrapper {
+        height: 28px;
+    }
+
+    .progress-dog {
+        width: 40px;
+        height: 40px;
+        right: -8px;
+    }
+
+    .countdown-box {
+        padding: 20px 24px;
+        min-width: 150px;
+    }
+
+    .countdown-number {
+        font-size: 56px;
+    }
+
+    .countdown-label,
+    .countdown-unit {
+        font-size: 14px;
+    }
+
+    .additional-info {
+        padding: 14px 16px;
+        gap: 12px;
+    }
+
+    .info-icon svg {
+        width: 24px;
+        height: 24px;
+    }
+
+    .info-text p {
+        font-size: 13px;
+    }
+
+    .pet-nav-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+
+    .pet-icon {
+        font-size: 18px;
+    }
+}
+
+/* Móviles muy pequeños (hasta 375px) */
+@media (max-width: 375px) {
+    .waiting-period-panel {
+        padding: 16px;
+    }
+
+    .period-title {
+        font-size: 20px;
+    }
+
+    .countdown-number {
+        font-size: 48px;
+    }
+
+    .progress-dog {
+        width: 35px;
+        height: 35px;
+    }
+}

@@ -3,1409 +3,1626 @@
         {
             "name": "Affenpinscher",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Affenpinscher pueden tener Displasia de cadera, Hipotiroidismo hereditario, Cardiomiopatía dilatada, Shunt portosistémico, Neuropatía hereditaria, Amiloidosis renal, Luxación patelar, Cataratas hereditarias, Atrofia progresiva de retina (PRA), Queratoconjuntivitis seca, Distiquiasis, Hidrocefalia, Síndrome braquicefálico (BOAS), Colapso traqueal, Diabetes mellitus, Síndrome de Cushing. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Affenpinscher pueden tener Displasia de cadera, Hipotiroidismo, Cardiomiopatía dilatada, Shunt portosistémico, Cataratas, Atrofia de retina, Síndrome braquicefálico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Alaskan Malamute (Malamute de Alaska)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Alaskan Malamute pueden tener Obesidad genética, Alergias hereditarias, Shunt portosistémico, Neuropatía hereditaria, Hipotiroidismo hereditario, Displasia de codo, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Alaskan Malamute pueden tener Obesidad genética, Alergias, Shunt portosistémico, Neuropatía hereditaria, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "American Eskimo (Esquimal Americano)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los American Eskimo pueden tener Glaucoma hereditario, Ictiosis, Luxación patelar, Displasia de codo, Dermatitis atópica, Epilepsia idiopática, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los American Eskimo pueden tener Glaucoma, Ictiosis, Luxación patelar, Displasia de codo, Dermatitis atópica, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "American Staffordshire Terrier",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Antiguo Pastor Ingles (Bobtail)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Antiguo Pastor Ingles pueden tener Megaesófago congénito, Shunt portosistémico, Displasia de codo, Ictiosis, Amiloidosis renal, Enfermedad de Von Willebrand, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Antiguo Pastor Ingles pueden tener Megaesófago, Shunt portosistémico, Displasia de codo, Ictiosis, Amiloidosis renal, Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Basenji",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Basenji pueden tener Amiloidosis renal, Cardiomiopatía dilatada, Enfermedad de Von Willebrand, Obesidad genética, Megaesófago congénito, Neuropatía hereditaria, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Basenji pueden tener Amiloidosis renal, Cardiomiopatía dilatada, Von Willebrand, Obesidad, Megaesófago, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Basset azul de Gascuña",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Basset Grifón Vandeano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Basset Hound",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Basset Hound pueden tener Cardiomiopatía dilatada, Luxación patelar, Amiloidosis renal, Displasia de cadera, Estenosis subaórtica, Epilepsia idiopática, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Basset Hound pueden tener Cardiomiopatía dilatada, Luxación patelar, Displasia de cadera, Estenosis subaórtica, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Basset leonado de Bretaña",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Beagle",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Beagle pueden tener Ictiosis, Estenosis subaórtica, Dermatitis atópica, Enfermedad de Von Willebrand, Hipotiroidismo hereditario, Shunt portosistémico, Glaucoma hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Beagle pueden tener Ictiosis, Estenosis subaórtica, Dermatitis atópica, Von Willebrand, Hipotiroidismo, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Beagle-Harrier",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Beauceron",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor de Beauce (Beauceron) pueden tener Megaesófago congénito, Neuropatía hereditaria, Dermatitis atópica, Alergias hereditarias, Epilepsia idiopática, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor de Beauce pueden tener Megaesófago, Neuropatía hereditaria, Dermatitis atópica, Alergias, Epilepsia, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bergamasco",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Bernes de las montañas (Boyero de Berna)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bernes de las montañas pueden tener Estenosis subaórtica, Displasia de codo, Atrofia progresiva de retina (PRA), Dermatitis atópica, Shunt portosistémico, Ictiosis, Epilepsia idiopática. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Bernes de las montañas pueden tener Estenosis subaórtica, Displasia de codo, Atrofia de retina, Dermatitis atópica, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bichón Boloñés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Mini/Toy"
         },
         {
             "name": "Bichón Frisé",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bichon Frise pueden tener Colapso traqueal, Obesidad genética, Epilepsia idiopática, Displasia de codo, Cataratas hereditarias, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Bichon Frise pueden tener Colapso traqueal, Obesidad, Epilepsia, Displasia de codo, Cataratas, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bichón Habanero",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bichón Habanero pueden tener Shunt portosistémico, Cardiomiopatía dilatada, Luxación patelar, Glaucoma hereditario, Alergias hereditarias, Obesidad genética, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Bichón Habanero pueden tener Shunt portosistémico, Cardiomiopatía dilatada, Luxación patelar, Glaucoma, Alergias. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bichón Maltés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bichón Maltés pueden tener Atrofia progresiva de retina (PRA), Epilepsia idiopática, Hipotiroidismo hereditario, Luxación patelar, Cataratas hereditarias, Dermatitis atópica, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Bichón Maltés pueden tener Atrofia de retina, Epilepsia, Hipotiroidismo, Luxación patelar, Cataratas, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bloodhound",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Sabueso de San Huberto (Bloodhound) pueden tener Megaesófago congénito, Ictiosis, Dermatitis atópica, Obesidad genética, Displasia de cadera, Glaucoma hereditario, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Bloodhound pueden tener Megaesófago, Ictiosis, Dermatitis atópica, Obesidad, Displasia de cadera, Glaucoma, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bodeguero Andaluz",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Border Collie",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Border Collie pueden tener Cardiomiopatía dilatada, Displasia de codo, Megaesófago congénito, Colapso traqueal, Shunt portosistémico, Dermatitis atópica, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Border Collie pueden tener Cardiomiopatía dilatada, Displasia de codo, Megaesófago, Colapso traqueal, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Border Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Border Terrier pueden tener Displasia de cadera, Neuropatía hereditaria, Atrofia progresiva de retina (PRA), Luxación patelar, Cardiomiopatía dilatada, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Border Terrier pueden tener Displasia de cadera, Neuropatía hereditaria, Atrofia de retina, Luxación patelar, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Borzoi (Galgo Ruso)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Borzoi pueden tener Glaucoma hereditario, Obesidad genética, Dermatitis atópica, Enfermedad de Von Willebrand, Ictiosis, Megaesófago congénito, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Borzoi pueden tener Glaucoma, Obesidad, Dermatitis atópica, Von Willebrand, Ictiosis, Megaesófago, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Boston Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Boston Terrier pueden tener Estenosis subaórtica, Alergias, Dermatitis atópica, Atrofia progresiva de retina (PRA), Hipotiroidismo, Síndrome braquicefálico (BOAS), Hidrocefalia, Epilepsia, Cataratas, Luxación patelar, Hemivértebras. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Boston Terrier pueden tener Estenosis subaórtica, Alergias, Dermatitis, Atrofia de retina, Síndrome braquicefálico, Hidrocefalia, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bouvier Des Flandres (Boyero de Flandes)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bouvier Des Flandres pueden tener Cardiomiopatía dilatada, Displasia de cadera, Obesidad genética, Colapso traqueal, Cataratas hereditarias, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Bouvier Des Flandres pueden tener Cardiomiopatía dilatada, Displasia de cadera, Obesidad, Colapso traqueal, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Boxer",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Boxer pueden tener Obesidad genética, Atrofia progresiva de retina, Displasia de cadera/codo, Estenosis subaórtica/pulmonar, Cardiomiopatía arritmogénica (ARVC), Cáncer (Mastocitoma, Linfoma, Gliomas), Espondilosis, Sordera congénita. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Boxer pueden tener Obesidad, Atrofia de retina, Displasia de cadera/codo, Estenosis, Cardiomiopatía arritmogénica, Cáncer, Espondilosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Braco alemán de pelo corto",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pointer Alemán de Pelo Corto pueden tener Obesidad genética, Shunt portosistémico, Luxación patelar, Amiloidosis renal, Displasia de cadera/codo, Alergias, Colapso traqueal, Epilepsia, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pointer Alemán de Pelo Corto pueden tener Obesidad, Shunt portosistémico, Luxación patelar, Displasia de cadera/codo, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Braco alemán de pelo duro",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Braco de Weimar (Weimaraner)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Weimaraner pueden tener Atrofia progresiva de retina (PRA), Megaesófago congénito, Neuropatía hereditaria, Glaucoma hereditario, Shunt portosistémico, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Weimaraner pueden tener Atrofia de retina, Megaesófago, Neuropatía hereditaria, Glaucoma, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Braco húngaro (Vizsla Húngaro)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Braco Húngaro (Vizsla) pueden tener Ictiosis, Epilepsia idiopática, Dermatitis atópica, Amiloidosis renal, Displasia de codo/cadera, Enfermedad de Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Vizsla pueden tener Ictiosis, Epilepsia, Dermatitis atópica, Amiloidosis renal, Displasia de codo/cadera, Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Braco húngaro de pelo duro",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Braco italiano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Bretón (Spaniel Bretón)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Spaniel Bretón pueden tener Ictiosis, Shunt portosistémico, Glaucoma hereditario, Obesidad genética, Cardiomiopatía dilatada, Neuropatía hereditaria, Megaesófago congénito. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Spaniel Bretón pueden tener Ictiosis, Shunt portosistémico, Glaucoma, Obesidad, Cardiomiopatía dilatada, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Buhund Noruego (Pastor noruego)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Buhund Noruego pueden tener Neuropatía hereditaria, Enfermedad de Von Willebrand, Glaucoma hereditario, Estenosis subaórtica, Amiloidosis renal, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Buhund Noruego pueden tener Neuropatía hereditaria, Von Willebrand, Glaucoma, Estenosis subaórtica, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bull Terrier Miniatura",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bull Terrier Miniatura pueden tener Neuropatía hereditaria, Estenosis subaórtica, Amiloidosis renal, Megaesófago congénito, Ictiosis, Atrofia progresiva de retina (PRA), Obesidad genética. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Bull Terrier Miniatura pueden tener Neuropatía hereditaria, Estenosis subaórtica, Amiloidosis renal, Megaesófago, Ictiosis, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bulldog Americano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bulldog Americano pueden tener Enfermedad de Von Willebrand, Cataratas, Neuropatía hereditaria, Cardiomiopatía dilatada, Colapso traqueal, Síndrome braquicefálico (BOAS), Displasia de cadera/codo, Ictiosis, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Bulldog Americano pueden tener Von Willebrand, Cataratas, Neuropatía hereditaria, Colapso traqueal, Síndrome braquicefálico, Displasia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bulldog Francés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bulldog Francés pueden tener Síndrome braquicefálico (BOAS), Shunt portosistémico, Estenosis subaórtica/pulmonar, Displasia de cadera, Hemivértebras, Siringomielia, Hidrocefalia, Alergias, Luxación patelar, Enfermedad disco intervertebral (IVDD). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Bulldog Francés pueden tener Síndrome braquicefálico, Estenosis subaórtica, Displasia de cadera, Hemivértebras, Siringomielia, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bulldog Ingles",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Bulldog Inglés pueden tener Displasia de cadera, Megaesófago, Síndrome braquicefálico (BOAS), Hipoplasia traqueal, Enfermedad disco intervertebral (IVDD), Siringomielia, Dermatitis por pliegues, Hidrocefalia, Luxación patelar, Criptorquidia. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Bulldog Inglés pueden tener Displasia de cadera, Megaesófago, Síndrome braquicefálico, Enfermedad disco intervertebral, Siringomielia, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cairn Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cairn Terrier pueden tener Obesidad genética, Enfermedad de Von Willebrand, Cataratas hereditarias, Estenosis subaórtica, Cardiomiopatía dilatada, Neuropatía hereditaria, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Cairn Terrier pueden tener Obesidad, Von Willebrand, Cataratas, Estenosis subaórtica, Cardiomiopatía dilatada, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Calupoh (Perro Lobo Mexicano)",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Canaan",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Cavalier King Charles Spaniel",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cavalier King Charles Spaniel pueden tener Estenosis subaórtica, Enfermedad valvular mitral (MVD), Siringomielia, Displasia de cadera, Epilepsia, Cataratas, Luxación patelar, Síndrome de plaquetas macrotróficas. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Cavalier King Charles pueden tener Estenosis subaórtica, Enfermedad valvular mitral, Siringomielia, Displasia de cadera, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
-            "name": "Chihuahua Cabeza de Manzana",
+            "name": "Chihuahua",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Chihuahua pueden tener Obesidad genética, Siringomielia, Hipotiroidismo, Estenosis pulmonar, Endocardiosis mitral, Ductus Arterioso Persistente, Hidrocefalia, Luxación patelar, Colapso traqueal, Fontanela abierta. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Chihuahua Cabeza de Venado",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Chihuahua pueden tener Obesidad genética, Siringomielia, Hipotiroidismo, Estenosis pulmonar, Endocardiosis mitral, Ductus Arterioso Persistente, Hidrocefalia, Luxación patelar, Colapso traqueal, Fontanela abierta. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Chihuahua pueden tener Obesidad, Siringomielia, Hipotiroidismo, Estenosis pulmonar, Hidrocefalia, Luxación patelar, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Chin Japonés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Chin Japonés pueden tener Cataratas, Glaucoma, Colapso traqueal, Síndrome braquicefálico (BOAS), Luxación patelar, Siringomielia, Hidrocefalia, Enfermedad valvular degenerativa. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Chin Japonés pueden tener Cataratas, Glaucoma, Colapso traqueal, Síndrome braquicefálico, Luxación patelar, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Chow Chow",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Chow Chow pueden tener Atrofia progresiva de retina, Dermatitis atópica, Neuropatía hereditaria, Hipotiroidismo, Amiloidosis renal, Displasia de codo/cadera, Glaucoma, Entropión, Ruptura de ligamentos cruzados. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Chow Chow pueden tener Atrofia de retina, Dermatitis atópica, Neuropatía hereditaria, Hipotiroidismo, Displasia de codo/cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Clumber Spaniel",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Clumber Spaniel pueden tener Obesidad genética, Displasia de cadera, Enfermedad de Von Willebrand, Neuropatía hereditaria, Epilepsia idiopática, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Clumber Spaniel pueden tener Obesidad, Displasia de cadera, Von Willebrand, Neuropatía hereditaria, Epilepsia, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cocker Americano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cocker Spaniel pueden tener Ictiosis, Amiloidosis renal, Displasia de codo, Hipotiroidismo hereditario, Dermatitis atópica, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Cocker Spaniel pueden tener Ictiosis, Amiloidosis renal, Displasia de codo, Hipotiroidismo, Dermatitis atópica, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cocker Spaniel",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cocker Spaniel pueden tener Ictiosis, Amiloidosis renal, Displasia de codo, Hipotiroidismo hereditario, Dermatitis atópica, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Cocker Spaniel pueden tener Ictiosis, Amiloidosis renal, Displasia de codo, Hipotiroidismo, Dermatitis atópica, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Collie Barbudo (Bearded Collie)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Collie Barbudo pueden tener Obesidad genética, Luxación patelar, Displasia de codo, Amiloidosis renal, Estenosis subaórtica, Shunt portosistémico, Glaucoma hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Collie Barbudo pueden tener Obesidad, Luxación patelar, Displasia de codo, Amiloidosis renal, Estenosis subaórtica, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Collie de Pelo Corto (Collie Smooth)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Collie pueden tener Hipotiroidismo hereditario, Displasia de cadera, Alergias hereditarias, Shunt portosistémico, Neuropatía hereditaria, Glaucoma hereditario, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Collie pueden tener Hipotiroidismo, Displasia de cadera, Alergias, Shunt portosistémico, Neuropatía hereditaria, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Collie de Pelo largo (Collie Rough)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Collie pueden tener Hipotiroidismo hereditario, Displasia de cadera, Alergias hereditarias, Shunt portosistémico, Neuropatía hereditaria, Glaucoma hereditario, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Collie pueden tener Hipotiroidismo, Displasia de cadera, Alergias, Shunt portosistémico, Neuropatía hereditaria, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Corgi Galés Cárdigan",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cardigan Welsh Corgi pueden tener Glaucoma hereditario, Colapso traqueal, Atrofia progresiva de retina (PRA), Displasia de cadera, Amiloidosis renal, Dermatitis atópica, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Corgi Galés Cárdigan pueden tener Glaucoma, Colapso traqueal, Atrofia de retina, Displasia de cadera, Amiloidosis renal, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Corgi Galés Pembroke",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pembroke Welsh Corgi pueden tener Colapso traqueal, Epilepsia idiopática, Ictiosis, Luxación patelar, Amiloidosis renal, Hipotiroidismo hereditario, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Corgi Galés Pembroke pueden tener Colapso traqueal, Epilepsia idiopática, Ictiosis, Luxación patelar, Amiloidosis renal, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cotón de Tuléar",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Crestado chino",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Crestado Chino pueden tener Dermatitis atópica, Epilepsia idiopática, Atrofia progresiva de retina (PRA), Cataratas hereditarias, Hipotiroidismo hereditario, Displasia de codo, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Crestado Chino pueden tener Dermatitis atópica, Epilepsia, Atrofia de retina, Cataratas, Hipotiroidismo, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Crestado rodesiano (Rhodesian Ridgeback)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Crestado Rodesiano pueden tener Luxación patelar, Enfermedad de Von Willebrand, Alergias, Displasia de cadera/codo, Obesidad genética, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Crestado Rodesiano pueden tener Luxación patelar, Von Willebrand, Alergias, Displasia de cadera/codo, Obesidad, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
-            "name": "Dachshund Pelo liso",
+            "name": "Dachshund",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Dachshund pueden tener Von Willebrand, Colapso traqueal, Alergias, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
-            "name": "Dachshund Pelo largo",
+            "name": "Dachshund Miniatura",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Dachshund Pelo duro (alambre)",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Dachshund Miniatura Pelo liso",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Dachshund Miniatura Pelo largo",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Dachshund Miniatura Pelo duro (alambre)",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dachshund (Teckel) pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Alergias hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Dachshund pueden tener Von Willebrand, Colapso traqueal, Alergias, Neuropatía hereditaria, Displasia de codo, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Dálmata",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dálmata pueden tener Sordera congénita, Hiperuricosuria (HU), Urolitiasis, Obstrucciones urinarias, Displasia de cadera, Epilepsia, Dermatitis atópica, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Dálmata pueden tener Sordera congénita, Hiperuricosuria (HU), Urolitiasis, Displasia de cadera, Epilepsia, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Dandie Dinmont Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dandie Dinmont Terrier pueden tener Neuropatía hereditaria, Atrofia progresiva de retina, Hipotiroidismo, Alergias, Colapso traqueal, Displasia de codo, Cataratas. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Dandie Dinmont Terrier pueden tener Neuropatía hereditaria, Atrofia de retina, Hipotiroidismo, Alergias, Colapso traqueal, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Doberman",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Doberman Pinscher pueden tener Epilepsia, Síndrome de Wobbler, Hipotiroidismo, Enfermedad de Von Willebrand, Miocardiopatía dilatada (DCM), Displasia de cadera, Torsión gástrica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Doberman pueden tener Epilepsia, Síndrome de Wobbler, Hipotiroidismo, Von Willebrand, Miocardiopatía dilatada, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Doberman Pinscher",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Doberman Pinscher pueden tener Epilepsia, Síndrome de Wobbler, Hipotiroidismo, Enfermedad de Von Willebrand, Miocardiopatía dilatada (DCM), Displasia de cadera, Torsión gástrica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Doberman pueden tener Epilepsia, Síndrome de Wobbler, Hipotiroidismo, Von Willebrand, Miocardiopatía dilatada, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Dogo Argentino",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dogo Argentino pueden tener Hipotiroidismo hereditario, Epilepsia idiopática, Colapso traqueal, Alergias hereditarias, Estenosis subaórtica, Cataratas hereditarias, Megaesófago congénito. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Dogo Argentino pueden tener Hipotiroidismo, Epilepsia, Colapso traqueal, Alergias, Estenosis subaórtica, Cataratas, Megaesófago. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Dogo Canario",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 6,
+            "size": "Gigante"
         },
         {
             "name": "Dogo de Burdeos (Mastin de Burdeos)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Dogo de Burdeos pueden tener Displasia de codo/cadera, Síndrome braquicefálico (BOAS), Cardiomiopatía dilatada, Estenosis pulmonar/subaórtica, Torsión gástrica, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Dogo de Burdeos pueden tener Displasia, Síndrome braquicefálico, Cardiomiopatía dilatada, Estenosis, Torsión gástrica, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
-            "name": "Elkhound Noruego (Cazador de Alces Noruego)",
+            "name": "Elkhound Noruego",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Elkhound Noruego pueden tener Enfermedad de Von Willebrand, Neuropatía hereditaria, Estenosis subaórtica, Ictiosis, Displasia de codo, Amiloidosis renal, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Elkhound Noruego pueden tener Von Willebrand, Neuropatía hereditaria, Estenosis subaórtica, Ictiosis, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Field Spaniel",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Field Spaniel pueden tener Colapso traqueal, Atrofia progresiva de retina (PRA), Hipotiroidismo hereditario, Megaesófago congénito, Dermatitis atópica, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Field Spaniel pueden tener Colapso traqueal, Atrofia de retina, Hipotiroidismo, Megaesófago, Dermatitis atópica, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Fila Brasileiro",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 6,
+            "size": "Gigante"
         },
         {
             "name": "Finlandés de Laponia",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Fox Terrier Pelo Duro",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Wire Fox Terrier pueden tener Shunt portosistémico, Dermatitis atópica, Megaesófago congénito, Glaucoma hereditario, Atrofia progresiva de retina (PRA), Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Wire Fox Terrier pueden tener Shunt portosistémico, Dermatitis atópica, Megaesófago, Glaucoma, Atrofia de retina, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Fox Terrier Pelo Liso",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Fox Terrier Toy",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Toy Fox Terrier pueden tener Obesidad genética, Cataratas hereditarias, Displasia de cadera, Hipotiroidismo hereditario, Shunt portosistémico, Atrofia progresiva de retina (PRA), Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Toy Fox Terrier pueden tener Obesidad, Cataratas, Displasia de cadera, Hipotiroidismo, Shunt portosistémico, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Foxhound Americano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Foxhound Americano pueden tener Alergias hereditarias, Epilepsia idiopática, Megaesófago congénito, Colapso traqueal, Shunt portosistémico, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Foxhound Americano pueden tener Alergias, Epilepsia, Megaesófago, Colapso traqueal, Shunt portosistémico, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Galgo Afgano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Lebrel Afgano pueden tener Glaucoma hereditario, Alergias hereditarias, Displasia de cadera, Hipotiroidismo hereditario, Cataratas hereditarias, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Lebrel Afgano pueden tener Glaucoma, Alergias, Displasia de cadera, Hipotiroidismo, Cataratas, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Galgo Árabe (Sloughi)",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Galgo Español",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
-            "name": "Galgo Italiano (Pequeño Lebrel Italiano)",
+            "name": "Galgo Italiano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Greyhound Italiano pueden tener Glaucoma hereditario, Cardiomiopatía dilatada, Epilepsia idiopática, Neuropatía hereditaria, Enfermedad de Von Willebrand, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Galgo Italiano pueden tener Glaucoma, Cardiomiopatía dilatada, Epilepsia, Neuropatía hereditaria, Von Willebrand, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Galgo Persa (Saluki)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Galgo Persa (Saluki) pueden tener Glaucoma hereditario, Shunt portosistémico, Hipotiroidismo hereditario, Dermatitis atópica, Estenosis subaórtica, Alergias hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Galgo Persa pueden tener Glaucoma, Shunt portosistémico, Hipotiroidismo, Dermatitis atópica, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Golden Retriever",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Golden Retriever pueden tener Megaesófago, Ictiosis, Cardiomiopatía dilatada, Atrofia de retina, Displasia de cadera/codo, Cáncer (Linfoma, Hemangiosarcoma), Epilepsia, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Golden Retriever pueden tener Megaesófago, Ictiosis, Cardiomiopatía dilatada, Atrofia de retina, Displasia, Cáncer, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Gran Basset Grifón Vendeano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Gran Danés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Gran Danés pueden tener Ictiosis, Dermatitis atópica, Cataratas, Estenosis subaórtica, Displasia de cadera/codo, Cardiomiopatía dilatada, Torsión gástrica, Síndrome de Wobbler. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Gran Danés pueden tener Ictiosis, Dermatitis atópica, Cataratas, Estenosis subaórtica, Displasia, Cardiomiopatía dilatada, Torsión gástrica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Grifón de Bruselas",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Grifón de Bruselas pueden tener Enfermedad de Von Willebrand, Hipotiroidismo, Cataratas, Síndrome braquicefálico (BOAS), Siringomielia, Hidrocefalia, Luxación patelar, Enfermedad degenerativa valvular. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Grifón de Bruselas pueden tener Von Willebrand, Hipotiroidismo, Cataratas, Síndrome braquicefálico, Siringomielia, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Hamilton stovare",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Hovawart",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Husky Siberiano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Husky Siberiano pueden tener Atrofia progresiva de retina (PRA), Megaesófago congénito, Cataratas hereditarias, Enfermedad de Von Willebrand, Dermatitis atópica, Displasia de cadera, Glaucoma, Epilepsia, Deficiencia de Zinc. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Husky Siberiano pueden tener Atrofia de retina, Megaesófago, Cataratas, Von Willebrand, Dermatitis atópica, Displasia de cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Jack Russell Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Jack Russell Terrier pueden tener Dermatitis atópica, Hipotiroidismo hereditario, Obesidad genética, Neuropatía hereditaria, Luxación patelar, Cardiomiopatía dilatada, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Jack Russell Terrier pueden tener Dermatitis atópica, Hipotiroidismo, Obesidad, Neuropatía hereditaria, Luxación patelar, Cardiomiopatía. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Keeshond",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Keeshond pueden tener Displasia de codo, Amiloidosis renal, Colapso traqueal, Neuropatía hereditaria, Luxación patelar, Ictiosis, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Keeshond pueden tener Displasia de codo, Amiloidosis renal, Colapso traqueal, Neuropatía hereditaria, Luxación patelar, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Kerry Blue Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Kerry Blue Terrier pueden tener Colapso traqueal, Displasia de cadera, Estenosis subaórtica, Epilepsia idiopática, Atrofia progresiva de retina (PRA), Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Kerry Blue Terrier pueden tener Colapso traqueal, Displasia de cadera, Estenosis subaórtica, Epilepsia, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Komondor",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Komondor pueden tener Amiloidosis renal, Glaucoma hereditario, Neuropatía hereditaria, Obesidad genética, Megaesófago congénito, Dermatitis atópica, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Komondor pueden tener Amiloidosis renal, Glaucoma, Neuropatía hereditaria, Obesidad, Megaesófago, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Kuvasz húngaro",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Kuvasz pueden tener Obesidad genética, Enfermedad de Von Willebrand, Cardiomiopatía dilatada, Hipotiroidismo hereditario, Shunt portosistémico, Neuropatía hereditaria, Megaesófago congénito. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Kuvasz pueden tener Obesidad, Von Willebrand, Cardiomiopatía dilatada, Hipotiroidismo, Shunt portosistémico, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Labradoodle",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Labrador Retriever",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Labrador Retriever pueden tener Displasia de cadera/codo, Epilepsia, Obesidad, Colapso inducido por ejercicio, Diabetes, Hipotiroidismo, Estenosis tricuspídea, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Labrador Retriever pueden tener Displasia de cadera/codo, Epilepsia, Obesidad, Colapso inducido por ejercicio, Diabetes, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Lakeland Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Lakeland Terrier pueden tener Neuropatía hereditaria, Enfermedad de Von Willebrand, Epilepsia idiopática, Obesidad genética, Colapso traqueal, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Lakeland Terrier pueden tener Neuropatía hereditaria, Von Willebrand, Epilepsia, Obesidad, Colapso traqueal, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Lancashire Heeler",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Lebrel escocés (Deerhound)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Lebrel Escocés pueden tener Obesidad genética, Amiloidosis renal, Estenosis subaórtica, Megaesófago congénito, Dermatitis atópica, Displasia de cadera, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Lebrel Escocés pueden tener Obesidad, Amiloidosis renal, Estenosis subaórtica, Megaesófago, Dermatitis atópica, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Leonberger",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Leonberger pueden tener Dermatitis atópica, Colapso traqueal, Glaucoma hereditario, Obesidad genética, Neuropatía hereditaria, Atrofia progresiva de retina (PRA), Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Leonberger pueden tener Dermatitis atópica, Colapso traqueal, Glaucoma, Obesidad, Neuropatía hereditaria, Atrofia de retina, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Lhasa Apso",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Lhasa Apso pueden tener Colapso traqueal, Glaucoma, Ictiosis, Dermatitis atópica, Displasia de cadera, Luxación patelar, Displasia renal juvenil, Hidrocefalia, Enfermedad de Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Lhasa Apso pueden tener Colapso traqueal, Glaucoma, Ictiosis, Displasia de cadera, Luxación patelar, Hidrocefalia, Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Lobero irlandés (Irish Wolfhound)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Lobero Irlandés pueden tener Dermatitis atópica, Hipotiroidismo hereditario, Neuropatía hereditaria, Displasia de codo, Atrofia progresiva de retina (PRA), Cataratas hereditarias, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Lobero Irlandés pueden tener Dermatitis atópica, Hipotiroidismo, Neuropatía hereditaria, Displasia de codo, Atrofia de retina, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Löwchen (Petit Chien Lion)",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Manchester Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Manchester Terrier pueden tener Cataratas hereditarias, Epilepsia idiopática, Amiloidosis renal, Colapso traqueal, Alergias hereditarias, Atrofia progresiva de retina (PRA), Enfermedad de Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Manchester Terrier pueden tener Cataratas, Epilepsia, Amiloidosis renal, Colapso traqueal, Alergias, Atrofia de retina, Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Mastín napolitano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Mastín Napolitano pueden tener Dermatitis atópica, Megaesófago, Hipotiroidismo, Glaucoma, Displasia de cadera/codo, Cardiomiopatía dilatada, Síndrome de Wobbler, Pioderma recurrente, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Mastín Napolitano pueden tener Dermatitis atópica, Megaesófago, Hipotiroidismo, Glaucoma, Displasia, Cardiomiopatía dilatada, Síndrome de Wobbler. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Mastín Tibetano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Mastín Tibetano pueden tener Displasia de codo, Dermatitis atópica, Colapso traqueal, Enfermedad de Von Willebrand, Glaucoma hereditario, Estenosis subaórtica, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Mestizo",
-            "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Mastín Tibetano pueden tener Displasia de codo, Dermatitis atópica, Colapso traqueal, Von Willebrand, Glaucoma, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Münsterländer grande",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Otterhound",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Otterhound pueden tener Glaucoma hereditario, Estenosis subaórtica, Cataratas hereditarias, Epilepsia idiopática, Enfermedad de Von Willebrand, Alergias hereditarias, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Otterhound pueden tener Glaucoma, Estenosis subaórtica, Cataratas, Epilepsia, Von Willebrand, Alergias, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Papillon",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Papillon pueden tener Cataratas hereditarias, Colapso traqueal, Glaucoma hereditario, Dermatitis atópica, Hipotiroidismo hereditario, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Papillon pueden tener Cataratas, Colapso traqueal, Glaucoma, Dermatitis atópica, Hipotiroidismo, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Parson Russell Terrier",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Pastor Alemán",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor Alemán pueden tener Atrofia progresiva de retina, Mielopatía degenerativa, Displasia de cadera/codo, Estenosis subaórtica, Hemofilia, Insuficiencia pancreática, Epilepsia, Megaesófago. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor Alemán pueden tener Atrofia de retina, Mielopatía degenerativa, Displasia de cadera/codo, Hemofilia, Insuficiencia pancreática, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor Australiano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor Australiano pueden tener Colapso traqueal, Estenosis subaórtica, Luxación patelar, Displasia de cadera/codo, Neuropatía hereditaria, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor Australiano pueden tener Colapso traqueal, Estenosis subaórtica, Luxación patelar, Displasia de cadera/codo, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor Belga Malinois",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor Belga Malinois pueden tener Enfermedad de Von Willebrand, Displasia de cadera, Dermatitis atópica, Neuropatía hereditaria, Hipotiroidismo hereditario, Alergias hereditarias, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor Belga Malinois pueden tener Von Willebrand, Displasia de cadera, Dermatitis atópica, Neuropatía hereditaria, Hipotiroidismo, Alergias. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor Belga Tervueren",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor Belga Tervueren pueden tener Cataratas hereditarias, Amiloidosis renal, Estenosis subaórtica, Atrofia progresiva de retina (PRA), Alergias hereditarias, Luxación patelar, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor Belga Tervueren pueden tener Cataratas, Amiloidosis renal, Estenosis subaórtica, Atrofia de retina, Alergias, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor Blanco Suizo",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Pastor Catalán",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Pastor de Anatolia",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor de Anatolia pueden tener Enfermedad de Von Willebrand, Glaucoma hereditario, Dermatitis atópica, Cataratas hereditarias, Megaesófago congénito, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Pastor de Anatolia pueden tener Von Willebrand, Glaucoma, Dermatitis atópica, Cataratas, Megaesófago, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor de Brie (Briard)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor de Brie pueden tener Luxación patelar, Displasia de cadera, Hipotiroidismo hereditario, Estenosis subaórtica, Neuropatía hereditaria, Colapso traqueal, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor de Brie pueden tener Luxación patelar, Displasia de cadera, Hipotiroidismo, Estenosis subaórtica, Neuropatía hereditaria, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor de Los Pirineos",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Gran Pirineo pueden tener Hipotiroidismo hereditario, Luxación patelar, Displasia de codo, Ictiosis, Epilepsia idiopática, Cataratas hereditarias, Glaucoma hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pastor de Los Pirineos pueden tener Hipotiroidismo, Luxación patelar, Displasia de codo, Ictiosis, Epilepsia, Cataratas, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor de Shetland (Sheltie)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pastor de las Islas Shetland pueden tener Neuropatía hereditaria, Dermatitis atópica, Obesidad genética, Luxación patelar, Colapso traqueal, Enfermedad de Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Sheltie pueden tener Neuropatía hereditaria, Dermatitis atópica, Obesidad, Luxación patelar, Colapso traqueal, Von Willebrand. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pastor del Cáucaso",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 6,
+            "size": "Gigante"
         },
         {
             "name": "Pastor Leonés (Carea leonés)",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Pastor Polaco de las llanuras",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Pekinés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pekinés pueden tener Cataratas, Glaucoma, Hipotiroidismo, Displasia de codo, Colapso traqueal, Síndrome braquicefálico (BOAS), Luxación patelar, Hidrocefalia, Siringomielia, Dermatitis por pliegues. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Pekinés pueden tener Cataratas, Glaucoma, Hipotiroidismo, Displasia de codo, Colapso traqueal, Síndrome braquicefálico, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Perdiguero de Burgos",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Perro De Agua Español",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Perro De Agua Irlandés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Perro de Aguas Portugués",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Perro de Agua Portugués pueden tener Cardiomiopatía dilatada, Neuropatía hereditaria, Estenosis subaórtica, Colapso traqueal, Epilepsia idiopática, Obesidad genética, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Perro de Agua Portugués pueden tener Cardiomiopatía dilatada, Neuropatía hereditaria, Estenosis subaórtica, Colapso traqueal, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Perro de Groenlandia",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Perro de Montaña de Los Pirineos",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Gran Pirineo pueden tener Hipotiroidismo hereditario, Luxación patelar, Displasia de codo, Ictiosis, Epilepsia idiopática, Cataratas hereditarias, Glaucoma hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Perro de Montaña de Los Pirineos pueden tener Hipotiroidismo, Luxación patelar, Displasia de codo, Ictiosis, Epilepsia, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Perro Lobo Checoslovaco",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Pinscher Alemán",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pinscher Alemán pueden tener Glaucoma hereditario, Cataratas hereditarias, Neuropatía hereditaria, Colapso traqueal, Estenosis subaórtica, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Pinscher Alemán pueden tener Glaucoma, Cataratas, Neuropatía hereditaria, Colapso traqueal, Estenosis subaórtica, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pinscher Miniatura",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pinscher Miniatura pueden tener Epilepsia idiopática, Neuropatía hereditaria, Cardiomiopatía dilatada, Cataratas hereditarias, Alergias hereditarias, Glaucoma hereditario, Obesidad genética. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Pinscher Miniatura pueden tener Epilepsia, Neuropatía hereditaria, Cardiomiopatía dilatada, Cataratas, Alergias, Glaucoma, Obesidad. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pitbull Terrier Americano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pit Bull Terrier Americano pueden tener Displasia de codo, Neuropatía hereditaria, Cataratas hereditarias, Alergias hereditarias, Displasia de cadera, Cardiomiopatía dilatada, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Pitbull Terrier pueden tener Displasia de codo, Neuropatía hereditaria, Cataratas, Alergias, Displasia de cadera, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Podenco Canario",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Podenco Ibicenco",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Podenco Ibicenco pueden tener Megaesófago congénito, Amiloidosis renal, Hipotiroidismo hereditario, Shunt portosistémico, Enfermedad de Von Willebrand, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Podenco Ibicenco pueden tener Megaesófago, Amiloidosis renal, Hipotiroidismo, Shunt portosistémico, Von Willebrand, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pointer Alemán de Pelo Corto",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pointer Alemán de Pelo Corto pueden tener Obesidad genética, Shunt portosistémico, Luxación patelar, Amiloidosis renal, Displasia de cadera/codo, Alergias, Colapso traqueal, Cataratas, Glaucoma, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Pointer Alemán de Pelo Corto pueden tener Obesidad, Shunt portosistémico, Luxación patelar, Displasia, Alergias, Colapso traqueal, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pointer Alemán de Pelo Duro",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Pointer Ingles",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pointer pueden tener Estenosis subaórtica, Dermatitis atópica, Colapso traqueal, Megaesófago congénito, Enfermedad de Von Willebrand, Displasia de codo, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Pointer pueden tener Estenosis subaórtica, Dermatitis atópica, Colapso traqueal, Megaesófago, Von Willebrand, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pomerania",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pomeranian pueden tener Luxación patelar, Legg-Calvé-Perthes, Estenosis subaórtica, Megaesófago congénito, Hipotiroidismo hereditario, Amiloidosis renal, Cardiomiopatía dilatada, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Poodle (Caniche) Estandar",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo hereditario, Ictiosis, Displasia de codo, Epilepsia idiopática, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
-        },
-        {
-            "name": "Poodle (Caniche) Miniatura",
-            "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo hereditario, Ictiosis, Displasia de codo, Epilepsia idiopática, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Pomerania pueden tener Luxación patelar, Legg-Calvé-Perthes, Estenosis subaórtica, Megaesófago, Hipotiroidismo, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Poodle (Caniche) Toy",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo hereditario, Ictiosis, Displasia de codo, Epilepsia idiopática, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo, Ictiosis, Displasia de codo, Epilepsia, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+        },
+        {
+            "name": "Poodle (Caniche) Miniatura",
+            "hasGeneticIssues": true,
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo, Ictiosis, Displasia de codo, Epilepsia, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+        },
+        {
+            "name": "Poodle (Caniche) Estandar",
+            "hasGeneticIssues": true,
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Caniche (Poodle) pueden tener Hipotiroidismo, Ictiosis, Displasia de codo, Epilepsia, Dermatitis atópica, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pug",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Pug pueden tener Alergias, Dermatitis atópica, Síndrome braquicefálico (BOAS), Úlcera corneal, Queratoconjuntivitis seca, Encefalitis del Pug, Luxación patelar, Displasia de cadera, Hemivértebras, Siringomielia. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Pug pueden tener Alergias, Dermatitis atópica, Síndrome braquicefálico, Úlcera corneal, Encefalitis del Pug, Luxación patelar, Displasia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Puli húngaro",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Puli pueden tener Displasia de cadera, Amiloidosis renal, Atrofia progresiva de retina (PRA), Megaesófago congénito, Neuropatía hereditaria, Epilepsia idiopática. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Puli pueden tener Displasia de cadera, Amiloidosis renal, Atrofia de retina, Megaesófago, Neuropatía hereditaria, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Ratonero Valenciano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Retriever de La Bahía de Chesapeake",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Chesapeake Bay Retriever pueden tener Alergias hereditarias, Hipotiroidismo hereditario, Cardiomiopatía dilatada, Cataratas hereditarias, Dermatitis atópica, Neuropatía hereditaria, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Chesapeake Bay Retriever pueden tener Alergias, Hipotiroidismo, Cardiomiopatía dilatada, Cataratas, Dermatitis atópica, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Retriever de Pelo Liso",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Retriever de Pelo Liso pueden tener Shunt portosistémico, Estenosis subaórtica, Cardiomiopatía dilatada, Hipotiroidismo hereditario, Amiloidosis renal, Enfermedad de Von Willebrand, Epilepsia idiopática. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Retriever de Pelo Liso pueden tener Shunt portosistémico, Estenosis subaórtica, Cardiomiopatía dilatada, Hipotiroidismo, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Retriever de Pelo Rizado",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Cobrador de Pelo Risado pueden tener Atrofia progresiva de retina (PRA), Alergias hereditarias, Estenosis subaórtica, Enfermedad de Von Willebrand, Shunt portosistémico, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Retriever de Pelo Rizado pueden tener Atrofia de retina, Alergias, Estenosis subaórtica, Von Willebrand, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Rottweiler",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Rottweiler pueden tener Obesidad, Ictiosis, Hipotiroidismo, Cataratas, Estenosis subaórtica, Displasia de cadera/codo, Osteocondrosis, Rotura ligamentos cruzados, Miocardiopatía dilatada, Cáncer óseo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Rottweiler pueden tener Obesidad, Ictiosis, Hipotiroidismo, Cataratas, Estenosis subaórtica, Displasia, Osteocondrosis, Cáncer óseo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Sabueso de las Montañas de Montenegro",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Sabueso Español",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Sabueso Italiano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Samoyedo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Samoyedo pueden tener Obesidad genética, Neuropatía hereditaria, Shunt portosistémico, Luxación patelar, Atrofia progresiva de retina (PRA), Displasia de cadera, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Samoyedo pueden tener Obesidad, Neuropatía hereditaria, Shunt portosistémico, Luxación patelar, Atrofia de retina, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "San Bernardo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los San Bernardo pueden tener Amiloidosis renal, Shunt portosistémico, Epilepsia idiopática, Glaucoma hereditario, Luxación patelar, Hipotiroidismo hereditario, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los San Bernardo pueden tener Amiloidosis renal, Shunt portosistémico, Epilepsia, Glaucoma, Luxación patelar, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Schipperke",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Schipperke pueden tener Luxación patelar, Displasia de cadera, Megaesófago congénito, Atrofia progresiva de retina (PRA), Dermatitis atópica, Displasia de codo, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Schipperke pueden tener Luxación patelar, Displasia de cadera, Megaesófago, Atrofia de retina, Dermatitis atópica, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Schnauzer Miniatura",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Schnauzer Miniatura pueden tener Displasia de codo, Enfermedad de Von Willebrand, Alergias hereditarias, Glaucoma hereditario, Colapso traqueal, Megaesófago congénito, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Schnauzer Miniatura pueden tener Displasia de codo, Von Willebrand, Alergias, Glaucoma, Colapso traqueal, Megaesófago, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Schnauzer Estandar",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Schnauzer Estándar pueden tener Obesidad genética, Epilepsia idiopática, Displasia de cadera, Displasia de codo, Colapso traqueal, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Schnauzer Estándar pueden tener Obesidad, Epilepsia, Displasia de cadera/codo, Colapso traqueal, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Schnauzer Gigante",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Schnauzer Gigante pueden tener Luxación patelar, Epilepsia idiopática, Enfermedad de Von Willebrand, Colapso traqueal, Dermatitis atópica, Hipotiroidismo hereditario, Estenosis subaórtica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Schnauzer Gigante pueden tener Luxación patelar, Epilepsia, Von Willebrand, Colapso traqueal, Dermatitis atópica, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Sealyham Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Sealyham Terrier pueden tener Enfermedad de Von Willebrand, Colapso traqueal, Ictiosis, Cardiomiopatía dilatada, Glaucoma hereditario, Megaesófago congénito, Shunt portosistémico. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Sealyham Terrier pueden tener Von Willebrand, Colapso traqueal, Ictiosis, Cardiomiopatía dilatada, Glaucoma, Megaesófago. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Setter Inglés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Setter Inglés pueden tener Enfermedad de Von Willebrand, Amiloidosis renal, Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma hereditario, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Setter Inglés pueden tener Von Willebrand, Amiloidosis renal, Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Setter irlandés rojo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Setter Irlandés pueden tener Obesidad genética, Displasia de codo/cadera, Ictiosis, Luxación patelar, Amiloidosis renal, Dermatitis atópica, Atrofia progresiva de retina (PRA), Megaesófago. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Setter Irlandés pueden tener Obesidad, Displasia de codo/cadera, Ictiosis, Luxación patelar, Amiloidosis renal, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Setter irlandés rojo y blanco",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Setter Irlandés pueden tener Obesidad genética, Displasia de codo/cadera, Ictiosis, Luxación patelar, Amiloidosis renal, Dermatitis atópica, Atrofia progresiva de retina (PRA), Megaesófago. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 7,
+            "size": "Grande",
+            "warningMessage": "⚠️ Los Setter Irlandés pueden tener Obesidad, Displasia de codo/cadera, Ictiosis, Luxación patelar, Amiloidosis renal, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Shar Pei",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Shar-Pei pueden tener Fiebre del Shar-Pei, Amiloidosis renal, Entropión, Displasia de cadera, Dermatitis (pliegues/atópica), Mucinosis cutánea, Glaucoma, Hipotiroidismo, Problemas articulares. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Shar-Pei pueden tener Fiebre del Shar-Pei, Amiloidosis renal, Entropión, Displasia de cadera, Dermatitis, Mucinosis cutánea, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Shiba Inu",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Shiba Inu pueden tener Dermatitis atópica, Displasia de cadera, Cardiomiopatía dilatada, Alergias hereditarias, Megaesófago congénito, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Shiba Inu pueden tener Dermatitis atópica, Displasia de cadera, Cardiomiopatía dilatada, Alergias, Megaesófago, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Shih Tzu",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Shih Tzu pueden tener Colapso traqueal, Obesidad, Dermatitis atópica, Síndrome braquicefálico (BOAS), Úlceras corneales, Ojo seco, Cataratas, Luxación patelar, Displasia de cadera/codo, Enfermedad renal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Shih Tzu pueden tener Colapso traqueal, Obesidad, Dermatitis atópica, Síndrome braquicefálico, Úlceras corneales, Cataratas, Displasia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Silky Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Silky Terrier pueden tener Hipotiroidismo hereditario, Enfermedad de Von Willebrand, Obesidad genética, Displasia de cadera, Estenosis subaórtica, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Silky Terrier pueden tener Hipotiroidismo, Von Willebrand, Obesidad, Displasia de cadera, Estenosis subaórtica, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Spaniel de Sussex",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Sussex Spaniel pueden tener Displasia de cadera, Amiloidosis renal, Neuropatía hereditaria, Glaucoma hereditario, Epilepsia idiopática, Ictiosis, Ataxia hereditaria, Mielopatía degenerativa, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Sussex Spaniel pueden tener Displasia de cadera/codo, Amiloidosis renal, Neuropatía hereditaria, Glaucoma, Epilepsia, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Spaniel Holandés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Spaniel Tibetano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Spaniel Tibetano pueden tener Displasia de codo, Colapso traqueal, Cataratas hereditarias, Atrofia progresiva de retina (PRA), Shunt portosistémico, Hipotiroidismo hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Spaniel Tibetano pueden tener Displasia de codo, Colapso traqueal, Cataratas, Atrofia de retina, Shunt portosistémico, Hipotiroidismo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Spinone Italiano",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 7,
+            "size": "Grande"
         },
         {
             "name": "Spitz Alemán",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Spitz Finlandés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Spitz Finlandés pueden tener Glaucoma hereditario, Estenosis subaórtica, Hipotiroidismo hereditario, Colapso traqueal, Cardiomiopatía dilatada, Amiloidosis renal, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Spitz Finlandés pueden tener Glaucoma, Estenosis subaórtica, Hipotiroidismo, Colapso traqueal, Cardiomiopatía dilatada, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Spitz Japonés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Springer Spaniel Galés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Welsh Springer Spaniel pueden tener Obesidad genética, Displasia de cadera, Hipotiroidismo hereditario, Amiloidosis renal, Ictiosis, Epilepsia idiopática. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Welsh Springer Spaniel pueden tener Obesidad, Displasia de cadera, Hipotiroidismo, Amiloidosis renal, Ictiosis, Epilepsia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Springer Spaniel Inglés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Springer Spaniel Inglés pueden tener Luxación patelar, Shunt portosistémico, Enfermedad de Von Willebrand, Displasia de cadera, Cardiomiopatía dilatada, Amiloidosis renal, Ictiosis. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Springer Spaniel Inglés pueden tener Luxación patelar, Shunt portosistémico, Von Willebrand, Displasia de cadera, Cardiomiopatía dilatada. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Terranova",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Terranova pueden tener Displasia de codo/cadera, Estenosis subaórtica/pulmonar, Cardiomiopatía dilatada, Cistinuria, Entropión/Ectropión, Ruptura de ligamentos cruzados. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 6,
+            "size": "Gigante",
+            "warningMessage": "⚠️ Los Terranova pueden tener Displasia de codo/cadera, Estenosis subaórtica, Cardiomiopatía dilatada, Cistinuria, Entropión, Ruptura ligamentos. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Terrier Australiano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Terrier Australiano pueden tener Epilepsia idiopática, Obesidad genética, Alergias hereditarias, Colapso traqueal, Enfermedad de Von Willebrand, Shunt portosistémico, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Terrier Australiano pueden tener Epilepsia, Obesidad, Alergias, Colapso traqueal, Von Willebrand, Shunt portosistémico, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Terrier Cesky",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Terrier de Airedale",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Airedale Terrier pueden tener Neuropatía hereditaria, Shunt portosistémico, Estenosis subaórtica, Cataratas hereditarias, Atrofia progresiva de retina (PRA), Amiloidosis renal, Displasia de codo. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Airedale Terrier pueden tener Neuropatía hereditaria, Shunt portosistémico, Estenosis subaórtica, Cataratas, Atrofia de retina, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Terrier Escocés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Terrier Escocés pueden tener Displasia de codo, Epilepsia idiopática, Hipotiroidismo hereditario, Obesidad genética, Shunt portosistémico, Amiloidosis renal, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Terrier Escocés pueden tener Displasia de codo, Epilepsia, Hipotiroidismo, Obesidad, Shunt portosistémico, Amiloidosis renal, Colapso traqueal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Terrier Irlandés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 8,
+            "size": "Mediano"
         },
         {
             "name": "Terrier japonés",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 9,
+            "size": "Pequeño"
         },
         {
             "name": "Terrier Tibetano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Terrier Tibetano pueden tener Amiloidosis renal, Enfermedad de Von Willebrand, Displasia de cadera, Hipotiroidismo hereditario, Estenosis subaórtica, Megaesófago congénito, Cataratas hereditarias. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Terrier Tibetano pueden tener Amiloidosis renal, Von Willebrand, Displasia de cadera, Hipotiroidismo, Estenosis subaórtica, Cataratas. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "West Highland White Terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los West Highland White Terrier (Westie) pueden tener Megaesófago congénito, Enfermedad de Von Willebrand, Displasia de cadera, Dermatitis atópica, Alergias hereditarias, Cataratas hereditarias, Glaucoma hereditario. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Westie pueden tener Megaesófago, Von Willebrand, Displasia de cadera, Dermatitis atópica, Alergias, Cataratas, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Whippet",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Whippet pueden tener Glaucoma hereditario, Cardiomiopatía dilatada, Atrofia progresiva de retina (PRA), Obesidad genética, Luxación patelar, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Whippet pueden tener Glaucoma, Cardiomiopatía dilatada, Atrofia de retina, Obesidad, Luxación patelar, Neuropatía hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
-            "name": "Xoloitzcuintle",
+            "name": "Xoloitzcuintle Toy",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Xoloitzcuintle pueden tener Cataratas hereditarias, Atrofia progresiva de retina (PRA), Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma hereditario, Dermatitis atópica. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Xoloitzcuintle pueden tener Cataratas, Atrofia de retina, Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
+        },
+        {
+            "name": "Xoloitzcuintle Mediana",
+            "hasGeneticIssues": true,
+            "maxAge": 9,
+            "size": "Pequeño",
+            "warningMessage": "⚠️ Los Xoloitzcuintle pueden tener Cataratas, Atrofia de retina, Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
+        },
+        {
+            "name": "Xoloitzcuintle Estandar",
+            "hasGeneticIssues": true,
+            "maxAge": 8,
+            "size": "Mediano",
+            "warningMessage": "⚠️ Los Xoloitzcuintle pueden tener Cataratas, Atrofia de retina, Shunt portosistémico, Colapso traqueal, Displasia de cadera, Glaucoma. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Yorkshire terrier",
             "hasGeneticIssues": true,
-            "maxAge": 0,
-            "warningMessage": "⚠️ Los Yorkshire Terrier pueden tener Glaucoma hereditario, Colapso traqueal, Ictiosis, Legg-Calvé-Perthes, Epilepsia idiopática, Alergias hereditarias, Obesidad genética. No cubrimos problemas genéticos ni hereditarios."
+            "maxAge": 10,
+            "size": "Mini/Toy",
+            "warningMessage": "⚠️ Los Yorkshire Terrier pueden tener Glaucoma, Colapso traqueal, Ictiosis, Legg-Calvé-Perthes, Epilepsia, Alergias, Obesidad. No cubrimos problemas genéticos ni hereditarios."
         }
     ],
     "gatos": [
         {
             "name": "Abisinio",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Abisinio pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Deficiencia de piruvato quinasa, Amiloidosis renal, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "American Wirehair (Americano de pelo duro)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Pelo aspero Americano pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Osteocondrodisplasia, Displasia de cadera, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Angora Turco",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Angora Turco pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Ataxia cerebelosa, Sordera congénita (blancos/ojos azules), Displasia de cadera, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Asiático",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Azul Ruso",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Azul Ruso pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Osteocondrodisplasia, Displasia de cadera, Luxación patelar, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Balinés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Balinés pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera, Luxación patelar, Hidrocefalia congénita. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bengalí",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Bengalí pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera, Luxación patelar, Neuropatía distal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Birmano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Birman (Sagrado de Birmania) pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera, Luxación patelar, Hidrocefalia. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bobtail Americano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Bobtail Americano pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Síndrome de Manx (malformaciones caudales), Displasia de cadera, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bobtail japónes de pelo corto",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Bobtail Japonés pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Osteocondrodisplasia, Síndrome de Manx. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bobtail japónes de pelo largo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Bobtail Japonés pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Osteocondrodisplasia, Síndrome de Manx. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bombay",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Bombay pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Deficiencia de piruvato quinasa, Displasia de cadera, Luxación patelar, Síndrome braquicefálico. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Bosque de Noruega",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Gato de bosque de Noruega pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Glucogenosis tipo IV, Displasia de cadera, Luxación patelar, Atrofia de retina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "British Shorthair (Britanico de pelo corto)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los British Shorthair pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Hemofilia B, Displasia de cadera, Luxación patelar, Osteoartritis temprana. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Burmés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Burmese pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Deficiencia de piruvato quinasa, Síndrome de dolor orofacial felino, Diabetes. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Burmilla",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Burmilla pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cartujo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Chartreux pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Luxación patelar, Displasia de cadera, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Chinchilla",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Cornish Rex",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Cornish Rex pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Luxación patelar, Hipotricosis hereditaria. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Cymric",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Cymric pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Síndrome de Manx (espina bífida/malformaciones), Megacolon, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Devon Rex",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Devon Rex pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Miopatía hereditaria (Espasticidad), Luxación patelar, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Domestico",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Exótico de pelo corto",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Exótico de pelo corto pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Síndrome braquicefálico (BOAS), Problemas oculares (epífora, úlceras), Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Fold escocés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Fold Escocés pueden tener Osteocondrodisplasia (problemas óseos y articulares severos), Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Artritis degenerativa. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Himalayo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Himalayo pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Síndrome braquicefálico, Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Khao Manee",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Khao Manee pueden tener Sordera congénita (especialmente en ojos azules/impares), Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Korat",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Korat pueden tener Gangliosidosis (GM1/GM2), Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Laperm",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los LaPerm pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Deficiencia de piruvato quinasa, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Maine Coon",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Maine Coon pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia muscular espinal (SMA), Displasia de cadera, Luxación patelar. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Manx",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Manx pueden tener Síndrome de Manx (espina bífida, problemas caudales), Megacolon, Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Sordera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Mau egipcio",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Mau Egipcio pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Deficiencia de piruvato quinasa, Luxación patelar, Hernia umbilical. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Mist Australiano",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Australian Mist pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Munchkin",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Munchkin pueden tener Lordosis, Pectus excavatum, Osteoartritis temprana, Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Ocigato",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Ocelote (Ocicat) pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Oriental de pelo corto",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Oriental de pelo corto pueden tener Cardiomiopatía hipertrófica (HCM), Amiloidosis hepática/renal, Atrofia progresiva de retina (PRA), Síndrome de pica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Oriental de pelo largo",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Javanés (Oriental pelo largo) pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Sordera congénita. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Persa",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Persa pueden tener Enfermedad poliquística renal (PKD), Cardiomiopatía hipertrófica (HCM), Síndrome braquicefálico (BOAS), Atrofia progresiva de retina (PRA), Displasia de cadera, Sequestrum corneal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Peterbald",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Peterbald pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia ectodérmica. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Pixie bob",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Pixiebob pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Polidactilia (y problemas asociados), Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Ragdoll",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Ragdoll pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Cálculos en la vejiga, Mucopolisacaridosis. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Savannah",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Selkirk Rex",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Selkirk Rex pueden tener Enfermedad poliquística renal (PKD), Cardiomiopatía hipertrófica (HCM), Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Siames",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Siamés pueden tener Amiloidosis, Asma felino, Cardiomiopatía hipertrófica (HCM), Adenocarcinoma intestinal, Gangliosidosis, Atrofia progresiva de retina (PRA). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Siberiano (Bosque de Siberia)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Siberiano pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Deficiencia de piruvato quinasa, Cáncer hereditario. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Singapura",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Singapura pueden tener Deficiencia de piruvato quinasa (PK Deficiency), Atrofia progresiva de retina (PRA), Cardiomiopatía hipertrófica (HCM), Inercia uterina. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Snowshoe",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Sokoke",
             "hasGeneticIssues": false,
-            "maxAge": 0
+            "maxAge": 10,
+            "size": "Estandar"
         },
         {
             "name": "Somalí",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Somalí pueden tener Deficiencia de piruvato quinasa, Atrofia progresiva de retina (PRA), Amiloidosis renal, Miastenia gravis, Cardiomiopatía hipertrófica (HCM). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Sphynx",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Esfinge (Sphynx) pueden tener Cardiomiopatía hipertrófica (HCM), Miopatía hereditaria (espasticidad), Displasia valvular mitral, Urticaria pigmentosa. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Sphynx (Egipcio)",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Esfinge (Sphynx) pueden tener Cardiomiopatía hipertrófica (HCM), Miopatía hereditaria (espasticidad), Displasia valvular mitral, Urticaria pigmentosa. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Tiffanie",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Chantilly-Tiffany pueden tener Cardiomiopatía hipertrófica (HCM), Enfermedad poliquística renal (PKD), Atrofia progresiva de retina (PRA), Displasia de cadera. No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Tonquinés",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Tonkinés pueden tener Amiloidosis, Asma, Defectos cardíacos congénitos, Atrofia progresiva de retina (PRA), Cardiomiopatía hipertrófica (HCM). No cubrimos problemas genéticos ni hereditarios."
         },
         {
             "name": "Van Turco",
             "hasGeneticIssues": true,
-            "maxAge": 0,
+            "maxAge": 10,
+            "size": "Estandar",
             "warningMessage": "⚠️ Los Van Turco pueden tener Cardiomiopatía hipertrófica (HCM), Sordera congénita (especialmente en blancos/ojos impares), Ataxia hereditaria. No cubrimos problemas genéticos ni hereditarios."
         }
     ]

@@ -16,12 +16,25 @@ export async function POST(req: Request) {
                 dataToSeed = body;
             }
         } catch (e) {
+            // Si no hay body, leer del archivo local breeds.json
+            console.log('📂 Leyendo breeds.json desde disco...');
+            const filePath = path.join(process.cwd(), 'src', 'data', 'breeds.json');
+            const fileContents = await fs.readFile(filePath, 'utf8');
+            dataToSeed = JSON.parse(fileContents);
+        }
+
+        // 2. Formatear datos para la base de datos
+        const formattedBreeds: any[] = [];
+
+        // Transformar Perros
+        if (dataToSeed.perros) {
             formattedBreeds.push(...dataToSeed.perros.map((b: any) => ({
                 name: b.name,
                 type: 'perro',
                 has_genetic_issues: b.hasGeneticIssues,
                 warning_message: b.warningMessage,
-                max_age: b.maxAge
+                max_age: b.maxAge,
+                size: b.size
             })));
         }
 
@@ -32,7 +45,8 @@ export async function POST(req: Request) {
                 type: 'gato',
                 has_genetic_issues: b.hasGeneticIssues,
                 warning_message: b.warningMessage,
-                max_age: b.maxAge
+                max_age: b.maxAge,
+                size: b.size
             })));
         }
 
@@ -52,6 +66,7 @@ export async function POST(req: Request) {
         }
 
     } catch (error: any) {
+        console.error('❌ Error en seed-breeds route:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

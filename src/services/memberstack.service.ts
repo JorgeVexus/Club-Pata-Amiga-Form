@@ -178,6 +178,10 @@ function mapFormDataToCustomFields(formData: RegistrationFormData, fileUrls: any
         // Metadata
         'registration-date': new Date().toISOString(),
         'waiting-period-end': calculateWaitingPeriodEnd(),
+
+        // Estado de aprobación (NUEVO)
+        'approval-status': 'pending',
+        'submitted-at': new Date().toISOString(),
     };
 }
 
