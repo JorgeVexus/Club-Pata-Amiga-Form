@@ -1,10 +1,6 @@
-/**
- * API Route: /api/admin/members
- * Maneja operaciones administrativas sobre miembros
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
+import { supabase } from '@/lib/supabase';
 
 /**
  * GET /api/admin/members?status=pending
@@ -42,10 +38,25 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // Filter out admin/super_admin users from the results
+        const { data: adminUsers, error: adminError } = await supabase
+            .from('users')
+            .select('memberstack_id')
+            .in('role', ['admin', 'super_admin']);
+
+        if (adminError) {
+            console.error('Error fetching admin users:', adminError);
+        }
+
+        const adminMemberstackIds = new Set(adminUsers?.map(u => u.memberstack_id) || []);
+
+        // Filter out admins from the member list
+        const filteredMembers = result.data?.filter(member => !adminMemberstackIds.has(member.id)) || [];
+
         return NextResponse.json({
             success: true,
-            members: result.data,
-            count: result.data?.length || 0,
+            members: filteredMembers,
+            count: filteredMembers.length,
         });
 
     } catch (error: any) {

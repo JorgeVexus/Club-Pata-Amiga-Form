@@ -5,14 +5,15 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all';
-    onFilterChange: (filter: RequestType | 'all') => void;
+    activeFilter: RequestType | 'all' | 'admins';
+    onFilterChange: (filter: RequestType | 'all' | 'admins') => void;
     pendingCounts: Record<RequestType, number>;
     isMobileOpen?: boolean;
     onClose?: () => void;
+    isSuperAdmin?: boolean;
 }
 
-export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, isMobileOpen, onClose }: SidebarProps) {
+export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, isMobileOpen, onClose, isSuperAdmin = false }: SidebarProps) {
     return (
         <aside className={`${styles.sidebar} ${isMobileOpen ? styles.open : ''}`}>
             {/* Close Button (Mobile Only) */}
@@ -81,6 +82,20 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                 </button>
             </nav>
 
+            {/* Super Admin Only: Admins Section */}
+            {isSuperAdmin && (
+                <nav className={styles.menuSection}>
+                    <h3 className={styles.menuTitle}>Administración</h3>
+                    <button
+                        className={`${styles.menuItem} ${activeFilter === 'admins' ? styles.active : ''}`}
+                        onClick={() => onFilterChange('admins')}
+                    >
+                        <span className={styles.menuIcon}>👨‍💼</span>
+                        <span className={styles.menuLabel}>Administradores</span>
+                    </button>
+                </nav>
+            )}
+
             {/* Historial de Actividad */}
             <nav className={styles.menuSection}>
                 <h3 className={styles.menuTitle}>Historial de Actividad</h3>
@@ -92,7 +107,17 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
             </nav>
 
             {/* Botón de Cerrar Sesión */}
-            <button className={styles.logoutButton}>
+            {/* Botón de Cerrar Sesión */}
+            <button
+                className={styles.logoutButton}
+                data-ms-action="logout"
+                onClick={() => {
+                    // Optional: Force redirect fallback if Memberstack doesn't redirect automatically
+                    setTimeout(() => {
+                        window.location.href = '/admin/login?post_logout=true';
+                    }, 500);
+                }}
+            >
                 <span>🚪</span>
                 <span>Cerrar sesión</span>
             </button>

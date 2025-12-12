@@ -1,10 +1,6 @@
-/**
- * API Route: /api/admin/metrics
- * Obtiene métricas generales para el dashboard
- */
-
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { supabase } from '@/lib/supabase';
 
 export async function GET(request: NextRequest) {
     try {
@@ -18,8 +14,23 @@ export async function GET(request: NextRequest) {
 
         const members = result.data;
 
-        // Calcular métricas reales
-        const totalMembers = members.filter(m => m.customFields['approval-status'] === 'approved').length;
+        // Get all admin/super_admin users from Supabase to exclude them
+        const { data: adminUsers, error: adminError } = await supabase
+            .from('users')
+            .select('memberstack_id')
+            .in('role', ['admin', 'super_admin']);
+
+        if (adminError) {
+            console.error('Error fetching admin users:', adminError);
+        }
+
+        const adminMemberstackIds = new Set(adminUsers?.map(u => u.memberstack_id) || []);
+
+        // Calcular métricas reales - EXCLUDE admin/super_admin users
+        const totalMembers = members.filter(m =>
+            m.customFields['approval-status'] === 'approved' &&
+            !adminMemberstackIds.has(m.id)
+        ).length;
 
         // Métricas placeholder para features futuras
         const totalAmbassadors = 0; // members.filter(m => m.customFields['roles']?.includes('ambassador')).length;

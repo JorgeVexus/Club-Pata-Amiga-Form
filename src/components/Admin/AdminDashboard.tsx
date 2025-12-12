@@ -12,9 +12,10 @@ import MemberDetailModal from './MemberDetailModal';
 import RejectionModal from './RejectionModal';
 import RejectionReasonModal from './RejectionReasonModal';
 import ActivityFeed, { ActivityLog } from './ActivityFeed';
+import AdminsTable from './AdminsTable';
 
 export default function AdminDashboard() {
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [memberToReject, setMemberToReject] = useState<any>(null); // For rejection action
@@ -33,8 +34,10 @@ export default function AdminDashboard() {
     });
 
     // Admin Identity & Activity State
-    const currentAdminId = 'current-admin-id'; // This should match what's saved in DB
-    const [isAdminSuper, setIsAdminSuper] = useState(true); // Toggle Role
+    const [currentAdminId, setCurrentAdminId] = useState('Admin');
+    const [adminName, setAdminName] = useState('Cargando...');
+    const [adminRoleLabel, setAdminRoleLabel] = useState('Verificando...');
+    const [isAdminSuper, setIsAdminSuper] = useState(false);
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
 
     // Helper to fetch single member details
@@ -54,8 +57,37 @@ export default function AdminDashboard() {
         }
     };
 
-    // Cargar métricas y actividad al montar
+    // Initial Data Load
     useEffect(() => {
+        const fetchAdminRole = async () => {
+            if (typeof window !== 'undefined' && window.$memberstackDom) {
+                try {
+                    const member = await window.$memberstackDom.getCurrentMember();
+                    if (!member?.data?.id) return; // Wait for auth
+
+                    const currentMemberId = member.data.id;
+
+                    const response = await fetch('/api/admin/me', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ memberstackId: currentMemberId })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setIsAdminSuper(data.isSuperAdmin);
+                        // Update UI with real data
+                        setCurrentAdminId(data.name || 'Admin');
+                        setAdminName(data.name || 'Admin');
+                        setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
+                    }
+                } catch (e) {
+                    console.error("Error checking permissions", e);
+                }
+            }
+        };
+
+        fetchAdminRole();
         loadMetrics();
         loadPendingCounts();
         loadActivityLogs();
@@ -150,6 +182,7 @@ export default function AdminDashboard() {
                     pendingCounts={pendingCounts}
                     isMobileOpen={isMobileMenuOpen}
                     onClose={() => setIsMobileMenuOpen(false)}
+                    isSuperAdmin={isAdminSuper}
                 />
 
                 <main className={styles.mainContent}>
@@ -161,7 +194,8 @@ export default function AdminDashboard() {
                                     activeFilter === 'member' ? 'Miembros' :
                                         activeFilter === 'ambassador' ? 'Embajadores' :
                                             activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
-                                                'Fondo Solidario'}
+                                                activeFilter === 'admins' ? 'Administradores' :
+                                                    'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {new Date().toLocaleDateString('es-MX', {
@@ -177,62 +211,74 @@ export default function AdminDashboard() {
                             <div className={styles.adminBadge}>
                                 <span className={styles.adminIcon}>👤</span>
                                 <div className={styles.adminInfo}>
-                                    <div className={styles.adminName}>Lucero Marvel</div>
-                                    <div className={styles.adminRole}>Administrador</div>
+                                    <div className={styles.adminName}>{adminName}</div>
+                                    <div className={styles.adminRole}>{adminRoleLabel}</div>
                                 </div>
                             </div>
                         </div>
                     </header>
 
-                    {/* Metric Cards */}
-                    <MetricCards metrics={metrics} />
+                    {/* Metric Cards - Hide when viewing admins */}
+                    {activeFilter !== 'admins' && <MetricCards metrics={metrics} />}
 
-                    {/* Requests Table */}
-                    <RequestsTable
-                        filter="all"
-                        requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
-                        onViewDetails={(id) => fetchMemberDetails(id, setSelectedMember)}
-                        onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
-                        onApprove={async (id) => {
-                            if (confirm('¿Estás seguro de aprobar este miembro?')) {
-                                try {
-                                    const response = await fetch(`/api/admin/members/${id}/approve`, {
-                                        method: 'POST',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ adminId: currentAdminId })
-                                    });
+                    {/* Admins Table - Only for Super Admins */}
+                    {activeFilter === 'admins' ? (
+                        <AdminsTable />
+                    ) : (
+                        <>
+                            {/* Requests Table */}
+                            <RequestsTable
+                                filter="all"
+                                requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
+                                onViewDetails={(id) => fetchMemberDetails(id, setSelectedMember)}
+                                onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
+                                onApprove={async (id) => {
+                                    if (confirm('¿Estás seguro de aprobar este miembro?')) {
+                                        try {
+                                            const response = await fetch(`/api/admin/members/${id}/approve`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ adminId: currentAdminId })
+                                            });
 
-                                    if (response.ok) {
-                                        alert('Miembro aprobado');
-                                        window.location.reload();
-                                    } else {
-                                        alert('Error al aprobar');
+                                            if (response.ok) {
+                                                alert('Miembro aprobado');
+                                                window.location.reload();
+                                            } else {
+                                                alert('Error al aprobar');
+                                            }
+                                        } catch (error) {
+                                            console.error('Error:', error);
+                                            alert('Error de conexión');
+                                        }
                                     }
-                                } catch (error) {
-                                    console.error('Error:', error);
-                                    alert('Error de conexión');
-                                }
-                            }
-                        }}
-                        onReject={(id) => fetchMemberDetails(id, setMemberToReject)}
-                    />
-
-                    {/* Activity History Section */}
-                    <div className={styles.activitySection}>
-                        {/* Panel 1: Recent Activity (Super Admin Only) */}
-                        {isAdminSuper && (
-                            <ActivityFeed
-                                title="Actividad reciente"
-                                logs={activityLogs}
+                                }}
+                                onReject={(id) => fetchMemberDetails(id, setMemberToReject)}
                             />
-                        )}
 
-                        {/* Panel 2: Your Activity (Everyone) */}
-                        <ActivityFeed
-                            title="Tu actividad"
-                            logs={activityLogs.filter(log => log.adminName === currentAdminId || log.adminName === 'Admin' || log.adminName === 'current-admin-id')}
-                        />
-                    </div>
+                            {/* Activity History Section */}
+                            <div className={styles.activitySection}>
+                                {/* Panel 1: Recent Activity (Super Admin Only) */}
+                                {isAdminSuper && (
+                                    <ActivityFeed
+                                        title="Actividad reciente"
+                                        logs={activityLogs}
+                                    />
+                                )}
+
+                                {/* Panel 2: Your Activity (Everyone) */}
+                                <ActivityFeed
+                                    title="Tu actividad"
+                                    logs={activityLogs.filter(log =>
+                                        log.adminName === currentAdminId ||
+                                        log.adminName === 'Admin' ||
+                                        log.adminName === 'current-admin-id' ||
+                                        log.adminName === 'Lucero Marvel'
+                                    )}
+                                />
+                            </div>
+                        </>
+                    )}
                 </main>
             </div>
 

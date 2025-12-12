@@ -118,7 +118,7 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                         <div key={log.id} className={styles.activityCard}>
                             <div className={styles.cardHeader}>
                                 <span>
-                                    {log.type === 'approved' ? 'SOLICITUD APROBADA' : 'SOLICITUD RECHAZADA'} #{log.id.substring(0, 4).toUpperCase()}
+                                    {log.type === 'approved' ? 'SOLICITUD APROBADA' : 'SOLICITUD RECHAZADA'} #{log.id.slice(-4).toUpperCase()}
                                 </span>
                                 <span className={styles.timeAgo}>{timeAgo(log.timestamp)}</span>
                             </div>
@@ -127,8 +127,6 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                                 <div className={`${styles.tag} ${log.type === 'approved' ? styles.member : styles.rejected}`}>
                                     {log.type === 'approved' ? (log.role === 'Miembro' ? '👤 Miembro' : '🗣 Embajador') : (log.role === 'Embajador' ? '🗣 Embajador' : '⚠️ Rechazado')}
                                 </div>
-                                {/* Example extra tag if we had reimbursement logic */}
-                                {/* <div className={`${styles.tag} ${styles.medical}`}>❄️ Emergencia médica</div> */}
                             </div>
 
                             <div className={styles.actors}>
@@ -139,7 +137,9 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                                     </div>
                                     <div className={styles.actorInfo}>
                                         <span className={styles.roleLabel}>Administrador</span>
-                                        <span className={styles.nameLabel}>{log.adminName}</span>
+                                        <span className={styles.nameLabel}>
+                                            {log.adminName === 'current-admin-id' ? 'Lucero Marvel' : log.adminName}
+                                        </span>
                                     </div>
                                 </div>
 
