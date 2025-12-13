@@ -147,6 +147,11 @@ export default function PetRegistrationForm() {
                 const tempUserId = `temp_${Date.now()}_pet${i}`;
 
                 // Subir fotos de la mascota
+                if (!pet.photos || pet.photos.length === 0) {
+                    console.warn(`Mascota ${i + 1} no tiene fotos`);
+                    continue;
+                }
+
                 const photoUploads = await uploadMultipleFiles(
                     pet.photos,
                     'PET_PHOTO',
