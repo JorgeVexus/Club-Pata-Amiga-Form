@@ -19,6 +19,7 @@ interface RadioGroupProps {
     error?: string;
     required?: boolean;
     memberstackField?: string;
+    helpText?: string;
 }
 
 export default function RadioGroup({
@@ -30,6 +31,7 @@ export default function RadioGroup({
     error,
     required = false,
     memberstackField,
+    helpText,
 }: RadioGroupProps) {
     return (
         <div className={styles.fieldWrapper}>
@@ -37,6 +39,10 @@ export default function RadioGroup({
                 {label}
                 {required && <span className={styles.required}> *</span>}
             </label>
+
+            {helpText && (
+                <p className={styles.helpText}>{helpText}</p>
+            )}
 
             <div className={styles.radioGroup}>
                 {options.map((option) => (
