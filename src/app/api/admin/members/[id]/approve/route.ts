@@ -9,7 +9,7 @@ import { registerUserInSupabase } from '@/app/actions/user.actions';
 
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
         // TODO: Validar que el usuario sea admin
@@ -18,7 +18,7 @@ export async function POST(
         //     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
         // }
 
-        const memberId = params.id;
+        const { id: memberId } = await params;
         const body = await request.json();
         const adminId = body.adminId || 'admin_temp'; // TODO: Obtener del token de sesión
 
