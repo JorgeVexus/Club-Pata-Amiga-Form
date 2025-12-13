@@ -171,7 +171,7 @@ export default function PetCard({
                         <BreedAutocomplete
                             label="🐕 Raza de tu peludo"
                             name={`pet-${petNum}-breed`}
-                            petType={petData.petType}
+                            petType={petData.petType as 'perro' | 'gato'}
                             value={petData.breed || ''}
                             onChange={handleBreedChange}
                             error={errors[`pet-${petNum}-breed`]}
