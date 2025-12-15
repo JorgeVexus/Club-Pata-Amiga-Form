@@ -1,0 +1,16 @@
+.container {
+    width: 100%;
+    min-height: 100vh;
+}
+
+.formContainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem 2rem;
+}
+
+@media (max-width: 768px) {
+    .formContainer {
+        padding: 0 0.5rem 1rem;
+    }
+}

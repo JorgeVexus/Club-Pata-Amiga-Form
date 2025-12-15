@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
+import '@/styles/fonts.css';
 import Script from 'next/script';
 
 const outfit = Outfit({

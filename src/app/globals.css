@@ -24,7 +24,10 @@
     --spacing-2xl: 3rem;
 
     /* Fuentes */
-    --font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-heading: 'Fraiche', sans-serif;
+    --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-family: var(--font-body);
+    /* Para compatibilidad con código existente */
 
     /* Sombras */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
@@ -89,9 +92,19 @@ label {
     font-weight: 500;
 }
 
+/* Headings use Fraiche */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: var(--font-heading);
+}
+
 /* Botones */
 button {
-    font-family: var(--font-family);
+    font-family: var(--font-heading);
     font-weight: 600;
     cursor: pointer;
     border: none;
