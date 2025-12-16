@@ -41,8 +41,8 @@
 }
 
 .stepWrapper.active .stepTitle {
-    color: #00BFA5;
-    font-weight: 700;
+    color: #000000;
+    font-weight: 300;
 }
 
 /* Completed Step */
@@ -52,8 +52,8 @@
 }
 
 .stepWrapper.completed .stepTitle {
-    color: #333;
-    font-weight: 600;
+    color: #000000;
+    font-weight: 300;
 }
 
 /* Pending Step */
@@ -63,7 +63,7 @@
 }
 
 .stepWrapper.pending .stepTitle {
-    color: #999;
+    color: #000000;
 }
 
 /* Step Circle */
@@ -87,7 +87,7 @@
 .stepTitle {
     font-family: 'Fraiche', sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: 300;
     text-align: center;
     transition: all 0.3s ease;
     white-space: nowrap;
