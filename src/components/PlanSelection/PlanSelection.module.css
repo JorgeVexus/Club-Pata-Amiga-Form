@@ -125,7 +125,7 @@
     margin: 0 auto 3rem auto;
 }
 
-/* Botones de Navegación */
+/* Botones de Navegación - usando estilos globales */
 .navigationButtons {
     display: flex;
     justify-content: space-between;
@@ -134,60 +134,9 @@
     border-top: 1px solid #eee;
 }
 
-.cancelButton {
-    background: none;
-    border: none;
-    color: #555;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-}
-
-.cancelButton:hover {
-    text-decoration: underline;
-}
-
 .rightButtons {
     display: flex;
     gap: 1rem;
-}
-
-.previousButton {
-    background-color: #4ECDC4;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.previousButton:hover {
-    background-color: #3dbdb4;
-}
-
-.nextButton {
-    background-color: #FF8C00;
-    color: white;
-    border: none;
-    padding: 12px 30px;
-    border-radius: 50px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.nextButton:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-    opacity: 0.7;
-}
-
-.nextButton:not(:disabled):hover {
-    background-color: #e67e00;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
 }
 
 /* Toast/Error Alert */

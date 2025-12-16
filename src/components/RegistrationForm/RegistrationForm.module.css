@@ -73,33 +73,9 @@
     border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+/* Botón de envío - usando estilos globales */
 .submitButton {
-    background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-    color: white;
-    font-size: 1.125rem;
-    font-weight: 700;
-    padding: 1rem 4rem;
-    border-radius: 50px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.submitButton:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
-}
-
-.submitButton:active:not(:disabled) {
-    transform: translateY(0);
-}
-
-.submitButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+    min-width: 200px;
 }
 
 .successMessage {
@@ -156,10 +132,6 @@
         font-size: 1.75rem;
     }
 
-    .submitButton {
-        width: 100%;
-        padding: 1rem 2rem;
-    }
 }
 
 @keyframes fadeIn {

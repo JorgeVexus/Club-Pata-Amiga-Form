@@ -102,14 +102,66 @@ h6 {
     font-family: var(--font-heading);
 }
 
-/* Botones */
+/* Botones - Estilos Globales Estandarizados */
 button {
     font-family: var(--font-heading);
-    font-weight: 600;
+    font-weight: 300;
+    /* Fraiche Light para mejor legibilidad */
     cursor: pointer;
-    border: none;
     transition: all 0.3s ease;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: 2px solid #000000;
+    font-size: 1rem;
+    color: #000000;
 }
+
+/* Botón Principal (Siguiente/Enviar) */
+button[type="submit"],
+button.btn-primary,
+button.nextButton,
+.nextButton {
+    background: #FE8F15;
+    color: #000000;
+}
+
+button[type="submit"]:hover,
+button.btn-primary:hover,
+button.nextButton:hover,
+.nextButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(254, 143, 21, 0.3);
+}
+
+/* Botón Secundario (Anterior/Cancelar) */
+button[type="button"],
+button.btn-secondary,
+button.previousButton,
+button.cancelButton,
+.previousButton,
+.cancelButton {
+    background: #00BBB4;
+    color: #000000;
+}
+
+button[type="button"]:hover,
+button.btn-secondary:hover,
+button.previousButton:hover,
+button.cancelButton:hover,
+.previousButton:hover,
+.cancelButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 187, 180, 0.3);
+}
+
+/* Botón Deshabilitado */
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
 
 /* Animaciones de Error */
 @keyframes shake {

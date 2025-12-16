@@ -123,81 +123,13 @@
     line-height: 1.4;
 }
 
-/* Botones de navegación */
+/* Botones de navegación - usando estilos globales */
 .navigationButtons {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 3rem;
     gap: 1rem;
-}
-
-.cancelButton {
-    background: none;
-    border: none;
-    color: var(--color-text-light);
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.875rem 1.5rem;
-    transition: color 0.2s ease;
-}
-
-.cancelButton:hover {
-    color: var(--color-text-dark);
-    text-decoration: underline;
-}
-
-.previousButton {
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 0.875rem 2.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(125, 216, 213, 0.3);
-}
-
-.previousButton:hover {
-    background: #6bc7c4;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(125, 216, 213, 0.4);
-}
-
-.previousButton:active {
-    transform: translateY(0);
-}
-
-.nextButton {
-    background: #FF9500;
-    color: white;
-    border: none;
-    padding: 0.875rem 2.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border-radius: 50px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
-}
-
-.nextButton:hover {
-    background: #E68600;
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(255, 149, 0, 0.4);
-}
-
-.nextButton:active {
-    transform: translateY(0);
-}
-
-.nextButton:disabled {
-    background: #ccc;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
 }
 
 /* Responsive */
