@@ -1,0 +1,12 @@
+/* Fondo turquesa para páginas de formulario */
+.form-page-background {
+    min-height: 100vh;
+    background: #00BBB4;
+    padding: 2rem 0;
+}
+
+@media (max-width: 768px) {
+    .form-page-background {
+        padding: 1rem 0;
+    }
+}

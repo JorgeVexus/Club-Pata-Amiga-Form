@@ -56,7 +56,7 @@ export default function PlanSelectionPage() {
     };
 
     return (
-        <div>
+        <div style={{ minHeight: '100vh', background: '#00BBB4', padding: '2rem 0' }}>
             <StepIndicator
                 currentStep={3}
                 completedSteps={completedSteps}

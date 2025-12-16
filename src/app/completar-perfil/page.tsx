@@ -41,7 +41,7 @@ export default function CompleteProfilePage() {
     };
 
     return (
-        <div>
+        <div style={{ minHeight: '100vh', background: '#00BBB4', padding: '2rem 0' }}>
             <StepIndicator
                 currentStep={1}
                 completedSteps={completedSteps}

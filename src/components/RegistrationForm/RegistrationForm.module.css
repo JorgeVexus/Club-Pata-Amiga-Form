@@ -68,7 +68,7 @@
 
 .submitWrapper {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     padding-top: var(--spacing-xl);
     border-top: 1px solid rgba(255, 255, 255, 0.3);
 }
