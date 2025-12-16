@@ -77,6 +77,26 @@
     color: var(--color-text-light);
 }
 
+/* Slot Counter */
+.slotCounter {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 187, 180, 0.1);
+    border-radius: 15px;
+    text-align: center;
+}
+
+.slotText {
+    font-size: 0.9rem;
+    color: var(--color-text-dark);
+    font-weight: 600;
+}
+
+.canAddMore {
+    color: #00BFA5;
+    font-weight: 500;
+}
+
 .fileList {
     margin-top: var(--spacing-md);
     display: flex;

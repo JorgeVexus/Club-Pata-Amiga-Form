@@ -87,15 +87,40 @@ export default function FileUpload({
         e.preventDefault();
         setIsDragging(false);
 
-        const validFiles = validateFiles(e.dataTransfer.files);
-        setSelectedFiles(validFiles);
-        onChange(validFiles);
+        const newFiles = validateFiles(e.dataTransfer.files);
+        const remainingSlots = maxFiles - selectedFiles.length;
+        const filesToAdd = newFiles.slice(0, remainingSlots);
+
+        const updatedFiles = [...selectedFiles, ...filesToAdd];
+        setSelectedFiles(updatedFiles);
+        onChange(updatedFiles);
+
+        // Show feedback if limit reached
+        if (newFiles.length > remainingSlots && remainingSlots > 0) {
+            alert(`Solo puedes subir ${maxFiles} archivos en total. Se agregaron ${filesToAdd.length} de ${newFiles.length} seleccionados.`);
+        } else if (remainingSlots === 0) {
+            alert(`Ya has subido el máximo de ${maxFiles} archivos. Elimina uno para agregar otro.`);
+        }
     };
 
     const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const validFiles = validateFiles(e.target.files);
-        setSelectedFiles(validFiles);
-        onChange(validFiles);
+        const newFiles = validateFiles(e.target.files);
+        const remainingSlots = maxFiles - selectedFiles.length;
+        const filesToAdd = newFiles.slice(0, remainingSlots);
+
+        const updatedFiles = [...selectedFiles, ...filesToAdd];
+        setSelectedFiles(updatedFiles);
+        onChange(updatedFiles);
+
+        // Show feedback if limit reached
+        if (newFiles.length > remainingSlots && remainingSlots > 0) {
+            alert(`Solo puedes subir ${maxFiles} archivos en total. Se agregaron ${filesToAdd.length} de ${newFiles.length} seleccionados.`);
+        } else if (remainingSlots === 0) {
+            alert(`Ya has subido el máximo de ${maxFiles} archivos. Elimina uno para agregar otro.`);
+        }
+
+        // Reset input to allow selecting the same file again if needed
+        e.target.value = '';
     };
 
     const handleBrowseClick = () => {
@@ -153,6 +178,18 @@ export default function FileUpload({
                     {accept.replace(/\./g, '').toUpperCase()} - Máx. {maxSize}MB
                 </p>
             </div>
+
+            {/* Slot Counter */}
+            {maxFiles > 1 && (
+                <div className={styles.slotCounter}>
+                    <span className={styles.slotText}>
+                        📸 {selectedFiles.length} de {maxFiles} {selectedFiles.length === 1 ? 'archivo subido' : 'archivos subidos'}
+                    </span>
+                    {selectedFiles.length < maxFiles && selectedFiles.length > 0 && (
+                        <span className={styles.canAddMore}> - Puedes agregar más</span>
+                    )}
+                </div>
+            )}
 
             {selectedFiles.length > 0 && (
                 <div className={styles.fileList}>

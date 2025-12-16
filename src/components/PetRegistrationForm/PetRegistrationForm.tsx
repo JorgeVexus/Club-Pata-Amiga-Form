@@ -147,16 +147,23 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
             // 2. SEGUNDO: Subir fotos a Supabase y actualizar URLs
             console.log('Subiendo fotos a Supabase...');
+            console.log('🔍 DEBUG: petsWithCalculations:', petsWithCalculations.map(p => ({
+                name: p.name,
+                photosCount: p.photos?.length || 0,
+                photos: p.photos
+            })));
+
             for (let i = 0; i < petsWithCalculations.length; i++) {
                 const pet = petsWithCalculations[i];
                 const tempUserId = `temp_${Date.now()}_pet${i}`;
 
                 // Subir fotos de la mascota
                 if (!pet.photos || pet.photos.length === 0) {
-                    console.warn(`Mascota ${i + 1} no tiene fotos`);
+                    console.warn(`⚠️ Mascota ${i + 1} no tiene fotos. pet.photos:`, pet.photos);
                     continue;
                 }
 
+                console.log(`📸 Subiendo ${pet.photos.length} fotos para mascota ${i + 1}...`);
                 const photoUploads = await uploadMultipleFiles(
                     pet.photos,
                     'PET_PHOTO',
@@ -171,7 +178,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
                 // Actualizar URLs de fotos en Memberstack
                 const photoUrls = photoUploads.map(u => u.publicUrl || '');
-                console.log(`Actualizando URLs de fotos para mascota ${i + 1}:`, photoUrls);
+                console.log(`✅ Actualizando URLs de fotos para mascota ${i + 1}:`, photoUrls);
                 await updatePetPhotos(i, photoUrls);
 
                 // Subir certificado veterinario si excede la edad
