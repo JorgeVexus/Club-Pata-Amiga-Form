@@ -346,6 +346,107 @@
     }
 }
 
+/* Small Desktop - 1400px */
+@media (max-width: 1400px) {
+    .requestsSection {
+        padding: var(--spacing-lg);
+    }
+
+    .table {
+        font-size: 0.875rem;
+    }
+
+    .tableHeader th,
+    .tableBody td {
+        padding: var(--spacing-sm);
+    }
+
+    .actionButton {
+        padding: 10px 16px !important;
+        font-size: 0.8125rem !important;
+    }
+
+    .memberInfo {
+        gap: 6px;
+    }
+
+    .memberName {
+        font-size: 0.9rem;
+    }
+
+    .memberEmail {
+        font-size: 0.8rem;
+    }
+}
+
+/* Large Tablet - 1200px */
+@media (max-width: 1200px) {
+    .searchBox {
+        min-width: 200px;
+    }
+
+    .table {
+        font-size: 0.8125rem;
+    }
+
+    /* Reduce table header font size */
+    .tableHeader th {
+        font-size: 0.75rem;
+    }
+}
+
+/* Medium Tablet - 1100px (Fix button deformation and overflow) */
+@media (max-width: 1100px) {
+    .requestsSection {
+        padding: var(--spacing-md);
+    }
+
+    .table {
+        font-size: 0.75rem;
+    }
+
+    .tableHeader th,
+    .tableBody td {
+        padding: 8px;
+    }
+
+    /* Stack action buttons vertically to prevent deformation */
+    .actionButtons {
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+    }
+
+    .actionButton,
+    .viewButton,
+    .approveButton,
+    .rejectButton {
+        width: 100% !important;
+        justify-content: center;
+        padding: 8px 12px !important;
+        font-size: 0.75rem !important;
+    }
+
+    /* Make member info more compact */
+    .memberInfo {
+        gap: 4px;
+    }
+
+    .memberName {
+        font-size: 0.85rem;
+    }
+
+    .memberEmail {
+        font-size: 0.75rem;
+    }
+
+    .statusBadge {
+        font-size: 0.7rem;
+        padding: 4px 10px;
+    }
+}
+
+/* Mobile - 768px */
 @media (max-width: 768px) {
     .requestsHeader {
         flex-direction: column;
