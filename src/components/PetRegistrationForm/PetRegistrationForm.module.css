@@ -39,7 +39,7 @@
     width: 60px;
     height: 60px;
     border-radius: 50%;
-    background: #38A169;
+    background: #FE8F15 !important;
     color: white;
     border: none;
     font-size: 2rem;
@@ -52,7 +52,7 @@
 }
 
 .addPetButton:hover {
-    background: #2F855A;
+    background: #d17411 !important;
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(56, 161, 105, 0.4);
 }
