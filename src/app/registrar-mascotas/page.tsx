@@ -3,22 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StepIndicator from '@/components/UI/StepIndicator';
-import PlanSelection from '@/components/PlanSelection/PlanSelection';
-import { getRegistrationProgress, markStepComplete, canAccessStep, getCompletedSteps, resetRegistrationProgress } from '@/utils/registration-progress';
+import PetRegistrationForm from '@/components/PetRegistrationForm/PetRegistrationForm';
+import { getRegistrationProgress, markStepComplete, canAccessStep, getCompletedSteps } from '@/utils/registration-progress';
 
-export default function PlanSelectionPage() {
+export default function RegisterPetsPage() {
     const router = useRouter();
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
     useEffect(() => {
         // Verificar si puede acceder a este paso
-        if (!canAccessStep(3)) {
-            const progress = getRegistrationProgress();
-            if (!progress.step1Complete) {
-                router.push('/completar-perfil');
-            } else if (!progress.step2Complete) {
-                router.push('/registrar-mascotas');
-            }
+        if (!canAccessStep(2)) {
+            router.push('/completar-perfil');
             return;
         }
 
@@ -39,31 +34,26 @@ export default function PlanSelectionPage() {
         }
     };
 
-    const handlePlanSuccess = () => {
-        // Marcar paso 3 como completo
-        markStepComplete(3);
-
-        // Limpiar progreso ya que el registro está completo
-        resetRegistrationProgress();
-
-        // Redirigir a página de éxito o dashboard
-        // router.push('/registro-exitoso');
-        console.log('¡Registro completo!');
+    const handlePetsSuccess = () => {
+        // Marcar paso 2 como completo
+        markStepComplete(2);
+        // Redirigir al paso 3
+        router.push('/seleccion-plan');
     };
 
     const handleGoBack = () => {
-        router.push('/registrar-mascotas');
+        router.push('/completar-perfil');
     };
 
     return (
         <div>
             <StepIndicator
-                currentStep={3}
+                currentStep={2}
                 completedSteps={completedSteps}
                 onStepClick={handleStepClick}
             />
-            <PlanSelection
-                onSuccess={handlePlanSuccess}
+            <PetRegistrationForm
+                onSuccess={handlePetsSuccess}
                 onBack={handleGoBack}
             />
         </div>

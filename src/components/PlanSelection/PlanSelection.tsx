@@ -19,7 +19,12 @@ const PLANS = {
     }
 };
 
-export default function PlanSelection() {
+interface PlanSelectionProps {
+    onSuccess?: () => void;
+    onBack?: () => void;
+}
+
+export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps = {}) {
     const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
 
@@ -46,9 +51,12 @@ export default function PlanSelection() {
         // Aquí iría la lógica de redirección a Payment o Checkout de Memberstack
         console.log('Plan seleccionado:', selectedPlanId);
 
-        // Simulación de navegación (por ahora solo log)
-        // window.location.href = '/checkout?priceId=' + selectedPlanId;
-        alert(`Plan seleccionado: ${selectedPlanId === PLANS.MONTHLY.id ? 'Mensual' : 'Anual'}. Listo para ir a pagar.`);
+        // Llamar callback si existe, sino mostrar alert
+        if (onSuccess) {
+            onSuccess();
+        } else {
+            alert(`Plan seleccionado: ${selectedPlanId === PLANS.MONTHLY.id ? 'Mensual' : 'Anual'}. Listo para ir a pagar.`);
+        }
     };
 
     return (
@@ -116,7 +124,7 @@ export default function PlanSelection() {
                 <div className={styles.rightButtons}>
                     <button
                         className={styles.previousButton}
-                        onClick={() => window.history.back()}
+                        onClick={() => onBack ? onBack() : window.history.back()}
                     >
                         Anterior
                     </button>

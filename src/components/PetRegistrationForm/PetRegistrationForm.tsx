@@ -17,7 +17,12 @@ import { uploadMultipleFiles } from '@/services/supabase.service';
 import type { PetFormData } from '@/types/pet.types';
 import styles from './PetRegistrationForm.module.css';
 
-export default function PetRegistrationForm() {
+interface PetRegistrationFormProps {
+    onSuccess?: () => void;
+    onBack?: () => void;
+}
+
+export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrationFormProps = {}) {
     const [pets, setPets] = useState<Partial<PetFormData>[]>([
         {
             isOriginal: true,
@@ -196,8 +201,13 @@ export default function PetRegistrationForm() {
             // 3. Éxito - Redirigir a selección de plan
             alert('¡Mascotas registradas exitosamente! 🐾');
             console.log('✅ Registro de mascotas completado');
-            // Redirigir a página de selección de plan
-            window.location.href = '/seleccion-plan';
+
+            // Llamar callback si existe, sino redirigir a la ruta anterior
+            if (onSuccess) {
+                onSuccess();
+            } else {
+                window.location.href = '/seleccion-plan';
+            }
 
         } catch (error: any) {
             console.error('Error en el registro:', error);
@@ -279,7 +289,7 @@ export default function PetRegistrationForm() {
                     <button
                         type="button"
                         className={styles.previousButton}
-                        onClick={() => window.history.back()}
+                        onClick={() => onBack ? onBack() : window.history.back()}
                     >
                         Anterior
                     </button>

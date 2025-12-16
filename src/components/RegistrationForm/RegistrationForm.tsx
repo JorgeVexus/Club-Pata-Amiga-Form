@@ -21,7 +21,11 @@ import Toast from '@/components/UI/Toast';
 import type { RegistrationFormData } from '@/types/form.types';
 import styles from './RegistrationForm.module.css';
 
-export default function RegistrationForm() {
+interface RegistrationFormProps {
+    onSuccess?: () => void;
+}
+
+export default function RegistrationForm({ onSuccess }: RegistrationFormProps = {}) {
     const [member, setMember] = useState<any>(null); // Store current member
 
     // Check auth on mount
@@ -316,10 +320,16 @@ export default function RegistrationForm() {
             // 4. Éxito - Redirigir a registro de mascotas
             setSubmitSuccess(true);
 
-            // Redirigir después de un breve delay para que el usuario vea el mensaje
-            setTimeout(() => {
-                window.location.href = '/registro-mascotas';
-            }, 1500);
+            // Llamar callback si existe, sino redirigir a la ruta anterior
+            if (onSuccess) {
+                setTimeout(() => {
+                    onSuccess();
+                }, 1500);
+            } else {
+                setTimeout(() => {
+                    window.location.href = '/registro-mascotas';
+                }, 1500);
+            }
         } catch (error: any) {
             console.error('Error en el registro:', error);
             alert(error.message || 'Hubo un error al procesar tu registro. Por favor intenta de nuevo.');

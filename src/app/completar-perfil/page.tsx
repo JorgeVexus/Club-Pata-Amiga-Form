@@ -1,29 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import StepIndicator from '@/components/UI/StepIndicator';
 import RegistrationForm from '@/components/RegistrationForm/RegistrationForm';
+import { getRegistrationProgress, markStepComplete, getCompletedSteps } from '@/utils/registration-progress';
 
 export default function CompleteProfilePage() {
-    const [currentStep, setCurrentStep] = useState(1);
+    const router = useRouter();
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
+    useEffect(() => {
+        // Cargar pasos completados desde localStorage
+        const completed = getCompletedSteps();
+        setCompletedSteps(completed);
+    }, []);
+
     const handleStepClick = (step: number) => {
-        // Solo permitir navegar a pasos completados
-        if (completedSteps.includes(step) || step < currentStep) {
-            setCompletedSteps(prev => prev.filter(s => s < step));
-            setCurrentStep(step);
+        const progress = getRegistrationProgress();
+
+        // Permitir navegar a paso 1 siempre
+        if (step === 1) {
+            router.push('/completar-perfil');
         }
+        // Permitir navegar a paso 2 solo si paso 1 está completo
+        else if (step === 2 && progress.step1Complete) {
+            router.push('/registrar-mascotas');
+        }
+        // Permitir navegar a paso 3 solo si pasos 1 y 2 están completos
+        else if (step === 3 && progress.step1Complete && progress.step2Complete) {
+            router.push('/seleccion-plan');
+        }
+    };
+
+    const handleFormSuccess = () => {
+        // Cuando el formulario se envía exitosamente, marcar paso 1 como completo
+        markStepComplete(1);
+        // Redirigir al paso 2
+        router.push('/registrar-mascotas');
     };
 
     return (
         <div>
             <StepIndicator
-                currentStep={currentStep}
+                currentStep={1}
                 completedSteps={completedSteps}
                 onStepClick={handleStepClick}
             />
-            <RegistrationForm />
+            <RegistrationForm onSuccess={handleFormSuccess} />
         </div>
     );
 }
