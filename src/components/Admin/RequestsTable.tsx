@@ -320,9 +320,9 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                     <div className={styles.actionButtons}>
                                         {request.status === 'rejected' ? (
                                             <button
-                                                className={styles.rejectButton} // Reusing reject style or create a new 'reason' style
+                                                className={styles.rejectButton}
                                                 onClick={() => onViewRejectionReason?.(request.id)}
-                                                style={{ width: '100%', borderRadius: '50px' }}
+                                                style={{ width: '50%', borderRadius: '50px' }}
                                             >
                                                 Ver Motivo
                                             </button>
