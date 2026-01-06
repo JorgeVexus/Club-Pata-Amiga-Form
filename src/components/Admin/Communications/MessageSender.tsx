@@ -21,7 +21,11 @@ interface Member {
     };
 }
 
-export default function MessageSender() {
+interface MessageSenderProps {
+    adminName: string;
+}
+
+export default function MessageSender({ adminName }: MessageSenderProps) {
     const [members, setMembers] = useState<Member[]>([]);
     const [templates, setTemplates] = useState<CommTemplate[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -97,6 +101,7 @@ export default function MessageSender() {
         setIsSending(true);
         const res = await sendAdminEmail({
             userId: selectedMember.id,
+            adminId: adminName,
             to: email,
             subject: processedSubject || 'Notificación de Club Pata Amiga',
             content: processedContent,
@@ -129,6 +134,7 @@ export default function MessageSender() {
         // Registrar log manual
         commService.logCommunication({
             user_id: selectedMember.id,
+            admin_id: adminName,
             type: 'whatsapp',
             template_id: selectedTemplate?.id,
             status: 'sent',

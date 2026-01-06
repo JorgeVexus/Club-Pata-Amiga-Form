@@ -45,7 +45,19 @@
 
 .date {
     white-space: nowrap;
-    color: #444;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.adminCol {
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.system {
+    color: #999;
+    font-style: italic;
+    font-size: 0.8rem;
 }
 
 .userId code {

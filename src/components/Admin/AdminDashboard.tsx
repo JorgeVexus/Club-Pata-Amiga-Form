@@ -227,7 +227,10 @@ export default function AdminDashboard() {
                     {activeFilter === 'admins' ? (
                         <AdminsTable />
                     ) : activeFilter === 'communications' ? (
-                        <CommunicationsHub />
+                        <CommunicationsHub
+                            adminName={adminName}
+                            isSuperAdmin={isAdminSuper}
+                        />
                     ) : (
                         <>
                             {/* Requests Table */}

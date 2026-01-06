@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📡 Guía del Centro de Comunicaciones - Club Pata Amiga</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #00BBB4;
+            --secondary: #FE8F15;
+            --dark: #333;
+            --light: #f8f9fa;
+            --border: #e0e0e0;
+            --success: #25D366;
+            --failed: #e74c3c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background: white;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            border-bottom: 4px solid var(--secondary);
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.6rem;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card {
+            background: var(--light);
+            border-left: 5px solid var(--primary);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        .mermaid {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c0392b;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .alert-warning {
+            background: #fef9e7;
+            border-left: 4px solid var(--secondary);
+        }
+
+        .alert-info {
+            background: #e8f6f6;
+            border-left: 4px solid var(--primary);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📡 Centro de Comunicaciones</h1>
+    <p class="subtitle">Guía de Uso e Implementación - Fase 2 Completada</p>
+
+    <p>El Centro de Comunicaciones permite a los Super Administradores gestionar plantillas y enviar mensajes
+        personalizados por Email y WhatsApp de forma centralizada.</p>
+
+    <div class="mermaid">
+        graph LR
+        A[Plantillas] --> B[Panel de Envío]
+        B --> C{Canal}
+        C -->|Email| D[Resend API]
+        C -->|WhatsApp| E[Click-to-Chat]
+        D --> F[Historial/Logs]
+        E --> F
+    </div>
+
+    <h2>🚀 Funcionalidades Principales</h2>
+
+    <div class="feature-card">
+        <h3>1. Gestor de Plantillas</h3>
+        <p>Ubicación: <code>Administración > Comunicaciones > Gestionar Plantillas</code></p>
+        <ul>
+            <li>Crea plantillas reutilizables para correos de bienvenida, rechazos o anuncios.</li>
+            <li>Soporta <strong>placeholders dinámicos</strong> que se autocomplentan con datos del usuario.</li>
+            <li>Categorización por tipo (Email o WhatsApp) para optimizar el contenido.</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>2. Panel de Mensajería Inteligente</h3>
+        <p>Ubicación: <code>Administración > Comunicaciones > Enviar Mensaje</code></p>
+        <ul>
+            <li><strong>Buscador:</strong> Filtra miembros por nombre o email en tiempo real.</li>
+            <li><strong>Mapeo Automático:</strong> El sistema extrae el email correcto (auth) y los nombres de las
+                mascotas automáticamete.</li>
+            <li><strong>Vista Previa Real:</strong> Mira cómo quedará el mensaje con los datos del usuario antes de
+                enviarlo.</li>
+        </ul>
+    </div>
+
+    <div class="feature-card">
+        <h3>3. Historial y Trazabilidad</h3>
+        <p>Ubicación: <code>Administración > Comunicaciones > Historial</code></p>
+        <ul>
+            <li>Registro detallado de cada interacción.</li>
+            <li>Estado del envío (Enviado / Fallido).</li>
+            <li>Contenido exacto enviado para futuras auditorías.</li>
+        </ul>
+    </div>
+
+    <h2>🏷️ Sistema de Variables (Placeholders)</h2>
+    <p>Puedes usar las siguientes variables dentro de tus plantillas para personalizarlas:</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Descripción</th>
+                <th>Resultado de Ejemplo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>{{name}}</code></td>
+                <td>Nombre del miembro</td>
+                <td>Juan Perez</td>
+            </tr>
+            <tr>
+                <td><code>{{pet_name}}</code></td>
+                <td>Nombres de todas las mascotas (unidas con "y")</td>
+                <td>Luna y Max</td>
+            </tr>
+            <tr>
+                <td><code>{{pet-1-name}}</code></td>
+                <td>Nombre de la primera mascota específica</td>
+                <td>Luna</td>
+            </tr>
+            <tr>
+                <td><code>{{date}}</code></td>
+                <td>Fecha actual del envío</td>
+                <td>06/01/2026</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>⚠️ Configuración Crítica de Producción</h2>
+
+    <div class="alert alert-warning">
+        <h3>📧 Verificación de Dominio (Resend)</h3>
+        <p>Para enviar correos reales a tus usuarios desde <code>@pataamiga.mx</code>, debes seguir estos pasos:</p>
+        <ol>
+            <li>Entra a <a href="https://resend.com/domains" target="_blank">Resend.com > Domains</a>.</li>
+            <li>Haz clic en <strong>"Add Domain"</strong> y escribe <code>pataamiga.mx</code>.</li>
+            <li>Configura los registros <strong>DNS (MX, TXT, CNAME)</strong> que te proporcione Resend en tu proveedor
+                de dominio (Cloudflare/GoDaddy/Vercel).</li>
+            <li>Una vez verificado, el error de "Domain not verified" desaparecerá automáticamente.</li>
+        </ol>
+    </div>
+
+    <div class="alert alert-info">
+        <h3>🔐 Variables de Entorno</h3>
+        <p>Asegúrate de tener configurada la variable <code>RESEND_API_KEY</code> tanto en tu Local como en el panel de
+            <strong>Vercel Settings</strong>.</p>
+    </div>
+
+    <h2>✅ Estado de Implementación</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Módulo</th>
+                <th>Estado</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Base de Datos</td>
+                <td>🟢 100%</td>
+                <td>Tablas y RLS configurados en Supabase.</td>
+            </tr>
+            <tr>
+                <td>Integración Email</td>
+                <td>🟢 100%</td>
+                <td>Resend configurado vía Server Actions.</td>
+            </tr>
+            <tr>
+                <td>Integración WhatsApp</td>
+                <td>🟢 100%</td>
+                <td>Lógica Click-to-Chat operativa.</td>
+            </tr>
+            <tr>
+                <td>Interfaz Admin</td>
+                <td>🟢 100%</td>
+                <td>Tabs de Mensajería, Plantillas e Historial.</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+
+</html>

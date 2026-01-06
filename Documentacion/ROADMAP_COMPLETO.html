@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🗺️ Roadmap de Implementación - Club Pata Amiga</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #00BBB4;
+            --secondary: #FE8F15;
+            --dark: #333;
+            --light: #f8f9fa;
+            --border: #e0e0e0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.7;
+            color: var(--dark);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            background: white;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            border-bottom: 4px solid var(--secondary);
+            padding-bottom: 15px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.6rem;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        h3 {
+            color: var(--primary);
+            font-size: 1.25rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: var(--dark);
+            font-size: 1.1rem;
+            margin-top: 25px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0;
+            padding-left: 25px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .phase-card {
+            background: var(--light);
+            border-left: 5px solid var(--primary);
+            padding: 20px 25px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .phase-card.high {
+            border-left-color: #e74c3c;
+        }
+
+        .phase-card.medium {
+            border-left-color: var(--secondary);
+        }
+
+        .phase-card.low {
+            border-left-color: #95a5a6;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .priority-high {
+            background: #fde8e8;
+            color: #e74c3c;
+        }
+
+        .priority-medium {
+            background: #fef3e2;
+            color: #e67e22;
+        }
+
+        .priority-low {
+            background: #ecf0f1;
+            color: #7f8c8d;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 0.95rem;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: var(--light);
+        }
+
+        .mermaid {
+            background: var(--light);
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .task-list {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin: 20px 0;
+        }
+
+        .task-list h4 {
+            margin-top: 0;
+            color: var(--primary);
+        }
+
+        .task-list ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .task-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--light);
+        }
+
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+
+        .task-list li::before {
+            content: "☐ ";
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #c0392b;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .tech-badge {
+            background: var(--primary);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid var(--border);
+            margin: 40px 0;
+        }
+
+        .note {
+            background: #e8f6f6;
+            border-left: 4px solid var(--primary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning {
+            background: #fef9e7;
+            border-left: 4px solid var(--secondary);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        @media print {
+            body {
+                padding: 20px;
+            }
+
+            .mermaid {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>🗺️ Roadmap de Implementación</h1>
+    <p class="subtitle">Club Pata Amiga - Sistema de Membresías para Mascotas</p>
+
+    <p>Este documento establece el orden lógico y las tareas detalladas para las próximas fases de desarrollo del
+        proyecto. Las fases están ordenadas por dependencias técnicas y prioridad de negocio.</p>
+
+    <hr>
+
+    <h2>📊 Resumen de Fases</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Fase</th>
+                <th>Sistema</th>
+                <th>Dependencias</th>
+                <th>Prioridad</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Fase 1</strong></td>
+                <td>Sistema de Notificaciones en Tiempo Real</td>
+                <td>Supabase Realtime</td>
+                <td><span class="priority-badge priority-high">⭐ Alta</span></td>
+            </tr>
+            <tr>
+                <td><strong>Fase 2</strong></td>
+                <td>Centro de Comunicaciones (Super Admin)</td>
+                <td>Resend, Twilio/WATI</td>
+                <td><span class="priority-badge priority-high">⭐ Alta</span></td>
+            </tr>
+            <tr>
+                <td><strong>Fase 3</strong></td>
+                <td>Sistema de Apelaciones y Actualización de Documentos</td>
+                <td>Fase 1 y 2</td>
+                <td><span class="priority-badge priority-high">⭐ Alta</span></td>
+            </tr>
+            <tr>
+                <td><strong>Fase 4</strong></td>
+                <td>Integración Webflow (Dashboard Usuario)</td>
+                <td>Fase 3</td>
+                <td><span class="priority-badge priority-medium">🟧 Media</span></td>
+            </tr>
+            <tr>
+                <td><strong>Fase 5</strong></td>
+                <td>Migración Cloudflare (Dominio Unificado)</td>
+                <td>Dominio comprado</td>
+                <td><span class="priority-badge priority-low">🟦 Final</span></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <hr>
+
+    <h2>🔔 Fase 1: Sistema de Notificaciones en Tiempo Real</h2>
+
+    <p>Este sistema permite que los usuarios reciban alertas instantáneas sobre cambios en su cuenta, nuevos contenidos
+        y actualizaciones importantes.</p>
+
+    <div class="phase-card high">
+        <h4>🎯 Objetivo</h4>
+        <p>Implementar una campanita de notificaciones visible en el navbar de Webflow que muestre un badge rojo con el
+            conteo de notificaciones no leídas y un dropdown con la lista de notificaciones.</p>
+    </div>
+
+    <h3>Componentes a Desarrollar</h3>
+
+    <h4>1. Base de Datos (Supabase)</h4>
+    <ul>
+        <li>Crear tabla <code>notifications</code> con campos: id, user_id, type, title, message, icon, link, is_read,
+            created_at</li>
+        <li>Crear tabla <code>notification_preferences</code> para preferencias de usuario</li>
+        <li>Habilitar <strong>Supabase Realtime</strong> para la tabla de notificaciones</li>
+        <li>Definir índices para consultas rápidas por user_id y estado</li>
+    </ul>
+
+    <h4>2. Tipos de Notificaciones</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Tipo</th>
+                <th>Código</th>
+                <th>Ejemplo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>🎉 Cuenta</td>
+                <td><code>account</code></td>
+                <td>Solicitud aprobada, rechazada, documentos requeridos</td>
+            </tr>
+            <tr>
+                <td>⏰ Carencia</td>
+                <td><code>waiting_period</code></td>
+                <td>Tu período de carencia terminó para Max</td>
+            </tr>
+            <tr>
+                <td>🏥 Centros</td>
+                <td><code>new_center</code></td>
+                <td>Nuevo centro de bienestar cerca de ti</td>
+            </tr>
+            <tr>
+                <td>📝 Blog</td>
+                <td><code>blog</code></td>
+                <td>Nuevo artículo: Cuidados de invierno</td>
+            </tr>
+            <tr>
+                <td>📢 Anuncios</td>
+                <td><code>announcement</code></td>
+                <td>Mantenimiento programado, promociones</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>3. Componentes Frontend (React/Next.js)</h4>
+    <ul>
+        <li><code>NotificationBell.tsx</code> - Campanita con badge contador</li>
+        <li><code>NotificationDropdown.tsx</code> - Lista desplegable de notificaciones</li>
+        <li><code>NotificationItem.tsx</code> - Cada notificación individual</li>
+        <li>Página <code>/notifications</code> - Vista completa de todas las notificaciones</li>
+    </ul>
+
+    <h4>4. API Routes</h4>
+    <ul>
+        <li><code>GET /api/notifications</code> - Obtener notificaciones del usuario</li>
+        <li><code>PATCH /api/notifications/:id/read</code> - Marcar como leída</li>
+        <li><code>POST /api/notifications/mark-all-read</code> - Marcar todas como leídas</li>
+        <li><code>POST /api/notifications/create</code> - Crear nueva notificación (interno)</li>
+    </ul>
+
+    <div class="task-list">
+        <h4>✅ Tareas de Fase 1</h4>
+        <ul>
+            <li>Diseñar y crear esquema SQL para notificaciones</li>
+            <li>Configurar Supabase Realtime en el proyecto</li>
+            <li>Desarrollar componente NotificationBell con suscripción en tiempo real</li>
+            <li>Implementar dropdown con scroll y marca de lectura</li>
+            <li>Crear triggers automáticos para notificaciones de carencia (cron job)</li>
+            <li>Desarrollar widget embebible para Webflow</li>
+            <li>Testing de actualizaciones en tiempo real</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>📨 Fase 2: Centro de Comunicaciones (Super Admin)</h2>
+
+    <p>Este sistema permite a los Super Administradores enviar mensajes personalizados a los usuarios a través de
+        múltiples canales (Email y WhatsApp) usando plantillas predefinidas o texto libre.</p>
+
+    <div class="phase-card high">
+        <h4>🎯 Objetivo</h4>
+        <p>Crear un módulo en el Admin Dashboard donde los Super Admins puedan seleccionar un usuario, elegir una
+            plantilla (o escribir un mensaje personalizado), y enviarlo por Email y/o WhatsApp con un solo clic.</p>
+    </div>
+
+    <h3>Arquitectura del Sistema</h3>
+
+    <div class="mermaid">
+        graph TB
+        A[👨‍💼 Super Admin] --> B[Centro de Mensajes]
+        B --> C{Seleccionar Usuario}
+        C --> D[Ver Historial de Comunicación]
+        C --> E[Nuevo Mensaje]
+        E --> F{Tipo de Mensaje}
+        F --> G[📋 Usar Plantilla]
+        F --> H[✏️ Texto Personalizado]
+        G --> I[Seleccionar Plantilla]
+        I --> J[Previsualizar con Datos Reales]
+        H --> J
+        J --> K{Canales de Envío}
+        K --> L[📧 Email - Resend API]
+        K --> M[💬 WhatsApp - Twilio/WATI]
+        L --> N[📊 Log en Supabase]
+        M --> N
+        N --> O[✅ Confirmación al Admin]
+    </div>
+
+    <h3>Sistema de Plantillas Dinámicas</h3>
+
+    <h4>1. Variables Disponibles (Tags)</h4>
+    <table>
+        <thead>
+            <tr>
+                <th>Variable</th>
+                <th>Descripción</th>
+                <th>Ejemplo</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>{{nombre_usuario}}</code></td>
+                <td>Nombre completo del usuario</td>
+                <td>Jorge Cerna</td>
+            </tr>
+            <tr>
+                <td><code>{{email}}</code></td>
+                <td>Email del usuario</td>
+                <td>jorge@email.com</td>
+            </tr>
+            <tr>
+                <td><code>{{nombre_mascota}}</code></td>
+                <td>Nombre de la mascota principal</td>
+                <td>Max</td>
+            </tr>
+            <tr>
+                <td><code>{{fecha_carencia}}</code></td>
+                <td>Fecha fin de período de carencia</td>
+                <td>15 de Enero, 2026</td>
+            </tr>
+            <tr>
+                <td><code>{{motivo_rechazo}}</code></td>
+                <td>Razón del rechazo (si aplica)</td>
+                <td>INE ilegible</td>
+            </tr>
+            <tr>
+                <td><code>{{link_accion}}</code></td>
+                <td>URL para acción específica</td>
+                <td>clubpataamiga.com/actualizar</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4>2. Plantillas Predefinidas</h4>
+    <ul>
+        <li><strong>Bienvenida:</strong> Mensaje de bienvenida tras aprobación</li>
+        <li><strong>Documentos Requeridos:</strong> Solicitud de documentos faltantes o inválidos</li>
+        <li><strong>Recordatorio Carencia:</strong> Aviso de que la carencia está por terminar</li>
+        <li><strong>Carencia Completada:</strong> Notificación de que ya puede usar beneficios</li>
+        <li><strong>Nuevo Centro:</strong> Aviso de nuevo centro de bienestar</li>
+        <li><strong>Promoción:</strong> Ofertas y descuentos especiales</li>
+        <li><strong>Renovación:</strong> Recordatorio de renovación de membresía</li>
+    </ul>
+
+    <h4>3. Base de Datos para Plantillas</h4>
+    <ul>
+        <li>Tabla <code>message_templates</code>: id, name, subject, body_email, body_whatsapp, variables, category,
+            is_active</li>
+        <li>Tabla <code>message_logs</code>: id, user_id, template_id, channel, content, status, sent_at, admin_id</li>
+    </ul>
+
+    <h3>Integraciones Externas</h3>
+
+    <h4>📧 Email: Resend</h4>
+    <ul>
+        <li>Crear cuenta en <a href="https://resend.com">resend.com</a> (gratis hasta 100 emails/día)</li>
+        <li>Configurar dominio de envío verificado</li>
+        <li>Implementar plantillas HTML responsivas</li>
+        <li>API Key en variables de entorno</li>
+    </ul>
+
+    <h4>💬 WhatsApp: Twilio o WATI</h4>
+    <ul>
+        <li><strong>Opción 1 - Twilio:</strong> Más flexible, requiere WhatsApp Business API aprobado</li>
+        <li><strong>Opción 2 - WATI:</strong> Más fácil de configurar, interfaz visual para plantillas</li>
+        <li>Registrar número de WhatsApp Business</li>
+        <li>Crear plantillas aprobadas por Meta</li>
+        <li>Configurar webhook para respuestas (opcional)</li>
+    </ul>
+
+    <div class="warning">
+        <strong>⚠️ Importante:</strong> WhatsApp Business API requiere que las plantillas sean aprobadas por Meta antes
+        de poder enviar mensajes masivos. Este proceso puede tomar 24-48 horas.
+    </div>
+
+    <div class="task-list">
+        <h4>✅ Tareas de Fase 2</h4>
+        <ul>
+            <li>Crear cuentas en Resend y Twilio/WATI</li>
+            <li>Diseñar esquema SQL para plantillas y logs de mensajes</li>
+            <li>Desarrollar UI "Centro de Mensajes" en sidebar del Admin Dashboard</li>
+            <li>Implementar selector de usuario con búsqueda</li>
+            <li>Crear editor de plantillas con preview en vivo</li>
+            <li>Desarrollar motor de reemplazo de variables ({{tags}})</li>
+            <li>Implementar envío por Email vía Resend API</li>
+            <li>Implementar envío por WhatsApp vía Twilio/WATI</li>
+            <li>Crear historial de mensajes enviados por usuario</li>
+            <li>Agregar confirmaciones y manejo de errores</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>⚖️ Fase 3: Sistema de Apelaciones y Actualización de Documentos</h2>
+
+    <p>Este sistema permite que los usuarios rechazados puedan apelar la decisión, recibir feedback específico del
+        administrador, y actualizar únicamente los documentos que fueron marcados como inválidos.</p>
+
+    <div class="phase-card high">
+        <h4>🎯 Objetivo</h4>
+        <p>Crear un flujo completo de apelación donde el admin puede solicitar información adicional, el usuario recibe
+            notificación y puede actualizar sus documentos, y el admin puede re-evaluar la solicitud.</p>
+    </div>
+
+    <h3>Nuevos Estados de Solicitud</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Estado</th>
+                <th>Código</th>
+                <th>Descripción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>⏳ Pendiente</td>
+                <td><code>pending</code></td>
+                <td>Solicitud nueva esperando revisión</td>
+            </tr>
+            <tr>
+                <td>✅ Aprobado</td>
+                <td><code>approved</code></td>
+                <td>Usuario aprobado con acceso completo</td>
+            </tr>
+            <tr>
+                <td>❌ Rechazado</td>
+                <td><code>rejected</code></td>
+                <td>Rechazado, puede apelar</td>
+            </tr>
+            <tr>
+                <td>📋 En Apelación</td>
+                <td><code>appealing</code></td>
+                <td>Usuario inició proceso de apelación</td>
+            </tr>
+            <tr>
+                <td>📝 Info Solicitada</td>
+                <td><code>information_requested</code></td>
+                <td>Admin pidió documentos adicionales</td>
+            </tr>
+            <tr>
+                <td>📤 Info Proporcionada</td>
+                <td><code>information_provided</code></td>
+                <td>Usuario subió los documentos solicitados</td>
+            </tr>
+            <tr>
+                <td>🚫 Rechazo Permanente</td>
+                <td><code>permanently_rejected</code></td>
+                <td>Sin posibilidad de apelación</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Flujo de Apelación</h3>
+
+    <div class="mermaid">
+        graph TB
+        A[❌ Usuario Rechazado] --> B[Ve motivo en su Dashboard]
+        B --> C{¿Desea Apelar?}
+        C -->|Sí| D[Escribe mensaje de apelación]
+        D --> E[Estado: appealing]
+        E --> F[👨‍💼 Admin revisa apelación]
+        F --> G{Decisión}
+        G -->|Aprobar| H[✅ approved]
+        G -->|Necesita docs| I[📝 information_requested]
+        G -->|Rechazar| J[🚫 permanently_rejected]
+        I --> K[Notificación Email + WhatsApp]
+        K --> L[Usuario ve qué documentos actualizar]
+        L --> M[Sube nuevos documentos]
+        M --> N[Estado: information_provided]
+        N --> O[Badge rojo en Admin Dashboard]
+        O --> F
+        C -->|No| P[Mantiene estado rejected]
+    </div>
+
+    <h3>Componentes Admin Dashboard</h3>
+
+    <ul>
+        <li><strong>Filtro de Apelaciones:</strong> Ver solo solicitudes en estado de apelación</li>
+        <li><strong>Modal "Solicitar Información":</strong>
+            <ul>
+                <li>Checkboxes para marcar qué documentos son inválidos (INE, Comprobante, Fotos)</li>
+                <li>Campo de texto para explicar qué está mal</li>
+                <li>Selector de canales de notificación</li>
+            </ul>
+        </li>
+        <li><strong>Historial de la Apelación:</strong> Timeline con todos los mensajes intercambiados</li>
+        <li><strong>Comparador de Documentos:</strong> Ver documento original vs nuevo lado a lado</li>
+    </ul>
+
+    <h3>Componentes Usuario (Webflow)</h3>
+
+    <ul>
+        <li><strong>Banner de Estado:</strong> Mensaje claro del estado actual de su solicitud</li>
+        <li><strong>Botón "Apelar":</strong> Solo visible cuando el estado es <code>rejected</code></li>
+        <li><strong>Módulo de Actualización:</strong>
+            <ul>
+                <li>Solo muestra los campos marcados como inválidos</li>
+                <li>Mantiene los documentos válidos sin cambios</li>
+                <li>Validación de formatos y tamaños</li>
+            </ul>
+        </li>
+        <li><strong>Historial:</strong> Ver todos los mensajes del admin</li>
+    </ul>
+
+    <div class="task-list">
+        <h4>✅ Tareas de Fase 3</h4>
+        <ul>
+            <li>Actualizar esquema SQL con nuevos estados y tabla appeal_logs</li>
+            <li>Modificar RequestsTable para mostrar badge de apelaciones</li>
+            <li>Crear modal "Solicitar Información" con checkboxes de documentos</li>
+            <li>Implementar API route para actualizar estado de apelación</li>
+            <li>Desarrollar triggers de notificación al cambiar estado</li>
+            <li>Crear componente de historial/timeline de apelación</li>
+            <li>Diseñar UI de comparación de documentos (original vs nuevo)</li>
+            <li>Implementar lógica de subida selectiva en Webflow</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>🌐 Fase 4: Integración Webflow (Dashboard Usuario)</h2>
+
+    <p>Esta fase conecta todos los sistemas anteriores con la experiencia del usuario en Webflow, creando un dashboard
+        completo donde puedan ver su estado, notificaciones y actualizar su información.</p>
+
+    <div class="phase-card medium">
+        <h4>🎯 Objetivo</h4>
+        <p>Crear páginas en Webflow que muestren dinámicamente la información del usuario basándose en su estado de
+            solicitud y le permitan interactuar con el sistema de apelaciones.</p>
+    </div>
+
+    <h3>Páginas a Crear en Webflow</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Página</th>
+                <th>URL</th>
+                <th>Visible cuando</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Dashboard Principal</td>
+                <td><code>/mi-cuenta</code></td>
+                <td>Usuario aprobado</td>
+            </tr>
+            <tr>
+                <td>Solicitud en Revisión</td>
+                <td><code>/solicitud-pendiente</code></td>
+                <td>Estado: pending</td>
+            </tr>
+            <tr>
+                <td>Solicitud Rechazada</td>
+                <td><code>/solicitud-rechazada</code></td>
+                <td>Estado: rejected</td>
+            </tr>
+            <tr>
+                <td>Actualizar Documentos</td>
+                <td><code>/actualizar-documentos</code></td>
+                <td>Estado: information_requested</td>
+            </tr>
+            <tr>
+                <td>Apelación Enviada</td>
+                <td><code>/apelacion-enviada</code></td>
+                <td>Estado: appealing, information_provided</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Scripts de Integración</h3>
+
+    <ul>
+        <li><strong>Script de Redirección:</strong> Evalúa el estado del usuario y redirige a la página correcta</li>
+        <li><strong>Widget de Notificaciones:</strong> Campanita embebida en el navbar</li>
+        <li><strong>Formulario de Documentos:</strong> Subida directa a Supabase Storage</li>
+        <li><strong>Conexión con Memberstack:</strong> Obtener datos del usuario autenticado</li>
+    </ul>
+
+    <div class="task-list">
+        <h4>✅ Tareas de Fase 4</h4>
+        <ul>
+            <li>Diseñar y crear páginas de estado en Webflow</li>
+            <li>Implementar script de redirección basado en estado</li>
+            <li>Embedar widget de notificaciones</li>
+            <li>Crear formulario de actualización de documentos</li>
+            <li>Conectar Memberstack con consultas a Supabase</li>
+            <li>Testing completo de flujos de usuario</li>
+            <li>Diseño responsivo de todas las páginas</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>☁️ Fase 5: Migración Cloudflare (Dominio Unificado)</h2>
+
+    <p>Esta fase final unifica Webflow y Vercel bajo un solo dominio usando Cloudflare Workers como proxy reverso. Se
+        activa únicamente cuando el dominio final esté comprado y configurado.</p>
+
+    <div class="phase-card low">
+        <h4>🎯 Objetivo</h4>
+        <p>Hacer que <code>clubpataamiga.com</code> muestre contenido de Webflow (landing, home) y de Vercel (registro,
+            admin) sin que el usuario note cambios en la URL.</p>
+    </div>
+
+    <h3>Arquitectura Final</h3>
+
+    <div class="mermaid">
+        graph LR
+        A[Usuario] --> B[clubpataamiga.com]
+        B --> C[Cloudflare DNS]
+        C --> D[Cloudflare Worker]
+        D --> E{Analiza URL}
+        E -->|/, /nosotros, /blog| F[Webflow]
+        E -->|/registro, /admin, /api| G[Vercel]
+        F --> H[Respuesta al Usuario]
+        G --> H
+    </div>
+
+    <h3>Rutas de Enrutamiento</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Ruta</th>
+                <th>Destino</th>
+                <th>Contenido</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>/</code></td>
+                <td>Webflow</td>
+                <td>Landing page</td>
+            </tr>
+            <tr>
+                <td><code>/nosotros</code></td>
+                <td>Webflow</td>
+                <td>Página de información</td>
+            </tr>
+            <tr>
+                <td><code>/blog/*</code></td>
+                <td>Webflow</td>
+                <td>Artículos del blog</td>
+            </tr>
+            <tr>
+                <td><code>/completar-perfil</code></td>
+                <td>Vercel</td>
+                <td>Paso 1 de registro</td>
+            </tr>
+            <tr>
+                <td><code>/registrar-mascotas</code></td>
+                <td>Vercel</td>
+                <td>Paso 2 de registro</td>
+            </tr>
+            <tr>
+                <td><code>/admin/*</code></td>
+                <td>Vercel</td>
+                <td>Panel de administración</td>
+            </tr>
+            <tr>
+                <td><code>/api/*</code></td>
+                <td>Vercel</td>
+                <td>API endpoints</td>
+            </tr>
+            <tr>
+                <td><code>/_next/*</code></td>
+                <td>Vercel</td>
+                <td>Assets de Next.js</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3>Requisitos Previos</h3>
+
+    <ul>
+        <li>Dominio comprado (cualquier registrador)</li>
+        <li>Cuenta de Cloudflare (gratis)</li>
+        <li>Sitio de Webflow publicado</li>
+        <li>App de Vercel desplegada y funcionando</li>
+    </ul>
+
+    <div class="note">
+        <strong>💡 Nota:</strong> Cloudflare Workers tiene un límite de 100,000 requests/día en el plan gratuito, más
+        que suficiente para la mayoría de aplicaciones.
+    </div>
+
+    <div class="task-list">
+        <h4>✅ Tareas de Fase 5</h4>
+        <ul>
+            <li>Comprar dominio (si no se tiene)</li>
+            <li>Crear cuenta en Cloudflare y agregar dominio</li>
+            <li>Cambiar nameservers en el registrador al de Cloudflare</li>
+            <li>Configurar DNS records para Webflow</li>
+            <li>Crear Cloudflare Worker con lógica de routing</li>
+            <li>Agregar routes al Worker para el dominio</li>
+            <li>Configurar SSL en modo "Full (strict)"</li>
+            <li>Testing completo de todas las rutas</li>
+            <li>Actualizar URLs en Memberstack y configuraciones</li>
+        </ul>
+    </div>
+
+    <hr>
+
+    <h2>🛠️ Stack Tecnológico</h2>
+
+    <div class="tech-stack">
+        <span class="tech-badge">Next.js 15</span>
+        <span class="tech-badge">React 18</span>
+        <span class="tech-badge">TypeScript</span>
+        <span class="tech-badge">Supabase</span>
+        <span class="tech-badge">Memberstack</span>
+        <span class="tech-badge">Webflow</span>
+        <span class="tech-badge">Vercel</span>
+        <span class="tech-badge">Cloudflare</span>
+        <span class="tech-badge">Resend</span>
+        <span class="tech-badge">Twilio/WATI</span>
+    </div>
+
+    <hr>
+
+    <h2>📝 Notas Finales</h2>
+
+    <ul>
+        <li>Las fases están ordenadas por dependencias técnicas - cada fase construye sobre la anterior</li>
+        <li>La Fase 5 (Cloudflare) es independiente y puede ejecutarse cuando el dominio esté disponible</li>
+        <li>Hacer testing exhaustivo entre cada fase antes de continuar</li>
+    </ul>
+
+    <hr>
+
+    <p style="text-align: center; color: #999; margin-top: 40px;">
+        Club Pata Amiga - Roadmap de Implementación<br>
+        Generado el 3 de Enero de 2026
+    </p>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true
+            }
+        });
+    </script>
+</body>
+
+</html>

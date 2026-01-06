@@ -6,7 +6,12 @@ import TemplateManager from './TemplateManager';
 import MessageSender from './MessageSender';
 import CommHistory from './CommHistory';
 
-export default function CommunicationsHub() {
+interface CommunicationsHubProps {
+    adminName: string;
+    isSuperAdmin: boolean;
+}
+
+export default function CommunicationsHub({ adminName, isSuperAdmin }: CommunicationsHubProps) {
     const [activeTab, setActiveTab] = useState<'messaging' | 'templates' | 'history'>('messaging');
 
     return (
@@ -39,11 +44,11 @@ export default function CommunicationsHub() {
             {/* Tab Content */}
             <div className={styles.tabContent}>
                 {activeTab === 'messaging' ? (
-                    <MessageSender />
+                    <MessageSender adminName={adminName} />
                 ) : activeTab === 'templates' ? (
                     <TemplateManager />
                 ) : (
-                    <CommHistory />
+                    <CommHistory adminName={adminName} isSuperAdmin={isSuperAdmin} />
                 )}
             </div>
         </div>
