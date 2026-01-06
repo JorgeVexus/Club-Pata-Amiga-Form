@@ -9,17 +9,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Helper para configurar CORS y respuesta
+function corsResponse(data: any, status = 200) {
+    const response = NextResponse.json(data, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
+export async function OPTIONS() {
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
 
         // Validar userId
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'userId is required' },
-                { status: 400 }
-            );
+        if (!userId || userId === 'undefined') {
+            return corsResponse({ error: 'Valid userId is required' }, 400);
         }
 
         // Obtener conteo de no leídas
@@ -32,22 +46,16 @@ export async function GET(request: NextRequest) {
 
         if (error) {
             console.error('Error counting notifications:', error);
-            return NextResponse.json(
-                { error: 'Failed to count notifications' },
-                { status: 500 }
-            );
+            return corsResponse({ error: 'Failed to count notifications' }, 500);
         }
 
-        return NextResponse.json({
+        return corsResponse({
             success: true,
             unreadCount: count || 0
         });
 
     } catch (error) {
         console.error('Notifications count API error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return corsResponse({ error: 'Internal server error' }, 500);
     }
 }

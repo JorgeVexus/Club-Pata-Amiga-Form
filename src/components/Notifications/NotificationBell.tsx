@@ -67,18 +67,34 @@ export default function NotificationBell({
 
     // Cargar notificaciones
     const loadNotifications = useCallback(async () => {
+        if (!userId) {
+            console.warn('🔔 NotificationBell: userId is missing, skipping fetch');
+            return;
+        }
+
         try {
+            console.log('🔔 NotificationBell: Fetching notifications for:', userId);
             const response = await fetch(
                 `/api/notifications?userId=${userId}&limit=${maxNotifications}`
             );
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('🔔 NotificationBell: Fetch error:', response.status, errorData);
+                return;
+            }
+
             const data = await response.json();
 
             if (data.success) {
                 setNotifications(data.notifications);
                 setUnreadCount(data.notifications.filter((n: Notification) => !n.is_read).length);
+                console.log('🔔 NotificationBell: Loaded', data.notifications.length, 'notifications');
+            } else {
+                console.error('🔔 NotificationBell: API returned failure:', data.error);
             }
         } catch (error) {
-            console.error('Error loading notifications:', error);
+            console.error('🔔 NotificationBell: Unexpected error:', error);
         } finally {
             setIsLoading(false);
         }

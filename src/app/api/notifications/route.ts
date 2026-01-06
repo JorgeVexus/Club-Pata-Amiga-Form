@@ -12,6 +12,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Helper para configurar CORS y respuesta
+function corsResponse(data: any, status = 200) {
+    const response = NextResponse.json(data, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
+export async function OPTIONS() {
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -21,11 +38,8 @@ export async function GET(request: NextRequest) {
         const unreadOnly = searchParams.get('unreadOnly') === 'true';
 
         // Validar userId
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'userId is required' },
-                { status: 400 }
-            );
+        if (!userId || userId === 'undefined') {
+            return corsResponse({ error: 'Valid userId is required' }, 400);
         }
 
         // Construir query
@@ -48,13 +62,10 @@ export async function GET(request: NextRequest) {
 
         if (error) {
             console.error('Error fetching notifications:', error);
-            return NextResponse.json(
-                { error: 'Failed to fetch notifications' },
-                { status: 500 }
-            );
+            return corsResponse({ error: 'Failed to fetch notifications' }, 500);
         }
 
-        return NextResponse.json({
+        return corsResponse({
             success: true,
             notifications: data || [],
             pagination: {
@@ -66,9 +77,6 @@ export async function GET(request: NextRequest) {
 
     } catch (error) {
         console.error('Notifications API error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return corsResponse({ error: 'Internal server error' }, 500);
     }
 }

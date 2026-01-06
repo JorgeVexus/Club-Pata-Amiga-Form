@@ -12,6 +12,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Helper para configurar CORS y respuesta
+function corsResponse(data: any, status = 200) {
+    const response = NextResponse.json(data, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
+export async function OPTIONS() {
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'PATCH, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
 export async function PATCH(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -23,17 +40,11 @@ export async function PATCH(
 
         // Validar parámetros
         if (!id) {
-            return NextResponse.json(
-                { error: 'Notification ID is required' },
-                { status: 400 }
-            );
+            return corsResponse({ error: 'Notification ID is required' }, 400);
         }
 
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'userId is required' },
-                { status: 400 }
-            );
+        if (!userId || userId === 'undefined') {
+            return corsResponse({ error: 'Valid userId is required' }, 400);
         }
 
         // Marcar como leída (verificando que pertenezca al usuario)
@@ -50,29 +61,20 @@ export async function PATCH(
 
         if (error) {
             console.error('Error marking notification as read:', error);
-            return NextResponse.json(
-                { error: 'Failed to mark notification as read' },
-                { status: 500 }
-            );
+            return corsResponse({ error: 'Failed to mark notification as read' }, 500);
         }
 
         if (!data) {
-            return NextResponse.json(
-                { error: 'Notification not found or does not belong to user' },
-                { status: 404 }
-            );
+            return corsResponse({ error: 'Notification not found or does not belong to user' }, 404);
         }
 
-        return NextResponse.json({
+        return corsResponse({
             success: true,
             notification: data
         });
 
     } catch (error) {
         console.error('Mark as read API error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return corsResponse({ error: 'Internal server error' }, 500);
     }
 }

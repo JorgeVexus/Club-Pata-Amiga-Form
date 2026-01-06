@@ -478,14 +478,22 @@
 
                 window.$memberstackDom.getCurrentMember().then(function (result) {
                     var member = result.data;
+                    console.log('🔔 Pata Amiga: Memberstack session check:', member ? member.id : 'No user logged in');
+
                     if (member && member.id) {
                         // Buscar contenedor
                         var container = document.getElementById('pata-amiga-notifications');
                         if (container) {
                             new NotificationWidget('pata-amiga-notifications', member.id);
-                            console.log('🔔 Pata Amiga Notifications initialized for:', member.id);
+                            console.log('🔔 Pata Amiga: Notifications system initialized for:', member.id);
+                        } else {
+                            console.warn('🔔 Pata Amiga: Notifications container #pata-amiga-notifications not found in page');
                         }
+                    } else {
+                        console.log('🔔 Pata Amiga: Notifications disabled (User not logged in)');
                     }
+                }).catch(function (err) {
+                    console.error('🔔 Pata Amiga: Memberstack error:', err);
                 });
             }
         }, 100);
