@@ -147,7 +147,8 @@
     background-color: #1ebe57;
 }
 
-button:disabled {
+.emailBtn:disabled,
+.waBtn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     filter: grayscale(1);

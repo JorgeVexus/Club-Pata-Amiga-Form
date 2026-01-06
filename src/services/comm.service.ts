@@ -121,6 +121,20 @@ export const commService = {
     },
 
     /**
+     * Obtener todos los logs (para el dashboard general)
+     */
+    async getAllLogs(): Promise<{ success: boolean; data?: CommLog[]; error?: string }> {
+        const { data, error } = await supabase
+            .from('communication_logs')
+            .select('*, communication_templates(name)')
+            .order('created_at', { ascending: false })
+            .limit(100);
+
+        if (error) return { success: false, error: error.message };
+        return { success: true, data };
+    },
+
+    /**
      * Procesa placeholders en un texto
      * Ejemplo: "Hola {{name}}" -> "Hola Juan"
      */

@@ -1,0 +1,114 @@
+.container {
+    padding: 20px 0;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 300px;
+}
+
+.tableWrapper {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    overflow: hidden;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.table th {
+    background: #f8f9fa;
+    padding: 12px 15px;
+    font-size: 0.85rem;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.table td {
+    padding: 12px 15px;
+    border-top: 1px solid #eee;
+    font-size: 0.9rem;
+}
+
+.date {
+    white-space: nowrap;
+    color: #444;
+}
+
+.userId code {
+    background: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
+.typeBadge {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.email {
+    background: #eef;
+    color: #44b;
+}
+
+.whatsapp {
+    background: #e6f7f0;
+    color: #1a7;
+}
+
+.statusBadge {
+    padding: 4px 8px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.sent {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.failed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.contentCol {
+    max-width: 400px;
+}
+
+.contentPreview {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.empty {
+    padding: 40px;
+    text-align: center;
+    color: #999;
+}
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: #00BBB4;
+}

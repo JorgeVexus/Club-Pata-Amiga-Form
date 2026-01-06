@@ -4,9 +4,10 @@ import React, { useState, useEffect } from 'react';
 import styles from './CommunicationsHub.module.css';
 import TemplateManager from './TemplateManager';
 import MessageSender from './MessageSender';
+import CommHistory from './CommHistory';
 
 export default function CommunicationsHub() {
-    const [activeTab, setActiveTab] = useState<'messaging' | 'templates'>('messaging');
+    const [activeTab, setActiveTab] = useState<'messaging' | 'templates' | 'history'>('messaging');
 
     return (
         <div className={styles.hubContainer}>
@@ -26,14 +27,23 @@ export default function CommunicationsHub() {
                     <span className={styles.tabIcon}>📄</span>
                     Gestionar Plantillas
                 </button>
+                <button
+                    className={`${styles.tabButton} ${activeTab === 'history' ? styles.active : ''}`}
+                    onClick={() => setActiveTab('history')}
+                >
+                    <span className={styles.tabIcon}>📜</span>
+                    Historial
+                </button>
             </div>
 
             {/* Tab Content */}
             <div className={styles.tabContent}>
                 {activeTab === 'messaging' ? (
                     <MessageSender />
-                ) : (
+                ) : activeTab === 'templates' ? (
                     <TemplateManager />
+                ) : (
+                    <CommHistory />
                 )}
             </div>
         </div>
