@@ -205,17 +205,17 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
                     <div className={styles.actions}>
                         <button
                             className={styles.emailBtn}
-                            disabled={!selectedMember || !selectedTemplate || isSending}
+                            disabled={!selectedMember || !selectedTemplate || isSending || adminName === 'Cargando...'}
                             onClick={handleSendEmail}
                         >
-                            {isSending ? 'Enviando...' : '📧 Enviar Email'}
+                            {isSending ? 'Enviando...' : adminName === 'Cargando...' ? 'Identificando...' : '📧 Enviar Email'}
                         </button>
                         <button
                             className={styles.waBtn}
-                            disabled={!selectedMember || !selectedTemplate}
+                            disabled={!selectedMember || !selectedTemplate || adminName === 'Cargando...'}
                             onClick={handleWhatsApp}
                         >
-                            💬 Abrir WhatsApp
+                            {adminName === 'Cargando...' ? 'Identificando...' : '💬 Abrir WhatsApp'}
                         </button>
                     </div>
                 </div>
