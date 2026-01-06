@@ -1,0 +1,211 @@
+.container {
+    padding: 20px 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.configSection {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.formGroup label {
+    font-weight: 700;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input,
+.select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: #00BBB4;
+}
+
+/* Búsqueda de usuarios */
+.results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 5px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.resultItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background 0.2s;
+}
+
+.resultItem:hover {
+    background: #f0fdfc;
+}
+
+.resultItem small {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.selectedInfo {
+    background: #e6f7f7;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #00BBB4;
+}
+
+.selectedInfo button {
+    background: none;
+    border: none;
+    color: #fe4b5b;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Acciones */
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.emailBtn,
+.waBtn {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.emailBtn {
+    background-color: #00BBB4;
+    color: white;
+}
+
+.emailBtn:hover:not(:disabled) {
+    background-color: #009c96;
+}
+
+.waBtn {
+    background-color: #25D366;
+    color: white;
+}
+
+.waBtn:hover:not(:disabled) {
+    background-color: #1ebe57;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* Preview Section */
+.previewSection {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.previewSection label {
+    font-weight: 700;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.previewCard {
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.previewSubject {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+}
+
+.previewBody {
+    line-height: 1.6;
+    color: #444;
+    white-space: pre-wrap;
+}
+
+.noPreview {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+.loading {
+    padding: 50px;
+    text-align: center;
+    font-weight: 600;
+    color: #00BBB4;
+}
