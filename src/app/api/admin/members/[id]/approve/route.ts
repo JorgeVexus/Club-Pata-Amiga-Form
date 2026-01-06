@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { approveMemberApplication } from '@/services/memberstack-admin.service';
 import { registerUserInSupabase } from '@/app/actions/user.actions';
+import { createServerNotification } from '@/app/actions/notification.actions';
 
 export async function POST(
     request: NextRequest,
@@ -34,11 +35,15 @@ export async function POST(
             );
         }
 
-        // TODO: Enviar email de aprobación
-        // await sendApprovalEmail(result.data.auth.email);
-
-        // TODO: Actualizar en Supabase
-        // await updateSupabaseApprovalStatus(memberId, 'approved');
+        // Enviar notificación de aprobación
+        await createServerNotification({
+            userId: memberId,
+            type: 'account',
+            title: '¡Tu solicitud ha sido aprobada! 🎉',
+            message: 'Bienvenido a Club Pata Amiga. Tu membresía ya está activa y puedes disfrutar de todos los beneficios.',
+            icon: '🎉',
+            link: '/dashboard'
+        });
 
         console.log(`✅ Miembro ${memberId} aprobado exitosamente`);
 

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { rejectMemberApplication } from '@/services/memberstack-admin.service';
+import { createServerNotification } from '@/app/actions/notification.actions';
 
 export async function POST(
     request: NextRequest,
@@ -46,11 +47,15 @@ export async function POST(
             );
         }
 
-        // TODO: Enviar email de rechazo con la razón
-        // await sendRejectionEmail(result.data.auth.email, reason);
-
-        // TODO: Actualizar en Supabase
-        // await updateSupabaseApprovalStatus(memberId, 'rejected', reason);
+        // Enviar notificación de rechazo con razón
+        await createServerNotification({
+            userId: memberId,
+            type: 'account',
+            title: 'Actualización de tu solicitud 📋',
+            message: `Tu solicitud requiere cambios. Razón: ${reason}`,
+            icon: '📋',
+            link: '/completar-perfil'
+        });
 
         console.log(`✅ Miembro ${memberId} rechazado exitosamente`);
 
