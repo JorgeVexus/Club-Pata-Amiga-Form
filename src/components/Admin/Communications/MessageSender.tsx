@@ -7,11 +7,17 @@ import styles from './MessageSender.module.css';
 
 interface Member {
     id: string;
+    auth?: {
+        email: string;
+    };
     customFields: {
         'first-name'?: string;
         'paternal-last-name'?: string;
-        'email'?: string;
         'phone'?: string;
+        'pet-1-name'?: string;
+        'pet-2-name'?: string;
+        'pet-3-name'?: string;
+        [key: string]: any;
     };
 }
 
@@ -51,9 +57,19 @@ export default function MessageSender() {
     // Al seleccionar miembro o plantilla, procesamos los placeholders
     useEffect(() => {
         if (selectedTemplate) {
+            // Recolectar nombres de mascotas (aquellas que tengan valor)
+            const petNames = [
+                selectedMember?.customFields?.['pet-1-name'],
+                selectedMember?.customFields?.['pet-2-name'],
+                selectedMember?.customFields?.['pet-3-name']
+            ].filter(Boolean) as string[];
+
             const vars = {
                 name: selectedMember?.customFields?.['first-name'] || 'Usuario',
-                // Añadir más variables según sea necesario
+                pet_name: petNames.length > 0 ? petNames.join(' y ') : 'tu mascota',
+                'pet-1-name': selectedMember?.customFields?.['pet-1-name'] || '',
+                'pet-2-name': selectedMember?.customFields?.['pet-2-name'] || '',
+                'pet-3-name': selectedMember?.customFields?.['pet-3-name'] || '',
                 date: new Date().toLocaleDateString(),
             };
 
@@ -66,14 +82,15 @@ export default function MessageSender() {
 
     const filteredMembers = members.filter(m => {
         const full = `${m.customFields?.['first-name']} ${m.customFields?.['paternal-last-name']}`.toLowerCase();
-        return full.includes(searchTerm.toLowerCase()) || m.customFields?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+        const email = m.auth?.email?.toLowerCase() || '';
+        return full.includes(searchTerm.toLowerCase()) || email.includes(searchTerm.toLowerCase());
     }).slice(0, 5);
 
     async function handleSendEmail() {
         if (!selectedMember || !selectedTemplate) return;
-        const email = selectedMember.customFields.email;
+        const email = selectedMember.auth?.email;
         if (!email) {
-            alert('El usuario no tiene email registrado');
+            alert('El usuario no tiene email registrado en su cuenta (auth)');
             return;
         }
 
@@ -148,7 +165,7 @@ export default function MessageSender() {
                                         }}
                                     >
                                         {m.customFields?.['first-name']} {m.customFields?.['paternal-last-name']}
-                                        <small>{m.customFields.email}</small>
+                                        <small>{m.auth?.email}</small>
                                     </div>
                                 ))}
                             </div>
