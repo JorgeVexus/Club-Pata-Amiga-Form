@@ -6,7 +6,6 @@
 
 import { resend, DEFAULT_FROM_EMAIL, DEFAULT_FROM_NAME } from '@/lib/resend';
 import { commService } from '@/services/comm.service';
-import { getServiceRoleClient } from '@/lib/supabase';
 
 interface SendEmailParams {
     userId: string;
