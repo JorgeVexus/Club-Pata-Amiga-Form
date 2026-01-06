@@ -1,0 +1,60 @@
+.hubContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+}
+
+.tabsHeader {
+    display: flex;
+    gap: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0;
+}
+
+.tabButton {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+    color: #00BBB4;
+}
+
+.tabButton.active {
+    color: #00BBB4;
+    border-bottom-color: #00BBB4;
+}
+
+.tabIcon {
+    font-size: 1.2rem;
+}
+
+.tabContent {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 0;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+}
+
+.emptyIcon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+    opacity: 0.5;
+}

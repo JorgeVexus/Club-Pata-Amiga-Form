@@ -80,6 +80,14 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                         <span className={styles.menuBadge}>{pendingCounts['solidarity-fund']}</span>
                     )}
                 </button>
+
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'communications' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('communications')}
+                >
+                    <span className={styles.menuIcon}>📡</span>
+                    <span className={styles.menuLabel}>Comunicaciones</span>
+                </button>
             </nav>
 
             {/* Super Admin Only: Admins Section */}

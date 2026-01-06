@@ -13,6 +13,7 @@ import RejectionModal from './RejectionModal';
 import RejectionReasonModal from './RejectionReasonModal';
 import ActivityFeed, { ActivityLog } from './ActivityFeed';
 import AdminsTable from './AdminsTable';
+import CommunicationsHub from './Communications/CommunicationsHub';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins'>('all');
@@ -31,6 +32,7 @@ export default function AdminDashboard() {
         ambassador: 0,
         'wellness-center': 0,
         'solidarity-fund': 0,
+        'communications': 0,
     });
 
     // Admin Identity & Activity State
@@ -224,6 +226,8 @@ export default function AdminDashboard() {
                     {/* Admins Table - Only for Super Admins */}
                     {activeFilter === 'admins' ? (
                         <AdminsTable />
+                    ) : activeFilter === 'communications' ? (
+                        <CommunicationsHub />
                     ) : (
                         <>
                             {/* Requests Table */}
