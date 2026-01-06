@@ -9,17 +9,31 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
+// Helper para configurar CORS y respuesta
+function corsResponse(data: any, status = 200) {
+    const response = NextResponse.json(data, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
+export async function OPTIONS() {
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { userId } = body;
 
         // Validar userId
-        if (!userId) {
-            return NextResponse.json(
-                { error: 'userId is required' },
-                { status: 400 }
-            );
+        if (!userId || userId === 'undefined') {
+            return corsResponse({ error: 'Valid userId is required' }, 400);
         }
 
         // Marcar todas como leídas
