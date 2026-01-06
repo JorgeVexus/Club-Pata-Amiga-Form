@@ -41,6 +41,7 @@ export default function AdminDashboard() {
     const [adminRoleLabel, setAdminRoleLabel] = useState('Verificando...');
     const [isAdminSuper, setIsAdminSuper] = useState(false);
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+    const [hasMounted, setHasMounted] = useState(false);
 
     // Helper to fetch single member details
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
@@ -93,6 +94,7 @@ export default function AdminDashboard() {
         loadMetrics();
         loadPendingCounts();
         loadActivityLogs();
+        setHasMounted(true);
     }, []);
 
     async function loadMetrics() {
@@ -200,7 +202,7 @@ export default function AdminDashboard() {
                                                     'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
-                                {new Date().toLocaleDateString('es-MX', {
+                                {hasMounted && new Date().toLocaleDateString('es-MX', {
                                     weekday: 'long',
                                     year: 'numeric',
                                     month: 'long',

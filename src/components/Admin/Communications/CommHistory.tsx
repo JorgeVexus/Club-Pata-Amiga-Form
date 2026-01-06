@@ -13,16 +13,24 @@ export default function CommHistory({ adminName, isSuperAdmin }: CommHistoryProp
     const [logs, setLogs] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
+    const [hasMounted, setHasMounted] = useState(false);
 
     useEffect(() => {
         loadLogs();
+        setHasMounted(true);
     }, []);
 
     async function loadLogs() {
-        setIsLoading(true);
-        const { data, error } = await commService.getAllLogs();
-        if (data) setLogs(data);
-        setIsLoading(false);
+        try {
+            setIsLoading(true);
+            const { data, error } = await commService.getAllLogs();
+            if (error) throw error;
+            if (data) setLogs(data);
+        } catch (err) {
+            console.error('Error cargando logs:', err);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     const filteredLogs = logs.filter(log => {
