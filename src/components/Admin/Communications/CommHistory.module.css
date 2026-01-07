@@ -80,8 +80,13 @@
 }
 
 .whatsapp {
-    background: #e6f7f0;
-    color: #1a7;
+    background: #e7f9ed;
+    color: #1eb854;
+}
+
+.app {
+    background: #e6f7ff;
+    color: #00BBB4;
 }
 
 .statusBadge {

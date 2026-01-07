@@ -30,12 +30,21 @@
     'use strict';
 
     // Configuración
-    const CONFIG = window.PATA_AMIGA_CONFIG || {
+    const DEFAULT_CONFIG = {
         apiUrl: 'https://club-pata-amiga-form.vercel.app',
         notificationsUrl: '/miembros/notificaciones',
         supabaseUrl: '',
         supabaseAnonKey: ''
     };
+
+    // Mezclar configuración personalizada con valores por defecto
+    const CONFIG = {};
+    const customConfig = window.PATA_AMIGA_CONFIG || {};
+
+    // Asegurar que cada propiedad tenga un valor (prioridad: custom > default)
+    Object.keys(DEFAULT_CONFIG).forEach(key => {
+        CONFIG[key] = customConfig[key] !== undefined ? customConfig[key] : DEFAULT_CONFIG[key];
+    });
 
     // Estilos del widget (inyectados dinámicamente)
     const STYLES = `

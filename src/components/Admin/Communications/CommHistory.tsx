@@ -85,8 +85,8 @@ export default function CommHistory({ adminName, isSuperAdmin }: CommHistoryProp
                                     })}
                                 </td>
                                 <td>
-                                    <span className={`${styles.typeBadge} ${styles[log.type]}`}>
-                                        {log.type === 'email' ? '📧 Email' : '💬 WA'}
+                                    <span className={`${styles.typeBadge} ${log.metadata?.is_custom_notification ? styles.app : styles[log.type]}`}>
+                                        {log.type === 'email' ? '📧 Email' : (log.metadata?.is_custom_notification ? '🔔 App' : '💬 WA')}
                                     </span>
                                 </td>
                                 <td className={styles.userId}>
