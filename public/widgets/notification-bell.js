@@ -32,7 +32,7 @@
     // Configuración
     const CONFIG = window.PATA_AMIGA_CONFIG || {
         apiUrl: 'https://club-pata-amiga-form.vercel.app',
-        notificationsUrl: '/notificaciones',
+        notificationsUrl: '/miembros/notificaciones',
         supabaseUrl: '',
         supabaseAnonKey: ''
     };

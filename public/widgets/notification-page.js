@@ -302,7 +302,7 @@
 
         renderItem(n) {
             return `
-                <a href="${n.link || '#'}" class="pata-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
+                <a href="${n.link || '/miembros/notificaciones'}" class="pata-item ${!n.is_read ? 'unread' : ''}" data-id="${n.id}">
                     <div class="pata-item-icon">${n.icon || '🔔'}</div>
                     <div class="pata-item-content">
                         <div class="pata-item-top">
