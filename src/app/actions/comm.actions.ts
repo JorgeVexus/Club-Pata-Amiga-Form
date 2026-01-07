@@ -70,10 +70,62 @@ export async function sendAdminEmail(params: SendEmailParams) {
             metadata: { resendId: resendData?.id, ...metadata }
         });
 
+        // 3. Crear notificación in-app automática
+        await commService.sendInAppNotification({
+            user_id: userId,
+            type: 'announcement',
+            title: subject,
+            message: content.length > 100 ? content.substring(0, 97) + '...' : content,
+            icon: '✉️',
+            metadata: { method: 'automatic-email' }
+        });
+
         return { success: true, id: resendData?.id };
 
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado enviando email:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Envía una notificación personalizada (libre) desde el dashboard
+ */
+export async function sendCustomNotification(params: {
+    userId: string;
+    adminId: string;
+    title: string;
+    message: string;
+    type?: string;
+    icon?: string;
+}) {
+    console.log(`🔔 [Server Action] Enviando notificación custom a ${params.userId}`);
+
+    try {
+        const res = await commService.sendInAppNotification({
+            user_id: params.userId,
+            type: params.type || 'announcement',
+            title: params.title,
+            message: params.message,
+            icon: params.icon || '🔔',
+            metadata: { admin_id: params.adminId, method: 'manual-custom' }
+        });
+
+        if (res.success) {
+            // También lo registramos en el historial de comunicaciones
+            await commService.logCommunication({
+                user_id: params.userId,
+                admin_id: params.adminId,
+                type: 'whatsapp', // Usamos whatsapp como proxy para 'mensaje directo' en el log actual o podemos expandir tipos
+                status: 'sent',
+                content: `[Notificación App] ${params.title}: ${params.message}`,
+                metadata: { is_custom_notification: true }
+            });
+        }
+
+        return res;
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error en sendCustomNotification:', error);
         return { success: false, error: error.message };
     }
 }

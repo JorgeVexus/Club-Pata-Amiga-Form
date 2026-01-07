@@ -135,6 +135,36 @@ export const commService = {
     },
 
     /**
+     * Envía una notificación in-app (inserta en la tabla notifications)
+     */
+    async sendInAppNotification(params: {
+        user_id: string;
+        type: string;
+        title: string;
+        message: string;
+        icon?: string;
+        link?: string;
+        metadata?: any;
+    }): Promise<{ success: boolean; data?: any; error?: string }> {
+        const { error, data } = await supabase
+            .from('notifications')
+            .insert({
+                user_id: params.user_id,
+                type: params.type,
+                title: params.title,
+                message: params.message,
+                icon: params.icon || '🔔',
+                link: params.link,
+                metadata: params.metadata || {}
+            })
+            .select()
+            .single();
+
+        if (error) return { success: false, error: error.message };
+        return { success: true, data };
+    },
+
+    /**
      * Procesa placeholders en un texto
      * Ejemplo: "Hola {{name}}" -> "Hola Juan"
      */

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { commService, CommTemplate } from '@/services/comm.service';
-import { sendAdminEmail } from '@/app/actions/comm.actions';
+import { sendAdminEmail, sendCustomNotification } from '@/app/actions/comm.actions';
 import styles from './MessageSender.module.css';
 
 interface Member {
@@ -33,6 +33,9 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
     const [selectedTemplate, setSelectedTemplate] = useState<CommTemplate | null>(null);
     const [processedContent, setProcessedContent] = useState('');
     const [processedSubject, setProcessedSubject] = useState('');
+    const [isManualMode, setIsManualMode] = useState(false);
+    const [customTitle, setCustomTitle] = useState('');
+    const [customMessage, setCustomMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -116,6 +119,27 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
         setIsSending(false);
     }
 
+    async function handleSendCustom() {
+        if (!selectedMember || !customTitle || !customMessage) return;
+
+        setIsSending(true);
+        const res = await sendCustomNotification({
+            userId: selectedMember.id,
+            adminId: adminName,
+            title: customTitle,
+            message: customMessage,
+        });
+
+        if (res.success) {
+            alert('✅ Notificación personalizada enviada');
+            setCustomTitle('');
+            setCustomMessage('');
+        } else {
+            alert('❌ Error: ' + res.error);
+        }
+        setIsSending(false);
+    }
+
     function handleWhatsApp() {
         if (!selectedMember) return;
         const phone = selectedMember.customFields.phone;
@@ -185,38 +209,92 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
                         </div>
                     )}
 
-                    <div className={styles.formGroup}>
-                        <label>2. Seleccionar Plantilla</label>
-                        <select
-                            className={styles.select}
-                            onChange={(e) => {
-                                const t = templates.find(t => t.id === e.target.value);
-                                setSelectedTemplate(t || null);
-                            }}
-                            value={selectedTemplate?.id || ''}
+                    <div className={styles.modeToggle} style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+                        <button
+                            className={`${styles.modeBtn} ${!isManualMode ? styles.activeMode : ''}`}
+                            onClick={() => setIsManualMode(false)}
                         >
-                            <option value="">-- Elige una plantilla --</option>
-                            {templates.map(t => (
-                                <option key={t.id} value={t.id}>[{t.type.toUpperCase()}] {t.name}</option>
-                            ))}
-                        </select>
+                            Usar Plantilla
+                        </button>
+                        <button
+                            className={`${styles.modeBtn} ${isManualMode ? styles.activeMode : ''}`}
+                            onClick={() => setIsManualMode(true)}
+                        >
+                            Mensaje Libre (App)
+                        </button>
                     </div>
 
+                    {!isManualMode ? (
+                        <div className={styles.formGroup}>
+                            <label>2. Seleccionar Plantilla</label>
+                            <select
+                                className={styles.select}
+                                onChange={(e) => {
+                                    const t = templates.find(t => t.id === e.target.value);
+                                    setSelectedTemplate(t || null);
+                                }}
+                                value={selectedTemplate?.id || ''}
+                            >
+                                <option value="">-- Elige una plantilla --</option>
+                                {templates.map(t => (
+                                    <option key={t.id} value={t.id}>[{t.type.toUpperCase()}] {t.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                    ) : (
+                        <>
+                            <div className={styles.formGroup}>
+                                <label>Título de la Alerta</label>
+                                <input
+                                    type="text"
+                                    className={styles.input}
+                                    placeholder="Ej: ¡Nuevo beneficio disponible!"
+                                    value={customTitle}
+                                    onChange={(e) => setCustomTitle(e.target.value)}
+                                />
+                            </div>
+                            <div className={styles.formGroup}>
+                                <label>Mensaje (App)</label>
+                                <textarea
+                                    className={styles.input}
+                                    placeholder="Escribe el mensaje que el usuario verá en la app..."
+                                    value={customMessage}
+                                    onChange={(e) => setCustomMessage(e.target.value)}
+                                    rows={4}
+                                    style={{ borderRadius: '10px', resize: 'none' }}
+                                />
+                            </div>
+                        </>
+                    )}
+
                     <div className={styles.actions}>
-                        <button
-                            className={styles.emailBtn}
-                            disabled={!selectedMember || !selectedTemplate || isSending || adminName === 'Cargando...'}
-                            onClick={handleSendEmail}
-                        >
-                            {isSending ? 'Enviando...' : adminName === 'Cargando...' ? 'Identificando...' : '📧 Enviar Email'}
-                        </button>
-                        <button
-                            className={styles.waBtn}
-                            disabled={!selectedMember || !selectedTemplate || adminName === 'Cargando...'}
-                            onClick={handleWhatsApp}
-                        >
-                            {adminName === 'Cargando...' ? 'Identificando...' : '💬 Abrir WhatsApp'}
-                        </button>
+                        {!isManualMode ? (
+                            <>
+                                <button
+                                    className={styles.emailBtn}
+                                    disabled={!selectedMember || !selectedTemplate || isSending || adminName === 'Cargando...'}
+                                    onClick={handleSendEmail}
+                                >
+                                    {isSending ? 'Enviando...' : adminName === 'Cargando...' ? 'Identificando...' : '📧 Enviar Email'}
+                                </button>
+                                <button
+                                    className={styles.waBtn}
+                                    disabled={!selectedMember || !selectedTemplate || adminName === 'Cargando...'}
+                                    onClick={handleWhatsApp}
+                                >
+                                    {adminName === 'Cargando...' ? 'Identificando...' : '💬 Abrir WhatsApp'}
+                                </button>
+                            </>
+                        ) : (
+                            <button
+                                className={styles.emailBtn}
+                                style={{ gridColumn: 'span 2' }}
+                                disabled={!selectedMember || !customTitle || !customMessage || isSending || adminName === 'Cargando...'}
+                                onClick={handleSendCustom}
+                            >
+                                {isSending ? 'Enviando...' : '🔔 Enviar Notificación App'}
+                            </button>
+                        )}
                     </div>
                 </div>
 
@@ -224,7 +302,19 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
                 <div className={styles.previewSection}>
                     <label>Vista Previa</label>
                     <div className={styles.previewCard}>
-                        {selectedTemplate ? (
+                        {isManualMode ? (
+                            <div className={styles.pushPreview}>
+                                <div className={styles.pushHeader}>
+                                    <span className={styles.pushIcon}>🔔</span>
+                                    <span className={styles.pushAppName}>Club Pata Amiga</span>
+                                    <span className={styles.pushTime}>ahora</span>
+                                </div>
+                                <div className={styles.pushContent}>
+                                    <div className={styles.pushTitle}>{customTitle || 'Título del mensaje'}</div>
+                                    <div className={styles.pushMessage}>{customMessage || 'Contenido de la notificación...'}</div>
+                                </div>
+                            </div>
+                        ) : selectedTemplate ? (
                             <>
                                 {selectedTemplate.type === 'email' && (
                                     <div className={styles.previewSubject}>

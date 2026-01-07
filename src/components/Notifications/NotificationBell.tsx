@@ -272,7 +272,7 @@ export default function NotificationBell({
 
                     {/* Footer */}
                     {notifications.length > 0 && (
-                        <a href="/notifications" className={styles.viewAllLink}>
+                        <a href="/notificaciones" className={styles.viewAllLink}>
                             Ver todas las notificaciones →
                         </a>
                     )}
