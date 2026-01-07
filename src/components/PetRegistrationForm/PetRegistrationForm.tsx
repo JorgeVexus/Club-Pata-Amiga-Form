@@ -14,6 +14,7 @@ import {
     formatWaitingPeriodMessage
 } from '@/services/pet.service';
 import { uploadMultipleFiles } from '@/services/supabase.service';
+import { syncPetStoriesToSupabase } from '@/app/actions/user.actions';
 import type { PetFormData } from '@/types/pet.types';
 import styles from './PetRegistrationForm.module.css';
 
@@ -143,6 +144,20 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
             if (!response.success) {
                 throw new Error(response.error || 'Error al guardar las mascotas');
+            }
+
+            // 1.5 Sincronizar historias de adopción con Supabase
+            try {
+                const currentMember = await window.$memberstackDom.getCurrentMember();
+                if (currentMember?.data?.id) {
+                    await syncPetStoriesToSupabase(currentMember.data.id, {
+                        pet1: petsWithCalculations[0]?.adoptionStory,
+                        pet2: petsWithCalculations[1]?.adoptionStory,
+                        pet3: petsWithCalculations[2]?.adoptionStory,
+                    });
+                }
+            } catch (syncError) {
+                console.error('Error no crítico sincronizando historias:', syncError);
             }
 
             // 2. SEGUNDO: Subir fotos a Supabase y actualizar URLs

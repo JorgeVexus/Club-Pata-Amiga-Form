@@ -113,6 +113,7 @@ export async function savePetsToMemberstack(
             customFields[`${prefix}-age`] = pet.age || '';
             customFields[`${prefix}-exceeds-max-age`] = (pet.exceedsMaxAge ?? false).toString();
             customFields[`${prefix}-is-adopted`] = (pet.isAdopted ?? false).toString();
+            customFields[`${prefix}-adoption-story`] = pet.adoptionStory || '';
             customFields[`${prefix}-ruac`] = pet.ruac || '';
             customFields[`${prefix}-is-original`] = (pet.isOriginal ?? true).toString();
             customFields[`${prefix}-waiting-period-days`] = (pet.waitingPeriodDays ?? 180).toString();

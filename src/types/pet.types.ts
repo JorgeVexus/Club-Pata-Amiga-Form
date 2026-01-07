@@ -19,6 +19,7 @@ export interface PetFormData {
 
     // Adopción
     isAdopted: boolean;
+    adoptionStory?: string;
 
     // Documentos
     photos?: File[];

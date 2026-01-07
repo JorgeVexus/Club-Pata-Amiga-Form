@@ -61,6 +61,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
         gender: undefined,
         birthDate: '',
         curp: '',
+        isForeigner: false,
         ineFiles: [], // Mantenemos para compatibilidad
         ineFrontFile: null, // Nuevo: INE frontal
         ineBackFile: null,  // Nuevo: INE trasera
@@ -94,7 +95,10 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
         // Validar campos requeridos
         if (!formData.firstName?.trim()) newErrors.firstName = 'El nombre es requerido';
         if (!formData.paternalLastName?.trim()) newErrors.paternalLastName = 'El apellido paterno es requerido';
-        if (!formData.maternalLastName?.trim()) newErrors.maternalLastName = 'El apellido materno es requerido';
+
+        if (!formData.isForeigner && !formData.maternalLastName?.trim()) {
+            newErrors.maternalLastName = 'El apellido materno es requerido';
+        }
         if (!formData.gender) newErrors.gender = 'Selecciona una opción';
         if (!formData.birthDate) {
             newErrors.birthDate = 'La fecha de nacimiento es requerida';
@@ -116,31 +120,19 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
             }
         }
 
-        if (!formData.curp?.trim()) newErrors.curp = 'El CURP es requerido';
-        if (!formData.ineFrontFile) newErrors.ineFrontFile = 'Debes subir el frente de tu INE';
-        if (!formData.ineBackFile) newErrors.ineBackFile = 'Debes subir el reverso de tu INE';
-        if (!formData.proofOfAddressFile) newErrors.proofOfAddressFile = 'Debes subir tu comprobante de domicilio';
-        if (!formData.postalCode?.trim()) newErrors.postalCode = 'El código postal es requerido';
-        if (!formData.state?.trim()) newErrors.state = 'El estado es requerido';
-        if (!formData.city?.trim()) newErrors.city = 'La ciudad es requerida';
-        if (!formData.colony?.trim()) newErrors.colony = 'La colonia es requerida';
-        if (!formData.email?.trim()) newErrors.email = 'El correo electrónico es requerido';
-        if (!formData.phone?.trim()) newErrors.phone = 'El número de teléfono es requerido';
-        if (!formData.phone?.trim()) newErrors.phone = 'El número de teléfono es requerido';
-        // Password validation removed as it is handled in auth step
-
-        // Validar formato de email
-        if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'El correo electrónico no es válido';
+        if (!formData.isForeigner && !formData.curp?.trim()) {
+            newErrors.curp = 'El CURP es requerido';
         }
-
-        // Validar CURP con validador completo
-        if (formData.curp) {
+        // Validar CURP con validador completo - Solo si no es extranjero
+        if (!formData.isForeigner && formData.curp) {
             const curpValidation = validateCURP(formData.curp);
             if (!curpValidation.isValid) {
                 newErrors.curp = curpValidation.error || 'CURP inválida';
             }
         }
+
+        if (!formData.ineFrontFile) newErrors.ineFrontFile = formData.isForeigner ? 'Debes subir tu pasaporte' : 'Debes subir el frente de tu INE';
+        if (!formData.ineBackFile) newErrors.ineBackFile = formData.isForeigner ? 'Debes subir tu visa/sello' : 'Debes subir el reverso de tu INE';
 
         // Validar edad (debe ser mayor de 18 años)
         if (formData.birthDate) {
@@ -412,16 +404,18 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                             memberstackField="paternal-last-name"
                         />
 
-                        <TextInput
-                            label="Apellido materno"
-                            name="maternalLastName"
-                            value={formData.maternalLastName || ''}
-                            onChange={(value) => setFormData({ ...formData, maternalLastName: value })}
-                            placeholder="García"
-                            error={errors.maternalLastName}
-                            required
-                            memberstackField="maternal-last-name"
-                        />
+                        {!formData.isForeigner && (
+                            <TextInput
+                                label="Apellido materno"
+                                name="maternalLastName"
+                                value={formData.maternalLastName || ''}
+                                onChange={(value) => setFormData({ ...formData, maternalLastName: value })}
+                                placeholder="García"
+                                error={errors.maternalLastName}
+                                required
+                                memberstackField="maternal-last-name"
+                            />
+                        )}
 
                         <RadioGroup
                             label="🧑‍🦰 ¿Cómo te identificas?"
@@ -450,39 +444,56 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                             maxDate={getMaxBirthDateForAdult()}
                         />
 
-                        <TextInput
-                            label="🆔 CURP"
-                            name="curp"
-                            value={formData.curp || ''}
-                            onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
-                            onBlur={handleCurpBlur}
-                            placeholder="ABCD123456HDFRNN09"
-                            error={errors.curp}
-                            helpText="Para proteger tu identidad y la de toda la manada"
-                            required
-                            memberstackField="curp"
-                            maxLength={18}
-                        />
+                        {!formData.isForeigner && (
+                            <TextInput
+                                label="🆔 CURP"
+                                name="curp"
+                                value={formData.curp || ''}
+                                onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
+                                onBlur={handleCurpBlur}
+                                placeholder="ABCD123456HDFRNN09"
+                                error={errors.curp}
+                                helpText="Para proteger tu identidad y la de toda la manada"
+                                required
+                                memberstackField="curp"
+                                maxLength={18}
+                            />
+                        )}
+
+                        <div className={styles.checkboxWrapper} style={{ marginBottom: '1.5rem' }}>
+                            <label className={styles.checkboxLabel} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={formData.isForeigner}
+                                    onChange={(e) => setFormData({ ...formData, isForeigner: e.target.checked })}
+                                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                                />
+                                <span style={{ fontWeight: 500 }}>¿Eres extranjero?</span>
+                            </label>
+                            <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
+                                Si marcas esta opción, podrás subir tu pasaporte en lugar del INE.
+                            </p>
+                        </div>
 
                         <FileUpload
-                            label="🪪 INE - Frente"
+                            label={formData.isForeigner ? "🛂 Pasaporte (Portada)" : "🪪 INE - Frente"}
                             name="ineFront"
                             accept=".pdf,.jpg,.jpeg,.png"
                             maxSize={5}
                             maxFiles={1}
-                            instruction="Sube el frente de tu INE (lado con foto)"
+                            instruction={formData.isForeigner ? "Sube la portada de tu pasaporte vigente" : "Sube el frente de tu INE (lado con foto)"}
                             onChange={(files) => setFormData({ ...formData, ineFrontFile: files[0] || null })}
                             error={errors.ineFrontFile}
                             required
                         />
 
                         <FileUpload
-                            label="🪪 INE - Reverso"
+                            label={formData.isForeigner ? "🛂 Pasaporte (Sello / Visa)" : "🪪 INE - Reverso"}
                             name="ineBack"
                             accept=".pdf,.jpg,.jpeg,.png"
                             maxSize={5}
                             maxFiles={1}
-                            instruction="Sube el reverso de tu INE (lado trasero)"
+                            instruction={formData.isForeigner ? "Sube la página con el sello de entrada o tu visa" : "Sube el reverso de tu INE (lado trasero)"}
                             onChange={(files) => setFormData({ ...formData, ineBackFile: files[0] || null })}
                             error={errors.ineBackFile}
                             required

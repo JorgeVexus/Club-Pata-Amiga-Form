@@ -89,6 +89,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 colony: userData.colony,
                 address: userData.address,
                 membership_status: 'pending',
+                is_foreigner: userData.isForeigner || false,
                 created_at: new Date().toISOString(),
             })
             .select() // Seleccionar para confirmar inserción
@@ -103,5 +104,37 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error)
         return { success: false, error: error.message }
+    }
+}
+
+/**
+ * Sincroniza las historias de adopción de las mascotas en Supabase
+ * Se guarda en la tabla 'users' en las columnas correspondientes
+ */
+export async function syncPetStoriesToSupabase(memberstackId: string, stories: { pet1?: string; pet2?: string; pet3?: string }) {
+    console.log('🔄 [Server Action] Sincronizando historias de adopción:', { memberstackId, hasStories: Object.keys(stories).length });
+
+    const supabase = getServiceRoleClient()
+    if (!supabase) return { success: false, error: 'Configuración de servidor incompleta' }
+
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({
+                pet_1_adoption_story: stories.pet1 || null,
+                pet_2_adoption_story: stories.pet2 || null,
+                pet_3_adoption_story: stories.pet3 || null,
+            })
+            .eq('memberstack_id', memberstackId);
+
+        if (error) {
+            console.error('❌ [Server Action] Error actualizando historias:', error);
+            return { success: false, error: error.message };
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado en syncPetStories:', error);
+        return { success: false, error: error.message };
     }
 }

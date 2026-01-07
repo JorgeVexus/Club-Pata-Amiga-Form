@@ -11,6 +11,7 @@ export interface RegistrationFormData {
     gender: 'hombre' | 'mujer' | 'no-especificar';
     birthDate: string; // Formato: YYYY-MM-DD
     curp: string;
+    isForeigner: boolean;
 
     // Documentos
     ineFiles: File[]; // Mantener para compatibilidad

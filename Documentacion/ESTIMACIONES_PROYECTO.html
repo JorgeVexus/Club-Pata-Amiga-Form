@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📑 Roadmap Estratégico y Estimaciones - Club Pata Amiga</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+    <style>
+        :root {
+            --primary: #00BBB4;
+            --secondary: #FE8F15;
+            --dark: #1A1A1A;
+            --light: #F4F7F6;
+            --white: #FFFFFF;
+            --gray: #666;
+            --success: #27AE60;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background-color: var(--light);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            border-bottom: 2px solid var(--light);
+            padding-bottom: 30px;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--gray);
+            font-weight: 300;
+        }
+
+        .status-badge {
+            background: var(--success);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        h2 {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .phase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .phase-card {
+            border: 1px solid #EEE;
+            padding: 25px;
+            border-radius: 15px;
+            transition: transform 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .phase-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary);
+        }
+
+        .phase-card.high::before {
+            background: var(--secondary);
+        }
+
+        .phase-number {
+            font-weight: 800;
+            color: #DDD;
+            font-size: 3rem;
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            z-index: 0;
+        }
+
+        .phase-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .phase-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .phase-time {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.9rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .feature-list li::before {
+            content: "✓";
+            color: var(--success);
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        .gantt-section {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 50px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 15px;
+            border-bottom: 1px solid #DDD;
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            border-radius: 5px 5px 0 0;
+        }
+
+        .mermaid {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .footer {
+            margin-top: 60px;
+            text-align: center;
+            color: var(--gray);
+            font-size: 0.9rem;
+            border-top: 1px solid #EEE;
+            padding-top: 30px;
+        }
+
+        .highlight {
+            background: #FFF9E6;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid var(--secondary);
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>Roadmap de Desarrollo</h1>
+            <p class="subtitle">Vexus Agency  - Club Pata Amiga</p>
+            <div class="status-badge">Fases 1 y 2 en Optimización Final</div>
+        </header>
+
+        <p>Este documento presenta el plan detallado para convertir Club Pata Amiga en un ecosistema multi-perfil
+            completo, permitiendo la interacción fluida entre Miembros, Embajadores y Centros de Bienestar.</p>
+
+        <h2>🚀 Próximas Etapas y Estimaciones</h2>
+
+        <div class="phase-grid">
+            <!-- Fase 2.5 -->
+            <div class="phase-card">
+                <div class="phase-number">2.5</div>
+                <div class="phase-content">
+                    <span class="phase-time">Estimación: 3-4 Días</span>
+                    <div class="phase-title">Cierre de Comunicaciones y Registro</div>
+                    <ul class="feature-list">
+                        <li><strong>Lógica para Extranjeros:</strong> Switch INE/Pasaporte en el registro.</li>
+                        <li><strong>Historias de Adopción:</strong> Campo para relatos y autorización legal.</li>
+                        <li><strong>Página de Notificaciones:</strong> Centro de alertas para el usuario.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fase 3 -->
+            <div class="phase-card">
+                <div class="phase-number">03</div>
+                <div class="phase-content">
+                    <span class="phase-time">Estimación: 1 Semana</span>
+                    <div class="phase-title">Sistema de Apelaciones Inteligente</div>
+                    <ul class="feature-list">
+                        <li><strong>Botón de Apelación:</strong> Visible solo en la página de rechazo.</li>
+                        <li><strong>Dashboard Super Admin:</strong> Vista unificada de apelaciones pendientes.</li>
+                        <li><strong>Feedback Bidireccional:</strong> Mensajes del admin que aparecen en la página de
+                            estatus y notificaciones (vía plantillas Email/WA).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fase 4 -->
+            <div class="phase-card high">
+                <div class="phase-number">04</div>
+                <div class="phase-content">
+                    <span class="phase-time">Estimación: 2 Semanas</span>
+                    <div class="phase-title">Programa de Embajadores</div>
+                    <ul class="feature-list">
+                        <li><strong>Códigos y Enlaces:</strong> Generación de tracking para referidos.</li>
+                        <li><strong>Comisiones y Dashbhoard:</strong> Visualización de ganancias y número de registros.
+                        </li>
+                        <li><strong>Bóveda de Pagos:</strong> Captura de CLABE y datos para dispersión de fondos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fase 5 -->
+            <div class="phase-card high">
+                <div class="phase-number">05</div>
+                <div class="phase-content">
+                    <span class="phase-time">Estimación: 2 Semanas</span>
+                    <div class="phase-title">Fondo Solidario y Apoyos</div>
+                    <ul class="feature-list">
+                        <li><strong>Solicitudes de Apoyo:</strong> Urgencias, vacunación y fallecimiento.</li>
+                        <li><strong>Validación de Carencia:</strong> El sistema bloquea solicitudes si el periodo no ha
+                            terminado.</li>
+                        <li><strong>Pruebas Médicas:</strong> Carga de facturas y evidencias para auditoría.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Fase 6 -->
+            <div class="phase-card">
+                <div class="phase-number">06</div>
+                <div class="phase-content">
+                    <span class="phase-time">Estimación: 2 Semanas</span>
+                    <div class="phase-title">Centros de Bienestar (Full)</div>
+                    <ul class="feature-list">
+                        <li><strong>Registro de Clínicas:</strong> Onboarding especializado para establecimientos.</li>
+                        <li><strong>Control de Usuarios:</strong> Las clínicas pueden ver y gestionar a los pacientes de
+                            la app que atienden.</li>
+                        <li><strong>Vinculación de Apoyos:</strong> El usuario puede seleccionar una clínica registrada
+                            para redirigir su solicitud de fondo solidario.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <strong>Arquitectura Multi-Estatus:</strong> No necesitamos integraciones externas extras para referidos.
+            Toda la lógica se desarrollará directamente en nuestra infraestructura, aprovechando
+            <strong>Supabase</strong> para la base de datos y <strong>Memberstack</strong> para la seguridad.
+        </div>
+
+        <h2>📅 Cronograma de Ejecución (Gantt)</h2>
+        <div class="gantt-section">
+            <div class="mermaid">
+                gantt
+                title Plan de Lanzamiento Club Pata Amiga
+                dateFormat YYYY-WW
+                section Actual
+                Mejoras Registro (Pasaporte/Historias) :active, a0, 2026-01, 2d
+                Cierre Comms (Pág. Notif) : a1, after a0, 2d
+                section Fase 3
+                Sistema de Apelaciones (Feedback) : b1, after a1, 1w
+                section Fase 4
+                Reg. Embajadores (Codes/Comms) : c1, after b1, 2w
+                section Fase 5
+                Gestión Fondo Solidario : d1, after c1, 2w
+                section Fase 6
+                Control Centros Bienestar : e1, after d1, 2w
+                section Lanzamiento
+                Migración y Dominio Final : f1, after e1, 1w
+            </div>
+        </div>
+
+        <h2>🛸 Detalles de Formulario (Actualización Inmediata)</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Escenario</th>
+                    <th>Acción del Sistema</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Usuario es Extranjero</strong></td>
+                    <td>El campo "INE" se oculta y se solicita "Pasaporte Vigente" de forma obligatoria.</td>
+                </tr>
+                <tr>
+                    <td><strong>Mascota es Adoptada</strong></td>
+                    <td>Se habilita un campo de redacción para la historia de adopción con aviso de consentimiento legal
+                        para su publicación en la web.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Roadmap con estimaciones para las siguientes etapas del desarrollo de Club Pata Amiga
+            </p>
+            <p>© 2026 | Vexus Agency</p>
+        </div>
+    </div>
+
+    <script>
+        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+</body>
+
+</html>
