@@ -7,14 +7,15 @@ export const metadata: Metadata = {
     description: 'Buzón de notificaciones y mensajes de Club Pata Amiga',
 };
 
-export default function NotificacionesPage({
+export default async function NotificacionesPage({
     searchParams,
 }: {
-    searchParams: { userId?: string };
+    searchParams: Promise<{ userId?: string }>;
 }) {
     // En producción esto vendría de la sesión de Memberstack, 
     // pero permitimos pasar un userId para pruebas o integración simple.
-    const userId = searchParams.userId || '';
+    const resolvedParams = await searchParams;
+    const userId = resolvedParams.userId || '';
 
     return (
         <main className="min-h-screen pt-20">

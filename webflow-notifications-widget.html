@@ -1,0 +1,361 @@
+<!-- 🔔 WIDGET DE NOTIFICACIONES - CLUB PATA AMIGA -->
+<!-- Instrucciones: Pega este código en un elemento "Embed" en tu Navbar o Dashboard de Webflow -->
+
+<div id="pata-amiga-notifications-root" style="position: relative; display: inline-block;">
+    <!-- El widget se renderizará aquí -->
+</div>
+
+<style>
+    /* 🎨 Estilos del Widget */
+    :root {
+        --pa-primary: #00BBB4;
+        --pa-primary-dark: #009c96;
+        --pa-bg: #ffffff;
+        --pa-text: #333333;
+        --pa-text-light: #666666;
+        --pa-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    #pa-bell-button {
+        background: none;
+        border: none;
+        padding: 8px;
+        cursor: pointer;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.2s;
+        border-radius: 50%;
+    }
+
+    #pa-bell-button:hover {
+        background: rgba(0, 187, 180, 0.1);
+        transform: scale(1.05);
+    }
+
+    #pa-bell-icon {
+        font-size: 24px;
+    }
+
+    #pa-unread-badge {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: #fe4b5b;
+        color: white;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 11px;
+        font-weight: 700;
+        display: none;
+        /* Se activa por JS */
+        align-items: center;
+        justify-content: center;
+        border: 2px solid white;
+    }
+
+    #pa-notifications-dropdown {
+        position: absolute;
+        top: 45px;
+        right: 0;
+        width: 320px;
+        background: var(--pa-bg);
+        border-radius: 16px;
+        box-shadow: var(--pa-shadow);
+        border: 1px solid #eee;
+        display: none;
+        /* Se activa por JS */
+        z-index: 9999;
+        overflow: hidden;
+        animation: paFadeIn 0.2s ease-out;
+    }
+
+    @keyframes paFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .pa-dropdown-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fafafa;
+    }
+
+    .pa-dropdown-title {
+        font-weight: 800;
+        font-size: 14px;
+        margin: 0;
+        color: var(--pa-text);
+    }
+
+    #pa-mark-all-read {
+        font-size: 12px;
+        color: var(--pa-primary);
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0;
+        text-decoration: underline;
+    }
+
+    #pa-notifications-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+
+    .pa-notification-item {
+        padding: 12px 15px;
+        border-bottom: 1px solid #f5f5f5;
+        display: flex;
+        gap: 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .pa-notification-item:hover {
+        background: #f0fdfc;
+    }
+
+    .pa-notification-item.unread {
+        background: #fafcfe;
+    }
+
+    .pa-notif-icon {
+        font-size: 20px;
+        margin-top: 2px;
+    }
+
+    .pa-notif-content {
+        flex: 1;
+    }
+
+    .pa-notif-title {
+        font-weight: 700;
+        font-size: 13px;
+        color: #333;
+        margin-bottom: 2px;
+    }
+
+    .pa-notif-message {
+        font-size: 12px;
+        color: #666;
+        line-height: 1.4;
+    }
+
+    .pa-notif-time {
+        font-size: 10px;
+        color: #999;
+        margin-top: 5px;
+        display: block;
+    }
+
+    .pa-empty-state {
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+        font-style: italic;
+        font-size: 13px;
+    }
+
+    .pa-dropdown-footer {
+        padding: 12px;
+        text-align: center;
+        border-top: 1px solid #eee;
+    }
+
+    .pa-view-all {
+        font-size: 12px;
+        font-weight: 700;
+        color: var(--pa-primary);
+        text-decoration: none;
+    }
+</style>
+
+<!-- 🧠 Lógica del Widget -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+    (function () {
+        // Configuración (Ajustar según necesidad)
+        const CONFIG = {
+            supabaseUrl: 'https://hjvhntxjkuuobgfslzlf.supabase.co',
+            supabaseKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdmhudHhqa3V1b2JnZnNsemxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NTg5NTcsImV4cCI6MjA4MDQzNDk1N30.MMgexipW0S6PTva14Te9wWQdSLw0Fe6D5U2--r__tEk',
+            apiBaseUrl: 'https://club-pata-amiga-form.vercel.app', // API en Vercel
+            notificacionesPage: 'https://club-pata-amiga-form.vercel.app/notificaciones'
+        };
+
+        let memberId = null;
+        let supabaseClient = null;
+        let notifications = [];
+
+        // 1. Inicializar Supabase
+        supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseKey);
+
+        // 2. Renderizar Estructura
+        const root = document.getElementById('pata-amiga-notifications-root');
+        root.innerHTML = `
+        <button id="pa-bell-button">
+            <span id="pa-bell-icon">🔔</span>
+            <span id="pa-unread-badge">0</span>
+        </button>
+        <div id="pa-notifications-dropdown">
+            <div class="pa-dropdown-header">
+                <h3 class="pa-dropdown-title">Notificaciones</h3>
+                <button id="pa-mark-all-read">✓ Marcar todas</button>
+            </div>
+            <div id="pa-notifications-list">
+                <div class="pa-empty-state">Cargando...</div>
+            </div>
+            <div class="pa-dropdown-footer">
+                <a href="${CONFIG.notificacionesPage}" class="pa-view-all">Ver todas las notificaciones →</a>
+            </div>
+        </div>
+    `;
+
+        // 3. Detectar Sesión de Memberstack
+        function checkMemberstack() {
+            if (window.$memberstackDom) {
+                window.$memberstackDom.getCurrentMember().then(({ data }) => {
+                    if (data && data.id) {
+                        memberId = data.id;
+                        console.log('🔔 Widget PA: Usuario detectado:', memberId);
+                        initWidget();
+                    } else {
+                        console.log('🔔 Widget PA: No hay sesión activa.');
+                        root.style.display = 'none';
+                    }
+                });
+            } else {
+                setTimeout(checkMemberstack, 500);
+            }
+        }
+
+        function initWidget() {
+            loadNotifications();
+            subscribeToRealtime();
+
+            // Manejo de eventos
+            document.getElementById('pa-bell-button').onclick = (e) => {
+                e.stopPropagation();
+                const dropdown = document.getElementById('pa-notifications-dropdown');
+                dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+            };
+
+            document.getElementById('pa-mark-all-read').onclick = markAllAsRead;
+
+            document.addEventListener('click', () => {
+                document.getElementById('pa-notifications-dropdown').style.display = 'none';
+            });
+
+            document.getElementById('pa-notifications-dropdown').onclick = (e) => e.stopPropagation();
+        }
+
+        async function loadNotifications() {
+            if (!memberId) return;
+            try {
+                const res = await fetch(`${CONFIG.apiBaseUrl}/api/notifications?userId=${memberId}&limit=10`);
+                const data = await res.json();
+                if (data.success) {
+                    notifications = data.notifications;
+                    renderNotifications();
+                }
+            } catch (err) {
+                console.error('Error cargando notificaciones:', err);
+            }
+        }
+
+        function renderNotifications() {
+            const listContainer = document.getElementById('pa-notifications-list');
+            const badge = document.getElementById('pa-unread-badge');
+
+            const unreadCount = notifications.filter(n => !n.is_read).length;
+
+            if (unreadCount > 0) {
+                badge.innerText = unreadCount > 99 ? '99+' : unreadCount;
+                badge.style.display = 'flex';
+            } else {
+                badge.style.display = 'none';
+            }
+
+            if (notifications.length === 0) {
+                listContainer.innerHTML = '<div class="pa-empty-state">Por ahora no tienes notificaciones 🦴</div>';
+                return;
+            }
+
+            listContainer.innerHTML = notifications.map(n => `
+            <a href="${n.link || CONFIG.notificacionesPage + '?userId=' + memberId}" 
+               class="pa-notification-item ${!n.is_read ? 'unread' : ''}"
+               onclick="markAsRead('${n.id}')">
+                <div class="pa-notif-icon">${n.icon || '🔔'}</div>
+                <div class="pa-notif-content">
+                    <div class="pa-notif-title">${n.title}</div>
+                    <div class="pa-notif-message">${n.message}</div>
+                    <span class="pa-notif-time">${formatTime(n.created_at)}</span>
+                </div>
+            </a>
+        `).join('');
+        }
+
+        function subscribeToRealtime() {
+            supabaseClient
+                .channel(`notifications-${memberId}`)
+                .on('postgres_changes', {
+                    event: '*',
+                    schema: 'public',
+                    table: 'notifications',
+                    filter: `user_id=eq.${memberId}`
+                }, () => {
+                    loadNotifications();
+                })
+                .subscribe();
+        }
+
+        async function markAsRead(id) {
+            // En un widget estático, marcamos por API
+            fetch(`${CONFIG.apiBaseUrl}/api/notifications/${id}/read`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: memberId })
+            });
+        }
+
+        async function markAllAsRead() {
+            try {
+                await fetch(`${CONFIG.apiBaseUrl}/api/notifications/mark-all-read`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: memberId })
+                });
+                notifications = notifications.map(n => ({ ...n, is_read: true }));
+                renderNotifications();
+            } catch (err) {
+                console.error('Error marcar todas:', err);
+            }
+        }
+
+        function formatTime(dateStr) {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffMin = Math.floor(diffMs / 60000);
+            if (diffMin < 60) return `Hace ${diffMin} min`;
+            if (diffMin < 1440) return `Hace ${Math.floor(diffMin / 60)}h`;
+            return date.toLocaleDateString();
+        }
+
+        checkMemberstack();
+    })();
+</script>
