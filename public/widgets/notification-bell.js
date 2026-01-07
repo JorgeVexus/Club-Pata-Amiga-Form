@@ -379,7 +379,7 @@
                 '<button class="pata-mark-all-btn" style="display: none;">✓ Marcar todas</button>' +
                 '</div>' +
                 '<div class="pata-notification-list"></div>' +
-                '<a href="' + (CONFIG.notificationsUrl || (CONFIG.apiUrl + '/notificaciones')) + '" class="pata-view-all" style="display: none;">' +
+                '<a href="' + (CONFIG.notificationsUrl || (CONFIG.apiUrl + '/miembros/notificaciones')) + '" class="pata-view-all" style="display: none;">' +
                 'Ver todas las notificaciones →' +
                 '</a>' +
                 '</div>' +
