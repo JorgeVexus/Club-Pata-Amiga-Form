@@ -127,14 +127,32 @@
         }
 
         async init() {
+            console.log('🚀 Unified Widget: Starting initialization...');
             this.injectStyles();
-            await this.waitForMemberstack();
-            if (!this.member) return;
 
+            console.log('⏳ Unified Widget: Waiting for Memberstack...');
+            await this.waitForMemberstack();
+
+            if (!this.member) {
+                console.warn('⚠️ Unified Widget: No member session found.');
+                return;
+            }
+            console.log('✅ Unified Widget: Member loaded:', this.member.id);
+
+            console.log('⏳ Unified Widget: Loading pet data...');
             await this.loadData();
+
+            console.log('📊 Unified Widget: Pets found:', this.pets.length);
+
             if (this.pets.length > 0) {
+                console.log('✨ Unified Widget: Rendering panel...');
                 this.container.classList.add('show');
                 this.render();
+            } else {
+                console.warn('⚠️ Unified Widget: No pets found for this user in Supabase.');
+                // En lugar de no mostrar nada, podríamos mostrar un mensaje de "No hay mascotas"
+                this.container.innerHTML = '<div style="color:white; padding:20px; text-align:center;">No se encontraron mascotas registradas.</div>';
+                this.container.classList.add('show');
             }
         }
 
