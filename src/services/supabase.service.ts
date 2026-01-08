@@ -36,7 +36,8 @@ export async function uploadFile(
             const bucketName = STORAGE_BUCKETS[bucket];
             const fileExt = file.name.split('.').pop();
             const timestamp = Date.now();
-            const fileName = `${userId}/${timestamp}.${fileExt}`;
+            const randomString = Math.random().toString(36).substring(2, 8);
+            const fileName = `${userId}/${timestamp}_${randomString}.${fileExt}`;
 
             const { data, error } = await supabase.storage
                 .from(bucketName)

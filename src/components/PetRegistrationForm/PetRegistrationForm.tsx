@@ -14,7 +14,7 @@ import {
     formatWaitingPeriodMessage
 } from '@/services/pet.service';
 import { uploadMultipleFiles } from '@/services/supabase.service';
-import { syncPetStoriesToSupabase } from '@/app/actions/user.actions';
+import { syncPetStoriesToSupabase, registerPetsInSupabase } from '@/app/actions/user.actions';
 import type { PetFormData } from '@/types/pet.types';
 import styles from './PetRegistrationForm.module.css';
 
@@ -162,62 +162,57 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
             // 2. SEGUNDO: Subir fotos a Supabase y actualizar URLs
             console.log('Subiendo fotos a Supabase...');
-            console.log('🔍 DEBUG: petsWithCalculations:', petsWithCalculations.map(p => ({
-                name: p.name,
-                photosCount: p.photos?.length || 0,
-                photos: p.photos
-            })));
+
+            const petsWithFinalData = [...petsWithCalculations];
 
             for (let i = 0; i < petsWithCalculations.length; i++) {
                 const pet = petsWithCalculations[i];
                 const tempUserId = `temp_${Date.now()}_pet${i}`;
 
-                // Subir fotos de la mascota
-                if (!pet.photos || pet.photos.length === 0) {
-                    console.warn(`⚠️ Mascota ${i + 1} no tiene fotos. pet.photos:`, pet.photos);
-                    continue;
-                }
+                if (!pet.photos || pet.photos.length === 0) continue;
 
-                console.log(`📸 Subiendo ${pet.photos.length} fotos para mascota ${i + 1}...`);
-                const photoUploads = await uploadMultipleFiles(
-                    pet.photos,
-                    'PET_PHOTO',
-                    tempUserId
-                );
+                const photoUploads = await uploadMultipleFiles(pet.photos, 'PET_PHOTO', tempUserId);
 
-                if (photoUploads.some(u => !u.success)) {
-                    console.error(`Error al subir fotos de la mascota ${i + 1}`);
-                    // Continuar con las demás mascotas aunque falle una
-                    continue;
-                }
+                if (photoUploads.some(u => !u.success)) continue;
 
-                // Actualizar URLs de fotos en Memberstack
                 const photoUrls = photoUploads.map(u => u.publicUrl || '');
-                console.log(`✅ Actualizando URLs de fotos para mascota ${i + 1}:`, photoUrls);
+                petsWithFinalData[i].photo1Url = photoUrls[0] || '';
+                petsWithFinalData[i].photo2Url = photoUrls[1] || '';
+
                 await updatePetPhotos(i, photoUrls);
 
                 // Subir certificado veterinario si excede la edad
                 if (pet.exceedsMaxAge && pet.vetCertificate) {
-                    console.log(`Subiendo certificado veterinario para mascota ${i + 1}...`);
-                    const certUpload = await uploadMultipleFiles(
-                        [pet.vetCertificate],
-                        'VET_CERTIFICATE',
-                        tempUserId
-                    );
-
+                    const certUpload = await uploadMultipleFiles([pet.vetCertificate], 'VET_CERTIFICATE', tempUserId);
                     if (certUpload[0]?.success) {
-                        // Actualizar URL del certificado en Memberstack
-                        const petNum = i + 1;
+                        const certUrl = certUpload[0].publicUrl || '';
+                        petsWithFinalData[i].vetCertificateUrl = certUrl;
                         await window.$memberstackDom.updateMember({
-                            customFields: {
-                                [`pet-${petNum}-vet-certificate-url`]: certUpload[0].publicUrl || '',
-                            },
+                            customFields: { [`pet-${i + 1}-vet-certificate-url`]: certUrl },
                         });
-                        console.log(`✅ Certificado veterinario subido para mascota ${i + 1}`);
-                    } else {
-                        console.error(`Error al subir certificado de mascota ${i + 1}`);
                     }
                 }
+            }
+
+            // 2.5 TERCERO: Registrar Mascotas en Supabase (Tabla pets)
+            try {
+                const currentMember = await window.$memberstackDom.getCurrentMember();
+                if (currentMember?.data?.id) {
+                    console.log('Sincronizando mascotas con la tabla public.pets en Supabase...');
+
+                    // LIMPIEZA: Removemos los objetos File para que el Server Action no falle por tamaño/serialización
+                    const cleanPetsData = petsWithFinalData.map(({ photos, vetCertificate, ...rest }) => ({
+                        ...rest,
+                        // Ya tenemos las URLs en photo1Url, photo2Url y vetCertificateUrl
+                    }));
+
+                    const syncResult = await registerPetsInSupabase(currentMember.data.id, cleanPetsData);
+                    if (!syncResult.success) {
+                        console.error('Error sincronizando mascotas en tabla pets:', syncResult.error);
+                    }
+                }
+            } catch (syncError) {
+                console.error('Error no crítico registrando mascotas en Supabase:', syncError);
             }
 
             // 3. Éxito - Redirigir a selección de plan

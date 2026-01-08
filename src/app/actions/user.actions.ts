@@ -80,7 +80,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 mother_last_name: userData.maternalLastName,
                 gender: userData.gender,
                 birth_date: userData.birthDate,
-                curp: userData.curp,
+                curp: userData.curp?.trim() || null,
                 email: userData.email,
                 phone: userData.phone,
                 postal_code: userData.postalCode,
@@ -135,6 +135,57 @@ export async function syncPetStoriesToSupabase(memberstackId: string, stories: {
         return { success: true };
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado en syncPetStories:', error);
+        return { success: false, error: error.message };
+    }
+}
+/**
+ * Registra las mascotas en la tabla 'public.pets' de Supabase
+ */
+export async function registerPetsInSupabase(memberstackId: string, pets: any[]) {
+    console.log('🔄 [Server Action] Registrando mascotas en Supabase:', { memberstackId, count: pets.length });
+
+    const supabase = getServiceRoleClient()
+    if (!supabase) return { success: false, error: 'Configuración de servidor incompleta' }
+
+    try {
+        // 1. Obtener el ID interno del usuario en Supabase (UUID)
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !userData) {
+            console.error('❌ [Server Action] Usuario no encontrado en Supabase:', userError);
+            return { success: false, error: 'Usuario no encontrado' };
+        }
+
+        // 2. Preparar los datos de las mascotas
+        const petsToInsert = pets.map(pet => ({
+            owner_id: userData.id,
+            name: pet.name,
+            breed: pet.breed || (pet.isMixed ? 'Mestizo' : ''),
+            breed_size: pet.breedSize,
+            birth_date: null, // Podríamos calcular la fecha aproximada basándonos en la edad
+            photo_url: pet.photoUrls?.[0] || null, // Guardamos la primera foto como principal
+            vet_certificate_url: pet.vetCertificateUrl || null,
+            status: 'pending',
+            created_at: new Date().toISOString()
+        }));
+
+        // 3. Insertar mascotas
+        const { error: insertError } = await supabase
+            .from('pets')
+            .insert(petsToInsert);
+
+        if (insertError) {
+            console.error('❌ [Server Action] Error insertando mascotas:', insertError);
+            return { success: false, error: insertError.message };
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado en registerPets:', error);
         return { success: false, error: error.message };
     }
 }
