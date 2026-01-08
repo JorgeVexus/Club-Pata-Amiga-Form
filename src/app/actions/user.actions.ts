@@ -197,10 +197,10 @@ export async function getPetsByUserId(memberstackId: string) {
     if (!supabase) return { success: false, error: 'Configuración fallida' };
 
     try {
-        // 1. Obtener el ID interno del usuario
+        // 1. Obtener el ID interno del usuario y campos de comunicación
         const { data: userData, error: userError } = await supabase
             .from('users')
-            .select('id')
+            .select('id, last_admin_response, action_required_fields')
             .eq('memberstack_id', memberstackId)
             .single();
 

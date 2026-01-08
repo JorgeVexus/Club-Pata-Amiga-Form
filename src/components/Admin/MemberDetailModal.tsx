@@ -133,6 +133,45 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                     Fecha: {fields['appealed-at'] ? new Date(fields['appealed-at']).toLocaleDateString() : 'Desconocida'}
                                 </span>
                             </div>
+
+                            {/* Admin Response Area */}
+                            <div className={styles.adminResponseArea}>
+                                <label className={styles.responseLabel}>Responder al usuario:</label>
+                                <textarea
+                                    className={styles.responseTextarea}
+                                    placeholder="Indica al usuario qué documentos faltan o por qué se mantiene el rechazo..."
+                                    value={petNotes['appeal_response'] || ''}
+                                    onChange={(e) => setPetNotes({ ...petNotes, ['appeal_response']: e.target.value })}
+                                />
+                                <button
+                                    className={styles.sendResponseBtn}
+                                    onClick={async () => {
+                                        const msg = petNotes['appeal_response'];
+                                        if (!msg?.trim()) return alert('Escribe un mensaje primero.');
+
+                                        try {
+                                            const res = await fetch(`/api/admin/members/${member.id}/appeal-response`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({
+                                                    message: msg,
+                                                    adminId: 'current_admin'
+                                                })
+                                            });
+                                            if (res.ok) {
+                                                alert('Mensaje enviado al usuario.');
+                                                setPetNotes({ ...petNotes, ['appeal_response']: '' });
+                                            } else {
+                                                alert('Error al enviar el mensaje.');
+                                            }
+                                        } catch (e) {
+                                            alert('Error de conexión.');
+                                        }
+                                    }}
+                                >
+                                    Enviar Mensaje al Usuario 📩
+                                </button>
+                            </div>
                         </div>
                     )}
 

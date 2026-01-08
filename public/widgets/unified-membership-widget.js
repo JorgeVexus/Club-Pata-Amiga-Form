@@ -186,6 +186,12 @@
                 const data = await res.json();
                 if (data.success) {
                     this.pets = data.pets;
+                    // Guardar datos extra del usuario (nuestra API ahora los devuelve junto a las mascotas o en el mismo objeto)
+                    this.userExtra = {
+                        lastAdminResponse: data.last_admin_response || data.pets?.[0]?.last_admin_response,
+                        // Nota: Dependiendo de cómo devolvamos el JSON en la API, puede estar en la raíz o en cada pet
+                        actionRequiredFields: data.action_required_fields || []
+                    };
                 }
             } catch (err) {
                 console.error('Error cargando mascotas:', err);
@@ -284,6 +290,7 @@
         renderRejectedContent(pet) {
             const memberStatus = this.member.customFields?.['approval-status'];
             const appealMessage = this.member.customFields?.['appeal-message'];
+            const adminMsg = this.userExtra?.lastAdminResponse;
 
             return `
                 <div class="pata-alert-banner pata-alert-error">
@@ -293,6 +300,16 @@
                         <p style="margin:0; font-size:14px; color:inherit;">${pet.admin_notes || 'No se pudo aprobar la solicitud por inconsistencias en los datos.'}</p>
                     </div>
                 </div>
+
+                ${adminMsg ? `
+                    <div class="pata-alert-banner pata-alert-warning" style="background: #FFF9C4; border-color: #FBC02D;">
+                        <span>💡</span>
+                        <div>
+                            <div class="pata-subtitle" style="color: #616161; font-size: 14px; margin-bottom: 5px;">Requerimiento del Administrador:</div>
+                            <p style="margin:0; font-size:14px; color:#1A1A1A; font-weight: 700;">${adminMsg}</p>
+                        </div>
+                    </div>
+                ` : ''}
 
                 <div id="pata-appeal-section">
                     ${memberStatus === 'appealed' ? `

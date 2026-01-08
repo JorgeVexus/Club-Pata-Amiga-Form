@@ -33,6 +33,7 @@ export default function AdminDashboard() {
         'wellness-center': 0,
         'solidarity-fund': 0,
         'communications': 0,
+        'appeals': 0,
     });
 
     // Admin Identity & Activity State
@@ -163,6 +164,13 @@ export default function AdminDashboard() {
             if (data.success && data.members) {
                 setPendingCounts(prev => ({ ...prev, member: data.members.length }));
             }
+
+            // Load appealed counts
+            const appealRes = await fetch('/api/admin/members?status=appealed');
+            const appealData = await appealRes.json();
+            if (appealData.success && appealData.members) {
+                setPendingCounts(prev => ({ ...prev, appeals: appealData.members.length }));
+            }
         } catch (error) { console.error('Error loading pending counts', error); }
     }
 
@@ -199,7 +207,8 @@ export default function AdminDashboard() {
                                         activeFilter === 'ambassador' ? 'Embajadores' :
                                             activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
                                                 activeFilter === 'admins' ? 'Administradores' :
-                                                    'Fondo Solidario'}
+                                                    activeFilter === 'appeals' ? 'Apelaciones' :
+                                                        'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {

@@ -450,6 +450,58 @@
     font-weight: 600;
 }
 
+/* Admin Response Area */
+.adminResponseArea {
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px dashed #00BBB4;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.responseLabel {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1A1A1A;
+}
+
+.responseTextarea {
+    width: 100%;
+    height: 80px;
+    padding: 10px;
+    border: 1px solid var(--gray-300);
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: none;
+    transition: border-color 0.2s;
+}
+
+.responseTextarea:focus {
+    outline: none;
+    border-color: #00BBB4;
+}
+
+.sendResponseBtn {
+    background: #00BBB4;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    align-self: flex-start;
+    transition: all 0.2s;
+}
+
+.sendResponseBtn:hover {
+    background: #008f8a;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 187, 180, 0.3);
+}
+
 .petAdminActions {
     margin-top: var(--spacing-md);
     padding: var(--spacing-md);

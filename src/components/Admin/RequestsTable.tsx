@@ -14,7 +14,7 @@ interface MemberRequest {
 
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all'; // Initial sort/status filter
-    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund'; // New Type Filter
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals'; // New Type Filter
     onViewDetails: (memberId: string) => void;
     onViewRejectionReason?: (memberId: string) => void; // Optional for now
     onApprove: (memberId: string) => void;
@@ -58,6 +58,11 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             if (sortFilter === 'approved') statusParam = 'approved';
             if (sortFilter === 'rejected') statusParam = 'rejected';
             if (sortFilter === 'all') statusParam = 'all';
+
+            // If requestType is appeals, force status to appealed unless a specific sort is selected
+            if (requestType === 'appeals' && sortFilter === 'all') {
+                statusParam = 'appealed';
+            }
 
             const response = await fetch(`/api/admin/members?status=${statusParam}`);
             const data = await response.json();
@@ -108,6 +113,7 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
 
             if (requestType === 'all') return true;
             if (requestType === 'member') return true;
+            if (requestType === 'appeals') return req.status === 'appealed';
 
             return false;
         })
