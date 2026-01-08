@@ -17,6 +17,17 @@ interface Pet {
     vet_certificate_url?: string;
 }
 
+interface AppealLog {
+    id: string;
+    user_id: string;
+    admin_id?: string;
+    admin_name: string;
+    type: 'user_appeal' | 'admin_request' | 'user_update' | 'system';
+    message: string;
+    created_at: string;
+    formatted_date: string;
+}
+
 interface MemberDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -31,12 +42,17 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
     const [petNotes, setPetNotes] = useState<Record<string, string>>({});
+    const [appealLogs, setAppealLogs] = useState<AppealLog[]>([]);
+    const [loadingLogs, setLoadingLogs] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
+            if (showAppealSection) {
+                loadAppealLogs();
+            }
         }
-    }, [isOpen, member]);
+    }, [isOpen, member, showAppealSection]);
 
     async function loadPets() {
         setLoadingPets(true);
@@ -55,6 +71,21 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             console.error('Error loading pets:', error);
         } finally {
             setLoadingPets(false);
+        }
+    }
+
+    async function loadAppealLogs() {
+        setLoadingLogs(true);
+        try {
+            const res = await fetch(`/api/admin/members/${member.id}/appeal-logs`);
+            const data = await res.json();
+            if (data.success && data.logs) {
+                setAppealLogs(data.logs);
+            }
+        } catch (error) {
+            console.error('Error loading appeal logs:', error);
+        } finally {
+            setLoadingLogs(false);
         }
     }
 
@@ -162,6 +193,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             if (res.ok) {
                                                 alert('Mensaje enviado al usuario.');
                                                 setPetNotes({ ...petNotes, ['appeal_response']: '' });
+                                                loadAppealLogs(); // Recargar el historial
                                             } else {
                                                 alert('Error al enviar el mensaje.');
                                             }
@@ -172,6 +204,35 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 >
                                     Enviar Mensaje al Usuario 📩
                                 </button>
+                            </div>
+
+                            {/* Historial de Conversación */}
+                            <div className={styles.appealHistorySection}>
+                                <h4 className={styles.historyTitle}>📜 Historial de Conversación</h4>
+                                {loadingLogs ? (
+                                    <p className={styles.loadingText}>Cargando historial...</p>
+                                ) : appealLogs.length === 0 ? (
+                                    <p className={styles.emptyHistory}>No hay mensajes anteriores.</p>
+                                ) : (
+                                    <div className={styles.historyList}>
+                                        {appealLogs.map((log) => (
+                                            <div
+                                                key={log.id}
+                                                className={`${styles.historyItem} ${log.type === 'user_appeal' || log.type === 'user_update' ? styles.userMessage : styles.adminMessage}`}
+                                            >
+                                                <div className={styles.historyHeader}>
+                                                    <span className={styles.historyAuthor}>
+                                                        {log.type === 'user_appeal' || log.type === 'user_update'
+                                                            ? '👤 Usuario'
+                                                            : `🛡️ ${log.admin_name}`}
+                                                    </span>
+                                                    <span className={styles.historyDate}>{log.formatted_date}</span>
+                                                </div>
+                                                <p className={styles.historyMessage}>{log.message}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
