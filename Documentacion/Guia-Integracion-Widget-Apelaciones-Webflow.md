@@ -1,21 +1,21 @@
-# 🎡 Guía de Integración: Widget de Apelaciones en Webflow
+# 🎡 Guía de Integración: Smart Membership Widget (Todo en Uno)
 
-Para integrar el sistema de apelaciones y el visor de estado de mascotas en Webflow, debes seguir estos dos pasos sencillos.
+Este nuevo widget unifica el panel de **Período de Carencia** con el **Sistema de Apelaciones**. Se adapta automáticamente al estado de cada mascota (Aprobada, Rechazada, Acción Requerida o Pendiente).
 
 ---
 
-## 1. Crear el Contenedor (Place Holder)
-En la página de Webflow donde quieras que aparezca el widget (ej. Dashboard de Usuario), agrega un elemento **Embed** de Webflow y pega el siguiente código HTML:
+## 1. Crear el Contenedor
+Agrega un elemento **Embed** en tu página de Dashboard de Webflow:
 
 ```html
-<!-- Contenedor donde se renderizará el widget -->
-<div id="pata-amiga-appeal-widget"></div>
+<!-- Contenedor único para todas las mascotas -->
+<div id="pata-amiga-membership-widget"></div>
 ```
 
 ---
 
-## 2. Agregar el Script de Lógica
-Puedes agregarlo en la misma sección de **Embed** (debajo del div anterior) o en los **Page Settings** (en el apartado de `Before </body> tag`).
+## 2. Agregar el Script Unificado
+Puedes colocarlo en el mismo Embed o en los Config de la página (`Before </body> tag`).
 
 ```html
 <script>
@@ -23,27 +23,24 @@ Puedes agregarlo en la misma sección de **Embed** (debajo del div anterior) o e
     apiUrl: 'https://club-pata-amiga-form.vercel.app'
   };
 </script>
-<script src="https://club-pata-amiga-form.vercel.app/widgets/appeal-widget.js"></script>
+<script src="https://club-pata-amiga-form.vercel.app/widgets/unified-membership-widget.js"></script>
 ```
 
 ---
 
-## 💡 Notas Importantes
+## 🚀 Características de esta versión:
 
-### Dependencia de Memberstack
-El widget detecta automáticamente al usuario logueado usando Memberstack. Asegúrate de que:
-1. Memberstack esté correctamente configurado en la página.
-2. El usuario haya iniciado sesión antes de cargar el widget.
-
-### ¿Qué hace el widget exactamente?
-- **Si el usuario está Aprobado:** Muestra un banner de bienvenida y la lista de sus mascotas activas.
-- **Si está Rechazado:** Muestra el motivo y el formulario para enviar la apelación.
-- **Si está En Apelación:** Muestra un mensaje de "En revisión" para darle tranquilidad al usuario.
-- **Si falta información:** Listará las mascotas que requieren atención específica.
-
-### Estilos
-El widget ya incluye sus propios estilos (colores, fuentes y sombras) para que se vea moderno y profesional de inmediato, adaptándose al diseño de Club Pata Amiga.
+1.  **Interfaz de Pestañas (Tabs):** Si el usuario tiene varias mascotas, puede alternar entre ellas para ver su estado individual.
+2.  **Carencia Visual:** Para mascotas aprobadas, muestra la barra de progreso con el perrito animado y los días restantes (basado en tu diseño original).
+3.  **Apelación "Click-to-Reveal":** 
+    -   Si una mascota es rechazada, solo aparece el botón **"Apelar mi solicitud"**.
+    -   Al dar clic, se despliega suavemente el formulario para escribir el mensaje. Esto mantiene el diseño limpio.
+4.  **Notas del Admin:** Muestra directamente las razones del rechazo o las instrucciones de "Acción Requerida".
 
 ---
 
-¿Necesitas ayuda con alguna personalización visual o algún paso adicional?
+## 💡 Notas Técnicas
+- **ID del Contenedor:** Asegúrate de que el ID del div sea exactamente `pata-amiga-membership-widget`.
+- **Estilos:** El widget ya inyecta su propio CSS (basado en tus colores `--panel-bg: #00BBB4`, etc.) para que no tengas que añadir nada extra.
+
+¿Alguna duda con la implementación? ¡Pruébalo y verás lo potente que queda! 🐾⚖️✨
