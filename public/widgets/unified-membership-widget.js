@@ -355,6 +355,8 @@
         }
 
         renderActionRequiredContent(pet) {
+            const adminMsg = this.userExtra?.lastAdminResponse;
+
             return `
                 <div class="pata-alert-banner pata-alert-warning">
                     <span>🛠️</span>
@@ -363,7 +365,18 @@
                         <p style="margin:0; font-size:14px; color:inherit;"><strong>Nota del Admin:</strong> ${pet.admin_notes || 'Por favor revisa tus documentos.'}</p>
                     </div>
                 </div>
-                <p style="font-size:14px; color:#fff;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
+
+                ${adminMsg ? `
+                    <div class="pata-alert-banner pata-alert-info" style="background: #E3F2FD; border-color: #1976D2; margin-top: 15px;">
+                        <span>💬</span>
+                        <div>
+                            <div class="pata-subtitle" style="color: #1976D2; font-size: 14px; margin-bottom: 5px;">Mensaje del Equipo:</div>
+                            <p style="margin:0; font-size:14px; color:#1A1A1A;">${adminMsg}</p>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <p style="font-size:14px; color:#fff; margin-top:15px;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
             `;
         }
 

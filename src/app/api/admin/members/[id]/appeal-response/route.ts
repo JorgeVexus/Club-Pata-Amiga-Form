@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { createServerNotification } from '@/app/actions/notification.actions';
 
 // Cliente Supabase con Service Role
 const supabaseAdmin = createClient(
@@ -43,22 +44,31 @@ export async function POST(
             return NextResponse.json({ error: 'Error al registrar el log' }, { status: 500 });
         }
 
-        // 2. Opcional: Actualizar un campo denormalizado en la tabla users para acceso rápido del widget
+        // 2. Actualizar campo denormalizado en users para acceso rápido del widget
         const { error: userError } = await supabaseAdmin
             .from('users')
             .update({
                 last_admin_response: message,
-                membership_status: 'action_required' // Cambiamos el estado para que el usuario sepa que debe hacer algo
+                membership_status: 'action_required'
             })
             .eq('memberstack_id', memberId);
 
         if (userError) {
             console.warn('Error actualizando usuario (no crítico):', userError);
-            // No retornamos error aquí porque el log ya se creó
         }
 
-        // 3. También debemos actualizar Memberstack para que el widget (que lee de MS o de nuestra API) esté al tanto
-        // Nota: El widget unificado lee de /api/user/pets, así que si esa API lee de Supabase, estamos bien.
+        // 3. Crear notificación para la campana del usuario 🔔
+        await createServerNotification({
+            userId: memberId,
+            type: 'account',
+            title: '📩 Nuevo mensaje de tu apelación',
+            message: message.length > 100 ? message.substring(0, 100) + '...' : message,
+            icon: '📩',
+            link: '/mi-membresia', // O la página donde ven su estado
+            metadata: { source: 'appeal_response' }
+        });
+
+        console.log(`✅ Respuesta de apelación enviada y notificación creada para ${memberId}`);
 
         return NextResponse.json({
             success: true,
