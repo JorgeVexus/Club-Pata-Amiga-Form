@@ -215,7 +215,12 @@ export async function getPetsByUserId(memberstackId: string) {
 
         if (petsError) return { success: false, error: petsError.message };
 
-        return { success: true, pets };
+        return {
+            success: true,
+            pets,
+            last_admin_response: userData.last_admin_response,
+            action_required_fields: userData.action_required_fields
+        };
     } catch (error: any) {
         return { success: false, error: error.message };
     }

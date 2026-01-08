@@ -20,7 +20,9 @@ export async function GET(request: NextRequest) {
         // Agregar headers CORS para que funcione desde Webflow
         const response = NextResponse.json({
             success: true,
-            pets: result.pets
+            pets: result.pets,
+            last_admin_response: result.last_admin_response,
+            action_required_fields: result.action_required_fields
         });
 
         response.headers.set('Access-Control-Allow-Origin', '*');

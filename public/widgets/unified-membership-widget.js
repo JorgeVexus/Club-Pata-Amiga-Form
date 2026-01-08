@@ -119,6 +119,7 @@
             this.container = document.getElementById(containerId);
             this.member = null;
             this.pets = [];
+            this.userExtra = { lastAdminResponse: '', actionRequiredFields: [] };
             this.currentIndex = 0;
             this.showAppealForm = false;
 
