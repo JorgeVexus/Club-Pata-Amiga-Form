@@ -30,8 +30,7 @@ export async function POST(
             .from('pets')
             .update({
                 status,
-                admin_notes: adminNotes || null,
-                updated_at: new Date().toISOString()
+                admin_notes: adminNotes || null
             })
             .eq('id', petId)
             .select()
