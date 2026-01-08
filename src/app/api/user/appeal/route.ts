@@ -58,13 +58,30 @@ export async function POST(request: NextRequest) {
 
         console.log(`✅ Apelación registrada y logueada exitosamente`);
 
-        return NextResponse.json({
+        const response = NextResponse.json({
             success: true,
             message: 'Tu apelación ha sido enviada. El equipo de Club Pata Amiga la revisará pronto.',
         });
 
+        // Agregar headers CORS para que funcione desde Webflow
+        response.headers.set('Access-Control-Allow-Origin', '*');
+        response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+        response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+
+        return response;
+
     } catch (error: any) {
         console.error('Error procesando apelación:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        const response = NextResponse.json({ error: error.message }, { status: 500 });
+        response.headers.set('Access-Control-Allow-Origin', '*');
+        return response;
     }
+}
+
+export async function OPTIONS() {
+    const response = new NextResponse(null, { status: 204 });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
+    return response;
 }
