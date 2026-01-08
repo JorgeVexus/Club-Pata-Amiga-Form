@@ -305,6 +305,7 @@ export default function AdminDashboard() {
                 isOpen={!!selectedMember}
                 onClose={() => setSelectedMember(null)}
                 member={selectedMember}
+                showAppealSection={activeFilter === 'appeals'}
                 onApprove={async (id) => {
                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
                         try {

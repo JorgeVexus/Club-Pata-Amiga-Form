@@ -23,9 +23,10 @@ interface MemberDetailModalProps {
     member: any; // Using any for flexibility with MemberStack data structure
     onApprove: (id: string) => void;
     onReject: (id: string) => void;
+    showAppealSection?: boolean; // Solo muestra la sección de apelación si viene del menú de Apelaciones
 }
 
-export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject }: MemberDetailModalProps) {
+export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false }: MemberDetailModalProps) {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
@@ -123,8 +124,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                 {/* Content */}
                 <div className={styles.content}>
-                    {/* Appeal Info (If applicable) */}
-                    {fields['approval-status'] === 'appealed' && (
+                    {/* Appeal Info (Only shown when accessed from Appeals menu) */}
+                    {showAppealSection && fields['approval-status'] === 'appealed' && (
                         <div className={`${styles.section} ${styles.appealSection}`}>
                             <h3 className={styles.sectionTitle}>📩 Apelación en Proceso</h3>
                             <div className={styles.appealContent}>
