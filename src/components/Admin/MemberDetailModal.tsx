@@ -35,9 +35,10 @@ interface MemberDetailModalProps {
     onApprove: (id: string) => void;
     onReject: (id: string) => void;
     showAppealSection?: boolean; // Solo muestra la sección de apelación si viene del menú de Apelaciones
+    selectedPetId?: string | null; // Para filtrar a una sola mascota en apelaciones
 }
 
-export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false }: MemberDetailModalProps) {
+export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false, selectedPetId }: MemberDetailModalProps) {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
@@ -346,12 +347,14 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                     {/* Pets */}
                     <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Mascotas Registradas ({pets.length})</h3>
+                        <h3 className={styles.sectionTitle}>
+                            {selectedPetId ? 'Mascota en Apelación' : `Mascotas Registradas (${pets.length})`}
+                        </h3>
                         {loadingPets ? (
                             <div className={styles.loading}>Cargando mascotas...</div>
                         ) : (
                             <div className={styles.grid}>
-                                {pets.map((pet) => (
+                                {(selectedPetId ? pets.filter(p => p.id === selectedPetId) : pets).map((pet) => (
                                     <div key={pet.id} className={styles.petCardFull}>
                                         <div className={styles.petHeader}>
                                             <div className={styles.petAvatar}>🐶</div>

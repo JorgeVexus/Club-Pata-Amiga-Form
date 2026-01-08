@@ -12,11 +12,28 @@ interface MemberRequest {
     petCount?: number;
 }
 
+// Interface para mascotas apeladas
+interface AppealedPet {
+    petId: string;
+    petName: string;
+    petType: string;
+    petStatus: string;
+    petBreed: string;
+    petPhotoUrl?: string;
+    petAdminNotes?: string;
+    ownerId: string;
+    ownerName: string;
+    ownerEmail: string;
+    appealMessage: string;
+    appealedAt: string;
+    createdAt: string;
+}
+
 interface RequestsTableProps {
-    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all'; // Initial sort/status filter
-    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals'; // New Type Filter
-    onViewDetails: (memberId: string) => void;
-    onViewRejectionReason?: (memberId: string) => void; // Optional for now
+    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals';
+    onViewDetails: (memberId: string, petId?: string) => void; // petId opcional para apelaciones
+    onViewRejectionReason?: (memberId: string) => void;
     onApprove: (memberId: string) => void;
     onReject: (memberId: string) => void;
 }
@@ -24,6 +41,7 @@ interface RequestsTableProps {
 export default function RequestsTable({ filter, requestType = 'all', onViewDetails, onViewRejectionReason, onApprove, onReject }: RequestsTableProps) {
 
     const [requests, setRequests] = useState<MemberRequest[]>([]);
+    const [appealedPets, setAppealedPets] = useState<AppealedPet[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -53,16 +71,22 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
         try {
             setLoading(true);
 
-            // Determine status based on current filter
+            // Si es vista de apelaciones, usar la API de mascotas apeladas
+            if (requestType === 'appeals') {
+                const response = await fetch('/api/admin/pets/appealed');
+                const data = await response.json();
+                if (data.success && data.pets) {
+                    setAppealedPets(data.pets);
+                    setRequests([]); // Limpiar requests normales
+                }
+                return;
+            }
+
+            // Lógica normal para otros tipos
             let statusParam = 'pending';
             if (sortFilter === 'approved') statusParam = 'approved';
             if (sortFilter === 'rejected') statusParam = 'rejected';
             if (sortFilter === 'all') statusParam = 'all';
-
-            // If requestType is appeals, force status to appealed unless a specific sort is selected
-            if (requestType === 'appeals' && sortFilter === 'all') {
-                statusParam = 'appealed';
-            }
 
             const response = await fetch(`/api/admin/members?status=${statusParam}`);
             const data = await response.json();
@@ -281,7 +305,79 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             </div>
 
             {/* Table */}
-            {filteredRequests.length === 0 ? (
+            {requestType === 'appeals' ? (
+                /* Tabla especial para Apelaciones por Mascota */
+                appealedPets.length === 0 ? (
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📋</div>
+                        <div className={styles.emptyText}>No hay apelaciones pendientes</div>
+                        <div className={styles.emptySubtext}>Las nuevas apelaciones aparecerán aquí</div>
+                    </div>
+                ) : (
+                    <table className={styles.table}>
+                        <thead className={styles.tableHeader}>
+                            <tr>
+                                <th>Mascota</th>
+                                <th>Dueño</th>
+                                <th>Mensaje de Apelación</th>
+                                <th>Fecha</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className={styles.tableBody}>
+                            {appealedPets
+                                .filter(pet => {
+                                    if (!searchQuery) return true;
+                                    const query = searchQuery.toLowerCase();
+                                    return (
+                                        pet.petName.toLowerCase().includes(query) ||
+                                        pet.ownerName.toLowerCase().includes(query) ||
+                                        pet.ownerEmail.toLowerCase().includes(query)
+                                    );
+                                })
+                                .map((pet) => (
+                                    <tr key={pet.petId}>
+                                        <td data-label="Mascota">
+                                            <div className={styles.memberInfo}>
+                                                <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
+                                                    {pet.petType === 'Gato' ? '🐱' : '🐕'}
+                                                </div>
+                                                <div className={styles.memberDetails}>
+                                                    <div className={styles.memberName}>{pet.petName}</div>
+                                                    <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Dueño">
+                                            <div className={styles.memberDetails}>
+                                                <div className={styles.memberName}>{pet.ownerName}</div>
+                                                <div className={styles.memberEmail}>{pet.ownerEmail}</div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
+                                            <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
+                                            </span>
+                                        </td>
+                                        <td data-label="Fecha">
+                                            {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                        </td>
+                                        <td data-label="Acciones">
+                                            <div className={styles.actionButtons}>
+                                                <button
+                                                    className={styles.viewButton}
+                                                    onClick={() => onViewDetails(pet.ownerId, pet.petId)}
+                                                >
+                                                    Ver Detalles
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                        </tbody>
+                    </table>
+                )
+            ) : filteredRequests.length === 0 ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>📋</div>
                     <div className={styles.emptyText}>No hay solicitudes</div>

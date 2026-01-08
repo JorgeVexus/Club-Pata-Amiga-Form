@@ -19,6 +19,7 @@ export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
+    const [selectedPetId, setSelectedPetId] = useState<string | null>(null); // Para apelaciones por mascota
     const [memberToReject, setMemberToReject] = useState<any>(null); // For rejection action
     const [rejectionToView, setRejectionToView] = useState<any>(null); // For viewing reason
     const [metrics, setMetrics] = useState<DashboardMetrics>({
@@ -248,7 +249,10 @@ export default function AdminDashboard() {
                             <RequestsTable
                                 filter="all"
                                 requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
-                                onViewDetails={(id) => fetchMemberDetails(id, setSelectedMember)}
+                                onViewDetails={(id, petId) => {
+                                    setSelectedPetId(petId || null);
+                                    fetchMemberDetails(id, setSelectedMember);
+                                }}
                                 onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
                                 onApprove={async (id) => {
                                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
@@ -303,9 +307,13 @@ export default function AdminDashboard() {
             {/* Modals outside main content */}
             <MemberDetailModal
                 isOpen={!!selectedMember}
-                onClose={() => setSelectedMember(null)}
+                onClose={() => {
+                    setSelectedMember(null);
+                    setSelectedPetId(null);
+                }}
                 member={selectedMember}
                 showAppealSection={activeFilter === 'appeals'}
+                selectedPetId={selectedPetId}
                 onApprove={async (id) => {
                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
                         try {
