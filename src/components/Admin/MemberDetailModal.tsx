@@ -279,27 +279,33 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 />
                                             </div>
                                             <div className={styles.petButtons}>
-                                                <button
-                                                    className={styles.petApproveBtn}
-                                                    onClick={() => handlePetStatusUpdate(pet.id, 'approved')}
-                                                    disabled={updatingPetId === pet.id}
-                                                >
-                                                    Aprobar
-                                                </button>
-                                                <button
-                                                    className={styles.petInfoBtn}
-                                                    onClick={() => handlePetStatusUpdate(pet.id, 'action_required')}
-                                                    disabled={updatingPetId === pet.id}
-                                                >
-                                                    Solicitar Info
-                                                </button>
-                                                <button
-                                                    className={styles.petRejectBtn}
-                                                    onClick={() => handlePetStatusUpdate(pet.id, 'rejected')}
-                                                    disabled={updatingPetId === pet.id}
-                                                >
-                                                    Rechazar
-                                                </button>
+                                                {pet.status !== 'approved' && (
+                                                    <button
+                                                        className={styles.petApproveBtn}
+                                                        onClick={() => handlePetStatusUpdate(pet.id, 'approved')}
+                                                        disabled={updatingPetId === pet.id}
+                                                    >
+                                                        {updatingPetId === pet.id ? '...' : 'Aprobar'}
+                                                    </button>
+                                                )}
+                                                {pet.status !== 'action_required' && (
+                                                    <button
+                                                        className={styles.petInfoBtn}
+                                                        onClick={() => handlePetStatusUpdate(pet.id, 'action_required')}
+                                                        disabled={updatingPetId === pet.id}
+                                                    >
+                                                        {updatingPetId === pet.id ? '...' : 'Solicitar Info'}
+                                                    </button>
+                                                )}
+                                                {pet.status !== 'rejected' && (
+                                                    <button
+                                                        className={styles.petRejectBtn}
+                                                        onClick={() => handlePetStatusUpdate(pet.id, 'rejected')}
+                                                        disabled={updatingPetId === pet.id}
+                                                    >
+                                                        {updatingPetId === pet.id ? '...' : 'Rechazar'}
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     </div>

@@ -195,7 +195,8 @@
 .petHeader {
     display: flex;
     gap: var(--spacing-md);
-    align-items: center;
+    align-items: flex-start;
+    justify-content: space-between;
 }
 
 .petAvatar {
@@ -364,11 +365,15 @@
 }
 
 .statusBadge {
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 50px;
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.7rem;
+    font-weight: 800;
     text-transform: uppercase;
+    white-space: nowrap;
+    flex-shrink: 0;
+    line-height: 1;
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .statusBadge.pending {
@@ -428,13 +433,17 @@
 
 .petButtons button {
     flex: 1;
-    padding: 10px;
+    padding: 12px 8px;
     border-radius: 50px;
     font-size: 0.75rem;
-    font-weight: bold;
+    font-weight: 800;
     cursor: pointer;
-    border: 1px solid transparent;
+    border: 2px solid #000;
     transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 
 .petApproveBtn {
