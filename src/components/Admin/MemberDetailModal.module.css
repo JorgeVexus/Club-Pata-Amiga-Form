@@ -403,6 +403,53 @@
     color: #1e40af;
 }
 
+.petAdminA.section {
+    margin-bottom: var(--spacing-xl);
+    padding: var(--spacing-lg);
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid var(--gray-200);
+}
+
+.appealSection {
+    background: #f0fdfa;
+    border: 2px solid #00BBB4;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.appealContent {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #00BBB4;
+}
+
+.appealMessage {
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #1A1A1A;
+    margin: 0 0 10px 0;
+    line-height: 1.5;
+}
+
+.appealDate {
+    font-size: 0.75rem;
+    color: var(--gray-500);
+    font-weight: 600;
+}
+
 .petAdminActions {
     margin-top: var(--spacing-md);
     padding: var(--spacing-md);

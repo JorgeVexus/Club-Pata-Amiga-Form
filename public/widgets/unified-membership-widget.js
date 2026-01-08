@@ -282,6 +282,9 @@
         }
 
         renderRejectedContent(pet) {
+            const memberStatus = this.member.customFields?.['approval-status'];
+            const appealMessage = this.member.customFields?.['appeal-message'];
+
             return `
                 <div class="pata-alert-banner pata-alert-error">
                     <span>❌</span>
@@ -292,7 +295,16 @@
                 </div>
 
                 <div id="pata-appeal-section">
-                    ${!this.showAppealForm ? `
+                    ${memberStatus === 'appealed' ? `
+                        <div class="pata-alert-banner pata-alert-info" style="flex-direction: column; align-items: flex-start;">
+                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
+                                <span>📩</span>
+                                <div class="pata-subtitle" style="margin:0;">Apelación en Revisión</div>
+                            </div>
+                            <p style="margin:0; font-size:14px; color:inherit; font-style: italic;">"${appealMessage || 'Sin mensaje registrado.'}"</p>
+                            <p style="margin:10px 0 0 0; font-size:12px; opacity:0.8;">Nuestro equipo está revisando tu caso. Te notificaremos pronto.</p>
+                        </div>
+                    ` : !this.showAppealForm ? `
                         <button class="pata-btn" id="pata-btn-reveal-appeal">Apelar decisión</button>
                     ` : `
                         <div class="pata-appeal-form active">

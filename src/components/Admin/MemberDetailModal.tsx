@@ -123,6 +123,19 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                 {/* Content */}
                 <div className={styles.content}>
+                    {/* Appeal Info (If applicable) */}
+                    {fields['approval-status'] === 'appealed' && (
+                        <div className={`${styles.section} ${styles.appealSection}`}>
+                            <h3 className={styles.sectionTitle}>📩 Apelación en Proceso</h3>
+                            <div className={styles.appealContent}>
+                                <p className={styles.appealMessage}>"{fields['appeal-message'] || 'Sin mensaje registrado.'}"</p>
+                                <span className={styles.appealDate}>
+                                    Fecha: {fields['appealed-at'] ? new Date(fields['appealed-at']).toLocaleDateString() : 'Desconocida'}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Personal Info */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Información Personal</h3>
