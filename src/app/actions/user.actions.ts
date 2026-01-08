@@ -189,3 +189,34 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
         return { success: false, error: error.message };
     }
 }
+/**
+ * Obtiene las mascotas de un usuario desde Supabase
+ */
+export async function getPetsByUserId(memberstackId: string) {
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        // 1. Obtener el ID interno del usuario
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !userData) return { success: false, error: 'Usuario no encontrado' };
+
+        // 2. Obtener las mascotas
+        const { data: pets, error: petsError } = await supabase
+            .from('pets')
+            .select('*')
+            .eq('owner_id', userData.id)
+            .order('created_at', { ascending: true });
+
+        if (petsError) return { success: false, error: petsError.message };
+
+        return { success: true, pets };
+    } catch (error: any) {
+        return { success: false, error: error.message };
+    }
+}

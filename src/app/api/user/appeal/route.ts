@@ -5,6 +5,14 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { submitAppeal } from '@/services/memberstack-admin.service';
+import { createClient } from '@supabase/supabase-js';
+
+// Cliente Supabase con Service Role
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+);
 
 export async function POST(request: NextRequest) {
     try {
@@ -12,57 +20,51 @@ export async function POST(request: NextRequest) {
         const { memberId, appealMessage } = body;
 
         // Validar datos
-        if (!memberId) {
-            return NextResponse.json(
-                { error: 'ID de miembro requerido' },
-                { status: 400 }
-            );
-        }
-
-        if (!appealMessage || appealMessage.trim().length === 0) {
-            return NextResponse.json(
-                { error: 'El mensaje de apelación es obligatorio' },
-                { status: 400 }
-            );
-        }
-
-        if (appealMessage.length < 20) {
-            return NextResponse.json(
-                { error: 'El mensaje debe tener al menos 20 caracteres' },
-                { status: 400 }
-            );
+        if (!memberId || !appealMessage?.trim()) {
+            return NextResponse.json({ error: 'Datos incompletos' }, { status: 400 });
         }
 
         console.log(`📧 Procesando apelación de miembro ${memberId}...`);
 
-        // Registrar apelación en Memberstack
+        // 1. Registrar apelación en Memberstack (Estado: appealed)
         const result = await submitAppeal(memberId, appealMessage);
 
         if (!result.success) {
-            return NextResponse.json(
-                { error: result.error },
-                { status: 500 }
-            );
+            return NextResponse.json({ error: result.error }, { status: 500 });
         }
 
-        // TODO: Enviar email al admin notificando la apelación
-        // await sendAppealNotificationToAdmin(memberId, appealMessage);
+        // 2. Actualizar usuario en Supabase
+        const { error: userError } = await supabaseAdmin
+            .from('users')
+            .update({
+                last_appeal_message: appealMessage,
+                membership_status: 'appealed' // Sincronizamos el estado
+            })
+            .eq('memberstack_id', memberId);
 
-        // TODO: Enviar email de confirmación al usuario
-        // await sendAppealConfirmationEmail(result.data.auth.email);
+        if (userError) console.error('Error actualizando usuario en Supabase:', userError);
 
-        console.log(`✅ Apelación registrada exitosamente`);
+        // 3. Crear log de apelación
+        const { error: logError } = await supabaseAdmin
+            .from('appeal_logs')
+            .insert({
+                user_id: memberId,
+                type: 'user_appeal',
+                message: appealMessage,
+                created_at: new Date().toISOString()
+            });
+
+        if (logError) console.error('Error creando log de apelación:', logError);
+
+        console.log(`✅ Apelación registrada y logueada exitosamente`);
 
         return NextResponse.json({
             success: true,
-            message: 'Apelación enviada exitosamente. Será revisada en 24-48 horas.',
+            message: 'Tu apelación ha sido enviada. El equipo de Club Pata Amiga la revisará pronto.',
         });
 
     } catch (error: any) {
         console.error('Error procesando apelación:', error);
-        return NextResponse.json(
-            { error: error.message },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

@@ -1,13 +1,20 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './MemberDetailModal.module.css';
+import { getPetsByUserId } from '@/app/actions/user.actions';
 
 interface Pet {
+    id: string;
     name: string;
     breed: string;
-    age: string;
-    type: string;
+    breed_size: string;
+    age?: string;
+    type?: string;
+    status: 'pending' | 'approved' | 'action_required' | 'rejected';
+    admin_notes?: string;
+    photo_url?: string;
+    vet_certificate_url?: string;
 }
 
 interface MemberDetailModalProps {
@@ -19,28 +26,69 @@ interface MemberDetailModalProps {
 }
 
 export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject }: MemberDetailModalProps) {
+    const [pets, setPets] = useState<Pet[]>([]);
+    const [loadingPets, setLoadingPets] = useState(false);
+    const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
+    const [petNotes, setPetNotes] = useState<Record<string, string>>({});
+
+    useEffect(() => {
+        if (isOpen && member) {
+            loadPets();
+        }
+    }, [isOpen, member]);
+
+    async function loadPets() {
+        setLoadingPets(true);
+        try {
+            const result = await getPetsByUserId(member.id);
+            if (result.success && result.pets) {
+                setPets(result.pets);
+                // Inicializar notas
+                const notes: Record<string, string> = {};
+                result.pets.forEach((p: any) => {
+                    notes[p.id] = p.admin_notes || '';
+                });
+                setPetNotes(notes);
+            }
+        } catch (error) {
+            console.error('Error loading pets:', error);
+        } finally {
+            setLoadingPets(false);
+        }
+    }
+
+    async function handlePetStatusUpdate(petId: string, status: string) {
+        setUpdatingPetId(petId);
+        try {
+            const response = await fetch(`/api/admin/members/${member.id}/pets/${petId}/status`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status,
+                    adminNotes: petNotes[petId],
+                    adminId: 'current_admin' // TODO: Get from auth
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                // Actualizar localmente
+                setPets(prev => prev.map(p => p.id === petId ? { ...p, status: status as any, admin_notes: petNotes[petId] } : p));
+                alert(`Mascota actualizada a ${status}`);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error updating pet:', error);
+            alert('Error de conexión');
+        } finally {
+            setUpdatingPetId(null);
+        }
+    }
+
     if (!isOpen || !member) return null;
 
     const fields = member.customFields || {};
-
-    // Extract pets
-    const pets: (Pet & { photos: string[], certificate?: string })[] = [];
-    for (let i = 1; i <= 3; i++) {
-        if (fields[`pet-${i}-name`]) {
-            const petPhotos = [];
-            if (fields[`pet-${i}-photo-1-url`]) petPhotos.push(fields[`pet-${i}-photo-1-url`]);
-            if (fields[`pet-${i}-photo-2-url`]) petPhotos.push(fields[`pet-${i}-photo-2-url`]);
-
-            pets.push({
-                name: fields[`pet-${i}-name`],
-                breed: fields[`pet-${i}-breed`],
-                age: fields[`pet-${i}-age`],
-                type: fields[`pet-${i}-type`] || 'Mascota',
-                photos: petPhotos,
-                certificate: fields[`pet-${i}-vet-certificate-url`]
-            });
-        }
-    }
 
     // Force download handler
     const handleDownload = async (e: React.MouseEvent, url: string, filename: string) => {
@@ -185,62 +233,79 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                     {/* Pets */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Mascotas Registradas ({pets.length})</h3>
-                        <div className={styles.grid}>
-                            {pets.map((pet, index) => (
-                                <div key={index} className={styles.petCardFull}>
-                                    <div className={styles.petHeader}>
-                                        <div className={styles.petAvatar}>
-                                            {pet.type === 'Gato' ? '🐱' : '🐶'}
-                                        </div>
-                                        <div className={styles.petInfo}>
-                                            <h4>{pet.name}</h4>
-                                            <div className={styles.petBreed}>{pet.breed} • {pet.age} años</div>
-                                        </div>
-                                    </div>
-
-                                    {/* Pet Photos */}
-                                    <div className={styles.petPhotosSection}>
-                                        <span className={styles.petLabel}>Fotos de la mascota:</span>
-                                        <div className={styles.petPhotosGrid}>
-                                            {pet.photos.map((photo, i) => (
-                                                <div key={i} className={styles.petPhotoContainer}>
-                                                    <img src={photo} alt={`${pet.name} ${i + 1}`} className={styles.petThumb} />
-                                                    <div className={styles.photoActions}>
-                                                        <a href={photo} target="_blank" rel="noopener noreferrer">Ver</a>
-                                                        <a
-                                                            href="#"
-                                                            onClick={(e) => handleDownload(e, photo, `${pet.name}-foto-${i + 1}`)}
-                                                        >
-                                                            Bajar
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                            {pet.photos.length === 0 && <span className={styles.noData}>Sin fotos</span>}
-                                        </div>
-                                    </div>
-
-                                    {/* Vet Certificate */}
-                                    {pet.certificate && (
-                                        <div className={styles.certificateSection}>
-                                            <span className={styles.petLabel}>Certificado Médico/Cartilla:</span>
-                                            <div className={styles.documentCardSmall}>
-                                                <span className={styles.documentIcon}>🩺</span>
-                                                <div className={styles.documentInfo}>Documento</div>
-                                                <a href={pet.certificate} target="_blank" rel="noopener noreferrer" className={styles.linkButton}>Ver</a>
-                                                <a
-                                                    href="#"
-                                                    onClick={(e) => handleDownload(e, pet.certificate!, `${pet.name}-certificado`)}
-                                                    className={styles.linkButton}
-                                                >
-                                                    Descargar
-                                                </a>
+                        {loadingPets ? (
+                            <div className={styles.loading}>Cargando mascotas...</div>
+                        ) : (
+                            <div className={styles.grid}>
+                                {pets.map((pet) => (
+                                    <div key={pet.id} className={styles.petCardFull}>
+                                        <div className={styles.petHeader}>
+                                            <div className={styles.petAvatar}>🐶</div>
+                                            <div className={styles.petInfo}>
+                                                <h4>{pet.name}</h4>
+                                                <div className={styles.petBreed}>{pet.breed} • {pet.breed_size}</div>
+                                            </div>
+                                            <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
+                                                {pet.status === 'pending' ? 'Pendiente' :
+                                                    pet.status === 'approved' ? 'Aprobada' :
+                                                        pet.status === 'rejected' ? 'Rechazada' : 'Acción Requerida'}
                                             </div>
                                         </div>
-                                    )}
-                                </div>
-                            ))}
-                        </div>
+
+                                        {/* Pet Photo */}
+                                        <div className={styles.petPhotosSection}>
+                                            <div className={styles.petPhotosGrid}>
+                                                {pet.photo_url ? (
+                                                    <div className={styles.petPhotoContainer}>
+                                                        <img src={pet.photo_url} alt={pet.name} className={styles.petThumb} />
+                                                        <div className={styles.photoActions}>
+                                                            <a href={pet.photo_url} target="_blank" rel="noopener noreferrer">Ver</a>
+                                                            <a href="#" onClick={(e) => handleDownload(e, pet.photo_url!, `${pet.name}-foto`)}>Bajar</a>
+                                                        </div>
+                                                    </div>
+                                                ) : <span className={styles.noData}>Sin foto principal</span>}
+                                            </div>
+                                        </div>
+
+                                        {/* Admin Actions per Pet */}
+                                        <div className={styles.petAdminActions}>
+                                            <div className={styles.notesField}>
+                                                <label>Notas del Administrador:</label>
+                                                <textarea
+                                                    value={petNotes[pet.id] || ''}
+                                                    onChange={(e) => setPetNotes({ ...petNotes, [pet.id]: e.target.value })}
+                                                    placeholder="Razón del rechazo o info faltante..."
+                                                    className={styles.notesInput}
+                                                />
+                                            </div>
+                                            <div className={styles.petButtons}>
+                                                <button
+                                                    className={styles.petApproveBtn}
+                                                    onClick={() => handlePetStatusUpdate(pet.id, 'approved')}
+                                                    disabled={updatingPetId === pet.id}
+                                                >
+                                                    Aprobar
+                                                </button>
+                                                <button
+                                                    className={styles.petInfoBtn}
+                                                    onClick={() => handlePetStatusUpdate(pet.id, 'action_required')}
+                                                    disabled={updatingPetId === pet.id}
+                                                >
+                                                    Solicitar Info
+                                                </button>
+                                                <button
+                                                    className={styles.petRejectBtn}
+                                                    onClick={() => handlePetStatusUpdate(pet.id, 'rejected')}
+                                                    disabled={updatingPetId === pet.id}
+                                                >
+                                                    Rechazar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 

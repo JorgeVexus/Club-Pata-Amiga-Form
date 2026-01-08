@@ -356,6 +356,112 @@
     transform: translateY(-1px);
 }
 
+.loading {
+    padding: var(--spacing-xl);
+    text-align: center;
+    color: var(--gray-500);
+    font-style: italic;
+}
+
+.statusBadge {
+    padding: 4px 12px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.statusBadge.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.statusBadge.approved {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.statusBadge.rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.statusBadge.action_required {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.petAdminActions {
+    margin-top: var(--spacing-md);
+    padding: var(--spacing-md);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+}
+
+.notesField {
+    margin-bottom: var(--spacing-md);
+}
+
+.notesField label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: var(--gray-700);
+    margin-bottom: 4px;
+}
+
+.notesInput {
+    width: 100%;
+    min-height: 80px;
+    padding: var(--spacing-sm);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    resize: vertical;
+}
+
+.petButtons {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.petButtons button {
+    flex: 1;
+    padding: 10px;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.petApproveBtn {
+    background: var(--brand-green);
+    color: #000;
+}
+
+.petInfoBtn {
+    background: var(--brand-yellow);
+    color: #000;
+}
+
+.petRejectBtn {
+    background: var(--brand-pink);
+    color: #000;
+}
+
+.petButtons button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(0.95);
+}
+
+.petButtons button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 @media (max-width: 640px) {
     .modal {
         height: 100%;
@@ -369,5 +475,9 @@
 
     .actionButton {
         width: 100%;
+    }
+
+    .petButtons {
+        flex-direction: column;
     }
 }
