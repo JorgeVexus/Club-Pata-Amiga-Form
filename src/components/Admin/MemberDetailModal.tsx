@@ -255,11 +255,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         {/* Pet Photo Section */}
                                         <div className={styles.petPhotosSection}>
                                             <div className={styles.petPhotosGrid}>
-                                                {pet.photo_url ? (
-                                                    <div className={styles.petPhotoContainer}>
+                                                {/* Mostrar fotos del objeto pet (Supabase) */}
+                                                {[pet.photo_url, (pet as any).photo2_url].filter(Boolean).map((url, idx) => (
+                                                    <div key={idx} className={styles.petPhotoContainer}>
                                                         <img
-                                                            src={pet.photo_url}
-                                                            alt={pet.name}
+                                                            src={url}
+                                                            alt={`${pet.name} - ${idx + 1}`}
                                                             className={styles.petThumb}
                                                             onError={(e) => {
                                                                 (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
@@ -267,15 +268,45 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                             }}
                                                         />
                                                         <div className={styles.photoActions}>
-                                                            <a href={pet.photo_url} target="_blank" rel="noopener noreferrer">Ver Original</a>
-                                                            <a href="#" onClick={(e) => handleDownload(e, pet.photo_url!, `${pet.name}-foto`)}>Bajar</a>
+                                                            <a href={url} target="_blank" rel="noopener noreferrer">Ver #{idx + 1}</a>
+                                                            <a href="#" onClick={(e) => handleDownload(e, url!, `${pet.name}-foto-${idx + 1}`)}>Bajar</a>
                                                         </div>
                                                     </div>
-                                                ) : (
-                                                    <div className={styles.noPhotoPlaceholder}>
-                                                        <span>📷 Sin foto disponible</span>
-                                                        <p style={{ fontSize: '0.7rem', margin: '5px 0 0' }}>Verifica en Memberstack si existe el archivo.</p>
-                                                    </div>
+                                                ))}
+
+                                                {/* Fallback si no hay fotos en el objeto pet, buscar en customFields de Memberstack */}
+                                                {!pet.photo_url && !((pet as any).photo2_url) && (
+                                                    (() => {
+                                                        const pIdx = pets.indexOf(pet) + 1;
+                                                        const mUrl1 = fields[`pet-${pIdx}-photo-1-url`];
+                                                        const mUrl2 = fields[`pet-${pIdx}-photo-2-url`];
+
+                                                        if (mUrl1 || mUrl2) {
+                                                            return [mUrl1, mUrl2].filter(Boolean).map((url, idx) => (
+                                                                <div key={`m-${idx}`} className={styles.petPhotoContainer}>
+                                                                    <img
+                                                                        src={url}
+                                                                        alt={`${pet.name} (MS) - ${idx + 1}`}
+                                                                        className={styles.petThumb}
+                                                                        onError={(e) => {
+                                                                            (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+                                                                            (e.target as HTMLImageElement).style.opacity = '0.5';
+                                                                        }}
+                                                                    />
+                                                                    <div className={styles.photoActions}>
+                                                                        <a href={url} target="_blank" rel="noopener noreferrer">Ver MS #{idx + 1}</a>
+                                                                    </div>
+                                                                </div>
+                                                            ));
+                                                        }
+
+                                                        return (
+                                                            <div className={styles.noPhotoPlaceholder}>
+                                                                <span>📷 Sin fotos detectadas</span>
+                                                                <p style={{ fontSize: '0.6rem', margin: '5px 0 0' }}>Sync Error o falta de archivos.</p>
+                                                            </div>
+                                                        );
+                                                    })()
                                                 )}
                                             </div>
                                         </div>
