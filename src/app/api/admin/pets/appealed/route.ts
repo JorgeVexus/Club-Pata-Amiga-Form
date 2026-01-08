@@ -37,11 +37,12 @@ export async function GET(request: NextRequest) {
         const appealedPetsWithOwner = [];
 
         for (const user of appealedUsers) {
-            // Obtener mascotas de este usuario
+            // Obtener solo las mascotas rechazadas o con acción requerida de este usuario
             const { data: pets, error: petsError } = await supabaseAdmin
                 .from('pets')
                 .select('*')
-                .eq('owner_id', user.id);
+                .eq('owner_id', user.id)
+                .in('status', ['rejected', 'action_required']); // Solo mascotas con estos estados
 
             if (petsError) {
                 console.warn(`Error obteniendo mascotas de ${user.memberstack_id}:`, petsError);
