@@ -252,18 +252,31 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             </div>
                                         </div>
 
-                                        {/* Pet Photo */}
+                                        {/* Pet Photo Section */}
                                         <div className={styles.petPhotosSection}>
                                             <div className={styles.petPhotosGrid}>
                                                 {pet.photo_url ? (
                                                     <div className={styles.petPhotoContainer}>
-                                                        <img src={pet.photo_url} alt={pet.name} className={styles.petThumb} />
+                                                        <img
+                                                            src={pet.photo_url}
+                                                            alt={pet.name}
+                                                            className={styles.petThumb}
+                                                            onError={(e) => {
+                                                                (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+                                                                (e.target as HTMLImageElement).style.opacity = '0.5';
+                                                            }}
+                                                        />
                                                         <div className={styles.photoActions}>
-                                                            <a href={pet.photo_url} target="_blank" rel="noopener noreferrer">Ver</a>
+                                                            <a href={pet.photo_url} target="_blank" rel="noopener noreferrer">Ver Original</a>
                                                             <a href="#" onClick={(e) => handleDownload(e, pet.photo_url!, `${pet.name}-foto`)}>Bajar</a>
                                                         </div>
                                                     </div>
-                                                ) : <span className={styles.noData}>Sin foto principal</span>}
+                                                ) : (
+                                                    <div className={styles.noPhotoPlaceholder}>
+                                                        <span>📷 Sin foto disponible</span>
+                                                        <p style={{ fontSize: '0.7rem', margin: '5px 0 0' }}>Verifica en Memberstack si existe el archivo.</p>
+                                                    </div>
+                                                )}
                                             </div>
                                         </div>
 

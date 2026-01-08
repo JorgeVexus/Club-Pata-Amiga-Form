@@ -87,8 +87,14 @@
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+}
+
+@media (max-width: 1024px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 .field {
@@ -253,9 +259,10 @@
 
 .petThumb {
     width: 100%;
-    height: 100px;
+    height: 180px;
     object-fit: cover;
     display: block;
+    background: var(--gray-100);
 }
 
 .photoActions {
