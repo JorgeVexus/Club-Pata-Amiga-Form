@@ -233,10 +233,31 @@ export async function getPetsByUserId(memberstackId: string) {
 
         if (petsError) return { success: false, error: petsError.message };
 
+        // 3. Si no tenemos last_admin_response del usuario, buscar el último en appeal_logs
+        let lastAdminMsg = userData.last_admin_response || null;
+        if (!lastAdminMsg) {
+            try {
+                const { data: lastLog } = await supabase
+                    .from('appeal_logs')
+                    .select('message')
+                    .eq('user_id', memberstackId)
+                    .eq('type', 'admin_request')
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (lastLog) {
+                    lastAdminMsg = lastLog.message;
+                }
+            } catch (e) {
+                // No hay logs, está bien
+            }
+        }
+
         return {
             success: true,
             pets,
-            last_admin_response: userData.last_admin_response,
+            last_admin_response: lastAdminMsg,
             action_required_fields: userData.action_required_fields
         };
     } catch (error: any) {
