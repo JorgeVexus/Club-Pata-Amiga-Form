@@ -131,29 +131,41 @@
             console.log('🚀 Unified Widget: Starting initialization...');
             this.injectStyles();
 
-            console.log('⏳ Unified Widget: Waiting for Memberstack...');
-            await this.waitForMemberstack();
+            try {
+                console.log('⏳ Unified Widget: Waiting for Memberstack...');
+                await this.waitForMemberstack();
 
-            if (!this.member) {
-                console.warn('⚠️ Unified Widget: No member session found.');
-                return;
-            }
-            console.log('✅ Unified Widget: Member loaded:', this.member.id);
+                if (!this.member) {
+                    console.warn('⚠️ Unified Widget: No member session found.');
+                    this.container.innerHTML = '<!-- Pata Amiga: No member session -->';
+                    return;
+                }
+                console.log('✅ Unified Widget: Member loaded:', this.member.id);
 
-            console.log('⏳ Unified Widget: Loading pet data...');
-            await this.loadData();
+                console.log('⏳ Unified Widget: Loading pet data...');
+                await this.loadData();
 
-            console.log('📊 Unified Widget: Pets found:', this.pets.length);
+                console.log('📊 Unified Widget: Pets found:', this.pets.length);
 
-            if (this.pets.length > 0) {
-                console.log('✨ Unified Widget: Rendering panel...');
-                this.container.classList.add('show');
-                this.render();
-            } else {
-                console.warn('⚠️ Unified Widget: No pets found for this user in Supabase.');
-                // En lugar de no mostrar nada, podríamos mostrar un mensaje de "No hay mascotas"
-                this.container.innerHTML = '<div style="color:white; padding:20px; text-align:center;">No se encontraron mascotas registradas.</div>';
-                this.container.classList.add('show');
+                if (this.pets.length > 0) {
+                    console.log('✨ Unified Widget: Rendering panel...');
+                    this.container.classList.add('show');
+                    this.render();
+                } else {
+                    console.warn('⚠️ Unified Widget: No pets found for this user in Supabase.');
+                    this.container.innerHTML = `
+                        <div class="pata-unified-panel show" style="background: rgba(0,0,0,0.4);">
+                            <div style="color:white; padding:20px; text-align:center; font-weight:600;">
+                                👋 Hola ${this.member.customFields?.['first-name'] || 'Socio'}. <br>
+                                <span style="font-size: 14px; font-weight: 400; opacity: 0.8;">No encontramos mascotas registradas o están pendientes de sincronización.</span>
+                            </div>
+                        </div>
+                    `;
+                    this.container.classList.add('show');
+                }
+            } catch (err) {
+                console.error('❌ Unified Widget: Critical error during init:', err);
+                this.container.innerHTML = `<div style="color:red; padding:10px; font-size:12px;">Widget Error: ${err.message}</div>`;
             }
         }
 
@@ -183,19 +195,23 @@
 
         async loadData() {
             try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`);
+                const url = `${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`;
+                console.log('📡 Unified Widget: Fetching from:', url);
+                const res = await fetch(url);
                 const data = await res.json();
+                console.log('📥 Unified Widget: Received data:', data);
+
                 if (data.success) {
-                    this.pets = data.pets;
-                    // Guardar datos extra del usuario (nuestra API ahora los devuelve junto a las mascotas o en el mismo objeto)
+                    this.pets = data.pets || [];
                     this.userExtra = {
-                        lastAdminResponse: data.last_admin_response || data.pets?.[0]?.last_admin_response,
-                        // Nota: Dependiendo de cómo devolvamos el JSON en la API, puede estar en la raíz o en cada pet
+                        lastAdminResponse: data.last_admin_response || '',
                         actionRequiredFields: data.action_required_fields || []
                     };
+                } else {
+                    console.error('❌ Unified Widget: API error:', data.error);
                 }
             } catch (err) {
-                console.error('Error cargando mascotas:', err);
+                console.error('❌ Unified Widget: Fetch failed:', err);
             }
         }
 

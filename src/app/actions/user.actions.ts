@@ -197,14 +197,32 @@ export async function getPetsByUserId(memberstackId: string) {
     if (!supabase) return { success: false, error: 'Configuración fallida' };
 
     try {
-        // 1. Obtener el ID interno del usuario y campos de comunicación
-        const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('id, last_admin_response, action_required_fields')
-            .eq('memberstack_id', memberstackId)
-            .single();
+        // 1. Obtener el ID interno del usuario y campos de comunicación (con tolerancia a errores)
+        let userData: any = null;
+        try {
+            const { data, error } = await supabase
+                .from('users')
+                .select('id, last_admin_response, action_required_fields')
+                .eq('memberstack_id', memberstackId)
+                .single();
 
-        if (userError || !userData) return { success: false, error: 'Usuario no encontrado' };
+            if (error) {
+                console.warn('⚠️ [Server Action] Could not fetch user communication fields:', error.message);
+                // Intento fallback solo con ID si falló (por si faltan columnas)
+                const { data: fallbackData } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('memberstack_id', memberstackId)
+                    .single();
+                userData = fallbackData;
+            } else {
+                userData = data;
+            }
+        } catch (e) {
+            console.error('❌ [Server Action] Error fetching user:', e);
+        }
+
+        if (!userData) return { success: false, error: 'Usuario no encontrado en Supabase' };
 
         // 2. Obtener las mascotas
         const { data: pets, error: petsError } = await supabase
