@@ -51,23 +51,30 @@ export async function GET(request: NextRequest) {
         }
 
         // Filtrar solo los que tienen dueños con estado 'appealed'
+        // owner puede venir como objeto o array dependiendo de la relación
         const appealedPets = (pets || [])
-            .filter(pet => pet.owner?.membership_status === 'appealed')
-            .map(pet => ({
-                petId: pet.id,
-                petName: pet.name,
-                petType: pet.type || 'Perro',
-                petStatus: pet.status,
-                petBreed: pet.breed,
-                petPhotoUrl: pet.photo_url,
-                petAdminNotes: pet.admin_notes,
-                ownerId: pet.owner?.memberstack_id,
-                ownerName: `${pet.owner?.first_name || ''} ${pet.owner?.last_name || ''}`.trim() || 'Sin nombre',
-                ownerEmail: pet.owner?.email,
-                appealMessage: pet.appeal_message || '', // Del campo de la mascota
-                appealedAt: pet.appealed_at || pet.created_at,
-                createdAt: pet.created_at
-            }));
+            .filter(pet => {
+                const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
+                return owner?.membership_status === 'appealed';
+            })
+            .map(pet => {
+                const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
+                return {
+                    petId: pet.id,
+                    petName: pet.name,
+                    petType: pet.type || 'Perro',
+                    petStatus: pet.status,
+                    petBreed: pet.breed,
+                    petPhotoUrl: pet.photo_url,
+                    petAdminNotes: pet.admin_notes,
+                    ownerId: owner?.memberstack_id,
+                    ownerName: `${owner?.first_name || ''} ${owner?.last_name || ''}`.trim() || 'Sin nombre',
+                    ownerEmail: owner?.email,
+                    appealMessage: pet.appeal_message || '',
+                    appealedAt: pet.appealed_at || pet.created_at,
+                    createdAt: pet.created_at
+                };
+            });
 
         console.log(`✅ Encontradas ${appealedPets.length} mascotas en apelación`);
 
