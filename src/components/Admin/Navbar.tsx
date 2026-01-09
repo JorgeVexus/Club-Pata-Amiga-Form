@@ -7,9 +7,10 @@ import AdminNotifications from './AdminNotifications';
 
 interface NavbarProps {
     onMobileMenuToggle?: () => void;
+    onNotificationClick?: (notification: any) => void;
 }
 
-export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
+export default function Navbar({ onMobileMenuToggle, onNotificationClick }: NavbarProps) {
     return (
         <nav className={styles.navbar}>
             <div className={styles.navbarLogo}>
@@ -34,7 +35,7 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
 
             <div className={styles.navbarRight}>
                 {/* 🆕 Campanita de Notificaciones */}
-                <AdminNotifications />
+                <AdminNotifications onNotificationClick={onNotificationClick} />
 
                 <div className={styles.adminBadgeNav}>
                     <Image

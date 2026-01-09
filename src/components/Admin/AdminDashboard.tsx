@@ -190,9 +190,21 @@ export default function AdminDashboard() {
         } catch (error) { console.error('Error loading pending counts', error); }
     }
 
+    // 🆕 Handler para cuando se hace clic en una notificación
+    function handleNotificationClick(notification: any) {
+        const userId = notification.metadata?.userId;
+        if (userId) {
+            // Abrir el modal del miembro
+            fetchMemberDetails(userId, setSelectedMember);
+        }
+    }
+
     return (
         <div className={styles.dashboard}>
-            <Navbar onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)} />
+            <Navbar
+                onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                onNotificationClick={handleNotificationClick}
+            />
 
             <div className={styles.dashboardContent}>
                 {/* Mobile Overlay */}

@@ -14,7 +14,11 @@ interface AdminNotification {
     metadata?: any;
 }
 
-export default function AdminNotifications() {
+interface AdminNotificationsProps {
+    onNotificationClick?: (notification: AdminNotification) => void;
+}
+
+export default function AdminNotifications({ onNotificationClick }: AdminNotificationsProps) {
     const [notifications, setNotifications] = useState<AdminNotification[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -89,6 +93,16 @@ export default function AdminNotifications() {
         return `Hace ${diffDays}d`;
     }
 
+    function handleNotificationClick(notif: AdminNotification) {
+        markAsRead(notif.id);
+        setIsOpen(false);
+
+        // Si hay callback, usarlo (para abrir modal desde AdminDashboard)
+        if (onNotificationClick) {
+            onNotificationClick(notif);
+        }
+    }
+
     return (
         <div className={styles.container} ref={dropdownRef}>
             <button
@@ -126,12 +140,7 @@ export default function AdminNotifications() {
                                 <div
                                     key={notif.id}
                                     className={`${styles.item} ${!notif.is_read ? styles.unread : ''}`}
-                                    onClick={() => {
-                                        markAsRead(notif.id);
-                                        if (notif.link) {
-                                            window.location.href = notif.link;
-                                        }
-                                    }}
+                                    onClick={() => handleNotificationClick(notif)}
                                 >
                                     <span className={styles.itemIcon}>{notif.icon || '📢'}</span>
                                     <div className={styles.itemContent}>
