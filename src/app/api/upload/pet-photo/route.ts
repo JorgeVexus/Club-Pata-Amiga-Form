@@ -16,6 +16,18 @@ const supabaseAdmin = createClient(
 const BUCKET_NAME = 'pet-photos';
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
+// Headers CORS para permitir requests desde Webflow
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// Handler para preflight requests
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
@@ -23,22 +35,22 @@ export async function POST(request: NextRequest) {
         const userId = formData.get('userId') as string | null;
 
         if (!file) {
-            return NextResponse.json({ error: 'No se envió ningún archivo' }, { status: 400 });
+            return NextResponse.json({ error: 'No se envió ningún archivo' }, { status: 400, headers: corsHeaders });
         }
 
         if (!userId) {
-            return NextResponse.json({ error: 'userId es obligatorio' }, { status: 400 });
+            return NextResponse.json({ error: 'userId es obligatorio' }, { status: 400, headers: corsHeaders });
         }
 
         // Validar tamaño
         if (file.size > MAX_FILE_SIZE) {
-            return NextResponse.json({ error: 'El archivo es muy grande. Máximo 5MB.' }, { status: 400 });
+            return NextResponse.json({ error: 'El archivo es muy grande. Máximo 5MB.' }, { status: 400, headers: corsHeaders });
         }
 
         // Validar tipo
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
         if (!validTypes.includes(file.type)) {
-            return NextResponse.json({ error: 'Tipo de archivo no válido. Usa JPG, PNG o WebP.' }, { status: 400 });
+            return NextResponse.json({ error: 'Tipo de archivo no válido. Usa JPG, PNG o WebP.' }, { status: 400, headers: corsHeaders });
         }
 
         console.log(`📷 Subiendo foto para usuario ${userId}...`);
@@ -63,7 +75,7 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Error subiendo archivo:', error);
-            return NextResponse.json({ error: 'Error al subir el archivo' }, { status: 500 });
+            return NextResponse.json({ error: 'Error al subir el archivo' }, { status: 500, headers: corsHeaders });
         }
 
         // Obtener URL pública
@@ -77,10 +89,10 @@ export async function POST(request: NextRequest) {
             success: true,
             url: urlData.publicUrl,
             path: data.path
-        });
+        }, { headers: corsHeaders });
 
     } catch (error: any) {
         console.error('Error en upload API:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
