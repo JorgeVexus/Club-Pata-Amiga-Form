@@ -112,7 +112,49 @@
         }
         .pata-btn:hover { transform: scale(1.02); opacity: 0.9; }
         .pata-btn-outline { background: transparent; border: 2px solid #1A1A1A; color: #1A1A1A; }
+        .pata-btn-success { background: #4CAF50; }
+        .pata-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Modal de Actualización */
+        .pata-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            padding: 20px; box-sizing: border-box;
+        }
+        .pata-modal {
+            background: #fff; border-radius: 16px; max-width: 500px; width: 100%;
+            max-height: 90vh; overflow-y: auto; animation: pataFadeIn 0.3s ease;
+        }
+        .pata-modal-header {
+            padding: 20px; border-bottom: 1px solid #eee;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .pata-modal-title { font-size: 18px; font-weight: 700; margin: 0; }
+        .pata-modal-close { background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; }
+        .pata-modal-body { padding: 20px; }
+        .pata-modal-footer { padding: 20px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+
+        .pata-admin-request {
+            background: #FFF3E0; border-radius: 8px; padding: 15px; margin-bottom: 20px;
+            border-left: 4px solid #FF9800;
+        }
+        .pata-admin-request-label { font-size: 12px; color: #E65100; font-weight: 600; margin-bottom: 5px; }
+        .pata-admin-request-msg { margin: 0; font-size: 14px; color: #333; }
+
+        .pata-upload-area {
+            border: 2px dashed #ddd; border-radius: 12px; padding: 30px;
+            text-align: center; cursor: pointer; transition: all 0.2s; margin-bottom: 15px;
+        }
+        .pata-upload-area:hover { border-color: #00BBB4; background: #f9f9f9; }
+        .pata-upload-area.has-file { border-color: #4CAF50; background: #E8F5E9; }
+        .pata-upload-icon { font-size: 40px; margin-bottom: 10px; }
+        .pata-upload-text { font-size: 14px; color: #666; }
+        .pata-upload-input { display: none; }
+        .pata-upload-preview { max-width: 100%; max-height: 150px; border-radius: 8px; margin-top: 10px; }
+        .pata-upload-filename { font-size: 12px; color: #4CAF50; margin-top: 5px; font-weight: 600; }
     `;
+
 
     class UnifiedWidget {
         constructor(containerId) {
@@ -122,6 +164,10 @@
             this.userExtra = { lastAdminResponse: '', actionRequiredFields: [] };
             this.currentIndex = 0;
             this.showAppealForm = false;
+            // 🆕 Estados para modal de actualización
+            this.showUpdateModal = false;
+            this.uploadFiles = { photo1: null, photo2: null };
+            this.uploading = false;
 
             if (!this.container) return;
             this.init();
@@ -379,6 +425,65 @@
                 ` : ''}
 
                 <p style="font-size:14px; color:#fff; margin-top:15px;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
+
+                ${adminMsg ? `
+                    <div style="margin-top: 20px;">
+                        <button class="pata-btn pata-btn-success" id="pata-btn-open-update" data-pet-id="${pet.id}">
+                            📎 Actualizar Información de ${pet.name}
+                        </button>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        // 🆕 Renderizar el modal de actualización
+        renderUpdateModal(pet) {
+            const adminMsg = pet.last_admin_response || 'Por favor actualiza la información solicitada.';
+
+            return `
+                <div class="pata-modal-overlay" id="pata-update-modal">
+                    <div class="pata-modal">
+                        <div class="pata-modal-header">
+                            <h3 class="pata-modal-title">📎 Actualizar información de ${pet.name}</h3>
+                            <button class="pata-modal-close" id="pata-modal-close">&times;</button>
+                        </div>
+                        <div class="pata-modal-body">
+                            <div class="pata-admin-request">
+                                <div class="pata-admin-request-label">📩 El equipo te pidió:</div>
+                                <p class="pata-admin-request-msg">${adminMsg}</p>
+                            </div>
+
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1 (nueva):</label>
+                                <div class="pata-upload-area" id="pata-upload-area-1">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1">
+                                    <div class="pata-upload-icon">📷</div>
+                                    <div class="pata-upload-text">Haz clic para seleccionar foto</div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 2 (opcional):</label>
+                                <div class="pata-upload-area" id="pata-upload-area-2">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-2">
+                                    <div class="pata-upload-icon">📷</div>
+                                    <div class="pata-upload-text">Haz clic para seleccionar foto</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 15px;">
+                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Mensaje (opcional):</label>
+                                <textarea id="pata-update-message" class="pata-textarea" placeholder="Añade un comentario sobre tu actualización..."></textarea>
+                            </div>
+                        </div>
+                        <div class="pata-modal-footer">
+                            <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update">Cancelar</button>
+                            <button class="pata-btn pata-btn-success" id="pata-btn-submit-update" ${this.uploading ? 'disabled' : ''}>
+                                ${this.uploading ? 'Enviando...' : 'Enviar Actualización'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
             `;
         }
 
@@ -435,6 +540,139 @@
                             location.reload();
                         }
                     } catch (e) { alert('Error al enviar.'); }
+                };
+            }
+
+            // 🆕 Abrir modal de actualización
+            const openUpdateBtn = document.getElementById('pata-btn-open-update');
+            if (openUpdateBtn) {
+                openUpdateBtn.onclick = () => {
+                    this.showUpdateModal = true;
+                    this.uploadFiles = { photo1: null, photo2: null };
+                    const pet = this.pets[this.currentIndex];
+                    document.body.insertAdjacentHTML('beforeend', this.renderUpdateModal(pet));
+                    this.attachModalEvents();
+                };
+            }
+        }
+
+        // 🆕 Eventos específicos del modal
+        attachModalEvents() {
+            // Cerrar modal
+            const closeBtn = document.getElementById('pata-modal-close');
+            const cancelBtn = document.getElementById('pata-btn-cancel-update');
+            const closeModal = () => {
+                const modal = document.getElementById('pata-update-modal');
+                if (modal) modal.remove();
+                this.showUpdateModal = false;
+            };
+            if (closeBtn) closeBtn.onclick = closeModal;
+            if (cancelBtn) cancelBtn.onclick = closeModal;
+
+            // Click outside to close
+            const overlay = document.getElementById('pata-update-modal');
+            if (overlay) {
+                overlay.onclick = (e) => {
+                    if (e.target === overlay) closeModal();
+                };
+            }
+
+            // Upload areas
+            const setupUpload = (areaId, fileId, key) => {
+                const area = document.getElementById(areaId);
+                const input = document.getElementById(fileId);
+                if (area && input) {
+                    area.onclick = () => input.click();
+                    input.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            this.uploadFiles[key] = file;
+                            area.classList.add('has-file');
+                            area.innerHTML = `
+                                <img src="${URL.createObjectURL(file)}" class="pata-upload-preview">
+                                <div class="pata-upload-filename">✓ ${file.name}</div>
+                            `;
+                        }
+                    };
+                }
+            };
+            setupUpload('pata-upload-area-1', 'pata-file-1', 'photo1');
+            setupUpload('pata-upload-area-2', 'pata-file-2', 'photo2');
+
+            // Submit update
+            const submitBtn = document.getElementById('pata-btn-submit-update');
+            if (submitBtn) {
+                submitBtn.onclick = async () => {
+                    if (!this.uploadFiles.photo1 && !this.uploadFiles.photo2) {
+                        return alert('Por favor sube al menos una foto.');
+                    }
+
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Subiendo fotos...';
+                    this.uploading = true;
+
+                    try {
+                        const pet = this.pets[this.currentIndex];
+                        let photo1Url = null;
+                        let photo2Url = null;
+
+                        // Subir foto 1
+                        if (this.uploadFiles.photo1) {
+                            const formData = new FormData();
+                            formData.append('file', this.uploadFiles.photo1);
+                            formData.append('userId', this.member.id);
+                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.success) photo1Url = data.url;
+                        }
+
+                        // Subir foto 2
+                        if (this.uploadFiles.photo2) {
+                            const formData = new FormData();
+                            formData.append('file', this.uploadFiles.photo2);
+                            formData.append('userId', this.member.id);
+                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.success) photo2Url = data.url;
+                        }
+
+                        submitBtn.innerText = 'Guardando...';
+
+                        // Actualizar mascota
+                        const message = document.getElementById('pata-update-message')?.value || '';
+                        const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: this.member.id,
+                                photo1Url,
+                                photo2Url,
+                                message
+                            })
+                        });
+
+                        const updateData = await updateRes.json();
+                        if (updateData.success) {
+                            alert('✅ ' + updateData.message);
+                            location.reload();
+                        } else {
+                            alert('Error: ' + updateData.error);
+                            submitBtn.disabled = false;
+                            submitBtn.innerText = 'Enviar Actualización';
+                        }
+                    } catch (e) {
+                        console.error('Error en update:', e);
+                        alert('Error al enviar la actualización.');
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Enviar Actualización';
+                    }
+                    this.uploading = false;
                 };
             }
         }
