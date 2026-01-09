@@ -44,7 +44,7 @@ export async function POST(
         // 1. Verificar que la mascota pertenece al usuario y está en action_required
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('*, owner:users!owner_id(memberstack_id)')
+            .select('*, owner:users!owner_id(id, memberstack_id, first_name, last_name)')
             .eq('id', petId)
             .single();
 
@@ -113,18 +113,21 @@ export async function POST(
                 created_at: new Date().toISOString()
             });
 
-        // 5. 🆕 Crear notificación para los admins
+        // 5. 🆕 Crear notificación para los admins con nombre del usuario
+        const ownerName = `${pet.owner?.first_name || ''} ${pet.owner?.last_name || ''}`.trim() || 'Usuario';
+        const ownerId = pet.owner?.id;
+
         await supabaseAdmin
             .from('notifications')
             .insert({
                 user_id: 'admin', // Notificación para admins
                 type: 'account',
-                title: '📎 Usuario actualizó información',
-                message: `El usuario actualizó la información de ${pet.name}. Revísala en Gestión General.`,
+                title: `📎 ${ownerName} actualizó información`,
+                message: `${ownerName} actualizó las fotos de ${pet.name}. Revísala en Pendientes.`,
                 icon: '📎',
-                link: '/admin',
+                link: `/admin?member=${userId}`, // Link directo al miembro
                 is_read: false,
-                metadata: { petId, petName: pet.name, userId },
+                metadata: { petId, petName: pet.name, userId, ownerId, ownerName },
                 created_at: new Date().toISOString()
             });
 
