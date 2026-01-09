@@ -31,13 +31,15 @@ export async function POST(
 ) {
     try {
         const { petId } = await params;
-        const { userId, photo1Url, photo2Url, message } = await request.json();
+        const body = await request.json();
+        const { userId, photo1Url, photo2Url, message } = body;
+
+        console.log(`📝 Usuario ${userId} actualizando mascota ${petId}...`);
+        console.log('📦 Body recibido:', JSON.stringify(body, null, 2));
 
         if (!userId) {
             return NextResponse.json({ error: 'userId es obligatorio' }, { status: 400, headers: corsHeaders });
         }
-
-        console.log(`📝 Usuario ${userId} actualizando mascota ${petId}...`);
 
         // 1. Verificar que la mascota pertenece al usuario y está en action_required
         const { data: pet, error: petError } = await supabaseAdmin
@@ -63,16 +65,21 @@ export async function POST(
         }
 
         // 2. Preparar los campos a actualizar
+        // SOLO incluir la foto si viene con valor real (no null, no undefined, no string vacío)
         const updateData: Record<string, any> = {
             status: 'pending' // Cambiar a pending para re-revisión
         };
 
-        if (photo1Url) {
+        if (photo1Url && typeof photo1Url === 'string' && photo1Url.trim() !== '') {
             updateData.photo_url = photo1Url;
+            console.log('📷 Actualizando foto 1:', photo1Url);
         }
-        if (photo2Url) {
+        if (photo2Url && typeof photo2Url === 'string' && photo2Url.trim() !== '') {
             updateData.photo2_url = photo2Url;
+            console.log('📷 Actualizando foto 2:', photo2Url);
         }
+
+        console.log('📋 Campos a actualizar:', JSON.stringify(updateData, null, 2));
 
         // 3. Actualizar la mascota
         const { error: updateError } = await supabaseAdmin
@@ -95,13 +102,28 @@ export async function POST(
                 type: 'user_update',
                 message: logMessage,
                 metadata: {
-                    photo1_updated: !!photo1Url,
-                    photo2_updated: !!photo2Url
+                    photo1_updated: !!(photo1Url && photo1Url.trim()),
+                    photo2_updated: !!(photo2Url && photo2Url.trim())
                 },
                 created_at: new Date().toISOString()
             });
 
-        console.log(`✅ Mascota ${petId} actualizada por usuario ${userId}`);
+        // 5. 🆕 Crear notificación para los admins
+        await supabaseAdmin
+            .from('notifications')
+            .insert({
+                user_id: 'admin', // Notificación para admins
+                type: 'account',
+                title: '📎 Usuario actualizó información',
+                message: `El usuario actualizó la información de ${pet.name}. Revísala en Gestión General.`,
+                icon: '📎',
+                link: '/admin',
+                is_read: false,
+                metadata: { petId, petName: pet.name, userId },
+                created_at: new Date().toISOString()
+            });
+
+        console.log(`✅ Mascota ${petId} actualizada por usuario ${userId} y admin notificado`);
 
         return NextResponse.json({
             success: true,

@@ -19,6 +19,15 @@ export interface AdminApiResponse<T = any> {
     error?: string;
 }
 
+// 🆕 Sistema de caché simple en memoria
+interface CacheEntry<T> {
+    data: T;
+    timestamp: number;
+}
+
+const CACHE_TTL_MS = 60 * 1000; // 60 segundos de caché
+const membersCache: Map<string, CacheEntry<MemberstackMember[]>> = new Map();
+
 /**
  * Cliente base para Memberstack Admin API
  */
@@ -48,10 +57,33 @@ class MemberstackAdminClient {
     }
 
     /**
+     * 🆕 Invalida el caché (usar después de actualizar un miembro)
+     */
+    invalidateCache() {
+        membersCache.clear();
+        console.log('🗑️ Caché de miembros invalidado');
+    }
+
+    /**
      * Lista todos los miembros con un status específico
+     * 🆕 Ahora con caché de 60 segundos para mejorar rendimiento
      */
     async listMembers(status?: 'pending' | 'approved' | 'rejected' | 'appealed'): Promise<AdminApiResponse<MemberstackMember[]>> {
         try {
+            const cacheKey = status || 'all';
+            const cached = membersCache.get(cacheKey);
+
+            // Verificar si hay caché válido
+            if (cached && (Date.now() - cached.timestamp) < CACHE_TTL_MS) {
+                console.log(`⚡ Usando caché para miembros (${cacheKey})`);
+                return {
+                    success: true,
+                    data: cached.data,
+                };
+            }
+
+            console.log(`📡 Fetching miembros desde Memberstack (${cacheKey})...`);
+
             // Memberstack Admin API endpoint para listar miembros
             const url = `${this.baseUrl}/members`;
 
@@ -74,6 +106,13 @@ class MemberstackAdminClient {
                     m.customFields?.['approval-status'] === status
                 );
             }
+
+            // 🆕 Guardar en caché
+            membersCache.set(cacheKey, {
+                data: members,
+                timestamp: Date.now()
+            });
+            console.log(`💾 Caché actualizado para ${cacheKey} (${members.length} miembros)`);
 
             return {
                 success: true,
@@ -144,6 +183,9 @@ class MemberstackAdminClient {
             }
 
             const data = await response.json();
+
+            // 🆕 Invalidar caché después de actualizar
+            this.invalidateCache();
 
             return {
                 success: true,
