@@ -64,8 +64,7 @@ export async function POST(
 
         // 2. Preparar los campos a actualizar
         const updateData: Record<string, any> = {
-            status: 'pending', // Cambiar a pending para re-revisión
-            updated_at: new Date().toISOString()
+            status: 'pending' // Cambiar a pending para re-revisión
         };
 
         if (photo1Url) {
