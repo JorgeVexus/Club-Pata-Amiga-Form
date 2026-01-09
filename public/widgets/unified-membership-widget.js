@@ -307,7 +307,8 @@
         renderRejectedContent(pet) {
             const memberStatus = this.member.customFields?.['approval-status'];
             const appealMessage = this.member.customFields?.['appeal-message'];
-            const adminMsg = this.userExtra?.lastAdminResponse;
+            // 🆕 Ahora lee el mensaje del admin directamente de la mascota
+            const adminMsg = pet.last_admin_response;
 
             return `
                 <div class="pata-alert-banner pata-alert-error">
@@ -355,7 +356,8 @@
         }
 
         renderActionRequiredContent(pet) {
-            const adminMsg = this.userExtra?.lastAdminResponse;
+            // 🆕 Ahora lee el mensaje del admin directamente de la mascota
+            const adminMsg = pet.last_admin_response;
 
             return `
                 <div class="pata-alert-banner pata-alert-warning">

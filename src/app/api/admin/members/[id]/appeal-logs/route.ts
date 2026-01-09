@@ -1,6 +1,7 @@
 /**
  * API Route: /api/admin/members/[id]/appeal-logs
- * Obtiene el historial de logs de apelación para un usuario específico
+ * Obtiene el historial de logs de apelación
+ * ACTUALIZADO: Ahora filtra por mascota específica (petId)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -18,27 +19,35 @@ export async function GET(
 ) {
     try {
         const { id: memberId } = await params;
+        const { searchParams } = new URL(request.url);
+        const petId = searchParams.get('petId'); // 🆕 Parámetro opcional para filtrar por mascota
 
-        console.log(`📜 Obteniendo logs de apelación para ${memberId}...`);
+        console.log(`📜 Obteniendo logs de apelación para ${memberId}, petId: ${petId || 'todos'}...`);
 
-        // Obtener los logs de apelación ordenados por fecha (más recientes primero)
-        const { data: logs, error } = await supabaseAdmin
+        // Construir query base
+        let query = supabaseAdmin
             .from('appeal_logs')
             .select('*')
             .eq('user_id', memberId)
             .order('created_at', { ascending: false });
+
+        // 🆕 Si se proporciona petId, filtrar solo logs de esa mascota
+        if (petId) {
+            query = query.eq('pet_id', petId);
+        }
+
+        const { data: logs, error } = await query;
 
         if (error) {
             console.error('Error obteniendo logs:', error);
             return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // Enriquecer logs con nombres de admin si es posible
+        // Enriquecer logs con nombres de admin
         const enrichedLogs = await Promise.all((logs || []).map(async (log) => {
             let adminName = 'Sistema';
 
             if (log.admin_id && log.admin_id !== 'admin' && log.admin_id !== 'current_admin') {
-                // Intentar obtener el nombre del admin desde Supabase
                 const { data: adminData } = await supabaseAdmin
                     .from('users')
                     .select('first_name, last_name, full_name')

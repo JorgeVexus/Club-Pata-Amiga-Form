@@ -43,17 +43,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
     const [petNotes, setPetNotes] = useState<Record<string, string>>({});
+    const [petMessages, setPetMessages] = useState<Record<string, string>>({});  // 🆕 Mensaje de respuesta por mascota
+    const [petLogs, setPetLogs] = useState<Record<string, AppealLog[]>>({});      // 🆕 Logs por mascota
+    const [loadingLogs, setLoadingLogs] = useState<Record<string, boolean>>({}); // 🆕 Loading state por mascota
     const [appealLogs, setAppealLogs] = useState<AppealLog[]>([]);
-    const [loadingLogs, setLoadingLogs] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
-            if (showAppealSection) {
-                loadAppealLogs();
-            }
         }
-    }, [isOpen, member, showAppealSection]);
+    }, [isOpen, member]);
 
     async function loadPets() {
         setLoadingPets(true);
@@ -75,18 +74,51 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         }
     }
 
-    async function loadAppealLogs() {
-        setLoadingLogs(true);
+    // 🆕 Cargar logs de apelación para una mascota específica
+    async function loadPetAppealLogs(petId: string) {
+        setLoadingLogs(prev => ({ ...prev, [petId]: true }));
         try {
-            const res = await fetch(`/api/admin/members/${member.id}/appeal-logs`);
+            const res = await fetch(`/api/admin/members/${member.id}/appeal-logs?petId=${petId}`);
             const data = await res.json();
             if (data.success && data.logs) {
-                setAppealLogs(data.logs);
+                setPetLogs(prev => ({ ...prev, [petId]: data.logs }));
             }
         } catch (error) {
-            console.error('Error loading appeal logs:', error);
+            console.error(`Error loading appeal logs for pet ${petId}:`, error);
         } finally {
-            setLoadingLogs(false);
+            setLoadingLogs(prev => ({ ...prev, [petId]: false }));
+        }
+    }
+
+    // 🆕 Enviar mensaje de respuesta a una mascota específica
+    async function sendPetResponse(petId: string) {
+        const msg = petMessages[petId];
+        if (!msg?.trim()) {
+            alert('Escribe un mensaje primero.');
+            return;
+        }
+
+        try {
+            const res = await fetch(`/api/admin/members/${member.id}/appeal-response`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: msg,
+                    petId: petId,
+                    adminId: 'current_admin'
+                })
+            });
+            if (res.ok) {
+                alert('Mensaje enviado.');
+                setPetMessages(prev => ({ ...prev, [petId]: '' }));
+                loadPetAppealLogs(petId); // Recargar historial de esta mascota
+                loadPets(); // Recargar para ver el nuevo status
+            } else {
+                const err = await res.json();
+                alert('Error: ' + (err.error || 'Error al enviar'));
+            }
+        } catch (e) {
+            alert('Error de conexión.');
         }
     }
 
@@ -156,85 +188,19 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                 {/* Content */}
                 <div className={styles.content}>
-                    {/* Appeal Info (Only shown when accessed from Appeals menu) */}
+                    {/* Appeal Info Banner (solo info básica, formularios están dentro de cada mascota) */}
                     {showAppealSection && fields['approval-status'] === 'appealed' && (
                         <div className={`${styles.section} ${styles.appealSection}`}>
-                            <h3 className={styles.sectionTitle}>📩 Apelación en Proceso</h3>
+                            <h3 className={styles.sectionTitle}>📩 Apelación Recibida</h3>
                             <div className={styles.appealContent}>
-                                <p className={styles.appealMessage}>"{fields['appeal-message'] || 'Sin mensaje registrado.'}"</p>
+                                <p className={styles.appealMessage}>Mensaje del usuario: "{fields['appeal-message'] || 'Sin mensaje registrado.'}"</p>
                                 <span className={styles.appealDate}>
                                     Fecha: {fields['appealed-at'] ? new Date(fields['appealed-at']).toLocaleDateString() : 'Desconocida'}
                                 </span>
                             </div>
-
-                            {/* Admin Response Area */}
-                            <div className={styles.adminResponseArea}>
-                                <label className={styles.responseLabel}>Responder al usuario:</label>
-                                <textarea
-                                    className={styles.responseTextarea}
-                                    placeholder="Indica al usuario qué documentos faltan o por qué se mantiene el rechazo..."
-                                    value={petNotes['appeal_response'] || ''}
-                                    onChange={(e) => setPetNotes({ ...petNotes, ['appeal_response']: e.target.value })}
-                                />
-                                <button
-                                    className={styles.sendResponseBtn}
-                                    onClick={async () => {
-                                        const msg = petNotes['appeal_response'];
-                                        if (!msg?.trim()) return alert('Escribe un mensaje primero.');
-
-                                        try {
-                                            const res = await fetch(`/api/admin/members/${member.id}/appeal-response`, {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({
-                                                    message: msg,
-                                                    adminId: 'current_admin'
-                                                })
-                                            });
-                                            if (res.ok) {
-                                                alert('Mensaje enviado al usuario.');
-                                                setPetNotes({ ...petNotes, ['appeal_response']: '' });
-                                                loadAppealLogs(); // Recargar el historial
-                                            } else {
-                                                alert('Error al enviar el mensaje.');
-                                            }
-                                        } catch (e) {
-                                            alert('Error de conexión.');
-                                        }
-                                    }}
-                                >
-                                    Enviar Mensaje al Usuario 📩
-                                </button>
-                            </div>
-
-                            {/* Historial de Conversación */}
-                            <div className={styles.appealHistorySection}>
-                                <h4 className={styles.historyTitle}>📜 Historial de Conversación</h4>
-                                {loadingLogs ? (
-                                    <p className={styles.loadingText}>Cargando historial...</p>
-                                ) : appealLogs.length === 0 ? (
-                                    <p className={styles.emptyHistory}>No hay mensajes anteriores.</p>
-                                ) : (
-                                    <div className={styles.historyList}>
-                                        {appealLogs.map((log) => (
-                                            <div
-                                                key={log.id}
-                                                className={`${styles.historyItem} ${log.type === 'user_appeal' || log.type === 'user_update' ? styles.userMessage : styles.adminMessage}`}
-                                            >
-                                                <div className={styles.historyHeader}>
-                                                    <span className={styles.historyAuthor}>
-                                                        {log.type === 'user_appeal' || log.type === 'user_update'
-                                                            ? '👤 Usuario'
-                                                            : `🛡️ ${log.admin_name}`}
-                                                    </span>
-                                                    <span className={styles.historyDate}>{log.formatted_date}</span>
-                                                </div>
-                                                <p className={styles.historyMessage}>{log.message}</p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
+                            <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '10px', fontStyle: 'italic' }}>
+                                💡 Responde a cada mascota individualmente en su tarjeta de abajo.
+                            </p>
                         </div>
                     )}
 
@@ -468,6 +434,67 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     </button>
                                                 )}
                                             </div>
+
+                                            {/* 🆕 Sección de Comunicación por Mascota (solo para rejected/action_required) */}
+                                            {showAppealSection && (pet.status === 'rejected' || pet.status === 'action_required') && (
+                                                <div className={styles.petCommunicationSection}>
+                                                    {/* Mostrar última respuesta del admin si existe */}
+                                                    {(pet as any).last_admin_response && (
+                                                        <div className={styles.lastAdminResponse}>
+                                                            <strong>📩 Último mensaje enviado:</strong>
+                                                            <p>{(pet as any).last_admin_response}</p>
+                                                        </div>
+                                                    )}
+
+                                                    {/* Formulario de respuesta */}
+                                                    <div className={styles.petResponseForm}>
+                                                        <label>💬 Responder sobre esta mascota:</label>
+                                                        <textarea
+                                                            value={petMessages[pet.id] || ''}
+                                                            onChange={(e) => setPetMessages({ ...petMessages, [pet.id]: e.target.value })}
+                                                            placeholder="Indica qué información falta o por qué se rechaza esta mascota..."
+                                                            className={styles.notesInput}
+                                                            rows={3}
+                                                        />
+                                                        <button
+                                                            className={styles.sendResponseBtn}
+                                                            onClick={() => sendPetResponse(pet.id)}
+                                                        >
+                                                            Enviar Mensaje 📩
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Historial de esta mascota */}
+                                                    <div className={styles.petHistorySection}>
+                                                        <button
+                                                            className={styles.loadHistoryBtn}
+                                                            onClick={() => loadPetAppealLogs(pet.id)}
+                                                        >
+                                                            {loadingLogs[pet.id] ? 'Cargando...' : '📜 Ver Historial de Mensajes'}
+                                                        </button>
+                                                        {petLogs[pet.id] && petLogs[pet.id].length > 0 && (
+                                                            <div className={styles.historyList}>
+                                                                {petLogs[pet.id].map((log) => (
+                                                                    <div
+                                                                        key={log.id}
+                                                                        className={`${styles.historyItem} ${log.type === 'user_appeal' || log.type === 'user_update' ? styles.userMessage : styles.adminMessage}`}
+                                                                    >
+                                                                        <div className={styles.historyHeader}>
+                                                                            <span className={styles.historyAuthor}>
+                                                                                {log.type === 'user_appeal' || log.type === 'user_update'
+                                                                                    ? '👤 Usuario'
+                                                                                    : `🛡️ ${log.admin_name}`}
+                                                                            </span>
+                                                                            <span className={styles.historyDate}>{log.formatted_date}</span>
+                                                                        </div>
+                                                                        <p className={styles.historyMessage}>{log.message}</p>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}

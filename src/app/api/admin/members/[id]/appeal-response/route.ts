@@ -1,6 +1,7 @@
 /**
  * API Route: /api/admin/members/[id]/appeal-response
  * Permite a un administrador enviar un mensaje de respuesta a una apelación
+ * ACTUALIZADO: Ahora trabaja a nivel de mascota individual
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -20,19 +21,24 @@ export async function POST(
 ) {
     try {
         const { id: memberId } = await params;
-        const { message, adminId } = await request.json();
+        const { message, adminId, petId } = await request.json();
 
         if (!message?.trim()) {
             return NextResponse.json({ error: 'El mensaje es obligatorio' }, { status: 400 });
         }
 
-        console.log(`📩 Enviando respuesta de apelación a ${memberId}...`);
+        if (!petId) {
+            return NextResponse.json({ error: 'petId es obligatorio para enviar mensaje a una mascota' }, { status: 400 });
+        }
 
-        // 1. Registrar en appeal_logs
+        console.log(`📩 Enviando respuesta de apelación a mascota ${petId} del usuario ${memberId}...`);
+
+        // 1. Registrar en appeal_logs CON el pet_id
         const { error: logError } = await supabaseAdmin
             .from('appeal_logs')
             .insert({
                 user_id: memberId,
+                pet_id: petId,  // 🆕 Vinculado a la mascota específica
                 admin_id: adminId || 'admin',
                 type: 'admin_request',
                 message: message,
@@ -44,31 +50,33 @@ export async function POST(
             return NextResponse.json({ error: 'Error al registrar el log' }, { status: 500 });
         }
 
-        // 2. Actualizar campo denormalizado en users para acceso rápido del widget
-        const { error: userError } = await supabaseAdmin
-            .from('users')
+        // 2. Actualizar la MASCOTA específica (no el usuario)
+        const { error: petError } = await supabaseAdmin
+            .from('pets')
             .update({
                 last_admin_response: message,
-                membership_status: 'action_required'
+                status: 'action_required'
             })
-            .eq('memberstack_id', memberId);
+            .eq('id', petId);
 
-        if (userError) {
-            console.warn('Error actualizando usuario (no crítico):', userError);
+        if (petError) {
+            console.error('Error actualizando mascota:', petError);
+            return NextResponse.json({ error: 'Error al actualizar la mascota' }, { status: 500 });
         }
 
         // 3. Crear notificación para la campana del usuario 🔔
+        // (Las notificaciones sí van al usuario, pero con contexto de la mascota)
         await createServerNotification({
             userId: memberId,
             type: 'account',
-            title: '📩 Nuevo mensaje de tu apelación',
+            title: '📩 Nuevo mensaje sobre tu mascota',
             message: message.length > 100 ? message.substring(0, 100) + '...' : message,
             icon: '📩',
-            link: '/mi-membresia', // O la página donde ven su estado
-            metadata: { source: 'appeal_response' }
+            link: '/mi-membresia',
+            metadata: { source: 'appeal_response', petId: petId }
         });
 
-        console.log(`✅ Respuesta de apelación enviada y notificación creada para ${memberId}`);
+        console.log(`✅ Respuesta de apelación enviada a mascota ${petId} y notificación creada para ${memberId}`);
 
         return NextResponse.json({
             success: true,
