@@ -3,6 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
+import AdminNotifications from './AdminNotifications';
 
 interface NavbarProps {
     onMobileMenuToggle?: () => void;
@@ -32,6 +33,9 @@ export default function Navbar({ onMobileMenuToggle }: NavbarProps) {
             </div>
 
             <div className={styles.navbarRight}>
+                {/* 🆕 Campanita de Notificaciones */}
+                <AdminNotifications />
+
                 <div className={styles.adminBadgeNav}>
                     <Image
                         src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693b20b431b6b876fa5356ee_Icon%20huella.svg"
