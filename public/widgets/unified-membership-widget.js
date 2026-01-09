@@ -454,7 +454,7 @@
                             </div>
 
                             <div>
-                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1 (nueva):</label>
+                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1:</label>
                                 <div class="pata-upload-area" id="pata-upload-area-1">
                                     <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1">
                                     <div class="pata-upload-icon">📷</div>
@@ -462,7 +462,7 @@
                                 </div>
                             </div>
 
-                            <div>
+                            <div style="margin-top: 15px;">
                                 <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 2 (opcional):</label>
                                 <div class="pata-upload-area" id="pata-upload-area-2">
                                     <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-2">
@@ -475,6 +475,7 @@
                                 <label style="font-weight: 600; margin-bottom: 10px; display: block;">Mensaje (opcional):</label>
                                 <textarea id="pata-update-message" class="pata-textarea" placeholder="Añade un comentario sobre tu actualización..."></textarea>
                             </div>
+
                         </div>
                         <div class="pata-modal-footer">
                             <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update">Cancelar</button>
@@ -627,6 +628,13 @@
                             });
                             const data = await res.json();
                             if (data.success) photo1Url = data.url;
+                            else {
+                                alert('Error al subir foto 1: ' + (data.error || 'Error desconocido'));
+                                submitBtn.disabled = false;
+                                submitBtn.innerText = 'Enviar Actualización';
+                                this.uploading = false;
+                                return;
+                            }
                         }
 
                         // Subir foto 2
@@ -640,6 +648,13 @@
                             });
                             const data = await res.json();
                             if (data.success) photo2Url = data.url;
+                            else {
+                                alert('Error al subir foto 2: ' + (data.error || 'Error desconocido'));
+                                submitBtn.disabled = false;
+                                submitBtn.innerText = 'Enviar Actualización';
+                                this.uploading = false;
+                                return;
+                            }
                         }
 
                         submitBtn.innerText = 'Guardando...';
@@ -656,6 +671,8 @@
                                 message
                             })
                         });
+
+
 
                         const updateData = await updateRes.json();
                         if (updateData.success) {

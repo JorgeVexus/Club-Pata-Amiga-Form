@@ -65,21 +65,26 @@ export async function POST(
         }
 
         // 2. Preparar los campos a actualizar
-        // SOLO incluir la foto si viene con valor real (no null, no undefined, no string vacío)
+        // Ahora soportamos photo_url y photo2_url
         const updateData: Record<string, any> = {
             status: 'pending' // Cambiar a pending para re-revisión
         };
 
+        // Actualizar foto 1 si viene con valor válido
         if (photo1Url && typeof photo1Url === 'string' && photo1Url.trim() !== '') {
             updateData.photo_url = photo1Url;
             console.log('📷 Actualizando foto 1:', photo1Url);
         }
+
+        // Actualizar foto 2 si viene con valor válido
         if (photo2Url && typeof photo2Url === 'string' && photo2Url.trim() !== '') {
             updateData.photo2_url = photo2Url;
             console.log('📷 Actualizando foto 2:', photo2Url);
         }
 
         console.log('📋 Campos a actualizar:', JSON.stringify(updateData, null, 2));
+
+
 
         // 3. Actualizar la mascota
         const { error: updateError } = await supabaseAdmin
