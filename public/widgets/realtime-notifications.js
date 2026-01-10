@@ -450,16 +450,54 @@
         playSound() {
             try {
                 const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain);
-                gain.connect(ctx.destination);
-                osc.frequency.value = 800;
-                gain.gain.value = 0.1;
-                osc.start();
-                osc.stop(ctx.currentTime + 0.1);
+                const now = ctx.currentTime;
+
+                // Crear sonido de campanita con múltiples armónicos
+                const frequencies = [1200, 1800, 2400]; // Tonos de campana
+
+                frequencies.forEach((freq, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+
+                    // Volumen con decay (fade out natural)
+                    const volume = 0.15 / (i + 1);
+                    gain.gain.setValueAtTime(volume, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                });
+
+                // Segundo toque de campana (eco)
+                setTimeout(() => {
+                    try {
+                        const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+                        const now2 = ctx2.currentTime;
+
+                        [1200, 1600].forEach((freq, i) => {
+                            const osc = ctx2.createOscillator();
+                            const gain = ctx2.createGain();
+                            osc.connect(gain);
+                            gain.connect(ctx2.destination);
+                            osc.type = 'sine';
+                            osc.frequency.value = freq;
+                            gain.gain.setValueAtTime(0.08 / (i + 1), now2);
+                            gain.gain.exponentialRampToValueAtTime(0.001, now2 + 0.5);
+                            osc.start(now2);
+                            osc.stop(now2 + 0.5);
+                        });
+                    } catch (e) { }
+                }, 200);
+
             } catch (e) { }
         }
+
 
         shakeBell() {
             const btn = document.querySelector('.rtbell-button');
