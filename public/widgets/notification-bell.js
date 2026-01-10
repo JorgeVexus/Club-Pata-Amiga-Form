@@ -1,19 +1,24 @@
 /**
- * 🔔 Club Pata Amiga - Notification Widget for Webflow
+ * 🔔 Club Pata Amiga - Notification Widget for Webflow (Real-Time)
  * 
  * Este script crea una campanita de notificaciones que se puede
  * insertar en cualquier página de Webflow.
  * 
+ * 🆕 AHORA CON SUPABASE REALTIME - Notificaciones instantáneas!
+ * 
  * INSTRUCCIONES DE USO EN WEBFLOW:
  * 
  * 1. En Webflow, ve a Project Settings → Custom Code
- * 2. En "Head Code", pega el siguiente script:
+ * 2. En "Head Code", pega los siguientes scripts:
+ * 
+ * <!-- Supabase para Realtime -->
+ * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  * 
  * <script>
  *   window.PATA_AMIGA_CONFIG = {
  *     apiUrl: 'https://club-pata-amiga-form.vercel.app',
- *     supabaseUrl: 'TU_SUPABASE_URL',
- *     supabaseAnonKey: 'TU_SUPABASE_ANON_KEY'
+ *     supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
+ *     supabaseAnonKey: 'TU_ANON_KEY'
  *   };
  * </script>
  * <script src="https://club-pata-amiga-form.vercel.app/widgets/notification-bell.js"></script>
@@ -33,8 +38,8 @@
     const DEFAULT_CONFIG = {
         apiUrl: 'https://club-pata-amiga-form.vercel.app',
         notificationsUrl: '/miembros/notificaciones',
-        supabaseUrl: '',
-        supabaseAnonKey: ''
+        supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
+        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q'
     };
 
     // Mezclar configuración personalizada con valores por defecto
@@ -73,6 +78,17 @@
             transform: scale(1.05);
         }
 
+        .pata-notification-bell.shake {
+            animation: pataShake 0.5s ease-in-out;
+        }
+
+        @keyframes pataShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            50% { transform: rotate(15deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
         .pata-notification-bell .bell-icon {
             font-size: 1.5rem;
         }
@@ -94,6 +110,12 @@
             justify-content: center;
             border: 2px solid white;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            animation: pataPulse 2s infinite;
+        }
+
+        @keyframes pataPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
 
         .pata-notification-dropdown {
@@ -255,6 +277,46 @@
             background: #f0f0f0;
         }
 
+        /* 🆕 Toast de notificación en tiempo real */
+        .pata-realtime-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #00BBB4, #00a09a);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 187, 180, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 10001;
+            animation: pataToastIn 0.4s ease;
+            max-width: 320px;
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        @keyframes pataToastIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pata-realtime-toast-icon {
+            font-size: 24px;
+            animation: pataRing 0.5s ease;
+        }
+
+        @keyframes pataRing {
+            0%, 100% { transform: rotate(0deg); }
+            20%, 60% { transform: rotate(-20deg); }
+            40%, 80% { transform: rotate(20deg); }
+        }
+
+        .pata-realtime-toast-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
         @media (max-width: 480px) {
             .pata-notification-dropdown {
                 position: fixed;
@@ -264,6 +326,12 @@
                 right: 0;
                 width: 100%;
                 border-radius: 20px 20px 0 0;
+            }
+
+            .pata-realtime-toast {
+                left: 20px;
+                right: 20px;
+                max-width: none;
             }
         }
     `;
@@ -302,6 +370,9 @@
             this.notifications = [];
             this.unreadCount = 0;
             this.isOpen = false;
+            this.supabaseClient = null;
+            this.realtimeChannel = null;
+            this.toastTimeout = null;
 
             if (!this.container) {
                 console.error('Pata Amiga: Container not found:', containerId);
@@ -311,6 +382,141 @@
             this.render();
             this.loadNotifications();
             this.setupClickOutside();
+            this.initRealtime(); // 🆕 Inicializar Realtime
+        }
+
+        // 🆕 Inicializar Supabase Realtime
+        initRealtime() {
+            // Verificar si Supabase está disponible
+            if (typeof supabase !== 'undefined' && supabase.createClient) {
+                try {
+                    this.supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+                    console.log('📡 Pata Amiga: Supabase Realtime inicializado');
+                    this.subscribeToRealtime();
+                } catch (e) {
+                    console.warn('⚠️ Pata Amiga: Error inicializando Supabase:', e);
+                    this.fallbackToPolling();
+                }
+            } else {
+                console.log('⚠️ Pata Amiga: Supabase no disponible, usando polling');
+                this.fallbackToPolling();
+            }
+        }
+
+        // 🆕 Suscribirse a cambios en tiempo real
+        subscribeToRealtime() {
+            const self = this;
+
+            this.realtimeChannel = this.supabaseClient
+                .channel('user-notifications-' + this.userId)
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: 'user_id=eq.' + this.userId
+                    },
+                    function (payload) {
+                        console.log('🔔 Nueva notificación en tiempo real:', payload);
+                        const newNotif = payload.new;
+
+                        // Añadir al inicio
+                        self.notifications.unshift(newNotif);
+                        self.unreadCount++;
+
+                        // Mostrar toast
+                        self.showToast(newNotif.title || 'Nueva notificación');
+
+                        // Reproducir sonido
+                        self.playSound();
+
+                        // Shake bell
+                        self.shakeBell();
+
+                        // Actualizar UI
+                        self.updateUI();
+                    }
+                )
+                .on(
+                    'postgres_changes',
+                    {
+                        event: 'UPDATE',
+                        schema: 'public',
+                        table: 'notifications',
+                        filter: 'user_id=eq.' + this.userId
+                    },
+                    function (payload) {
+                        const updated = payload.new;
+                        self.notifications = self.notifications.map(function (n) {
+                            return n.id === updated.id ? updated : n;
+                        });
+                        self.unreadCount = self.notifications.filter(function (n) { return !n.is_read; }).length;
+                        self.updateUI();
+                    }
+                )
+                .subscribe(function (status) {
+                    console.log('📡 Pata Amiga Realtime status:', status);
+                });
+        }
+
+        // 🆕 Fallback a polling si Realtime no está disponible
+        fallbackToPolling() {
+            const self = this;
+            setInterval(function () {
+                self.loadNotifications();
+            }, 30000);
+        }
+
+        // 🆕 Mostrar toast de nueva notificación
+        showToast(message) {
+            // Remover toast anterior si existe
+            const existingToast = document.querySelector('.pata-realtime-toast');
+            if (existingToast) existingToast.remove();
+
+            const toast = document.createElement('div');
+            toast.className = 'pata-realtime-toast';
+            toast.innerHTML = '<span class="pata-realtime-toast-icon">🔔</span>' +
+                '<span class="pata-realtime-toast-text">' + message + '</span>';
+            document.body.appendChild(toast);
+
+            // Remover después de 4 segundos
+            clearTimeout(this.toastTimeout);
+            this.toastTimeout = setTimeout(function () {
+                toast.remove();
+            }, 4000);
+        }
+
+        // 🆕 Reproducir sonido de notificación
+        playSound() {
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                gainNode.gain.value = 0.1;
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                // Ignorar si no hay soporte de audio
+            }
+        }
+
+        // 🆕 Animar campanita
+        shakeBell() {
+            const bell = this.container.querySelector('.pata-notification-bell');
+            if (bell) {
+                bell.classList.add('shake');
+                setTimeout(function () {
+                    bell.classList.remove('shake');
+                }, 500);
+            }
         }
 
         async loadNotifications() {
@@ -417,7 +623,7 @@
             } else {
                 list.innerHTML = this.notifications.map(function (n) {
                     return '<div class="pata-notification-item ' + (n.is_read ? '' : 'unread') + '" data-id="' + n.id + '">' +
-                        '<div class="icon">' + n.icon + '</div>' +
+                        '<div class="icon">' + (n.icon || '📢') + '</div>' +
                         '<div class="content">' +
                         '<h4 class="title">' + n.title + '</h4>' +
                         '<p class="message">' + n.message + '</p>' +
@@ -475,6 +681,13 @@
                 }
             });
         }
+
+        // 🆕 Limpiar al destruir
+        destroy() {
+            if (this.realtimeChannel) {
+                this.supabaseClient.removeChannel(this.realtimeChannel);
+            }
+        }
     }
 
     // Inicializar cuando el DOM esté listo
@@ -495,7 +708,7 @@
                         var container = document.getElementById('pata-amiga-notifications');
                         if (container) {
                             new NotificationWidget('pata-amiga-notifications', member.id);
-                            console.log('🔔 Pata Amiga: Notifications system initialized for:', member.id);
+                            console.log('🔔 Pata Amiga: Notifications system initialized (Realtime) for:', member.id);
                         } else {
                             console.warn('🔔 Pata Amiga: Notifications container #pata-amiga-notifications not found in page');
                         }
@@ -528,3 +741,4 @@
     };
 
 })();
+
