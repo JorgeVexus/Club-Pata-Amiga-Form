@@ -21,6 +21,31 @@
     transform: scale(1.05);
 }
 
+/* 🆕 Animación cuando hay nuevas notificaciones */
+.bellButton.hasNew {
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-15deg);
+    }
+
+    50% {
+        transform: rotate(15deg);
+    }
+
+    75% {
+        transform: rotate(-10deg);
+    }
+}
+
 .bellIcon {
     font-size: 20px;
 }
@@ -53,6 +78,63 @@
     50% {
         transform: scale(1.1);
     }
+}
+
+/* 🆕 Toast de nueva notificación */
+.toast {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: linear-gradient(135deg, #00BBB4, #00a09a);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 187, 180, 0.4);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    z-index: 2000;
+    animation: toastIn 0.4s ease;
+}
+
+@keyframes toastIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toastIcon {
+    font-size: 24px;
+    animation: ring 0.5s ease;
+}
+
+@keyframes ring {
+
+    0%,
+    100% {
+        transform: rotate(0deg);
+    }
+
+    20%,
+    60% {
+        transform: rotate(-20deg);
+    }
+
+    40%,
+    80% {
+        transform: rotate(20deg);
+    }
+}
+
+.toastText {
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .dropdown {
@@ -183,6 +265,7 @@
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    line-clamp: 2;
 }
 
 .itemTime {
