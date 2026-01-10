@@ -279,11 +279,10 @@
             this.channel = null;
             this.notifications = [];
             this.isOpen = false;
-            this.connected = false;
         }
 
         async init() {
-            console.log('🔔 RealtimeNotifications: Iniciando...');
+            console.log('🔔 Notificaciones: Iniciando...');
 
             // Inyectar estilos
             this.injectStyles();
@@ -301,10 +300,10 @@
             // Cargar notificaciones
             await this.loadNotifications();
 
-            // Conectar Supabase Realtime
-            this.connectRealtime();
+            // Iniciar polling
+            this.startPolling();
 
-            console.log('✅ RealtimeNotifications listo para:', this.userId);
+            console.log('✅ Notificaciones listo para:', this.userId);
         }
 
         injectStyles() {
@@ -332,62 +331,12 @@
             return null;
         }
 
-        connectRealtime() {
-            if (typeof supabase === 'undefined') {
-                console.warn('⚠️ Supabase CDN no cargado. Usando polling.');
-                this.startPolling();
-                return;
-            }
-
-            try {
-                this.supabase = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
-
-                this.channel = this.supabase
-                    .channel('user-rt-' + this.userId)
-                    .on('postgres_changes', {
-                        event: 'INSERT',
-                        schema: 'public',
-                        table: 'notifications',
-                        filter: 'user_id=eq.' + this.userId
-                    }, (payload) => {
-                        console.log('🔔 Nueva notificación RT:', payload);
-                        this.handleNewNotification(payload.new);
-                    })
-                    .on('postgres_changes', {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'notifications',
-                        filter: 'user_id=eq.' + this.userId
-                    }, (payload) => {
-                        this.handleUpdateNotification(payload.new);
-                    })
-                    .subscribe((status) => {
-                        console.log('📡 Realtime status:', status);
-                        this.connected = (status === 'SUBSCRIBED');
-                        // Si falla después de intentos, usar polling
-                        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-                            console.log('⚠️ Realtime falló, usando polling rápido');
-                            this.startPolling();
-                        }
-                    });
-
-                // Iniciar polling como backup (por si Realtime no funciona)
-                // El polling detectará notificaciones nuevas por comparación
-                this.startPolling();
-
-            } catch (e) {
-                console.error('Error conectando Realtime:', e);
-                this.startPolling();
-            }
-        }
-
         startPolling() {
             if (this.pollingStarted) return;
             this.pollingStarted = true;
 
             // Polling cada 10 segundos
             setInterval(async () => {
-                const prevCount = this.notifications.length;
                 const prevFirstId = this.notifications[0]?.id;
 
                 await this.loadNotifications();
@@ -404,7 +353,7 @@
                         this.shakeBell();
                     }
                 }
-            }, 10000); // Cada 10 segundos
+            }, 10000);
         }
 
 
