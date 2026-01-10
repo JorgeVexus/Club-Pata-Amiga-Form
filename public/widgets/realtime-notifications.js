@@ -364,8 +364,16 @@
                     .subscribe((status) => {
                         console.log('📡 Realtime status:', status);
                         this.connected = (status === 'SUBSCRIBED');
-                        this.updateStatus();
+                        // Si falla después de intentos, usar polling
+                        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+                            console.log('⚠️ Realtime falló, usando polling rápido');
+                            this.startPolling();
+                        }
                     });
+
+                // Iniciar polling como backup (por si Realtime no funciona)
+                // El polling detectará notificaciones nuevas por comparación
+                this.startPolling();
 
             } catch (e) {
                 console.error('Error conectando Realtime:', e);
@@ -374,8 +382,31 @@
         }
 
         startPolling() {
-            setInterval(() => this.loadNotifications(), 30000);
+            if (this.pollingStarted) return;
+            this.pollingStarted = true;
+
+            // Polling cada 10 segundos
+            setInterval(async () => {
+                const prevCount = this.notifications.length;
+                const prevFirstId = this.notifications[0]?.id;
+
+                await this.loadNotifications();
+
+                // Detectar si hay nuevas notificaciones
+                if (this.notifications.length > 0 &&
+                    this.notifications[0]?.id !== prevFirstId &&
+                    prevFirstId !== undefined) {
+                    // Nueva notificación detectada!
+                    const newNotif = this.notifications[0];
+                    if (!newNotif.is_read) {
+                        this.showToast(newNotif.title || 'Nueva notificación');
+                        this.playSound();
+                        this.shakeBell();
+                    }
+                }
+            }, 10000); // Cada 10 segundos
         }
+
 
         handleNewNotification(notif) {
             // Añadir al inicio

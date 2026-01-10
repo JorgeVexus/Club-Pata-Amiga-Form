@@ -49,13 +49,10 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Error marking all notifications as read:', error);
-            return NextResponse.json(
-                { error: 'Failed to mark notifications as read' },
-                { status: 500 }
-            );
+            return corsResponse({ error: 'Failed to mark notifications as read' }, 500);
         }
 
-        return NextResponse.json({
+        return corsResponse({
             success: true,
             markedCount: data?.length || 0,
             message: `${data?.length || 0} notifications marked as read`
@@ -63,9 +60,7 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Mark all as read API error:', error);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return corsResponse({ error: 'Internal server error' }, 500);
     }
 }
+
