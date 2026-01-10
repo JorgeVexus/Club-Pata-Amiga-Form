@@ -30,32 +30,30 @@
 
     // ========== ESTILOS ==========
     const STYLES = `
+        /* Container - ahora es inline para el navbar */
         #realtime-bell-widget {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 99999;
+            position: relative;
+            display: inline-block;
             font-family: 'Outfit', -apple-system, sans-serif;
         }
 
         .rtbell-button {
-            width: 56px;
-            height: 56px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #00BBB4, #00a09a);
+            background: transparent;
             border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
-            box-shadow: 0 4px 20px rgba(0, 187, 180, 0.4);
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
 
         .rtbell-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(0, 187, 180, 0.5);
+            background: rgba(0, 187, 180, 0.1);
+            transform: scale(1.05);
         }
 
         .rtbell-button.shake {
@@ -71,25 +69,24 @@
         }
 
         .rtbell-icon {
-            font-size: 28px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+            font-size: 24px;
         }
 
         .rtbell-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
-            min-width: 22px;
-            height: 22px;
+            top: 2px;
+            right: 2px;
+            min-width: 18px;
+            height: 18px;
             background: #FF4444;
             color: white;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 700;
-            border-radius: 11px;
+            border-radius: 9px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 6px;
+            padding: 0 5px;
             border: 2px solid white;
             animation: rtPulse 2s infinite;
         }
@@ -101,7 +98,7 @@
 
         .rtbell-dropdown {
             position: absolute;
-            bottom: 70px;
+            top: calc(100% + 10px);
             right: 0;
             width: 350px;
             max-height: 400px;
@@ -110,9 +107,10 @@
             box-shadow: 0 10px 50px rgba(0,0,0,0.2);
             overflow: hidden;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(-10px);
             pointer-events: none;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            z-index: 10000;
         }
 
         .rtbell-dropdown.open {
@@ -120,6 +118,7 @@
             transform: translateY(0);
             pointer-events: auto;
         }
+
 
         .rtbell-header {
             padding: 16px 20px;
@@ -256,22 +255,9 @@
             font-weight: 600;
         }
 
-        /* Status indicator */
+        /* Status indicator - oculto para navbar */
         .rtbell-status {
-            position: absolute;
-            bottom: -8px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 8px;
-            background: #333;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        .rtbell-status.connected {
-            background: #22c55e;
+            display: none;
         }
 
         @media (max-width: 480px) {
@@ -524,7 +510,6 @@
                     <button class="rtbell-button">
                         <span class="rtbell-icon">🔔</span>
                         <span class="rtbell-badge" style="display:none;">0</span>
-                        <span class="rtbell-status">Conectando...</span>
                     </button>
                     <div class="rtbell-dropdown">
                         <div class="rtbell-header">
