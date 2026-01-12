@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Apelaciones - Documentación Técnica</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00BBB4, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            color: #00BBB4;
+            font-size: 1.8rem;
+            margin: 40px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #00BBB4;
+        }
+
+        h3 {
+            color: #FFC107;
+            font-size: 1.3rem;
+            margin: 25px 0 15px;
+        }
+
+        h4 {
+            color: #e0e0e0;
+            font-size: 1.1rem;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            color: #ccc;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            color: #fff;
+        }
+
+        code {
+            background: rgba(0, 187, 180, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            color: #00d4aa;
+        }
+
+        pre {
+            background: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border: 1px solid #30363d;
+        }
+
+        pre code {
+            background: none;
+            padding: 0;
+            color: #c9d1d9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        th {
+            background: rgba(0, 187, 180, 0.2);
+            color: #00BBB4;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #FFC107;
+            color: #000;
+        }
+
+        .status-approved {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .status-rejected {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .status-appealed {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .flow-diagram {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 15px 0;
+        }
+
+        .flow-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00BBB4, #00a09a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .flow-content {
+            flex: 1;
+        }
+
+        .flow-arrow {
+            text-align: center;
+            color: #00BBB4;
+            font-size: 1.5rem;
+            margin: 5px 0 5px 60px;
+        }
+
+        ul,
+        ol {
+            margin: 15px 0 15px 25px;
+        }
+
+        li {
+            margin: 8px 0;
+            color: #ccc;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05));
+            border-left: 4px solid #00BBB4;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, rgba(255, 193, 7, 0.1), rgba(255, 193, 7, 0.05));
+            border-left: 4px solid #FFC107;
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .toc {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 40px;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+        }
+
+        .toc a {
+            color: #00BBB4;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .method {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.85rem;
+            margin-right: 10px;
+        }
+
+        .method-get {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .method-post {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .method-patch {
+            background: #FFC107;
+            color: #000;
+        }
+
+        .method-delete {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        footer {
+            margin-top: 60px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>⚖️ Sistema de Apelaciones</h1>
+        <p class="subtitle">Documentación Técnica Completa - Club Pata Amiga</p>
+
+        <!-- Tabla de Contenidos -->
+        <div class="toc">
+            <h3>📑 Tabla de Contenidos</h3>
+            <ol>
+                <li><a href="#overview">Descripción General</a></li>
+                <li><a href="#flow">Flujo de Apelación</a></li>
+                <li><a href="#database">Estructura de Base de Datos</a></li>
+                <li><a href="#api">Endpoints API</a></li>
+                <li><a href="#admin">Panel de Administración</a></li>
+                <li><a href="#user">Widget de Usuario</a></li>
+                <li><a href="#notifications">Sistema de Notificaciones</a></li>
+                <li><a href="#files">Archivos del Sistema</a></li>
+            </ol>
+        </div>
+
+        <!-- 1. Descripción General -->
+        <h2 id="overview">1. Descripción General</h2>
+
+        <p>El Sistema de Apelaciones permite a los usuarios responder cuando una de sus mascotas es rechazada por el
+            administrador. A diferencia de un sistema de aprobación simple, las apelaciones se manejan <strong>por
+                mascota individual</strong>, no por usuario.</p>
+
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🎯</span>
+                    <span class="card-title">Objetivo</span>
+                </div>
+                <p>Permitir comunicación bidireccional entre admin y usuario cuando hay problemas con el registro de una
+                    mascota.</p>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <span class="card-icon">🔄</span>
+                    <span class="card-title">Modelo</span>
+                </div>
+                <p>Apelaciones por mascota con historial de mensajes, similar a un sistema de tickets.</p>
+            </div>
+        </div>
+
+        <h3>Estados de Mascota</h3>
+        <table>
+            <tr>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Acción Disponible</th>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-pending">pending</span></td>
+                <td>Mascota recién registrada, pendiente de revisión</td>
+                <td>Admin: Aprobar o Rechazar</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-approved">approved</span></td>
+                <td>Mascota aprobada y activa</td>
+                <td>Usuario puede ver carnet</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-rejected">rejected</span></td>
+                <td>Mascota rechazada por admin</td>
+                <td>Usuario: Puede apelar</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge status-appealed">appealed</span></td>
+                <td>Usuario envió apelación, espera respuesta</td>
+                <td>Admin: Revisar y responder</td>
+            </tr>
+        </table>
+
+        <!-- 2. Flujo de Apelación -->
+        <h2 id="flow">2. Flujo de Apelación</h2>
+
+        <div class="flow-diagram">
+            <div class="flow-step">
+                <div class="flow-number">1</div>
+                <div class="flow-content">
+                    <strong>Admin rechaza mascota</strong>
+                    <p>El admin revisa la mascota y la rechaza con un motivo específico (ej: "Foto borrosa", "INE
+                        ilegible")</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-number">2</div>
+                <div class="flow-content">
+                    <strong>Usuario recibe notificación</strong>
+                    <p>El usuario ve una notificación en su campanita y en el widget de membresía con el mensaje del
+                        admin</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-number">3</div>
+                <div class="flow-content">
+                    <strong>Usuario envía apelación</strong>
+                    <p>El usuario responde con un mensaje y puede adjuntar nuevos documentos/fotos</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-number">4</div>
+                <div class="flow-content">
+                    <strong>Estado cambia a "appealed"</strong>
+                    <p>La mascota aparece en la pestaña "Apelaciones" del admin con badge rojo</p>
+                </div>
+            </div>
+
+            <div class="flow-arrow">↓</div>
+
+            <div class="flow-step">
+                <div class="flow-number">5</div>
+                <div class="flow-content">
+                    <strong>Admin responde</strong>
+                    <p>El admin puede: Aprobar la mascota, Rechazar de nuevo con nuevo mensaje, o Continuar el diálogo
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Base de Datos -->
+        <h2 id="database">3. Estructura de Base de Datos</h2>
+
+        <h3>Tabla: pets</h3>
+        <p>Campos relacionados con apelaciones:</p>
+
+        <pre><code>-- Campos de apelación en tabla pets
+appeal_message TEXT,              -- Mensaje de apelación del usuario
+appealed_at TIMESTAMPTZ,          -- Fecha de la última apelación
+rejection_reason TEXT,            -- Motivo de rechazo del admin
+rejected_at TIMESTAMPTZ,          -- Fecha de rechazo
+status TEXT                       -- 'pending', 'approved', 'rejected', 'appealed'</code></pre>
+
+        <h3>Tabla: appeal_messages</h3>
+        <p>Historial de mensajes de la conversación:</p>
+
+        <pre><code>CREATE TABLE appeal_messages (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    pet_id UUID REFERENCES pets(id) ON DELETE CASCADE,
+    
+    sender_type TEXT NOT NULL,     -- 'admin' o 'user'
+    sender_id TEXT,                -- ID del admin o usuario
+    sender_name TEXT,              -- Nombre para mostrar
+    
+    message TEXT NOT NULL,         -- Contenido del mensaje
+    attachments JSONB,             -- URLs de archivos adjuntos
+    
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX idx_appeal_messages_pet ON appeal_messages(pet_id);
+CREATE INDEX idx_appeal_messages_created ON appeal_messages(created_at DESC);</code></pre>
+
+        <h3>Tabla: notifications</h3>
+        <p>Notificaciones relacionadas con apelaciones:</p>
+
+        <pre><code>-- Tipos de notificación para apelaciones
+type: 'pet_rejected'     -- Mascota rechazada
+type: 'appeal_response'  -- Admin respondió a apelación
+type: 'pet_approved'     -- Mascota aprobada tras apelación</code></pre>
+
+        <!-- 4. API Endpoints -->
+        <h2 id="api">4. Endpoints API</h2>
+
+        <h3>Apelaciones de Usuario</h3>
+
+        <div class="endpoint">
+            <span class="method method-post">POST</span>
+            <code>/api/user/pets/[petId]/appeal</code>
+            <p>Enviar una apelación para una mascota rechazada</p>
+            <pre><code>// Request Body
+{
+    "userId": "mem_xxx",
+    "message": "Adjunto nueva foto más clara",
+    "attachments": ["url1", "url2"]  // opcional
+}
+
+// Response
+{
+    "success": true,
+    "message": "Apelación enviada correctamente"
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method method-get">GET</span>
+            <code>/api/user/pets/[petId]/appeal-history</code>
+            <p>Obtener historial de mensajes de apelación</p>
+            <pre><code>// Response
+{
+    "success": true,
+    "messages": [
+        {
+            "id": "uuid",
+            "sender_type": "admin",
+            "sender_name": "Admin",
+            "message": "La foto está borrosa",
+            "created_at": "2024-01-10T..."
+        },
+        {
+            "id": "uuid",
+            "sender_type": "user",
+            "sender_name": "Juan",
+            "message": "Adjunto nueva foto",
+            "created_at": "2024-01-11T..."
+        }
+    ]
+}</code></pre>
+        </div>
+
+        <h3>Gestión Admin</h3>
+
+        <div class="endpoint">
+            <span class="method method-get">GET</span>
+            <code>/api/admin/pets/appealed</code>
+            <p>Listar todas las mascotas con apelaciones pendientes</p>
+        </div>
+
+        <div class="endpoint">
+            <span class="method method-post">POST</span>
+            <code>/api/admin/appeal-response</code>
+            <p>Responder a una apelación</p>
+            <pre><code>// Request Body
+{
+    "petId": "uuid",
+    "action": "respond" | "approve" | "reject",
+    "message": "Mensaje del admin",
+    "adminId": "admin_id",
+    "adminName": "Nombre Admin"
+}</code></pre>
+        </div>
+
+        <div class="endpoint">
+            <span class="method method-patch">PATCH</span>
+            <code>/api/admin/members/[id]/pets/[petId]/status</code>
+            <p>Cambiar estado de mascota (aprobar/rechazar)</p>
+            <pre><code>// Request Body - Rechazar
+{
+    "status": "rejected",
+    "rejectionReason": "Motivo del rechazo"
+}
+
+// Request Body - Aprobar
+{
+    "status": "approved"
+}</code></pre>
+        </div>
+
+        <!-- 5. Panel Admin -->
+        <h2 id="admin">5. Panel de Administración</h2>
+
+        <h3>Pestaña "Apelaciones"</h3>
+        <p>Nueva pestaña en el dashboard de admin que muestra:</p>
+
+        <ul>
+            <li><strong>Lista de mascotas apeladas</strong> con foto, nombre y datos del dueño</li>
+            <li><strong>Badge rojo</strong> indicando número de apelaciones pendientes</li>
+            <li><strong>Modal de detalle</strong> con historial de conversación</li>
+            <li><strong>Acciones:</strong> Aprobar, Rechazar, Responder</li>
+        </ul>
+
+        <h3>Componentes Involucrados</h3>
+        <table>
+            <tr>
+                <th>Componente</th>
+                <th>Ubicación</th>
+                <th>Función</th>
+            </tr>
+            <tr>
+                <td><code>AppealedTab.tsx</code></td>
+                <td>src/components/Admin/</td>
+                <td>Lista de mascotas apeladas</td>
+            </tr>
+            <tr>
+                <td><code>AppealModal.tsx</code></td>
+                <td>src/components/Admin/</td>
+                <td>Modal con historial y acciones</td>
+            </tr>
+            <tr>
+                <td><code>AdminDashboard.tsx</code></td>
+                <td>src/components/Admin/</td>
+                <td>Contenedor con pestañas</td>
+            </tr>
+        </table>
+
+        <!-- 6. Widget Usuario -->
+        <h2 id="user">6. Widget de Usuario en Webflow</h2>
+
+        <h3>unified-membership-widget.js</h3>
+        <p>Widget principal que muestra las mascotas del usuario con su estado:</p>
+
+        <div class="highlight-box">
+            <h4>Funcionalidades del Widget:</h4>
+            <ul>
+                <li>Ver todas las mascotas y su estado</li>
+                <li>Ver mensaje de rechazo si la mascota fue rechazada</li>
+                <li>Botón "Apelar" para mascotas rechazadas</li>
+                <li>Modal de apelación con historial de mensajes</li>
+                <li>Formulario para enviar nueva apelación</li>
+            </ul>
+        </div>
+
+        <h3>Integración en Webflow</h3>
+        <pre><code>&lt;!-- En el Head Code de Webflow --&gt;
+&lt;script src="https://club-pata-amiga-form.vercel.app/widgets/unified-membership-widget.js"&gt;&lt;/script&gt;
+
+&lt;!-- En la página --&gt;
+&lt;div id="membership-widget"&gt;&lt;/div&gt;</code></pre>
+
+        <!-- 7. Notificaciones -->
+        <h2 id="notifications">7. Sistema de Notificaciones</h2>
+
+        <h3>Notificaciones Generadas</h3>
+        <table>
+            <tr>
+                <th>Evento</th>
+                <th>Destinatario</th>
+                <th>Mensaje</th>
+            </tr>
+            <tr>
+                <td>Mascota rechazada</td>
+                <td>Usuario</td>
+                <td>"Tu mascota [nombre] requiere atención"</td>
+            </tr>
+            <tr>
+                <td>Nueva apelación</td>
+                <td>Admin</td>
+                <td>"Nueva apelación de [usuario] para [mascota]"</td>
+            </tr>
+            <tr>
+                <td>Admin responde</td>
+                <td>Usuario</td>
+                <td>"Tienes una respuesta sobre [mascota]"</td>
+            </tr>
+            <tr>
+                <td>Mascota aprobada</td>
+                <td>Usuario</td>
+                <td>"¡Tu mascota [nombre] ha sido aprobada!"</td>
+            </tr>
+        </table>
+
+        <h3>Widgets de Notificación</h3>
+        <ul>
+            <li><code>notification-bell.js</code> - Campanita con badge y dropdown</li>
+            <li><code>realtime-notifications.js</code> - Polling cada 10s con toast</li>
+            <li><code>AdminNotifications.tsx</code> - Campanita del panel admin</li>
+        </ul>
+
+        <!-- 8. Archivos -->
+        <h2 id="files">8. Archivos del Sistema</h2>
+
+        <h3>Backend (API Routes)</h3>
+        <pre><code>src/app/api/
+├── admin/
+│   ├── appeal-response/route.ts       # Responder apelaciones
+│   ├── members/[id]/pets/[petId]/
+│   │   └── status/route.ts            # Cambiar estado mascota
+│   └── pets/
+│       └── appealed/route.ts          # Listar apelaciones
+├── user/
+│   └── pets/
+│       └── [petId]/
+│           ├── appeal/route.ts        # Enviar apelación
+│           └── appeal-history/route.ts # Historial mensajes
+└── notifications/
+    ├── route.ts                       # CRUD notificaciones
+    └── mark-all-read/route.ts         # Marcar leídas</code></pre>
+
+        <h3>Componentes Admin</h3>
+        <pre><code>src/components/Admin/
+├── AdminDashboard.tsx         # Dashboard principal
+├── AppealedTab.tsx            # Pestaña apelaciones
+├── AppealModal.tsx            # Modal detalle apelación
+├── MemberDetailModal.tsx      # Modal detalle miembro
+└── AdminNotifications.tsx     # Campanita admin</code></pre>
+
+        <h3>Widgets Webflow</h3>
+        <pre><code>public/widgets/
+├── unified-membership-widget.js    # Widget principal usuario
+├── notification-bell.js            # Campanita original
+└── realtime-notifications.js       # Campanita con polling</code></pre>
+
+        <h3>Base de Datos</h3>
+        <pre><code>supabase/migrations/
+├── 20240107_add_appeal_fields.sql      # Campos apelación en pets
+├── 20240108_create_appeal_messages.sql # Tabla mensajes
+└── 20250110_enable_realtime.sql        # Habilitar realtime</code></pre>
+
+        <footer>
+            <p>📄 Documentación generada el 12 de Enero, 2026</p>
+            <p>Club Pata Amiga - Sistema de Apelaciones v1.0</p>
+        </footer>
+    </div>
+</body>
+
+</html>
