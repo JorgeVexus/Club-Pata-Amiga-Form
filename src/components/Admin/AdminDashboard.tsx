@@ -14,6 +14,9 @@ import RejectionReasonModal from './RejectionReasonModal';
 import ActivityFeed, { ActivityLog } from './ActivityFeed';
 import AdminsTable from './AdminsTable';
 import CommunicationsHub from './Communications/CommunicationsHub';
+import AmbassadorsTable from './AmbassadorsTable';
+import AmbassadorDetailModal from './AmbassadorDetailModal';
+import { Ambassador } from '@/types/ambassador.types';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins'>('all');
@@ -44,6 +47,9 @@ export default function AdminDashboard() {
     const [isAdminSuper, setIsAdminSuper] = useState(false);
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
     const [hasMounted, setHasMounted] = useState(false);
+
+    // Estado para embajadores
+    const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
 
     // Helper to fetch single member details
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
@@ -187,6 +193,13 @@ export default function AdminDashboard() {
             if (appealData.success && appealData.members) {
                 setPendingCounts(prev => ({ ...prev, appeals: appealData.members.length }));
             }
+
+            // Load ambassador pending counts
+            const ambassadorRes = await fetch('/api/ambassadors?status=pending&limit=1');
+            const ambassadorData = await ambassadorRes.json();
+            if (ambassadorData.success) {
+                setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
+            }
         } catch (error) { console.error('Error loading pending counts', error); }
     }
 
@@ -269,6 +282,10 @@ export default function AdminDashboard() {
                         <CommunicationsHub
                             adminName={adminName}
                             isSuperAdmin={isAdminSuper}
+                        />
+                    ) : activeFilter === 'ambassador' ? (
+                        <AmbassadorsTable
+                            onViewDetails={(amb) => setSelectedAmbassador(amb)}
                         />
                     ) : (
                         <>
@@ -406,6 +423,19 @@ export default function AdminDashboard() {
                 rejectedBy={rejectionToView?.customFields?.['rejected-by'] || 'Admin'}
                 rejectedAt={rejectionToView?.customFields?.['rejected-at'] || ''}
             />
+
+            {/* Modal de Detalle de Embajador */}
+            {selectedAmbassador && (
+                <AmbassadorDetailModal
+                    ambassador={selectedAmbassador}
+                    onClose={() => setSelectedAmbassador(null)}
+                    onRefresh={() => {
+                        setSelectedAmbassador(null);
+                        // Forzar recarga de la lista
+                        window.location.reload();
+                    }}
+                />
+            )}
         </div >
     );
 }
