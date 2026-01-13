@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AmbassadorStep1Data,
     AmbassadorStep2Data,
@@ -64,6 +64,68 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [isLoadingMember, setIsLoadingMember] = useState(true);
+    const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
+
+    // Cargar datos del miembro de Memberstack si está logueado
+    useEffect(() => {
+        const loadMemberData = async () => {
+            setIsLoadingMember(true);
+
+            // Esperar a que Memberstack esté disponible
+            if (typeof window !== 'undefined' && window.$memberstackDom) {
+                try {
+                    const memberResult = await window.$memberstackDom.getCurrentMember();
+                    const member = memberResult?.data;
+
+                    if (member) {
+                        // Guardar ID de Memberstack
+                        setMemberstackId(member.id);
+
+                        // Obtener email desde auth
+                        const email = member.auth?.email || '';
+
+                        // Obtener campos personalizados
+                        const cf = member.customFields || {};
+
+                        // Mapear campos de Memberstack a nuestro formulario
+                        setStep1Data(prev => ({
+                            ...prev,
+                            first_name: cf['first-name'] || '',
+                            paternal_surname: cf['paternal-last-name'] || '',
+                            maternal_surname: cf['maternal-last-name'] || '',
+                            gender: (cf['gender'] as Gender) || '',
+                            birth_date: cf['birth-date'] || '',
+                            curp: cf['curp'] || '',
+                            postal_code: cf['postal-code'] || '',
+                            state: cf['state'] || '',
+                            city: cf['city'] || '',
+                            neighborhood: cf['neighborhood'] || cf['colony'] || '',
+                            address: cf['address'] || cf['street-address'] || '',
+                            email: email,
+                            phone: cf['phone'] || cf['phone-number'] || '',
+                        }));
+
+                        console.log('✅ Datos del miembro cargados:', {
+                            id: member.id,
+                            email,
+                            name: cf['first-name'],
+                            lastName: cf['paternal-last-name']
+                        });
+                    }
+                } catch (error) {
+                    console.log('ℹ️ Usuario no logueado en Memberstack:', error);
+                }
+            }
+
+            setIsLoadingMember(false);
+        };
+
+        // Pequeño delay para asegurar que Memberstack esté listo
+        const timer = setTimeout(loadMemberData, 500);
+        return () => clearTimeout(timer);
+    }, []);
+
 
     // Handlers para cada paso
     const handleStep1Change = (field: keyof AmbassadorStep1Data, value: string | File | null) => {
@@ -297,8 +359,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                     card_last_digits: step3Data.card_number || undefined,
                     clabe: step3Data.clabe || undefined,
 
-                    // Opcional
-                    linked_memberstack_id: linkedMemberstackId
+                    // Vinculación con Memberstack (si está logueado)
+                    linked_memberstack_id: memberstackId || linkedMemberstackId || undefined
                 })
             });
 
@@ -408,6 +470,26 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                             Ir al inicio
                         </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Estado de carga mientras se obtienen datos del miembro
+    if (isLoadingMember) {
+        return (
+            <div className={styles['ambassador-form-container']}>
+                <div className={styles['ambassador-form-card']} style={{ textAlign: 'center', padding: '60px 40px' }}>
+                    <div className={styles['ambassador-spinner']} style={{
+                        width: '50px',
+                        height: '50px',
+                        border: '4px solid #eee',
+                        borderTopColor: '#00BBB4',
+                        borderRadius: '50%',
+                        animation: 'spin 0.8s linear infinite',
+                        margin: '0 auto 20px'
+                    }} />
+                    <p style={{ color: '#666' }}>Cargando tu información...</p>
                 </div>
             </div>
         );
