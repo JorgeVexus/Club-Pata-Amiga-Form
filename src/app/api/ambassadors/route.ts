@@ -116,9 +116,12 @@ export async function POST(request: NextRequest) {
         const body: CreateAmbassadorRequest = await request.json();
 
         // Validaciones básicas
-        if (!body.first_name || !body.paternal_surname || !body.email || !body.curp || !body.password) {
+        const requiredFields = ['first_name', 'paternal_surname', 'email', 'password'];
+        const missingFields = requiredFields.filter(field => !body[field as keyof CreateAmbassadorRequest]);
+
+        if (missingFields.length > 0) {
             return NextResponse.json(
-                { success: false, error: 'Faltan campos obligatorios' },
+                { success: false, error: `Faltan campos obligatorios: ${missingFields.join(', ')}` },
                 { status: 400, headers: corsHeaders() }
             );
         }

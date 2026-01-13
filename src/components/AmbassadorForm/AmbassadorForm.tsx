@@ -83,19 +83,25 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                         // Guardar ID de Memberstack
                         setMemberstackId(member.id);
 
-                        // Marcar como miembro existente
-                        setIsExistingMember(true);
-
-                        // Saltar directamente al paso 2
-                        setCurrentStep(2);
-
-                        // Obtener email desde auth
-                        const email = member.auth?.email || '';
-
                         // Obtener campos personalizados
                         const cf = member.customFields || {};
+                        const email = member.auth?.email || '';
 
-                        // Mapear campos de Memberstack a nuestro formulario (para el submit)
+                        // Campos críticos para saltar al paso 2 (mínimos de Memberstack)
+                        const hasRequiredBasicInfo =
+                            cf['first-name'] &&
+                            email;
+
+                        if (hasRequiredBasicInfo) {
+                            // Marcar como miembro existente y saltar al paso 2
+                            setIsExistingMember(true);
+                            setCurrentStep(2);
+                            console.log('✅ Miembro existente detectado, saltando al paso 2.');
+                        } else {
+                            console.log('⚠️ No se detectó información básica de miembro, permaneciendo en paso 1.');
+                        }
+
+                        // Mapear campos de Memberstack a nuestro formulario
                         setStep1Data(prev => ({
                             ...prev,
                             first_name: cf['first-name'] || '',
@@ -111,17 +117,10 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                             address: cf['address'] || cf['street-address'] || '',
                             email: email,
                             phone: cf['phone'] || cf['phone-number'] || '',
-                            // No necesitamos contraseña, usará la de Memberstack
-                            password: 'MEMBERSTACK_USER',
-                            confirm_password: 'MEMBERSTACK_USER'
+                            // Contraseña por defecto si es usuario existente
+                            password: prev.password || 'MEMBERSTACK_USER',
+                            confirm_password: prev.confirm_password || 'MEMBERSTACK_USER'
                         }));
-
-                        console.log('✅ Miembro existente detectado, saltando al paso 2:', {
-                            id: member.id,
-                            email,
-                            name: cf['first-name'],
-                            lastName: cf['paternal-last-name']
-                        });
                     }
                 } catch (error) {
                     console.log('ℹ️ Usuario no logueado en Memberstack:', error);

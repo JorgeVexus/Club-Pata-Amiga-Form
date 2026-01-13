@@ -18,10 +18,9 @@ CREATE TABLE IF NOT EXISTS ambassadors (
     paternal_surname TEXT NOT NULL,
     maternal_surname TEXT,
     gender TEXT CHECK (gender IN ('male', 'female', 'not_specified')),
-    birth_date DATE NOT NULL,
-    curp TEXT UNIQUE NOT NULL,
-    
-    -- INE
+    birth_date DATE,
+    curp TEXT UNIQUE,
+    ine_front_url TEXT,   -- INE
     ine_front_url TEXT,
     ine_back_url TEXT,
     
