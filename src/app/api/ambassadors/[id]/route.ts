@@ -1,0 +1,205 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, PATCH, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+}
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders() });
+}
+
+// GET - Obtener un embajador por ID
+export async function GET(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+
+        const { data: ambassador, error } = await supabase
+            .from('ambassadors')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error || !ambassador) {
+            return NextResponse.json(
+                { success: false, error: 'Embajador no encontrado' },
+                { status: 404, headers: corsHeaders() }
+            );
+        }
+
+        // Obtener referidos
+        const { data: referrals, count: referralsCount } = await supabase
+            .from('referrals')
+            .select('*', { count: 'exact' })
+            .eq('ambassador_id', id)
+            .order('created_at', { ascending: false });
+
+        // Obtener historial de pagos
+        const { data: payouts } = await supabase
+            .from('ambassador_payouts')
+            .select('*')
+            .eq('ambassador_id', id)
+            .order('created_at', { ascending: false });
+
+        return NextResponse.json({
+            success: true,
+            data: {
+                ...ambassador,
+                referrals: referrals || [],
+                referrals_count: referralsCount || 0,
+                payouts: payouts || []
+            }
+        }, { headers: corsHeaders() });
+
+    } catch (error) {
+        console.error('Ambassador GET error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Error interno del servidor' },
+            { status: 500, headers: corsHeaders() }
+        );
+    }
+}
+
+// PATCH - Actualizar embajador (aprobar/rechazar/suspender)
+export async function PATCH(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+        const body = await request.json();
+
+        // Obtener embajador actual
+        const { data: currentAmbassador, error: fetchError } = await supabase
+            .from('ambassadors')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (fetchError || !currentAmbassador) {
+            return NextResponse.json(
+                { success: false, error: 'Embajador no encontrado' },
+                { status: 404, headers: corsHeaders() }
+            );
+        }
+
+        // Preparar datos de actualización
+        const updateData: Record<string, unknown> = {};
+
+        // Cambio de status
+        if (body.status) {
+            updateData.status = body.status;
+
+            if (body.status === 'approved') {
+                updateData.approved_at = new Date().toISOString();
+                updateData.approved_by = body.admin_id || 'admin';
+            } else if (body.status === 'rejected') {
+                updateData.rejection_reason = body.rejection_reason || 'Sin motivo especificado';
+            }
+        }
+
+        // Actualizar otros campos si se proporcionan
+        const allowedFields = [
+            'commission_percentage', 'payment_method', 'bank_name',
+            'card_last_digits', 'clabe', 'rfc', 'phone', 'address',
+            'instagram', 'facebook', 'tiktok', 'other_social'
+        ];
+
+        allowedFields.forEach(field => {
+            if (body[field] !== undefined) {
+                updateData[field] = body[field];
+            }
+        });
+
+        // Ejecutar actualización
+        const { data: updatedAmbassador, error: updateError } = await supabase
+            .from('ambassadors')
+            .update(updateData)
+            .eq('id', id)
+            .select()
+            .single();
+
+        if (updateError) {
+            console.error('Error updating ambassador:', updateError);
+            return NextResponse.json(
+                { success: false, error: 'Error al actualizar' },
+                { status: 500, headers: corsHeaders() }
+            );
+        }
+
+        // Si se aprobó, enviar notificación al embajador
+        if (body.status === 'approved') {
+            // Aquí podrías enviar un email de bienvenida
+            console.log(`Embajador ${currentAmbassador.email} aprobado`);
+        }
+
+        // Si se rechazó, enviar notificación
+        if (body.status === 'rejected') {
+            console.log(`Embajador ${currentAmbassador.email} rechazado: ${body.rejection_reason}`);
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: body.status === 'approved'
+                ? 'Embajador aprobado correctamente'
+                : body.status === 'rejected'
+                    ? 'Solicitud rechazada'
+                    : 'Embajador actualizado',
+            data: updatedAmbassador
+        }, { headers: corsHeaders() });
+
+    } catch (error) {
+        console.error('Ambassador PATCH error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Error interno del servidor' },
+            { status: 500, headers: corsHeaders() }
+        );
+    }
+}
+
+// DELETE - Eliminar embajador
+export async function DELETE(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const { id } = await params;
+
+        const { error } = await supabase
+            .from('ambassadors')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting ambassador:', error);
+            return NextResponse.json(
+                { success: false, error: 'Error al eliminar' },
+                { status: 500, headers: corsHeaders() }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Embajador eliminado correctamente'
+        }, { headers: corsHeaders() });
+
+    } catch (error) {
+        console.error('Ambassador DELETE error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Error interno del servidor' },
+            { status: 500, headers: corsHeaders() }
+        );
+    }
+}
