@@ -1,0 +1,626 @@
+/* ============================================
+   🎯 Formulario de Registro de Embajadores
+   Club Pata Amiga - 3 Pasos
+   ============================================ */
+
+/* 
+   Colores usados:
+   - Primary: #00BBB4
+   - Primary Dark: #00a09a
+   - Secondary: #FFC107
+   - Text: #333
+   - Text Light: #666
+   - Error: #ef4444
+   - Success: #22c55e
+*/
+
+
+/* Container principal */
+.ambassador-form-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #00BBB4 0%, #00a09a 100%);
+    padding: 40px 20px;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Header */
+.ambassador-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ambassador-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+.ambassador-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    margin: 0 0 10px 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Stepper */
+.ambassador-stepper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+.ambassador-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0.6;
+    transition: all 0.3s ease;
+}
+
+.ambassador-step.active {
+    opacity: 1;
+}
+
+.ambassador-step.completed {
+    opacity: 1;
+}
+
+.ambassador-step-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    transition: all 0.3s ease;
+}
+
+.ambassador-step.active .ambassador-step-icon {
+    background: #FFC107;
+    border-color: #FFC107;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+}
+
+.ambassador-step.completed .ambassador-step-icon {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+.ambassador-step-label {
+    color: white;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+.ambassador-step-line {
+    width: 60px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    margin-bottom: 30px;
+}
+
+.ambassador-step-line.completed {
+    background: #22c55e;
+}
+
+/* Card del formulario */
+.ambassador-form-card {
+    max-width: 900px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.ambassador-form-title {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.ambassador-form-title h2 {
+    font-size: 1.6rem;
+    color: #333;
+    margin: 0 0 8px 0;
+}
+
+.ambassador-form-title p {
+    color: #666;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.ambassador-form-subtitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #666;
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+/* Grid de campos */
+.ambassador-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .ambassador-form-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ambassador-form-full {
+    grid-column: 1 / -1;
+}
+
+/* Campos de formulario */
+.ambassador-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.ambassador-field label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #333;
+}
+
+.ambassador-field input,
+.ambassador-field select,
+.ambassador-field textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.ambassador-field input:focus,
+.ambassador-field select:focus,
+.ambassador-field textarea:focus {
+    outline: none;
+    border-color: #00BBB4;
+    box-shadow: 0 0 0 3px rgba(0, 187, 180, 0.1);
+}
+
+.ambassador-field input.error,
+.ambassador-field select.error {
+    border-color: #ef4444;
+}
+
+.ambassador-field .error-message {
+    color: #ef4444;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+.ambassador-field .helper-text {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 4px;
+}
+
+/* Radio buttons */
+.ambassador-radio-group {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.ambassador-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.ambassador-radio-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: #00BBB4;
+}
+
+/* File upload */
+.ambassador-file-upload {
+    border: 2px dashed #ccc;
+    border-radius: 12px;
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.ambassador-file-upload:hover {
+    border-color: #00BBB4;
+    background: rgba(0, 187, 180, 0.05);
+}
+
+.ambassador-file-upload.has-file {
+    border-color: #22c55e;
+    background: rgba(34, 197, 94, 0.05);
+}
+
+.ambassador-file-upload-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.ambassador-file-upload-text {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.ambassador-file-upload-text a {
+    color: #00BBB4;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.ambassador-file-upload-formats {
+    color: #999;
+    font-size: 0.8rem;
+    margin-top: 8px;
+}
+
+/* Redes sociales */
+.ambassador-social-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.ambassador-social-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f5f5f5;
+    border-radius: 30px;
+    padding: 8px 16px;
+    flex: 1;
+    min-width: 200px;
+}
+
+.ambassador-social-input .icon {
+    font-size: 1.2rem;
+}
+
+.ambassador-social-input input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    font-size: 0.9rem;
+    padding: 6px 0;
+}
+
+.ambassador-social-input input:focus {
+    outline: none;
+}
+
+/* Payment method cards */
+.ambassador-payment-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+@media (max-width: 600px) {
+    .ambassador-payment-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ambassador-payment-card {
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.ambassador-payment-card:hover {
+    border-color: #00BBB4;
+}
+
+.ambassador-payment-card.selected {
+    border-color: #00BBB4;
+    background: rgba(0, 187, 180, 0.05);
+}
+
+.ambassador-payment-card .icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.ambassador-payment-card .title {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.ambassador-payment-card .subtitle {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+/* Checkbox de términos */
+.ambassador-terms {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 12px;
+}
+
+.ambassador-terms p {
+    font-size: 0.85rem;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.ambassador-terms label {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.ambassador-terms input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: #00BBB4;
+}
+
+.ambassador-terms a {
+    color: #00BBB4;
+    text-decoration: underline;
+}
+
+/* Botones de navegación */
+.ambassador-form-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.ambassador-btn-cancel {
+    background: none;
+    border: none;
+    color: #333;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 10px 20px;
+}
+
+.ambassador-btn-cancel:hover {
+    text-decoration: underline;
+}
+
+.ambassador-nav-buttons {
+    display: flex;
+    gap: 12px;
+}
+
+.ambassador-btn {
+    padding: 14px 30px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.ambassador-btn-secondary {
+    background: white;
+    border-color: #00BBB4;
+    color: #00BBB4;
+}
+
+.ambassador-btn-secondary:hover {
+    background: rgba(0, 187, 180, 0.1);
+}
+
+.ambassador-btn-primary {
+    background: #FFC107;
+    color: #000;
+    border-color: #FFC107;
+}
+
+.ambassador-btn-primary:hover {
+    background: #e6ac00;
+    border-color: #e6ac00;
+}
+
+.ambassador-btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Ayuda flotante */
+.ambassador-help {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    text-align: right;
+}
+
+.ambassador-help-icon {
+    width: 50px;
+    height: 50px;
+    background: #FFC107;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    margin-left: auto;
+    margin-bottom: 10px;
+}
+
+.ambassador-help-text {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    font-size: 0.9rem;
+}
+
+.ambassador-help-text p {
+    margin: 0 0 8px 0;
+    font-weight: 600;
+}
+
+.ambassador-help-text a {
+    color: #00BBB4;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 5px 0;
+}
+
+/* Success screen */
+.ambassador-success {
+    text-align: center;
+    padding: 60px 40px;
+}
+
+.ambassador-success-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+.ambassador-success h2 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.ambassador-success p {
+    color: #666;
+    font-size: 1.1rem;
+    max-width: 500px;
+    margin: 0 auto 30px;
+}
+
+.ambassador-success-info {
+    background: rgba(0, 187, 180, 0.1);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.ambassador-success-info h4 {
+    color: #00BBB4;
+    margin: 0 0 10px 0;
+}
+
+/* Loading spinner */
+.ambassador-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.ambassador-spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Phone input with country code */
+.ambassador-phone-input {
+    display: flex;
+    gap: 10px;
+}
+
+.ambassador-phone-input .country-code {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 15px;
+    background: #f5f5f5;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.ambassador-phone-input input {
+    flex: 1;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .ambassador-form-card {
+        padding: 25px 20px;
+        border-radius: 16px;
+    }
+
+    .ambassador-title {
+        font-size: 1.8rem;
+    }
+
+    .ambassador-step-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.4rem;
+    }
+
+    .ambassador-form-actions {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .ambassador-nav-buttons {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .ambassador-btn {
+        width: 100%;
+        text-align: center;
+    }
+
+    .ambassador-help {
+        bottom: 15px;
+        right: 15px;
+    }
+}
