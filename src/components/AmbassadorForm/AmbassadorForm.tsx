@@ -66,6 +66,7 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
     const [showSuccess, setShowSuccess] = useState(false);
     const [isLoadingMember, setIsLoadingMember] = useState(true);
     const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
+    const [isExistingMember, setIsExistingMember] = useState(false);
 
     // Cargar datos del miembro de Memberstack si está logueado
     useEffect(() => {
@@ -82,13 +83,19 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                         // Guardar ID de Memberstack
                         setMemberstackId(member.id);
 
+                        // Marcar como miembro existente
+                        setIsExistingMember(true);
+
+                        // Saltar directamente al paso 2
+                        setCurrentStep(2);
+
                         // Obtener email desde auth
                         const email = member.auth?.email || '';
 
                         // Obtener campos personalizados
                         const cf = member.customFields || {};
 
-                        // Mapear campos de Memberstack a nuestro formulario
+                        // Mapear campos de Memberstack a nuestro formulario (para el submit)
                         setStep1Data(prev => ({
                             ...prev,
                             first_name: cf['first-name'] || '',
@@ -104,9 +111,12 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                             address: cf['address'] || cf['street-address'] || '',
                             email: email,
                             phone: cf['phone'] || cf['phone-number'] || '',
+                            // No necesitamos contraseña, usará la de Memberstack
+                            password: 'MEMBERSTACK_USER',
+                            confirm_password: 'MEMBERSTACK_USER'
                         }));
 
-                        console.log('✅ Datos del miembro cargados:', {
+                        console.log('✅ Miembro existente detectado, saltando al paso 2:', {
                             id: member.id,
                             email,
                             name: cf['first-name'],
@@ -277,7 +287,9 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
     };
 
     const handleBack = () => {
-        if (currentStep > 1) {
+        // Si es miembro existente, no puede volver al paso 1
+        const minStep = isExistingMember ? 2 : 1;
+        if (currentStep > minStep) {
             setCurrentStep(prev => prev - 1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
@@ -509,14 +521,16 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
 
             {/* Stepper */}
             <div className={styles['ambassador-stepper']}>
-                <div className={`${styles['ambassador-step']} ${currentStep >= 1 ? styles.active : ''} ${currentStep > 1 ? styles.completed : ''}`}>
+                <div className={`${styles['ambassador-step']} ${currentStep >= 1 || isExistingMember ? styles.active : ''} ${currentStep > 1 || isExistingMember ? styles.completed : ''}`}>
                     <div className={styles['ambassador-step-icon']}>
-                        {currentStep > 1 ? '✓' : '👤'}
+                        {currentStep > 1 || isExistingMember ? '✓' : '👤'}
                     </div>
-                    <span className={styles['ambassador-step-label']}>Completa tu perfil</span>
+                    <span className={styles['ambassador-step-label']}>
+                        {isExistingMember ? 'Perfil verificado' : 'Completa tu perfil'}
+                    </span>
                 </div>
 
-                <div className={`${styles['ambassador-step-line']} ${currentStep > 1 ? styles.completed : ''}`}></div>
+                <div className={`${styles['ambassador-step-line']} ${currentStep > 1 || isExistingMember ? styles.completed : ''}`}></div>
 
                 <div className={`${styles['ambassador-step']} ${currentStep >= 2 ? styles.active : ''} ${currentStep > 2 ? styles.completed : ''}`}>
                     <div className={styles['ambassador-step-icon']}>
@@ -548,6 +562,27 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                         color: '#ef4444'
                     }}>
                         {errors.submit}
+                    </div>
+                )}
+
+                {/* Mensaje de bienvenida para miembros existentes */}
+                {isExistingMember && currentStep === 2 && (
+                    <div style={{
+                        background: 'linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05))',
+                        border: '1px solid #00BBB4',
+                        borderRadius: '12px',
+                        padding: '20px',
+                        marginBottom: '25px',
+                        textAlign: 'center'
+                    }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>👋</div>
+                        <h3 style={{ color: '#00BBB4', margin: '0 0 8px 0', fontSize: '1.1rem' }}>
+                            ¡Hola, {step1Data.first_name}!
+                        </h3>
+                        <p style={{ color: '#555', margin: 0, fontSize: '0.95rem' }}>
+                            Tus datos personales ya están registrados en tu cuenta.
+                            Solo necesitas completar la información adicional para ser embajador.
+                        </p>
                     </div>
                 )}
 
@@ -588,7 +623,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
                     </button>
 
                     <div className={styles['ambassador-nav-buttons']}>
-                        {currentStep > 1 && (
+                        {/* Mostrar botón Anterior solo si puede retroceder */}
+                        {currentStep > 1 && !(isExistingMember && currentStep === 2) && (
                             <button
                                 type="button"
                                 className={`${styles['ambassador-btn']} ${styles['ambassador-btn-secondary']}`}
