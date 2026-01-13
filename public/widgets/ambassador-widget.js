@@ -456,7 +456,7 @@
                 <div class="ambassador-not-found-icon">🎯</div>
                 <h2>¿Quieres ser Embajador Pata Amiga?</h2>
                 <p>Únete a nuestra manada y gana comisiones por cada familia que ayudes a proteger a sus peludos.</p>
-                <button class="ambassador-btn-apply" onclick="window.location.href='/embajadores/registro'">
+                <button class="ambassador-btn-apply" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/registro'">
                     Quiero ser Embajador
                 </button>
             </div>
@@ -557,7 +557,7 @@
                     quieres intentarlo de nuevo con información actualizada, puedes volver a aplicar.
                 </p>
 
-                <button class="ambassador-btn-retry" onclick="window.location.href='/embajadores/registro'">
+                <button class="ambassador-btn-retry" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/registro'">
                     Volver a aplicar
                 </button>
             </div>
