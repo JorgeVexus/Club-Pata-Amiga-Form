@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Widget Embajadores - Integración Webflow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: #f5f5f5;
+            line-height: 1.6;
+        }
+
+        .docs-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: #00BBB4;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        h2 {
+            color: #333;
+            margin: 30px 0 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #00BBB4;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            color: #e6e6e6;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            white-space: pre;
+        }
+
+        .info-box {
+            background: #E3F2FD;
+            border-left: 4px solid #2196F3;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #FFF3E0;
+            border-left: 4px solid #FF9800;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .success-box {
+            background: #E8F5E9;
+            border-left: 4px solid #4CAF50;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .preview-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .preview-section h3 {
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            background: #f9f9f9;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-pending {
+            background: #FFF3E0;
+            color: #F57C00;
+        }
+
+        .badge-approved {
+            background: #E8F5E9;
+            color: #388E3C;
+        }
+
+        .badge-rejected {
+            background: #FFEBEE;
+            color: #D32F2F;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="docs-container">
+        <h1>🎯 Widget Dashboard Embajadores</h1>
+        <p>Guía de integración para el widget de embajadores en Webflow.</p>
+
+        <h2>📋 Descripción</h2>
+        <p>Este widget muestra el dashboard de embajadores con diferentes estados según la situación del usuario:</p>
+
+        <table>
+            <tr>
+                <th>Estado</th>
+                <th>Descripción</th>
+                <th>Pantalla</th>
+            </tr>
+            <tr>
+                <td><span class="badge badge-pending">pending</span></td>
+                <td>Solicitud enviada, esperando aprobación</td>
+                <td>Mensaje de "En revisión" con barra de progreso</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-approved">approved</span></td>
+                <td>Embajador aprobado y activo</td>
+                <td>Dashboard completo con stats</td>
+            </tr>
+            <tr>
+                <td><span class="badge badge-rejected">rejected</span></td>
+                <td>Solicitud rechazada</td>
+                <td>Mensaje con motivo y opción de reintentar</td>
+            </tr>
+            <tr>
+                <td>No registrado</td>
+                <td>Usuario no es embajador</td>
+                <td>Invitación a registrarse</td>
+            </tr>
+        </table>
+
+        <h2>🔧 Integración en Webflow</h2>
+
+        <h3>Paso 1: Agregar el contenedor</h3>
+        <p>En la página de Webflow donde quieres mostrar el widget, agrega un elemento DIV con el ID:</p>
+        <div class="code-block">
+            <code>&lt;div id="ambassador-widget"&gt;&lt;/div&gt;</code>
+        </div>
+
+        <h3>Paso 2: Agregar el script</h3>
+        <p>En la configuración de la página (Page Settings > Before &lt;/body&gt; tag), agrega:</p>
+        <div class="code-block">
+            <code>&lt;!-- Widget Dashboard Embajadores --&gt;
+&lt;script src="https://club-pata-amiga-form.vercel.app/widgets/ambassador-widget.js"&gt;&lt;/script&gt;</code>
+        </div>
+
+        <div class="info-box">
+            <strong>ℹ️ Nota:</strong> El widget detecta automáticamente el email del usuario de Memberstack para
+            verificar si es embajador.
+        </div>
+
+        <h3>Paso 3: Agregar fuente (Opcional)</h3>
+        <p>Si no tienes la fuente Outfit en tu proyecto, agrégala en Project Settings > Custom Code > Head:</p>
+        <div class="code-block">
+            <code>&lt;link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&amp;display=swap" rel="stylesheet"&gt;</code>
+        </div>
+
+        <h2>📁 Archivos Necesarios</h2>
+        <table>
+            <tr>
+                <th>Archivo</th>
+                <th>Ubicación</th>
+            </tr>
+            <tr>
+                <td>ambassador-widget.js</td>
+                <td>/public/widgets/</td>
+            </tr>
+            <tr>
+                <td>bienvenida background.png</td>
+                <td>/public/embajadores-images/</td>
+            </tr>
+            <tr>
+                <td>bandera.png</td>
+                <td>/public/embajadores-images/</td>
+            </tr>
+            <tr>
+                <td>altavoz.png</td>
+                <td>/public/embajadores-images/</td>
+            </tr>
+            <tr>
+                <td>clock icon.png</td>
+                <td>/public/embajadores-images/</td>
+            </tr>
+        </table>
+
+        <h2>🎨 Vista Previa</h2>
+        <div class="preview-section">
+            <h3>Estado: En Revisión</h3>
+            <div id="ambassador-widget"></div>
+        </div>
+
+        <div class="success-box">
+            <strong>✅ Listo:</strong> El widget se inicializa automáticamente al cargar la página.
+        </div>
+    </div>
+
+    <!-- Load the widget for preview -->
+    <script src="/widgets/ambassador-widget.js"></script>
+</body>
+
+</html>
