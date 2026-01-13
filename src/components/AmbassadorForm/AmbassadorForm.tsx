@@ -318,28 +318,94 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props
         }
     };
 
-    // Pantalla de éxito
+    // Pantalla de éxito - Modal
     if (showSuccess) {
         return (
-            <div className={styles['ambassador-form-container']}>
-                <div className={styles['ambassador-form-card']}>
-                    <div className={styles['ambassador-success']}>
-                        <div className={styles['ambassador-success-icon']}>🎉</div>
-                        <h2>¡Solicitud enviada!</h2>
+            <div className={styles['ambassador-success-overlay']}>
+                <div className={styles['ambassador-success-modal']}>
+                    {/* Close button */}
+                    <button
+                        className={styles['ambassador-success-close']}
+                        onClick={() => window.location.href = '/'}
+                    >
+                        ✕
+                    </button>
+
+                    {/* Icon */}
+                    <div className={styles['ambassador-success-check']}>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                    </div>
+
+                    {/* Title */}
+                    <h2 className={styles['ambassador-success-title']}>Tu solicitud fue enviada</h2>
+                    <p className={styles['ambassador-success-subtitle']}>
+                        Queremos que todo sea claro, justo y con amor por la comunidad.
+                    </p>
+
+                    {/* Main message */}
+                    <div className={styles['ambassador-success-message']}>
                         <p>
-                            Gracias por querer ser parte de la manada. Tu solicitud está siendo
-                            revisada por nuestro equipo. Te notificaremos por correo cuando sea aprobada.
+                            Gracias por querer sumar tu voz a la manada. Tu registro como Embajador está
+                            en revisión y recibirá respuesta en las próximas <strong>24-48 horas</strong>.
                         </p>
-                        <div className={styles['ambassador-success-info']}>
-                            <h4>¿Qué sigue?</h4>
-                            <p>Revisaremos tu información en las próximas 24-48 horas. Una vez aprobado,
-                                recibirás acceso a tu dashboard de embajador con tu código de referido único.</p>
+                        <p>
+                            Mientras tanto, siéntete con la tranquilidad de que ya diste el primer paso
+                            para ayudar a que más familias y sus compañeros estén protegidos.
+                        </p>
+                    </div>
+
+                    {/* What's next */}
+                    <div className={styles['ambassador-success-steps']}>
+                        <h4>¿Qué sigue?</h4>
+                        <ol>
+                            <li>
+                                <strong>Revisaremos tu solicitud en 24-48 horas</strong><br />
+                                Nuestro equipo verificará que todo esté en orden
+                            </li>
+                            <li>
+                                <strong>Te enviaremos tu código personal</strong><br />
+                                Si eres aprobado, recibirás un correo con tu código único y materiales para empezar
+                            </li>
+                            <li>
+                                <strong>¡Empieza a compartir!</strong><br />
+                                Usa tu código, comparte en redes, habla con amigos y empieza a generar comisiones
+                            </li>
+                            <li>
+                                <strong>Recibe tus pagos mensuales</strong><br />
+                                Cada mes depositaremos tus comisiones en la cuenta que registraste
+                            </li>
+                        </ol>
+                    </div>
+
+                    {/* Contact */}
+                    <div className={styles['ambassador-success-contact']}>
+                        <h4>¿Tienes dudas? Comunícate con nosotros</h4>
+                        <div className={styles['ambassador-success-contact-items']}>
+                            <a href="mailto:embajadores@clubpataamiga.com">
+                                <span>✉️</span> embajadores@clubpataamiga.com
+                            </a>
+                            <a href="https://wa.me/526448995874" target="_blank" rel="noopener noreferrer">
+                                <span>💬</span> WhatsApp: +52 644 899 5874
+                            </a>
                         </div>
+                        <p className={styles['ambassador-success-contact-note']}>
+                            Respondemos en menos de 24 horas.
+                        </p>
+                    </div>
+
+                    {/* Footer */}
+                    <div className={styles['ambassador-success-footer']}>
+                        <p>
+                            Te avisaremos por correo y dentro de tu panel cuando tengamos noticias.
+                            <strong> ¡Qué alegría tenerte por aquí!</strong>
+                        </p>
                         <button
-                            className={`${styles['ambassador-btn']} ${styles['ambassador-btn-primary']}`}
+                            className={styles['ambassador-success-btn']}
                             onClick={() => window.location.href = '/'}
                         >
-                            Volver al inicio
+                            Ir al inicio
                         </button>
                     </div>
                 </div>
