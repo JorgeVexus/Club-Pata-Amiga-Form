@@ -9,13 +9,66 @@ const supabase = createClient(
 function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type',
     };
 }
 
 export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders() });
+}
+
+// GET - Validar código de referido (via query param)
+export async function GET(request: NextRequest) {
+    try {
+        const { searchParams } = new URL(request.url);
+        const code = searchParams.get('code');
+
+        if (!code) {
+            return NextResponse.json(
+                { success: false, valid: false, error: 'Código requerido' },
+                { status: 400, headers: corsHeaders() }
+            );
+        }
+
+        // Buscar embajador con este código
+        const { data: ambassador, error } = await supabase
+            .from('ambassadors')
+            .select('id, first_name, paternal_surname, referral_code, status')
+            .eq('referral_code', code.toUpperCase())
+            .single();
+
+        if (error || !ambassador) {
+            return NextResponse.json({
+                success: true,
+                valid: false,
+                message: 'Código de referido no encontrado'
+            }, { headers: corsHeaders() });
+        }
+
+        // Verificar que el embajador esté aprobado
+        if (ambassador.status !== 'approved') {
+            return NextResponse.json({
+                success: true,
+                valid: false,
+                message: 'Este código de referido no está activo'
+            }, { headers: corsHeaders() });
+        }
+
+        return NextResponse.json({
+            success: true,
+            valid: true,
+            ambassador_name: `${ambassador.first_name} ${ambassador.paternal_surname}`,
+            referral_code: ambassador.referral_code
+        }, { headers: corsHeaders() });
+
+    } catch (error) {
+        console.error('Validate referral code GET error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Error interno del servidor' },
+            { status: 500, headers: corsHeaders() }
+        );
+    }
 }
 
 // POST - Validar código de referido
