@@ -226,3 +226,42 @@
         font-size: 0.9rem;
     }
 }
+
+/* Error Box */
+.errorBox {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid #ef4444;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    color: #dc2626;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* Member Info */
+.memberInfo {
+    background: linear-gradient(135deg, #FFF9E6, #FFF3CD);
+    border: 1px solid #F59E0B;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.memberInfo p {
+    color: #92400E;
+    font-size: 0.9rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.memberInfo a {
+    color: #D97706;
+    font-weight: 600;
+    text-decoration: underline;
+}
+
+.memberInfo a:hover {
+    color: #B45309;
+}

@@ -1,82 +1,143 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import AmbassadorForm from '@/components/AmbassadorForm/AmbassadorForm';
 import styles from './page.module.css';
 
-interface MemberstackMember {
+interface MemberData {
     id: string;
-    auth?: {
-        email?: string;
-    };
+    email: string;
+    firstName: string;
+    paternalLastName: string;
+    maternalLastName?: string;
+    phone?: string;
     customFields?: Record<string, string>;
 }
 
-export default function AmbassadorRegistrationPage() {
+// Componente de carga
+function LoadingCard() {
+    return (
+        <div className={styles.container}>
+            <div className={styles.loadingCard}>
+                <div className={styles.spinner}></div>
+                <p>Verificando tu cuenta...</p>
+            </div>
+        </div>
+    );
+}
+
+// Componente principal que usa useSearchParams
+function AmbassadorRegistrationContent() {
+    const searchParams = useSearchParams();
+    const memberIdFromUrl = searchParams.get('memberId');
+
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [memberData, setMemberData] = useState<MemberstackMember | null>(null);
+    const [memberData, setMemberData] = useState<MemberData | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const checkMemberStatus = async () => {
             setIsLoading(true);
+            setError(null);
 
-            // Esperar a que Memberstack esté disponible
+            // CASO 1: Viene con memberId desde Webflow
+            if (memberIdFromUrl) {
+                console.log('🔗 Member ID recibido desde Webflow:', memberIdFromUrl);
+                try {
+                    const response = await fetch(`/api/memberstack/member?id=${memberIdFromUrl}`);
+                    const data = await response.json();
+
+                    if (data.success && data.member) {
+                        setMemberData({
+                            id: data.member.id,
+                            email: data.member.auth?.email || '',
+                            firstName: data.member.customFields?.['first-name'] || '',
+                            paternalLastName: data.member.customFields?.['paternal-last-name'] || '',
+                            maternalLastName: data.member.customFields?.['maternal-last-name'] || '',
+                            phone: data.member.customFields?.['phone'] || '',
+                            customFields: data.member.customFields
+                        });
+                        setIsLoggedIn(true);
+                        console.log('✅ Datos del miembro cargados desde API');
+                    } else {
+                        console.log('⚠️ No se encontró el miembro:', data.error);
+                    }
+                } catch (err) {
+                    console.error('Error cargando datos del miembro:', err);
+                }
+                setIsLoading(false);
+                return;
+            }
+
+            // CASO 2: Verificar sesión de Memberstack en el navegador
             if (typeof window !== 'undefined' && window.$memberstackDom) {
                 try {
                     const result = await window.$memberstackDom.getCurrentMember();
                     if (result?.data) {
-                        setMemberData(result.data);
+                        const cf = result.data.customFields || {};
+                        setMemberData({
+                            id: result.data.id,
+                            email: result.data.auth?.email || '',
+                            firstName: cf['first-name'] || '',
+                            paternalLastName: cf['paternal-last-name'] || '',
+                            maternalLastName: cf['maternal-last-name'] || '',
+                            phone: cf['phone'] || '',
+                            customFields: cf
+                        });
                         setIsLoggedIn(true);
-                        console.log('✅ Usuario logueado detectado:', result.data.auth?.email);
+                        console.log('✅ Sesión de Memberstack detectada:', result.data.auth?.email);
                     }
-                } catch (error) {
-                    console.log('ℹ️ Usuario no logueado');
+                } catch (err) {
+                    console.log('ℹ️ No hay sesión de Memberstack activa');
                 }
             }
 
             setIsLoading(false);
         };
 
-        // Pequeño delay para asegurar que Memberstack esté listo
         const timer = setTimeout(checkMemberStatus, 500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [memberIdFromUrl]);
 
     const handleGoogleSignup = async () => {
         if (window.$memberstackDom) {
             try {
                 await window.$memberstackDom.signupWithProvider({ provider: 'google' });
-                // Después del signup, recargar para verificar estado
                 window.location.reload();
-            } catch (error) {
-                console.error('Error en signup con Google:', error);
+            } catch (err) {
+                console.error('Error en signup con Google:', err);
+                setError('Error al iniciar sesión con Google');
             }
         }
     };
 
-    // Estado de carga
     if (isLoading) {
-        return (
-            <div className={styles.container}>
-                <div className={styles.loadingCard}>
-                    <div className={styles.spinner}></div>
-                    <p>Verificando tu cuenta...</p>
-                </div>
-            </div>
-        );
+        return <LoadingCard />;
     }
 
-    // Usuario logueado → Mostrar formulario de embajador (pasos 2 y 3)
+    // Usuario identificado → Mostrar formulario de embajador
     if (isLoggedIn && memberData) {
-        return <AmbassadorForm linkedMemberstackId={memberData.id} />;
+        return (
+            <AmbassadorForm
+                linkedMemberstackId={memberData.id}
+                preloadedData={{
+                    firstName: memberData.firstName,
+                    paternalLastName: memberData.paternalLastName,
+                    maternalLastName: memberData.maternalLastName,
+                    email: memberData.email,
+                    phone: memberData.phone,
+                    customFields: memberData.customFields
+                }}
+            />
+        );
     }
 
     // Usuario NO logueado → Mostrar pantalla de autenticación
     return (
         <div className={styles.container}>
             <div className={styles.authCard}>
-                {/* Header */}
                 <div className={styles.header}>
                     <img
                         src="/images/logo-pata-amiga.png"
@@ -89,7 +150,12 @@ export default function AmbassadorRegistrationPage() {
                     </p>
                 </div>
 
-                {/* Beneficios */}
+                {error && (
+                    <div className={styles.errorBox}>
+                        {error}
+                    </div>
+                )}
+
                 <div className={styles.benefits}>
                     <div className={styles.benefit}>
                         <span className={styles.benefitIcon}>💰</span>
@@ -105,11 +171,18 @@ export default function AmbassadorRegistrationPage() {
                     </div>
                 </div>
 
-                {/* Opciones de registro */}
-                <div className={styles.authOptions}>
-                    <p className={styles.authLabel}>Para comenzar, crea tu cuenta o inicia sesión:</p>
+                <div className={styles.memberInfo}>
+                    <p>
+                        <strong>¿Ya eres miembro de Club Pata Amiga?</strong><br />
+                        <a href="https://www.clubpataamiga.com/mi-cuenta" target="_blank" rel="noopener noreferrer">
+                            Inicia sesión en tu cuenta
+                        </a> y desde ahí podrás registrarte como embajador con tus datos ya cargados.
+                    </p>
+                </div>
 
-                    {/* Botón Google */}
+                <div className={styles.authOptions}>
+                    <p className={styles.authLabel}>¿Eres nuevo? Crea tu cuenta:</p>
+
                     <button
                         className={styles.googleButton}
                         onClick={handleGoogleSignup}
@@ -127,7 +200,6 @@ export default function AmbassadorRegistrationPage() {
                         <span>o</span>
                     </div>
 
-                    {/* Botón Email */}
                     <a
                         href="#"
                         className={styles.emailButton}
@@ -136,18 +208,25 @@ export default function AmbassadorRegistrationPage() {
                         ✉️ Registrarme con Email
                     </a>
 
-                    {/* Ya tengo cuenta */}
                     <p className={styles.loginLink}>
                         ¿Ya tienes cuenta?{' '}
                         <a href="#" data-ms-modal="login">Inicia sesión</a>
                     </p>
                 </div>
 
-                {/* Footer */}
                 <div className={styles.footer}>
                     <p>Al registrarte, aceptas nuestros <a href="/terminos">Términos y Condiciones</a></p>
                 </div>
             </div>
         </div>
+    );
+}
+
+// Página principal que envuelve el contenido con Suspense
+export default function AmbassadorRegistrationPage() {
+    return (
+        <Suspense fallback={<LoadingCard />}>
+            <AmbassadorRegistrationContent />
+        </Suspense>
     );
 }

@@ -51,22 +51,59 @@ const initialStep3: AmbassadorStep3Data = {
     accept_terms: false
 };
 
-interface Props {
-    onSuccess?: () => void;
-    linkedMemberstackId?: string; // Si viene de un usuario existente
+interface PreloadedMemberData {
+    firstName?: string;
+    paternalLastName?: string;
+    maternalLastName?: string;
+    email?: string;
+    phone?: string;
+    customFields?: Record<string, string>;
 }
 
-export default function AmbassadorForm({ onSuccess, linkedMemberstackId }: Props) {
-    const [currentStep, setCurrentStep] = useState(1);
-    const [step1Data, setStep1Data] = useState<AmbassadorStep1Data>(initialStep1);
+interface Props {
+    onSuccess?: () => void;
+    linkedMemberstackId?: string;
+    preloadedData?: PreloadedMemberData;
+}
+
+export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preloadedData }: Props) {
+    // Si viene preloadedData, empezar en paso 2 y marcar como miembro existente
+    const [currentStep, setCurrentStep] = useState(preloadedData ? 2 : 1);
+    const [isExistingMember, setIsExistingMember] = useState(!!preloadedData);
+
+    // Inicializar step1Data con los datos precargados si existen
+    const getInitialStep1 = (): AmbassadorStep1Data => {
+        if (!preloadedData) return initialStep1;
+
+        const cf = preloadedData.customFields || {};
+        return {
+            ...initialStep1,
+            first_name: preloadedData.firstName || cf['first-name'] || '',
+            paternal_surname: preloadedData.paternalLastName || cf['paternal-last-name'] || '',
+            maternal_surname: preloadedData.maternalLastName || cf['maternal-last-name'] || '',
+            email: preloadedData.email || '',
+            phone: preloadedData.phone || cf['phone'] || '',
+            gender: (cf['gender'] as Gender) || '',
+            birth_date: cf['birth-date'] || '',
+            curp: cf['curp'] || '',
+            postal_code: cf['postal-code'] || '',
+            state: cf['state'] || '',
+            city: cf['city'] || '',
+            neighborhood: cf['neighborhood'] || cf['colony'] || '',
+            address: cf['address'] || '',
+            password: 'MEMBER_LINKED',
+            confirm_password: 'MEMBER_LINKED'
+        };
+    };
+
+    const [step1Data, setStep1Data] = useState<AmbassadorStep1Data>(getInitialStep1);
     const [step2Data, setStep2Data] = useState<AmbassadorStep2Data>(initialStep2);
     const [step3Data, setStep3Data] = useState<AmbassadorStep3Data>(initialStep3);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
-    const [isLoadingMember, setIsLoadingMember] = useState(true);
+    const [isLoadingMember, setIsLoadingMember] = useState(!preloadedData);
     const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
-    const [isExistingMember, setIsExistingMember] = useState(false);
 
     // Cargar datos del miembro de Memberstack si está logueado
     useEffect(() => {
