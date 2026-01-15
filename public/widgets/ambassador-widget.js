@@ -1492,12 +1492,32 @@
 
     async function checkAmbassadorStatus(email) {
         try {
-            // Primero intentar buscar por email del miembro actual
+            // Primero buscar embajador por email
             const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors?search=${encodeURIComponent(email)}&limit=1`);
             const data = await response.json();
 
             if (data.success && data.data && data.data.length > 0) {
-                return data.data[0];
+                const ambassador = data.data[0];
+
+                // Si está aprobado, obtener datos completos incluyendo referidos
+                if (ambassador.status === 'approved') {
+                    try {
+                        const detailResponse = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}`);
+                        const detailData = await detailResponse.json();
+
+                        if (detailData.success && detailData.data) {
+                            console.log('📊 Ambassador data con referidos:', detailData.data);
+                            return {
+                                ...detailData.data,
+                                recent_referrals: detailData.data.referrals || []
+                            };
+                        }
+                    } catch (detailError) {
+                        console.error('Error getting ambassador details:', detailError);
+                    }
+                }
+
+                return ambassador;
             }
             return null;
         } catch (error) {
