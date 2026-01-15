@@ -450,13 +450,17 @@
     }
 
     // Estado: No es embajador
-    function renderNotAmbassador() {
+    function renderNotAmbassador(memberId) {
+        const registroUrl = memberId
+            ? `${CONFIG.API_BASE_URL}/embajadores/registro?memberId=${memberId}`
+            : `${CONFIG.API_BASE_URL}/embajadores/registro`;
+
         return `
             <div class="ambassador-not-found">
                 <div class="ambassador-not-found-icon">🎯</div>
                 <h2>¿Quieres ser Embajador Pata Amiga?</h2>
                 <p>Únete a nuestra manada y gana comisiones por cada familia que ayudes a proteger a sus peludos.</p>
-                <button class="ambassador-btn-apply" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/registro'">
+                <button class="ambassador-btn-apply" onclick="window.location.href='${registroUrl}'">
                     Quiero ser Embajador
                 </button>
             </div>
@@ -539,7 +543,11 @@
     }
 
     // Estado: Rechazado
-    function renderRejected(ambassador) {
+    function renderRejected(ambassador, memberId) {
+        const registroUrl = memberId
+            ? `${CONFIG.API_BASE_URL}/embajadores/registro?memberId=${memberId}`
+            : `${CONFIG.API_BASE_URL}/embajadores/registro`;
+
         return `
             <div class="ambassador-rejected-card">
                 <div class="ambassador-rejected-icon">😔</div>
@@ -557,7 +565,7 @@
                     quieres intentarlo de nuevo con información actualizada, puedes volver a aplicar.
                 </p>
 
-                <button class="ambassador-btn-retry" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/registro'">
+                <button class="ambassador-btn-retry" onclick="window.location.href='${registroUrl}'">
                     Volver a aplicar
                 </button>
             </div>
@@ -645,10 +653,13 @@
 
         // Wait for Memberstack
         let email = null;
+        let memberId = null;
         if (window.$memberstackDom) {
             try {
                 const member = await window.$memberstackDom.getCurrentMember();
                 email = member?.data?.auth?.email;
+                memberId = member?.data?.id;
+                console.log('👤 Memberstack user:', { email, memberId });
             } catch (e) {
                 console.log('Memberstack not available');
             }
@@ -663,11 +674,11 @@
         // Render based on status
         let content = '';
         if (!ambassador) {
-            content = renderNotAmbassador();
+            content = renderNotAmbassador(memberId);
         } else if (ambassador.status === 'pending') {
             content = renderPending(ambassador);
         } else if (ambassador.status === 'rejected') {
-            content = renderRejected(ambassador);
+            content = renderRejected(ambassador, memberId);
         } else if (ambassador.status === 'approved') {
             // Dashboard completo - se implementará después
             content = `<p>Dashboard del embajador - Próximamente</p>`;
