@@ -123,6 +123,25 @@ export async function POST(request: NextRequest) {
             return value.trim();
         };
 
+        // Mapear género de español a valores de la DB
+        const mapGender = (gender: string | undefined | null): string | null => {
+            if (!gender) return null;
+            const genderLower = gender.toLowerCase().trim();
+            const genderMap: Record<string, string> = {
+                'male': 'male',
+                'female': 'female',
+                'not_specified': 'not_specified',
+                'hombre': 'male',
+                'mujer': 'female',
+                'masculino': 'male',
+                'femenino': 'female',
+                'no especificado': 'not_specified',
+                'm': 'male',
+                'f': 'female'
+            };
+            return genderMap[genderLower] || null;
+        };
+
         // Validaciones básicas
         const requiredFields = ['first_name', 'paternal_surname', 'email', 'password'];
         const missingFields = requiredFields.filter(field => !body[field as keyof CreateAmbassadorRequest]);
@@ -203,7 +222,7 @@ export async function POST(request: NextRequest) {
                 first_name: body.first_name.trim(),
                 paternal_surname: body.paternal_surname.trim(),
                 maternal_surname: sanitize(body.maternal_surname),
-                gender: sanitize(body.gender),
+                gender: mapGender(body.gender),
                 birth_date: sanitize(body.birth_date), // Convertir "" a null
                 curp: body.curp ? body.curp.toUpperCase() : null, // Opcional para extranjeros
                 ine_front_url: sanitize(body.ine_front_url),
