@@ -1,0 +1,228 @@
+/* Container */
+.container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #00BBB4 0%, #009B95 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* Loading Card */
+.loadingCard {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #eee;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingCard p {
+    color: #666;
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* Auth Card */
+.authCard {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.2);
+}
+
+/* Header */
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0 0 10px 0;
+}
+
+.subtitle {
+    font-size: 1rem;
+    color: #666;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Benefits */
+.benefits {
+    background: linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05));
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 30px;
+}
+
+.benefit {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+.benefit:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 187, 180, 0.1);
+}
+
+.benefitIcon {
+    font-size: 1.3rem;
+}
+
+/* Auth Options */
+.authOptions {
+    text-align: center;
+}
+
+.authLabel {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+
+.googleButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 20px;
+    background: white;
+    border: 2px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.googleButton:hover {
+    border-color: #00BBB4;
+    background: rgba(0, 187, 180, 0.05);
+}
+
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0;
+    color: #999;
+    font-size: 0.9rem;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e0e0e0;
+}
+
+.divider span {
+    padding: 0 15px;
+}
+
+.emailButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #00BBB4, #009B95);
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.emailButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 187, 180, 0.35);
+}
+
+.loginLink {
+    margin-top: 20px;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.loginLink a {
+    color: #00BBB4;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.loginLink a:hover {
+    color: #009B95;
+}
+
+/* Footer */
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+.footer p {
+    color: #999;
+    font-size: 0.8rem;
+    margin: 0;
+}
+
+.footer a {
+    color: #00BBB4;
+    text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 520px) {
+    .authCard {
+        padding: 30px 25px;
+    }
+
+    .title {
+        font-size: 1.5rem;
+    }
+
+    .subtitle {
+        font-size: 0.9rem;
+    }
+}

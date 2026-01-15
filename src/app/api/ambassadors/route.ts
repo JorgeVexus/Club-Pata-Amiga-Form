@@ -115,6 +115,14 @@ export async function POST(request: NextRequest) {
     try {
         const body: CreateAmbassadorRequest = await request.json();
 
+        // Función para convertir strings vacíos a null (evita errores de Postgres con fechas)
+        const sanitize = (value: string | undefined | null): string | null => {
+            if (value === undefined || value === null || value === '' || value.trim() === '') {
+                return null;
+            }
+            return value.trim();
+        };
+
         // Validaciones básicas
         const requiredFields = ['first_name', 'paternal_surname', 'email', 'password'];
         const missingFields = requiredFields.filter(field => !body[field as keyof CreateAmbassadorRequest]);
@@ -194,34 +202,34 @@ export async function POST(request: NextRequest) {
                 ambassador_code: ambassadorCode,
                 first_name: body.first_name.trim(),
                 paternal_surname: body.paternal_surname.trim(),
-                maternal_surname: body.maternal_surname?.trim() || null,
-                gender: body.gender || null,
-                birth_date: body.birth_date,
-                curp: body.curp.toUpperCase(),
-                ine_front_url: body.ine_front_url || null,
-                ine_back_url: body.ine_back_url || null,
-                postal_code: body.postal_code?.trim() || null,
-                state: body.state?.trim() || null,
-                city: body.city?.trim() || null,
-                neighborhood: body.neighborhood?.trim() || null,
-                address: body.address?.trim() || null,
+                maternal_surname: sanitize(body.maternal_surname),
+                gender: sanitize(body.gender),
+                birth_date: sanitize(body.birth_date), // Convertir "" a null
+                curp: body.curp ? body.curp.toUpperCase() : null, // Opcional para extranjeros
+                ine_front_url: sanitize(body.ine_front_url),
+                ine_back_url: sanitize(body.ine_back_url),
+                postal_code: sanitize(body.postal_code),
+                state: sanitize(body.state),
+                city: sanitize(body.city),
+                neighborhood: sanitize(body.neighborhood),
+                address: sanitize(body.address),
                 email: body.email.toLowerCase().trim(),
-                phone: body.phone?.trim() || null,
+                phone: sanitize(body.phone),
                 password_hash: passwordHash,
-                instagram: body.instagram?.trim() || null,
-                facebook: body.facebook?.trim() || null,
-                tiktok: body.tiktok?.trim() || null,
-                other_social: body.other_social?.trim() || null,
-                motivation: body.motivation?.trim() || null,
-                rfc: body.rfc?.toUpperCase() || null,
+                instagram: sanitize(body.instagram),
+                facebook: sanitize(body.facebook),
+                tiktok: sanitize(body.tiktok),
+                other_social: sanitize(body.other_social),
+                motivation: sanitize(body.motivation),
+                rfc: body.rfc ? body.rfc.toUpperCase() : null,
                 payment_method: body.payment_method || 'pending',
-                bank_name: body.bank_name?.trim() || null,
-                card_last_digits: body.card_last_digits?.trim() || null,
-                clabe: body.clabe?.trim() || null,
+                bank_name: sanitize(body.bank_name),
+                card_last_digits: sanitize(body.card_last_digits),
+                clabe: sanitize(body.clabe),
                 referral_code: referralCode,
                 status: 'pending',
                 commission_percentage: commissionPercentage,
-                linked_memberstack_id: body.linked_memberstack_id || null
+                linked_memberstack_id: sanitize(body.linked_memberstack_id)
             })
             .select()
             .single();
