@@ -194,9 +194,23 @@ export async function PATCH(
             }
         }
 
-        // Si se rechazó, enviar notificación
-        if (body.status === 'rejected') {
-            console.log(`❌ Embajador ${currentAmbassador.email} rechazado: ${body.rejection_reason}`);
+        // Si se rechazó o suspendió, quitar el tag is-ambassador de Memberstack
+        if (body.status === 'rejected' || body.status === 'suspended') {
+            console.log(`❌ Embajador ${currentAmbassador.email} ${body.status === 'rejected' ? 'rechazado' : 'suspendido'}${body.rejection_reason ? ': ' + body.rejection_reason : ''}`);
+
+            // Quitar el campo is-ambassador en Memberstack
+            if (currentAmbassador.linked_memberstack_id) {
+                const memberstackUpdated = await updateMemberstackField(
+                    currentAmbassador.linked_memberstack_id,
+                    { 'is-ambassador': 'false' }
+                );
+
+                if (memberstackUpdated) {
+                    console.log(`✅ Campo is-ambassador removido en Memberstack para ${currentAmbassador.email}`);
+                } else {
+                    console.warn(`⚠️ No se pudo actualizar Memberstack para ${currentAmbassador.email}`);
+                }
+            }
         }
 
         return NextResponse.json({
