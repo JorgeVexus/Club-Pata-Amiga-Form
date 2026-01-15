@@ -32,6 +32,12 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
         },
     ]);
     const [ambassadorCode, setAmbassadorCode] = useState('');
+    const [ambassadorValidation, setAmbassadorValidation] = useState<{
+        isValidating: boolean;
+        isValid: boolean | null;
+        ambassadorName: string;
+        message: string;
+    }>({ isValidating: false, isValid: null, ambassadorName: '', message: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -62,6 +68,60 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
         const newPets = [...pets];
         newPets[index] = data;
         setPets(newPets);
+    };
+
+    // Validar código de embajador
+    const validateAmbassadorCode = async (code: string) => {
+        if (!code || code.trim().length < 3) {
+            setAmbassadorValidation({ isValidating: false, isValid: null, ambassadorName: '', message: '' });
+            return;
+        }
+
+        setAmbassadorValidation(prev => ({ ...prev, isValidating: true, message: 'Validando...' }));
+
+        try {
+            const response = await fetch(
+                `https://club-pata-amiga-form.vercel.app/api/referrals/validate-code?code=${encodeURIComponent(code.trim())}`
+            );
+            const data = await response.json();
+
+            if (data.success && data.valid) {
+                setAmbassadorValidation({
+                    isValidating: false,
+                    isValid: true,
+                    ambassadorName: data.ambassador_name || '',
+                    message: `✅ Código válido - Referido por: ${data.ambassador_name}`
+                });
+            } else {
+                setAmbassadorValidation({
+                    isValidating: false,
+                    isValid: false,
+                    ambassadorName: '',
+                    message: data.message || '❌ Código no válido'
+                });
+            }
+        } catch (error) {
+            console.error('Error validando código:', error);
+            setAmbassadorValidation({
+                isValidating: false,
+                isValid: null,
+                ambassadorName: '',
+                message: '⚠️ No se pudo validar el código'
+            });
+        }
+    };
+
+    // Handler del input con debounce
+    const handleAmbassadorCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const code = e.target.value;
+        setAmbassadorCode(code);
+
+        // Debounce la validación
+        const timeoutId = setTimeout(() => {
+            validateAmbassadorCode(code);
+        }, 500);
+
+        return () => clearTimeout(timeoutId);
     };
 
     // Validar formulario
@@ -284,13 +344,35 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                         id="ambassadorCode"
                         type="text"
                         value={ambassadorCode}
-                        onChange={(e) => setAmbassadorCode(e.target.value)}
+                        onChange={handleAmbassadorCodeChange}
                         placeholder="Código de embajador (Opcional)"
-                        className={styles.input}
+                        className={`${styles.input} ${ambassadorValidation.isValid === true ? styles.inputValid :
+                                ambassadorValidation.isValid === false ? styles.inputInvalid : ''
+                            }`}
+                        style={{
+                            borderColor: ambassadorValidation.isValid === true ? '#22C55E' :
+                                ambassadorValidation.isValid === false ? '#EF4444' : undefined
+                        }}
                     />
-                    <p className={styles.helpText}>
-                        Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí
-                    </p>
+                    {ambassadorValidation.message && (
+                        <p
+                            className={styles.validationMessage}
+                            style={{
+                                color: ambassadorValidation.isValid === true ? '#22C55E' :
+                                    ambassadorValidation.isValid === false ? '#EF4444' : '#666',
+                                marginTop: '8px',
+                                fontSize: '0.9rem',
+                                fontWeight: ambassadorValidation.isValid === true ? '500' : 'normal'
+                            }}
+                        >
+                            {ambassadorValidation.message}
+                        </p>
+                    )}
+                    {!ambassadorValidation.message && (
+                        <p className={styles.helpText}>
+                            Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí
+                        </p>
+                    )}
                 </div>
 
                 {/* Botones de navegación */}

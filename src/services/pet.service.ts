@@ -142,6 +142,43 @@ export async function savePetsToMemberstack(
             throw new Error(`Error al actualizar datos: ${updateError.message || updateError}`);
         }
 
+        // Si hay código de embajador, registrar el referido
+        if (ambassadorCode && ambassadorCode.trim()) {
+            try {
+                console.log('🐾 Registrando referido con código:', ambassadorCode);
+
+                const memberEmail = currentMember.data?.auth?.email;
+                const memberName = currentMember.data?.customFields?.['first-name'] || '';
+                const memberLastName = currentMember.data?.customFields?.['paternal-last-name'] || '';
+
+                const referralResponse = await fetch(`${getApiBaseUrl()}/api/referrals`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        referral_code: ambassadorCode.trim().toUpperCase(),
+                        referred_user_id: currentMember.data.id,
+                        referred_user_name: `${memberName} ${memberLastName}`.trim() || 'Usuario',
+                        referred_user_email: memberEmail || '',
+                        membership_plan: 'pending', // Se actualizará cuando pague
+                        membership_amount: 0, // Se actualizará cuando pague
+                    }),
+                });
+
+                const referralData = await referralResponse.json();
+
+                if (referralData.success) {
+                    console.log('✅ Referido registrado exitosamente');
+                } else {
+                    console.warn('⚠️ No se pudo registrar el referido:', referralData.error);
+                }
+            } catch (referralError) {
+                console.error('Error registrando referido (no crítico):', referralError);
+                // No fallar el registro de mascotas si falla el referido
+            }
+        }
+
         return {
             success: true,
             petIds: pets.map((_, i) => `pet-${i + 1}`),
@@ -153,6 +190,18 @@ export async function savePetsToMemberstack(
             error: error.message || 'Error al guardar las mascotas',
         };
     }
+}
+
+// Helper para obtener la URL base de la API
+function getApiBaseUrl(): string {
+    // En producción usa la URL de Vercel, en desarrollo usa localhost
+    if (typeof window !== 'undefined') {
+        const host = window.location.host;
+        if (host.includes('localhost') || host.includes('127.0.0.1')) {
+            return 'http://localhost:3000';
+        }
+    }
+    return 'https://club-pata-amiga-form.vercel.app';
 }
 
 /**
