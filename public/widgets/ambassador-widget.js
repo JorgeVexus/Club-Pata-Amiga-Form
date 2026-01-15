@@ -1341,14 +1341,14 @@
                             ${referrals.length > 0 ? referrals.map(ref => `
                                 <div class="amb-referral-row">
                                     <div class="amb-referral-info">
-                                        <strong>${ref.name || 'Usuario'}</strong>
-                                        <span class="amb-referral-email">${ref.email || ''}</span>
+                                        <strong>${ref.referred_user_name || 'Usuario'}</strong>
+                                        <span class="amb-referral-email">${ref.referred_user_email || ''}</span>
                                         <span class="amb-referral-date">📅 ${formatDate(ref.created_at)}</span>
                                     </div>
                                     <div class="amb-referral-right">
                                         <span class="amb-referral-amount">${formatCurrency(ref.commission_amount)}</span>
-                                        <span class="amb-referral-status ${ref.status === 'paid' ? 'paid' : 'pending'}">
-                                            ${ref.status === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
+                                        <span class="amb-referral-status ${ref.commission_status === 'paid' ? 'paid' : 'pending'}">
+                                            ${ref.commission_status === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
                                         </span>
                                     </div>
                                 </div>
