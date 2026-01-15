@@ -6,12 +6,46 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const MEMBERSTACK_SECRET_KEY = process.env.MEMBERSTACK_SECRET_KEY;
+const MEMBERSTACK_API_URL = 'https://admin.memberstack.com/members';
+
 function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, PATCH, DELETE, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
+}
+
+// Función para actualizar campos personalizados en Memberstack
+async function updateMemberstackField(memberId: string, customFields: Record<string, string | boolean>) {
+    if (!MEMBERSTACK_SECRET_KEY) {
+        console.error('❌ MEMBERSTACK_SECRET_KEY no configurada');
+        return false;
+    }
+
+    try {
+        const response = await fetch(`${MEMBERSTACK_API_URL}/${memberId}`, {
+            method: 'PATCH',
+            headers: {
+                'X-API-KEY': MEMBERSTACK_SECRET_KEY,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ customFields })
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ Error actualizando Memberstack:', response.status, errorText);
+            return false;
+        }
+
+        console.log('✅ Memberstack actualizado correctamente');
+        return true;
+    } catch (error) {
+        console.error('❌ Error en updateMemberstackField:', error);
+        return false;
+    }
 }
 
 export async function OPTIONS() {
@@ -139,15 +173,30 @@ export async function PATCH(
             );
         }
 
-        // Si se aprobó, enviar notificación al embajador
+        // Si se aprobó, actualizar Memberstack y enviar notificación
         if (body.status === 'approved') {
-            // Aquí podrías enviar un email de bienvenida
-            console.log(`Embajador ${currentAmbassador.email} aprobado`);
+            console.log(`✅ Embajador ${currentAmbassador.email} aprobado`);
+
+            // Actualizar el campo is-ambassador en Memberstack
+            if (currentAmbassador.linked_memberstack_id) {
+                const memberstackUpdated = await updateMemberstackField(
+                    currentAmbassador.linked_memberstack_id,
+                    { 'is-ambassador': 'true' }
+                );
+
+                if (memberstackUpdated) {
+                    console.log(`✅ Campo is-ambassador actualizado en Memberstack para ${currentAmbassador.email}`);
+                } else {
+                    console.warn(`⚠️ No se pudo actualizar Memberstack para ${currentAmbassador.email}`);
+                }
+            } else {
+                console.warn(`⚠️ Embajador ${currentAmbassador.email} no tiene linked_memberstack_id`);
+            }
         }
 
         // Si se rechazó, enviar notificación
         if (body.status === 'rejected') {
-            console.log(`Embajador ${currentAmbassador.email} rechazado: ${body.rejection_reason}`);
+            console.log(`❌ Embajador ${currentAmbassador.email} rechazado: ${body.rejection_reason}`);
         }
 
         return NextResponse.json({
