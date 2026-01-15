@@ -433,6 +433,587 @@
         .ambassador-paw-btn:hover {
             transform: scale(1.1);
         }
+
+        /* ============================================
+           APPROVED DASHBOARD STYLES (Figma Design)
+           ============================================ */
+        .amb-dashboard {
+            padding: 20px 0;
+        }
+
+        /* Header */
+        .amb-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            padding: 0 10px;
+        }
+
+        .amb-header-content {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        .amb-header-icon {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .amb-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .amb-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .amb-help-link {
+            color: #15BEB2;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        /* Code Section */
+        .amb-code-section {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .amb-section-title-alt {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 10px 0;
+        }
+
+        .amb-code-desc {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .amb-code-box {
+            background: white;
+            border: 3px dashed #15BEB2;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .amb-code-label {
+            font-size: 0.85rem;
+            color: #888;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .amb-code-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            letter-spacing: 3px;
+            margin-bottom: 20px;
+            font-family: 'Fraiche', sans-serif;
+        }
+
+        .amb-code-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .amb-btn-yellow {
+            background: #FFD93D;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amb-btn-yellow:hover {
+            background: #FFC700;
+            transform: translateY(-2px);
+        }
+
+        .amb-btn-green {
+            background: #4ADE80;
+            color: #333;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .amb-btn-green:hover {
+            background: #22C55E;
+            transform: translateY(-2px);
+        }
+
+        .amb-how-it-works {
+            background: #FFF9E6;
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .amb-star {
+            font-size: 1.2rem;
+        }
+
+        .amb-how-it-works strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .amb-how-it-works p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        /* Two Columns Grid */
+        .amb-two-columns {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 700px) {
+            .amb-two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Earnings Card */
+        .amb-earnings-card {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .amb-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .amb-card-icon {
+            font-size: 1.8rem;
+        }
+
+        .amb-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0;
+        }
+
+        .amb-card-subtitle {
+            font-size: 0.85rem;
+            color: #888;
+            margin: 2px 0 0 0;
+        }
+
+        .amb-earnings-total {
+            margin-bottom: 15px;
+        }
+
+        .amb-earnings-label {
+            display: block;
+            font-size: 0.85rem;
+            color: #888;
+            margin-bottom: 5px;
+        }
+
+        .amb-earnings-value {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #15BEB2;
+            display: block;
+        }
+
+        .amb-earnings-pending {
+            background: #F0FDF4;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .amb-earnings-pending-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #22C55E;
+            display: block;
+        }
+
+        /* Stats Card */
+        .amb-stats-card {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .amb-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .amb-stat {
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+        }
+
+        .amb-stat.cyan { background: #CFFAFE; }
+        .amb-stat.blue { background: #DBEAFE; }
+        .amb-stat.yellow { background: #FEF9C3; }
+        .amb-stat.green { background: #DCFCE7; }
+
+        .amb-stat-num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #333;
+            display: block;
+        }
+
+        .amb-stat-label {
+            font-size: 0.8rem;
+            color: #666;
+            display: block;
+            margin-top: 5px;
+        }
+
+        /* Bank Alert */
+        .amb-bank-alert {
+            background: white;
+            border: 2px solid #333;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .amb-bank-alert-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .amb-bank-icon {
+            font-size: 1.5rem;
+        }
+
+        .amb-bank-alert strong {
+            display: block;
+            margin-bottom: 3px;
+        }
+
+        .amb-bank-alert p {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .amb-btn-outline {
+            background: white;
+            border: 2px solid #15BEB2;
+            color: #15BEB2;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amb-btn-outline:hover {
+            background: #15BEB2;
+            color: white;
+        }
+
+        /* Referrals Section */
+        .amb-referrals-section {
+            background: #15BEB2;
+            border-radius: 25px;
+            padding: 30px;
+            margin-bottom: 25px;
+        }
+
+        .amb-section-title-dark {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+            margin: 0 0 5px 0;
+        }
+
+        .amb-section-subtitle {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin: 0 0 20px 0;
+        }
+
+        .amb-referrals-table {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .amb-table-header {
+            display: flex;
+            gap: 10px;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .amb-search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+
+        .amb-filter-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: white;
+            cursor: pointer;
+        }
+
+        .amb-table-body {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .amb-referral-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .amb-referral-row:last-child {
+            border-bottom: none;
+        }
+
+        .amb-referral-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .amb-referral-info strong {
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .amb-referral-email {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .amb-referral-date {
+            font-size: 0.75rem;
+            color: #aaa;
+        }
+
+        .amb-referral-right {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 5px;
+        }
+
+        .amb-referral-amount {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .amb-referral-status {
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .amb-referral-status.paid {
+            background: #DCFCE7;
+            color: #16A34A;
+        }
+
+        .amb-referral-status.pending {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .amb-empty-referrals {
+            text-align: center;
+            padding: 40px 20px;
+            color: #888;
+        }
+
+        .amb-empty-icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .amb-empty-hint {
+            font-size: 0.85rem;
+            color: #aaa;
+        }
+
+        /* Material Section */
+        .amb-material-section {
+            background: linear-gradient(135deg, #FF0063, #FF3D7F);
+            border-radius: 25px;
+            padding: 30px;
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+
+        .amb-material-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0 0 15px 0;
+        }
+
+        .amb-material-desc {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+            opacity: 0.95;
+        }
+
+        .amb-material-cta {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .amb-btn-green-solid {
+            background: #22C55E;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amb-btn-green-solid:hover {
+            background: #16A34A;
+            transform: translateY(-2px);
+        }
+
+        /* How Section */
+        .amb-how-section {
+            background: white;
+            border: 3px solid #333;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .amb-how-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+
+        .amb-how-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .amb-how-item {
+            background: #F8FAFC;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .amb-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .amb-title {
+                font-size: 1.3rem;
+            }
+            
+            .amb-code-value {
+                font-size: 1.8rem;
+            }
+            
+            .amb-earnings-value {
+                font-size: 2rem;
+            }
+            
+            .amb-stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .amb-stat-num {
+                font-size: 1.8rem;
+            }
+            
+            .amb-bank-alert {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .amb-bank-alert-content {
+                flex-direction: column;
+            }
+        }
     `;
 
     // ============================================
@@ -606,6 +1187,305 @@
         `;
     }
 
+    // Estado: Aprobado - Dashboard completo (Diseño Figma)
+    function renderApproved(ambassador) {
+        const formatCurrency = (amount) => {
+            return '$' + (amount || 0).toLocaleString('es-MX');
+        };
+
+        const formatDate = (dateString) => {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-MX', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            });
+        };
+
+        // Estadísticas del embajador
+        const totalReferrals = ambassador.referrals_count || 0;
+        const totalEarnings = ambassador.total_earnings || 0;
+        const pendingPayout = ambassador.pending_payout || 0;
+        const referralCode = ambassador.referral_code || 'PATA123';
+        const monthlyReferrals = ambassador.monthly_referrals || 0;
+        const paidReferrals = ambassador.paid_referrals || 0;
+        const pendingReferrals = ambassador.pending_referrals || 0;
+        const hasBankData = ambassador.payment_method && ambassador.payment_method !== 'pending';
+
+        // Mock de referidos para la tabla (se reemplazará con datos reales)
+        const referrals = ambassador.recent_referrals || [];
+
+        return `
+            <div class="amb-dashboard">
+                <!-- Header -->
+                <div class="amb-header">
+                    <div class="amb-header-content">
+                        <img src="${CONFIG.IMAGES_BASE_URL}/altavoz.png" alt="" class="amb-header-icon">
+                        <div>
+                            <h1 class="amb-title">Gana por compartir el amor por los peludos</h1>
+                            <p class="amb-subtitle">Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.</p>
+                        </div>
+                    </div>
+                    <a href="#help" class="amb-help-link">¿Qué es esto?</a>
+                </div>
+
+                <!-- Código de Referido -->
+                <div class="amb-code-section">
+                    <h2 class="amb-section-title-alt">Tu código de referido</h2>
+                    <p class="amb-code-desc">Comparte tu código con tus amigos. Si se unirán al ejército+que y pagan una membresía real por cada membresía que invitas.<br>Es muy fácil, tú ganas una comisión.</p>
+                    
+                    <div class="amb-code-box">
+                        <span class="amb-code-label">Código único:</span>
+                        <div class="amb-code-value">${referralCode}</div>
+                        <div class="amb-code-buttons">
+                            <button class="amb-btn-yellow" onclick="copyReferralCode('${referralCode}')">
+                                Copiar código
+                            </button>
+                            <button class="amb-btn-green" onclick="shareCode('${referralCode}')">
+                                Compartir ➜
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="amb-how-it-works">
+                        <span class="amb-star">⭐</span>
+                        <strong>¿Cómo funciona?</strong>
+                        <p>Comparte tu código con tus amigos. Si se unirán al ejército+que y pagan una membresía, tú ganas una comisión.</p>
+                    </div>
+                </div>
+
+                <!-- Grid: Ganancias y Estadísticas -->
+                <div class="amb-two-columns">
+                    <!-- Tus Ganancias -->
+                    <div class="amb-earnings-card">
+                        <div class="amb-card-header">
+                            <span class="amb-card-icon">💰</span>
+                            <div>
+                                <h3 class="amb-card-title">Tus ganancias</h3>
+                                <p class="amb-card-subtitle">Historial de comisiones</p>
+                            </div>
+                        </div>
+                        <div class="amb-earnings-total">
+                            <span class="amb-earnings-label">Total acumulado:</span>
+                            <span class="amb-earnings-value">${formatCurrency(totalEarnings)}</span>
+                        </div>
+                        <div class="amb-earnings-pending">
+                            <span class="amb-earnings-label">Disponible:</span>
+                            <span class="amb-earnings-pending-value">${formatCurrency(pendingPayout)}</span>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas -->
+                    <div class="amb-stats-card">
+                        <div class="amb-card-header">
+                            <span class="amb-card-icon">📊</span>
+                            <div>
+                                <h3 class="amb-card-title">Estadísticas</h3>
+                                <p class="amb-card-subtitle">Resumen de tus referidos</p>
+                            </div>
+                        </div>
+                        <div class="amb-stats-grid">
+                            <div class="amb-stat cyan">
+                                <span class="amb-stat-num">${totalReferrals}</span>
+                                <span class="amb-stat-label">Total</span>
+                            </div>
+                            <div class="amb-stat blue">
+                                <span class="amb-stat-num">${monthlyReferrals}</span>
+                                <span class="amb-stat-label">Este mes</span>
+                            </div>
+                            <div class="amb-stat yellow">
+                                <span class="amb-stat-num">${pendingReferrals}</span>
+                                <span class="amb-stat-label">Pendientes</span>
+                            </div>
+                            <div class="amb-stat green">
+                                <span class="amb-stat-num">${paidReferrals}</span>
+                                <span class="amb-stat-label">Pagados</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta Datos Bancarios -->
+                ${!hasBankData ? `
+                <div class="amb-bank-alert">
+                    <div class="amb-bank-alert-content">
+                        <span class="amb-bank-icon">🏦</span>
+                        <div>
+                            <strong>Agrega tus datos bancarios</strong>
+                            <p>Para poder recibir tus pagos, por favor agrega tus datos bancarios en tu perfil. 💳</p>
+                        </div>
+                    </div>
+                    <button class="amb-btn-outline" onclick="window.location.href='/perfil#bancarios'">
+                        Agregar datos bancarios
+                    </button>
+                </div>
+                ` : ''}
+
+                <!-- Estado de tus referidos -->
+                <div class="amb-referrals-section">
+                    <h2 class="amb-section-title-dark">Estado de tus referidos</h2>
+                    <p class="amb-section-subtitle">Personas que usaron tu código</p>
+                    
+                    <div class="amb-referrals-table">
+                        <div class="amb-table-header">
+                            <input type="text" placeholder="🔍 Buscar..." class="amb-search-input">
+                            <select class="amb-filter-select">
+                                <option>Todos 📋</option>
+                                <option>Pagados</option>
+                                <option>Pendientes</option>
+                            </select>
+                        </div>
+                        
+                        <div class="amb-table-body">
+                            ${referrals.length > 0 ? referrals.map(ref => `
+                                <div class="amb-referral-row">
+                                    <div class="amb-referral-info">
+                                        <strong>${ref.name || 'Usuario'}</strong>
+                                        <span class="amb-referral-email">${ref.email || ''}</span>
+                                        <span class="amb-referral-date">📅 ${formatDate(ref.created_at)}</span>
+                                    </div>
+                                    <div class="amb-referral-right">
+                                        <span class="amb-referral-amount">${formatCurrency(ref.commission_amount)}</span>
+                                        <span class="amb-referral-status ${ref.status === 'paid' ? 'paid' : 'pending'}">
+                                            ${ref.status === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
+                                        </span>
+                                    </div>
+                                </div>
+                            `).join('') : `
+                                <div class="amb-empty-referrals">
+                                    <span class="amb-empty-icon">🐾</span>
+                                    <p>Aún no tienes referidos</p>
+                                    <p class="amb-empty-hint">¡Comparte tu código para empezar a ganar!</p>
+                                </div>
+                            `}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Material Digital -->
+                <div class="amb-material-section">
+                    <h2 class="amb-material-title">Material digital para compartir</h2>
+                    <p class="amb-material-desc">
+                        Hemos creado un kit lleno de material promocional, logos, plantillas, imágenes y recursos listos 
+                        para descargar y compartir en tus redes. Todo diseñado para que invites de manera fácil y estética, 
+                        y todos salgamos ganando con más amigos peludos en la manada.
+                    </p>
+                    <div class="amb-material-cta">
+                        Comparte la info, difunde la manada y sigue ayudando hocikitos. ¡Te estaremos esperando!
+                    </div>
+                    <button class="amb-btn-green-solid" onclick="window.open('/materiales-embajador', '_blank')">
+                        Descargar kit
+                    </button>
+                </div>
+
+                <!-- Cómo funciona -->
+                <div class="amb-how-section">
+                    <h3 class="amb-how-title">¿Cómo funciona ser embajador?</h3>
+                    <div class="amb-how-list">
+                        <div class="amb-how-item">✅ Recibe un porcentaje real de cada membresía adquirida con tu código.</div>
+                        <div class="amb-how-item">✅ La comisión se abona a saldo una vez que se inicie el período de cobertura a quien invitaste.</div>
+                        <div class="amb-how-item">✅ Consulta tus recomendaciones y comisiones directamente desde tu panel.</div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // ============================================
+    // FUNCIONES AUXILIARES (compartir, copiar, etc.)
+    // ============================================
+
+    // Función para copiar código de referido
+    window.copyReferralCode = function (code) {
+        navigator.clipboard.writeText(code).then(() => {
+            const btn = document.querySelector('.amb-btn-yellow') || document.querySelector('.ambassador-copy-btn');
+            if (btn) {
+                const originalText = btn.textContent;
+                btn.textContent = '✅ ¡Copiado!';
+                btn.style.background = '#22C55E';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#FFD93D';
+                }, 2000);
+            }
+            // También mostrar alerta para feedback
+            console.log('Código copiado:', code);
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+            alert('Tu código es: ' + code);
+        });
+    };
+
+    // Copiar link de registro con código
+    window.copyReferralLink = function (code) {
+        const link = `https://www.clubpataamiga.com/registro?ref=${code}`;
+        navigator.clipboard.writeText(link).then(() => {
+            alert('¡Link copiado!\n' + link);
+        }).catch(err => {
+            alert('Tu link es: ' + link);
+        });
+    };
+
+    // Compartir en WhatsApp
+    window.shareOnWhatsApp = function (code) {
+        const message = `¡Únete a Club Pata Amiga y protege a tus peludos! 🐾\n\nUsa mi código de referido: ${code}\n\nRegístrate aquí: https://www.clubpataamiga.com/registro?ref=${code}`;
+        const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
+        window.open(url, '_blank');
+    };
+
+    // Compartir en Facebook
+    window.shareOnFacebook = function (code) {
+        const url = `https://www.clubpataamiga.com/registro?ref=${code}`;
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent('¡Únete a Club Pata Amiga con mi código: ' + code)}`;
+        window.open(fbUrl, '_blank');
+    };
+
+    // Compartir código (usa Web Share API si está disponible)
+    window.shareCode = function (code) {
+        const shareData = {
+            title: 'Club Pata Amiga',
+            text: `¡Únete a Club Pata Amiga y protege a tus peludos! 🐾\n\nUsa mi código de referido: ${code}`,
+            url: `https://www.clubpataamiga.com/registro?ref=${code}`
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData).catch(err => {
+                console.log('Error compartiendo:', err);
+                // Fallback a WhatsApp
+                window.shareOnWhatsApp(code);
+            });
+        } else {
+            // Fallback: mostrar opciones
+            const options = [
+                { name: 'WhatsApp', action: () => window.shareOnWhatsApp(code) },
+                { name: 'Facebook', action: () => window.shareOnFacebook(code) },
+                { name: 'Copiar link', action: () => window.copyReferralLink(code) }
+            ];
+
+            const choice = prompt('¿Cómo quieres compartir?\n1. WhatsApp\n2. Facebook\n3. Copiar link\n\nEscribe el número:');
+            if (choice === '1') window.shareOnWhatsApp(code);
+            else if (choice === '2') window.shareOnFacebook(code);
+            else if (choice === '3') window.copyReferralLink(code);
+        }
+    };
+
+    // Solicitar retiro
+    window.requestWithdraw = async function (ambassadorId, amount) {
+        if (!confirm(`¿Deseas solicitar un retiro de ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)}?`)) {
+            return;
+        }
+
+        try {
+            // Por ahora solo mostrar mensaje
+            alert('Tu solicitud de retiro ha sido enviada. Te contactaremos pronto para procesar el pago.');
+            // TODO: Implementar la API de solicitud de retiro
+        } catch (error) {
+            console.error('Error solicitando retiro:', error);
+            alert('Hubo un error al procesar tu solicitud. Por favor intenta más tarde.');
+        }
+    };
+
     // ============================================
     // FUNCIONES PRINCIPALES
     // ============================================
@@ -680,8 +1560,7 @@
         } else if (ambassador.status === 'rejected') {
             content = renderRejected(ambassador, memberId);
         } else if (ambassador.status === 'approved') {
-            // Dashboard completo - se implementará después
-            content = `<p>Dashboard del embajador - Próximamente</p>`;
+            content = renderApproved(ambassador);
         } else if (ambassador.status === 'suspended') {
             content = `
                 <div class="ambassador-rejected-card">
