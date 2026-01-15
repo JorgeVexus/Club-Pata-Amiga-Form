@@ -49,7 +49,10 @@ function AmbassadorRegistrationContent() {
                     const response = await fetch(`/api/memberstack/member?id=${memberIdFromUrl}`);
                     const data = await response.json();
 
+                    console.log('📨 Respuesta de API:', data);
+
                     if (data.success && data.member) {
+                        console.log('✅ Miembro encontrado:', data.member);
                         setMemberData({
                             id: data.member.id,
                             email: data.member.auth?.email || '',
@@ -62,10 +65,12 @@ function AmbassadorRegistrationContent() {
                         setIsLoggedIn(true);
                         console.log('✅ Datos del miembro cargados desde API');
                     } else {
-                        console.log('⚠️ No se encontró el miembro:', data.error);
+                        console.log('⚠️ No se encontró el miembro:', data.error, data.details);
+                        setError(`No pudimos cargar tus datos: ${data.error || 'Error desconocido'}`);
                     }
                 } catch (err) {
-                    console.error('Error cargando datos del miembro:', err);
+                    console.error('❌ Error cargando datos del miembro:', err);
+                    setError('Error de conexión al cargar tus datos');
                 }
                 setIsLoading(false);
                 return;
