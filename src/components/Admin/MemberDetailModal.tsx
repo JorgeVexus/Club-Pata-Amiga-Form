@@ -11,7 +11,7 @@ interface Pet {
     breed_size: string;
     age?: string;
     type?: string;
-    status: 'pending' | 'approved' | 'action_required' | 'rejected';
+    status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
     admin_notes?: string;
     photo_url?: string;
     vet_certificate_url?: string;
@@ -332,10 +332,29 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
                                                 {pet.status === 'pending' ? 'Pendiente' :
                                                     pet.status === 'approved' ? 'Aprobada' :
-                                                        pet.status === 'rejected' ? 'Rechazada' : 'Acción Requerida'}
+                                                        pet.status === 'rejected' ? 'Rechazada' :
+                                                            pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
                                             </div>
                                         </div>
 
+                                        {/* Mensaje de Apelación - Solo mostrar si la mascota está apelada */}
+                                        {pet.status === 'appealed' && (pet as any).appeal_message && (
+                                            <div style={{
+                                                background: 'linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%)',
+                                                padding: '15px',
+                                                borderRadius: '12px',
+                                                marginBottom: '15px',
+                                                border: '1px solid #CE93D8'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                    <span style={{ fontSize: '18px' }}>⚖️</span>
+                                                    <strong style={{ color: '#7B1FA2' }}>Mensaje de Apelación del Usuario:</strong>
+                                                </div>
+                                                <p style={{ margin: 0, color: '#4A148C', fontStyle: 'italic' }}>
+                                                    "{(pet as any).appeal_message}"
+                                                </p>
+                                            </div>
+                                        )}
                                         {/* Pet Photo Section */}
                                         <div className={styles.petPhotosSection}>
                                             <div className={styles.petPhotosGrid}>
@@ -504,21 +523,23 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                     </div>
                 </div>
 
-                {/* Footer Actions */}
-                <div className={styles.footer}>
-                    <button
-                        className={`${styles.actionButton} ${styles.approveButton}`}
-                        onClick={() => onApprove(member.id)}
-                    >
-                        Aprobar Solicitud
-                    </button>
-                    <button
-                        className={`${styles.actionButton} ${styles.rejectButton}`}
-                        onClick={() => onReject(member.id)}
-                    >
-                        Rechazar Solicitud
-                    </button>
-                </div>
+                {/* Footer Actions - Solo mostrar si el usuario NO está aprobado */}
+                {fields['approval-status'] !== 'approved' && (
+                    <div className={styles.footer}>
+                        <button
+                            className={`${styles.actionButton} ${styles.approveButton}`}
+                            onClick={() => onApprove(member.id)}
+                        >
+                            Aprobar Solicitud
+                        </button>
+                        <button
+                            className={`${styles.actionButton} ${styles.rejectButton}`}
+                            onClick={() => onReject(member.id)}
+                        >
+                            Rechazar Solicitud
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
