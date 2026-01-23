@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
             .select(`
                 id,
                 name,
-                type,
+                pet_type,
                 status,
                 breed,
                 breed_size,
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
             return {
                 petId: pet.id,
                 petName: pet.name,
-                petType: pet.type || 'Perro',
+                petType: pet.pet_type || 'Perro',
                 petStatus: pet.status,
                 petBreed: pet.breed,
                 petBreedSize: pet.breed_size,

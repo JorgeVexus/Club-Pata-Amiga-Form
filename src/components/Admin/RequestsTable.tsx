@@ -51,7 +51,7 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter]); // Reload when internal filter changes
+    }, [sortFilter, requestType]); // Reload when internal filter OR requestType changes
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -80,6 +80,7 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                     setAppealedPets(data.pets);
                     setRequests([]); // Limpiar requests normales
                 }
+                setLoading(false);
                 return;
             }
 
