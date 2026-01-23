@@ -1,7 +1,7 @@
 /**
  * API Route: /api/admin/pets/appealed
- * Obtiene todas las mascotas que tienen apelaciones activas
- * OPTIMIZADO: Un solo query sin loops ni llamadas a Memberstack
+ * Obtiene todas las mascotas de usuarios que han apelado
+ * CORREGIDO: Ahora busca por membership_status del dueño, no solo por status de mascota
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,68 +15,60 @@ const supabaseAdmin = createClient(
 
 export async function GET(request: NextRequest) {
     try {
-        console.log('📋 Obteniendo mascotas apeladas (optimizado)...');
+        console.log('📋 Obteniendo mascotas de usuarios apelados...');
 
-        // Query optimizado: obtener mascotas con status rejected/action_required
-        // cuyos dueños tengan membership_status = 'appealed'
-        // En un solo query con JOIN implícito
-        const { data: pets, error } = await supabaseAdmin
-            .from('pets')
-            .select(`
-                id,
-                name,
-                type,
-                status,
-                breed,
-                photo_url,
-                admin_notes,
-                appeal_message,
-                last_admin_response,
-                appealed_at,
-                created_at,
-                owner:users!owner_id (
-                    id,
-                    memberstack_id,
-                    first_name,
-                    last_name,
-                    email,
-                    membership_status
-                )
-            `)
-            .in('status', ['rejected', 'action_required']);
+        // Primero: obtener usuarios con membership_status = 'appealed'
+        const { data: appealedUsers, error: usersError } = await supabaseAdmin
+            .from('users')
+            .select('id, memberstack_id, first_name, last_name, email, membership_status, last_appeal_message')
+            .eq('membership_status', 'appealed');
 
-        if (error) {
-            console.error('Error obteniendo mascotas apeladas:', error);
-            return NextResponse.json({ error: error.message }, { status: 500 });
+        if (usersError) {
+            console.error('Error obteniendo usuarios apelados:', usersError);
+            return NextResponse.json({ error: usersError.message }, { status: 500 });
         }
 
-        // Filtrar solo los que tienen dueños con estado 'appealed'
-        // owner puede venir como objeto o array dependiendo de la relación
-        const appealedPets = (pets || [])
-            .filter(pet => {
-                const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
-                return owner?.membership_status === 'appealed';
-            })
-            .map(pet => {
-                const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
-                return {
-                    petId: pet.id,
-                    petName: pet.name,
-                    petType: pet.type || 'Perro',
-                    petStatus: pet.status,
-                    petBreed: pet.breed,
-                    petPhotoUrl: pet.photo_url,
-                    petAdminNotes: pet.admin_notes,
-                    ownerId: owner?.memberstack_id,
-                    ownerName: `${owner?.first_name || ''} ${owner?.last_name || ''}`.trim() || 'Sin nombre',
-                    ownerEmail: owner?.email,
-                    appealMessage: pet.appeal_message || '',
-                    appealedAt: pet.appealed_at || pet.created_at,
-                    createdAt: pet.created_at
-                };
-            });
+        if (!appealedUsers || appealedUsers.length === 0) {
+            console.log('✅ No hay usuarios en estado de apelación');
+            return NextResponse.json({ success: true, pets: [] });
+        }
 
-        console.log(`✅ Encontradas ${appealedPets.length} mascotas en apelación`);
+        console.log(`📌 Encontrados ${appealedUsers.length} usuarios en apelación`);
+
+        // Segundo: obtener las mascotas de esos usuarios
+        const userIds = appealedUsers.map(u => u.id);
+
+        const { data: pets, error: petsError } = await supabaseAdmin
+            .from('pets')
+            .select('*')
+            .in('owner_id', userIds);
+
+        if (petsError) {
+            console.error('Error obteniendo mascotas:', petsError);
+            return NextResponse.json({ error: petsError.message }, { status: 500 });
+        }
+
+        // Combinar datos de mascotas con datos de dueños
+        const appealedPets = (pets || []).map(pet => {
+            const owner = appealedUsers.find(u => u.id === pet.owner_id);
+            return {
+                petId: pet.id,
+                petName: pet.name,
+                petType: pet.type || 'Perro',
+                petStatus: pet.status,
+                petBreed: pet.breed,
+                petPhotoUrl: pet.photo_url,
+                petAdminNotes: pet.admin_notes,
+                ownerId: owner?.memberstack_id,
+                ownerName: `${owner?.first_name || ''} ${owner?.last_name || ''}`.trim() || 'Sin nombre',
+                ownerEmail: owner?.email,
+                appealMessage: owner?.last_appeal_message || pet.appeal_message || '',
+                appealedAt: pet.appealed_at || pet.created_at,
+                createdAt: pet.created_at
+            };
+        });
+
+        console.log(`✅ Encontradas ${appealedPets.length} mascotas de usuarios en apelación`);
 
         return NextResponse.json({
             success: true,
