@@ -23,7 +23,6 @@ export async function GET(request: NextRequest) {
             .select(`
                 id,
                 name,
-                pet_type,
                 status,
                 breed,
                 breed_size,
@@ -56,7 +55,7 @@ export async function GET(request: NextRequest) {
             return {
                 petId: pet.id,
                 petName: pet.name,
-                petType: pet.pet_type || 'Perro',
+                petType: 'Perro', // Default - column doesn't exist in DB
                 petStatus: pet.status,
                 petBreed: pet.breed,
                 petBreedSize: pet.breed_size,
