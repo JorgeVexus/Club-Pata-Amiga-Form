@@ -2,6 +2,7 @@
  * API Route: /api/user/appeal
  * Permite a un usuario apelar una MASCOTA ESPECÍFICA
  * ACTUALIZADO: Apelaciones a nivel mascota con límite de intentos
+ * CORS habilitado para Webflow
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,6 +16,15 @@ const supabaseAdmin = createClient(
 
 const MAX_APPEALS_PER_PET = 2;
 
+// Helper para agregar headers CORS a todas las respuestas
+function corsResponse(data: any, status: number = 200) {
+    const response = NextResponse.json(data, { status });
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
@@ -22,9 +32,9 @@ export async function POST(request: NextRequest) {
 
         // Validar datos
         if (!memberId || !petId || !appealMessage?.trim()) {
-            return NextResponse.json({
+            return corsResponse({
                 error: 'Datos incompletos. Se requiere memberId, petId y appealMessage.'
-            }, { status: 400 });
+            }, 400);
         }
 
         console.log(`📧 Procesando apelación de mascota ${petId} del miembro ${memberId}...`);
@@ -37,28 +47,28 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (petError || !pet) {
-            return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404 });
+            return corsResponse({ error: 'Mascota no encontrada' }, 404);
         }
 
         // Verificar que la mascota pertenece al usuario
         const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
         if (owner?.memberstack_id !== memberId) {
-            return NextResponse.json({ error: 'No tienes permiso para apelar esta mascota' }, { status: 403 });
+            return corsResponse({ error: 'No tienes permiso para apelar esta mascota' }, 403);
         }
 
         // Verificar que la mascota puede ser apelada (status rejected o action_required)
         if (!['rejected', 'action_required'].includes(pet.status)) {
-            return NextResponse.json({
+            return corsResponse({
                 error: `Esta mascota no puede ser apelada. Status actual: ${pet.status}`
-            }, { status: 400 });
+            }, 400);
         }
 
         // Verificar límite de apelaciones
         const currentAppealCount = pet.appeal_count || 0;
         if (currentAppealCount >= MAX_APPEALS_PER_PET) {
-            return NextResponse.json({
+            return corsResponse({
                 error: `Has alcanzado el límite de ${MAX_APPEALS_PER_PET} apelaciones para esta mascota.`
-            }, { status: 400 });
+            }, 400);
         }
 
         // 2. Actualizar mascota a status 'appealed'
@@ -74,7 +84,7 @@ export async function POST(request: NextRequest) {
 
         if (updateError) {
             console.error('Error actualizando mascota:', updateError);
-            return NextResponse.json({ error: 'Error al procesar la apelación' }, { status: 500 });
+            return corsResponse({ error: 'Error al procesar la apelación' }, 500);
         }
 
         // 3. Crear log de apelación (vinculado a la mascota)
@@ -93,24 +103,16 @@ export async function POST(request: NextRequest) {
 
         console.log(`✅ Apelación registrada para mascota ${pet.name} (intento ${currentAppealCount + 1}/${MAX_APPEALS_PER_PET})`);
 
-        const response = NextResponse.json({
+        return corsResponse({
             success: true,
             message: `Tu apelación para ${pet.name} ha sido enviada. El equipo la revisará pronto.`,
             appealCount: currentAppealCount + 1,
             maxAppeals: MAX_APPEALS_PER_PET
         });
 
-        response.headers.set('Access-Control-Allow-Origin', '*');
-        response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-        response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-
-        return response;
-
     } catch (error: any) {
         console.error('Error procesando apelación:', error);
-        const response = NextResponse.json({ error: error.message }, { status: 500 });
-        response.headers.set('Access-Control-Allow-Origin', '*');
-        return response;
+        return corsResponse({ error: error.message }, 500);
     }
 }
 
@@ -166,10 +168,15 @@ async function updateMemberStatusFromPets(memberstackId: string) {
     }
 }
 
-export async function OPTIONS() {
-    const response = new NextResponse(null, { status: 204 });
-    response.headers.set('Access-Control-Allow-Origin', '*');
-    response.headers.set('Access-Control-Allow-Methods', 'POST, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type');
-    return response;
+// Handler para preflight CORS
+export async function OPTIONS(request: NextRequest) {
+    return new NextResponse(null, {
+        status: 204,
+        headers: {
+            'Access-Control-Allow-Origin': '*',
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+            'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+            'Access-Control-Max-Age': '86400',
+        },
+    });
 }
