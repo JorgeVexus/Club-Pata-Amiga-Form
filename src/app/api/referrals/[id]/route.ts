@@ -100,14 +100,15 @@ export async function PATCH(
             }
 
             if (difference !== 0) {
-                // Obtener saldo actual
+                // Obtener datos del embajador para actualizar saldo y enviar email
                 const { data: amb } = await supabase
                     .from('ambassadors')
-                    .select('total_earnings, pending_payout')
+                    .select('total_earnings, pending_payout, email, first_name, linked_memberstack_id')
                     .eq('id', currentReferral.ambassador_id)
                     .single();
 
                 if (amb) {
+                    // 1. Actualizar saldos
                     await supabase
                         .from('ambassadors')
                         .update({
@@ -115,6 +116,23 @@ export async function PATCH(
                             pending_payout: (amb.pending_payout || 0) + difference
                         })
                         .eq('id', currentReferral.ambassador_id);
+
+                    // 2. Enviar email si es una aprobación nueva
+                    if (wasPending && commission_status === 'approved') {
+                        try {
+                            const { notifyCommissionEarned } = await import('@/app/actions/ambassador-comm.actions');
+                            await notifyCommissionEarned({
+                                userId: amb.linked_memberstack_id || currentReferral.ambassador_id,
+                                email: amb.email,
+                                name: amb.first_name,
+                                referralName: currentReferral.referred_user_name || 'Un nuevo miembro',
+                                amount: newCommissionAmount
+                            });
+                            console.log(`📧 Email de comisión enviado a ${amb.email}`);
+                        } catch (emailError) {
+                            console.error('❌ Error enviando email de comisión:', emailError);
+                        }
+                    }
                 }
             }
         }

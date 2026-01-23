@@ -177,7 +177,21 @@ export async function PATCH(
         if (body.status === 'approved') {
             console.log(`✅ Embajador ${currentAmbassador.email} aprobado`);
 
-            // Actualizar el campo is-ambassador en Memberstack
+            // 1. Enviar email de bienvenida (Notificación)
+            try {
+                const { notifyAmbassadorApproval } = await import('@/app/actions/ambassador-comm.actions');
+                await notifyAmbassadorApproval({
+                    userId: currentAmbassador.linked_memberstack_id || currentAmbassador.id,
+                    email: currentAmbassador.email,
+                    name: currentAmbassador.first_name,
+                    referralCode: currentAmbassador.referral_code
+                });
+                console.log(`📧 Email de bienvenida enviado a ${currentAmbassador.email}`);
+            } catch (emailError) {
+                console.error('❌ Error enviando email de bienvenida:', emailError);
+            }
+
+            // 2. Actualizar el campo is-ambassador en Memberstack
             if (currentAmbassador.linked_memberstack_id) {
                 const memberstackUpdated = await updateMemberstackField(
                     currentAmbassador.linked_memberstack_id,
