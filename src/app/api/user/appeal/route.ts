@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         // 2. Buscar la mascota que pertenece a este usuario
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, appeal_count, owner_id')
+            .select('id, name, status, owner_id, appeal_count')
             .eq('id', petId)
             .single();
 
