@@ -1,5 +1,5 @@
 /**
- * 🐾 Club Pata Amiga - Smart Pet Cards Widget (Definitive Figma & Photos Fix)
+ * 🐾 Club Pata Amiga - Pet Cards Widget (Simplified - Cards Only)
  */
 
 (function () {
@@ -8,7 +8,6 @@
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://club-pata-amiga-form.vercel.app',
         maxPets: 3,
-        brushUrl: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6939f6880cc902377c8e9b67_Brush%20Stroke.svg',
         placeholderDog: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png',
         statusColors: {
             approved: { bg: '#E8F5E9', text: '#2E7D32', label: 'APROBADA', icon: '✅' },
@@ -22,196 +21,141 @@
     const STYLES = `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap');
 
-        .pata-manada-section {
-            padding: 100px 0;
-            background-color: #FFFDEE;
-            font-family: 'Outfit', sans-serif;
-            position: relative;
-            width: 100%;
-            overflow: hidden;
+        /* Cards Grid - Horizontal Layout */
+        .pata-cards-grid {
             display: flex;
+            flex-direction: row;
+            gap: 20px;
             justify-content: center;
-            min-height: 550px;
+            align-items: stretch;
+            flex-wrap: nowrap;
+            font-family: 'Outfit', sans-serif;
         }
 
-        /* Full Width Brush Background - Corrected for Visibility */
-        .pata-manada-bg-band {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            width: 105%;
-            height: 480px;
-            transform: translateY(-50%) translateX(-2.5%);
-            background-color: #9FD406;
-            z-index: 1;
-            /* Using a combination of background and clip-path/mask for better support */
-            -webkit-mask-image: url('${CONFIG.brushUrl}');
-            -webkit-mask-size: 100% 100%;
-            -webkit-mask-repeat: no-repeat;
-            mask-image: url('${CONFIG.brushUrl}');
-            mask-size: 100% 100%;
-            mask-repeat: no-repeat;
-        }
-
-        .pata-manada-container {
-            max-width: 1200px;
-            width: 100%;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            align-items: center;
-            gap: 50px;
-            padding: 0 50px;
-        }
-
-        .pata-manada-header {
-            flex: 0 0 240px;
-        }
-
-        .pata-manada-title {
-            font-size: 84px;
-            font-weight: 900;
-            color: #1A1A1A;
-            line-height: 0.8;
-            margin: 0;
-            text-shadow: 2px 2px 0px rgba(255,255,255,0.2);
-        }
-
-        .pata-manada-grid {
-            flex: 1;
-            display: flex;
-            gap: 24px;
-            justify-content: flex-start;
-            flex-wrap: wrap;
-        }
-
-        /* CARDS - Figma proportions */
+        /* Pet Card */
         .pata-pet-card {
             background: #fff;
             border-radius: 20px;
-            padding: 14px;
-            width: 255px;
-            height: 405px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.07);
+            width: 220px;
+            min-width: 220px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.08);
             display: flex;
             flex-direction: column;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border: 1px solid rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: transform 0.3s ease;
         }
-        .pata-pet-card:hover { transform: translateY(-10px); }
+        .pata-pet-card:hover { transform: translateY(-8px); }
 
-        .pata-card-photo-box {
+        /* Photo Container */
+        .pata-card-photo {
             width: 100%;
-            height: 240px;
+            height: 260px;
             background: #00BBB4;
-            border-radius: 16px;
             position: relative;
             overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        
-        /* Ensure photo is visible */
-        .pata-card-photo-box img { 
+        .pata-card-photo img { 
             width: 100%; 
             height: 100%; 
             object-fit: cover;
-            display: block; 
-            z-index: 2;
+            display: block;
         }
 
+        /* Status Badge */
         .pata-status-badge {
             position: absolute;
-            top: 15px;
+            top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 5px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
             font-size: 10px;
             font-weight: 800;
-            z-index: 10;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 5;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.15);
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
             white-space: nowrap;
         }
 
+        /* Name Badge */
         .pata-name-badge {
             position: absolute;
-            bottom: 15px;
+            bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
             background: #fff;
-            padding: 8px 24px;
-            border-radius: 40px;
+            padding: 8px 22px;
+            border-radius: 30px;
             font-weight: 800;
-            font-size: 19px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.12);
-            z-index: 10;
+            font-size: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+            z-index: 5;
+            white-space: nowrap;
         }
 
+        /* Buttons Area */
         .pata-card-actions {
-            margin-top: auto;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            padding: 12px 0 4px 0;
+            gap: 8px;
         }
 
         .pata-btn {
-            padding: 13px;
-            border-radius: 50px;
+            padding: 12px;
+            border-radius: 30px;
             border: none;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 13px;
             cursor: pointer;
-            transition: 0.2s;
             text-align: center;
             width: 100%;
+            box-sizing: border-box;
+            transition: opacity 0.2s;
         }
-        .pata-btn-primary { background: #9FD406; color: #1A1A1A; box-shadow: 0 4px 6px rgba(159, 212, 6, 0.2); }
+        .pata-btn:hover { opacity: 0.85; }
         .pata-btn-outline { background: #fff; color: #1A1A1A; border: 2px solid #1A1A1A; }
-        .pata-btn:disabled { background: #F8F8F8; color: #BBB; border: 2px solid #EEE; cursor: not-allowed; }
+        .pata-btn-primary { background: #9FD406; color: #1A1A1A; }
+        .pata-btn:disabled { background: #F5F5F5; color: #AAA; border-color: #EEE; cursor: default; }
 
-        /* ADD CARD */
+        /* Add Card */
         .pata-add-card {
-            width: 255px;
-            height: 405px;
-            background: rgba(255,255,255,0.6);
-            border: 2px dashed #AAA;
+            width: 220px;
+            min-width: 220px;
+            min-height: 360px;
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed #999;
             border-radius: 20px;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             text-align: center;
-            padding: 25px;
+            padding: 20px;
             cursor: pointer;
             transition: 0.3s;
+            box-sizing: border-box;
         }
-        .pata-add-card:hover { border-color: #9FD406; background: #fff; transform: translateY(-5px); }
+        .pata-add-card:hover { border-color: #9FD406; background: #fff; }
 
-        /* MODAL (Dynamic) */
-        .pata-modal-dynamic {
+        /* Modal */
+        .pata-modal-overlay {
             position: fixed; top:0; left:0; width:100%; height:100%;
-            background: rgba(0,0,0,0.85); z-index: 100000; 
+            background: rgba(0,0,0,0.8); z-index: 100000; 
             display: flex; align-items: center; justify-content: center; padding: 20px;
-            backdrop-filter: blur(5px);
         }
-        .pata-modal-inner {
-            background: #fff; border-radius: 30px; padding: 45px; 
-            position: relative; max-width: 650px; width: 100%;
-            box-shadow: 0 25px 60px rgba(0,0,0,0.4);
+        .pata-modal-box {
+            background: #fff; border-radius: 24px; padding: 35px; 
+            position: relative; max-width: 550px; width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
         }
 
-        @media (max-width: 1000px) {
-            .pata-manada-container { flex-direction: column; padding: 0 20px; }
-            .pata-manada-header { text-align: center; margin-bottom: 40px; }
-            .pata-manada-title { font-size: 60px; }
-            .pata-manada-grid { justify-content: center; }
+        /* Responsive */
+        @media (max-width: 750px) {
+            .pata-cards-grid { flex-wrap: wrap; }
+            .pata-pet-card, .pata-add-card { width: 100%; max-width: 280px; min-width: auto; }
         }
     `;
 
@@ -227,25 +171,25 @@
 
         async init() {
             this.injectStyles();
-            this.container.innerHTML = `<div style="text-align:center; padding: 80px; color:#666; font-size:18px;">🐾 Preparando tu manada...</div>`;
+            this.container.innerHTML = `<div style="text-align:center; padding: 40px; color:#888; font-family:'Outfit',sans-serif;">🐾 Cargando...</div>`;
 
             try {
                 await this.waitForMemberstack();
                 if (!this.member) {
-                    this.container.innerHTML = '<div style="text-align:center; padding: 60px; color:#666;">Inicia sesión para ver tus beneficios 🐾</div>';
+                    this.container.innerHTML = '<div style="text-align:center; padding: 40px; color:#888;">Inicia sesión para ver tus mascotas.</div>';
                     return;
                 }
                 await this.loadData();
                 this.render();
             } catch (err) {
-                console.error('Manada Init Error:', err);
+                console.error('Widget Error:', err);
             }
         }
 
         injectStyles() {
-            if (document.getElementById('pata-manada-styles')) return;
+            if (document.getElementById('pata-cards-styles')) return;
             const style = document.createElement('style');
-            style.id = 'pata-manada-styles';
+            style.id = 'pata-cards-styles';
             style.textContent = STYLES;
             document.head.appendChild(style);
         }
@@ -280,38 +224,30 @@
             const addCard = this.pets.length < CONFIG.maxPets ? this.createAddCardHtml() : '';
 
             this.container.innerHTML = `
-                <section class="pata-manada-section">
-                    <div class="pata-manada-bg-band"></div>
-                    <div class="pata-manada-container">
-                        <div class="pata-manada-header">
-                            <h2 class="pata-manada-title">Mi\nmanada</h2>
-                        </div>
-                        <div class="pata-manada-grid">
-                            ${petCards}
-                            ${addCard}
-                        </div>
-                    </div>
-                </section>
+                <div class="pata-cards-grid">
+                    ${petCards}
+                    ${addCard}
+                </div>
             `;
         }
 
         createPetCardHtml(pet, index) {
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
-
-            // Logic imported from Admin Dashboard for Reliability
-            // 1. Check Supabase 'photo_url'
-            // 2. Check Memberstack Fallback (pet-X-photo-1-url)
             const msPhotoUrl = this.msFields[`pet-${index}-photo-1-url`];
             const imageUrl = pet.photo_url || msPhotoUrl || CONFIG.placeholderDog;
 
-            let carnyText = '';
-            let isReady = pet.status === 'approved';
-
+            let statusBtn = '';
             if (pet.status === 'approved') {
                 const regDate = new Date(pet.created_at);
                 const diffDays = Math.ceil(Math.abs(new Date() - regDate) / (1000 * 60 * 60 * 24));
                 const remaining = Math.max(0, 180 - diffDays);
-                if (remaining > 0) { isReady = false; carnyText = `Carencia: ${remaining} d`; }
+                if (remaining > 0) {
+                    statusBtn = `<button class="pata-btn pata-btn-primary" disabled>Carencia: ${remaining} d</button>`;
+                } else {
+                    statusBtn = `<button class="pata-btn pata-btn-primary">Solicitar Apoyo</button>`;
+                }
+            } else {
+                statusBtn = `<button class="pata-btn pata-btn-primary" disabled>Esperando</button>`;
             }
 
             return `
@@ -320,16 +256,12 @@
                         <div class="pata-status-badge" style="background:${status.bg}; color:${status.text}">
                             ${status.icon} ${status.label}
                         </div>
-                        <img src="${imageUrl}" alt="${pet.name}" 
-                             onload="this.style.opacity='1'"
-                             onerror="this.src='${CONFIG.placeholderDog}'; this.style.opacity='0.6';">
+                        <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}';">
                         <div class="pata-name-badge">${pet.name}</div>
                     </div>
                     <div class="pata-card-actions">
                         <button class="pata-btn pata-btn-outline" onclick="window.ManadaWidget.showDetails('${pet.id}')">Ver detalles</button>
-                        <button class="pata-btn pata-btn-primary" ${!isReady ? 'disabled' : ''}>
-                            ${isReady ? 'Solicitar Apoyo' : (carnyText || 'Verificando')}
-                        </button>
+                        ${statusBtn}
                     </div>
                 </div>
             `;
@@ -338,9 +270,9 @@
         createAddCardHtml() {
             return `
                 <div class="pata-add-card" onclick="window.ManadaWidget.showAddForm()">
-                    <div style="font-size:35px; margin-bottom:15px; background:white; width:65px; height:65px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 5px 12px rgba(0,0,0,0.1); color:#9FD406; font-weight:800;">＋</div>
-                    <h3 style="font-size:22px; font-weight:900; margin:0 0 8px 0; color:#1A1A1A;">Sumar un peludo</h3>
-                    <p style="font-size:14px; color:#666; margin:0; line-height:1.4;">Registra hasta 3 mascotas.<br>Quedan ${CONFIG.maxPets - this.pets.length} lugares.</p>
+                    <div style="font-size:30px; margin-bottom:12px; background:#fff; width:55px; height:55px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); color:#9FD406; font-weight:800;">＋</div>
+                    <h3 style="font-size:18px; font-weight:800; margin:0 0 5px 0; color:#1A1A1A;">Sumar un peludo</h3>
+                    <p style="font-size:12px; color:#777; margin:0; line-height:1.4;">Puedes tener hasta 3.<br>Quedan ${CONFIG.maxPets - this.pets.length} lugares.</p>
                 </div>
             `;
         }
@@ -348,32 +280,23 @@
         showDetails(petId) {
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
-
-            // Same logic as card for detail photo
             const idx = this.pets.indexOf(pet) + 1;
             const imageUrl = pet.photo_url || this.msFields[`pet-${idx}-photo-1-url`] || CONFIG.placeholderDog;
 
             const modal = document.createElement('div');
-            modal.className = 'pata-modal-dynamic';
+            modal.className = 'pata-modal-overlay';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             modal.innerHTML = `
-                <div class="pata-modal-inner">
-                    <button style="position:absolute; top:25px; right:25px; border:none; background:#F5F5F5; width:45px; height:45px; border-radius:50%; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                    <div style="display:flex; gap:35px; flex-wrap:wrap;">
-                        <img src="${imageUrl}" style="width:230px; height:320px; object-fit:cover; border-radius:24px; box-shadow:0 10px 25px rgba(0,0,0,0.15);">
-                        <div style="flex:1; min-width:300px;">
-                            <h2 style="font-size:42px; margin:0 0 10px 0; font-weight:900;">${pet.name}</h2>
-                            <div style="margin-bottom:25px; font-size:19px; color:#444; line-height:1.6;">
-                                <p style="margin:5px 0;"><strong>🐩 Raza:</strong> ${pet.breed}</p>
-                                <p style="margin:5px 0;"><strong>📏 Talla:</strong> ${pet.breed_size}</p>
-                                <p style="margin:5px 0;"><strong>📅 Alta:</strong> ${new Date(pet.created_at).toLocaleDateString()}</p>
-                            </div>
-                            ${pet.admin_notes ? `
-                                <div style="background:#FFFDEE; padding:20px; border-radius:18px; border-left:5px solid #9FD406; font-size:15px;">
-                                    <strong>🛡️ Nota del Administrador:</strong><br>
-                                    <p style="margin:8px 0 0 0; color:#555;">${pet.admin_notes}</p>
-                                </div>
-                            ` : ''}
+                <div class="pata-modal-box">
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <div style="display:flex; gap:25px; flex-wrap:wrap;">
+                        <img src="${imageUrl}" style="width:180px; height:240px; object-fit:cover; border-radius:18px;">
+                        <div style="flex:1; min-width:200px;">
+                            <h2 style="font-size:32px; margin:0 0 15px 0; font-weight:800;">${pet.name}</h2>
+                            <p style="margin:5px 0;"><strong>Raza:</strong> ${pet.breed}</p>
+                            <p style="margin:5px 0;"><strong>Talla:</strong> ${pet.breed_size}</p>
+                            <p style="margin:5px 0;"><strong>Alta:</strong> ${new Date(pet.created_at).toLocaleDateString()}</p>
+                            ${pet.admin_notes ? `<div style="background:#FFFDE7; padding:12px; border-radius:10px; margin-top:15px; border-left:4px solid #FFC107;"><strong>Nota:</strong> ${pet.admin_notes}</div>` : ''}
                         </div>
                     </div>
                 </div>
@@ -383,39 +306,39 @@
 
         showAddForm() {
             const modal = document.createElement('div');
-            modal.className = 'pata-modal-dynamic';
+            modal.className = 'pata-modal-overlay';
             modal.innerHTML = `
-                <div class="pata-modal-inner">
-                    <button style="position:absolute; top:25px; right:25px; border:none; background:#F5F5F5; width:45px; height:45px; border-radius:50%; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center;" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                    <h2 style="text-align:center; font-weight:900; font-size:36px; margin:0 0 30px 0;">Nuevo integrante 🐾</h2>
-                    <form id="pata-add-pet-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:18px;">
-                        <input type="text" name="name" placeholder="Nombre (Ej: Max)" required style="padding:15px; border-radius:12px; border:2px solid #EEE; font-family:inherit;">
-                        <select name="petType" required style="padding:15px; border-radius:12px; border:2px solid #EEE; font-family:inherit;">
+                <div class="pata-modal-box">
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <h2 style="text-align:center; font-weight:800; font-size:28px; margin:0 0 25px 0;">Nuevo integrante 🐾</h2>
+                    <form id="pata-add-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                        <input type="text" name="name" placeholder="Nombre" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
+                        <select name="petType" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
                             <option value="PERRO">Perro</option>
                             <option value="GATO">Gato</option>
                         </select>
-                        <input type="text" name="breed" placeholder="Raza" required style="padding:15px; border-radius:12px; border:2px solid #EEE; font-family:inherit;">
-                        <select name="breedSize" required style="padding:15px; border-radius:12px; border:2px solid #EEE; font-family:inherit;">
+                        <input type="text" name="breed" placeholder="Raza" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
+                        <select name="breedSize" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
                             <option value="CHICA">Chica</option>
                             <option value="MEDIANA" selected>Mediana</option>
                             <option value="GRANDE">Grande</option>
                         </select>
-                        <div style="grid-column: 1 / -1; background:#FAFAFA; padding:20px; border-radius:15px; border:2px dashed #DDD; text-align:center;">
-                            <label style="display:block; margin-bottom:10px; font-weight:800; color:#666;">📸 Sube la foto más guapa:</label>
-                            <input type="file" id="pata-f-input" accept="image/*" required style="font-size:14px;">
+                        <div style="grid-column: 1 / -1; background:#fafafa; padding:15px; border-radius:10px; border:1px dashed #ccc; text-align:center;">
+                            <label style="font-weight:700; color:#666;">📸 Foto del peludo:</label><br>
+                            <input type="file" id="pata-file" accept="image/*" required style="margin-top:8px;">
                         </div>
-                        <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:60px; font-size:18px;" id="pata-save-btn">¡Dar de alta! 🐶</button>
+                        <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:55px; font-size:16px;" id="pata-save-btn">Dar de alta</button>
                     </form>
                 </div>
             `;
             document.body.appendChild(modal);
 
-            const form = document.getElementById('pata-add-pet-form');
+            const form = document.getElementById('pata-add-form');
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('pata-save-btn');
-                const file = document.getElementById('pata-f-input').files[0];
-                btn.innerText = 'Cargando peludo... ⏳';
+                const file = document.getElementById('pata-file').files[0];
+                btn.innerText = 'Guardando...';
                 btn.disabled = true;
 
                 try {
@@ -440,10 +363,10 @@
                         })
                     });
 
-                    alert('¡Mascota registrada con éxito! 🐾');
+                    alert('¡Mascota registrada! 🐾');
                     modal.remove();
                     this.init();
-                } catch (err) { alert('Híjole, algo falló al guardar. Intenta de nuevo.'); btn.disabled = false; btn.innerText = '¡Dar de alta! 🐶'; }
+                } catch (err) { alert('Error al guardar.'); btn.disabled = false; btn.innerText = 'Dar de alta'; }
             };
         }
     }
