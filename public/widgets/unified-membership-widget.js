@@ -306,6 +306,8 @@
                 return this.renderRejectedContent(pet);
             } else if (pet.status === 'action_required') {
                 return this.renderActionRequiredContent(pet);
+            } else if (pet.status === 'appealed') {
+                return this.renderAppealedContent(pet);
             } else {
                 return `
                     <div class="pata-alert-banner pata-alert-info">
@@ -317,6 +319,34 @@
                     </div>
                 `;
             }
+        }
+
+        // 🆕 Renderizar contenido para mascotas con apelación en revisión
+        renderAppealedContent(pet) {
+            const appealMessage = pet.appeal_message || 'Sin mensaje registrado.';
+            const appealCount = pet.appeal_count || 1;
+            const appealDate = pet.appealed_at ? new Date(pet.appealed_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha no disponible';
+
+            return `
+                <div class="pata-alert-banner" style="background: #E8F5E9; border-left: 4px solid #7B1FA2; flex-direction: column; align-items: flex-start;">
+                    <div style="display:flex; gap:12px; align-items:center; width:100%; margin-bottom:12px;">
+                        <span style="font-size:24px;">⚖️</span>
+                        <div>
+                            <div class="pata-subtitle" style="margin:0; color:#4A148C;">Apelación en Revisión para ${pet.name}</div>
+                            <p style="margin:4px 0 0 0; font-size:12px; color:#616161;">Enviada el ${appealDate} • Apelación ${appealCount} de 2</p>
+                        </div>
+                    </div>
+                    
+                    <div style="background:#fff; padding:12px 16px; border-radius:8px; width:100%; margin-bottom:12px;">
+                        <p style="margin:0; font-size:13px; color:#424242; font-weight:600;">Tu mensaje:</p>
+                        <p style="margin:8px 0 0 0; font-size:14px; color:#1A1A1A; font-style:italic;">"${appealMessage}"</p>
+                    </div>
+                    
+                    <p style="margin:0; font-size:13px; color:#616161;">
+                        <span style="font-weight:600;">📋 Estado:</span> Nuestro equipo está revisando tu caso. Te notificaremos cuando haya una respuesta.
+                    </p>
+                </div>
+            `;
         }
 
         renderApprovedContent(pet) {
@@ -351,9 +381,10 @@
         }
 
         renderRejectedContent(pet) {
-            const memberStatus = this.member.customFields?.['approval-status'];
-            const appealMessage = this.member.customFields?.['appeal-message'];
-            // 🆕 Ahora lee el mensaje del admin directamente de la mascota
+            // 🆕 Ahora usa el estado y contador de apelaciones de la mascota individual
+            const appealCount = pet.appeal_count || 0;
+            const maxAppeals = 2;
+            const canAppeal = appealCount < maxAppeals;
             const adminMsg = pet.last_admin_response;
 
             return `
@@ -376,25 +407,28 @@
                 ` : ''}
 
                 <div id="pata-appeal-section">
-                    ${memberStatus === 'appealed' ? `
-                        <div class="pata-alert-banner pata-alert-info" style="flex-direction: column; align-items: flex-start;">
-                            <div style="display:flex; gap:10px; align-items:center; margin-bottom:10px;">
-                                <span>📩</span>
-                                <div class="pata-subtitle" style="margin:0;">Apelación en Revisión</div>
+                    ${!canAppeal ? `
+                        <div class="pata-alert-banner" style="background: #ECEFF1; border-left: 4px solid #90A4AE;">
+                            <span>⚠️</span>
+                            <div>
+                                <div class="pata-subtitle" style="color:#455A64;">Límite de apelaciones alcanzado</div>
+                                <p style="margin:4px 0 0 0; font-size:13px; color:#616161;">Has utilizado las ${maxAppeals} apelaciones disponibles para ${pet.name}. Contacta soporte si necesitas ayuda adicional.</p>
                             </div>
-                            <p style="margin:0; font-size:14px; color:inherit; font-style: italic;">"${appealMessage || 'Sin mensaje registrado.'}"</p>
-                            <p style="margin:10px 0 0 0; font-size:12px; opacity:0.8;">Nuestro equipo está revisando tu caso. Te notificaremos pronto.</p>
                         </div>
                     ` : !this.showAppealForm ? `
-                        <button class="pata-btn" id="pata-btn-reveal-appeal">Apelar decisión</button>
+                        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+                            <button class="pata-btn" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}">⚖️ Apelar decisión</button>
+                            <span style="font-size:12px; color:#666;">Intentos restantes: ${maxAppeals - appealCount}</span>
+                        </div>
                     ` : `
                         <div class="pata-appeal-form active">
                             <p style="font-size:14px; margin-bottom:10px;">Cuéntanos por qué debemos reconsiderar el caso de ${pet.name}:</p>
-                            <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Describe tu situación..."></textarea>
+                            <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Describe tu situación..." data-pet-id="${pet.id}"></textarea>
                             <div style="display:flex; gap:10px;">
-                                <button class="pata-btn" id="pata-btn-submit-appeal">Enviar Apelación</button>
+                                <button class="pata-btn" id="pata-btn-submit-appeal" data-pet-id="${pet.id}">Enviar Apelación</button>
                                 <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-appeal">Cancelar</button>
                             </div>
+                            <p style="font-size:11px; color:#888; margin-top:8px;">Apelación ${appealCount + 1} de ${maxAppeals}</p>
                         </div>
                     `}
                 </div>
@@ -520,8 +554,13 @@
             const submitBtn = document.getElementById('pata-btn-submit-appeal');
             if (submitBtn) {
                 submitBtn.onclick = async () => {
-                    const msg = document.getElementById('pata-textarea-appeal').value;
-                    if (msg.trim().length < 10) return alert('Por favor describe tu caso.');
+                    const textarea = document.getElementById('pata-textarea-appeal');
+                    const msg = textarea?.value || '';
+                    if (msg.trim().length < 10) return alert('Por favor describe tu caso con más detalle (mínimo 10 caracteres).');
+
+                    // Obtener petId del data-attribute o del índice actual
+                    const petId = submitBtn.dataset.petId || this.pets[this.currentIndex]?.id;
+                    if (!petId) return alert('Error: No se pudo identificar la mascota.');
 
                     submitBtn.innerText = 'Enviando...';
                     submitBtn.disabled = true;
@@ -532,15 +571,28 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 memberId: this.member.id,
-                                petId: this.pets[this.currentIndex].id, // En la API de appeal debemos soportar petId si queremos granularidad total
+                                petId: petId,
                                 appealMessage: msg
                             })
                         });
+
+                        const data = await res.json();
+
                         if (res.ok) {
-                            alert('Apelación enviada correctamente.');
+                            alert('✅ Apelación enviada correctamente. Nuestro equipo la revisará pronto.');
                             location.reload();
+                        } else {
+                            // Mostrar mensaje de error específico del API
+                            alert(`❌ ${data.error || 'Error al enviar la apelación. Intenta nuevamente.'}`);
+                            submitBtn.innerText = 'Enviar Apelación';
+                            submitBtn.disabled = false;
                         }
-                    } catch (e) { alert('Error al enviar.'); }
+                    } catch (e) {
+                        console.error('Error sending appeal:', e);
+                        alert('❌ Error de conexión. Verifica tu internet e intenta nuevamente.');
+                        submitBtn.innerText = 'Enviar Apelación';
+                        submitBtn.disabled = false;
+                    }
                 };
             }
 
