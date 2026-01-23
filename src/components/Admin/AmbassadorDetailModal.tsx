@@ -133,6 +133,33 @@ export default function AmbassadorDetailModal({
         }
     };
 
+    const handleCompletePayout = async (payoutId: string) => {
+        const ref = prompt('Referencia de pago (opcional):');
+        if (ref === null) return;
+
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/payouts/${payoutId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    status: 'completed',
+                    payment_reference: ref
+                })
+            });
+
+            if (response.ok) {
+                alert('Pago completado');
+                loadDetails();
+                onRefresh();
+            }
+        } catch (error) {
+            alert('Error al completar pago');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const getStatusClass = (status: string) => {
         const map: Record<string, string> = {
             pending: styles.statusPending,
@@ -405,6 +432,17 @@ export default function AmbassadorDetailModal({
                                                 payout.status === 'processing' ? 'Procesando' :
                                                     payout.status === 'completed' ? 'Completado' : 'Fallido'}
                                         </div>
+
+                                        {payout.status === 'pending' && (
+                                            <div className={styles.payoutActions}>
+                                                <button
+                                                    className={styles.btnCompletePayout}
+                                                    onClick={() => handleCompletePayout(payout.id)}
+                                                >
+                                                    Pagar 💸
+                                                </button>
+                                            </div>
+                                        )}
                                     </div>
                                 ))
                             )}

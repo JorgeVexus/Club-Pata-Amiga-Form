@@ -1014,6 +1014,30 @@
                 flex-direction: column;
             }
         }
+
+        .amb-btn-primary {
+            background: #15BEB2;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .amb-btn-primary:hover:not(:disabled) {
+            background: #00a09a;
+            transform: translateY(-2px);
+        }
+
+        .amb-btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
     `;
 
     // ============================================
@@ -1273,6 +1297,12 @@
                         <div class="amb-earnings-pending">
                             <span class="amb-earnings-label">Disponible:</span>
                             <span class="amb-earnings-pending-value">${formatCurrency(pendingPayout)}</span>
+                            
+                            <button class="amb-btn-primary" 
+                                    onclick="requestWithdraw('${ambassador.id}', ${pendingPayout})"
+                                    ${pendingPayout <= 0 ? 'disabled' : ''}>
+                                Solicitar retiro
+                            </button>
                         </div>
                     </div>
 
@@ -1477,12 +1507,29 @@
         }
 
         try {
-            // Por ahora solo mostrar mensaje
-            alert('Tu solicitud de retiro ha sido enviada. Te contactaremos pronto para procesar el pago.');
-            // TODO: Implementar la API de solicitud de retiro
+            const btn = document.querySelector('.amb-btn-primary');
+            if (btn) btn.disabled = true;
+
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/payouts`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Tu solicitud de retiro ha sido enviada con éxito. Te contactaremos pronto para procesar el pago.');
+                // Recargar el widget para mostrar saldo en 0 y el nuevo pago en la lista (si lo estuviéramos recargando)
+                location.reload();
+            } else {
+                alert('❌ Error: ' + (data.error || 'No se pudo procesar el retiro'));
+            }
         } catch (error) {
             console.error('Error solicitando retiro:', error);
-            alert('Hubo un error al procesar tu solicitud. Por favor intenta más tarde.');
+            alert('❌ Hubo un error al procesar tu solicitud. Por favor intenta más tarde.');
+        } finally {
+            const btn = document.querySelector('.amb-btn-primary');
+            if (btn) btn.disabled = false;
         }
     };
 
