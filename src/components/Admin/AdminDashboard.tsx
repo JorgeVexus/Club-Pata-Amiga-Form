@@ -72,12 +72,26 @@ export default function AdminDashboard() {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
+
+            // Verificar si hay un tab específico para abrir (ej: ?tab=appeals)
+            const tabParam = params.get('tab');
+            if (tabParam) {
+                const validTabs = ['member', 'ambassador', 'wellness-center', 'solidarity-fund', 'communications', 'appeals'];
+                if (validTabs.includes(tabParam)) {
+                    setActiveFilter(tabParam as RequestType);
+                }
+            }
+
+            // Verificar si hay un miembro para abrir
             const memberId = params.get('member');
             if (memberId) {
                 // Abrir directamente el detalle del miembro
                 fetchMemberDetails(memberId, setSelectedMember);
-                // Limpiar la URL
-                window.history.replaceState({}, '', '/admin');
+            }
+
+            // Limpiar la URL si hay parámetros
+            if (tabParam || memberId) {
+                window.history.replaceState({}, '', '/admin/dashboard');
             }
         }
     }, []);

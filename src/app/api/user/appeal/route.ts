@@ -122,6 +122,9 @@ export async function POST(request: NextRequest) {
         // 8. Recalcular el membership_status del usuario
         await updateMemberStatusFromPets(memberId, user.id);
 
+        // 9. 🔔 Crear notificación para el Admin
+        await createAdminNotification(pet.name, appealMessage, memberId, petId);
+
         console.log(`✅ Apelación registrada para mascota ${pet.name} (intento ${currentAppealCount + 1}/${MAX_APPEALS_PER_PET})`);
 
         return corsResponse({
@@ -134,6 +137,42 @@ export async function POST(request: NextRequest) {
     } catch (error: any) {
         console.error('Error procesando apelación:', error);
         return corsResponse({ error: error.message || 'Error interno del servidor.' }, 500);
+    }
+}
+
+/**
+ * 🔔 Crea una notificación para el admin cuando hay una nueva apelación
+ */
+async function createAdminNotification(petName: string, appealMessage: string, memberId: string, petId: string) {
+    try {
+        // Truncar mensaje si es muy largo
+        const truncatedMessage = appealMessage.length > 100
+            ? appealMessage.substring(0, 100) + '...'
+            : appealMessage;
+
+        await supabaseAdmin
+            .from('notifications')
+            .insert({
+                user_id: 'admin', // Las notificaciones del admin usan user_id = 'admin'
+                type: 'new_appeal',
+                title: `⚖️ Nueva apelación: ${petName}`,
+                message: truncatedMessage,
+                icon: '⚖️',
+                link: '/admin/dashboard?tab=appeals', // Link directo a la sección de apelaciones
+                is_read: false,
+                metadata: {
+                    pet_id: petId,
+                    member_id: memberId,
+                    pet_name: petName,
+                    full_message: appealMessage
+                }
+            });
+
+        console.log(`🔔 Notificación creada para admin: Nueva apelación de ${petName}`);
+
+    } catch (error) {
+        // No fallamos la apelación si la notificación falla, solo logueamos
+        console.error('Error creando notificación para admin:', error);
     }
 }
 

@@ -220,6 +220,11 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
         if (onNotificationClick) {
             onNotificationClick(notif);
         }
+
+        // 🆕 Navegar al link si existe
+        if (notif.link) {
+            window.location.href = notif.link;
+        }
     }
 
     return (
