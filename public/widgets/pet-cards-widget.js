@@ -237,7 +237,9 @@
             const imageUrl = pet.photo_url || msPhotoUrl || CONFIG.placeholderDog;
 
             let statusBtn = '';
+
             if (pet.status === 'approved') {
+                // Mascota aprobada - mostrar carencia o botón de apoyo
                 const regDate = new Date(pet.created_at);
                 const diffDays = Math.ceil(Math.abs(new Date() - regDate) / (1000 * 60 * 60 * 24));
                 const remaining = Math.max(0, 180 - diffDays);
@@ -246,8 +248,21 @@
                 } else {
                     statusBtn = `<button class="pata-btn pata-btn-primary">Solicitar Apoyo</button>`;
                 }
+            } else if (pet.status === 'rejected' || pet.status === 'action_required') {
+                // Mascota rechazada o con acción requerida - mostrar botón de apelar
+                const appealCount = pet.appeal_count || 0;
+                const canAppeal = appealCount < 2;
+                if (canAppeal) {
+                    statusBtn = `<button class="pata-btn pata-btn-primary" style="background:#7B1FA2; color:#fff;" onclick="event.stopPropagation(); window.ManadaWidget.showAppealForm('${pet.id}')">⚖️ Apelar</button>`;
+                } else {
+                    statusBtn = `<button class="pata-btn pata-btn-primary" disabled>Sin más apelaciones</button>`;
+                }
+            } else if (pet.status === 'appealed') {
+                // Mascota ya apelada - mostrar estado
+                statusBtn = `<button class="pata-btn pata-btn-primary" disabled style="background:#F3E5F5; color:#7B1FA2;">Apelación en revisión</button>`;
             } else {
-                statusBtn = `<button class="pata-btn pata-btn-primary" disabled>Esperando</button>`;
+                // Pendiente u otro estado
+                statusBtn = `<button class="pata-btn pata-btn-primary" disabled>Esperando revisión</button>`;
             }
 
             return `
@@ -367,6 +382,72 @@
                     modal.remove();
                     this.init();
                 } catch (err) { alert('Error al guardar.'); btn.disabled = false; btn.innerText = 'Dar de alta'; }
+            };
+        }
+
+        showAppealForm(petId) {
+            const pet = this.pets.find(p => p.id === petId);
+            if (!pet) return;
+
+            const modal = document.createElement('div');
+            modal.className = 'pata-modal-overlay';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            modal.innerHTML = `
+                <div class="pata-modal-box">
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 15px 0;">⚖️ Apelar para ${pet.name}</h2>
+                    ${pet.admin_notes ? `<div style="background:#FFEBEE; padding:12px; border-radius:10px; margin-bottom:20px; border-left:4px solid #C62828;"><strong>Motivo del rechazo:</strong><br>${pet.admin_notes}</div>` : ''}
+                    <form id="pata-appeal-form">
+                        <p style="margin-bottom:10px; color:#666;">Explica por qué crees que la decisión debería reconsiderarse. Puedes mencionar si ya corregiste el problema o si hay información adicional que no fue considerada.</p>
+                        <textarea id="pata-appeal-msg" required placeholder="Escribe tu mensaje de apelación aquí..." style="width:100%; height:120px; padding:15px; border-radius:10px; border:1px solid #ddd; resize:none; font-family:inherit; font-size:14px;"></textarea>
+                        <p style="font-size:12px; color:#999; margin:10px 0;">Intentos de apelación: ${pet.appeal_count || 0}/2</p>
+                        <button type="submit" class="pata-btn pata-btn-primary" style="width:100%; height:55px; font-size:16px; margin-top:10px; background:#7B1FA2; color:#fff;" id="pata-appeal-btn">Enviar Apelación</button>
+                    </form>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            const form = document.getElementById('pata-appeal-form');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                const btn = document.getElementById('pata-appeal-btn');
+                const msg = document.getElementById('pata-appeal-msg').value.trim();
+
+                if (!msg) {
+                    alert('Por favor escribe un mensaje de apelación.');
+                    return;
+                }
+
+                btn.innerText = 'Enviando...';
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            memberId: this.member.id,
+                            petId: petId,
+                            appealMessage: msg
+                        })
+                    });
+
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert(data.message || '¡Apelación enviada! El equipo la revisará pronto.');
+                        modal.remove();
+                        this.init(); // Recargar para mostrar nuevo estado
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo enviar la apelación.'));
+                        btn.disabled = false;
+                        btn.innerText = 'Enviar Apelación';
+                    }
+                } catch (err) {
+                    alert('Error de conexión. Intenta de nuevo.');
+                    btn.disabled = false;
+                    btn.innerText = 'Enviar Apelación';
+                }
             };
         }
     }

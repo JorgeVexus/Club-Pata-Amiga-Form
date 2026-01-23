@@ -1,7 +1,7 @@
 /**
  * API Route: /api/admin/pets/appealed
- * Obtiene todas las mascotas de usuarios que han apelado
- * CORREGIDO: Ahora busca por membership_status del dueño, no solo por status de mascota
+ * Obtiene SOLO las mascotas que tienen status 'appealed'
+ * CORREGIDO: Apelaciones a nivel mascota, no a nivel miembro
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -15,64 +15,70 @@ const supabaseAdmin = createClient(
 
 export async function GET(request: NextRequest) {
     try {
-        console.log('📋 Obteniendo mascotas de usuarios apelados...');
+        console.log('📋 Obteniendo mascotas con status APPEALED...');
 
-        // Primero: obtener usuarios con membership_status = 'appealed'
-        const { data: appealedUsers, error: usersError } = await supabaseAdmin
-            .from('users')
-            .select('id, memberstack_id, first_name, last_name, email, membership_status, last_appeal_message')
-            .eq('membership_status', 'appealed');
-
-        if (usersError) {
-            console.error('Error obteniendo usuarios apelados:', usersError);
-            return NextResponse.json({ error: usersError.message }, { status: 500 });
-        }
-
-        if (!appealedUsers || appealedUsers.length === 0) {
-            console.log('✅ No hay usuarios en estado de apelación');
-            return NextResponse.json({ success: true, pets: [] });
-        }
-
-        console.log(`📌 Encontrados ${appealedUsers.length} usuarios en apelación`);
-
-        // Segundo: obtener las mascotas de esos usuarios
-        const userIds = appealedUsers.map(u => u.id);
-
-        const { data: pets, error: petsError } = await supabaseAdmin
+        // Buscar SOLO mascotas con status = 'appealed'
+        const { data: pets, error } = await supabaseAdmin
             .from('pets')
-            .select('*')
-            .in('owner_id', userIds);
+            .select(`
+                id,
+                name,
+                type,
+                status,
+                breed,
+                breed_size,
+                photo_url,
+                admin_notes,
+                appeal_message,
+                appeal_count,
+                appealed_at,
+                last_admin_response,
+                created_at,
+                owner:users!owner_id (
+                    id,
+                    memberstack_id,
+                    first_name,
+                    last_name,
+                    email
+                )
+            `)
+            .eq('status', 'appealed')
+            .order('appealed_at', { ascending: false });
 
-        if (petsError) {
-            console.error('Error obteniendo mascotas:', petsError);
-            return NextResponse.json({ error: petsError.message }, { status: 500 });
+        if (error) {
+            console.error('Error obteniendo mascotas apeladas:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
         }
 
-        // Combinar datos de mascotas con datos de dueños
+        // Formatear respuesta
         const appealedPets = (pets || []).map(pet => {
-            const owner = appealedUsers.find(u => u.id === pet.owner_id);
+            const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
             return {
                 petId: pet.id,
                 petName: pet.name,
                 petType: pet.type || 'Perro',
                 petStatus: pet.status,
                 petBreed: pet.breed,
+                petBreedSize: pet.breed_size,
                 petPhotoUrl: pet.photo_url,
                 petAdminNotes: pet.admin_notes,
+                appealMessage: pet.appeal_message || '',
+                appealCount: pet.appeal_count || 1,
+                lastAdminResponse: pet.last_admin_response,
+                appealedAt: pet.appealed_at,
                 ownerId: owner?.memberstack_id,
                 ownerName: `${owner?.first_name || ''} ${owner?.last_name || ''}`.trim() || 'Sin nombre',
                 ownerEmail: owner?.email,
-                appealMessage: owner?.last_appeal_message || pet.appeal_message || '',
-                appealedAt: pet.appealed_at || pet.created_at,
                 createdAt: pet.created_at
             };
         });
 
-        console.log(`✅ Encontradas ${appealedPets.length} mascotas de usuarios en apelación`);
+        console.log(`✅ Encontradas ${appealedPets.length} mascotas con status APPEALED`);
 
         return NextResponse.json({
             success: true,
-            pets: appealedPets
+            pets: appealedPets,
+            count: appealedPets.length
         });
 
     } catch (error: any) {

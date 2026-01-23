@@ -198,12 +198,12 @@ export default function AdminDashboard() {
                 setPendingCounts(prev => ({ ...prev, member: data.members.length }));
             }
 
-            // Load appealed counts only if superadmin
+            // Load appealed counts only if superadmin - ahora cuenta MASCOTAS con status 'appealed'
             if (isSuper) {
-                const appealRes = await fetch('/api/admin/members?status=appealed');
+                const appealRes = await fetch('/api/admin/pets/appealed');
                 const appealData = await appealRes.json();
-                if (appealData.success && appealData.members) {
-                    setPendingCounts(prev => ({ ...prev, appeals: appealData.members.length }));
+                if (appealData.success) {
+                    setPendingCounts(prev => ({ ...prev, appeals: appealData.count || appealData.pets?.length || 0 }));
                 }
             } else {
                 setPendingCounts(prev => ({ ...prev, appeals: 0 }));
