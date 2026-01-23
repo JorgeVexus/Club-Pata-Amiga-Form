@@ -83,6 +83,56 @@ export default function AmbassadorDetailModal({
         }
     };
 
+    const handleUpdateReferral = async (referralId: string, currentAmount: number, isApproving: boolean = false) => {
+        let newAmount = currentAmount;
+
+        if (isApproving && currentAmount === 0) {
+            const input = prompt('Ingresa el monto de la membresía para calcular la comisión:', '500');
+            if (input === null) return;
+            newAmount = parseFloat(input);
+            if (isNaN(newAmount)) {
+                alert('Monto inválido');
+                return;
+            }
+        } else if (!isApproving) {
+            const input = prompt('Editar monto de la membresía:', currentAmount.toString());
+            if (input === null) return;
+            newAmount = parseFloat(input);
+            if (isNaN(newAmount)) {
+                alert('Monto inválido');
+                return;
+            }
+        }
+
+        try {
+            setLoading(true);
+            const body: any = { membership_amount: newAmount };
+            if (isApproving) {
+                body.commission_status = 'approved';
+            }
+
+            const response = await fetch(`/api/referrals/${referralId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            });
+
+            if (response.ok) {
+                alert(isApproving ? 'Comisión aprobada' : 'Monto actualizado');
+                loadDetails(); // Recargar datos del modal
+                onRefresh();   // Recargar tabla principal
+            } else {
+                const err = await response.json();
+                alert('Error: ' + (err.error || 'No se pudo actualizar'));
+            }
+        } catch (error) {
+            console.error('Error updating referral:', error);
+            alert('Error de conexión');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const getStatusClass = (status: string) => {
         const map: Record<string, string> = {
             pending: styles.statusPending,
@@ -309,6 +359,25 @@ export default function AmbassadorDetailModal({
                                             {ref.commission_status === 'pending' ? 'Pendiente' :
                                                 ref.commission_status === 'approved' ? 'Aprobada' :
                                                     ref.commission_status === 'paid' ? 'Pagada' : 'Cancelada'}
+                                        </div>
+
+                                        <div className={styles.referralActions}>
+                                            {ref.commission_status === 'pending' && (
+                                                <button
+                                                    className={`${styles.btnAction} ${styles.btnApproveReferral}`}
+                                                    onClick={() => handleUpdateReferral(ref.id, ref.membership_amount || 0, true)}
+                                                    title="Aprobar Comisión"
+                                                >
+                                                    ✅
+                                                </button>
+                                            )}
+                                            <button
+                                                className={styles.btnAction}
+                                                onClick={() => handleUpdateReferral(ref.id, ref.membership_amount || 0, false)}
+                                                title="Editar Monto"
+                                            >
+                                                ✏️
+                                            </button>
                                         </div>
                                     </div>
                                 ))
