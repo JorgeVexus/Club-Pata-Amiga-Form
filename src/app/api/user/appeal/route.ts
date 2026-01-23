@@ -30,6 +30,8 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { memberId, petId, appealMessage } = body;
 
+        console.log(`📧 [Appeal] Recibido: memberId=${memberId}, petId=${petId}`);
+
         // Validar datos
         if (!memberId || !petId || !appealMessage?.trim()) {
             return corsResponse({
@@ -37,33 +39,52 @@ export async function POST(request: NextRequest) {
             }, 400);
         }
 
-        console.log(`📧 Procesando apelación de mascota ${petId} del miembro ${memberId}...`);
+        // 1. Obtener el usuario de Supabase por memberstack_id
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberId)
+            .single();
 
-        // 1. Verificar que la mascota existe y pertenece al usuario
+        if (userError || !user) {
+            console.error('Usuario no encontrado:', userError);
+            return corsResponse({ error: 'Usuario no encontrado en el sistema.' }, 404);
+        }
+
+        console.log(`📧 [Appeal] Usuario encontrado: ${user.id}`);
+
+        // 2. Buscar la mascota que pertenece a este usuario
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, appeal_count, owner:users!owner_id(memberstack_id)')
+            .select('id, name, status, appeal_count, owner_id')
             .eq('id', petId)
             .single();
 
-        if (petError || !pet) {
-            return corsResponse({ error: 'Mascota no encontrada' }, 404);
+        if (petError) {
+            console.error('Error buscando mascota:', petError);
+            return corsResponse({ error: 'Error al buscar la mascota.' }, 500);
         }
 
-        // Verificar que la mascota pertenece al usuario
-        const owner = Array.isArray(pet.owner) ? pet.owner[0] : pet.owner;
-        if (owner?.memberstack_id !== memberId) {
-            return corsResponse({ error: 'No tienes permiso para apelar esta mascota' }, 403);
+        if (!pet) {
+            console.log(`📧 [Appeal] Mascota ${petId} no encontrada`);
+            return corsResponse({ error: 'Mascota no encontrada.' }, 404);
         }
 
-        // Verificar que la mascota puede ser apelada (status rejected o action_required)
+        console.log(`📧 [Appeal] Mascota encontrada: ${pet.name}, owner_id=${pet.owner_id}`);
+
+        // 3. Verificar que la mascota pertenece al usuario
+        if (pet.owner_id !== user.id) {
+            return corsResponse({ error: 'No tienes permiso para apelar esta mascota.' }, 403);
+        }
+
+        // 4. Verificar que la mascota puede ser apelada (status rejected o action_required)
         if (!['rejected', 'action_required'].includes(pet.status)) {
             return corsResponse({
                 error: `Esta mascota no puede ser apelada. Status actual: ${pet.status}`
             }, 400);
         }
 
-        // Verificar límite de apelaciones
+        // 5. Verificar límite de apelaciones
         const currentAppealCount = pet.appeal_count || 0;
         if (currentAppealCount >= MAX_APPEALS_PER_PET) {
             return corsResponse({
@@ -71,7 +92,7 @@ export async function POST(request: NextRequest) {
             }, 400);
         }
 
-        // 2. Actualizar mascota a status 'appealed'
+        // 6. Actualizar mascota a status 'appealed'
         const { error: updateError } = await supabaseAdmin
             .from('pets')
             .update({
@@ -84,10 +105,10 @@ export async function POST(request: NextRequest) {
 
         if (updateError) {
             console.error('Error actualizando mascota:', updateError);
-            return corsResponse({ error: 'Error al procesar la apelación' }, 500);
+            return corsResponse({ error: 'Error al procesar la apelación.' }, 500);
         }
 
-        // 3. Crear log de apelación (vinculado a la mascota)
+        // 7. Crear log de apelación
         await supabaseAdmin
             .from('appeal_logs')
             .insert({
@@ -98,8 +119,8 @@ export async function POST(request: NextRequest) {
                 created_at: new Date().toISOString()
             });
 
-        // 4. Recalcular y actualizar el membership_status del usuario
-        await updateMemberStatusFromPets(memberId);
+        // 8. Recalcular el membership_status del usuario
+        await updateMemberStatusFromPets(memberId, user.id);
 
         console.log(`✅ Apelación registrada para mascota ${pet.name} (intento ${currentAppealCount + 1}/${MAX_APPEALS_PER_PET})`);
 
@@ -112,29 +133,20 @@ export async function POST(request: NextRequest) {
 
     } catch (error: any) {
         console.error('Error procesando apelación:', error);
-        return corsResponse({ error: error.message }, 500);
+        return corsResponse({ error: error.message || 'Error interno del servidor.' }, 500);
     }
 }
 
 /**
  * Recalcula el membership_status del usuario basándose en el estado de sus mascotas
  */
-async function updateMemberStatusFromPets(memberstackId: string) {
+async function updateMemberStatusFromPets(memberstackId: string, userId: string) {
     try {
-        // Obtener el usuario
-        const { data: user, error: userError } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('memberstack_id', memberstackId)
-            .single();
-
-        if (userError || !user) return;
-
         // Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
             .select('status')
-            .eq('owner_id', user.id);
+            .eq('owner_id', userId);
 
         if (petsError || !pets || pets.length === 0) return;
 
