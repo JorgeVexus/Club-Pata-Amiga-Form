@@ -36,9 +36,10 @@ interface MemberDetailModalProps {
     onReject: (id: string) => void;
     showAppealSection?: boolean; // Solo muestra la sección de apelación si viene del menú de Apelaciones
     selectedPetId?: string | null; // Para filtrar a una sola mascota en apelaciones
+    isSuperAdmin?: boolean; // 🆕 Solo SuperAdmin puede ver apelaciones
 }
 
-export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false, selectedPetId }: MemberDetailModalProps) {
+export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false, selectedPetId, isSuperAdmin = false }: MemberDetailModalProps) {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
@@ -435,8 +436,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 )}
                                             </div>
 
-                                            {/* 🆕 Sección de Comunicación por Mascota (solo para rejected/action_required) */}
-                                            {showAppealSection && (pet.status === 'rejected' || pet.status === 'action_required') && (
+                                            {/* 🆕 Sección de Comunicación por Mascota (solo para rechazados y solo SuperAdmin) */}
+                                            {isSuperAdmin && showAppealSection && (pet.status === 'rejected' || pet.status === 'action_required') && (
                                                 <div className={styles.petCommunicationSection}>
                                                     {/* Mostrar última respuesta del admin si existe */}
                                                     {(pet as any).last_admin_response && (

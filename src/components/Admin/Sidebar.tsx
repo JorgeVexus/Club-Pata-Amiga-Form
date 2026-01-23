@@ -89,16 +89,18 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                     <span className={styles.menuLabel}>Comunicaciones</span>
                 </button>
 
-                <button
-                    className={`${styles.menuItem} ${activeFilter === 'appeals' ? styles.active : ''}`}
-                    onClick={() => onFilterChange('appeals')}
-                >
-                    <span className={styles.menuIcon}>📩</span>
-                    <span className={styles.menuLabel}>Apelaciones</span>
-                    {pendingCounts.appeals > 0 && (
-                        <span className={styles.menuBadge}>{pendingCounts.appeals}</span>
-                    )}
-                </button>
+                {isSuperAdmin && (
+                    <button
+                        className={`${styles.menuItem} ${activeFilter === 'appeals' ? styles.active : ''}`}
+                        onClick={() => onFilterChange('appeals')}
+                    >
+                        <span className={styles.menuIcon}>📩</span>
+                        <span className={styles.menuLabel}>Apelaciones</span>
+                        {pendingCounts.appeals > 0 && (
+                            <span className={styles.menuBadge}>{pendingCounts.appeals}</span>
+                        )}
+                    </button>
+                )}
             </nav>
 
             {/* Super Admin Only: Admins Section */}

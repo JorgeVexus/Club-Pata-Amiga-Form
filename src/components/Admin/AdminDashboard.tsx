@@ -105,6 +105,11 @@ export default function AdminDashboard() {
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
+
+                        // Cargar el resto después de verificar el rol
+                        loadMetrics();
+                        loadPendingCounts(data.isSuperAdmin);
+                        loadActivityLogs();
                     }
                 } catch (e) {
                     console.error("Error checking permissions", e);
@@ -113,11 +118,17 @@ export default function AdminDashboard() {
         };
 
         fetchAdminRole();
-        loadMetrics();
-        loadPendingCounts();
-        loadActivityLogs();
         setHasMounted(true);
     }, []);
+
+    // Seguridad: Redirigir si intenta entrar a filtros de superadmin no siendo uno
+    useEffect(() => {
+        if (hasMounted && !isAdminSuper) {
+            if (activeFilter === 'appeals' || activeFilter === 'admins') {
+                setActiveFilter('all');
+            }
+        }
+    }, [activeFilter, isAdminSuper, hasMounted]);
 
 
     async function loadMetrics() {
@@ -179,7 +190,7 @@ export default function AdminDashboard() {
         }
     }
 
-    async function loadPendingCounts() {
+    async function loadPendingCounts(isSuper: boolean = false) {
         try {
             const response = await fetch('/api/admin/members?status=pending');
             const data = await response.json();
@@ -187,11 +198,15 @@ export default function AdminDashboard() {
                 setPendingCounts(prev => ({ ...prev, member: data.members.length }));
             }
 
-            // Load appealed counts
-            const appealRes = await fetch('/api/admin/members?status=appealed');
-            const appealData = await appealRes.json();
-            if (appealData.success && appealData.members) {
-                setPendingCounts(prev => ({ ...prev, appeals: appealData.members.length }));
+            // Load appealed counts only if superadmin
+            if (isSuper) {
+                const appealRes = await fetch('/api/admin/members?status=appealed');
+                const appealData = await appealRes.json();
+                if (appealData.success && appealData.members) {
+                    setPendingCounts(prev => ({ ...prev, appeals: appealData.members.length }));
+                }
+            } else {
+                setPendingCounts(prev => ({ ...prev, appeals: 0 }));
             }
 
             // Load ambassador pending counts
@@ -292,6 +307,7 @@ export default function AdminDashboard() {
                             {/* Requests Table */}
                             <RequestsTable
                                 filter="all"
+                                isSuperAdmin={isAdminSuper}
                                 requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
                                 onViewDetails={(id, petId) => {
                                     setSelectedPetId(petId || null);
@@ -358,6 +374,7 @@ export default function AdminDashboard() {
                 member={selectedMember}
                 showAppealSection={activeFilter === 'appeals'}
                 selectedPetId={selectedPetId}
+                isSuperAdmin={isAdminSuper}
                 onApprove={async (id) => {
                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
                         try {

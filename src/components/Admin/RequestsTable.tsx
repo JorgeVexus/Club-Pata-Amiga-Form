@@ -36,9 +36,10 @@ interface RequestsTableProps {
     onViewRejectionReason?: (memberId: string) => void;
     onApprove: (memberId: string) => void;
     onReject: (memberId: string) => void;
+    isSuperAdmin?: boolean;
 }
 
-export default function RequestsTable({ filter, requestType = 'all', onViewDetails, onViewRejectionReason, onApprove, onReject }: RequestsTableProps) {
+export default function RequestsTable({ filter, requestType = 'all', onViewDetails, onViewRejectionReason, onApprove, onReject, isSuperAdmin = false }: RequestsTableProps) {
 
     const [requests, setRequests] = useState<MemberRequest[]>([]);
     const [appealedPets, setAppealedPets] = useState<AppealedPet[]>([]);
@@ -92,7 +93,12 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             const data = await response.json();
 
             if (data.success && data.members) {
-                let formattedRequests: MemberRequest[] = data.members.map((member: any) => {
+                // Si no es superadmin, quitar miembros que están en apelación
+                const allowedMembers = isSuperAdmin
+                    ? data.members
+                    : data.members.filter((m: any) => m.customFields?.['approval-status'] !== 'appealed');
+
+                let formattedRequests: MemberRequest[] = allowedMembers.map((member: any) => {
                     // Count pets by checking pet-x-name fields
                     let petCount = 0;
                     for (let i = 1; i <= 3; i++) {
