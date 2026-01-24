@@ -155,7 +155,7 @@ export async function POST(request: NextRequest) {
             throw new Error('Error al actualizar los datos en Memberstack');
         }
 
-        // 7. Registrar mascota en Supabase
+        // 7. Registrar mascota en Supabase (Tabla pets)
         const { error: insertError } = await supabaseAdmin.from('pets').insert({
             owner_id: user!.id,
             name: petData.name,
@@ -164,7 +164,6 @@ export async function POST(request: NextRequest) {
             age: petData.age || null,
             is_mixed: petData.isMixed || false,
             is_adopted: petData.isAdopted || false,
-            adoption_story: petData.adoptionStory || null,
             ruac: petData.ruac || null,
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
@@ -175,6 +174,21 @@ export async function POST(request: NextRequest) {
         if (insertError) {
             console.error('❌ [PET_ADD] Error insertando mascota en Supabase:', insertError);
             throw new Error('Error al guardar la mascota en la base de datos');
+        }
+
+        // 8. Guardar la historia de adopción en la tabla de usuarios (Slot correspondiente)
+        if (petData.adoptionStory) {
+            const storyColumn = `pet_${nextSlot}_adoption_story`;
+            const { error: userUpdateError } = await supabaseAdmin
+                .from('users')
+                .update({ [storyColumn]: petData.adoptionStory })
+                .eq('id', user!.id);
+
+            if (userUpdateError) {
+                console.warn('⚠️ [PET_ADD] No se pudo guardar la historia en el perfil del usuario:', userUpdateError);
+            } else {
+                console.log(`✅ [PET_ADD] Historia guardada en ${storyColumn}`);
+            }
         }
 
         console.log(`✅ [PET_ADD] Registro completado con éxito para ${msEmail}`);
