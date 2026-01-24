@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { memberstackId, petData } = body;
 
-        console.log(`🐾 Intentando registrar nueva mascota para: ${memberstackId}`);
+        console.log(`🐾 [PET_ADD] Procesando registro para MemberstackID: ${memberstackId}`);
 
         if (!memberstackId || !petData) {
             return NextResponse.json({ error: 'Missing required data' }, { status: 400, headers: corsHeaders });
@@ -37,18 +37,63 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Server configuration error' }, { status: 500, headers: corsHeaders });
         }
 
-        // 1. Obtener datos actuales del miembro para saber en qué slot poner la nueva mascota
+        // 1. Obtener datos actuales del miembro desde Memberstack
         const msResponse = await fetch(`https://admin.memberstack.com/members/${memberstackId}`, {
             headers: { 'X-API-KEY': MEMBERSTACK_ADMIN_KEY }
         });
         const msData = await msResponse.json();
 
-        if (!msResponse.ok) throw new Error('Error fetching member from Memberstack');
+        if (!msResponse.ok) {
+            console.error(`❌ [PET_ADD] Error al obtener miembro de Memberstack:`, msData);
+            throw new Error('No se pudo validar el usuario con Memberstack');
+        }
 
-        const customFields = msData.data.customFields || {};
+        const member = msData.data;
+        const msEmail = member.auth?.email;
+        const customFields = member.customFields || {};
+        const firstName = customFields['first-name'] || '';
+        const lastName = customFields['paternal-last-name'] || '';
+
+        console.log(`👤 [PET_ADD] Miembro identificado: ${msEmail} (${firstName} ${lastName})`);
+
+        // 2. Sincronizar con Supabase (Buscar o Crear usuario)
+        let { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id, email, memberstack_id')
+            .eq('memberstack_id', memberstackId)
+            .maybeSingle();
+
+        if (!user) {
+            console.log(`🆕 [PET_ADD] Usuario no encontrado en Supabase. Creando registro para ${msEmail}...`);
+            const { data: newUser, error: createError } = await supabaseAdmin
+                .from('users')
+                .insert({
+                    memberstack_id: memberstackId,
+                    email: msEmail,
+                    first_name: firstName,
+                    last_name: lastName,
+                    membership_status: 'pending',
+                    created_at: new Date().toISOString()
+                })
+                .select()
+                .single();
+
+            if (createError) {
+                console.error('❌ [PET_ADD] Error creando usuario en Supabase:', createError);
+                throw new Error('No se pudo crear el perfil de usuario en la base de datos');
+            }
+            user = newUser;
+        } else {
+            console.log(`✅ [PET_ADD] Usuario encontrado en Supabase: ID ${user.id} (Email original: ${user.email})`);
+            // Opcional: Actualizar el email si ha cambiado en Memberstack
+            if (user.email !== msEmail) {
+                console.log(`🔄 [PET_ADD] Actualizando email de ${user.email} a ${msEmail}`);
+                await supabaseAdmin.from('users').update({ email: msEmail }).eq('id', user.id);
+            }
+        }
+
+        // 3. Determinar el slot de la mascota
         let totalPets = parseInt(customFields['total-pets'] || '0');
-
-        // Si no hay total-pets, calcular manualmente revisando slots
         if (totalPets === 0) {
             for (let i = 1; i <= 3; i++) {
                 if (customFields[`pet-${i}-name`]) totalPets = i;
@@ -62,15 +107,15 @@ export async function POST(request: NextRequest) {
         const nextSlot = totalPets + 1;
         const prefix = `pet-${nextSlot}`;
 
-        // 2. Calcular período de carencia
+        // 4. Calcular período de carencia
         const carencia = calculateWaitingPeriod(
-            true, // Siempre es nueva para este flujo
+            true,
             petData.isAdopted || false,
             !!petData.ruac,
-            petData.isMixed || false // Nuevo parámetro añadido
+            petData.isMixed || false
         );
 
-        // 3. Preparar campos para Memberstack
+        // 5. Preparar campos para Memberstack
         const newFields: Record<string, any> = {
             'total-pets': nextSlot.toString(),
             [`${prefix}-name`]: petData.name,
@@ -90,10 +135,11 @@ export async function POST(request: NextRequest) {
             [`${prefix}-waiting-period-end`]: carencia.endDate,
             [`${prefix}-registration-date`]: new Date().toISOString(),
             [`${prefix}-is-active`]: 'true',
-            [`${prefix}-is-original`]: 'true'
+            [`${prefix}-is-original`]: 'true',
+            'approval-status': 'pending' // Asegurar que el status sea pendiente para que aparezca en el admin
         };
 
-        // 4. Actualizar Memberstack
+        // 6. Actualizar Memberstack
         const updateMsResponse = await fetch(`https://admin.memberstack.com/members/${memberstackId}`, {
             method: 'PATCH',
             headers: {
@@ -103,43 +149,39 @@ export async function POST(request: NextRequest) {
             body: JSON.stringify({ customFields: newFields })
         });
 
-        if (!updateMsResponse.ok) throw new Error('Error updating Memberstack');
-
-        // 5. Registrar en Supabase (Tabla pets)
-        const { data: user } = await supabaseAdmin
-            .from('users')
-            .select('id')
-            .eq('memberstack_id', memberstackId)
-            .single();
-
-        if (user) {
-            const { error: insertError } = await supabaseAdmin.from('pets').insert({
-                owner_id: user.id,
-                name: petData.name,
-                breed: petData.breed || 'Mestizo',
-                breed_size: petData.breedSize,
-                age: petData.age || null,
-                is_mixed: petData.isMixed || false,
-                is_adopted: petData.isAdopted || false,
-                adoption_story: petData.adoptionStory || null,
-                ruac: petData.ruac || null,
-                photo_url: petData.photo1Url,
-                photo2_url: petData.photo2Url || null,
-                status: 'pending',
-                created_at: new Date().toISOString()
-            });
-
-            if (insertError) {
-                console.error('❌ Error insertando en Supabase:', insertError);
-            } else {
-                console.log('✅ Mascota registrada en Supabase');
-            }
+        if (!updateMsResponse.ok) {
+            const errData = await updateMsResponse.json();
+            console.error('❌ [PET_ADD] Error al actualizar Memberstack:', errData);
+            throw new Error('Error al actualizar los datos en Memberstack');
         }
 
+        // 7. Registrar mascota en Supabase
+        const { error: insertError } = await supabaseAdmin.from('pets').insert({
+            owner_id: user!.id,
+            name: petData.name,
+            breed: petData.breed || 'Mestizo',
+            breed_size: petData.breedSize,
+            age: petData.age || null,
+            is_mixed: petData.isMixed || false,
+            is_adopted: petData.isAdopted || false,
+            adoption_story: petData.adoptionStory || null,
+            ruac: petData.ruac || null,
+            photo_url: petData.photo1Url,
+            photo2_url: petData.photo2Url || null,
+            status: 'pending',
+            created_at: new Date().toISOString()
+        });
+
+        if (insertError) {
+            console.error('❌ [PET_ADD] Error insertando mascota en Supabase:', insertError);
+            throw new Error('Error al guardar la mascota en la base de datos');
+        }
+
+        console.log(`✅ [PET_ADD] Registro completado con éxito para ${msEmail}`);
         return NextResponse.json({ success: true, slot: nextSlot }, { headers: corsHeaders });
 
     } catch (error: any) {
-        console.error('❌ Error adding pet:', error);
+        console.error('❌ [PET_ADD] Fallo crítico:', error);
         return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
