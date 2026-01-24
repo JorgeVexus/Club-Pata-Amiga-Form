@@ -157,6 +157,28 @@
             .pata-cards-grid { flex-wrap: wrap; }
             .pata-pet-card, .pata-add-card { width: 100%; max-width: 280px; min-width: auto; }
         }
+
+        /* Breed Autocomplete */
+        .pata-breed-wrapper { position: relative; grid-column: 1 / -1; }
+        .pata-breed-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0;
+            background: #fff; border: 1px solid #ddd; border-top: none;
+            border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto;
+            z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: none;
+        }
+        .pata-breed-suggestions.active { display: block; }
+        .pata-breed-suggestion {
+            padding: 10px 12px; cursor: pointer; font-size: 13px;
+            border-bottom: 1px solid #f0f0f0; transition: background 0.15s;
+        }
+        .pata-breed-suggestion:hover { background: #f5f5f5; }
+        .pata-breed-suggestion:last-child { border-bottom: none; }
+        .pata-breed-suggestion.selected { background: #E8F5E9; }
+        .pata-breed-warning {
+            padding: 8px 12px; background: #FFF8E1; border-left: 3px solid #FF9800;
+            margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #666;
+        }
     `;
 
     class ManadaWidget {
@@ -360,7 +382,11 @@
                             <label for="pata-is-mixed" style="font-size:13px; color:#555;">Es mestizo/criollo</label>
                         </div>
                         
-                        <input type="text" name="breed" id="pata-breed-input" placeholder="Raza *" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
+                        <div class="pata-breed-wrapper">
+                            <input type="text" name="breed" id="pata-breed-input" placeholder="Escribe para buscar raza *" required autocomplete="off" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
+                            <div id="pata-breed-suggestions" class="pata-breed-suggestions"></div>
+                            <div id="pata-breed-warning" class="pata-breed-warning" style="display:none;"></div>
+                        </div>
                         
                         <select name="breedSize" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
                             <option value="">Tamaño *</option>
@@ -425,6 +451,9 @@
                     breedInput.disabled = false;
                 }
             };
+
+            // 🆕 Configurar autocomplete de razas
+            this.setupBreedAutocomplete(modal);
 
             const form = document.getElementById('pata-add-form');
             form.onsubmit = async (e) => {
@@ -543,6 +572,136 @@
             } else {
                 throw new Error(data.error || 'Error subiendo foto');
             }
+        }
+
+        // 🆕 Configurar autocomplete de razas
+        async setupBreedAutocomplete(modal) {
+            const breedInput = document.getElementById('pata-breed-input');
+            const suggestionsBox = document.getElementById('pata-breed-suggestions');
+            const warningBox = document.getElementById('pata-breed-warning');
+            const petTypeSelect = modal.querySelector('[name="petType"]');
+
+            if (!breedInput || !suggestionsBox) return;
+
+            // Cache de razas
+            this.breedsCache = { perro: [], gato: [] };
+            this.selectedBreedIndex = -1;
+
+            // Cargar razas iniciales
+            const loadBreeds = async (type) => {
+                if (this.breedsCache[type]?.length > 0) return;
+                try {
+                    const res = await fetch(`${CONFIG.apiUrl}/api/breeds?type=${type}`);
+                    const data = await res.json();
+                    if (data.success && data.breeds) {
+                        this.breedsCache[type] = data.breeds;
+                    }
+                } catch (err) {
+                    console.error('Error cargando razas:', err);
+                }
+            };
+
+            // Mostrar sugerencias filtradas
+            const showSuggestions = (query) => {
+                const petType = petTypeSelect.value;
+                if (!petType) {
+                    suggestionsBox.innerHTML = '<div class="pata-breed-suggestion" style="color:#888;">Primero selecciona tipo de mascota</div>';
+                    suggestionsBox.classList.add('active');
+                    return;
+                }
+
+                const breeds = this.breedsCache[petType] || [];
+                const filtered = query.length > 0
+                    ? breeds.filter(b => b.name.toLowerCase().includes(query.toLowerCase())).slice(0, 10)
+                    : breeds.slice(0, 8);
+
+                if (filtered.length === 0) {
+                    suggestionsBox.innerHTML = '<div class="pata-breed-suggestion" style="color:#888;">No se encontraron razas</div>';
+                } else {
+                    suggestionsBox.innerHTML = filtered.map((b, i) => `
+                        <div class="pata-breed-suggestion" data-name="${b.name}" data-warning="${b.warning_message || ''}" data-has-issues="${b.has_genetic_issues}">
+                            ${b.name}
+                            ${b.has_genetic_issues ? '<span style="color:#FF9800; font-size:11px; margin-left:5px;">⚠️</span>' : ''}
+                        </div>
+                    `).join('');
+                }
+
+                suggestionsBox.classList.add('active');
+                this.selectedBreedIndex = -1;
+            };
+
+            // Seleccionar raza
+            const selectBreed = (name, warning) => {
+                breedInput.value = name;
+                suggestionsBox.classList.remove('active');
+
+                if (warning && warning !== '') {
+                    warningBox.innerHTML = warning;
+                    warningBox.style.display = 'block';
+                } else {
+                    warningBox.style.display = 'none';
+                }
+            };
+
+            // Eventos
+            breedInput.addEventListener('focus', async () => {
+                const petType = petTypeSelect.value;
+                if (petType) {
+                    await loadBreeds(petType);
+                }
+                showSuggestions(breedInput.value);
+            });
+
+            breedInput.addEventListener('input', (e) => {
+                showSuggestions(e.target.value);
+            });
+
+            breedInput.addEventListener('blur', () => {
+                setTimeout(() => suggestionsBox.classList.remove('active'), 200);
+            });
+
+            // Navegación con teclado
+            breedInput.addEventListener('keydown', (e) => {
+                const items = suggestionsBox.querySelectorAll('.pata-breed-suggestion[data-name]');
+                if (items.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    this.selectedBreedIndex = Math.min(this.selectedBreedIndex + 1, items.length - 1);
+                    items.forEach((item, i) => item.classList.toggle('selected', i === this.selectedBreedIndex));
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    this.selectedBreedIndex = Math.max(this.selectedBreedIndex - 1, 0);
+                    items.forEach((item, i) => item.classList.toggle('selected', i === this.selectedBreedIndex));
+                } else if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (this.selectedBreedIndex >= 0 && items[this.selectedBreedIndex]) {
+                        const item = items[this.selectedBreedIndex];
+                        selectBreed(item.dataset.name, item.dataset.warning);
+                    }
+                }
+            });
+
+            // Click en sugerencia
+            suggestionsBox.addEventListener('click', (e) => {
+                const item = e.target.closest('.pata-breed-suggestion');
+                if (item && item.dataset.name) {
+                    selectBreed(item.dataset.name, item.dataset.warning);
+                }
+            });
+
+            // Cuando cambia el tipo de mascota, recargar razas
+            petTypeSelect.addEventListener('change', async (e) => {
+                const type = e.target.value;
+                if (type) {
+                    await loadBreeds(type);
+                    breedInput.value = '';
+                    warningBox.style.display = 'none';
+                    if (document.activeElement === breedInput) {
+                        showSuggestions('');
+                    }
+                }
+            });
         }
 
         showAppealForm(petId) {
