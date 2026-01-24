@@ -952,6 +952,506 @@
             </div>
         </div>
 
+        <!-- SECCIÓN 9: Email de Resolución -->
+        <h2><span class="section-icon">📧</span> 9. Email de Resolución de Apelación</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">
+                <span>✉️</span> Notificaciones por Email (Resend)
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        9.1 Email enviado al aprobar apelación
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Usuario recibe email cuando su apelación es aprobada</div>
+                    <ol class="test-steps">
+                        <li>Tener mascota en estado "appealed"</li>
+                        <li>Admin aprueba desde la sección de apelaciones</li>
+                        <li>Verificar email recibido por el usuario</li>
+                    </ol>
+                    <div class="expected-result">✓ Email con asunto "🎉 ¡Buenas noticias! Tu apelación para [Mascota]
+                        fue aprobada"</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        9.2 Email enviado al rechazar apelación
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Usuario recibe email cuando su apelación es rechazada nuevamente</div>
+                    <ol class="test-steps">
+                        <li>Tener mascota en estado "appealed"</li>
+                        <li>Admin rechaza desde la sección de apelaciones</li>
+                        <li>Verificar email recibido por el usuario</li>
+                    </ol>
+                    <div class="expected-result">✓ Email con tono empático y motivo del rechazo</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        9.3 Email NO enviado si la mascota no estaba en "appealed"
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">El email solo se envía para mascotas que venían de apelación</div>
+                    <ol class="test-steps">
+                        <li>Aprobar mascota que está en "pending" (nunca apelada)</li>
+                        <li>Verificar que NO se envía email de resolución</li>
+                    </ol>
+                    <div class="expected-result">✓ Sin email de resolución (solo notificación in-app)</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        9.4 Email se registra en communication_logs
+                        <span class="priority priority-low">Baja</span>
+                    </div>
+                    <div class="test-description">El envío queda registrado en la base de datos</div>
+                    <ol class="test-steps">
+                        <li>Enviar email de resolución</li>
+                        <li>Verificar entrada en tabla communication_logs</li>
+                    </ol>
+                    <div class="expected-result">✓ Log con type='email', status='sent', metadata incluye
+                        'appeal_resolution'</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 10: Historial de Apelaciones para Usuario -->
+        <h2><span class="section-icon">📜</span> 10. Historial de Apelaciones (Usuario)</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">
+                <span>🕐</span> Modal de Historial en Widget
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        10.1 Botón "Ver historial" visible en estado appealed
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">El botón aparece cuando la mascota está en apelación</div>
+                    <ol class="test-steps">
+                        <li>Ver mascota con estado "appealed" en widget</li>
+                        <li>Verificar que aparece botón "📜 Ver historial"</li>
+                    </ol>
+                    <div class="expected-result">✓ Botón visible y clickeable en color morado</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        10.2 Modal de historial abre correctamente
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Al hacer clic se abre el modal con el historial</div>
+                    <ol class="test-steps">
+                        <li>Hacer clic en "Ver historial"</li>
+                        <li>Verificar que se abre modal</li>
+                    </ol>
+                    <div class="expected-result">✓ Modal muestra título "📜 Historial de [Mascota]"</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        10.3 Mensajes diferenciados visualmente
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Mensajes del usuario vs admin tienen estilos diferentes</div>
+                    <ol class="test-steps">
+                        <li>Abrir historial con mensajes de ambos</li>
+                        <li>Verificar colores diferentes (verde usuario, azul admin)</li>
+                    </ol>
+                    <div class="expected-result">✓ Usuario: fondo verde. Admin: fondo azul</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        10.4 Fechas y horas visibles
+                        <span class="priority priority-low">Baja</span>
+                    </div>
+                    <div class="test-description">Cada mensaje muestra timestamp</div>
+                    <ol class="test-steps">
+                        <li>Abrir historial</li>
+                        <li>Verificar formato de fecha en cada mensaje</li>
+                    </ol>
+                    <div class="expected-result">✓ Formato: "24 ene 2026, 10:30"</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        10.5 Historial vacío muestra mensaje apropiado
+                        <span class="priority priority-low">Baja</span>
+                    </div>
+                    <div class="test-description">Si no hay historial, muestra mensaje informativo</div>
+                    <ol class="test-steps">
+                        <li>Abrir historial de mascota sin logs previos</li>
+                    </ol>
+                    <div class="expected-result">✓ "No hay historial de apelaciones para esta mascota"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 11: Filtro por Fecha en Admin -->
+        <h2><span class="section-icon">📅</span> 11. Filtro por Fecha (Admin)</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">
+                <span>🔍</span> Filtros en Lista de Apelaciones
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        11.1 Botones de filtro por fecha visibles
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Se muestran los 4 filtros: Todos, Hoy, Esta semana, Este mes</div>
+                    <ol class="test-steps">
+                        <li>Ir a sección "Apelaciones" en admin</li>
+                        <li>Verificar que aparecen los 4 botones de filtro</li>
+                    </ol>
+                    <div class="expected-result">✓ Botones tipo pill con estilos interactivos</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        11.2 Filtro "Hoy" funciona correctamente
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Solo muestra apelaciones de hoy</div>
+                    <ol class="test-steps">
+                        <li>Tener apelaciones de diferentes fechas</li>
+                        <li>Hacer clic en "Hoy"</li>
+                        <li>Verificar que solo se muestran las de hoy</li>
+                    </ol>
+                    <div class="expected-result">✓ Lista filtrada correctamente por fecha actual</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        11.3 Filtro "Esta semana" funciona correctamente
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Muestra apelaciones de los últimos 7 días</div>
+                    <ol class="test-steps">
+                        <li>Hacer clic en "Esta semana"</li>
+                        <li>Verificar rango de fechas</li>
+                    </ol>
+                    <div class="expected-result">✓ Incluye apelaciones de hace 7 días o menos</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        11.4 Filtro "Este mes" funciona correctamente
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Muestra apelaciones de los últimos 30 días</div>
+                    <ol class="test-steps">
+                        <li>Hacer clic en "Este mes"</li>
+                        <li>Verificar rango de fechas</li>
+                    </ol>
+                    <div class="expected-result">✓ Incluye apelaciones de hace 30 días o menos</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        11.5 Filtro combinado con búsqueda
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Filtro de fecha + búsqueda funcionan juntos</div>
+                    <ol class="test-steps">
+                        <li>Aplicar filtro "Esta semana"</li>
+                        <li>Buscar por nombre de mascota</li>
+                    </ol>
+                    <div class="expected-result">✓ Resultados filtrados por ambos criterios</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 12: Fotos en Apelación -->
+        <h2><span class="section-icon">📸</span> 12. Subida de Fotos en Apelación</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">
+                <span>🖼️</span> Carga de Imágenes Opcionales
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        12.1 Áreas de carga de fotos visibles en formulario de apelación
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">El formulario muestra 2 áreas para subir fotos</div>
+                    <ol class="test-steps">
+                        <li>Abrir formulario de apelación</li>
+                        <li>Verificar que hay 2 áreas de upload</li>
+                    </ol>
+                    <div class="expected-result">✓ Dos áreas con texto "Arrastra o haz clic" y etiquetadas como
+                        opcionales</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        12.2 Preview de foto al seleccionar
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">La foto se previsualiza antes de enviar</div>
+                    <ol class="test-steps">
+                        <li>Hacer clic en área de upload</li>
+                        <li>Seleccionar una imagen</li>
+                    </ol>
+                    <div class="expected-result">✓ Miniatura de la imagen visible en el área</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        12.3 Apelación sin fotos funciona
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Las fotos son opcionales</div>
+                    <ol class="test-steps">
+                        <li>Escribir mensaje de apelación</li>
+                        <li>NO subir fotos</li>
+                        <li>Enviar apelación</li>
+                    </ol>
+                    <div class="expected-result">✓ Apelación enviada correctamente sin fotos</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        12.4 Apelación con fotos actualiza la mascota
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Las fotos nuevas reemplazan las anteriores</div>
+                    <ol class="test-steps">
+                        <li>Subir 1 o 2 fotos nuevas</li>
+                        <li>Enviar apelación</li>
+                        <li>Verificar en Supabase que photo_url/photo2_url cambiaron</li>
+                    </ol>
+                    <div class="expected-result">✓ URLs actualizadas en tabla pets</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        12.5 Drag & Drop funciona
+                        <span class="priority priority-low">Baja</span>
+                    </div>
+                    <div class="test-description">Se pueden arrastrar imágenes al área</div>
+                    <ol class="test-steps">
+                        <li>Arrastrar imagen desde escritorio al área de upload</li>
+                    </ol>
+                    <div class="expected-result">✓ Imagen aceptada y preview mostrado</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 13: Autocomplete de Razas -->
+        <h2><span class="section-icon">🐕</span> 13. Autocomplete de Razas (Modal Agregar Mascota)</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">
+                <span>🔤</span> Predicción de Razas
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.1 Sugerencias aparecen al escribir
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Al escribir 2+ caracteres aparecen sugerencias</div>
+                    <ol class="test-steps">
+                        <li>Abrir modal "Agregar mascota"</li>
+                        <li>Escribir "lab" en campo de raza</li>
+                    </ol>
+                    <div class="expected-result">✓ Aparece "Labrador Retriever" y otras razas que coinciden</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.2 Razas filtradas por tipo de mascota
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Si es gato, solo razas de gato</div>
+                    <ol class="test-steps">
+                        <li>Seleccionar "Gato" en tipo de mascota</li>
+                        <li>Escribir en campo de raza</li>
+                    </ol>
+                    <div class="expected-result">✓ Solo aparecen razas de gato (Siamés, Persa, etc.)</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.3 Selección con teclado (flechas + Enter)
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Navegación accesible</div>
+                    <ol class="test-steps">
+                        <li>Escribir para mostrar sugerencias</li>
+                        <li>Usar flechas arriba/abajo</li>
+                        <li>Presionar Enter para seleccionar</li>
+                    </ol>
+                    <div class="expected-result">✓ Raza seleccionada se completa en el campo</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.4 Selección con click del mouse
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Click en sugerencia la selecciona</div>
+                    <ol class="test-steps">
+                        <li>Mostrar sugerencias</li>
+                        <li>Hacer clic en una raza</li>
+                    </ol>
+                    <div class="expected-result">✓ Raza seleccionada aparece en el campo</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.5 Advertencia de problemas genéticos
+                        <span class="priority priority-medium">Media</span>
+                    </div>
+                    <div class="test-description">Si la raza tiene problemas genéticos, muestra advertencia</div>
+                    <ol class="test-steps">
+                        <li>Seleccionar una raza con has_genetic_issues = true (ej: Bulldog Francés)</li>
+                    </ol>
+                    <div class="expected-result">✓ Aparece mensaje de advertencia debajo del campo</div>
+                </div>
+            </div>
+
+            <div class="test-item">
+                <div class="checkbox-wrapper">
+                    <div class="checkbox" onclick="toggleCheck(this)"></div>
+                </div>
+                <div class="test-content">
+                    <div class="test-title">
+                        13.6 Checkbox "Mestizo" deshabilita campo
+                        <span class="priority priority-high">Alta</span>
+                    </div>
+                    <div class="test-description">Al marcar mestizo, raza se llena automáticamente</div>
+                    <ol class="test-steps">
+                        <li>Marcar checkbox "Es mestizo"</li>
+                    </ol>
+                    <div class="expected-result">✓ Campo de raza se llena con "Mestizo" y se deshabilita</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Notas -->
         <div class="notes-section">
             <h3>📝 Notas del Tester</h3>
@@ -959,8 +1459,9 @@
         </div>
 
         <footer>
-            <p>📋 Lista de Pruebas QA - Sistema de Apelaciones</p>
-            <p>Club Pata Amiga - Generado el 12 de Enero, 2026</p>
+            <p>📋 Lista de Pruebas QA - Sistema de Apelaciones v2.0</p>
+            <p>Club Pata Amiga - Actualizado el 24 de Enero, 2026</p>
+            <p style="font-size: 0.8rem; color: #555;">Total de pruebas: 55 (32 originales + 23 nuevas)</p>
         </footer>
     </div>
 
