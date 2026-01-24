@@ -102,7 +102,12 @@ export async function POST(request: NextRequest) {
                 name: petData.name,
                 breed: petData.breed || 'Mestizo',
                 breed_size: petData.breedSize,
+                age: petData.age || null,
+                is_mixed: petData.isMixed || false,
+                is_adopted: petData.isAdopted || false,
+                ruac: petData.ruac || null,
                 photo_url: petData.photo1Url,
+                photo2_url: petData.photo2Url || null,
                 status: 'pending',
                 created_at: new Date().toISOString()
             });

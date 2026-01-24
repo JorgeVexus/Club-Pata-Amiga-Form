@@ -320,69 +320,229 @@
         }
 
         showAddForm() {
+            // Estado para fotos
+            this.newPetPhotos = { photo1: null, photo2: null };
+
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             modal.innerHTML = `
-                <div class="pata-modal-box">
-                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                    <h2 style="text-align:center; font-weight:800; font-size:28px; margin:0 0 25px 0;">Nuevo integrante 🐾</h2>
-                    <form id="pata-add-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                        <input type="text" name="name" placeholder="Nombre" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
-                        <select name="petType" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
-                            <option value="PERRO">Perro</option>
-                            <option value="GATO">Gato</option>
+                <div class="pata-modal-box" style="max-width:550px; max-height:90vh; overflow-y:auto;">
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 20px 0;">Nuevo integrante 🐾</h2>
+                    
+                    <form id="pata-add-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
+                        <!-- Información básica -->
+                        <div style="grid-column: 1 / -1;"><label style="font-weight:600; font-size:13px; color:#666;">Información básica</label></div>
+                        
+                        <input type="text" name="name" placeholder="Nombre *" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <input type="text" name="lastName" placeholder="Apellido (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        
+                        <select name="petType" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                            <option value="">Tipo de mascota *</option>
+                            <option value="perro">🐕 Perro</option>
+                            <option value="gato">🐈 Gato</option>
                         </select>
-                        <input type="text" name="breed" placeholder="Raza" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
-                        <select name="breedSize" required style="padding:14px; border-radius:10px; border:1px solid #ddd;">
-                            <option value="CHICA">Chica</option>
-                            <option value="MEDIANA" selected>Mediana</option>
-                            <option value="GRANDE">Grande</option>
+                        
+                        <select name="age" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                            <option value="">Edad *</option>
+                            <option value="0-1">0-1 años</option>
+                            <option value="1-3">1-3 años</option>
+                            <option value="3-5">3-5 años</option>
+                            <option value="5-7">5-7 años</option>
+                            <option value="7-10">7-10 años</option>
+                            <option value="10+">10+ años</option>
                         </select>
-                        <div style="grid-column: 1 / -1; background:#fafafa; padding:15px; border-radius:10px; border:1px dashed #ccc; text-align:center;">
-                            <label style="font-weight:700; color:#666;">📸 Foto del peludo:</label><br>
-                            <input type="file" id="pata-file" accept="image/*" required style="margin-top:8px;">
+
+                        <!-- Raza -->
+                        <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px;">
+                            <input type="checkbox" id="pata-is-mixed" name="isMixed" style="width:18px; height:18px;">
+                            <label for="pata-is-mixed" style="font-size:13px; color:#555;">Es mestizo/criollo</label>
                         </div>
-                        <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:55px; font-size:16px;" id="pata-save-btn">Dar de alta</button>
+                        
+                        <input type="text" name="breed" id="pata-breed-input" placeholder="Raza *" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
+                        
+                        <select name="breedSize" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
+                            <option value="">Tamaño *</option>
+                            <option value="pequeño">Pequeño (hasta 10kg)</option>
+                            <option value="mediano">Mediano (10-25kg)</option>
+                            <option value="grande">Grande (25-45kg)</option>
+                            <option value="gigante">Gigante (más de 45kg)</option>
+                        </select>
+
+                        <!-- Adopción -->
+                        <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px; margin-top:5px;">
+                            <input type="checkbox" id="pata-is-adopted" name="isAdopted" style="width:18px; height:18px;">
+                            <label for="pata-is-adopted" style="font-size:13px; color:#555;">Es adoptado/rescatado 🏠</label>
+                        </div>
+
+                        <!-- RUAC -->
+                        <div style="grid-column: 1 / -1;">
+                            <input type="text" name="ruac" placeholder="Código RUAC (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
+                            <p style="margin:5px 0 0 0; font-size:11px; color:#888;">Si tu mascota tiene RUAC, esto reduce el período de carencia.</p>
+                        </div>
+
+                        <!-- Fotos -->
+                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:600; font-size:13px; color:#666;">📸 Fotos de tu mascota</label></div>
+                        
+                        <div style="grid-column: 1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div id="pata-add-photo-area-1" style="border:2px dashed #ddd; border-radius:10px; padding:20px; text-align:center; cursor:pointer; background:#fafafa; transition:all 0.2s;">
+                                <input type="file" id="pata-add-photo-1" accept="image/*" style="display:none;">
+                                <div id="pata-add-preview-1">
+                                    <span style="font-size:32px;">📸</span>
+                                    <p style="margin:8px 0 0 0; font-size:12px; color:#888;">Foto 1 *</p>
+                                </div>
+                            </div>
+                            <div id="pata-add-photo-area-2" style="border:2px dashed #ddd; border-radius:10px; padding:20px; text-align:center; cursor:pointer; background:#fafafa; transition:all 0.2s;">
+                                <input type="file" id="pata-add-photo-2" accept="image/*" style="display:none;">
+                                <div id="pata-add-preview-2">
+                                    <span style="font-size:32px;">📸</span>
+                                    <p style="margin:8px 0 0 0; font-size:12px; color:#888;">Foto 2 (opcional)</p>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="grid-column: 1 / -1; font-size:11px; color:#888; margin:0;">Sube fotos claras donde se vea bien a tu mascota.</p>
+
+                        <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:55px; font-size:16px; margin-top:10px;" id="pata-save-btn">🐾 Dar de alta</button>
                     </form>
                 </div>
             `;
             document.body.appendChild(modal);
 
+            // Configurar carga de fotos
+            this.setupAddPetPhotoInput('pata-add-photo-area-1', 'pata-add-photo-1', 'pata-add-preview-1', 'photo1');
+            this.setupAddPetPhotoInput('pata-add-photo-area-2', 'pata-add-photo-2', 'pata-add-preview-2', 'photo2');
+
+            // Manejar checkbox de mestizo
+            const mixedCheckbox = document.getElementById('pata-is-mixed');
+            const breedInput = document.getElementById('pata-breed-input');
+            mixedCheckbox.onchange = () => {
+                if (mixedCheckbox.checked) {
+                    breedInput.value = 'Mestizo';
+                    breedInput.disabled = true;
+                } else {
+                    breedInput.value = '';
+                    breedInput.disabled = false;
+                }
+            };
+
             const form = document.getElementById('pata-add-form');
             form.onsubmit = async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('pata-save-btn');
-                const file = document.getElementById('pata-file').files[0];
+
+                // Validar que al menos haya una foto
+                if (!this.newPetPhotos.photo1) {
+                    alert('Por favor sube al menos una foto de tu mascota.');
+                    return;
+                }
+
                 btn.innerText = 'Guardando...';
                 btn.disabled = true;
 
                 try {
-                    const upData = new FormData();
-                    upData.append('file', file);
-                    upData.append('userId', this.member.id);
-                    const upRes = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, { method: 'POST', body: upData });
-                    const upJson = await upRes.json();
+                    // Subir foto 1
+                    btn.innerText = 'Subiendo foto 1...';
+                    const photo1Url = await this.uploadNewPetPhoto(this.newPetPhotos.photo1);
 
-                    await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
+                    // Subir foto 2 si existe
+                    let photo2Url = null;
+                    if (this.newPetPhotos.photo2) {
+                        btn.innerText = 'Subiendo foto 2...';
+                        photo2Url = await this.uploadNewPetPhoto(this.newPetPhotos.photo2);
+                    }
+
+                    btn.innerText = 'Registrando mascota...';
+
+                    // Enviar datos al API
+                    const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             memberstackId: this.member.id,
                             petData: {
                                 name: form.name.value,
+                                lastName: form.lastName.value || '',
                                 petType: form.petType.value,
-                                breed: form.breed.value,
+                                age: form.age.value,
+                                isMixed: form.isMixed.checked,
+                                breed: form.breed.value || 'Mestizo',
                                 breedSize: form.breedSize.value,
-                                photo1Url: upJson.url
+                                isAdopted: form.isAdopted.checked,
+                                ruac: form.ruac.value || '',
+                                photo1Url: photo1Url,
+                                photo2Url: photo2Url
                             }
                         })
                     });
 
-                    alert('¡Mascota registrada! 🐾');
-                    modal.remove();
-                    this.init();
-                } catch (err) { alert('Error al guardar.'); btn.disabled = false; btn.innerText = 'Dar de alta'; }
+                    const data = await res.json();
+
+                    if (data.success) {
+                        alert('¡Mascota registrada exitosamente! 🐾 El equipo revisará tu solicitud pronto.');
+                        modal.remove();
+                        this.init();
+                    } else {
+                        alert('Error: ' + (data.error || 'No se pudo registrar la mascota.'));
+                        btn.disabled = false;
+                        btn.innerText = '🐾 Dar de alta';
+                    }
+                } catch (err) {
+                    console.error('Error registrando mascota:', err);
+                    alert('Error al guardar. Intenta nuevamente.');
+                    btn.disabled = false;
+                    btn.innerText = '🐾 Dar de alta';
+                }
             };
+        }
+
+        // 🆕 Configurar input de foto para agregar mascota
+        setupAddPetPhotoInput(areaId, inputId, previewId, photoKey) {
+            const area = document.getElementById(areaId);
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+
+            if (!area || !input) return;
+
+            area.onclick = () => input.click();
+
+            input.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    this.newPetPhotos[photoKey] = file;
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        if (preview) {
+                            preview.innerHTML = `
+                                <img src="${ev.target.result}" style="max-width:100%; max-height:70px; border-radius:6px; object-fit:cover;">
+                                <p style="margin:5px 0 0 0; font-size:10px; color:#4CAF50;">✓ ${file.name.substring(0, 12)}...</p>
+                            `;
+                        }
+                        area.style.borderColor = '#4CAF50';
+                        area.style.background = '#f0fff0';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+        }
+
+        // 🆕 Subir foto de nueva mascota
+        async uploadNewPetPhoto(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', this.member.id);
+
+            const res = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.success && data.url) {
+                return data.url;
+            } else {
+                throw new Error(data.error || 'Error subiendo foto');
+            }
         }
 
         showAppealForm(petId) {
