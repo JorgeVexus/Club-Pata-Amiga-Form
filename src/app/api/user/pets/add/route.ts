@@ -10,17 +10,31 @@ const supabaseAdmin = createClient(
 
 const MEMBERSTACK_ADMIN_KEY = process.env.MEMBERSTACK_ADMIN_SECRET_KEY;
 
+// Headers CORS para permitir requests desde Webflow
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handler para preflight requests
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const { memberstackId, petData } = body;
 
+        console.log(`🐾 Intentando registrar nueva mascota para: ${memberstackId}`);
+
         if (!memberstackId || !petData) {
-            return NextResponse.json({ error: 'Missing required data' }, { status: 400 });
+            return NextResponse.json({ error: 'Missing required data' }, { status: 400, headers: corsHeaders });
         }
 
         if (!MEMBERSTACK_ADMIN_KEY) {
-            return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
+            return NextResponse.json({ error: 'Server configuration error' }, { status: 500, headers: corsHeaders });
         }
 
         // 1. Obtener datos actuales del miembro para saber en qué slot poner la nueva mascota
@@ -42,7 +56,7 @@ export async function POST(request: NextRequest) {
         }
 
         if (totalPets >= 3) {
-            return NextResponse.json({ error: 'Ya has alcanzado el límite de 3 mascotas' }, { status: 400 });
+            return NextResponse.json({ error: 'Ya has alcanzado el límite de 3 mascotas' }, { status: 400, headers: corsHeaders });
         }
 
         const nextSlot = totalPets + 1;
@@ -52,7 +66,8 @@ export async function POST(request: NextRequest) {
         const carencia = calculateWaitingPeriod(
             true, // Siempre es nueva para este flujo
             petData.isAdopted || false,
-            !!petData.ruac
+            !!petData.ruac,
+            petData.isMixed || false // Nuevo parámetro añadido
         );
 
         // 3. Preparar campos para Memberstack
@@ -66,6 +81,7 @@ export async function POST(request: NextRequest) {
             [`${prefix}-age`]: petData.age,
             [`${prefix}-is-mixed`]: petData.isMixed ? 'true' : 'false',
             [`${prefix}-is-adopted`]: petData.isAdopted ? 'true' : 'false',
+            [`${prefix}-adoption-story`]: petData.adoptionStory || '',
             [`${prefix}-ruac`]: petData.ruac || '',
             [`${prefix}-photo-1-url`]: petData.photo1Url || '',
             [`${prefix}-photo-2-url`]: petData.photo2Url || '',
@@ -97,7 +113,7 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (user) {
-            await supabaseAdmin.from('pets').insert({
+            const { error: insertError } = await supabaseAdmin.from('pets').insert({
                 owner_id: user.id,
                 name: petData.name,
                 breed: petData.breed || 'Mestizo',
@@ -105,18 +121,25 @@ export async function POST(request: NextRequest) {
                 age: petData.age || null,
                 is_mixed: petData.isMixed || false,
                 is_adopted: petData.isAdopted || false,
+                adoption_story: petData.adoptionStory || null,
                 ruac: petData.ruac || null,
                 photo_url: petData.photo1Url,
                 photo2_url: petData.photo2Url || null,
                 status: 'pending',
                 created_at: new Date().toISOString()
             });
+
+            if (insertError) {
+                console.error('❌ Error insertando en Supabase:', insertError);
+            } else {
+                console.log('✅ Mascota registrada en Supabase');
+            }
         }
 
-        return NextResponse.json({ success: true, slot: nextSlot });
+        return NextResponse.json({ success: true, slot: nextSlot }, { headers: corsHeaders });
 
     } catch (error: any) {
-        console.error('Error adding pet:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        console.error('❌ Error adding pet:', error);
+        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
