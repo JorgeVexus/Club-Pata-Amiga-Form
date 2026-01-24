@@ -342,9 +342,14 @@
                         <p style="margin:8px 0 0 0; font-size:14px; color:#1A1A1A; font-style:italic;">"${appealMessage}"</p>
                     </div>
                     
-                    <p style="margin:0; font-size:13px; color:#616161;">
-                        <span style="font-weight:600;">📋 Estado:</span> Nuestro equipo está revisando tu caso. Te notificaremos cuando haya una respuesta.
-                    </p>
+                    <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                        <p style="margin:0; font-size:13px; color:#616161;">
+                            <span style="font-weight:600;">📋 Estado:</span> Nuestro equipo está revisando tu caso.
+                        </p>
+                        <button class="pata-btn-history" data-pet-id="${pet.id}" style="background:#7B1FA2; color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
+                            📜 Ver historial
+                        </button>
+                    </div>
                 </div>
             `;
         }
@@ -572,6 +577,17 @@
                     this.showAppealForm = false;
                     this.appealFiles = { photo1: null, photo2: null }; // Limpiar archivos
                     this.render();
+                };
+            }
+
+            // 🆕 Evento para ver historial de apelaciones
+            const historyBtn = this.container.querySelector('.pata-btn-history');
+            if (historyBtn) {
+                historyBtn.onclick = async () => {
+                    const petId = historyBtn.dataset.petId;
+                    if (petId) {
+                        await this.showAppealHistory(petId);
+                    }
                 };
             }
 
@@ -887,6 +903,62 @@
                 return data.url;
             } else {
                 throw new Error(data.error || 'Error subiendo foto');
+            }
+        }
+
+        // 🆕 Mostrar historial de apelaciones en un modal
+        async showAppealHistory(petId) {
+            const pet = this.pets.find(p => p.id === petId);
+            const petName = pet?.name || 'Mascota';
+
+            // Crear modal de carga
+            const modal = document.createElement('div');
+            modal.className = 'pata-modal-overlay';
+            modal.style.cssText = 'position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:100000; display:flex; align-items:center; justify-content:center; padding:20px;';
+            modal.innerHTML = `
+                <div style="background:#fff; border-radius:16px; padding:30px; max-width:500px; width:100%; max-height:80vh; overflow:auto; position:relative;">
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:36px; height:36px; border-radius:50%; font-size:18px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <h2 style="margin:0 0 20px 0; font-size:20px; font-weight:700;">📜 Historial de ${petName}</h2>
+                    <div id="pata-history-content" style="color:#888; text-align:center; padding:30px;">Cargando historial...</div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`);
+                const data = await res.json();
+
+                const contentDiv = document.getElementById('pata-history-content');
+                if (!data.success || !data.logs || data.logs.length === 0) {
+                    contentDiv.innerHTML = '<p style="color:#888;">No hay historial de apelaciones para esta mascota.</p>';
+                    return;
+                }
+
+                // Renderizar logs
+                contentDiv.innerHTML = data.logs.map(log => {
+                    const date = new Date(log.date).toLocaleDateString('es-MX', {
+                        day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                    });
+                    const isFromAdmin = log.isFromAdmin;
+                    const bgColor = isFromAdmin ? '#E3F2FD' : '#E8F5E9';
+                    const borderColor = isFromAdmin ? '#1976D2' : '#4CAF50';
+                    const label = isFromAdmin ? '👤 Equipo Pata Amiga' : '🐾 Tú';
+
+                    return `
+                        <div style="background:${bgColor}; border-left:3px solid ${borderColor}; padding:12px; border-radius:0 8px 8px 0; margin-bottom:12px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                <span style="font-weight:600; font-size:12px; color:#424242;">${log.icon} ${label}</span>
+                                <span style="font-size:11px; color:#888;">${date}</span>
+                            </div>
+                            <p style="margin:0; font-size:14px; color:#1A1A1A;">${log.message}</p>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error cargando historial:', err);
+                document.getElementById('pata-history-content').innerHTML = '<p style="color:#C62828;">Error al cargar el historial.</p>';
             }
         }
     }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { approveMemberApplication, rejectMemberApplication } from '@/services/memberstack-admin.service';
 import { createServerNotification } from '@/app/actions/notification.actions';
+import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
 
 // Cliente Supabase con Service Role para operaciones admin
 const supabaseAdmin = createClient(
@@ -26,6 +27,15 @@ export async function POST(
         }
 
         console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
+
+        // 0. Obtener estado ANTERIOR de la mascota para detectar si viene de 'appealed'
+        const { data: previousPet } = await supabaseAdmin
+            .from('pets')
+            .select('status, name')
+            .eq('id', petId)
+            .single();
+
+        const wasAppealed = previousPet?.status === 'appealed';
 
         // 1. Actualizar estado de la mascota en Supabase
         const updateData: any = {
@@ -80,6 +90,31 @@ export async function POST(
                 icon: '❌',
                 link: '/miembros/dashboard'
             });
+        }
+
+        // 3.5 Si venía de 'appealed', enviar email de resolución
+        if (wasAppealed && (status === 'approved' || status === 'rejected')) {
+            try {
+                // Obtener email del usuario
+                const { data: user } = await supabaseAdmin
+                    .from('users')
+                    .select('email')
+                    .eq('memberstack_id', memberId)
+                    .single();
+
+                if (user?.email) {
+                    await sendAppealResolutionEmail({
+                        userId: memberId,
+                        userEmail: user.email,
+                        petName: pet.name,
+                        resolution: status as 'approved' | 'rejected',
+                        adminNotes: adminNotes
+                    });
+                    console.log(`📧 Email de resolución de apelación enviado a ${user.email}`);
+                }
+            } catch (emailError) {
+                console.error('Error enviando email de apelación (no crítico):', emailError);
+            }
         }
 
         // 4. Crear log de la acción del admin

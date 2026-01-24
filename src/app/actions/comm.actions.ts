@@ -129,3 +129,91 @@ export async function sendCustomNotification(params: {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Envía email cuando una apelación es resuelta (aprobada o rechazada)
+ */
+export async function sendAppealResolutionEmail(params: {
+    userId: string;
+    userEmail: string;
+    petName: string;
+    resolution: 'approved' | 'rejected';
+    adminNotes?: string;
+}) {
+    const { userId, userEmail, petName, resolution, adminNotes } = params;
+
+    console.log(`📧 [Server Action] Enviando email de resolución de apelación para ${petName} a ${userEmail}`);
+
+    if (!resend) {
+        console.error('❌ [Server Action] Resend no está configurado');
+        return { success: false, error: 'Email no configurado' };
+    }
+
+    try {
+        const isApproved = resolution === 'approved';
+        const subject = isApproved
+            ? `🎉 ¡Buenas noticias! Tu apelación para ${petName} fue aprobada`
+            : `📋 Actualización sobre tu apelación para ${petName}`;
+
+        const content = isApproved
+            ? `¡Hola!
+
+Tenemos excelentes noticias para ti 🎉
+
+Después de revisar tu apelación, hemos decidido aprobar a ${petName}. ¡Ahora forma parte oficial de la manada de Club Pata Amiga!
+
+${adminNotes ? `Comentarios del equipo: ${adminNotes}` : ''}
+
+Gracias por tu paciencia durante este proceso. Estamos muy contentos de tenerte con nosotros.
+
+Con cariño,
+El equipo de Club Pata Amiga 🐾`
+            : `Hola,
+
+Queremos informarte que hemos revisado tu apelación para ${petName}.
+
+Lamentablemente, después de una cuidadosa evaluación, no pudimos aprobar la solicitud en esta ocasión.
+
+${adminNotes ? `Motivo: ${adminNotes}` : 'Si tienes dudas sobre esta decisión, no dudes en contactarnos.'}
+
+Sabemos que esta no es la noticia que esperabas, y valoramos tu comprensión.
+
+Con respeto,
+El equipo de Club Pata Amiga 🐾`;
+
+        const { data: resendData, error: resendError } = await resend.emails.send({
+            from: `${DEFAULT_FROM_NAME} <${DEFAULT_FROM_EMAIL}>`,
+            to: [userEmail],
+            subject: subject,
+            text: content,
+            html: content.replace(/\n/g, '<br/>'),
+        });
+
+        if (resendError) {
+            console.error('❌ [Server Action] Error enviando email de apelación:', resendError);
+            return { success: false, error: resendError.message };
+        }
+
+        console.log('✅ [Server Action] Email de resolución de apelación enviado:', resendData?.id);
+
+        // Registrar en logs
+        await commService.logCommunication({
+            user_id: userId,
+            type: 'email',
+            status: 'sent',
+            content: content,
+            metadata: {
+                type: 'appeal_resolution',
+                petName,
+                resolution,
+                resendId: resendData?.id
+            }
+        });
+
+        return { success: true, id: resendData?.id };
+
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error en sendAppealResolutionEmail:', error);
+        return { success: false, error: error.message };
+    }
+}

@@ -49,6 +49,9 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
     const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+    // 🆕 Filtro de fecha para apelaciones
+    const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+
     useEffect(() => {
         loadRequests();
     }, [sortFilter, requestType]); // Reload when internal filter OR requestType changes
@@ -314,76 +317,126 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             {/* Table */}
             {requestType === 'appeals' ? (
                 /* Tabla especial para Apelaciones por Mascota */
-                appealedPets.length === 0 ? (
-                    <div className={styles.emptyState}>
-                        <div className={styles.emptyIcon}>📋</div>
-                        <div className={styles.emptyText}>No hay apelaciones pendientes</div>
-                        <div className={styles.emptySubtext}>Las nuevas apelaciones aparecerán aquí</div>
+                <>
+                    {/* 🆕 Filtro por fecha */}
+                    <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '13px', color: '#666', alignSelf: 'center' }}>Filtrar por:</span>
+                        {(['all', 'today', 'week', 'month'] as const).map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => setAppealDateFilter(filter)}
+                                style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '20px',
+                                    border: appealDateFilter === filter ? '2px solid #7B1FA2' : '1px solid #ddd',
+                                    background: appealDateFilter === filter ? '#F3E5F5' : '#fff',
+                                    color: appealDateFilter === filter ? '#7B1FA2' : '#666',
+                                    fontSize: '12px',
+                                    fontWeight: appealDateFilter === filter ? 600 : 400,
+                                    cursor: 'pointer',
+                                    transition: '0.2s'
+                                }}
+                            >
+                                {filter === 'all' && 'Todos'}
+                                {filter === 'today' && 'Hoy'}
+                                {filter === 'week' && 'Esta semana'}
+                                {filter === 'month' && 'Este mes'}
+                            </button>
+                        ))}
                     </div>
-                ) : (
-                    <table className={styles.table}>
-                        <thead className={styles.tableHeader}>
-                            <tr>
-                                <th>Mascota</th>
-                                <th>Dueño</th>
-                                <th>Mensaje de Apelación</th>
-                                <th>Fecha</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody className={styles.tableBody}>
-                            {appealedPets
-                                .filter(pet => {
-                                    if (!searchQuery) return true;
-                                    const query = searchQuery.toLowerCase();
-                                    return (
-                                        pet.petName.toLowerCase().includes(query) ||
-                                        pet.ownerName.toLowerCase().includes(query) ||
-                                        pet.ownerEmail.toLowerCase().includes(query)
-                                    );
-                                })
-                                .map((pet) => (
-                                    <tr key={pet.petId}>
-                                        <td data-label="Mascota">
-                                            <div className={styles.memberInfo}>
-                                                <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
-                                                    {pet.petType === 'Gato' ? '🐱' : '🐕'}
+
+                    {appealedPets.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>📋</div>
+                            <div className={styles.emptyText}>No hay apelaciones pendientes</div>
+                            <div className={styles.emptySubtext}>Las nuevas apelaciones aparecerán aquí</div>
+                        </div>
+                    ) : (
+                        <table className={styles.table}>
+                            <thead className={styles.tableHeader}>
+                                <tr>
+                                    <th>Mascota</th>
+                                    <th>Dueño</th>
+                                    <th>Mensaje de Apelación</th>
+                                    <th>Fecha</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody className={styles.tableBody}>
+                                {appealedPets
+                                    .filter(pet => {
+                                        // Filtro por búsqueda
+                                        if (searchQuery) {
+                                            const query = searchQuery.toLowerCase();
+                                            const matchesSearch =
+                                                pet.petName.toLowerCase().includes(query) ||
+                                                pet.ownerName.toLowerCase().includes(query) ||
+                                                pet.ownerEmail.toLowerCase().includes(query);
+                                            if (!matchesSearch) return false;
+                                        }
+
+                                        // 🆕 Filtro por fecha
+                                        if (appealDateFilter !== 'all' && pet.appealedAt) {
+                                            const appealDate = new Date(pet.appealedAt);
+                                            const now = new Date();
+
+                                            if (appealDateFilter === 'today') {
+                                                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                                                return appealDate >= today;
+                                            } else if (appealDateFilter === 'week') {
+                                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                                return appealDate >= weekAgo;
+                                            } else if (appealDateFilter === 'month') {
+                                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                                                return appealDate >= monthAgo;
+                                            }
+                                        }
+
+                                        return true;
+                                    })
+                                    .map((pet) => (
+                                        <tr key={pet.petId}>
+                                            <td data-label="Mascota">
+                                                <div className={styles.memberInfo}>
+                                                    <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
+                                                        {pet.petType === 'Gato' ? '🐱' : '🐕'}
+                                                    </div>
+                                                    <div className={styles.memberDetails}>
+                                                        <div className={styles.memberName}>{pet.petName}</div>
+                                                        <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
+                                                    </div>
                                                 </div>
+                                            </td>
+                                            <td data-label="Dueño">
                                                 <div className={styles.memberDetails}>
-                                                    <div className={styles.memberName}>{pet.petName}</div>
-                                                    <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
+                                                    <div className={styles.memberName}>{pet.ownerName}</div>
+                                                    <div className={styles.memberEmail}>{pet.ownerEmail}</div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Dueño">
-                                            <div className={styles.memberDetails}>
-                                                <div className={styles.memberName}>{pet.ownerName}</div>
-                                                <div className={styles.memberEmail}>{pet.ownerEmail}</div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
-                                            <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
-                                                "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
-                                            </span>
-                                        </td>
-                                        <td data-label="Fecha">
-                                            {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
-                                        </td>
-                                        <td data-label="Acciones">
-                                            <div className={styles.actionButtons}>
-                                                <button
-                                                    className={styles.viewButton}
-                                                    onClick={() => onViewDetails(pet.ownerId, pet.petId)}
-                                                >
-                                                    Ver Detalles
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                        </tbody>
-                    </table>
-                )
+                                            </td>
+                                            <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
+                                                <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                    "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
+                                                </span>
+                                            </td>
+                                            <td data-label="Fecha">
+                                                {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                            </td>
+                                            <td data-label="Acciones">
+                                                <div className={styles.actionButtons}>
+                                                    <button
+                                                        className={styles.viewButton}
+                                                        onClick={() => onViewDetails(pet.ownerId, pet.petId)}
+                                                    >
+                                                        Ver Detalles
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                            </tbody>
+                        </table>
+                    )}
+                </>
             ) : filteredRequests.length === 0 ? (
                 <div className={styles.emptyState}>
                     <div className={styles.emptyIcon}>📋</div>
