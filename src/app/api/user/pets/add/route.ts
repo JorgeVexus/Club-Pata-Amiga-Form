@@ -156,15 +156,12 @@ export async function POST(request: NextRequest) {
         }
 
         // 7. Registrar mascota en Supabase (Tabla pets)
+        // Solo usamos las columnas que existen físicamente en la tabla para evitar errores de PostgREST
         const { error: insertError } = await supabaseAdmin.from('pets').insert({
             owner_id: user!.id,
             name: petData.name,
-            breed: petData.breed || 'Mestizo',
+            breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
             breed_size: petData.breedSize,
-            age: petData.age || null,
-            is_mixed: petData.isMixed || false,
-            is_adopted: petData.isAdopted || false,
-            ruac: petData.ruac || null,
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
             status: 'pending',
@@ -173,7 +170,7 @@ export async function POST(request: NextRequest) {
 
         if (insertError) {
             console.error('❌ [PET_ADD] Error insertando mascota en Supabase:', insertError);
-            throw new Error('Error al guardar la mascota en la base de datos');
+            throw new Error('Error al guardar la mascota en la base de datos (Supabase)');
         }
 
         // 8. Guardar la historia de adopción en la tabla de usuarios (Slot correspondiente)
