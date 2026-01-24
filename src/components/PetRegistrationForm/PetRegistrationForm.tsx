@@ -185,7 +185,8 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 const calculation = calculateWaitingPeriod(
                     pet.isOriginal!,
                     pet.isAdopted || false,
-                    !!pet.ruac
+                    !!pet.ruac,
+                    pet.isMixed || false
                 );
 
                 return {
@@ -347,7 +348,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                         onChange={handleAmbassadorCodeChange}
                         placeholder="Código de embajador (Opcional)"
                         className={`${styles.input} ${ambassadorValidation.isValid === true ? styles.inputValid :
-                                ambassadorValidation.isValid === false ? styles.inputInvalid : ''
+                            ambassadorValidation.isValid === false ? styles.inputInvalid : ''
                             }`}
                         style={{
                             borderColor: ambassadorValidation.isValid === true ? '#22C55E' :

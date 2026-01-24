@@ -263,8 +263,19 @@
 
         calculateCarencia(pet) {
             const now = new Date();
-            const start = new Date(pet.created_at); // O un campo específico de registro
-            const totalDays = 180; // Estándar, se puede traer del pet data si existe
+            const start = new Date(pet.created_at);
+
+            // Lógica de carencia refinada:
+            // 1. Adoptado o RUAC -> 90 días
+            // 2. Mestizo -> 120 días
+            // 3. Estándar -> 180 días
+
+            let totalDays = 180;
+            if (pet.is_adopted || pet.ruac) {
+                totalDays = 90;
+            } else if (pet.is_mixed) {
+                totalDays = 120;
+            }
 
             const diffTime = Math.abs(now - start);
             const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));

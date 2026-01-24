@@ -401,6 +401,12 @@
                             <input type="checkbox" id="pata-is-adopted" name="isAdopted" style="width:18px; height:18px;">
                             <label for="pata-is-adopted" style="font-size:13px; color:#555;">Es adoptado/rescatado 🏠</label>
                         </div>
+                        
+                        <div id="pata-adoption-story-wrapper" style="grid-column: 1 / -1; display:none; margin-top:5px;">
+                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📜 Cuéntanos su historia de adopción</label>
+                            <textarea name="adoptionStory" placeholder="¿Cómo llegó a tu vida?..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; height:80px; box-sizing:border-box; font-family:inherit;"></textarea>
+                            <p style="margin:5px 0 0 0; font-size:11px; color:#888;">Al llenar la historia nos autorizas a compartirla en nuestras redes 🐾</p>
+                        </div>
 
                         <!-- RUAC -->
                         <div style="grid-column: 1 / -1;">
@@ -452,6 +458,16 @@
                 }
             };
 
+            // Manejar checkbox de adopción (historia)
+            const adoptedCheckbox = document.getElementById('pata-is-adopted');
+            const storyWrapper = document.getElementById('pata-adoption-story-wrapper');
+            adoptedCheckbox.onchange = () => {
+                storyWrapper.style.display = adoptedCheckbox.checked ? 'block' : 'none';
+                const textarea = storyWrapper.querySelector('textarea');
+                if (adoptedCheckbox.checked) textarea.setAttribute('required', 'true');
+                else textarea.removeAttribute('required');
+            };
+
             // 🆕 Configurar autocomplete de razas
             this.setupBreedAutocomplete(modal);
 
@@ -498,6 +514,7 @@
                                 breed: form.breed.value || 'Mestizo',
                                 breedSize: form.breedSize.value,
                                 isAdopted: form.isAdopted.checked,
+                                adoptionStory: form.adoptionStory ? form.adoptionStory.value : '',
                                 ruac: form.ruac.value || '',
                                 photo1Url: photo1Url,
                                 photo2Url: photo2Url

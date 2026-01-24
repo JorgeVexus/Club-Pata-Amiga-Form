@@ -14,14 +14,16 @@ import type {
  * @param isOriginal - ¿Es una de las primeras 3 mascotas?
  * @param isAdopted - ¿Fue adoptada o rescatada?
  * @param hasRUAC - ¿Tiene código RUAC?
+ * @param isMixed - ¿Es mestiza/criolla?
  * @returns Información del período de carencia
  */
 export function calculateWaitingPeriod(
     isOriginal: boolean,
     isAdopted: boolean,
-    hasRUAC: boolean
+    hasRUAC: boolean,
+    isMixed: boolean = false
 ): WaitingPeriodCalculation {
-    // Mascotas de reemplazo siempre tienen 6 meses
+    // Mascotas de reemplazo siempre tienen 6 meses (180 días)
     if (!isOriginal) {
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 180);
@@ -34,25 +36,39 @@ export function calculateWaitingPeriod(
         };
     }
 
-    // Mascotas originales con beneficio: 4 meses
+    // BENEFICIO MÁXIMO: Adoptada o RUAC -> 90 días (3 meses aprox)
     if (isAdopted || hasRUAC) {
         const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 120);
+        endDate.setDate(endDate.getDate() + 90);
 
         let reductionReason: 'adopted' | 'ruac' | 'both' = 'adopted';
         if (isAdopted && hasRUAC) reductionReason = 'both';
         else if (hasRUAC) reductionReason = 'ruac';
 
         return {
-            days: 120,
-            months: 4,
+            days: 90,
+            months: 3,
             endDate: endDate.toISOString(),
             hasReduction: true,
             reductionReason,
         };
     }
 
-    // Caso estándar: 6 meses
+    // BENEFICIO MEDIO: Mestiza -> 120 días (4 meses aprox)
+    if (isMixed) {
+        const endDate = new Date();
+        endDate.setDate(endDate.getDate() + 120);
+
+        return {
+            days: 120,
+            months: 4,
+            endDate: endDate.toISOString(),
+            hasReduction: true,
+            reductionReason: 'adopted', // Reusamos campo o extendemos tipo si es necesario
+        };
+    }
+
+    // Caso estándar: 180 días (6 meses)
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 180);
 

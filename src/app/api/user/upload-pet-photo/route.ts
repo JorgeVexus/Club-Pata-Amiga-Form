@@ -7,6 +7,18 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
+// CORS headers para Webflow
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+};
+
+// Handle preflight OPTIONS request
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
@@ -14,7 +26,7 @@ export async function POST(request: NextRequest) {
         const userId = formData.get('userId') as string;
 
         if (!file || !userId) {
-            return NextResponse.json({ error: 'Missing file or userId' }, { status: 400 });
+            return NextResponse.json({ error: 'Missing file or userId' }, { status: 400, headers: corsHeaders });
         }
 
         const fileExt = file.name.split('.').pop();
@@ -34,10 +46,10 @@ export async function POST(request: NextRequest) {
             .from('pet-photos')
             .getPublicUrl(filePath);
 
-        return NextResponse.json({ success: true, url: publicUrl });
+        return NextResponse.json({ success: true, url: publicUrl }, { headers: corsHeaders });
 
     } catch (error: any) {
         console.error('Upload error:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
