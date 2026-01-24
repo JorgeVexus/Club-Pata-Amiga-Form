@@ -6,6 +6,18 @@ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 );
 
+// CORS headers para Webflow
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// Handle preflight OPTIONS request
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -27,7 +39,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             breeds: data || []
-        });
+        }, { headers: corsHeaders });
 
     } catch (error: any) {
         console.error('Error fetching breeds:', error);
@@ -35,6 +47,6 @@ export async function GET(request: NextRequest) {
             success: false,
             error: error.message,
             breeds: []
-        }, { status: 500 });
+        }, { status: 500, headers: corsHeaders });
     }
 }

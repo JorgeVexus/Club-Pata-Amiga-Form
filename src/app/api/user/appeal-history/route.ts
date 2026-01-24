@@ -12,6 +12,18 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
+// CORS headers para Webflow
+const corsHeaders = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+};
+
+// Handle preflight OPTIONS request
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders });
+}
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -19,7 +31,7 @@ export async function GET(request: NextRequest) {
         const petId = searchParams.get('petId');
 
         if (!memberId) {
-            return NextResponse.json({ error: 'memberId es requerido' }, { status: 400 });
+            return NextResponse.json({ error: 'memberId es requerido' }, { status: 400, headers: corsHeaders });
         }
 
         // Construir query
@@ -53,11 +65,11 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             logs: formattedLogs
-        });
+        }, { headers: corsHeaders });
 
     } catch (error: any) {
         console.error('Error en /api/user/appeal-history:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
     }
 }
 
