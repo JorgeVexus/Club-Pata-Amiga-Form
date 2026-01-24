@@ -57,18 +57,27 @@ export async function POST(
             return NextResponse.json({ error: 'No tienes permiso para editar esta mascota' }, { status: 403, headers: corsHeaders });
         }
 
-        // Verificar que está en action_required
-        if (pet.status !== 'action_required') {
+        // Verificar que está en un status que permite actualización
+        const allowedStatuses = ['action_required', 'rejected', 'appealed'];
+        if (!allowedStatuses.includes(pet.status)) {
             return NextResponse.json({
-                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado'
+                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado o cuando tu mascota esté rechazada/apelada'
             }, { status: 400, headers: corsHeaders });
         }
 
         // 2. Preparar los campos a actualizar
         // Ahora soportamos photo_url y photo2_url
-        const updateData: Record<string, any> = {
-            status: 'pending' // Cambiar a pending para re-revisión
-        };
+        const updateData: Record<string, any> = {};
+
+        // Determinar el nuevo status según el status actual
+        // Si viene de rejected o action_required, va a 'pending' para re-revisión
+        // Si viene de appealed, se mantiene 'pending' para que el admin lo revise
+        if (pet.status === 'action_required') {
+            updateData.status = 'pending';
+        } else if (pet.status === 'rejected' || pet.status === 'appealed') {
+            // Si estaba rechazado/apelado y sube nuevas fotos, vuelve a pending
+            updateData.status = 'pending';
+        }
 
         // Actualizar foto 1 si viene con valor válido
         if (photo1Url && typeof photo1Url === 'string' && photo1Url.trim() !== '') {

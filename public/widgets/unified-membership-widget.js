@@ -424,7 +424,31 @@
                         <div class="pata-appeal-form active">
                             <p style="font-size:14px; margin-bottom:10px;">Cuéntanos por qué debemos reconsiderar el caso de ${pet.name}:</p>
                             <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Describe tu situación..." data-pet-id="${pet.id}"></textarea>
-                            <div style="display:flex; gap:10px;">
+                            
+                            <!-- 🆕 Sección de carga de fotos -->
+                            <div style="margin-top:15px; padding:15px; background:#f8f9fa; border-radius:8px; border:1px dashed #ccc;">
+                                <p style="margin:0 0 10px 0; font-size:13px; font-weight:600; color:#333;">📷 ¿Tienes nuevas fotos? (opcional)</p>
+                                <p style="margin:0 0 12px 0; font-size:12px; color:#666;">Si las fotos anteriores tenían problemas, puedes subir nuevas aquí.</p>
+                                
+                                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                                    <div class="pata-upload-area" id="pata-appeal-upload-1" style="border:2px dashed #ddd; border-radius:8px; padding:15px; text-align:center; cursor:pointer; background:#fff; transition:all 0.2s;">
+                                        <input type="file" id="pata-appeal-file-1" accept="image/*" style="display:none;">
+                                        <div id="pata-appeal-preview-1">
+                                            <span style="font-size:28px;">📸</span>
+                                            <p style="margin:5px 0 0 0; font-size:12px; color:#888;">Foto 1</p>
+                                        </div>
+                                    </div>
+                                    <div class="pata-upload-area" id="pata-appeal-upload-2" style="border:2px dashed #ddd; border-radius:8px; padding:15px; text-align:center; cursor:pointer; background:#fff; transition:all 0.2s;">
+                                        <input type="file" id="pata-appeal-file-2" accept="image/*" style="display:none;">
+                                        <div id="pata-appeal-preview-2">
+                                            <span style="font-size:28px;">📸</span>
+                                            <p style="margin:5px 0 0 0; font-size:12px; color:#888;">Foto 2</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div style="display:flex; gap:10px; margin-top:15px;">
                                 <button class="pata-btn" id="pata-btn-submit-appeal" data-pet-id="${pet.id}">Enviar Apelación</button>
                                 <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-appeal">Cancelar</button>
                             </div>
@@ -546,11 +570,16 @@
             if (cancelBtn) {
                 cancelBtn.onclick = () => {
                     this.showAppealForm = false;
+                    this.appealFiles = { photo1: null, photo2: null }; // Limpiar archivos
                     this.render();
                 };
             }
 
-            // Submit appeal
+            // 🆕 Eventos para carga de fotos en apelación
+            this.setupAppealPhotoUpload('pata-appeal-upload-1', 'pata-appeal-file-1', 'pata-appeal-preview-1', 'photo1');
+            this.setupAppealPhotoUpload('pata-appeal-upload-2', 'pata-appeal-file-2', 'pata-appeal-preview-2', 'photo2');
+
+            // Submit appeal (con fotos opcionales)
             const submitBtn = document.getElementById('pata-btn-submit-appeal');
             if (submitBtn) {
                 submitBtn.onclick = async () => {
@@ -566,6 +595,22 @@
                     submitBtn.disabled = true;
 
                     try {
+                        // 1. Subir fotos si las hay
+                        let photo1Url = null;
+                        let photo2Url = null;
+
+                        if (this.appealFiles?.photo1) {
+                            submitBtn.innerText = 'Subiendo foto 1...';
+                            photo1Url = await this.uploadPhoto(this.appealFiles.photo1);
+                        }
+                        if (this.appealFiles?.photo2) {
+                            submitBtn.innerText = 'Subiendo foto 2...';
+                            photo2Url = await this.uploadPhoto(this.appealFiles.photo2);
+                        }
+
+                        submitBtn.innerText = 'Enviando apelación...';
+
+                        // 2. Enviar apelación
                         const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -578,15 +623,36 @@
 
                         const data = await res.json();
 
-                        if (res.ok) {
-                            alert('✅ Apelación enviada correctamente. Nuestro equipo la revisará pronto.');
-                            location.reload();
-                        } else {
-                            // Mostrar mensaje de error específico del API
+                        if (!res.ok) {
                             alert(`❌ ${data.error || 'Error al enviar la apelación. Intenta nuevamente.'}`);
                             submitBtn.innerText = 'Enviar Apelación';
                             submitBtn.disabled = false;
+                            return;
                         }
+
+                        // 3. Si hay fotos nuevas, actualizar la mascota
+                        if (photo1Url || photo2Url) {
+                            submitBtn.innerText = 'Actualizando fotos...';
+
+                            const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    userId: this.member.id,
+                                    photo1Url: photo1Url,
+                                    photo2Url: photo2Url,
+                                    message: `Apelación con nuevas fotos: ${msg.substring(0, 100)}...`
+                                })
+                            });
+
+                            if (!updateRes.ok) {
+                                console.warn('No se pudieron actualizar las fotos, pero la apelación fue enviada');
+                            }
+                        }
+
+                        alert('✅ Apelación enviada correctamente. Nuestro equipo la revisará pronto.');
+                        location.reload();
+
                     } catch (e) {
                         console.error('Error sending appeal:', e);
                         alert('❌ Error de conexión. Verifica tu internet e intenta nuevamente.');
@@ -743,6 +809,84 @@
                     }
                     this.uploading = false;
                 };
+            }
+        }
+
+        // 🆕 Configurar carga de fotos en formulario de apelación
+        setupAppealPhotoUpload(areaId, fileId, previewId, photoKey) {
+            const area = document.getElementById(areaId);
+            const fileInput = document.getElementById(fileId);
+            const preview = document.getElementById(previewId);
+
+            if (!area || !fileInput) return;
+
+            // Inicializar objeto de archivos de apelación si no existe
+            if (!this.appealFiles) {
+                this.appealFiles = { photo1: null, photo2: null };
+            }
+
+            // Click en área activa el input
+            area.onclick = () => fileInput.click();
+
+            // Cambio de archivo
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    // Guardar referencia
+                    this.appealFiles[photoKey] = file;
+
+                    // Mostrar preview
+                    const reader = new FileReader();
+                    reader.onload = (ev) => {
+                        if (preview) {
+                            preview.innerHTML = `
+                                <img src="${ev.target.result}" style="max-width:100%; max-height:80px; border-radius:4px; object-fit:cover;">
+                                <p style="margin:5px 0 0 0; font-size:11px; color:#4CAF50;">✓ ${file.name.substring(0, 15)}...</p>
+                            `;
+                        }
+                        area.style.borderColor = '#4CAF50';
+                        area.style.background = '#f0fff0';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            };
+
+            // Drag and drop
+            area.ondragover = (e) => {
+                e.preventDefault();
+                area.style.borderColor = CONFIG.brandColor;
+                area.style.background = '#e0f7fa';
+            };
+            area.ondragleave = () => {
+                area.style.borderColor = '#ddd';
+                area.style.background = '#fff';
+            };
+            area.ondrop = (e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    fileInput.files = e.dataTransfer.files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            };
+        }
+
+        // 🆕 Subir foto a Supabase Storage
+        async uploadPhoto(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userId', this.member.id);
+
+            const res = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.success && data.url) {
+                return data.url;
+            } else {
+                throw new Error(data.error || 'Error subiendo foto');
             }
         }
     }
