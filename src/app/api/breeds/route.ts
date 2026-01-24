@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
-const supabase = createClient(
+const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
 // CORS headers para Webflow
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 // Handle preflight OPTIONS request
@@ -23,7 +24,9 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const type = searchParams.get('type'); // 'perro' o 'gato'
 
-        let query = supabase
+        console.log(`📡 GET /api/breeds - Filtrando por tipo: ${type || 'todos'}`);
+
+        let query = supabaseAdmin
             .from('breeds')
             .select('name, type, has_genetic_issues, warning_message, max_age')
             .order('name');
@@ -32,17 +35,23 @@ export async function GET(request: NextRequest) {
             query = query.eq('type', type);
         }
 
-        const { data, error } = await query;
+        const { data, error, count } = await query;
 
-        if (error) throw error;
+        if (error) {
+            console.error('❌ Error de Supabase al consultar razas:', error);
+            throw error;
+        }
+
+        console.log(`✅ Se encontraron ${data?.length || 0} razas.`);
 
         return NextResponse.json({
             success: true,
-            breeds: data || []
+            breeds: data || [],
+            count: data?.length || 0
         }, { headers: corsHeaders });
 
     } catch (error: any) {
-        console.error('Error fetching breeds:', error);
+        console.error('❌ Error en /api/breeds:', error);
         return NextResponse.json({
             success: false,
             error: error.message,

@@ -589,17 +589,31 @@
 
             // Cargar razas iniciales
             const loadBreeds = async (type) => {
+                if (!type) return;
                 if (this.breedsCache[type]?.length > 0) return;
+
                 try {
+                    console.log(`📡 Cargando razas para: ${type}...`);
                     const res = await fetch(`${CONFIG.apiUrl}/api/breeds?type=${type}`);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
                     const data = await res.json();
                     if (data.success && data.breeds) {
                         this.breedsCache[type] = data.breeds;
+                        console.log(`✅ ${data.breeds.length} razas de ${type} cargadas.`);
                     }
                 } catch (err) {
-                    console.error('Error cargando razas:', err);
+                    console.error('❌ Error cargando razas:', err);
                 }
             };
+
+            // Evento al cambiar tipo de mascota
+            petTypeSelect.addEventListener('change', () => {
+                const type = petTypeSelect.value;
+                breedInput.value = ''; // Limpiar raza si cambia tipo
+                warningBox.style.display = 'none';
+                if (type) loadBreeds(type);
+            });
 
             // Mostrar sugerencias filtradas
             const showSuggestions = (query) => {

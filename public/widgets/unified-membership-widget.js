@@ -9,7 +9,7 @@
     'use strict';
 
     const CONFIG = {
-        apiUrl: 'https://club-pata-amiga-form.vercel.app',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://club-pata-amiga-form.vercel.app',
         brandColor: '#00BBB4',
         progressColor: '#9fd406',
         countdownBg: '#C8E600'
@@ -926,8 +926,15 @@
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
 
             try {
+                console.log(`📡 Historial: Consultando para petId=${petId}, memberId=${this.member?.id}`);
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`);
+
+                if (!res.ok) {
+                    throw new Error(`Error HTTP: ${res.status}`);
+                }
+
                 const data = await res.json();
+                console.log('📥 Historial recibido:', data);
 
                 const contentDiv = document.getElementById('pata-history-content');
                 if (!data.success || !data.logs || data.logs.length === 0) {
@@ -937,7 +944,8 @@
 
                 // Renderizar logs
                 contentDiv.innerHTML = data.logs.map(log => {
-                    const date = new Date(log.date).toLocaleDateString('es-MX', {
+                    const logDate = log.date ? new Date(log.date) : new Date();
+                    const dateStr = logDate.toLocaleDateString('es-MX', {
                         day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
                     });
                     const isFromAdmin = log.isFromAdmin;
@@ -946,10 +954,10 @@
                     const label = isFromAdmin ? '👤 Equipo Pata Amiga' : '🐾 Tú';
 
                     return `
-                        <div style="background:${bgColor}; border-left:3px solid ${borderColor}; padding:12px; border-radius:0 8px 8px 0; margin-bottom:12px;">
+                        <div style="background:${bgColor}; border-left:3px solid ${borderColor}; padding:12px; border-radius:0 8px 8px 0; margin-bottom:12px; text-align:left;">
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <span style="font-weight:600; font-size:12px; color:#424242;">${log.icon} ${label}</span>
-                                <span style="font-size:11px; color:#888;">${date}</span>
+                                <span style="font-weight:600; font-size:12px; color:#424242;">${log.icon || '📋'} ${label}</span>
+                                <span style="font-size:11px; color:#888;">${dateStr}</span>
                             </div>
                             <p style="margin:0; font-size:14px; color:#1A1A1A;">${log.message}</p>
                         </div>
@@ -957,8 +965,15 @@
                 }).join('');
 
             } catch (err) {
-                console.error('Error cargando historial:', err);
-                document.getElementById('pata-history-content').innerHTML = '<p style="color:#C62828;">Error al cargar el historial.</p>';
+                console.error('❌ Error cargando historial:', err);
+                const contentDiv = document.getElementById('pata-history-content');
+                if (contentDiv) {
+                    contentDiv.innerHTML = `
+                        <p style="color:#C62828; margin-bottom:10px;">Error al cargar el historial.</p>
+                        <p style="font-size:11px; color:#666;">Detalle: ${err.message}</p>
+                        <button onclick="location.reload()" style="background:#888; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:11px; cursor:pointer;">Reintentar</button>
+                    `;
+                }
             }
         }
     }
