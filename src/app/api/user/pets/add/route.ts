@@ -92,20 +92,33 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // 3. Determinar el slot de la mascota
-        let totalPets = parseInt(customFields['total-pets'] || '0');
-        if (totalPets === 0) {
-            for (let i = 1; i <= 3; i++) {
-                if (customFields[`pet-${i}-name`]) totalPets = i;
+        // 3. Determinar el slot de la mascota de forma robusta
+        // Escaneamos qué slots están ocupados y cuál es el primero disponible
+        let occupiedSlots: number[] = [];
+        for (let i = 1; i <= 3; i++) {
+            if (customFields[`pet-${i}-name`]) {
+                occupiedSlots.push(i);
             }
         }
 
-        if (totalPets >= 3) {
+        console.log(`📊 [PET_ADD] Slots ocupados: [${occupiedSlots.join(', ')}]. Total: ${occupiedSlots.length}`);
+
+        if (occupiedSlots.length >= 3) {
+            console.warn(`⚠️ [PET_ADD] El usuario ya tiene 3 mascotas ocupadas.`);
             return NextResponse.json({ error: 'Ya has alcanzado el límite de 3 mascotas' }, { status: 400, headers: corsHeaders });
         }
 
-        const nextSlot = totalPets + 1;
+        // El siguiente slot es el primero que esté libre
+        let nextSlot = 1;
+        for (let i = 1; i <= 3; i++) {
+            if (!occupiedSlots.includes(i)) {
+                nextSlot = i;
+                break;
+            }
+        }
+
         const prefix = `pet-${nextSlot}`;
+        console.log(`📍 [PET_ADD] Usando slot disponible: ${nextSlot}`);
 
         // 4. Calcular período de carencia
         const carencia = calculateWaitingPeriod(
@@ -117,7 +130,7 @@ export async function POST(request: NextRequest) {
 
         // 5. Preparar campos para Memberstack
         const newFields: Record<string, any> = {
-            'total-pets': nextSlot.toString(),
+            'total-pets': (occupiedSlots.length + 1).toString(), // El nuevo conteo real
             [`${prefix}-name`]: petData.name,
             [`${prefix}-last-name`]: petData.lastName || '',
             [`${prefix}-type`]: petData.petType,
