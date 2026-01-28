@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AmbassadorStep1Data } from '@/types/ambassador.types';
 import styles from './AmbassadorForm.module.css';
 
@@ -9,6 +9,7 @@ interface Step1Props {
     onChange: (field: keyof AmbassadorStep1Data, value: string | File | null) => void;
     errors: Partial<Record<keyof AmbassadorStep1Data, string>>;
     onFileUpload: (field: 'ine_front' | 'ine_back', file: File) => void;
+    onBlur?: (field: keyof AmbassadorStep1Data) => void;
 }
 
 // Estados de México
@@ -21,7 +22,10 @@ const ESTADOS_MEXICO = [
     'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'
 ];
 
-export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload }: Step1Props) {
+export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload, onBlur }: Step1Props) {
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleFileChange = (field: 'ine_front' | 'ine_back') => (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
@@ -68,6 +72,8 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     />
                     {errors.postal_code && <span className={styles['error-message']}>{errors.postal_code}</span>}
                 </div>
+
+
 
                 {/* Apellido Paterno */}
                 <div className={styles['ambassador-field']}>
@@ -207,6 +213,7 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                         placeholder="CURP"
                         maxLength={18}
                         className={errors.curp ? styles.error : ''}
+                        onBlur={() => onBlur?.('curp')}
                     />
                     <span className={styles['helper-text']}>Lo necesitamos para cumplir requisitos fiscales</span>
                     {errors.curp && <span className={styles['error-message']}>{errors.curp}</span>}
@@ -279,14 +286,77 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                 {/* Contraseña */}
                 <div className={styles['ambassador-field']}>
                     <label>Contraseña *</label>
-                    <input
-                        type="password"
-                        value={data.password}
-                        onChange={(e) => onChange('password', e.target.value)}
-                        placeholder="Mínimo 8 caracteres"
-                        className={errors.password ? styles.error : ''}
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type={showPassword ? "text" : "password"}
+                            value={data.password}
+                            onChange={(e) => onChange('password', e.target.value)}
+                            placeholder="Mínimo 8 caracteres"
+                            className={errors.password ? styles.error : ''}
+                            onBlur={() => onBlur?.('password')}
+                            style={{ paddingRight: '40px' }} // Espacio para el icono
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                color: '#666',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                            {showPassword ? '👁️' : '🙈'}
+                        </button>
+                    </div>
                     {errors.password && <span className={styles['error-message']}>{errors.password}</span>}
+                </div>
+
+                {/* Confirmar contraseña */}
+                <div className={styles['ambassador-field']}>
+                    <label>Confirmar contraseña *</label>
+                    <div style={{ position: 'relative' }}>
+                        <input
+                            type={showConfirmPassword ? "text" : "password"}
+                            value={data.confirm_password}
+                            onChange={(e) => onChange('confirm_password', e.target.value)}
+                            placeholder="Repite tu contraseña"
+                            className={errors.confirm_password ? styles.error : ''}
+                            onBlur={() => onBlur?.('confirm_password')}
+                            style={{ paddingRight: '40px' }}
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            style={{
+                                position: 'absolute',
+                                right: '10px',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
+                                background: 'none',
+                                border: 'none',
+                                cursor: 'pointer',
+                                fontSize: '1.2rem',
+                                color: '#666',
+                                padding: '4px',
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
+                            title={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        >
+                            {showConfirmPassword ? '👁️' : '🙈'}
+                        </button>
+                    </div>
+                    {errors.confirm_password && <span className={styles['error-message']}>{errors.confirm_password}</span>}
                 </div>
 
                 {/* Teléfono */}
@@ -309,18 +379,7 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     {errors.phone && <span className={styles['error-message']}>{errors.phone}</span>}
                 </div>
 
-                {/* Confirmar contraseña */}
-                <div className={styles['ambassador-field']}>
-                    <label>Confirmar contraseña *</label>
-                    <input
-                        type="password"
-                        value={data.confirm_password}
-                        onChange={(e) => onChange('confirm_password', e.target.value)}
-                        placeholder="Repite tu contraseña"
-                        className={errors.confirm_password ? styles.error : ''}
-                    />
-                    {errors.confirm_password && <span className={styles['error-message']}>{errors.confirm_password}</span>}
-                </div>
+
             </div>
         </div>
     );

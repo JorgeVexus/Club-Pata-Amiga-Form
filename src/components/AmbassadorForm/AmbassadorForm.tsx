@@ -8,6 +8,7 @@ import {
     AmbassadorFormData,
     Gender
 } from '@/types/ambassador.types';
+import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
 import Step1PersonalInfo from './Step1PersonalInfo';
 import Step2AdditionalInfo from './Step2AdditionalInfo';
 import Step3BankingInfo from './Step3BankingInfo';
@@ -208,8 +209,88 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
         }
     };
 
+    // Import (esto va arriba del todo, pero aquí lo simulo para el contexto del replace)
+    // import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
+
     const handleFileUpload = (field: 'ine_front' | 'ine_back', file: File) => {
         setStep1Data(prev => ({ ...prev, [field]: file }));
+        // Limpiar error al subir archivo
+        if (errors[field]) {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[field];
+                return newErrors;
+            });
+        }
+    };
+
+    // Validaciones en tiempo real (onBlur)
+    const handleBlur = async (field: keyof AmbassadorStep1Data | keyof AmbassadorStep3Data) => {
+        // 1. Validación de Contraseñas
+        if (field === 'confirm_password' || field === 'password') {
+            if (step1Data.password && step1Data.confirm_password) {
+                if (step1Data.password !== step1Data.confirm_password) {
+                    setErrors(prev => ({ ...prev, confirm_password: 'Las contraseñas no coinciden' }));
+                } else {
+                    setErrors(prev => {
+                        const newErrors = { ...prev };
+                        delete newErrors['confirm_password'];
+                        return newErrors;
+                    });
+                }
+            }
+            return;
+        }
+
+        // 2. Validación de CURP
+        if (field === 'curp' && step1Data.curp) {
+            const curp = step1Data.curp.toUpperCase();
+
+            // Regex CURP
+            const curpRegex = /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/;
+
+            if (!curpRegex.test(curp)) {
+                setErrors(prev => ({ ...prev, curp: 'Formato de CURP inválido' }));
+                return;
+            }
+
+            // Verificar disponibilidad en servidor
+            const check = await checkAmbassadorAvailability('curp', curp);
+            if (!check.available) {
+                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors['curp'];
+                    return newErrors;
+                });
+            }
+        }
+
+        // 3. Validación de RFC
+        if (field === 'rfc' && step3Data.rfc) {
+            const rfc = step3Data.rfc.toUpperCase();
+
+            // Regex RFC (Personas Físicas)
+            const rfcRegex = /^([A-ZÑ&]{4})\d{6}([A-Z\d]{3})$/;
+
+            if (!rfcRegex.test(rfc)) {
+                setErrors(prev => ({ ...prev, rfc: 'RFC inválido (Formato persona física)' }));
+                return;
+            }
+
+            // Verificar disponibilidad en servidor
+            const check = await checkAmbassadorAvailability('rfc', rfc);
+            if (!check.available) {
+                setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors['rfc'];
+                    return newErrors;
+                });
+            }
+        }
     };
 
     // Validaciones
@@ -655,6 +736,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         onChange={handleStep1Change}
                         errors={errors}
                         onFileUpload={handleFileUpload}
+                        // @ts-ignore
+                        onBlur={handleBlur}
                     />
                 )}
 
@@ -671,6 +754,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         data={step3Data}
                         onChange={handleStep3Change}
                         errors={errors}
+                        // @ts-ignore
+                        onBlur={handleBlur}
                     />
                 )}
 

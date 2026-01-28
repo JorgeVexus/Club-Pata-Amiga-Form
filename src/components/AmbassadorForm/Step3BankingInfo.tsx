@@ -8,9 +8,10 @@ interface Step3Props {
     data: AmbassadorStep3Data;
     onChange: (field: keyof AmbassadorStep3Data, value: string | boolean) => void;
     errors: Partial<Record<keyof AmbassadorStep3Data, string>>;
+    onBlur?: (field: keyof AmbassadorStep3Data) => void;
 }
 
-export default function Step3BankingInfo({ data, onChange, errors }: Step3Props) {
+export default function Step3BankingInfo({ data, onChange, errors, onBlur }: Step3Props) {
 
     const handlePaymentMethod = (method: PaymentMethod) => {
         onChange('payment_method', method);
@@ -32,6 +33,7 @@ export default function Step3BankingInfo({ data, onChange, errors }: Step3Props)
                     placeholder="Ejem. ABCD123456EFG"
                     maxLength={13}
                     className={errors.rfc ? styles.error : ''}
+                    onBlur={() => onBlur?.('rfc')}
                 />
                 <span className={styles['helper-text']}>Requerido para emitir tus comprobantes fiscales</span>
                 {errors.rfc && <span className={styles['error-message']}>{errors.rfc}</span>}
