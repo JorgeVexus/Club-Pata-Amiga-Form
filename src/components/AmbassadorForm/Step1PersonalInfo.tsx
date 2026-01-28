@@ -228,6 +228,7 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                         onChange={(e) => onChange('email', e.target.value)}
                         placeholder="tu@email.com"
                         className={errors.email ? styles.error : ''}
+                        onBlur={() => onBlur?.('email')}
                     />
                     <span className={styles['helper-text']}>Aquí te enviaremos noticias de tu patudo y de la comunidad</span>
                     {errors.email && <span className={styles['error-message']}>{errors.email}</span>}

@@ -291,6 +291,30 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                 });
             }
         }
+
+        // 4. Validación de Email
+        if (field === 'email' && step1Data.email) {
+            const email = step1Data.email.trim();
+            // Regex simple para email
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                setErrors(prev => ({ ...prev, email: 'Correo inválido' }));
+                return;
+            }
+
+            // Verificar disponibilidad en servidor
+            const check = await checkAmbassadorAvailability('email', email);
+            if (!check.available) {
+                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors['email'];
+                    return newErrors;
+                });
+            }
+        }
     };
 
     // Validaciones
@@ -378,12 +402,28 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     };
 
     // Navegación
-    const handleNext = () => {
+    const handleNext = async () => {
         let isValid = false;
 
         switch (currentStep) {
             case 1:
                 isValid = validateStep1();
+                if (isValid) {
+                    // Verificar disponibilidad antes de avanzar
+                    const [curpCheck, emailCheck] = await Promise.all([
+                        checkAmbassadorAvailability('curp', step1Data.curp),
+                        checkAmbassadorAvailability('email', step1Data.email)
+                    ]);
+
+                    if (!curpCheck.available) {
+                        setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
+                        isValid = false;
+                    }
+                    if (!emailCheck.available) {
+                        setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+                        isValid = false;
+                    }
+                }
                 break;
             case 2:
                 isValid = validateStep2();
@@ -391,6 +431,13 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
             case 3:
                 isValid = validateStep3();
                 if (isValid) {
+                    // Verificar RFC antes de enviar
+                    const rfcCheck = await checkAmbassadorAvailability('rfc', step3Data.rfc);
+                    if (!rfcCheck.available) {
+                        setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
+                        return; // Detener envío
+                    }
+
                     handleSubmit();
                     return;
                 }

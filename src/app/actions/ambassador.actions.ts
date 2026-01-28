@@ -18,17 +18,22 @@ const getServiceRoleClient = () => {
     });
 };
 
-type ValidationType = 'curp' | 'rfc';
+type ValidationType = 'curp' | 'rfc' | 'email';
 
 export async function checkAmbassadorAvailability(type: ValidationType, value: string) {
     if (!value) return { available: true };
     const supabase = getServiceRoleClient();
     if (!supabase) return { available: true, error: 'config_error' };
 
-    const cleanValue = value.trim().toUpperCase();
+    let cleanValue = value.trim();
+    if (type === 'email') {
+        cleanValue = cleanValue.toLowerCase();
+    } else {
+        cleanValue = cleanValue.toUpperCase();
+    }
 
     try {
-        // 1. Check in ambassadors table (both CURP and RFC)
+        // 1. Check in ambassadors table
         const { count: countAmbassadors, error: errorAmbassadors } = await supabase
             .from('ambassadors')
             .select('id', { count: 'exact', head: true })
@@ -43,15 +48,15 @@ export async function checkAmbassadorAvailability(type: ValidationType, value: s
             return { available: false, source: 'ambassadors' };
         }
 
-        // 2. If it's CURP, also check in users table
-        if (type === 'curp') {
+        // 2. If it's CURP or Email, also check in users table
+        if (type === 'curp' || type === 'email') {
             const { count: countUsers, error: errorUsers } = await supabase
                 .from('users')
                 .select('id', { count: 'exact', head: true })
-                .eq('curp', cleanValue);
+                .eq(type, cleanValue);
 
             if (errorUsers) {
-                console.error('Error checking user CURP:', errorUsers);
+                console.error(`Error checking user ${type}:`, errorUsers);
                 return { available: true, error: errorUsers.message };
             }
 
