@@ -35,12 +35,11 @@ function AmbassadorRegistrationContent() {
     const [isLoading, setIsLoading] = useState(true);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [memberData, setMemberData] = useState<MemberData | null>(null);
-    const [error, setError] = useState<string | null>(null);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         const checkMemberStatus = async () => {
             setIsLoading(true);
-            setError(null);
 
             // CASO 1: Viene con memberId desde Webflow
             if (memberIdFromUrl) {
@@ -66,11 +65,11 @@ function AmbassadorRegistrationContent() {
                         console.log('✅ Datos del miembro cargados desde API');
                     } else {
                         console.log('⚠️ No se encontró el miembro:', data.error, data.details);
-                        setError(`No pudimos cargar tus datos: ${data.error || 'Error desconocido'}`);
+                        // setError(`No pudimos cargar tus datos: ${data.error || 'Error desconocido'}`);
                     }
                 } catch (err) {
                     console.error('❌ Error cargando datos del miembro:', err);
-                    setError('Error de conexión al cargar tus datos');
+                    // setError('Error de conexión al cargar tus datos');
                 }
                 setIsLoading(false);
                 return;
@@ -113,7 +112,6 @@ function AmbassadorRegistrationContent() {
                 window.location.reload();
             } catch (err) {
                 console.error('Error en signup con Google:', err);
-                setError('Error al iniciar sesión con Google');
             }
         }
     };
@@ -122,18 +120,21 @@ function AmbassadorRegistrationContent() {
         return <LoadingCard />;
     }
 
-    // Usuario identificado → Mostrar formulario de embajador
-    if (isLoggedIn && memberData) {
+    // Usuario identificado O usuario que eligió registro por email → Mostrar formulario
+    if ((isLoggedIn && memberData) || showForm) {
         return (
             <AmbassadorForm
-                linkedMemberstackId={memberData.id}
-                preloadedData={{
+                linkedMemberstackId={memberData?.id}
+                preloadedData={memberData ? {
                     firstName: memberData.firstName,
                     paternalLastName: memberData.paternalLastName,
                     maternalLastName: memberData.maternalLastName,
                     email: memberData.email,
                     phone: memberData.phone,
                     customFields: memberData.customFields
+                } : undefined}
+                onSuccess={() => {
+                    // Opcional: manejar éxito si es necesario, el form ya muestra modal
                 }}
             />
         );
@@ -154,12 +155,6 @@ function AmbassadorRegistrationContent() {
                         Únete a nuestra manada y gana comisiones por cada familia que ayudes a proteger a sus peludos.
                     </p>
                 </div>
-
-                {error && (
-                    <div className={styles.errorBox}>
-                        {error}
-                    </div>
-                )}
 
                 <div className={styles.benefits}>
                     <div className={styles.benefit}>
@@ -189,6 +184,7 @@ function AmbassadorRegistrationContent() {
                     <p className={styles.authLabel}>¿Eres nuevo? Crea tu cuenta:</p>
 
                     <button
+                        type="button"
                         className={styles.googleButton}
                         onClick={handleGoogleSignup}
                     >
@@ -205,17 +201,34 @@ function AmbassadorRegistrationContent() {
                         <span>o</span>
                     </div>
 
-                    <a
-                        href="#"
+                    <button
                         className={styles.emailButton}
-                        data-ms-modal="signup"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            setShowForm(true);
+                        }}
                     >
                         ✉️ Registrarme con Email
-                    </a>
+                    </button>
 
                     <p className={styles.loginLink}>
                         ¿Ya tienes cuenta?{' '}
-                        <a href="#" data-ms-modal="login">Inicia sesión</a>
+                        <a
+                            href="#"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                if (window.$memberstackDom) {
+                                    window.$memberstackDom.openModal("login").then(({ data, type }: any) => {
+                                        console.log("Modal closed", data, type);
+                                        if (data) {
+                                            window.location.reload();
+                                        }
+                                    });
+                                }
+                            }}
+                        >
+                            Inicia sesión
+                        </a>
                     </p>
                 </div>
 

@@ -336,6 +336,32 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
         setIsSubmitting(true);
 
         try {
+            // 0. Si no hay ID de Memberstack, intentar crear cuenta primero
+            let finalMemberstackId = memberstackId || linkedMemberstackId;
+
+            if (!finalMemberstackId && step1Data.email && step1Data.password) {
+                console.log("Creating Memberstack user...");
+                try {
+                    // @ts-ignore
+                    const msResult = await window.$memberstackDom.signupMemberEmailPassword({
+                        email: step1Data.email,
+                        password: step1Data.password
+                    });
+
+                    if (msResult.data && msResult.data.member) {
+                        finalMemberstackId = msResult.data.member.id;
+                        console.log("Memberstack user created:", finalMemberstackId);
+                    } else {
+                        throw new Error("No se pudo crear la cuenta en Memberstack");
+                    }
+                } catch (msError: any) {
+                    console.error("Memberstack creation error:", msError);
+                    setErrors({ submit: msError.message || "Error al crear la cuenta de usuario" });
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+
             // Primero subir archivos INE si existen
             let ineFrontUrl = '';
             let ineBackUrl = '';
@@ -407,8 +433,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                     card_last_digits: step3Data.card_number || undefined,
                     clabe: step3Data.clabe || undefined,
 
-                    // Vinculación con Memberstack (si está logueado)
-                    linked_memberstack_id: memberstackId || linkedMemberstackId || undefined
+                    // Vinculación con Memberstack (si está logueado o recién creado)
+                    linked_memberstack_id: finalMemberstackId || undefined
                 })
             });
 

@@ -211,9 +211,47 @@ El equipo de Club Pata Amiga 🐾`;
         });
 
         return { success: true, id: resendData?.id };
-
     } catch (error: any) {
         console.error('❌ [Server Action] Error en sendAppealResolutionEmail:', error);
         return { success: false, error: error.message };
     }
+}
+
+/**
+ * Envía email de bienvenida cuando un usuario se registra
+ */
+export async function sendWelcomeEmail(params: {
+    userId: string;
+    email: string;
+    name: string;
+}) {
+    const { userId, email, name } = params;
+
+    const subject = '¡Bienvenido a la familia Club Pata Amiga! 🐾';
+    const content = `¡Hola ${name}!
+
+Estamos muy emocionados de darte la bienvenida a Club Pata Amiga.
+
+Tu registro ha sido exitoso y ya eres parte de nuestra comunidad. Ahora puedes proceder a registrar a tus peludos para obtener su membresía y placa de identificación.
+
+Pasos a seguir:
+1. Inicia sesión en tu cuenta
+2. Ve a la sección de "Mis Mascotas"
+3. Registra a tus mascotas
+4. Espera la aprobación de nuestros administradores
+
+Si tienes alguna duda, estamos aquí para ayudarte.
+
+¡Gracias por confiar en nosotros!
+
+Atentamente,
+El equipo de Club Pata Amiga`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        metadata: { type: 'welcome_email' }
+    });
 }
