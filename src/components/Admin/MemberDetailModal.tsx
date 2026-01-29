@@ -37,9 +37,10 @@ interface MemberDetailModalProps {
     showAppealSection?: boolean; // Solo muestra la sección de apelación si viene del menú de Apelaciones
     selectedPetId?: string | null; // Para filtrar a una sola mascota en apelaciones
     isSuperAdmin?: boolean; // 🆕 Solo SuperAdmin puede ver apelaciones
+    onDataChange?: () => void; // 🆕 Callback para refrescar datos en el padre
 }
 
-export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false, selectedPetId, isSuperAdmin = false }: MemberDetailModalProps) {
+export default function MemberDetailModal({ isOpen, onClose, member, onApprove, onReject, showAppealSection = false, selectedPetId, isSuperAdmin = false, onDataChange }: MemberDetailModalProps) {
     const [pets, setPets] = useState<Pet[]>([]);
     const [loadingPets, setLoadingPets] = useState(false);
     const [updatingPetId, setUpdatingPetId] = useState<string | null>(null);
@@ -124,6 +125,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     }
 
     async function handlePetStatusUpdate(petId: string, status: string) {
+        // Validación: Motivo de rechazo obligatorio
+        if ((status === 'rejected' || status === 'action_required') && (!petNotes[petId] || !petNotes[petId].trim())) {
+            alert('⚠️ Debes escribir una nota explicando el motivo (Rechazo o Solicitud de Info).');
+            return;
+        }
+
         setUpdatingPetId(petId);
         try {
             const response = await fetch(`/api/admin/members/${member.id}/pets/${petId}/status`, {
@@ -141,6 +148,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                 // Actualizar localmente
                 setPets(prev => prev.map(p => p.id === petId ? { ...p, status: status as any, admin_notes: petNotes[petId] } : p));
                 alert(`Mascota actualizada a ${status}`);
+                if (onDataChange) onDataChange(); // Notificar al padre
             } else {
                 alert('Error: ' + data.error);
             }

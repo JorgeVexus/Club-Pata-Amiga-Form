@@ -413,6 +413,16 @@ export default function AdminDashboard() {
                     setMemberToReject(selectedMember);
                     setSelectedMember(null); // Close detail modal
                 }}
+                onDataChange={() => {
+                    // Forzar recarga de RequestsTable cambiando una prop
+                    setActiveFilter(prev => prev); // Esto podría no ser suficiente si activeFilter no cambia.
+                    // Mejor: Usar un timestamp o iterador
+                    setMetrics(prev => ({ ...prev })); // Hacky.
+                    // Real implementation: Dispatch event or reload page?
+                    // Window reload is robust but slow.
+                    // Let's reload page for now as user requested "desaparecer".
+                    window.location.reload();
+                }}
             />
 
             <RejectionModal

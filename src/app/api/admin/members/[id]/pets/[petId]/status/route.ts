@@ -26,6 +26,14 @@ export async function POST(
             return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
         }
 
+        // Validación: Motivo requerido para rechazo o solicitud de info
+        if ((status === 'rejected' || status === 'action_required') && (!adminNotes || adminNotes.trim().length === 0)) {
+            return NextResponse.json(
+                { error: 'Debes proporcionar una razón para rechazar o solicitar cambios.' },
+                { status: 400 }
+            );
+        }
+
         console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
 
         // 0. Obtener estado ANTERIOR de la mascota para detectar si viene de 'appealed'

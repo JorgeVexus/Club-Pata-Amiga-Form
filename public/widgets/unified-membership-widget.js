@@ -638,20 +638,35 @@
                         submitBtn.innerText = 'Enviando apelación...';
 
                         // 2. Enviar apelación
-                        const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                memberId: this.member.id,
-                                petId: petId,
-                                appealMessage: msg
-                            })
-                        });
+                        let res, data;
+                        try {
+                            res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    memberId: this.member.id,
+                                    petId: petId,
+                                    appealMessage: msg
+                                })
+                            });
 
-                        const data = await res.json();
+                            const contentType = res.headers.get("content-type");
+                            if (contentType && contentType.indexOf("application/json") !== -1) {
+                                data = await res.json();
+                            } else {
+                                // Si no es JSON (ej: 500 HTML de Vercel), lanzar error
+                                const text = await res.text();
+                                console.error('Respuesta no JSON:', text.substring(0, 100)); // Loguear para debug
+                                throw new Error(`Error del servidor (${res.status}). Por favor contacta soporte.`);
+                            }
 
-                        if (!res.ok) {
-                            alert(`❌ ${data.error || 'Error al enviar la apelación. Intenta nuevamente.'}`);
+                            if (!res.ok) {
+                                throw new Error(data.error || 'Error al enviar la apelación.');
+                            }
+
+                        } catch (networkError) {
+                            console.error('Error de red/servidor:', networkError);
+                            alert(`❌ ${networkError.message || 'Error de conexión. Verifica tu internet.'}`);
                             submitBtn.innerText = 'Enviar Apelación';
                             submitBtn.disabled = false;
                             return;
@@ -878,9 +893,22 @@
                 }
             };
 
-            // Drag and drop
-            area.ondragover = (e) => {
+            // Drag and drop robustness
+            const preventDefaults = (e) => {
                 e.preventDefault();
+                e.stopPropagation();
+            };
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, preventDefaults, false);
+            });
+
+            // Highlight functionality
+            area.ondragenter = () => {
+                area.style.borderColor = CONFIG.brandColor;
+                area.style.background = '#e0f7fa';
+            };
+            area.ondragover = () => {
                 area.style.borderColor = CONFIG.brandColor;
                 area.style.background = '#e0f7fa';
             };

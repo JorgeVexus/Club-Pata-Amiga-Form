@@ -43,6 +43,7 @@ export default function BreedAutocomplete({
     const [selectedBreed, setSelectedBreed] = useState<Breed | null>(null);
     const [allBreeds, setAllBreeds] = useState<Breed[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [activeIndex, setActiveIndex] = useState(-1); // 🆕 Para navegación por teclado
 
     // Cargar razas desde el servidor al montar (o al cambiar tipo)
     useEffect(() => {
@@ -79,7 +80,28 @@ export default function BreedAutocomplete({
             setSuggestions([]);
             setShowSuggestions(false);
         }
+        setActiveIndex(-1); // Reset al cambiar input
     }, [inputValue, allBreeds]);
+
+    // 🆕 Manejo de Teclado
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (!showSuggestions || suggestions.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            setActiveIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            setActiveIndex(prev => (prev > 0 ? prev - 1 : prev));
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIndex >= 0 && activeIndex < suggestions.length) {
+                handleSelectBreed(suggestions[activeIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            setShowSuggestions(false);
+        }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
@@ -114,6 +136,7 @@ export default function BreedAutocomplete({
                     type="text"
                     value={inputValue}
                     onChange={handleInputChange}
+                    onKeyDown={handleKeyDown} // 🆕
                     onFocus={() => inputValue.length >= 2 && setShowSuggestions(true)}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                     placeholder={isLoading ? "Cargando razas..." : "Escribe para buscar..."}
@@ -125,11 +148,12 @@ export default function BreedAutocomplete({
 
                 {showSuggestions && suggestions.length > 0 && (
                     <ul className={styles.suggestionsList}>
-                        {suggestions.map((breed) => (
+                        {suggestions.map((breed, index) => (
                             <li
                                 key={breed.id}
-                                className={styles.suggestionItem}
+                                className={`${styles.suggestionItem} ${index === activeIndex ? styles.active : ''}`}
                                 onClick={() => handleSelectBreed(breed)}
+                                style={{ background: index === activeIndex ? '#f5f5f5' : 'transparent' }} // Fallback style
                             >
                                 {breed.name}
                                 {breed.has_genetic_issues && (
