@@ -697,7 +697,7 @@
 
                     } catch (e) {
                         console.error('Error sending appeal:', e);
-                        alert('❌ Error de conexión. Verifica tu internet e intenta nuevamente.');
+                        alert(`❌ ${e.message || 'Error de conexión. Verifica tu internet e intenta nuevamente.'}`);
                         submitBtn.innerText = 'Enviar Apelación';
                         submitBtn.disabled = false;
                     }
