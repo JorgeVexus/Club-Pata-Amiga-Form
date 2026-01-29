@@ -928,6 +928,18 @@
 
         // 🆕 Subir foto a Supabase Storage
         async uploadPhoto(file) {
+            // Validación Cliente: Formato y Tamaño
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            if (!allowedTypes.includes(file.type)) {
+                if (file.type === 'image/webp') {
+                    throw new Error('Formato WebP no soportado. Por favor usa JPG o PNG.');
+                }
+                throw new Error(`Formato ${file.type} no soportado. Solo JPG o PNG.`);
+            }
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                throw new Error('La imagen excede 5MB. Por favor comprímela.');
+            }
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('userId', this.member.id);

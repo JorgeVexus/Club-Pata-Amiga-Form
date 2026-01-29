@@ -71,13 +71,14 @@ export async function POST(
 
         // Determinar el nuevo status según el status actual
         // Si viene de rejected o action_required, va a 'pending' para re-revisión
-        // Si viene de appealed, se mantiene 'pending' para que el admin lo revise
+        // Si viene de appealed, SE MANTIENE 'appealed' (no reseteamos a pending porque ya está en cola de apelación)
         if (pet.status === 'action_required') {
             updateData.status = 'pending';
-        } else if (pet.status === 'rejected' || pet.status === 'appealed') {
-            // Si estaba rechazado/apelado y sube nuevas fotos, vuelve a pending
+        } else if (pet.status === 'rejected') {
+            // Si estaba rechazado y sube nuevas fotos, vuelve a pending
             updateData.status = 'pending';
         }
+        // NOTA: Si status es 'appealed', no lo cambiamos. Se asume que las fotos son parte de la apelación.
 
         // Actualizar foto 1 si viene con valor válido
         if (photo1Url && typeof photo1Url === 'string' && photo1Url.trim() !== '') {
@@ -134,7 +135,7 @@ export async function POST(
                 title: `📎 ${ownerName} actualizó información`,
                 message: `${ownerName} actualizó las fotos de ${pet.name}. Revísala en Pendientes.`,
                 icon: '📎',
-                link: `/admin?member=${userId}`, // Link directo al miembro
+                link: `/admin/dashboard?member=${userId}`, // FIXED: Link corregido hacia /admin/dashboard
                 is_read: false,
                 metadata: { petId, petName: pet.name, userId, ownerId, ownerName },
                 created_at: new Date().toISOString()

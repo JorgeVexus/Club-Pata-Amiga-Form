@@ -366,59 +366,46 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         {/* Pet Photo Section */}
                                         <div className={styles.petPhotosSection}>
                                             <div className={styles.petPhotosGrid}>
-                                                {/* Mostrar fotos del objeto pet (Supabase) */}
-                                                {[pet.photo_url, (pet as any).photo2_url].filter(Boolean).map((url, idx) => (
-                                                    <div key={idx} className={styles.petPhotoContainer}>
-                                                        <img
-                                                            src={url}
-                                                            alt={`${pet.name} - ${idx + 1}`}
-                                                            className={styles.petThumb}
-                                                            onError={(e) => {
-                                                                (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-                                                                (e.target as HTMLImageElement).style.opacity = '0.5';
-                                                            }}
-                                                        />
-                                                        <div className={styles.photoActions}>
-                                                            <a href={url} target="_blank" rel="noopener noreferrer">Ver #{idx + 1}</a>
-                                                            <a href="#" onClick={(e) => handleDownload(e, url!, `${pet.name}-foto-${idx + 1}`)}>Bajar</a>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                {/* Unified Photo Rendering Logic: Show Supabase photo OR Memberstack fallback per slot */}
+                                                {(() => {
+                                                    const pIdx = pets.indexOf(pet) + 1;
+                                                    const msUrl1 = fields[`pet-${pIdx}-photo-1-url`];
+                                                    const msUrl2 = fields[`pet-${pIdx}-photo-2-url`];
 
-                                                {/* Fallback si no hay fotos en el objeto pet, buscar en customFields de Memberstack */}
-                                                {!pet.photo_url && !((pet as any).photo2_url) && (
-                                                    (() => {
-                                                        const pIdx = pets.indexOf(pet) + 1;
-                                                        const mUrl1 = fields[`pet-${pIdx}-photo-1-url`];
-                                                        const mUrl2 = fields[`pet-${pIdx}-photo-2-url`];
+                                                    // Array of photos: [Photo 1, Photo 2]
+                                                    // Each item: { url: string, source: 'Supabase' | 'Memberstack', index: number }
+                                                    const photosToShow = [
+                                                        { url: pet.photo_url || msUrl1, source: pet.photo_url ? 'Supabase' : 'Memberstack', id: 1 },
+                                                        { url: (pet as any).photo2_url || msUrl2, source: (pet as any).photo2_url ? 'Supabase' : 'Memberstack', id: 2 }
+                                                    ].filter(p => p.url); // Only show if URL exists
 
-                                                        if (mUrl1 || mUrl2) {
-                                                            return [mUrl1, mUrl2].filter(Boolean).map((url, idx) => (
-                                                                <div key={`m-${idx}`} className={styles.petPhotoContainer}>
-                                                                    <img
-                                                                        src={url}
-                                                                        alt={`${pet.name} (MS) - ${idx + 1}`}
-                                                                        className={styles.petThumb}
-                                                                        onError={(e) => {
-                                                                            (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-                                                                            (e.target as HTMLImageElement).style.opacity = '0.5';
-                                                                        }}
-                                                                    />
-                                                                    <div className={styles.photoActions}>
-                                                                        <a href={url} target="_blank" rel="noopener noreferrer">Ver MS #{idx + 1}</a>
-                                                                    </div>
-                                                                </div>
-                                                            ));
-                                                        }
-
+                                                    if (photosToShow.length === 0) {
                                                         return (
                                                             <div className={styles.noPhotoPlaceholder}>
                                                                 <span>📷 Sin fotos detectadas</span>
                                                                 <p style={{ fontSize: '0.6rem', margin: '5px 0 0' }}>Sync Error o falta de archivos.</p>
                                                             </div>
                                                         );
-                                                    })()
-                                                )}
+                                                    }
+
+                                                    return photosToShow.map((photo, idx) => (
+                                                        <div key={idx} className={styles.petPhotoContainer}>
+                                                            <img
+                                                                src={photo.url}
+                                                                alt={`${pet.name} - Foto ${photo.id}`}
+                                                                className={styles.petThumb}
+                                                                onError={(e) => {
+                                                                    (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+                                                                    (e.target as HTMLImageElement).style.opacity = '0.5';
+                                                                }}
+                                                            />
+                                                            <div className={styles.photoActions}>
+                                                                <a href={photo.url} target="_blank" rel="noopener noreferrer">Ver #{photo.id}</a>
+                                                                <a href="#" onClick={(e) => handleDownload(e, photo.url!, `${pet.name}-foto-${photo.id}`)}>Bajar</a>
+                                                            </div>
+                                                        </div>
+                                                    ));
+                                                })()}
                                             </div>
                                         </div>
 
