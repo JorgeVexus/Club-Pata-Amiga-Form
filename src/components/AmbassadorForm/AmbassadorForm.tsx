@@ -177,6 +177,28 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     // Handlers para cada paso
     const handleStep1Change = (field: keyof AmbassadorStep1Data, value: string | File | null) => {
         setStep1Data(prev => ({ ...prev, [field]: value }));
+
+        // Validación inmediata para fecha de nacimiento
+        if (field === 'birth_date' && typeof value === 'string') {
+            const birthDate = new Date(value);
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            if (age < 18) {
+                setErrors(prev => ({ ...prev, birth_date: 'Debes ser mayor de 18 años' }));
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.birth_date;
+                    return newErrors;
+                });
+            }
+            return;
+        }
+
         // Limpiar error del campo
         if (errors[field]) {
             setErrors(prev => {
@@ -355,11 +377,13 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                 age--;
             }
             if (age < 18) {
-                newErrors.birth_date = 'Debes ser mayor de 18 años';
+                newErrors.birth_date = 'Debes ser mayor de 18 años para continuar';
+                // Asegurarse de que esto bloquee
             }
         }
 
         setErrors(newErrors);
+        // Si hay errores, retornar false
         return Object.keys(newErrors).length === 0;
     };
 

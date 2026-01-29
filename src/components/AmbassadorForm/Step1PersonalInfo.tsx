@@ -34,6 +34,25 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
         }
     };
 
+    const handleDragOver = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+
+    const handleDrop = (field: 'ine_front' | 'ine_back') => (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const file = e.dataTransfer.files?.[0];
+        if (file) {
+            onFileUpload(field, file);
+        }
+    };
+
+    // Calc max date for 18 years old
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() - 18);
+    const maxDateString = maxDate.toISOString().split('T')[0];
+
     return (
         <div>
             <div className={styles['ambassador-form-title']}>
@@ -46,6 +65,8 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
             </div>
 
             <div className={styles['ambassador-form-grid']}>
+                {/* --- SECCIÓN IDENTIDAD --- */}
+
                 {/* Nombre */}
                 <div className={styles['ambassador-field']}>
                     <label>Nombre(s) *</label>
@@ -58,22 +79,6 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     />
                     {errors.first_name && <span className={styles['error-message']}>{errors.first_name}</span>}
                 </div>
-
-                {/* Código Postal */}
-                <div className={styles['ambassador-field']}>
-                    <label>Código postal *</label>
-                    <input
-                        type="text"
-                        value={data.postal_code}
-                        onChange={(e) => onChange('postal_code', e.target.value)}
-                        placeholder="Código postal"
-                        maxLength={5}
-                        className={errors.postal_code ? styles.error : ''}
-                    />
-                    {errors.postal_code && <span className={styles['error-message']}>{errors.postal_code}</span>}
-                </div>
-
-
 
                 {/* Apellido Paterno */}
                 <div className={styles['ambassador-field']}>
@@ -88,22 +93,6 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     {errors.paternal_surname && <span className={styles['error-message']}>{errors.paternal_surname}</span>}
                 </div>
 
-                {/* Estado */}
-                <div className={styles['ambassador-field']}>
-                    <label>Estado *</label>
-                    <select
-                        value={data.state}
-                        onChange={(e) => onChange('state', e.target.value)}
-                        className={errors.state ? styles.error : ''}
-                    >
-                        <option value="">Selecciona un estado</option>
-                        {ESTADOS_MEXICO.map(estado => (
-                            <option key={estado} value={estado}>{estado}</option>
-                        ))}
-                    </select>
-                    {errors.state && <span className={styles['error-message']}>{errors.state}</span>}
-                </div>
-
                 {/* Apellido Materno */}
                 <div className={styles['ambassador-field']}>
                     <label>Apellido materno</label>
@@ -113,19 +102,6 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                         onChange={(e) => onChange('maternal_surname', e.target.value)}
                         placeholder="Apellido materno"
                     />
-                </div>
-
-                {/* Ciudad */}
-                <div className={styles['ambassador-field']}>
-                    <label>Ciudad *</label>
-                    <input
-                        type="text"
-                        value={data.city}
-                        onChange={(e) => onChange('city', e.target.value)}
-                        placeholder="Ciudad"
-                        className={errors.city ? styles.error : ''}
-                    />
-                    {errors.city && <span className={styles['error-message']}>{errors.city}</span>}
                 </div>
 
                 {/* Género */}
@@ -165,42 +141,18 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     </div>
                 </div>
 
-                {/* Colonia */}
-                <div className={styles['ambassador-field']}>
-                    <label>Colonia *</label>
-                    <input
-                        type="text"
-                        value={data.neighborhood}
-                        onChange={(e) => onChange('neighborhood', e.target.value)}
-                        placeholder="Colonia"
-                        className={errors.neighborhood ? styles.error : ''}
-                    />
-                    {errors.neighborhood && <span className={styles['error-message']}>{errors.neighborhood}</span>}
-                </div>
-
                 {/* Fecha de nacimiento */}
                 <div className={styles['ambassador-field']}>
                     <label>Fecha de nacimiento *</label>
                     <input
                         type="date"
                         value={data.birth_date}
+                        max={maxDateString}
                         onChange={(e) => onChange('birth_date', e.target.value)}
                         className={errors.birth_date ? styles.error : ''}
                     />
                     <span className={styles['helper-text']}>Debes ser mayor de 18 años para ser embajador</span>
                     {errors.birth_date && <span className={styles['error-message']}>{errors.birth_date}</span>}
-                </div>
-
-                {/* Dirección */}
-                <div className={styles['ambassador-field']}>
-                    <label>Dirección</label>
-                    <input
-                        type="text"
-                        value={data.address}
-                        onChange={(e) => onChange('address', e.target.value)}
-                        placeholder="Calle y número"
-                    />
-                    <span className={styles['helper-text']}>Queremos saber de dónde vienes</span>
                 </div>
 
                 {/* CURP */}
@@ -219,6 +171,8 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     {errors.curp && <span className={styles['error-message']}>{errors.curp}</span>}
                 </div>
 
+                {/* --- SECCIÓN CONTACTO --- */}
+
                 {/* Email */}
                 <div className={styles['ambassador-field']}>
                     <label>Correo electrónico *</label>
@@ -234,6 +188,98 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     {errors.email && <span className={styles['error-message']}>{errors.email}</span>}
                 </div>
 
+                {/* Teléfono */}
+                <div className={styles['ambassador-field']}>
+                    <label>Número de teléfono *</label>
+                    <div className={styles['ambassador-phone-input']}>
+                        <div className="country-code">
+                            🇲🇽 +52
+                        </div>
+                        <input
+                            type="tel"
+                            value={data.phone}
+                            onChange={(e) => onChange('phone', e.target.value.replace(/\D/g, ''))}
+                            placeholder="123 123 1234"
+                            maxLength={10}
+                            className={errors.phone ? styles.error : ''}
+                        />
+                    </div>
+                    <span className={styles['helper-text']}>Para comunicarnos cuando sea importante. Sin spam, lo prometemos</span>
+                    {errors.phone && <span className={styles['error-message']}>{errors.phone}</span>}
+                </div>
+
+                {/* --- SECCIÓN DIRECCIÓN --- */}
+
+                {/* Código Postal */}
+                <div className={styles['ambassador-field']}>
+                    <label>Código postal *</label>
+                    <input
+                        type="text"
+                        value={data.postal_code}
+                        onChange={(e) => onChange('postal_code', e.target.value)}
+                        placeholder="Código postal"
+                        maxLength={5}
+                        className={errors.postal_code ? styles.error : ''}
+                    />
+                    {errors.postal_code && <span className={styles['error-message']}>{errors.postal_code}</span>}
+                </div>
+
+                {/* Estado */}
+                <div className={styles['ambassador-field']}>
+                    <label>Estado *</label>
+                    <select
+                        value={data.state}
+                        onChange={(e) => onChange('state', e.target.value)}
+                        className={errors.state ? styles.error : ''}
+                    >
+                        <option value="">Selecciona un estado</option>
+                        {ESTADOS_MEXICO.map(estado => (
+                            <option key={estado} value={estado}>{estado}</option>
+                        ))}
+                    </select>
+                    {errors.state && <span className={styles['error-message']}>{errors.state}</span>}
+                </div>
+
+                {/* Ciudad */}
+                <div className={styles['ambassador-field']}>
+                    <label>Ciudad *</label>
+                    <input
+                        type="text"
+                        value={data.city}
+                        onChange={(e) => onChange('city', e.target.value)}
+                        placeholder="Ciudad"
+                        className={errors.city ? styles.error : ''}
+                    />
+                    {errors.city && <span className={styles['error-message']}>{errors.city}</span>}
+                </div>
+
+                {/* Colonia */}
+                <div className={styles['ambassador-field']}>
+                    <label>Colonia *</label>
+                    <input
+                        type="text"
+                        value={data.neighborhood}
+                        onChange={(e) => onChange('neighborhood', e.target.value)}
+                        placeholder="Colonia"
+                        className={errors.neighborhood ? styles.error : ''}
+                    />
+                    {errors.neighborhood && <span className={styles['error-message']}>{errors.neighborhood}</span>}
+                </div>
+
+                {/* Dirección */}
+                <div className={`${styles['ambassador-field']} ${styles['ambassador-form-full']}`}>
+                    <label>Dirección</label>
+                    <input
+                        type="text"
+                        value={data.address}
+                        onChange={(e) => onChange('address', e.target.value)}
+                        placeholder="Calle y número"
+                    />
+                    <span className={styles['helper-text']}>Queremos saber de dónde vienes</span>
+                </div>
+
+                {/* --- SECCIÓN DOCUMENTOS --- */}
+
                 {/* INE Upload */}
                 <div className={`${styles['ambassador-field']} ${styles['ambassador-form-full']}`}>
                     <label>Sube tu INE por ambos lados *</label>
@@ -241,7 +287,11 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '10px' }}>
                         {/* INE Frente */}
-                        <label className={`${styles['ambassador-file-upload']} ${data.ine_front ? styles['has-file'] : ''}`}>
+                        <label
+                            className={`${styles['ambassador-file-upload']} ${data.ine_front ? styles['has-file'] : ''}`}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop('ine_front')}
+                        >
                             <input
                                 type="file"
                                 accept="image/*,.pdf"
@@ -260,7 +310,11 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                         </label>
 
                         {/* INE Reverso */}
-                        <label className={`${styles['ambassador-file-upload']} ${data.ine_back ? styles['has-file'] : ''}`}>
+                        <label
+                            className={`${styles['ambassador-file-upload']} ${data.ine_back ? styles['has-file'] : ''}`}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop('ine_back')}
+                        >
                             <input
                                 type="file"
                                 accept="image/*,.pdf"
@@ -284,6 +338,8 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     {errors.ine_front && <span className={styles['error-message']}>{errors.ine_front}</span>}
                 </div>
 
+                {/* --- SECCIÓN SEGURIDAD --- */}
+
                 {/* Contraseña */}
                 <div className={styles['ambassador-field']}>
                     <label>Contraseña *</label>
@@ -295,7 +351,7 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                             placeholder="Mínimo 8 caracteres"
                             className={errors.password ? styles.error : ''}
                             onBlur={() => onBlur?.('password')}
-                            style={{ paddingRight: '40px' }} // Espacio para el icono
+                            style={{ paddingRight: '40px' }}
                         />
                         <button
                             type="button"
@@ -359,27 +415,6 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     </div>
                     {errors.confirm_password && <span className={styles['error-message']}>{errors.confirm_password}</span>}
                 </div>
-
-                {/* Teléfono */}
-                <div className={styles['ambassador-field']}>
-                    <label>Número de teléfono *</label>
-                    <div className={styles['ambassador-phone-input']}>
-                        <div className="country-code">
-                            🇲🇽 +52
-                        </div>
-                        <input
-                            type="tel"
-                            value={data.phone}
-                            onChange={(e) => onChange('phone', e.target.value.replace(/\D/g, ''))}
-                            placeholder="123 123 1234"
-                            maxLength={10}
-                            className={errors.phone ? styles.error : ''}
-                        />
-                    </div>
-                    <span className={styles['helper-text']}>Para comunicarnos cuando sea importante. Sin spam, lo prometemos</span>
-                    {errors.phone && <span className={styles['error-message']}>{errors.phone}</span>}
-                </div>
-
 
             </div>
         </div>

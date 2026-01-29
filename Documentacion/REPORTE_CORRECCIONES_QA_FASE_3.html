@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Correcciones QA - Fase 3</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00BBB4, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        /* Stats Cards */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00BBB4;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        h2 {
+            color: #00BBB4;
+            font-size: 1.5rem;
+            margin: 40px 0 20px;
+            padding: 15px 20px;
+            background: rgba(0, 187, 180, 0.1);
+            border-radius: 8px;
+            border-left: 4px solid #00BBB4;
+        }
+
+        /* Table Styles */
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .status-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: #FFC107;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .status-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Status Pills */
+        .status-fixed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffd54f;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-na {
+            background: rgba(158, 158, 158, 0.2);
+            color: #bdbdbd;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        /* Test Cards */
+        .test-group {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .test-group-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .test-steps {
+            padding: 20px;
+        }
+
+        .test-steps ol {
+            padding-left: 20px;
+            color: #ccc;
+        }
+
+        .test-steps li {
+            margin-bottom: 10px;
+        }
+
+        .expected-result {
+            margin-top: 5px;
+            padding: 8px 12px;
+            background: rgba(0, 187, 180, 0.1);
+            border-left: 3px solid #00BBB4;
+            color: #b2dfdb;
+            font-size: 0.95rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ffab91;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✅ Reporte de Correcciones QA - Fase 3</h1>
+        <div class="subtitle">Resumen de resolución de bugs y regresiones | 29 Enero 2026</div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Puntos Corregidos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">Bugs Críticos Resueltos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Status Bloqueantes</div>
+            </div>
+        </div>
+
+        <h2>1. Estado de Observaciones</h2>
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th width="50">#</th>
+                    <th>Observación</th>
+                    <th>Estado</th>
+                    <th>Solución Técnica</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>1.2 Rechazar sin motivo (bloqueo)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Validación Backend/Frontend implementada.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>3.4 Error conexión (upload image)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Validación de tipos (WebP no soportado) y manejo de errores.</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>3.5 No llega notificación</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Resuelto indirectamente al arreglar el upload (3.4).</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>4.3 Requiero más apelaciones</td>
+                    <td><span class="status-na">Pendiente</span></td>
+                    <td>Requiere inputs de usuario.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Aprobación no refresca UI</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Hard refresh forzado tras acción admin.</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>5.4 Link Notificación roto</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Link corregido a <code>/admin/dashboard</code>.</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>6.1 Mensajes por usuario</td>
+                    <td><span class="status-fixed">Mejorado</span></td>
+                    <td>Historial de Apelaciones implementado en Modal.</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>6.2/6.3 Info faltante</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Logs visibles en historial.</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>8.3 Sesión cerrada</td>
+                    <td><span class="status-na">N/A</span></td>
+                    <td>Comportamiento de plataforma Auth.</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>10.1 Botones duplicados</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Lógica de estados exclusiva + Refresh.</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>10.2 Modal Historial faltante</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Implementado method <code>showAppealHistory</code>.</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>10.2-10.5 Pruebas Historial</td>
+                    <td><span class="status-fixed">Listo</span></td>
+                    <td>Desbloqueado por punto 11.</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>11.5 Falta info</td>
+                    <td><span class="status-na">Pendiente</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>12.1 Botón negro error</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Corregido flujo de update (upload fix).</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>12.5 Drag & Drop bug</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>PreventDefault en eventos drag.</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>13.3 Flechas raza</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Soporte teclado agregado.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>2. Nueva Guía de Validación</h2>
+
+        <div class="test-group">
+            <div class="test-group-header">🧪 Prueba A: Flujo de Usuario (Apelación)</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Validación de Formato:</strong> Intenta subir un archivo <code>.webp</code>.
+                        <div class="expected-result">Debe mostrar alerta específica: "Formato WebP no soportado".</div>
+                    </li>
+                    <li>
+                        <strong>Apelación Exitosa:</strong> Sube JPG/PNG y envía.
+                        <div class="expected-result">Mensaje de éxito y reload. Status cambia a "En Revisión" (Morado).
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Ver Historial:</strong> Clic en ícono de reloj.
+                        <div class="expected-result">Modal muestra el log de la apelación recién creada.</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">🛡️ Prueba B: Panel Administrativo</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Recepción:</strong> Revisa Tab Apelaciones.
+                        <div class="expected-result">Mascota aparece con status "Apelada".</div>
+                    </li>
+                    <li>
+                        <strong>Fotos Mixtas (Fix):</strong> Abre el detalle.
+                        <div class="expected-result">Si se subió 1 foto nueva y había otra vieja, AMBAS deben verse. (No
+                            desaparecer).</div>
+                    </li>
+                    <li>
+                        <strong>Notificaciones:</strong> Clic en notificación de apelación.
+                        <div class="expected-result">Redirige correctamente al dashboard y abre el modal del usuario.
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">⚡ Prueba C: Resolución</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Aprobar/Rechazar:</strong> Ejecuta una acción.
+                        <div class="expected-result">Página se refresca automáticamente y el estado se actualiza
+                            visualmente.</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -14,18 +14,36 @@ export default function AuthLanding() {
     const [password, setPassword] = useState('');
     const [isEmailMode, setIsEmailMode] = useState(false);
 
-    // Verificar sesión al cargar (para cuando regresan de Google)
+    // Verificación de sesión y redirección dinámica
     React.useEffect(() => {
         const checkSession = async () => {
-            // Pequeña espera para asegurar carga
             await new Promise(resolve => setTimeout(resolve, 1000));
 
             if (window.$memberstackDom) {
                 try {
                     const { data: member } = await window.$memberstackDom.getCurrentMember();
                     if (member) {
-                        console.log('✅ Usuario detectado, redirigiendo...');
-                        router.push('/completar-perfil');
+                        console.log('✅ Usuario detectado, verificando rol...');
+
+                        try {
+                            const res = await fetch('/api/auth/check-role', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ memberstackId: member.id })
+                            });
+                            const data = await res.json();
+
+                            if (data.role === 'ambassador') {
+                                console.log('👤 Es embajador, redirigiendo a su dashboard...');
+                                window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/embajadores/embajadores';
+                            } else {
+                                console.log('🐾 Es miembro, redirigiendo a dashboard de usuario...');
+                                window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/pets/pet-waiting-period';
+                            }
+                        } catch (err) {
+                            console.error('Error checando rol, fallback a default');
+                            window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/pets/pet-waiting-period';
+                        }
                     }
                 } catch (e) {
                     console.log('No hay sesión activa.');
@@ -44,9 +62,9 @@ export default function AuthLanding() {
             await window.$memberstackDom.signupWithProvider({
                 provider: 'google'
             });
-            // Forzar redirect aunque Memberstack tenga configuración
-            // El await finaliza cuando el popup se cierra/completa
-            router.push('/completar-perfil');
+            // Al regresar de Google, si es login, la página suele recargarse o el estado cambia.
+            // Si es SPA, activamos la verificación de nuevo.
+            window.location.reload();
         } catch (error) {
             console.error('Signup error', error);
             setIsLoading(false);

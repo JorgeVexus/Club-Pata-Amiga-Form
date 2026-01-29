@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
 
         // Búsqueda
         if (search) {
-            query = query.or(`first_name.ilike.%${search}%,paternal_surname.ilike.%${search}%,email.ilike.%${search}%,referral_code.ilike.%${search}%`);
+            query = query.or(`first_name.ilike.%${search}%,paternal_surname.ilike.%${search}%,maternal_surname.ilike.%${search}%,email.ilike.%${search}%,referral_code.ilike.%${search}%`);
         }
 
         // Paginación
