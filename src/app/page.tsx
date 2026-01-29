@@ -1,5 +1,5 @@
-import AuthLanding from '@/components/Auth/AuthLanding';
+import AuthRedirector from '@/components/Auth/AuthRedirector';
 
 export default function Home() {
-    return <AuthLanding />;
+    return <AuthRedirector />;
 }

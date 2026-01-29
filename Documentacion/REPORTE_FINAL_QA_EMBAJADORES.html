@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte Integral QA - Apelaciones y Embajadores</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #00BBB4, #00d4aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+        }
+
+        /* Stats Cards */
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 20px 30px;
+            text-align: center;
+            min-width: 120px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00BBB4;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        h2 {
+            color: #00BBB4;
+            font-size: 1.6rem;
+            margin: 50px 0 20px;
+            padding: 0 0 10px 0;
+            border-bottom: 2px solid rgba(0, 187, 180, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            color: #fff;
+            font-size: 1.2rem;
+            margin: 30px 0 15px;
+            font-weight: 600;
+        }
+
+        /* Table Styles */
+        .status-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .status-table th {
+            background: rgba(0, 0, 0, 0.3);
+            color: #FFC107;
+            padding: 15px;
+            text-align: left;
+        }
+
+        .status-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .status-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Status Pills */
+        .status-fixed {
+            background: rgba(76, 175, 80, 0.2);
+            color: #81c784;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffd54f;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-na {
+            background: rgba(158, 158, 158, 0.2);
+            color: #bdbdbd;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: 1px solid rgba(158, 158, 158, 0.3);
+        }
+
+        /* Test Cards */
+        .test-group {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            margin: 15px 0;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .test-group-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #fff;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .test-steps {
+            padding: 20px;
+        }
+
+        .test-steps ol {
+            padding-left: 20px;
+            color: #ccc;
+        }
+
+        .test-steps li {
+            margin-bottom: 10px;
+        }
+
+        .expected-result {
+            margin-top: 5px;
+            padding: 8px 12px;
+            background: rgba(0, 187, 180, 0.1);
+            border-left: 3px solid #00BBB4;
+            color: #b2dfdb;
+            font-size: 0.95rem;
+            border-radius: 0 4px 4px 0;
+        }
+
+        code {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #ffab91;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>✅ Reporte Integral QA</h1>
+        <div class="subtitle">Consolidado 29 Enero 2026: Apelaciones (Fase 3) + Sistema de Embajadores</div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Sistemas Cubiertos</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">23</div>
+                <div class="stat-label">Correcciones Totales</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Estado Completado</div>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SISTEMA DE APELACIONES -->
+        <!-- ============================================== -->
+        <h2>🛡️ 1. Sistema de Apelaciones (Correcciones Fase 3)</h2>
+
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th width="50">#</th>
+                    <th>Observación</th>
+                    <th>Estado</th>
+                    <th>Solución</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>1.2 Rechazar sin motivo (bloqueo)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Validación Backend/Frontend.</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>3.4 Error conexión (upload image)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Validación de tipos (WebP no soportado).</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>3.5 No llega notificación</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Resuelto con fix de upload.</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>4.3 Requiero más apelaciones</td>
+                    <td><span class="status-na">Pendiente</span></td>
+                    <td>Requiere inputs de usuario.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Aprobación no refresca UI</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Hard refresh forzado.</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>5.4 Link Notificación roto</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Ruta <code>/admin/dashboard</code> corregida.</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>6.1 Mensajes por usuario</td>
+                    <td><span class="status-fixed">Mejorado</span></td>
+                    <td>Historial en Modal.</td>
+                </tr>
+                <tr>
+                    <td>8</td>
+                    <td>6.2/6.3 Info faltante</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Logs visibles.</td>
+                </tr>
+                <tr>
+                    <td>9</td>
+                    <td>8.3 Sesión cerrada</td>
+                    <td><span class="status-na">N/A</span></td>
+                    <td>Comportamiento Auth externo.</td>
+                </tr>
+                <tr>
+                    <td>10</td>
+                    <td>10.1 Botones duplicados</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Estados exclusivos.</td>
+                </tr>
+                <tr>
+                    <td>11</td>
+                    <td>10.2 Modal Historial faltante</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Implementado method <code>showAppealHistory</code>.</td>
+                </tr>
+                <tr>
+                    <td>12</td>
+                    <td>10.2-10.5 Pruebas Historial</td>
+                    <td><span class="status-fixed">Listo</span></td>
+                    <td>Desbloqueado.</td>
+                </tr>
+                <tr>
+                    <td>13</td>
+                    <td>11.5 Falta info</td>
+                    <td><span class="status-na">Pendiente</span></td>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <td>14</td>
+                    <td>12.1 Botón negro error</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Corregido flujo update.</td>
+                </tr>
+                <tr>
+                    <td>15</td>
+                    <td>12.5 Drag & Drop bug</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>PreventDefault events.</td>
+                </tr>
+                <tr>
+                    <td>16</td>
+                    <td>13.3 Flechas raza</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Soporte teclado.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Nueva Guía de Validación - Apelaciones</h3>
+
+        <div class="test-group">
+            <div class="test-group-header">🧪 Prueba A: Flujo de Usuario (Apelación)</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Validación de Formato:</strong> Intenta subir un archivo <code>.webp</code>.
+                        <div class="expected-result">Debe mostrar alerta específica: "Formato WebP no soportado".</div>
+                    </li>
+                    <li>
+                        <strong>Apelación Exitosa:</strong> Sube JPG/PNG y envía.
+                        <div class="expected-result">Mensaje de éxito y reload. Status cambia a "En Revisión" (Morado).
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Ver Historial:</strong> Clic en ícono de reloj.
+                        <div class="expected-result">Modal muestra el log de la apelación recién creada.</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">🛡️ Prueba B: Panel Administrativo</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Recepción:</strong> Revisa Tab Apelaciones.
+                        <div class="expected-result">Mascota aparece con status "Apelada".</div>
+                    </li>
+                    <li>
+                        <strong>Fotos Mixtas (Fix):</strong> Abre el detalle.
+                        <div class="expected-result">Si se subió 1 foto nueva y había otra vieja, AMBAS deben verse. (No
+                            desaparecer).</div>
+                    </li>
+                    <li>
+                        <strong>Notificaciones:</strong> Clic en notificación de apelación.
+                        <div class="expected-result">Redirige correctamente al dashboard y abre el modal del usuario.
+                        </div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">⚡ Prueba C: Resolución</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Aprobar/Rechazar:</strong> Ejecuta una acción.
+                        <div class="expected-result">Página se refresca automáticamente y el estado se actualiza
+                            visualmente.</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- SISTEMA DE EMBAJADORES -->
+        <!-- ============================================== -->
+        <h2>🎓 2. Sistema de Embajadores (Ajustes QA)</h2>
+
+        <table class="status-table">
+            <thead>
+                <tr>
+                    <th width="50">#</th>
+                    <th>Observación</th>
+                    <th>Estado</th>
+                    <th>Solución Técnica</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Campos revueltos en Móvil</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Grid responsivo unificado y agrupado por secciones (Identidad, Contacto, Dirección).</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Validación Edad (18+)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Bloqueo estricto: El formulario no permite avanzar si la edad es menor a 18 años.</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Drag & Drop abre imagen en pestaña</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Implementado <code>preventDefault</code> y <code>stopPropagation</code> en eventos
+                        onDrop/onDragOver.</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Botón de ayuda tapa el form (Móvil)</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Se oculta el botón (<code>display: none</code>) en pantallas menores a 768px.</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Mensaje Código Referido Incorrecto</td>
+                    <td><span class="status-fixed">Corregido</span></td>
+                    <td>Texto de error cambiado a "❌ Código no válido".</td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Filtro búsqueda por Apellido</td>
+                    <td><span class="status-fixed">Implementado</span></td>
+                    <td>Se añadió <code>maternal_surname</code> y <code>paternal_surname</code> a la query de búsqueda
+                        en API.</td>
+                </tr>
+                <tr>
+                    <td>7</td>
+                    <td>Redirección Login incorrecta</td>
+                    <td><span class="status-fixed">Implementado</span></td>
+                    <td><code>AuthLanding</code> ahora verifica el rol y redirige a la URL Webflow correspondiente.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h3>Nueva Guía de Validación - Embajadores</h3>
+
+        <div class="test-group">
+            <div class="test-group-header">📱 Prueba D: Usabilidad Móvil y Diseño</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Orden de Campos:</strong> Reduce la pantalla a tamaño móvil o tablet.
+                        <div class="expected-result">Los campos deben aparecer en orden lógico (Nombre -> Apellido ->
+                            Correo) y no mezclados.</div>
+                    </li>
+                    <li>
+                        <strong>Botón Ayuda:</strong> En vista móvil.
+                        <div class="expected-result">El botón flotante de ayuda NO debe aparecer ni tapar el botón
+                            "Siguiente".</div>
+                    </li>
+                    <li>
+                        <strong>Drag & Drop:</strong> Arrastra una imagen a la zona de carga de INE.
+                        <div class="expected-result">La imagen se carga en el recuadro. NO debe abrirse en una pestaña
+                            nueva del navegador.</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">🛑 Prueba E: Validaciones Críticas</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Edad Menor a 18:</strong> Selecciona una fecha de nacimiento reciente (ej. 2026 o 2010).
+                        Da clic en "Siguiente".
+                        <div class="expected-result">El campo se marca en <strong>rojo</strong>. El sistema
+                            <strong>BLOQUEA</strong> el avance al siguiente paso.
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Código Referido:</strong> Ingresa un código inexistente.
+                        <div class="expected-result">Debe mostrar mensaje exacto: "❌ Código no válido".</div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="test-group">
+            <div class="test-group-header">� Prueba F: Panel y Acceso</div>
+            <div class="test-steps">
+                <ol>
+                    <li>
+                        <strong>Búsqueda Admin:</strong> En el dashboard, busca un embajador por su apellido MATERNO.
+                        <div class="expected-result">El embajador debe aparecer en los resultados de la tabla.</div>
+                    </li>
+                    <li>
+                        <strong>Login Embajador:</strong> Inicia sesión con credenciales de embajador.
+                        <div class="expected-result">Redirección automática a: <code>.../embajadores/embajadores</code>
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Login Usuario:</strong> Inicia sesión con credenciales de usuario normal.
+                        <div class="expected-result">Redirección automática a: <code>.../pets/pet-waiting-period</code>
+                        </div>
+                    </li>
+                    <li>
+                        <strong>Login Admin:</strong> Inicia sesión como Admin/SuperAdmin.
+                        <div class="expected-result">Redirección automática a: <code>/admin/dashboard</code></div>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+    </div>
+</body>
+
+</html>

@@ -6,6 +6,10 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+import { AdminAuthService } from '@/services/admin-auth.service';
+
+// ... imports remain ...
+
 export async function POST(request: NextRequest) {
     try {
         const { memberstackId } = await request.json();
@@ -14,7 +18,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'ID requerido' }, { status: 400 });
         }
 
-        // Check if user is an Ambassador
+        // 1. Check if user is Admin/SuperAdmin
+        const adminRole = await AdminAuthService.getRole(memberstackId);
+        if (adminRole === 'admin' || adminRole === 'super_admin') {
+            return NextResponse.json({
+                success: true,
+                role: 'admin',
+                adminType: adminRole
+            });
+        }
+
+        // 2. Check if user is an Ambassador
         const { data: ambassador } = await supabase
             .from('ambassadors')
             .select('id, status')
