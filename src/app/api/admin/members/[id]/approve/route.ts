@@ -51,7 +51,7 @@ export async function POST(
             // Primero intentar por memberstack_id
             let { data: user, error: userError } = await supabaseAdmin
                 .from('users')
-                .select('crm_contact_id, membership_type, membership_cost, email')
+                .select('crm_contact_id, email')
                 .eq('memberstack_id', memberId)
                 .single();
 
@@ -60,7 +60,7 @@ export async function POST(
                 console.log('🔄 CRM: No encontrado por memberstack_id, intentando por email...');
                 const emailResult = await supabaseAdmin
                     .from('users')
-                    .select('crm_contact_id, membership_type, membership_cost, email')
+                    .select('crm_contact_id, email')
                     .eq('email', memberEmail)
                     .single();
                 user = emailResult.data;
@@ -74,10 +74,11 @@ export async function POST(
             });
 
             if (user?.crm_contact_id) {
+                // Por ahora usamos valores por defecto, después se puede mejorar
                 const crmResult = await updateContactAsActive(
                     user.crm_contact_id,
-                    user.membership_type || 'Mensual',
-                    user.membership_cost || '$159'
+                    'Mensual',  // Valor por defecto
+                    '$159'      // Valor por defecto
                 );
                 console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
             } else {
