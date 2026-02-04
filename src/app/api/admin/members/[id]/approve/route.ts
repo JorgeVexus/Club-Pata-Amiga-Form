@@ -4,9 +4,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import { approveMemberApplication } from '@/services/memberstack-admin.service';
 import { registerUserInSupabase } from '@/app/actions/user.actions';
 import { createServerNotification } from '@/app/actions/notification.actions';
+import { updateContactAsActive } from '@/services/crm.service';
+
+// Cliente Supabase para obtener crm_contact_id
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(
     request: NextRequest,
@@ -33,6 +41,28 @@ export async function POST(
                 { error: result.error },
                 { status: 500 }
             );
+        }
+
+        // Sincronizar con CRM - Marcar como "miembro activo"
+        try {
+            const { data: user } = await supabaseAdmin
+                .from('users')
+                .select('crm_contact_id, membership_type, membership_cost')
+                .eq('memberstack_id', memberId)
+                .single();
+
+            if (user?.crm_contact_id) {
+                const crmResult = await updateContactAsActive(
+                    user.crm_contact_id,
+                    user.membership_type || 'Mensual',
+                    user.membership_cost || '$159'
+                );
+                console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
+            } else {
+                console.warn('⚠️ Usuario sin crm_contact_id, omitiendo sync CRM');
+            }
+        } catch (crmError) {
+            console.error('⚠️ Error no crítico actualizando CRM:', crmError);
         }
 
         // Enviar notificación de aprobación
