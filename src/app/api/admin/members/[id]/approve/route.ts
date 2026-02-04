@@ -45,11 +45,15 @@ export async function POST(
 
         // Sincronizar con CRM - Marcar como "miembro activo"
         try {
-            const { data: user } = await supabaseAdmin
+            console.log('🔍 CRM Debug: Buscando usuario con memberstack_id:', memberId);
+
+            const { data: user, error: userError } = await supabaseAdmin
                 .from('users')
                 .select('crm_contact_id, membership_type, membership_cost')
                 .eq('memberstack_id', memberId)
                 .single();
+
+            console.log('🔍 CRM Debug: Resultado query:', { user, error: userError?.message });
 
             if (user?.crm_contact_id) {
                 const crmResult = await updateContactAsActive(
