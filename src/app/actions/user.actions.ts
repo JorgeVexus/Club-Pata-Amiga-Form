@@ -108,6 +108,35 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
 }
 
 /**
+ * Actualiza el crm_contact_id de un usuario
+ * Se usa después de sincronizar con Lynsales CRM
+ */
+export async function updateUserCrmContactId(memberstackId: string, crmContactId: string) {
+    console.log('🔄 [Server Action] Guardando CRM Contact ID:', { memberstackId, crmContactId });
+
+    const supabase = getServiceRoleClient()
+    if (!supabase) return { success: false, error: 'Configuración de servidor incompleta' }
+
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({ crm_contact_id: crmContactId })
+            .eq('memberstack_id', memberstackId);
+
+        if (error) {
+            console.error('❌ [Server Action] Error guardando CRM ID:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ [Server Action] CRM Contact ID guardado');
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
  * Sincroniza las historias de adopción de las mascotas en Supabase
  * Se guarda en la tabla 'users' en las columnas correspondientes
  */

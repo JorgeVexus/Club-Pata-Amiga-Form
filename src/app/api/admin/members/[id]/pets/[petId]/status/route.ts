@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { approveMemberApplication, rejectMemberApplication } from '@/services/memberstack-admin.service';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
+import { updateContactAsActive } from '@/services/crm.service';
 
 // Cliente Supabase con Service Role para operaciones admin
 const supabaseAdmin = createClient(
@@ -72,6 +73,29 @@ export async function POST(
 
         // 3. Notificaciones según el cambio de estado
         if (status === 'approved') {
+            // 3.1 Notificar al CRM - Miembro Activo
+            try {
+                const { data: userForCrm } = await supabaseAdmin
+                    .from('users')
+                    .select('crm_contact_id, membership_type, membership_cost')
+                    .eq('memberstack_id', memberId)
+                    .single();
+
+                if (userForCrm?.crm_contact_id) {
+                    const crmResult = await updateContactAsActive(
+                        userForCrm.crm_contact_id,
+                        userForCrm.membership_type || 'Mensual',
+                        userForCrm.membership_cost || '$159'
+                    );
+                    console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
+                } else {
+                    console.warn('⚠️ Usuario sin crm_contact_id, omitiendo sync CRM');
+                }
+            } catch (crmError) {
+                console.error('⚠️ Error no crítico actualizando CRM:', crmError);
+            }
+
+            // 3.2 Notificación interna
             await createServerNotification({
                 userId: memberId,
                 type: 'account',

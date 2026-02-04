@@ -12,7 +12,7 @@ import DatePicker from '@/components/FormFields/DatePicker';
 import FileUpload from '@/components/FormFields/FileUpload';
 import PostalCodeInput from '@/components/FormFields/PostalCodeInput';
 import PhoneInput from '@/components/FormFields/PhoneInput';
-import { checkCurpAvailability, registerUserInSupabase } from '@/app/actions/user.actions';
+import { checkCurpAvailability, registerUserInSupabase, updateUserCrmContactId } from '@/app/actions/user.actions';
 import { createMemberstackUser, completeMemberProfile } from '@/services/memberstack.service';
 import { uploadMultipleFiles, uploadFile } from '@/services/supabase.service';
 import { validateCURP, formatCURP } from '@/utils/curp-validator';
@@ -303,6 +303,41 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                     alert(`Error guardando en base de datos: ${supabaseResult.error}`);
                 } else {
                     console.log('✅ Respaldo en Supabase completado.');
+
+                    // 3.5 Sincronizar con CRM Lynsales
+                    try {
+                        console.log('🔄 Sincronizando con CRM Lynsales...');
+                        const crmResponse = await fetch('/api/crm/upsert', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                firstName: formData.firstName,
+                                lastName: `${formData.paternalLastName} ${formData.maternalLastName || ''}`.trim(),
+                                email: formData.email,
+                                phone: formData.phone,
+                                gender: formData.gender === 'hombre' ? 'male' : formData.gender === 'mujer' ? 'female' : undefined,
+                                address1: formData.address,
+                                city: formData.city,
+                                state: formData.state,
+                                postalCode: formData.postalCode,
+                                country: 'MX',
+                                dateOfBirth: formData.birthDate
+                            })
+                        });
+
+                        const crmData = await crmResponse.json();
+
+                        if (crmData.success && crmData.contactId) {
+                            console.log('✅ CRM sincronizado. Contact ID:', crmData.contactId);
+                            // Guardar el ID del CRM en Supabase
+                            await updateUserCrmContactId(finalMemberId, crmData.contactId);
+                        } else {
+                            console.warn('⚠️ CRM sync no exitoso:', crmData.error);
+                        }
+                    } catch (crmError) {
+                        // No bloqueamos el registro si CRM falla
+                        console.error('⚠️ Error no crítico sincronizando CRM:', crmError);
+                    }
                 }
             } catch (sbError: any) {
                 console.error('❌ Error no crítico guardando en Supabase:', sbError);
