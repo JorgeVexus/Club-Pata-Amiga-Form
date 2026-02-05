@@ -57,20 +57,37 @@ export default function PetCard({
         { value: '15+-años', label: '15+ años', numericAge: 15 },
     ];
 
-    // Opciones de tamaño
-    const sizeOptions = [
-        { value: 'pequeño', label: 'Pequeño (hasta 10kg)' },
-        { value: 'mediano', label: 'Mediano (10-25kg)' },
-        { value: 'grande', label: 'Grande (25-45kg)' },
-        { value: 'gigante', label: 'Gigante (más de 45kg)' },
+    // Opciones de tamaño según tipo de mascota con edad senior
+    const dogSizeOptions = [
+        { value: 'chica', label: 'Chica (hasta 10kg)', seniorAge: 8 },
+        { value: 'mediana', label: 'Mediana (11-25kg)', seniorAge: 7 },
+        { value: 'grande', label: 'Grande (26-45kg)', seniorAge: 6 },
+        { value: 'gigante', label: 'Gigante (46kg+)', seniorAge: 5 },
     ];
 
-    // Validar edad cuando cambia la edad o la raza
+    const catSizeOptions = [
+        { value: 'chica', label: 'Chica (hasta 4.5kg)', seniorAge: 7 },
+        { value: 'mediana', label: 'Mediana (4.5-7kg)', seniorAge: 7 },
+        { value: 'grande', label: 'Grande (7kg+)', seniorAge: 7 },
+    ];
+
+    // Seleccionar opciones según tipo de mascota
+    const sizeOptions = petData.petType === 'gato' ? catSizeOptions : dogSizeOptions;
+
+    // Obtener edad senior según tamaño seleccionado
+    const getSeniorAge = (): number | null => {
+        if (!petData.breedSize || !petData.petType) return null;
+        const options = petData.petType === 'gato' ? catSizeOptions : dogSizeOptions;
+        const selected = options.find(opt => opt.value === petData.breedSize);
+        return selected?.seniorAge || null;
+    };
+
+    // Validar edad cuando cambia la edad o el tamaño
     useEffect(() => {
-        // Si breedMaxAge es 0, significa que no hay límite definido aún (dato pendiente)
-        if (petData.age && breedMaxAge !== null && breedMaxAge > 0) {
+        const seniorAge = getSeniorAge();
+        if (petData.age && seniorAge !== null) {
             const selectedAge = ageOptions.find(opt => opt.value === petData.age);
-            if (selectedAge && selectedAge.numericAge > breedMaxAge) {
+            if (selectedAge && selectedAge.numericAge >= seniorAge) {
                 setShowVetCertificate(true);
                 onUpdate({ ...petData, exceedsMaxAge: true });
             } else {
@@ -78,13 +95,13 @@ export default function PetCard({
                 onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
             }
         } else {
-            // Si no hay edad o el límite es 0, limpiamos banderas
+            // Si no hay edad o tamaño, limpiamos banderas
             setShowVetCertificate(false);
             if (petData.exceedsMaxAge) {
                 onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
             }
         }
-    }, [petData.age, breedMaxAge]);
+    }, [petData.age, petData.breedSize, petData.petType]);
 
     // Manejar cambio de raza
     const handleBreedChange = (
@@ -242,7 +259,7 @@ export default function PetCard({
                         <div className={styles.vetCertificateSection}>
                             <div className={styles.ageWarning}>
                                 <p className={styles.warningText}>
-                                    ⚠️ Tu peludo pasa la edad permitida para su raza, pero no te preocupes, aún lo puedes incluir en la manada.
+                                    ⚠️ Tu peludo ya es senior para su talla, pero no te preocupes, aún lo puedes incluir en la manada.
                                 </p>
                                 <p className={styles.warningSubtext}>
                                     Solo necesitamos que subas un documento de tu veterinario certificando que está saludable.
