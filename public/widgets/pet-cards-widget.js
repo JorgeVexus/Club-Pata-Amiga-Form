@@ -368,7 +368,7 @@
                         
                         <select name="age" id="pata-age-select" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
                             <option value="">Edad *</option>
-                            <option value="0-6-meses" data-numeric="0">0-6 meses</option>
+                            <option value="4-6-meses" data-numeric="0">4-6 meses</option>
                             <option value="6-12-meses" data-numeric="0">6-12 meses</option>
                             <option value="1-año" data-numeric="1">1 año</option>
                             <option value="2-años" data-numeric="2">2 años</option>

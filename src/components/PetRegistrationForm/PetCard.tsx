@@ -36,9 +36,9 @@ export default function PetCard({
     const [breedMaxAge, setBreedMaxAge] = useState<number | null>(null);
     const [showVetCertificate, setShowVetCertificate] = useState(false);
 
-    // Opciones de edad
+    // Opciones de edad (mínimo 4 meses)
     const ageOptions = [
-        { value: '0-6-meses', label: '0-6 meses', numericAge: 0 },
+        { value: '4-6-meses', label: '4-6 meses', numericAge: 0 },
         { value: '6-12-meses', label: '6-12 meses', numericAge: 0 },
         { value: '1-año', label: '1 año', numericAge: 1 },
         { value: '2-años', label: '2 años', numericAge: 2 },
