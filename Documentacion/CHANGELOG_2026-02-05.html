@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Changelog - 5 de Febrero 2026</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .header .date {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .header .project {
+            font-size: 14px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .change-section {
+            margin-bottom: 30px;
+        }
+
+        .change-section h2 {
+            color: #4F46E5;
+            font-size: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .change-list {
+            list-style: none;
+        }
+
+        .change-list li {
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            background: #F9FAFB;
+            border-radius: 8px;
+            border-left: 4px solid #10B981;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .change-list li.bug-fix {
+            border-left-color: #EF4444;
+        }
+
+        .change-list li.improvement {
+            border-left-color: #F59E0B;
+        }
+
+        .change-list li strong {
+            color: #1F2937;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .tag.feature {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .tag.fix {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .tag.improvement {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #F9FAFB;
+            color: #6B7280;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Changelog</h1>
+            <div class="date">5 de Febrero, 2026</div>
+            <div class="project">Club Pata Amiga - Pet Membership Form</div>
+        </div>
+
+        <div class="content">
+            <!-- Integración CRM -->
+            <div class="change-section">
+                <h2>🔗 Integración CRM Lynsales</h2>
+                <ul class="change-list">
+                    <li>
+                        <span class="tag feature">FEATURE</span>
+                        <strong>Sincronización de contactos al registrar:</strong> Al completar el registro, los datos
+                        del usuario se envían automáticamente al CRM Lynsales como "Prospecto".
+                    </li>
+                    <li>
+                        <span class="tag feature">FEATURE</span>
+                        <strong>Actualización al aprobar miembro:</strong> Cuando un admin aprueba una membresía, el
+                        contacto se marca como "Miembro Activo" en el CRM.
+                    </li>
+                    <li class="bug-fix">
+                        <span class="tag fix">FIX</span>
+                        <strong>Búsqueda de usuario mejorada:</strong> Si no encuentra al usuario por memberstack_id,
+                        ahora busca por email como fallback.
+                    </li>
+                    <li class="bug-fix">
+                        <span class="tag fix">FIX</span>
+                        <strong>Query de base de datos corregido:</strong> Eliminadas columnas inexistentes
+                        (membership_type, membership_cost) del query de Supabase.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Formulario de Registro -->
+            <div class="change-section">
+                <h2>📝 Formulario de Registro</h2>
+                <ul class="change-list">
+                    <li>
+                        <span class="tag feature">FEATURE</span>
+                        <strong>Detección de sesión existente:</strong> Ahora muestra opciones cuando detecta una sesión
+                        activa en lugar de redirigir automáticamente.
+                    </li>
+                    <li class="improvement">
+                        <span class="tag improvement">MEJORA</span>
+                        <strong>UI de opciones:</strong> Si hay sesión, el usuario puede elegir: "Ir a mi Dashboard" o
+                        "Cerrar sesión y registrar otra cuenta".
+                    </li>
+                    <li class="bug-fix">
+                        <span class="tag fix">FIX</span>
+                        <strong>Sesiones stale corregidas:</strong> Ya no redirige incorrectamente por cookies viejas de
+                        Memberstack.
+                    </li>
+                    <li class="improvement">
+                        <span class="tag improvement">MEJORA</span>
+                        <strong>Estado de carga:</strong> Muestra "Verificando sesión..." mientras valida la
+                        autenticación.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Documentación -->
+            <div class="change-section">
+                <h2>📚 Documentación</h2>
+                <ul class="change-list">
+                    <li>
+                        <span class="tag feature">FEATURE</span>
+                        <strong>RESUMEN_CRM_AGENCIA.md:</strong> Documento profesional para compartir con la agencia de
+                        marketing sobre la integración CRM.
+                    </li>
+                    <li>
+                        <span class="tag feature">FEATURE</span>
+                        <strong>PENDIENTES_STRIPE.md:</strong> Lista de tareas pendientes para cuando se integre Stripe
+                        (actualizar membership_type y membership_cost).
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Cambios en Formularios -->
+            <div class="change-section">
+                <h2>✏️ Cambios en Formularios</h2>
+                <ul class="change-list">
+                    <li class="improvement">
+                        <span class="tag improvement">MEJORA</span>
+                        <strong>Comprobante de domicilio eliminado:</strong> Ya no se requiere subir comprobante de
+                        domicilio en el registro de miembros.
+                    </li>
+                    <li class="improvement">
+                        <span class="tag improvement">MEJORA</span>
+                        <strong>Etiquetas de raza actualizadas:</strong> "¿Es mestizo?" → "¿Es mestizo/peludo?", "Raza
+                        pura" → "Raza", "Mestizo" → "Mestizo/Doméstico".
+                    </li>
+                    <li class="bug-fix">
+                        <span class="tag fix">FIX</span>
+                        <strong>Lógica de subida corregida:</strong> Eliminada la subida de comprobante de domicilio del
+                        proceso de registro.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            Generado automáticamente • Club Pata Amiga Dev Team
+        </div>
+    </div>
+</body>
+
+</html>

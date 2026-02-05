@@ -246,7 +246,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
             // Generar un ID temporal para el usuario (se reemplazará con el ID de Memberstack)
             const tempUserId = `temp_${Date.now()}`;
 
-            // 1. Subir archivos a Supabase
+            // 1. Subir archivos a Supabase (solo INE, comprobante de domicilio ya no es requerido)
             const ineFiles = [formData.ineFrontFile!, formData.ineBackFile!];
             const ineUploads = await uploadMultipleFiles(
                 ineFiles,
@@ -254,14 +254,8 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                 tempUserId
             );
 
-            const proofOfAddressUpload = await uploadFile(
-                formData.proofOfAddressFile!,
-                'PROOF_OF_ADDRESS',
-                tempUserId
-            );
-
             // Verificar que las subidas fueron exitosas
-            if (ineUploads.some(u => !u.success) || !proofOfAddressUpload.success) {
+            if (ineUploads.some(u => !u.success)) {
                 throw new Error('Error al subir los archivos');
             }
 
@@ -270,7 +264,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                 formData as RegistrationFormData,
                 {
                     ineUrls: ineUploads.map(u => u.publicUrl || ''),
-                    proofOfAddressUrl: proofOfAddressUpload.publicUrl || '',
+                    proofOfAddressUrl: '', // Ya no se requiere
                 }
             );
 
@@ -560,17 +554,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                             }}
                         />
 
-                        <FileUpload
-                            label="✅ Confirma tu dirección"
-                            name="proofOfAddress"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            maxSize={5}
-                            maxFiles={1}
-                            instruction="Carga un comprobante con una antigüedad no mayor a 3 meses. (Recibo de luz, recibo de agua, recibo de internet, etc)"
-                            onChange={(files) => setFormData({ ...formData, proofOfAddressFile: files[0] || null })}
-                            error={errors.proofOfAddressFile}
-                            required
-                        />
+                        {/* Comprobante de domicilio eliminado - ya no es necesario */}
 
                         <TextInput
                             label="📧 Correo electrónico"

@@ -155,11 +155,11 @@ export default function PetCard({
                     />
 
                     <RadioGroup
-                        label="🌿 ¿Es mestizo?"
+                        label="🌿 ¿Es mestizo/peludo?"
                         name={`pet-${petNum}-mixed`}
                         options={[
-                            { value: 'true', label: 'Mestizo' },
-                            { value: 'false', label: 'Raza pura' },
+                            { value: 'true', label: 'Mestizo/Doméstico' },
+                            { value: 'false', label: 'Raza' },
                         ]}
                         value={petData.isMixed?.toString() || ''}
                         onChange={(value) => onUpdate({ ...petData, isMixed: value === 'true' })}
