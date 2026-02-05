@@ -209,14 +209,13 @@ export default function PetCard({
                     {petData.isAdopted && (
                         <div className={styles.adoptionStorySection}>
                             <TextArea
-                                label="📜 Cuéntanos su historia de adopción"
+                                label="📜 Cuéntanos su historia de adopción (opcional)"
                                 name={`pet-${petNum}-adoption-story`}
                                 value={petData.adoptionStory || ''}
                                 onChange={(value) => onUpdate({ ...petData, adoptionStory: value })}
                                 placeholder="Era un día lluvioso cuando lo encontramos..."
                                 helpText="Tu historia puede inspirar a otros a adoptar."
                                 error={errors[`pet-${petNum}-adoption-story`]}
-                                required
                             />
                             <p className={styles.legalNotice} style={{ fontSize: '0.75rem', color: '#666', marginTop: '-1rem', marginBottom: '1.5rem', fontStyle: 'italic' }}>
                                 Al llenar la historia de adopción nos autorizas a incluirla en la página web y redes sociales de Club Pata Amiga.

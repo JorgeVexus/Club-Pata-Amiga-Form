@@ -70,7 +70,7 @@ export default function BreedAutocomplete({
 
     // Filtrar sugerencias mientras el usuario escribe
     useEffect(() => {
-        if (inputValue.length >= 2 && allBreeds.length > 0) {
+        if (inputValue.length >= 1 && allBreeds.length > 0) {
             const filtered = allBreeds.filter(breed =>
                 breed.name.toLowerCase().includes(inputValue.toLowerCase())
             );

@@ -40,6 +40,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
     }>({ isValidating: false, isValid: null, ambassadorName: '', message: '' });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [showPopup, setShowPopup] = useState<string | null>(null);
 
     // Agregar otra mascota
     const handleAddPet = () => {
@@ -128,6 +129,11 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
+        // Verificar que hay al menos 1 mascota registrada
+        if (pets.length === 0 || !pets[0].name?.trim()) {
+            newErrors['general'] = 'Debes registrar al menos una mascota para continuar';
+        }
+
         pets.forEach((pet, index) => {
             const petNum = index + 1;
 
@@ -173,7 +179,14 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
         e.preventDefault();
 
         if (!validateForm()) {
-            alert('Por favor completa todos los campos requeridos');
+            // Mostrar popup con mensaje específico
+            const hasPetData = pets.length > 0 && pets[0].name?.trim();
+            if (!hasPetData) {
+                setShowPopup('🐾 Debes registrar al menos una mascota con todos sus datos para continuar');
+            } else {
+                setShowPopup('📋 Por favor completa todos los campos requeridos');
+            }
+            setTimeout(() => setShowPopup(null), 5000); // Auto-cerrar después de 5s
             return;
         }
 
@@ -297,6 +310,43 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
     return (
         <div className={styles.formContainer}>
+            {/* Popup de notificación */}
+            {showPopup && (
+                <div style={{
+                    position: 'fixed',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    background: 'linear-gradient(135deg, #EF4444, #DC2626)',
+                    color: 'white',
+                    padding: '16px 24px',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 40px rgba(239, 68, 68, 0.4)',
+                    zIndex: 9999,
+                    maxWidth: '90%',
+                    textAlign: 'center',
+                    fontWeight: 500,
+                    fontSize: '16px'
+                }}>
+                    {showPopup}
+                    <button
+                        onClick={() => setShowPopup(null)}
+                        style={{
+                            marginLeft: '16px',
+                            background: 'rgba(255,255,255,0.2)',
+                            border: 'none',
+                            color: 'white',
+                            padding: '4px 12px',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                        }}
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+
             {/* Header */}
             <div className={styles.header}>
                 <h1 className={styles.title}>Ahora sí, cuéntanos de tus peludos</h1>
@@ -305,7 +355,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 </p>
             </div>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
+            <form onSubmit={handleSubmit} className={styles.form} noValidate>
                 {/* Tarjetas de mascotas */}
                 {pets.map((pet, index) => (
                     <PetCard
@@ -375,6 +425,21 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                         </p>
                     )}
                 </div>
+
+                {/* Error general (ej: sin mascotas registradas) */}
+                {errors['general'] && (
+                    <div className={styles.errorMessage} style={{
+                        background: '#FEE2E2',
+                        color: '#991B1B',
+                        padding: '12px 16px',
+                        borderRadius: '8px',
+                        marginBottom: '1rem',
+                        textAlign: 'center',
+                        fontWeight: 500
+                    }}>
+                        ⚠️ {errors['general']}
+                    </div>
+                )}
 
                 {/* Botones de navegación */}
                 <div className={styles.navigationButtons}>
