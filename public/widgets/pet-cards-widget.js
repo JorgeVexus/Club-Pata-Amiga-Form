@@ -366,14 +366,25 @@
                             <option value="gato">🐈 Gato</option>
                         </select>
                         
-                        <select name="age" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <select name="age" id="pata-age-select" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
                             <option value="">Edad *</option>
-                            <option value="0-1">0-1 años</option>
-                            <option value="1-3">1-3 años</option>
-                            <option value="3-5">3-5 años</option>
-                            <option value="5-7">5-7 años</option>
-                            <option value="7-10">7-10 años</option>
-                            <option value="10+">10+ años</option>
+                            <option value="0-6-meses" data-numeric="0">0-6 meses</option>
+                            <option value="6-12-meses" data-numeric="0">6-12 meses</option>
+                            <option value="1-año" data-numeric="1">1 año</option>
+                            <option value="2-años" data-numeric="2">2 años</option>
+                            <option value="3-años" data-numeric="3">3 años</option>
+                            <option value="4-años" data-numeric="4">4 años</option>
+                            <option value="5-años" data-numeric="5">5 años</option>
+                            <option value="6-años" data-numeric="6">6 años</option>
+                            <option value="7-años" data-numeric="7">7 años</option>
+                            <option value="8-años" data-numeric="8">8 años</option>
+                            <option value="9-años" data-numeric="9">9 años</option>
+                            <option value="10-años" data-numeric="10">10 años</option>
+                            <option value="11-años" data-numeric="11">11 años</option>
+                            <option value="12-años" data-numeric="12">12 años</option>
+                            <option value="13-años" data-numeric="13">13 años</option>
+                            <option value="14-años" data-numeric="14">14 años</option>
+                            <option value="15+-años" data-numeric="15">15+ años</option>
                         </select>
 
                         <!-- Raza -->
@@ -388,13 +399,17 @@
                             <div id="pata-breed-warning" class="pata-breed-warning" style="display:none;"></div>
                         </div>
                         
-                        <select name="breedSize" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
-                            <option value="">Tamaño *</option>
-                            <option value="pequeño">Pequeño (hasta 10kg)</option>
-                            <option value="mediano">Mediano (10-25kg)</option>
-                            <option value="grande">Grande (25-45kg)</option>
-                            <option value="gigante">Gigante (más de 45kg)</option>
+                        <select name="breedSize" id="pata-size-select" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
+                            <option value="">Tamaño * (selecciona tipo primero)</option>
                         </select>
+                        
+                        <!-- Certificado veterinario (para mascotas senior) -->
+                        <div id="pata-vet-cert-section" style="grid-column: 1 / -1; display:none; background:#FEF3C7; padding:15px; border-radius:10px; border:1px solid #FCD34D;">
+                            <p style="margin:0 0 10px 0; color:#92400E; font-weight:500;">⚠️ Tu peludo ya es senior para su talla, pero no te preocupes, aún lo puedes incluir en la manada.</p>
+                            <p style="margin:0 0 10px 0; font-size:12px; color:#A16207;">Solo necesitamos que subas un documento de tu veterinario certificando que está saludable.</p>
+                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📋 Certificado Veterinario *</label>
+                            <input type="file" name="vetCertificate" id="pata-vet-cert" accept=".pdf,.jpg,.jpeg,.png" style="padding:10px; border:2px dashed #FCD34D; border-radius:8px; width:100%; box-sizing:border-box;">
+                        </div>
 
                         <!-- Adopción -->
                         <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px; margin-top:5px;">
@@ -412,6 +427,12 @@
                         <div style="grid-column: 1 / -1;">
                             <input type="text" name="ruac" placeholder="Código RUAC (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
                             <p style="margin:5px 0 0 0; font-size:11px; color:#888;">Si tu mascota tiene RUAC, esto reduce el período de carencia.</p>
+                        </div>
+                        
+                        <!-- Código Embajador -->
+                        <div style="grid-column: 1 / -1;">
+                            <input type="text" name="ambassadorCode" id="pata-ambassador-code" placeholder="Código de Embajador (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
+                            <p id="pata-ambassador-message" style="margin:5px 0 0 0; font-size:11px; color:#888;">Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí</p>
                         </div>
 
                         <!-- Fotos -->
@@ -470,6 +491,15 @@
 
             // 🆕 Configurar autocomplete de razas
             this.setupBreedAutocomplete(modal);
+
+            // 🆕 Configurar opciones de tamaño dinámicas según tipo de mascota
+            this.setupDynamicSizeOptions(modal);
+
+            // 🆕 Configurar validación de edad senior
+            this.setupSeniorAgeCheck(modal);
+
+            // 🆕 Configurar validación de código embajador
+            this.setupAmbassadorCodeValidation(modal);
 
             const form = document.getElementById('pata-add-form');
             form.onsubmit = async (e) => {
@@ -732,6 +762,126 @@
                         showSuggestions('');
                     }
                 }
+            });
+        }
+
+        // 🆕 Configurar opciones de tamaño dinámicas según tipo de mascota
+        setupDynamicSizeOptions(modal) {
+            const petTypeSelect = modal.querySelector('[name="petType"]');
+            const sizeSelect = document.getElementById('pata-size-select');
+
+            if (!petTypeSelect || !sizeSelect) return;
+
+            // Definir opciones de tamaño por tipo con edad senior
+            const DOG_SIZE_OPTIONS = [
+                { value: 'chica', label: 'Chica (hasta 10kg)', seniorAge: 8 },
+                { value: 'mediana', label: 'Mediana (11-25kg)', seniorAge: 7 },
+                { value: 'grande', label: 'Grande (26-45kg)', seniorAge: 6 },
+                { value: 'gigante', label: 'Gigante (46kg+)', seniorAge: 5 },
+            ];
+
+            const CAT_SIZE_OPTIONS = [
+                { value: 'chica', label: 'Chica (hasta 4.5kg)', seniorAge: 7 },
+                { value: 'mediana', label: 'Mediana (4.5-7kg)', seniorAge: 7 },
+                { value: 'grande', label: 'Grande (7kg+)', seniorAge: 7 },
+            ];
+
+            // Store en el widget para uso posterior
+            this.sizeOptions = { perro: DOG_SIZE_OPTIONS, gato: CAT_SIZE_OPTIONS };
+
+            // Actualizar opciones cuando cambia el tipo de mascota
+            petTypeSelect.addEventListener('change', () => {
+                const petType = petTypeSelect.value;
+                const options = this.sizeOptions[petType] || [];
+
+                sizeSelect.innerHTML = '<option value="">Tamaño *</option>' +
+                    options.map(opt => `<option value="${opt.value}" data-senior="${opt.seniorAge}">${opt.label}</option>`).join('');
+
+                // Limpiar selección y ocultar certificado
+                document.getElementById('pata-vet-cert-section').style.display = 'none';
+            });
+        }
+
+        // 🆕 Configurar validación de edad senior para certificado veterinario
+        setupSeniorAgeCheck(modal) {
+            const petTypeSelect = modal.querySelector('[name="petType"]');
+            const sizeSelect = document.getElementById('pata-size-select');
+            const ageSelect = document.getElementById('pata-age-select');
+            const vetCertSection = document.getElementById('pata-vet-cert-section');
+            const vetCertInput = document.getElementById('pata-vet-cert');
+
+            if (!petTypeSelect || !sizeSelect || !ageSelect || !vetCertSection) return;
+
+            const checkSeniorAge = () => {
+                const petType = petTypeSelect.value;
+                const sizeValue = sizeSelect.value;
+                const ageOption = ageSelect.options[ageSelect.selectedIndex];
+
+                if (!petType || !sizeValue || !ageOption || !ageOption.dataset.numeric) {
+                    vetCertSection.style.display = 'none';
+                    if (vetCertInput) vetCertInput.removeAttribute('required');
+                    return;
+                }
+
+                const numericAge = parseInt(ageOption.dataset.numeric) || 0;
+                const sizeOption = sizeSelect.options[sizeSelect.selectedIndex];
+                const seniorAge = parseInt(sizeOption?.dataset?.senior) || 10;
+
+                if (numericAge >= seniorAge) {
+                    vetCertSection.style.display = 'block';
+                    if (vetCertInput) vetCertInput.setAttribute('required', 'true');
+                } else {
+                    vetCertSection.style.display = 'none';
+                    if (vetCertInput) vetCertInput.removeAttribute('required');
+                }
+            };
+
+            // Escuchar cambios en tipo, tamaño y edad
+            petTypeSelect.addEventListener('change', checkSeniorAge);
+            sizeSelect.addEventListener('change', checkSeniorAge);
+            ageSelect.addEventListener('change', checkSeniorAge);
+        }
+
+        // 🆕 Configurar validación de código embajador
+        setupAmbassadorCodeValidation(modal) {
+            const codeInput = document.getElementById('pata-ambassador-code');
+            const messageEl = document.getElementById('pata-ambassador-message');
+
+            if (!codeInput || !messageEl) return;
+
+            let debounceTimer = null;
+
+            codeInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const code = codeInput.value.trim();
+
+                if (!code) {
+                    messageEl.textContent = 'Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí';
+                    messageEl.style.color = '#888';
+                    return;
+                }
+
+                messageEl.textContent = 'Verificando código...';
+                messageEl.style.color = '#888';
+
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${CONFIG.apiUrl}/api/referrals/validate-code?code=${encodeURIComponent(code)}`);
+                        const data = await res.json();
+
+                        if (data.valid) {
+                            messageEl.textContent = `✅ Código válido - Embajador: ${data.ambassadorName}`;
+                            messageEl.style.color = '#10b981';
+                        } else {
+                            messageEl.textContent = '❌ Código no válido';
+                            messageEl.style.color = '#ef4444';
+                        }
+                    } catch (err) {
+                        console.error('Error validando código:', err);
+                        messageEl.textContent = 'Error al verificar código';
+                        messageEl.style.color = '#ef4444';
+                    }
+                }, 500);
             });
         }
 
