@@ -4,8 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Changelog - 5 de Febrero 2026</title>
+    <title>Bitácora de Cambios - Club Pata Amiga</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --primary: #9FD406;
+            --primary-hover: #8bc205;
+            --dark: #1A1A1A;
+            --dark-light: #2A2A2A;
+            --gray: #F5F5F7;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #E5E5E5;
+            --white: #FFFFFF;
+            --success-bg: #E8F5E9;
+            --success-text: #2E7D32;
+            --warning-bg: #FFF3E0;
+            --warning-text: #EF6C00;
+            --danger-bg: #FFEBEE;
+            --danger-text: #C62828;
+            --purple-bg: #F3E5F5;
+            --purple-text: #7B1FA2;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,58 +37,200 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 40px 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--gray);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
             overflow: hidden;
         }
 
-        .header {
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            color: white;
+        /* Sidebar Styles */
+        .sidebar {
+            width: 280px;
+            background-color: var(--dark);
+            color: var(--white);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--dark-light);
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
             padding: 30px;
-            text-align: center;
+            border-bottom: 1px solid var(--dark-light);
         }
 
-        .header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
-
-        .header .date {
-            font-size: 18px;
-            opacity: 0.9;
-        }
-
-        .header .project {
-            font-size: 14px;
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        .change-section {
-            margin-bottom: 30px;
-        }
-
-        .change-section h2 {
-            color: #4F46E5;
+        .brand-logo {
             font-size: 20px;
-            margin-bottom: 15px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #E5E7EB;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--white);
+            margin-bottom: 5px;
+        }
+
+        .brand-logo span {
+            color: var(--primary);
+        }
+
+        .brand-subtitle {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .nav-dates {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #666;
+            font-weight: 700;
+            margin-bottom: 12px;
+            padding-left: 10px;
+            letter-spacing: 1px;
+        }
+
+        .nav-item {
+            width: 100%;
+            text-align: left;
+            padding: 14px 18px;
+            background: transparent;
+            border: none;
+            color: #bbb;
+            cursor: pointer;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background-color: var(--dark-light);
+            color: var(--white);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary);
+            color: var(--dark);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(159, 212, 6, 0.2);
+        }
+
+        .nav-item .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+        }
+
+        .nav-item.active .badge {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--dark);
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 40px;
+            scroll-behavior: smooth;
+        }
+
+        .changelog-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .changelog-entry {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .changelog-entry.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .entry-header {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .entry-title h1 {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .entry-meta {
+            color: var(--text-light);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .version-tag {
+            background: var(--dark);
+            color: var(--white);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .section-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s;
+        }
+
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.06);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -74,233 +240,287 @@
             list-style: none;
         }
 
-        .change-list li {
-            padding: 12px 15px;
-            margin-bottom: 10px;
-            background: #F9FAFB;
-            border-radius: 8px;
-            border-left: 4px solid #10B981;
-            font-size: 15px;
-            line-height: 1.5;
+        .change-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        .change-list li.bug-fix {
-            border-left-color: #EF4444;
-        }
-
-        .change-list li.improvement {
-            border-left-color: #F59E0B;
-        }
-
-        .change-list li strong {
-            color: #1F2937;
+        .change-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
         }
 
         .tag {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 4px;
+            height: 24px;
+            padding: 0 10px;
+            border-radius: 6px;
             font-size: 11px;
-            font-weight: bold;
-            margin-right: 8px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-transform: uppercase;
+            white-space: nowrap;
+            min-width: 80px;
         }
 
         .tag.feature {
-            background: #D1FAE5;
-            color: #065F46;
-        }
-
-        .tag.fix {
-            background: #FEE2E2;
-            color: #991B1B;
+            background-color: var(--success-bg);
+            color: var(--success-text);
         }
 
         .tag.improvement {
-            background: #FEF3C7;
-            color: #92400E;
+            background-color: var(--warning-bg);
+            color: var(--warning-text);
         }
 
-        .footer {
+        .tag.fix {
+            background-color: var(--danger-bg);
+            color: var(--danger-text);
+        }
+
+        .change-desc {
+            font-size: 15px;
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        .change-desc strong {
+            color: var(--dark);
+            font-weight: 600;
+        }
+
+        .empty-state {
             text-align: center;
-            padding: 20px;
-            background: #F9FAFB;
-            color: #6B7280;
-            font-size: 14px;
+            padding: 60px;
+            color: var(--text-light);
+            font-size: 16px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+
+            .sidebar {
+                width: 100%;
+                max-height: auto;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .entry-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>📋 Changelog</h1>
-            <div class="date">5 de Febrero, 2026</div>
-            <div class="project">Club Pata Amiga - Pet Membership Form</div>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="brand-logo">🐾 Club <span>Pata Amiga</span></div>
+            <div class="brand-subtitle">Dev Changelog</div>
         </div>
-
-        <div class="content">
-            <!-- Integración CRM -->
-            <div class="change-section">
-                <h2>🔗 Integración CRM Lynsales</h2>
-                <ul class="change-list">
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Sincronización de contactos al registrar:</strong> Al completar el registro, los datos
-                        del usuario se envían automáticamente al CRM Lynsales como "Prospecto".
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Actualización al aprobar miembro:</strong> Cuando un admin aprueba una membresía, el
-                        contacto se marca como "Miembro Activo" en el CRM.
-                    </li>
-                    <li class="bug-fix">
-                        <span class="tag fix">FIX</span>
-                        <strong>Búsqueda de usuario mejorada:</strong> Si no encuentra al usuario por memberstack_id,
-                        ahora busca por email como fallback.
-                    </li>
-                    <li class="bug-fix">
-                        <span class="tag fix">FIX</span>
-                        <strong>Query de base de datos corregido:</strong> Eliminadas columnas inexistentes
-                        (membership_type, membership_cost) del query de Supabase.
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Formulario de Registro -->
-            <div class="change-section">
-                <h2>📝 Formulario de Registro</h2>
-                <ul class="change-list">
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Detección de sesión existente:</strong> Ahora muestra opciones cuando detecta una sesión
-                        activa en lugar de redirigir automáticamente.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>UI de opciones:</strong> Si hay sesión, el usuario puede elegir: "Ir a mi Dashboard" o
-                        "Cerrar sesión y registrar otra cuenta".
-                    </li>
-                    <li class="bug-fix">
-                        <span class="tag fix">FIX</span>
-                        <strong>Sesiones stale corregidas:</strong> Ya no redirige incorrectamente por cookies viejas de
-                        Memberstack.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Estado de carga:</strong> Muestra "Verificando sesión..." mientras valida la
-                        autenticación.
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Documentación -->
-            <div class="change-section">
-                <h2>📚 Documentación</h2>
-                <ul class="change-list">
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>RESUMEN_CRM_AGENCIA.md:</strong> Documento profesional para compartir con la agencia de
-                        marketing sobre la integración CRM.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>PENDIENTES_STRIPE.md:</strong> Lista de tareas pendientes para cuando se integre Stripe
-                        (actualizar membership_type y membership_cost).
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Cambios en Formularios -->
-            <div class="change-section">
-                <h2>✏️ Cambios en Formularios</h2>
-                <ul class="change-list">
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Comprobante de domicilio eliminado:</strong> Ya no se requiere subir comprobante de
-                        domicilio en el registro de miembros.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Etiquetas de raza actualizadas:</strong> "¿Es mestizo?" → "¿Es mestizo/peludo?", "Raza
-                        pura" → "Raza", "Mestizo" → "Mestizo/Doméstico".
-                    </li>
-                    <li class="bug-fix">
-                        <span class="tag fix">FIX</span>
-                        <strong>Lógica de subida corregida:</strong> Eliminada la subida de comprobante de domicilio del
-                        proceso de registro.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Historia de adopción opcional:</strong> El campo de historia de adopción ahora es
-                        opcional.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Autocomplete de raza mejorado:</strong> Las sugerencias ahora aparecen desde la primera
-                        letra.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Validación de mascota obligatoria:</strong> Se requiere registrar al menos una mascota
-                        con popup de notificación.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Tamaños de mascota actualizados:</strong> Perros (Chica/Mediana/Grande/Gigante) y Gatos
-                        (Chica/Mediana/Grande) con pesos específicos.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Lógica de edad senior:</strong> El certificado veterinario ahora se activa basado en la
-                        edad senior según talla (perro: 8/7/6/5 años, gato: 7 años).
-                    </li>
-                </ul>
-            </div>
+        <nav class="nav-dates" id="nav-list">
+            <div class="nav-label">Historial de Cambios</div>
+            <!-- Los items del menú se generarán aquí -->
+            <button class="nav-item active" onclick="switchTab('2026-02-05')">
+                <span>5 de Feb, 2026</span>
+                <span class="badge">Hoy</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-04')">
+                <span>4 de Feb, 2026</span>
+                <span class="badge">CRM</span>
+            </button>
+        </nav>
+        <div
+            style="padding: 20px; border-top: 1px solid var(--dark-light); font-size: 11px; color: #666; text-align: center;">
+            &copy; 2026 Pata Amiga Dev Team
         </div>
+    </aside>
 
-        <!-- Sección: Pet Cards Widget -->
-        <div class="section">
-            <div class="section-title">🧩 Pet Cards Widget (Webflow)</div>
-            <div class="section-content">
-                <ul>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Formulario de agregar mascota completo:</strong> Modal con todos los campos igual a
-                        /registrar-mascotas.
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Opciones de edad actualizadas:</strong> De 4-6 meses hasta 15+ años (mínimo 4 meses
-                        requerido).
-                    </li>
-                    <li class="improvement">
-                        <span class="tag improvement">MEJORA</span>
-                        <strong>Tamaños dinámicos por tipo:</strong> Perros y gatos tienen opciones de tamaño diferentes
-                        con sus respectivos pesos.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Lógica de edad senior:</strong> Muestra sección de certificado veterinario cuando la
-                        mascota excede la edad senior de su talla.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Código de embajador:</strong> Campo con validación en tiempo real contra la API de
-                        referidos.
-                    </li>
-                    <li>
-                        <span class="tag feature">FEATURE</span>
-                        <strong>Subida de fotos real:</strong> Las fotos se suben a Supabase Storage en lugar de usar
-                        placeholders.
-                    </li>
-                </ul>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="changelog-container">
+
+            <!-- Entrada: 5 de Febrero (HOY) -->
+            <div id="2026-02-05" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Actualización Formulario y Widgets</h1>
+                        <div class="entry-meta">Jueves, 5 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.1.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🧩 Pet Cards Widget (Webflow)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Formulario completo implementado:</strong> Se añadió un modal completo para
+                                agregar mascotas que replica exactamente la funcionalidad de /registrar-mascotas,
+                                incluyendo lógica condicional y validaciones.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Edad mínima ajustada:</strong> Se estableció que la edad mínima de registro sea
+                                de 4 meses (4-6 meses) en lugar de 0 meses, tanto en la plataforma principal como en el
+                                widget.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Tamaños dinámicos:</strong> Las opciones de tamaño ahora cambian según si es
+                                perro (Chica/Mediana/Grande/Gigante) o gato (Chica/Mediana/Grande).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Validación Senior:</strong> Nueva lógica que detecta automáticamente si una
+                                mascota es senior según su talla y solicita certificado veterinario obligatorio.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Código Embajador:</strong> Nuevo campo con validación en tiempo real contra la
+                                API para referidos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Subida de fotos real:</strong> Integración con Supabase Storage para alojar las
+                                imágenes de las mascotas.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📝 Formulario de Registro</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Ajuste de edad mínima:</strong> Se eliminó la opción "0-6 meses" y se reemplazó
+                                por "4-6 meses" para cumplir con requisitos del seguro.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Detección de sesión inteligente:</strong> El formulario ahora detecta si ya
+                                existe una sesión y ofrece ir al dashboard o cerrar sesión.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Eliminación de comprobante:</strong> Ya no se solicita comprobante de domicilio
+                                durante el registro inicial.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Autocomplete predictivo:</strong> La búsqueda de razas ahora sugiere resultados
+                                desde la primera letra escrita.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📚 Documentación</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>RESUMEN_CRM_AGENCIA.md:</strong> Documentación técnica detallada sobre la
+                                integración con Lynsales para la agencia de marketing.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
 
-        <div class="footer">
-            Generado automáticamente • Club Pata Amiga Dev Team
+            <!-- Entrada: 4 de Febrero (AYER) -->
+            <div id="2026-02-04" class="changelog-entry">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Integración CRM Lynsales</h1>
+                        <div class="entry-meta">Miércoles, 4 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.0.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔗 Backend & Integraciones</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Sincronización bidireccional:</strong> Los contactos ahora se crean como
+                                "Prospecto" al registrarse y se actualizan a "Miembro Activo" al aprobarse.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Fallback de búsqueda:</strong> Corrección en la búsqueda de usuarios por email
+                                cuando el ID de Memberstack no está sincronizado.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
         </div>
-    </div>
+    </main>
+
+    <script>
+        function switchTab(dateId) {
+            // 1. Quitar clase active de todos los botones
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+
+            // 2. Ocultar todas las entradas
+            document.querySelectorAll('.changelog-entry').forEach(entry => {
+                entry.classList.remove('active');
+            });
+
+            // 3. Activar el botón clickeado (buscamos por onclick para simplicidad)
+            const activeBtn = Array.from(document.querySelectorAll('.nav-item')).find(btn => btn.getAttribute('onclick').includes(dateId));
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // 4. Mostrar la entrada correspondiente
+            const entryToShow = document.getElementById(dateId);
+            if (entryToShow) {
+                entryToShow.classList.add('active');
+                // Scroll al top
+                document.querySelector('.main-content').scrollTop = 0;
+            }
+        }
+    </script>
 </body>
 
 </html>
