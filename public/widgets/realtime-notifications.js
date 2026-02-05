@@ -28,8 +28,14 @@
         supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q',
         // Mapeo de rutas de backend -> rutas de Webflow
         urls: {
-            '/miembros/dashboard': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/dashboard', // Configurable desde Webflow
+            // Dashboard y Home de usuario
+            '/miembros/dashboard': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/pets/pet-waiting-period',
+            '/dashboard': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/pets/pet-waiting-period',
+            '/mi-membresia': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/pets/pet-waiting-period',
+
+            // Perfil y Edición
             '/perfil': window.PATA_AMIGA_CONFIG?.profileUrl || '/perfil',
+            '/completar-perfil': window.PATA_AMIGA_CONFIG?.profileUrl || '/perfil',
         }
     };
 
