@@ -23,9 +23,14 @@
 
     // ========== CONFIGURACIÓN ==========
     const CONFIG = {
-        apiUrl: 'https://club-pata-amiga-form.vercel.app',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://club-pata-amiga-form.vercel.app',
         supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
-        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q'
+        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q',
+        // Mapeo de rutas de backend -> rutas de Webflow
+        urls: {
+            '/miembros/dashboard': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/dashboard', // Configurable desde Webflow
+            '/perfil': window.PATA_AMIGA_CONFIG?.profileUrl || '/perfil',
+        }
     };
 
     // ========== ESTILOS ==========
@@ -253,6 +258,104 @@
         .rtbell-toast-text {
             font-size: 14px;
             font-weight: 600;
+        }
+
+        /* MODAL DE DETALLES */
+        .rtbell-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 20000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .rtbell-modal-overlay.open {
+            display: flex;
+            opacity: 1;
+        }
+
+        .rtbell-modal {
+            background: white;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+
+        .rtbell-modal-overlay.open .rtbell-modal {
+            transform: scale(1);
+        }
+
+        .rtbell-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #f0f0f0;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            color: #666;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .rtbell-modal-close:hover {
+            background: #e0e0e0;
+        }
+
+        .rtbell-modal-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .rtbell-modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .rtbell-modal-message {
+            font-size: 15px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        .rtbell-modal-btn {
+            background: #00BBB4;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .rtbell-modal-btn:hover {
+            background: #00a09a;
         }
 
         /* Status indicator - oculto para navbar */
@@ -515,6 +618,51 @@
             }
         }
 
+        // ================= NUEVA LÓGICA DE CLICK INTELIGENTE =================
+        handleNotificationClick(notif) {
+            // 1. Marcar como leída
+            if (!notif.is_read) {
+                this.markAsRead(notif.id);
+            }
+
+            // 2. Revisar si hay Link Configurado
+            const incomingLink = notif.link;
+
+            // Si el link coincide con una ruta mapeada en CONFIG.urls, redirigir allí
+            if (incomingLink && CONFIG.urls[incomingLink]) {
+                console.log(`🔀 Redirigiendo URL interna: ${incomingLink} -> ${CONFIG.urls[incomingLink]}`);
+                window.location.href = CONFIG.urls[incomingLink];
+                return;
+            }
+
+            // Si es un link externo absoluto (http...), abrirlo
+            if (incomingLink && (incomingLink.startsWith('http') || incomingLink.startsWith('https'))) {
+                window.location.href = incomingLink;
+                return;
+            }
+
+            // 3. Fallback: Mostrar Modal de Detalles (Evita 404)
+            this.showDetailModal(notif);
+        }
+
+        showDetailModal(notif) {
+            const overlay = document.querySelector('.rtbell-modal-overlay');
+            const icon = overlay.querySelector('.rtbell-modal-icon');
+            const title = overlay.querySelector('.rtbell-modal-title');
+            const message = overlay.querySelector('.rtbell-modal-message');
+
+            icon.textContent = notif.icon || '🔔';
+            title.textContent = notif.title;
+            message.textContent = notif.message;
+
+            overlay.classList.add('open');
+        }
+
+        closeDetailModal() {
+            const overlay = document.querySelector('.rtbell-modal-overlay');
+            overlay.classList.remove('open');
+        }
+
         render() {
             let container = document.getElementById('realtime-bell');
             if (!container) {
@@ -542,6 +690,17 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- MODAL DE DETALLES -->
+                <div class="rtbell-modal-overlay">
+                    <div class="rtbell-modal">
+                        <button class="rtbell-modal-close">&times;</button>
+                        <span class="rtbell-modal-icon">🔔</span>
+                        <div class="rtbell-modal-title">Título</div>
+                        <div class="rtbell-modal-message">Mensaje</div>
+                        <button class="rtbell-modal-btn">Entendido</button>
+                    </div>
+                </div>
             `;
 
             this.attachEvents();
@@ -551,6 +710,11 @@
             const btn = document.querySelector('.rtbell-button');
             const dropdown = document.querySelector('.rtbell-dropdown');
             const markAllBtn = document.querySelector('.rtbell-mark-all');
+
+            // Eventos del Modal
+            const modalOverlay = document.querySelector('.rtbell-modal-overlay');
+            const modalCloseBtn = document.querySelector('.rtbell-modal-close');
+            const modalActionBtn = document.querySelector('.rtbell-modal-btn');
 
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -563,10 +727,22 @@
                 this.markAllAsRead();
             });
 
-            document.addEventListener('click', () => {
-                this.isOpen = false;
-                dropdown.classList.remove('open');
+            document.addEventListener('click', (e) => {
+                // Cerrar dropdown si click fuera
+                if (this.isOpen && !e.target.closest('#realtime-bell-widget')) {
+                    this.isOpen = false;
+                    dropdown.classList.remove('open');
+                }
+
+                // Cerrar modal si click fuera (overlay)
+                if (e.target === modalOverlay) {
+                    this.closeDetailModal();
+                }
             });
+
+            // Cerrar modal
+            modalCloseBtn.addEventListener('click', () => this.closeDetailModal());
+            modalActionBtn.addEventListener('click', () => this.closeDetailModal());
         }
 
         updateUI() {
@@ -605,16 +781,14 @@
                     </div>
                 `).join('');
 
-                // Click events
+                // Click events con nueva lógica
                 list.querySelectorAll('.rtbell-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const id = item.dataset.id;
                         const notif = this.notifications.find(n => n.id === id);
-                        if (notif && !notif.is_read) {
-                            this.markAsRead(id);
-                        }
-                        if (notif && notif.link) {
-                            window.location.href = notif.link;
+
+                        if (notif) {
+                            this.handleNotificationClick(notif);
                         }
                     });
                 });
