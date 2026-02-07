@@ -19,15 +19,15 @@ export default function AuthLanding() {
     // Verificación de sesión (SIN redirección automática)
     React.useEffect(() => {
         const checkSession = async () => {
-            // Esperar que Memberstack cargue (máximo 3 segundos)
+            // Esperar que Memberstack cargue (máximo 4 segundos, intentos más agresivos)
             let attempts = 0;
-            while (!window.$memberstackDom && attempts < 6) {
-                await new Promise(resolve => setTimeout(resolve, 500));
+            while (!window.$memberstackDom && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 200));
                 attempts++;
             }
 
             if (!window.$memberstackDom) {
-                console.log('⚠️ Memberstack no cargó después de 3s');
+                console.log('⚠️ Memberstack no cargó después de esperar. Posible bloqueo o red lenta.');
                 setIsCheckingSession(false);
                 return;
             }
@@ -37,7 +37,7 @@ export default function AuthLanding() {
 
                 // Si no hay member o no tiene ID válido, mostrar formulario
                 if (!member || !member.id) {
-                    console.log('ℹ️ No hay sesión activa, mostrando formulario de registro');
+                    console.log('ℹ️ AuthLanding: No hay sesión activa, mostrando formulario de registro');
                     setIsCheckingSession(false);
                     return;
                 }

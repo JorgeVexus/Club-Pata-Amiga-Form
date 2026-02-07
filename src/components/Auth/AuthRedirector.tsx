@@ -8,14 +8,19 @@ export default function AuthRedirector() {
 
     React.useEffect(() => {
         const checkSession = async () => {
-            // Pequeño delay para UX (opcional)
-            await new Promise(resolve => setTimeout(resolve, 800));
+            let attempts = 0;
+            // Esperar activamente a Memberstack (hasta 3s)
+            while (!window.$memberstackDom && attempts < 15) {
+                await new Promise(resolve => setTimeout(resolve, 200));
+                attempts++;
+            }
 
             if (window.$memberstackDom) {
                 try {
                     const { data: member } = await window.$memberstackDom.getCurrentMember();
-                    if (member) {
-                        console.log('✅ Usuario detectado, verificando rol...');
+
+                    if (member && member.id) {
+                        console.log('✅ Usuario detectado en root, verificando rol...', member.id);
 
                         try {
                             const res = await fetch('/api/auth/check-role', {
@@ -23,6 +28,9 @@ export default function AuthRedirector() {
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ memberstackId: member.id })
                             });
+
+                            if (!res.ok) throw new Error('Error en API check-role');
+
                             const data = await res.json();
 
                             if (data.role === 'admin') {
@@ -36,21 +44,22 @@ export default function AuthRedirector() {
                                 window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
                             }
                         } catch (err) {
-                            console.error('Error checando rol, fallback a default');
+                            console.error('Error checando rol o API fallo, asumiendo miembro normal:', err);
+                            // Fallback seguro: si hay sesión pero falló el rol, mandar a dashboard de miembro
                             window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
                         }
                     } else {
-                        console.log('❌ No hay sesión, redirigiendo a Login...');
+                        console.log('❌ No hay sesión activa, redirigiendo a Login/Registro...');
                         window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
                     }
                 } catch (e) {
-                    console.log('Error chequeando sesión:', e);
-                    // Fallback
+                    console.log('Error chequeando sesión con Memberstack:', e);
+                    // Fallback final
                     window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
                 }
             } else {
-                console.log('Memberstack no cargado aun...');
-                // Podríamos esperar o redirigir
+                console.log('⚠️ Memberstack no cargó a tiempo, redirigiendo a registro...');
+                window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
             }
         };
         checkSession();
