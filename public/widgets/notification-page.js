@@ -9,7 +9,7 @@
  * 1. Crea una página nueva en Webflow (ej: /notificaciones).
  * 2. En la configuración de esa página (Custom Code → Head Code), pega esto:
  * 
- * <script src="https://club-pata-amiga-form.vercel.app/widgets/notification-page.js"></script>
+ * <script src="https://www.pataamiga.mx/widgets/notification-page.js"></script>
  * 
  * 3. En el cuerpo de la página, agrega un "Embed" con este ID:
  * 
@@ -20,7 +20,7 @@
     'use strict';
 
     const CONFIG = window.PATA_AMIGA_CONFIG || {
-        apiUrl: 'https://club-pata-amiga-form.vercel.app'
+        apiUrl: 'https://www.pataamiga.mx'
     };
 
     const STYLES = `

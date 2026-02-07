@@ -11,8 +11,8 @@
     // CONFIGURACIÓN
     // ============================================
     const CONFIG = {
-        API_BASE_URL: 'https://club-pata-amiga-form.vercel.app',
-        IMAGES_BASE_URL: 'https://club-pata-amiga-form.vercel.app/embajadores-images',
+        API_BASE_URL: 'https://www.pataamiga.mx',
+        IMAGES_BASE_URL: 'https://www.pataamiga.mx/embajadores-images',
         DEBUG: false
     };
 

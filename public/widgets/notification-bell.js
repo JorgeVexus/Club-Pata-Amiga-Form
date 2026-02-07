@@ -16,12 +16,12 @@
  * 
  * <script>
  *   window.PATA_AMIGA_CONFIG = {
- *     apiUrl: 'https://club-pata-amiga-form.vercel.app',
+ *     apiUrl: 'https://www.pataamiga.mx',
  *     supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
  *     supabaseAnonKey: 'TU_ANON_KEY'
  *   };
  * </script>
- * <script src="https://club-pata-amiga-form.vercel.app/widgets/notification-bell.js"></script>
+ * <script src="https://www.pataamiga.mx/widgets/notification-bell.js"></script>
  * 
  * 3. En el navbar de Webflow, agrega un Embed element donde quieras la campanita:
  * 
@@ -36,7 +36,7 @@
 
     // Configuración
     const DEFAULT_CONFIG = {
-        apiUrl: 'https://club-pata-amiga-form.vercel.app',
+        apiUrl: 'https://www.pataamiga.mx',
         notificationsUrl: '/miembros/notificaciones',
         supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
         supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q'

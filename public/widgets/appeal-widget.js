@@ -9,7 +9,7 @@
     'use strict';
 
     const DEFAULT_CONFIG = {
-        apiUrl: 'https://club-pata-amiga-form.vercel.app'
+        apiUrl: 'https://www.pataamiga.mx'
     };
 
     const CONFIG = {};

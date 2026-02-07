@@ -63,8 +63,8 @@ export default function AuthLanding() {
 
                     const data = await res.json();
                     const redirectUrl = data.role === 'ambassador'
-                        ? 'https://club-pata-amiga-6d0e72.webflow.io/embajadores/embajadores'
-                        : 'https://club-pata-amiga-6d0e72.webflow.io/pets/pet-waiting-period';
+                        ? 'https://www.pataamiga.mx/embajadores/embajadores'
+                        : 'https://www.pataamiga.mx/pets/pet-waiting-period';
 
                     // Guardar info de sesión para mostrar opciones (NO redirigir automáticamente)
                     setExistingSession({

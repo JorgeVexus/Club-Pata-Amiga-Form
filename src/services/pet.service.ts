@@ -217,7 +217,7 @@ function getApiBaseUrl(): string {
             return 'http://localhost:3000';
         }
     }
-    return 'https://club-pata-amiga-form.vercel.app';
+    return 'https://www.pataamiga.mx';
 }
 
 /**

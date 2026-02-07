@@ -9,7 +9,7 @@
  * 1. En el Head Code de Webflow, pega:
  * 
  * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- * <script src="https://club-pata-amiga-form.vercel.app/widgets/realtime-notifications.js"></script>
+ * <script src="https://www.pataamiga.mx/widgets/realtime-notifications.js"></script>
  * 
  * 2. Añade un div donde quieras la campanita:
  * 
@@ -23,7 +23,7 @@
 
     // ========== CONFIGURACIÓN ==========
     const CONFIG = {
-        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://club-pata-amiga-form.vercel.app',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://www.pataamiga.mx',
         supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
         supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q',
         // Mapeo de rutas de backend -> rutas de Webflow

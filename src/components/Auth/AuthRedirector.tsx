@@ -30,23 +30,23 @@ export default function AuthRedirector() {
                                 window.location.href = '/admin/dashboard';
                             } else if (data.role === 'ambassador') {
                                 console.log('👤 Es embajador, redirigiendo a su dashboard...');
-                                window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/embajadores/embajadores';
+                                window.location.href = 'https://www.pataamiga.mx/embajadores/embajadores';
                             } else {
                                 console.log('🐾 Es miembro, redirigiendo a dashboard de usuario...');
-                                window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/pets/pet-waiting-period';
+                                window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
                             }
                         } catch (err) {
                             console.error('Error checando rol, fallback a default');
-                            window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/pets/pet-waiting-period';
+                            window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
                         }
                     } else {
                         console.log('❌ No hay sesión, redirigiendo a Landing Webflow...');
-                        window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/';
+                        window.location.href = 'https://www.pataamiga.mx/';
                     }
                 } catch (e) {
                     console.log('Error chequeando sesión:', e);
                     // Fallback
-                    window.location.href = 'https://club-pata-amiga-6d0e72.webflow.io/';
+                    window.location.href = 'https://www.pataamiga.mx/';
                 }
             } else {
                 console.log('Memberstack no cargado aun...');
