@@ -40,13 +40,13 @@ export default function AuthRedirector() {
                             window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
                         }
                     } else {
-                        console.log('❌ No hay sesión, redirigiendo a Landing Webflow...');
-                        window.location.href = 'https://www.pataamiga.mx/';
+                        console.log('❌ No hay sesión, redirigiendo a Login...');
+                        window.location.href = 'https://www.pataamiga.mx/usuarios/registro';
                     }
                 } catch (e) {
                     console.log('Error chequeando sesión:', e);
                     // Fallback
-                    window.location.href = 'https://www.pataamiga.mx/';
+                    window.location.href = 'https://www.pataamiga.mx/usuarios/registro';
                 }
             } else {
                 console.log('Memberstack no cargado aun...');
