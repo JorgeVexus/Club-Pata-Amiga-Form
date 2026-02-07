@@ -63,8 +63,8 @@ export default function AuthLanding() {
 
                     const data = await res.json();
                     const redirectUrl = data.role === 'ambassador'
-                        ? 'https://www.pataamiga.mx/embajadores/embajadores'
-                        : 'https://www.pataamiga.mx/pets/pet-waiting-period';
+                        ? 'https://app.pataamiga.mx/embajadores/embajadores'
+                        : 'https://app.pataamiga.mx/pets/pet-waiting-period';
 
                     // Guardar info de sesión para mostrar opciones (NO redirigir automáticamente)
                     setExistingSession({

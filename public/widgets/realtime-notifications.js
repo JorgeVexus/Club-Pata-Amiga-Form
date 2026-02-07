@@ -9,7 +9,7 @@
  * 1. En el Head Code de Webflow, pega:
  * 
  * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
- * <script src="https://www.pataamiga.mx/widgets/realtime-notifications.js"></script>
+ * <script src="https://app.pataamiga.mx/widgets/realtime-notifications.js"></script>
  * 
  * 2. Añade un div donde quieras la campanita:
  * 

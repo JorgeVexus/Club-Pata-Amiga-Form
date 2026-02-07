@@ -8,14 +8,14 @@
  * 1. Agregar este script en el <head> de las páginas donde se usan códigos de referido
  * 2. El código se captura automáticamente de URLs como: /registro?ref=PATA123
  * 
- * <script src="https://www.pataamiga.mx/widgets/referral-tracker.js"></script>
+ * <script src="https://app.pataamiga.mx/widgets/referral-tracker.js"></script>
  */
 
 (function () {
     'use strict';
 
     const CONFIG = {
-        API_BASE_URL: 'https://www.pataamiga.mx',
+        API_BASE_URL: 'https://app.pataamiga.mx',
         STORAGE_KEY: 'pata_referral_code',
         EXPIRY_DAYS: 30, // Cuántos días mantener el código guardado
         URL_PARAMS: ['ref', 'referral', 'code', 'embajador'] // Parámetros de URL que buscamos

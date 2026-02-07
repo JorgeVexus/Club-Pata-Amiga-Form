@@ -27,26 +27,26 @@ export default function AuthRedirector() {
 
                             if (data.role === 'admin') {
                                 console.log('🛡️ Es Admin, redirigiendo a panel administrativo...');
-                                window.location.href = '/admin/dashboard';
+                                window.location.href = 'https://app.pataamiga.mx/admin/dashboard';
                             } else if (data.role === 'ambassador') {
                                 console.log('👤 Es embajador, redirigiendo a su dashboard...');
-                                window.location.href = 'https://www.pataamiga.mx/embajadores/embajadores';
+                                window.location.href = 'https://app.pataamiga.mx/embajadores/embajadores';
                             } else {
                                 console.log('🐾 Es miembro, redirigiendo a dashboard de usuario...');
-                                window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
+                                window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
                             }
                         } catch (err) {
                             console.error('Error checando rol, fallback a default');
-                            window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
+                            window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
                         }
                     } else {
                         console.log('❌ No hay sesión, redirigiendo a Login...');
-                        window.location.href = 'https://www.pataamiga.mx/usuarios/registro';
+                        window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
                     }
                 } catch (e) {
                     console.log('Error chequeando sesión:', e);
                     // Fallback
-                    window.location.href = 'https://www.pataamiga.mx/usuarios/registro';
+                    window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
                 }
             } else {
                 console.log('Memberstack no cargado aun...');

@@ -9,7 +9,7 @@
     'use strict';
 
     const CONFIG = {
-        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://www.pataamiga.mx',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         brandColor: '#00BBB4',
         progressColor: '#9fd406',
         countdownBg: '#C8E600'

@@ -9,7 +9,7 @@
     'use strict';
 
     const DEFAULT_CONFIG = {
-        apiUrl: 'https://www.pataamiga.mx'
+        apiUrl: 'https://app.pataamiga.mx'
     };
 
     const CONFIG = {};

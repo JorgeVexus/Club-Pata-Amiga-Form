@@ -11,8 +11,8 @@
     // CONFIGURACIÓN
     // ============================================
     const CONFIG = {
-        API_BASE_URL: 'https://www.pataamiga.mx',
-        IMAGES_BASE_URL: 'https://www.pataamiga.mx/embajadores-images',
+        API_BASE_URL: 'https://app.pataamiga.mx',
+        IMAGES_BASE_URL: 'https://app.pataamiga.mx/embajadores-images',
         DEBUG: false
     };
 

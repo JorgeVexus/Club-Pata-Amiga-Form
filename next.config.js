@@ -12,47 +12,12 @@ const nextConfig = {
         formats: ['image/avif', 'image/webp'],
     },
 
-    // Headers de seguridad
-    async headers() {
-        return [
-            {
-                source: '/:path*',
-                headers: [
-                    {
-                        key: 'X-DNS-Prefetch-Control',
-                        value: 'on'
-                    },
-                    {
-                        key: 'Strict-Transport-Security',
-                        value: 'max-age=63072000; includeSubDomains; preload'
-                    },
-                    {
-                        key: 'X-Frame-Options',
-                        value: 'SAMEORIGIN'
-                    },
-                    {
-                        key: 'X-Content-Type-Options',
-                        value: 'nosniff'
-                    },
-                    {
-                        key: 'Referrer-Policy',
-                        value: 'origin-when-cross-origin'
-                    }
-                ]
-            }
-        ]
-    },
-
     // Configuración para embed en Webflow
     async rewrites() {
         return [
             {
-                source: '/',
-                destination: 'https://proxy-ssl.webflow.com/',
-            },
-            {
                 source: '/embed',
-                destination: '/usuarios/registro', // Fixed: embed should probably go to registration if not specific
+                destination: '/usuarios/registro',
             },
         ]
     },

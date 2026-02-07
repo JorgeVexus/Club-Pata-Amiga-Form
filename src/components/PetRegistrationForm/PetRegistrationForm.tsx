@@ -82,7 +82,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
         try {
             const response = await fetch(
-                `https://www.pataamiga.mx/api/referrals/validate-code?code=${encodeURIComponent(code.trim())}`
+                `https://app.pataamiga.mx/api/referrals/validate-code?code=${encodeURIComponent(code.trim())}`
             );
             const data = await response.json();
 

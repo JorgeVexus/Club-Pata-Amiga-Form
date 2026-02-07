@@ -6,7 +6,7 @@
     'use strict';
 
     const CONFIG = {
-        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://www.pataamiga.mx',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         maxPets: 3,
         placeholderDog: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png',
         statusColors: {

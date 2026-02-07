@@ -217,7 +217,7 @@ function getApiBaseUrl(): string {
             return 'http://localhost:3000';
         }
     }
-    return 'https://www.pataamiga.mx';
+    return 'https://app.pataamiga.mx';
 }
 
 /**
