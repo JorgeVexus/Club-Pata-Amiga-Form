@@ -47,8 +47,12 @@ const nextConfig = {
     async rewrites() {
         return [
             {
+                source: '/',
+                destination: 'https://proxy-ssl.webflow.com/',
+            },
+            {
                 source: '/embed',
-                destination: '/',
+                destination: '/usuarios/registro', // Fixed: embed should probably go to registration if not specific
             },
         ]
     },
