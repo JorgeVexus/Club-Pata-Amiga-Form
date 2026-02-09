@@ -843,6 +843,7 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                     >
                         Cancelar
                     </button>
+                    {/* 5. Vincular a Memberstack (Actualizar Custom Fields LIGEROS) - MOVIDO AL SUBMIT */}
 
                     <div className={styles['ambassador-nav-buttons']}>
                         {/* Mostrar botón Anterior solo si puede retroceder */}
@@ -873,16 +874,16 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         </button>
                     </div>
                 </div>
-            </div>
 
-            {/* Help floating */}
-            <div className={styles['ambassador-help']}>
-                <div className={styles['ambassador-help-icon']}>❓</div>
-                <div className={styles['ambassador-help-text']}>
-                    <p>¿Necesitas ayuda?</p>
-                    <p><strong>Contáctanos</strong></p>
-                    <a href="mailto:pata_amiga@gmail.com">📧 pata_amiga@gmail.com</a>
-                    <a href="tel:+526448995874">📞 +52 644 899 5874</a>
+                {/* Help floating */}
+                <div className={styles['ambassador-help']}>
+                    <div className={styles['ambassador-help-icon']}>❓</div>
+                    <div className={styles['ambassador-help-text']}>
+                        <p>¿Necesitas ayuda?</p>
+                        <p><strong>Contáctanos</strong></p>
+                        <a href="mailto:pata_amiga@gmail.com">📧 pata_amiga@gmail.com</a>
+                        <a href="tel:+526448995874">📞 +52 644 899 5874</a>
+                    </div>
                 </div>
             </div>
         </div>

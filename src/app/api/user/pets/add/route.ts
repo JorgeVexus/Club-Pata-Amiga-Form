@@ -129,27 +129,11 @@ export async function POST(request: NextRequest) {
         );
 
         // 5. Preparar campos para Memberstack
+        // NOTA: Con la nueva arquitectura, SOLO actualizamos el conteo de mascotas en Memberstack.
+        // El resto de la data vive felizmente en Supabase.
         const newFields: Record<string, any> = {
-            'total-pets': (occupiedSlots.length + 1).toString(), // El nuevo conteo real
-            [`${prefix}-name`]: petData.name,
-            [`${prefix}-last-name`]: petData.lastName || '',
-            [`${prefix}-type`]: petData.petType,
-            [`${prefix}-breed`]: petData.breed || 'Mestizo',
-            [`${prefix}-breed-size`]: petData.breedSize,
-            [`${prefix}-age`]: petData.age,
-            [`${prefix}-is-mixed`]: petData.isMixed ? 'true' : 'false',
-            [`${prefix}-is-adopted`]: petData.isAdopted ? 'true' : 'false',
-            [`${prefix}-adoption-story`]: petData.adoptionStory || '',
-            [`${prefix}-ruac`]: petData.ruac || '',
-            [`${prefix}-photo-1-url`]: petData.photo1Url || '',
-            [`${prefix}-photo-2-url`]: petData.photo2Url || '',
-            [`${prefix}-vet-certificate-url`]: petData.vetCertificateUrl || '',
-            [`${prefix}-waiting-period-days`]: carencia.days.toString(),
-            [`${prefix}-waiting-period-end`]: carencia.endDate,
-            [`${prefix}-registration-date`]: new Date().toISOString(),
-            [`${prefix}-is-active`]: 'true',
-            [`${prefix}-is-original`]: 'true',
-            'approval-status': 'pending' // Asegurar que el status sea pendiente para que aparezca en el admin
+            'total-pets': (occupiedSlots.length + 1).toString(),
+            // 'approval-status': 'pending' // No es necesario sobreescribir status aquí, eso es del usuario
         };
 
         // 6. Actualizar Memberstack
