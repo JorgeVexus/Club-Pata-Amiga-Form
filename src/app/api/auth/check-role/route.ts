@@ -33,15 +33,19 @@ export async function POST(request: NextRequest) {
             .from('ambassadors')
             .select('id, status')
             .eq('linked_memberstack_id', memberstackId)
-            .single();
+            .eq('linked_memberstack_id', memberstackId)
+            .maybeSingle();
 
         if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended') {
+            console.log(`🔍 [Check-Role] Embajador encontrado para ID ${memberstackId}:`, ambassador);
             return NextResponse.json({
                 success: true,
                 role: 'ambassador',
                 status: ambassador.status
             });
         }
+
+        console.log(`ℹ️ [Check-Role] No es embajador activo (Status: ${ambassador?.status})`);
 
         return NextResponse.json({
             success: true,
