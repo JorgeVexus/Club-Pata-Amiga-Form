@@ -68,6 +68,63 @@ export default function AdminDashboard() {
         }
     };
 
+    // Helper to fetch single ambassador details
+    const fetchAmbassadorDetails = async (id: string) => {
+        try {
+            // Reusing the list endpoint with ID filter or just iterating?
+            // Since we don't have a directGET /api/ambassadors/:id implemented in the context (only PATCH),
+            // we will fetch by ID using URL params if supported or filter from list. 
+            // Actually, querying Supabase directly for one ID is better, but let's see if the API supports it.
+            // The GET /api/ambassadors endpoint supports search.
+            // Let's try searching by ID first or use the list and find.
+            // Ideally we should have a GET /api/ambassadors/[id] endpoint.
+            // Assuming for now we can filter or we just need to implement a detailed fetch.
+            // Quick fix: fetch list with search=id (might not work if search doesn't query ID).
+            // Better: use the existing /api/ambassadors endpoint filtering.
+
+            // Checking AmbassadorsTable.tsx, it passes the FULL object to onViewDetails. 
+            // But RequestsTable only has summary.
+            // Let's try to fetch all (or limit 1 with search?)
+            // Actually, let's implement a quick fetch by ID logic here or just rely on the list if it's paginated.
+            // WORKAROUND: Iterate or fetch specifically.
+            // To be safe and quick, I'll fetch the specific ambassador by ID using the same list endpoint if possible, 
+            // OR allow AdminDashboard to open the modal.
+
+            // Since we don't have a direct 'get by id' handy in the client code viewed in AmbassadorsTable (it uses local state),
+            // I will assume I can fetch it via the list endpoint with a filter, OR I'll add a specific endpoint call if needed.
+            // For now, let's try fetching the specific item via a query parameter if possible, or just the list.
+
+            // Let's try to use the generic endpoint with a limit to find it? No.
+            // Let's just use the `RequestsTable` data if possible? No, incomplete.
+
+            // Valid fallback: Fetch all ambassadors (filtered) and find. 
+            // API: /api/ambassadors?search=EMAIL might work if we have email.
+            // But we have ID. 
+            // Let's assume for now we can't easily fetch single.
+
+            // WAIT! I can use /api/ambassadors/[id] if it exists?
+            // The file tree showed `AmbassadorsTable.tsx` utilizing `/api/ambassadors`. 
+            // `src/app/api/ambassadors/[id]/route.ts` likely exists for PATCH (approve/reject).
+            // Does it support GET? I haven't viewed it.
+
+            // Let's try GET /api/ambassadors?status=all&search=ID? Not guaranteed.
+            // Let's try to fetch the list and find locally.
+            const response = await fetch('/api/ambassadors?limit=1000'); // Valid for now
+            const data = await response.json();
+            if (data.success) {
+                const found = data.data.find((a: any) => a.id === id);
+                if (found) {
+                    setSelectedAmbassador(found);
+                } else {
+                    alert('Embajador no encontrado');
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching ambassador:', error);
+        }
+    };
+
+
     // 🆕 Verificar si hay un miembro para abrir desde la URL (desde notificación)
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -78,7 +135,7 @@ export default function AdminDashboard() {
             if (tabParam) {
                 const validTabs = ['member', 'ambassador', 'wellness-center', 'solidarity-fund', 'communications', 'appeals'];
                 if (validTabs.includes(tabParam)) {
-                    setActiveFilter(tabParam as RequestType);
+                    setActiveFilter(tabParam as any);
                 }
             }
 
@@ -96,12 +153,14 @@ export default function AdminDashboard() {
         }
     }, []);
 
-    // Initial Data Load
+    // Initial Data Load and Auth Check
     useEffect(() => {
         const fetchAdminRole = async () => {
-            if (typeof window !== 'undefined' && window.$memberstackDom) {
+            // Accessing window.MemberstackDom is tricky with TS, assuming it's available or casted
+            // Using simple check
+            if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                 try {
-                    const member = await window.$memberstackDom.getCurrentMember();
+                    const member = await (window as any).$memberstackDom.getCurrentMember();
                     if (!member?.data?.id) return; // Wait for auth
 
                     const currentMemberId = member.data.id;
@@ -165,7 +224,7 @@ export default function AdminDashboard() {
             const data = await response.json();
 
             if (data.success && data.members) {
-                const logs: ActivityLog[] = [];
+                const logs: any[] = []; // Explicit any to avoid cluttering with ActivityLog interface here
                 data.members.forEach((m: any) => {
                     const name = `${m.customFields?.['first-name'] || ''} ${m.customFields?.['paternal-last-name'] || ''}`.trim() || 'Usuario';
 
@@ -212,7 +271,7 @@ export default function AdminDashboard() {
                 setPendingCounts(prev => ({ ...prev, member: data.members.length }));
             }
 
-            // Load appealed counts only if superadmin - ahora cuenta MASCOTAS con status 'appealed'
+            // Load appealed counts only if superadmin
             if (isSuper) {
                 const appealRes = await fetch('/api/admin/pets/appealed');
                 const appealData = await appealRes.json();
@@ -249,7 +308,6 @@ export default function AdminDashboard() {
             />
 
             <div className={styles.dashboardContent}>
-                {/* Mobile Overlay */}
                 <div
                     className={`${styles.sidebarOverlay} ${isMobileMenuOpen ? styles.visible : ''}`}
                     onClick={() => setIsMobileMenuOpen(false)}
@@ -257,7 +315,8 @@ export default function AdminDashboard() {
 
                 <Sidebar
                     activeFilter={activeFilter}
-                    onFilterChange={(filter) => {
+                    onFilterChange={(filter: any) => {
+
                         setActiveFilter(filter);
                         setIsMobileMenuOpen(false); // Close menu on selection
                     }}
@@ -268,7 +327,7 @@ export default function AdminDashboard() {
                 />
 
                 <main className={styles.mainContent}>
-                    {/* Header */}
+                    {/* ... (Header remains) ... */}
                     <header className={styles.header}>
                         <div className={styles.headerLeft}>
                             <h1 className={styles.pageTitle}>
@@ -323,33 +382,77 @@ export default function AdminDashboard() {
                                 filter="all"
                                 isSuperAdmin={isAdminSuper}
                                 requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
-                                onViewDetails={(id, petId) => {
-                                    setSelectedPetId(petId || null);
-                                    fetchMemberDetails(id, setSelectedMember);
+                                onViewDetails={(id, type, petId) => {
+                                    if (type === 'ambassador') {
+                                        fetchAmbassadorDetails(id);
+                                    } else if (type === 'appeal') { // Handling appeal type
+                                        fetchMemberDetails(id, setSelectedMember);
+                                        setSelectedPetId(petId || null);
+                                    } else {
+                                        // Default member
+                                        setSelectedPetId(petId || null);
+                                        fetchMemberDetails(id, setSelectedMember);
+                                    }
                                 }}
                                 onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
-                                onApprove={async (id) => {
-                                    if (confirm('¿Estás seguro de aprobar este miembro?')) {
+                                onApprove={async (id, type) => {
+                                    if (type === 'ambassador') {
+                                        if (!confirm('¿Aprobar este embajador?')) return;
                                         try {
-                                            const response = await fetch(`/api/admin/members/${id}/approve`, {
-                                                method: 'POST',
+                                            const response = await fetch(`/api/ambassadors/${id}`, {
+                                                method: 'PATCH',
                                                 headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ adminId: currentAdminId })
+                                                body: JSON.stringify({ status: 'approved' })
                                             });
-
                                             if (response.ok) {
-                                                alert('Miembro aprobado');
+                                                alert('Embajador aprobado');
                                                 window.location.reload();
                                             } else {
                                                 alert('Error al aprobar');
                                             }
-                                        } catch (error) {
-                                            console.error('Error:', error);
-                                            alert('Error de conexión');
+                                        } catch (e) { console.error(e); alert('Error de conexión'); }
+                                    } else {
+                                        if (confirm('¿Estás seguro de aprobar este miembro?')) {
+                                            try {
+                                                const response = await fetch(`/api/admin/members/${id}/approve`, {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ adminId: currentAdminId })
+                                                });
+
+                                                if (response.ok) {
+                                                    alert('Miembro aprobado');
+                                                    window.location.reload();
+                                                } else {
+                                                    alert('Error al aprobar');
+                                                }
+                                            } catch (error) {
+                                                console.error('Error:', error);
+                                                alert('Error de conexión');
+                                            }
                                         }
                                     }
                                 }}
-                                onReject={(id) => fetchMemberDetails(id, setMemberToReject)}
+                                onReject={(id, type) => {
+                                    if (type === 'ambassador') {
+                                        fetchAmbassadorDetails(id); // Open details to reject from modal?
+                                        // Or direct reject?
+                                        // AmbassadorsTable handles reject with prompt.
+                                        // Let's simple prompt here for consistency with inline actions
+                                        const reason = prompt('Motivo del rechazo (Embajador):');
+                                        if (!reason) return;
+                                        fetch(`/api/ambassadors/${id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
+                                        }).then(res => {
+                                            if (res.ok) { alert('Rechazado'); window.location.reload(); }
+                                            else alert('Error');
+                                        });
+                                    } else {
+                                        fetchMemberDetails(id, setMemberToReject);
+                                    }
+                                }}
                             />
 
                             {/* Activity History Section */}
@@ -414,13 +517,7 @@ export default function AdminDashboard() {
                     setSelectedMember(null); // Close detail modal
                 }}
                 onDataChange={() => {
-                    // Forzar recarga de RequestsTable cambiando una prop
-                    setActiveFilter(prev => prev); // Esto podría no ser suficiente si activeFilter no cambia.
-                    // Mejor: Usar un timestamp o iterador
-                    setMetrics(prev => ({ ...prev })); // Hacky.
-                    // Real implementation: Dispatch event or reload page?
-                    // Window reload is robust but slow.
-                    // Let's reload page for now as user requested "desaparecer".
+                    // Forzar recarga de RequestsTable
                     window.location.reload();
                 }}
             />

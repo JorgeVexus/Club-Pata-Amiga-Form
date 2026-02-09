@@ -8,11 +8,12 @@ interface MemberRequest {
     name: string;
     email: string;
     submittedAt: string;
-    status: 'pending' | 'approved' | 'rejected' | 'appealed';
+    status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended';
     petCount?: number;
+    type: 'member' | 'ambassador';
+    roles: ('member' | 'ambassador')[]; // New field for display tags
 }
 
-// Interface para mascotas apeladas
 interface AppealedPet {
     petId: string;
     petName: string;
@@ -32,10 +33,10 @@ interface AppealedPet {
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
     requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals';
-    onViewDetails: (memberId: string, petId?: string) => void; // petId opcional para apelaciones
-    onViewRejectionReason?: (memberId: string) => void;
-    onApprove: (memberId: string) => void;
-    onReject: (memberId: string) => void;
+    onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal', extraId?: string) => void;
+    onViewRejectionReason?: (id: string) => void;
+    onApprove: (id: string, type?: 'member' | 'ambassador') => void;
+    onReject: (id: string, type?: 'member' | 'ambassador') => void;
     isSuperAdmin?: boolean;
 }
 
@@ -48,13 +49,11 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
 
     const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
-    // 🆕 Filtro de fecha para apelaciones
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter, requestType]); // Reload when internal filter OR requestType changes
+    }, [sortFilter, requestType]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -75,61 +74,132 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
         try {
             setLoading(true);
 
-            // Si es vista de apelaciones, usar la API de mascotas apeladas
             if (requestType === 'appeals') {
                 const response = await fetch('/api/admin/pets/appealed');
                 const data = await response.json();
                 if (data.success && data.pets) {
                     setAppealedPets(data.pets);
-                    setRequests([]); // Limpiar requests normales
+                    setRequests([]);
                 }
                 setLoading(false);
                 return;
             }
 
-            // Lógica normal para otros tipos
+            // --- Lógica combinada para Miembros y Embajadores ---
+
             let statusParam = 'pending';
             if (sortFilter === 'approved') statusParam = 'approved';
             if (sortFilter === 'rejected') statusParam = 'rejected';
             if (sortFilter === 'all') statusParam = 'all';
 
-            const response = await fetch(`/api/admin/members?status=${statusParam}`);
-            const data = await response.json();
+            const promises = [];
 
-            if (data.success && data.members) {
-                // Si no es superadmin, quitar miembros que están en apelación
-                const allowedMembers = isSuperAdmin
-                    ? data.members
-                    : data.members.filter((m: any) => m.customFields?.['approval-status'] !== 'appealed');
-
-                let formattedRequests: MemberRequest[] = allowedMembers.map((member: any) => {
-                    // Count pets by checking pet-x-name fields
-                    let petCount = 0;
-                    for (let i = 1; i <= 3; i++) {
-                        if (member.customFields?.[`pet-${i}-name`]) petCount++;
-                    }
-
-                    return {
-                        id: member.id,
-                        name: `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim() || 'Sin nombre',
-                        email: member.auth?.email || 'Sin email',
-                        submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
-                        status: member.customFields?.['approval-status'] || 'pending',
-                        petCount: petCount
-                    };
-                });
-
-                // Apply sorting
-                formattedRequests.sort((a, b) => {
-                    const dateA = new Date(a.submittedAt).getTime();
-                    const dateB = new Date(b.submittedAt).getTime();
-                    return sortFilter === 'oldest' ? dateA - dateB : dateB - dateA;
-                });
-
-                setRequests(formattedRequests);
-            } else {
-                console.log('No data or not successful');
+            if (requestType === 'all' || requestType === 'member') {
+                promises.push(
+                    fetch(`/api/admin/members?status=${statusParam}`)
+                        .then(res => res.json())
+                        .then(data => ({ type: 'member', data }))
+                );
             }
+
+            if (requestType === 'all' || requestType === 'ambassador') {
+                promises.push(
+                    fetch(`/api/ambassadors?status=${statusParam}&limit=100`)
+                        .then(res => res.json())
+                        .then(data => ({ type: 'ambassador', data }))
+                );
+            }
+
+            const results = await Promise.all(promises);
+            let combinedRequests: MemberRequest[] = [];
+            const ambassadorEmails = new Set<string>();
+            const memberPetCounts = new Map<string, number>();
+
+            const ambassadorResult = results.find(r => r.type === 'ambassador');
+            const ambassadorData = ambassadorResult?.data?.data || [];
+
+            const memberResult = results.find(r => r.type === 'member');
+            const memberData = memberResult?.data?.members || [];
+
+            // Populate Sets for cross-referencing
+            ambassadorData.forEach((a: any) => { if (a.email) ambassadorEmails.add(a.email.toLowerCase()); });
+
+            const allowedMembers = isSuperAdmin
+                ? memberData
+                : memberData.filter((m: any) => m.customFields?.['approval-status'] !== 'appealed');
+
+            // Populate memberPetCounts
+            allowedMembers.forEach((m: any) => {
+                if (m.auth?.email) {
+                    const email = m.auth.email.toLowerCase();
+                    let count = 0;
+                    for (let i = 1; i <= 3; i++) {
+                        if (m.customFields?.[`pet-${i}-name`]) count++;
+                    }
+                    memberPetCounts.set(email, count);
+                }
+            });
+
+            // 1. Process Ambassadors
+            ambassadorData.forEach((amb: any) => {
+                const email = amb.email?.toLowerCase();
+                const roles: ('member' | 'ambassador')[] = ['ambassador'];
+
+                // Check pet count for member role
+                const petCount = memberPetCounts.get(email) || 0;
+                if (email && petCount > 0) roles.push('member');
+
+                combinedRequests.push({
+                    id: amb.id,
+                    name: `${amb.first_name} ${amb.paternal_surname}`,
+                    email: amb.email,
+                    submittedAt: amb.created_at,
+                    status: amb.status,
+                    petCount: 0,
+                    type: 'ambassador',
+                    roles: roles
+                });
+            });
+
+            // 2. Process Members
+            allowedMembers.forEach((member: any) => {
+                const email = member.auth?.email?.toLowerCase();
+                const name = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
+                const isNameless = !name;
+
+                // Deduplicate Shell Users
+                if (email && ambassadorEmails.has(email) && isNameless) {
+                    return;
+                }
+
+                // Calculate pet count locally (or fetch from map)
+                const petCount = memberPetCounts.get(email!) || 0;
+
+                const roles: ('member' | 'ambassador')[] = [];
+                if (petCount > 0) roles.push('member'); // Only if has pets
+                if (email && ambassadorEmails.has(email)) roles.push('ambassador');
+
+                combinedRequests.push({
+                    id: member.id,
+                    name: name || 'Sin nombre',
+                    email: member.auth?.email || 'Sin email',
+                    submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
+                    status: member.customFields?.['approval-status'] || 'pending',
+                    petCount: petCount,
+                    type: 'member',
+                    roles: roles
+                });
+            });
+
+            // Sort
+            combinedRequests.sort((a, b) => {
+                const dateA = new Date(a.submittedAt).getTime();
+                const dateB = new Date(b.submittedAt).getTime();
+                return sortFilter === 'oldest' ? dateA - dateB : dateB - dateA;
+            });
+
+            setRequests(combinedRequests);
+
         } catch (error) {
             console.error('Error loading requests:', error);
         } finally {
@@ -137,22 +207,12 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
         }
     }
 
-    // Filter and sort requests
     const filteredRequests = requests
         .filter(req => {
-            // Type Filter Logic
-            // Currently all users are members by default.
-            // If requestType is 'all' or 'member', show everything.
-            // If requestType is 'ambassador' or others, show nothing (until we implement types).
-
-            if (requestType === 'all') return true;
-            if (requestType === 'member') return true;
             if (requestType === 'appeals') return req.status === 'appealed';
-
-            return false;
+            return true;
         })
         .filter(req => {
-            // Search filter
             if (searchQuery) {
                 const query = searchQuery.toLowerCase();
                 return (
@@ -164,22 +224,10 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             return true;
         })
         .filter(req => {
-            // Client-side filtering (extra safety or for mixed lists)
             if (sortFilter === 'approved') return req.status === 'approved';
             if (sortFilter === 'rejected') return req.status === 'rejected';
             if (sortFilter === 'recents' || sortFilter === 'oldest') return req.status === 'pending';
-            return true; // 'all' shows everything
-        })
-        .sort((a, b) => {
-            // Sort by date
-            const dateA = new Date(a.submittedAt).getTime();
-            const dateB = new Date(b.submittedAt).getTime();
-
-            if (sortFilter === 'recents') {
-                return dateB - dateA; // Newest first
-            } else {
-                return dateA - dateB; // Oldest first
-            }
+            return true;
         });
 
     function getInitials(name: string): string {
@@ -204,7 +252,8 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             pending: 'Pendiente',
             approved: 'Aprobado',
             rejected: 'Rechazado',
-            appealed: 'Apelado'
+            appealed: 'Apelado',
+            suspended: 'Suspendido'
         };
         return labels[status] || status;
     }
@@ -220,6 +269,37 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
         return labels[filter] || filter;
     }
 
+    const renderRoleBadges = (roles: ('member' | 'ambassador')[]) => {
+        return (
+            <div style={{ display: 'inline-flex', gap: '4px', marginLeft: '8px', verticalAlign: 'middle' }}>
+                {roles.includes('member') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#F3E5F5',
+                        color: '#7B1FA2',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        MIEMBRO
+                    </span>
+                )}
+                {roles.includes('ambassador') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#E0F7FA',
+                        color: '#006064',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        EMBAJADOR
+                    </span>
+                )}
+            </div>
+        );
+    };
+
     if (loading) {
         return (
             <div className={styles.requestsSection}>
@@ -233,12 +313,10 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
 
     return (
         <div className={styles.requestsSection}>
-            {/* Header with Search and Filters */}
             <div className={styles.requestsHeader}>
                 <h2 className={styles.requestsTitle}>Solicitudes</h2>
 
                 <div className={styles.requestsControls}>
-                    {/* Search Box */}
                     <div className={styles.searchBox}>
                         <span className={styles.searchIcon}>🔍</span>
                         <input
@@ -250,7 +328,6 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                         />
                     </div>
 
-                    {/* Dropdown Filter */}
                     <div className={styles.filterDropdown}>
                         <button
                             className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
@@ -264,61 +341,18 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                         </button>
 
                         <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
-                            <button
-                                className={`${styles.dropdownOption} ${sortFilter === 'all' ? styles.selected : ''}`}
-                                onClick={() => {
-                                    setSortFilter('all');
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                📋 Todas
-                            </button>
-                            <button
-                                className={`${styles.dropdownOption} ${sortFilter === 'recents' ? styles.selected : ''}`}
-                                onClick={() => {
-                                    setSortFilter('recents');
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                Recientes
-                            </button>
-                            <button
-                                className={`${styles.dropdownOption} ${sortFilter === 'oldest' ? styles.selected : ''}`}
-                                onClick={() => {
-                                    setSortFilter('oldest');
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                Antiguos
-                            </button>
-                            <button
-                                className={`${styles.dropdownOption} ${sortFilter === 'approved' ? styles.selected : ''}`}
-                                onClick={() => {
-                                    setSortFilter('approved');
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                Aprobados
-                            </button>
-                            <button
-                                className={`${styles.dropdownOption} ${sortFilter === 'rejected' ? styles.selected : ''}`}
-                                onClick={() => {
-                                    setSortFilter('rejected');
-                                    setIsDropdownOpen(false);
-                                }}
-                            >
-                                Rechazados
-                            </button>
+                            <button className={`${styles.dropdownOption} ${sortFilter === 'all' ? styles.selected : ''}`} onClick={() => { setSortFilter('all'); setIsDropdownOpen(false); }}>📋 Todas</button>
+                            <button className={`${styles.dropdownOption} ${sortFilter === 'recents' ? styles.selected : ''}`} onClick={() => { setSortFilter('recents'); setIsDropdownOpen(false); }}>Recientes</button>
+                            <button className={`${styles.dropdownOption} ${sortFilter === 'oldest' ? styles.selected : ''}`} onClick={() => { setSortFilter('oldest'); setIsDropdownOpen(false); }}>Antiguos</button>
+                            <button className={`${styles.dropdownOption} ${sortFilter === 'approved' ? styles.selected : ''}`} onClick={() => { setSortFilter('approved'); setIsDropdownOpen(false); }}>Aprobados</button>
+                            <button className={`${styles.dropdownOption} ${sortFilter === 'rejected' ? styles.selected : ''}`} onClick={() => { setSortFilter('rejected'); setIsDropdownOpen(false); }}>Rechazados</button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Table */}
             {requestType === 'appeals' ? (
-                /* Tabla especial para Apelaciones por Mascota */
                 <>
-                    {/* 🆕 Filtro por fecha */}
                     <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                         <span style={{ fontSize: '13px', color: '#666', alignSelf: 'center' }}>Filtrar por:</span>
                         {(['all', 'today', 'week', 'month'] as const).map(filter => (
@@ -363,76 +397,45 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                 </tr>
                             </thead>
                             <tbody className={styles.tableBody}>
-                                {appealedPets
-                                    .filter(pet => {
-                                        // Filtro por búsqueda
-                                        if (searchQuery) {
-                                            const query = searchQuery.toLowerCase();
-                                            const matchesSearch =
-                                                pet.petName.toLowerCase().includes(query) ||
-                                                pet.ownerName.toLowerCase().includes(query) ||
-                                                pet.ownerEmail.toLowerCase().includes(query);
-                                            if (!matchesSearch) return false;
-                                        }
-
-                                        // 🆕 Filtro por fecha
-                                        if (appealDateFilter !== 'all' && pet.appealedAt) {
-                                            const appealDate = new Date(pet.appealedAt);
-                                            const now = new Date();
-
-                                            if (appealDateFilter === 'today') {
-                                                const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-                                                return appealDate >= today;
-                                            } else if (appealDateFilter === 'week') {
-                                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-                                                return appealDate >= weekAgo;
-                                            } else if (appealDateFilter === 'month') {
-                                                const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-                                                return appealDate >= monthAgo;
-                                            }
-                                        }
-
-                                        return true;
-                                    })
-                                    .map((pet) => (
-                                        <tr key={pet.petId}>
-                                            <td data-label="Mascota">
-                                                <div className={styles.memberInfo}>
-                                                    <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
-                                                        {pet.petType === 'Gato' ? '🐱' : '🐕'}
-                                                    </div>
-                                                    <div className={styles.memberDetails}>
-                                                        <div className={styles.memberName}>{pet.petName}</div>
-                                                        <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
-                                                    </div>
+                                {appealedPets.map((pet) => (
+                                    <tr key={pet.petId}>
+                                        <td data-label="Mascota">
+                                            <div className={styles.memberInfo}>
+                                                <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
+                                                    {pet.petType === 'Gato' ? '🐱' : '🐕'}
                                                 </div>
-                                            </td>
-                                            <td data-label="Dueño">
                                                 <div className={styles.memberDetails}>
-                                                    <div className={styles.memberName}>{pet.ownerName}</div>
-                                                    <div className={styles.memberEmail}>{pet.ownerEmail}</div>
+                                                    <div className={styles.memberName}>{pet.petName}</div>
+                                                    <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
                                                 </div>
-                                            </td>
-                                            <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
-                                                <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
-                                                    "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
-                                                </span>
-                                            </td>
-                                            <td data-label="Fecha">
-                                                {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
-                                            </td>
-                                            <td data-label="Acciones">
-                                                <div className={styles.actionButtons}>
-                                                    <button
-                                                        className={styles.viewButton}
-                                                        onClick={() => onViewDetails(pet.ownerId, pet.petId)}
-                                                    >
-                                                        Ver Detalles
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
+                                            </div>
+                                        </td>
+                                        <td data-label="Dueño">
+                                            <div className={styles.memberDetails}>
+                                                <div className={styles.memberName}>{pet.ownerName}</div>
+                                                <div className={styles.memberEmail}>{pet.ownerEmail}</div>
+                                            </div>
+                                        </td>
+                                        <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
+                                            <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
+                                            </span>
+                                        </td>
+                                        <td data-label="Fecha">
+                                            {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                        </td>
+                                        <td data-label="Acciones">
+                                            <div className={styles.actionButtons}>
+                                                <button
+                                                    className={styles.viewButton}
+                                                    onClick={() => onViewDetails(pet.ownerId, 'appeal', pet.petId)}
+                                                >
+                                                    Ver Detalles
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
                             </tbody>
                         </table>
                     )}
@@ -449,9 +452,9 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                 <table className={styles.table}>
                     <thead className={styles.tableHeader}>
                         <tr>
-                            <th>Miembro</th>
+                            <th>Usuario / Rol</th>
                             <th>Fecha de Solicitud</th>
-                            <th>Mascotas</th>
+                            <th>Info Extra</th>
                             <th>Estado</th>
                             <th>Acciones</th>
                         </tr>
@@ -459,19 +462,31 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                     <tbody className={styles.tableBody}>
                         {filteredRequests.map((request) => (
                             <tr key={request.id}>
-                                <td data-label="Miembro">
+                                <td data-label="Usuario">
                                     <div className={styles.memberInfo}>
-                                        <div className={styles.memberAvatar}>
-                                            {getInitials(request.name)}
+                                        <div className={styles.memberAvatar} style={{
+                                            background: request.type === 'ambassador' ? '#E0F7FA' : '#F3E5F5',
+                                            color: request.type === 'ambassador' ? '#006064' : '#7B1FA2'
+                                        }}>
+                                            {request.type === 'ambassador' ? '🎯' : getInitials(request.name)}
                                         </div>
                                         <div className={styles.memberDetails}>
-                                            <div className={styles.memberName}>{request.name}</div>
+                                            <div className={styles.memberName}>
+                                                {request.name}
+                                                {renderRoleBadges(request.roles)}
+                                            </div>
                                             <div className={styles.memberEmail}>{request.email}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
-                                <td data-label="Mascotas">{request.petCount || 0}</td>
+                                <td data-label="Info Extra">
+                                    {request.type === 'member' ? (
+                                        <span>🐶 {request.petCount || 0} Mascotas</span>
+                                    ) : (
+                                        <span>-</span>
+                                    )}
+                                </td>
                                 <td data-label="Estado">
                                     <span className={`${styles.statusBadge} ${styles[request.status]}`}>
                                         <span className={styles.statusDot}></span>
@@ -491,7 +506,7 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                         ) : (
                                             <button
                                                 className={styles.viewButton}
-                                                onClick={() => onViewDetails(request.id)}
+                                                onClick={() => onViewDetails(request.id, request.type)}
                                             >
                                                 Ver Detalles
                                             </button>
@@ -500,13 +515,13 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                             <>
                                                 <button
                                                     className={styles.approveButton}
-                                                    onClick={() => onApprove(request.id)}
+                                                    onClick={() => onApprove(request.id, request.type)}
                                                 >
                                                     Aprobar
                                                 </button>
                                                 <button
                                                     className={styles.rejectButton}
-                                                    onClick={() => onReject(request.id)}
+                                                    onClick={() => onReject(request.id, request.type)}
                                                 >
                                                     Rechazar
                                                 </button>
