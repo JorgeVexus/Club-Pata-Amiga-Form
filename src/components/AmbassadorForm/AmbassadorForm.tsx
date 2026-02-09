@@ -593,6 +593,10 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
             const data = await response.json();
 
             if (data.success) {
+                // Track Meta Pixel Conversion
+                if (typeof window !== 'undefined' && (window as any).fbq) {
+                    (window as any).fbq('track', 'CompleteRegistration');
+                }
                 setShowSuccess(true);
                 onSuccess?.();
             } else {

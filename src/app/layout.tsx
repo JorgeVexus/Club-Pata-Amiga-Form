@@ -3,6 +3,7 @@ import { Outfit } from 'next/font/google';
 import './globals.css';
 import '@/styles/fonts.css';
 import Script from 'next/script';
+import MetaPixel from '@/components/Analytics/MetaPixel';
 
 const outfit = Outfit({
     subsets: ['latin'],
@@ -44,6 +45,7 @@ export default function RootLayout({
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAei8wBZ0fQRWGY9nInhuCep5K8cHkDtqs&libraries=places&loading=async"
                     strategy="afterInteractive"
                 />
+                <MetaPixel />
                 {children}
             </body>
         </html>
