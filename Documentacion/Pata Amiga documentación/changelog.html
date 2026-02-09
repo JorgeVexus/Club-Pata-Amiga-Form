@@ -337,9 +337,13 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-07')">
-                <span>7 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-09')">
+                <span>9 de Feb, 2026</span>
                 <span class="badge">Hoy</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-07')">
+                <span>7 de Feb, 2026</span>
+                <span class="badge">Infra</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-05')">
                 <span>5 de Feb, 2026</span>
@@ -360,8 +364,85 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 7 de Febrero (HOY) -->
-            <div id="2026-02-07" class="changelog-entry active">
+            <!-- Entrada: 9 de Febrero (HOY) -->
+            <div id="2026-02-09" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Mantenimiento & Dashboard UI</h1>
+                        <div class="entry-meta">Lunes, 9 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.3.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">👥 Gestión de Usuarios (Dashboard)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Etiquetas de Rol:</strong> Identificación visual de "MIEMBRO" y "EMBAJADOR" en
+                                la tabla general.
+                                <em>Lógica condicional: La etiqueta de Miembro solo aparece si el usuario tiene mascotas
+                                    registradas.</em>
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Lista Unificada:</strong> Se fusionaron las vistas de Miembros y Embajadores en
+                                "Gestión General" para facilitar la administración centralizada.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Deduplicación de Usuarios:</strong> Se ocultan automáticamente los registros
+                                "shell" de autenticación de Embajadores para mostrar solo el perfil completo.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Contadores Sidebar:</strong> Corrección en la lógica de conteo para solicitudes
+                                pendientes.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔐 Autenticación & UX</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Redirección Login:</strong> Ajuste de rutas pos-login:
+                                <ul style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li>Miembros → <code>/pets/pet-waiting-period</code></li>
+                                    <li>Embajadores → <code>/embajadores/dashboard</code></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Switch de Cuenta:</strong> Botón "Cerrar sesión" en
+                                <code>/embajadores/registro</code> para facilitar el cambio de cuenta.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Registro Admin:</strong> Solución al error "Email already taken" mediante
+                                limpieza de registros huérfanos.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 7 de Febrero -->
+            <div id="2026-02-07" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Migración de Dominios y Autenticación</h1>
