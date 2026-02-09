@@ -437,6 +437,60 @@
                                 limpieza de registros huérfanos.
                             </div>
                         </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Login Admin (RLS):</strong> Solución crítica en verificación de roles. Se
+                                implementó <em>Service Role</em> en API `check-role` para saltar restricciones RLS y
+                                detectar correctamente a los administradores.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🏗️ Arquitectura de Datos (Memberstack 2.0)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">MIGRATION</span>
+                            <div class="change-desc">
+                                <strong>Nueva App de Memberstack:</strong> Migración exitosa a una nueva aplicación de
+                                Memberstack con credenciales actualizadas (App ID & Secret Key).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag box">HYBRID</span>
+                            <div class="change-desc">
+                                <strong>Estrategia de Datos Híbrida:</strong> Refactorización completa para optimizar el
+                                almacenamiento:
+                                <ul style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li><strong>Memberstack (Lite):</strong> Solo autenticación y perfil básico (Nombre,
+                                        Roles, Status).</li>
+                                    <li><strong>Supabase (Heavy):</strong> Datos complejos como Mascotas, Direcciones,
+                                        Bancos y Redes Sociales.</li>
+                                </ul>
+                                <em>Resultado: Perfil de usuario más ligero, mayor seguridad y eliminación de límites de
+                                    campos personalizados.</em>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📊 Marketing & Analytics</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Meta Pixel API:</strong> Implementación limpia (sin librerías externas) del
+                                Pixel de Facebook para tracking de conversiones.
+                                <ul style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li>Evento Global: <code>PageView</code></li>
+                                    <li>Conversión: <code>CompleteRegistration</code> (Al finalizar registro de
+                                        Embajador/Miembro)</li>
+                                </ul>
+                            </div>
+                        </li>
                     </ul>
                 </div>
             </div>

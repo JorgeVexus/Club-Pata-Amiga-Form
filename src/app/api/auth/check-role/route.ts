@@ -19,7 +19,15 @@ export async function POST(request: NextRequest) {
         }
 
         // 1. Check if user is Admin/SuperAdmin
-        const adminRole = await AdminAuthService.getRole(memberstackId);
+        // Usamos el cliente con SERVICE_ROLE para bypass RLS, ya que AdminAuthService usa el cliente público
+        const { data: user } = await supabase
+            .from('users')
+            .select('role')
+            .eq('memberstack_id', memberstackId)
+            .maybeSingle();
+
+        const adminRole = user?.role;
+
         if (adminRole === 'admin' || adminRole === 'super_admin') {
             return NextResponse.json({
                 success: true,
