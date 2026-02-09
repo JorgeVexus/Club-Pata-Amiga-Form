@@ -337,9 +337,13 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-05')">
-                <span>5 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-07')">
+                <span>7 de Feb, 2026</span>
                 <span class="badge">Hoy</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-05')">
+                <span>5 de Feb, 2026</span>
+                <span class="badge">Widgets</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-04')">
                 <span>4 de Feb, 2026</span>
@@ -356,8 +360,113 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 5 de Febrero (HOY) -->
-            <div id="2026-02-05" class="changelog-entry active">
+            <!-- Entrada: 7 de Febrero (HOY) -->
+            <div id="2026-02-07" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Migración de Dominios y Autenticación</h1>
+                        <div class="entry-meta">Sábado, 7 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.2.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🌐 Infraestructura de Dominios</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Subdominio App:</strong> Migración completa de la aplicación a
+                                <code>app.pataamiga.mx</code>, separando el tráfico de marketing (Webflow) del
+                                aplicativo (Vercel).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Configuración DNS:</strong> Eliminación de Workers intermedios. Configuración
+                                directa CNAME en Cloudflare para optimizar latencia y simplificar SSL.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Verificación Resend:</strong> Validación y configuración de registros DKIM/SPF
+                                para asegurar la entregabilidad de correos transaccionales desde el nuevo dominio.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔐 Lógica de Autenticación</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Detección de Sesión Cross-Domain:</strong> Se implementó lógica de "gracia" en
+                                <code>AuthRedirector</code>.
+                                <em>Nota: La persistencia total de sesión entre www y app requiere plan de pago en
+                                    Memberstack para cookies cross-site.</em>
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Redirección Login:</strong> El flujo de login se centraliza en el aplicativo.
+                                Los usuarios son redirigidos inmediatamente al dashboard correspondiente según su rol
+                                (Admin/Embajador/Miembro).
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="section-card">
+                    <div class="section-title">🎨 Frontend & Webflow</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Slider de Beneficios:</strong> Implementación del widget "Stacked Cards"
+                                (Lo que ofrece la membresía). Lógica 100% custom para garantizar 5 tarjetas visibles
+                                con efecto de profundidad y posicionamiento absoluto, replicando Figma
+                                sin dependencias pesadas.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">WIP</span>
+                            <div class="change-desc">
+                                <strong>Landing Page:</strong> Inicio de la maquetación completa del diseño de Figma
+                                para la nueva Home en Webflow, integrando los nuevos widgets y guía de estilos.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="section-card">
+                    <div class="section-title">⚙️ Backend & Config</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">ADMIN</span>
+                            <div class="change-desc">
+                                <strong>Propiedad Memberstack:</strong> Transferencia exitosa de la propiedad de la
+                                cuenta
+                                Memberstack. Se verificó que API Keys, dominios y redirecciones se mantuvieran intactos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">CLEANUP</span>
+                            <div class="change-desc">
+                                <strong>Limpieza Base de Datos:</strong> Reset completo de usuarios de prueba en
+                                Supabase
+                                y Memberstack para iniciar fase de producción con datos limpios.
+                                <em>(Tablas truncadas: users, memberships, pets, notifications, etc.)</em>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 5 de Febrero -->
+            <div id="2026-02-05" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Actualización Formulario y Widgets</h1>

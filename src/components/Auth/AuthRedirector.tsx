@@ -10,6 +10,8 @@ export default function AuthRedirector() {
         const checkSession = async () => {
             let attempts = 0;
             // Esperar activamente a Memberstack (hasta 3s)
+            // IMPORTANTE: Asegurarse de que en Memberstack Dashboard -> Settings -> Domains
+            // esté configurado "pataamiga.mx" (sin www ni app) para que las cookies se compartan.
             while (!window.$memberstackDom && attempts < 15) {
                 await new Promise(resolve => setTimeout(resolve, 200));
                 attempts++;
@@ -38,15 +40,18 @@ export default function AuthRedirector() {
                                 window.location.href = 'https://app.pataamiga.mx/admin/dashboard';
                             } else if (data.role === 'ambassador') {
                                 console.log('👤 Es embajador, redirigiendo a su dashboard...');
-                                window.location.href = 'https://app.pataamiga.mx/embajadores/embajadores';
+                                console.log('👤 Es embajador, redirigiendo a su dashboard...');
+                                window.location.href = 'https://www.pataamiga.mx/embajadores/dashboard';
                             } else {
                                 console.log('🐾 Es miembro, redirigiendo a dashboard de usuario...');
-                                window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
+                                console.log('🐾 Es miembro, redirigiendo a dashboard de usuario...');
+                                window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
                             }
                         } catch (err) {
                             console.error('Error checando rol o API fallo, asumiendo miembro normal:', err);
                             // Fallback seguro: si hay sesión pero falló el rol, mandar a dashboard de miembro
-                            window.location.href = 'https://app.pataamiga.mx/pets/pet-waiting-period';
+                            // Fallback seguro: si hay sesión pero falló el rol, mandar a dashboard de miembro
+                            window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
                         }
                     } else {
                         console.log('❌ No hay sesión activa, redirigiendo a Login/Registro...');

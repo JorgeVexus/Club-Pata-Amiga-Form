@@ -123,20 +123,59 @@ function AmbassadorRegistrationContent() {
     // Usuario identificado O usuario que eligió registro por email → Mostrar formulario
     if ((isLoggedIn && memberData) || showForm) {
         return (
-            <AmbassadorForm
-                linkedMemberstackId={memberData?.id}
-                preloadedData={memberData ? {
-                    firstName: memberData.firstName,
-                    paternalLastName: memberData.paternalLastName,
-                    maternalLastName: memberData.maternalLastName,
-                    email: memberData.email,
-                    phone: memberData.phone,
-                    customFields: memberData.customFields
-                } : undefined}
-                onSuccess={() => {
-                    // Opcional: manejar éxito si es necesario, el form ya muestra modal
-                }}
-            />
+            <>
+                {isLoggedIn && memberData && (
+                    <div className={styles.container} style={{ minHeight: 'auto', padding: '20px 0 0' }}>
+                        <div style={{
+                            background: 'white',
+                            padding: '10px 20px',
+                            borderRadius: '50px',
+                            boxShadow: '0 2px 10px rgba(0,0,0,0.05)',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '10px',
+                            fontSize: '0.9rem',
+                            color: '#666'
+                        }}>
+                            <span>Hola, <strong>{memberData.firstName || memberData.email}</strong> 👋</span>
+                            <span style={{ color: '#ccc' }}>|</span>
+                            <button
+                                onClick={async () => {
+                                    if (window.$memberstackDom) {
+                                        await window.$memberstackDom.logout();
+                                        window.location.reload();
+                                    }
+                                }}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    color: '#FF0055',
+                                    cursor: 'pointer',
+                                    fontWeight: 600,
+                                    padding: 0,
+                                    textDecoration: 'underline'
+                                }}
+                            >
+                                ¿No eres tú? Cerrar sesión
+                            </button>
+                        </div>
+                    </div>
+                )}
+                <AmbassadorForm
+                    linkedMemberstackId={memberData?.id}
+                    preloadedData={memberData ? {
+                        firstName: memberData.firstName,
+                        paternalLastName: memberData.paternalLastName,
+                        maternalLastName: memberData.maternalLastName,
+                        email: memberData.email,
+                        phone: memberData.phone,
+                        customFields: memberData.customFields
+                    } : undefined}
+                    onSuccess={() => {
+                        // Opcional: manejar éxito si es necesario, el form ya muestra modal
+                    }}
+                />
+            </>
         );
     }
 
