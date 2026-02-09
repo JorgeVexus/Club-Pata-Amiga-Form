@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { AdminAuthService } from '@/services/admin-auth.service';
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(request: NextRequest) {
     try {
@@ -10,7 +15,11 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Member ID required' }, { status: 400 });
         }
 
-        const user = await AdminAuthService.getUserDetails(memberstackId);
+        const { data: user } = await supabase
+            .from('users')
+            .select('role, full_name, email')
+            .eq('memberstack_id', memberstackId)
+            .maybeSingle();
 
         if (!user) {
             return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
