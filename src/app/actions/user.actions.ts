@@ -196,8 +196,13 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             breed: pet.breed || (pet.isMixed ? 'Mestizo' : ''),
             breed_size: pet.breedSize,
             birth_date: null, // Podríamos calcular la fecha aproximada basándonos en la edad
-            photo_url: pet.photoUrls?.[0] || null, // Guardamos la primera foto como principal
+            // Prioritize specific fields, fallback to array
+            photo_url: pet.photo1Url || pet.photoUrls?.[0] || null,
+            photo2_url: pet.photo2Url || pet.photoUrls?.[1] || null,
             vet_certificate_url: pet.vetCertificateUrl || null,
+            // Waiting period
+            waiting_period_start: pet.waitingPeriodStart || new Date().toISOString(),
+            waiting_period_end: pet.waitingPeriodEnd || null,
             status: 'pending',
             created_at: new Date().toISOString()
         }));

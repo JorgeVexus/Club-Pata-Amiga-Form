@@ -172,8 +172,8 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                     return;
                 }
 
-                // Calculate pet count locally (or fetch from map)
-                const petCount = memberPetCounts.get(email!) || 0;
+                // Calculate pet count: prefer API value (Supabase), fallback to local map (Legacy Memberstack)
+                const petCount = member.petCount !== undefined ? member.petCount : (memberPetCounts.get(email!) || 0);
 
                 const roles: ('member' | 'ambassador')[] = [];
                 if (petCount > 0) roles.push('member'); // Only if has pets

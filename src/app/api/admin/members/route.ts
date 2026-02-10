@@ -60,10 +60,52 @@ export async function GET(request: NextRequest) {
         // Filter out admins from the member list
         const filteredMembers = result.data?.filter(member => !adminMemberstackIds.has(member.id)) || [];
 
+        // ENRICHMENT: Fetch real pet counts from Supabase
+        // 1. Get mapping of Memberstack ID -> Supabase User ID
+        const memberstackIds = filteredMembers.map(m => m.id);
+
+        let petCountsMap = new Map<string, number>();
+
+        if (memberstackIds.length > 0) {
+            // Get Supabase User IDs
+            const { data: userMappings, error: mappingError } = await supabaseAdmin
+                .from('users')
+                .select('id, memberstack_id')
+                .in('memberstack_id', memberstackIds);
+
+            if (!mappingError && userMappings) {
+                const supabaseUserIds = userMappings.map(u => u.id);
+                const supabaseIdToMsId = new Map(userMappings.map(u => [u.id, u.memberstack_id]));
+
+                // Get pet counts
+                // Note: verify if .count() works with group by easily in logic or just fetch all pets fields (lightweight)
+                // Fetching just owner_id is lighter
+                const { data: petsData, error: petsError } = await supabaseAdmin
+                    .from('pets')
+                    .select('owner_id')
+                    .in('owner_id', supabaseUserIds);
+
+                if (!petsError && petsData) {
+                    petsData.forEach(pet => {
+                        const msId = supabaseIdToMsId.get(pet.owner_id);
+                        if (msId) {
+                            petCountsMap.set(msId, (petCountsMap.get(msId) || 0) + 1);
+                        }
+                    });
+                }
+            }
+        }
+
+        // Attach pet counts to members
+        const membersWithCounts = filteredMembers.map(member => ({
+            ...member,
+            petCount: petCountsMap.get(member.id) || 0
+        }));
+
         return NextResponse.json({
             success: true,
-            members: filteredMembers,
-            count: filteredMembers.length,
+            members: membersWithCounts,
+            count: membersWithCounts.length,
         });
 
     } catch (error: any) {

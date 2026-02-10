@@ -205,6 +205,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 return {
                     ...pet,
                     waitingPeriodDays: calculation.days,
+                    waitingPeriodStart: new Date().toISOString(), // Mark start of waiting period
                     waitingPeriodEnd: calculation.endDate,
                 } as PetFormData;
             });
