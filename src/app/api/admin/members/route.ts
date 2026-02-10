@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@supabase/supabase-js';
+
+// Usar Service Role para poder consultar roles de otros usuarios y filtrar admins
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 /**
  * GET /api/admin/members?status=pending
@@ -39,7 +45,8 @@ export async function GET(request: NextRequest) {
         }
 
         // Filter out admin/super_admin users from the results
-        const { data: adminUsers, error: adminError } = await supabase
+        // USAMOS el cliente admin (Service Role) para saltar RLS
+        const { data: adminUsers, error: adminError } = await supabaseAdmin
             .from('users')
             .select('memberstack_id')
             .in('role', ['admin', 'super_admin']);
