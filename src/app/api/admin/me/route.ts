@@ -15,14 +15,24 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Member ID required' }, { status: 400 });
         }
 
-        const { data: user } = await supabase
+        const { data: user, error } = await supabase
             .from('users')
-            .select('role, full_name, email')
+            .select('role, full_name, email, memberstack_id')
             .eq('memberstack_id', memberstackId)
             .maybeSingle();
 
+        if (error) {
+            console.error('Supabase Error:', error);
+        }
+
         if (!user) {
-            return NextResponse.json({ error: 'User not found in database' }, { status: 404 });
+            console.log(`❌ User not found for ID: ${memberstackId}`);
+            // Intento de fallback: buscar por si acaso hay algún problema de espacios/formato
+            return NextResponse.json({
+                error: 'User not found in database',
+                receivedId: memberstackId,
+                debugParams: { supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL }
+            }, { status: 404 });
         }
 
         return NextResponse.json({
