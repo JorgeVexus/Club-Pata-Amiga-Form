@@ -34,7 +34,7 @@ export default function RootLayout({
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"
-                    data-memberstack-app="app_cmiqkcuzv00670ssogle4ah3n"
+                    data-memberstack-app={process.env.NEXT_PUBLIC_MEMBERSTACK_APP_ID}
                     src="https://static.memberstack.com/scripts/v2/memberstack.js"
                     strategy="beforeInteractive"
                 />
