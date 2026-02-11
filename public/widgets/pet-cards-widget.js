@@ -318,22 +318,55 @@
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
             const idx = this.pets.indexOf(pet) + 1;
-            const imageUrl = pet.photo_url || this.msFields[`pet-${idx}-photo-1-url`] || CONFIG.placeholderDog;
+
+            // Get all available photos
+            const photo1 = pet.photo_url || this.msFields[`pet-${idx}-photo-1-url`];
+            const photo2 = pet.photo2_url || this.msFields[`pet-${idx}-photo-2-url`];
+
+            const photos = [photo1, photo2].filter(p => p); // Filter out nulls/undefined/empty
+            const mainPhoto = photos[0] || CONFIG.placeholderDog;
 
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+
+            // Generate photo gallery HTML
+            let photoHtml = '';
+            if (photos.length > 1) {
+                photoHtml = `
+                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;">
+                        ${photos.map(url => `
+                            <img src="${url}" style="width:140px; height:200px; object-fit:cover; border-radius:12px; flex-shrink:0;">
+                        `).join('')}
+                    </div>
+                `;
+            } else {
+                photoHtml = `
+                    <img src="${mainPhoto}" style="width:100%; max-width:280px; height:320px; object-fit:cover; border-radius:18px; margin:0 auto; display:block;">
+                `;
+            }
+
             modal.innerHTML = `
                 <div class="pata-modal-box">
                     <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                    <div style="display:flex; gap:25px; flex-wrap:wrap;">
-                        <img src="${imageUrl}" style="width:180px; height:240px; object-fit:cover; border-radius:18px;">
-                        <div style="flex:1; min-width:200px;">
-                            <h2 style="font-size:32px; margin:0 0 15px 0; font-weight:800;">${pet.name}</h2>
-                            <p style="margin:5px 0;"><strong>Raza:</strong> ${pet.breed}</p>
-                            <p style="margin:5px 0;"><strong>Talla:</strong> ${pet.breed_size}</p>
-                            <p style="margin:5px 0;"><strong>Alta:</strong> ${new Date(pet.created_at).toLocaleDateString()}</p>
-                            ${pet.admin_notes ? `<div style="background:#FFFDE7; padding:12px; border-radius:10px; margin-top:15px; border-left:4px solid #FFC107;"><strong>Nota:</strong> ${pet.admin_notes}</div>` : ''}
+                    <div style="display:flex; gap:30px; flex-wrap:wrap; align-items:start;">
+                        <div style="flex:0 0 auto; width:100%; max-width:300px;">
+                            ${photoHtml}
+                        </div>
+                        <div style="flex:1; min-width:240px;">
+                            <div class="pata-status-badge" style="position:static; transform:none; display:inline-flex; margin-bottom:15px; background:${CONFIG.statusColors[pet.status]?.bg}; color:${CONFIG.statusColors[pet.status]?.text};">
+                                ${CONFIG.statusColors[pet.status]?.icon} ${CONFIG.statusColors[pet.status]?.label}
+                            </div>
+                            <h2 style="font-size:36px; margin:0 0 5px 0; font-weight:800; line-height:1.2;">${pet.name}</h2>
+                            <p style="color:#666; font-size:16px; margin-bottom:20px;">${pet.breed} • ${pet.breed_size}</p>
+                            
+                            <div style="background:#F9F9F9; padding:20px; border-radius:16px;">
+                                <p style="margin:8px 0;"><strong>🐣 Edad:</strong> ${pet.age || 'No especificada'}</p>
+                                <p style="margin:8px 0;"><strong>📅 Alta:</strong> ${new Date(pet.created_at).toLocaleDateString()}</p>
+                                <p style="margin:8px 0;"><strong>🆔 RUAC:</strong> ${pet.ruac || 'No registrado'}</p>
+                            </div>
+
+                            ${pet.admin_notes ? `<div style="background:#FFFDE7; padding:15px; border-radius:12px; margin-top:20px; border-left:4px solid #FFC107; color:#5D4037;"><strong>📝 Nota del Admin:</strong><br>${pet.admin_notes}</div>` : ''}
                         </div>
                     </div>
                 </div>

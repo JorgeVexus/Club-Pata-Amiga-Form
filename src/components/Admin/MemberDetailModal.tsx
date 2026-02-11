@@ -14,6 +14,7 @@ interface Pet {
     status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
     admin_notes?: string;
     photo_url?: string;
+    photo2_url?: string;
     vet_certificate_url?: string;
 }
 
@@ -374,9 +375,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                                                     // Array of photos: [Photo 1, Photo 2]
                                                     // Each item: { url: string, source: 'Supabase' | 'Memberstack', index: number }
+                                                    // Update: Use dedicated photo2_url field
                                                     const photosToShow = [
                                                         { url: pet.photo_url || msUrl1, source: pet.photo_url ? 'Supabase' : 'Memberstack', id: 1 },
-                                                        { url: (pet as any).photo2_url || msUrl2, source: (pet as any).photo2_url ? 'Supabase' : 'Memberstack', id: 2 }
+                                                        { url: pet.photo2_url || msUrl2, source: pet.photo2_url ? 'Supabase' : 'Memberstack', id: 2 }
                                                     ].filter(p => p.url); // Only show if URL exists
 
                                                     if (photosToShow.length === 0) {

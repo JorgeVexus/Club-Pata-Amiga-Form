@@ -1,0 +1,539 @@
+<!--
+  Bloque de FAQs por categorías (cascada) para incrustar en Webflow.
+  Contiene HTML + CSS + JS en un solo archivo para facilitar copia/pega.
+-->
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>FAQs por categorías - Club Pata Amiga</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      :root {
+        --pata-faq-color-bg: #ffffff;
+        --pata-faq-color-border: #d4d9e0;
+        --pata-faq-color-text: #222222;
+        --pata-faq-color-muted: #6b7280;
+        --pata-faq-color-accent: #00c7b1;
+        --pata-faq-radius-pill: 999px;
+        --pata-faq-font: system-ui, -apple-system, BlinkMacSystemFont,
+          "SF Pro Text", "Segoe UI", sans-serif;
+      }
+
+      .pata-faq-cascade {
+        max-width: 720px;
+        margin: 0 auto;
+        font-family: var(--pata-faq-font);
+      }
+
+      .pata-faq-category-group {
+        margin-bottom: 10px;
+      }
+
+      /* BOTÓN DE CATEGORÍA (estilo Figma) */
+      .pata-faq-category-btn {
+        display: flex;
+        padding-right: 19px;
+        justify-content: space-between;
+        align-items: center;
+        align-self: stretch;
+
+        width: 100%;
+        gap: 12px;
+        padding-left: 20px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-radius: var(--pata-faq-radius-pill);
+        border: none; /* SIN BORDE */
+        background-color: var(--pata-faq-color-bg);
+        cursor: pointer;
+        text-align: left;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02);
+        transition: box-shadow 140ms ease, transform 120ms ease;
+      }
+
+      .pata-faq-category-btn:hover {
+        box-shadow: 0 7px 20px rgba(15, 23, 42, 0.14);
+        transform: translateY(-1px);
+      }
+
+      /* TÍTULO DE LA CATEGORÍA (texto) */
+      .pata-faq-category-text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        color: #000000;
+        font-family: "Outfit", system-ui, -apple-system, BlinkMacSystemFont,
+          "SF Pro Text", "Segoe UI", sans-serif;
+        font-size: 30px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 30px; /* 100% */
+      }
+
+      /* PANEL DE PREGUNTAS DE ESA CATEGORÍA */
+      .pata-faq-category-panel {
+        padding-top: 8px;
+        padding-left: 24px; /* indent para efecto cascada */
+      }
+
+      .pata-faq-item {
+        margin-bottom: 6px;
+      }
+
+      .pata-faq-question {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 9px 14px 9px 18px;
+        border-radius: var(--pata-faq-radius-pill);
+        border: 1px solid var(--pata-faq-color-border);
+        background-color: var(--pata-faq-color-bg);
+        cursor: pointer;
+        text-align: left;
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--pata-faq-color-text);
+        transition: box-shadow 140ms ease, transform 120ms ease;
+      }
+
+      .pata-faq-question:hover {
+        box-shadow: 0 5px 16px rgba(15, 23, 42, 0.1);
+        transform: translateY(-0.5px);
+      }
+
+      .pata-faq-question-text {
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ICONO COMÚN (círculo turquesa con chevron) */
+      .pata-faq-icon-circle {
+        width: 24px;
+        height: 24px;
+        border-radius: 999px;
+        background-color: var(--pata-faq-color-accent);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .pata-faq-icon-chevron {
+        position: relative;
+        width: 8px;
+        height: 8px;
+        border-left: 2px solid #ffffff;
+        border-bottom: 2px solid #ffffff;
+        transform: rotate(-45deg); /* flecha hacia abajo */
+        transition: transform 160ms ease;
+      }
+
+      /* Chevron hacia arriba cuando está abierto */
+      .pata-faq-category-group.is-open
+        > .pata-faq-category-btn
+        .pata-faq-icon-chevron,
+      .pata-faq-item.is-open > .pata-faq-question .pata-faq-icon-chevron {
+        transform: rotate(135deg);
+      }
+
+      .pata-faq-answer {
+        max-width: 540px;
+        margin: 6px 0 10px 10px;
+        padding-right: 4px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--pata-faq-color-muted);
+      }
+
+      .pata-faq-answer p {
+        margin: 0;
+      }
+
+      @media (max-width: 767px) {
+        .pata-faq-category-btn,
+        .pata-faq-question {
+          font-size: 13px;
+          padding-inline: 14px;
+        }
+
+        .pata-faq-category-text,
+        .pata-faq-question-text {
+          white-space: normal;
+        }
+
+        .pata-faq-category-panel {
+          padding-left: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!--
+      Copia SOLO el contenido dentro del <div class="pata-faq-cascade">
+      en un Embed de Webflow si quieres usar el CSS/JS desde Page Settings.
+    -->
+    <div class="pata-faq-cascade" data-pata-faq-root>
+      <!-- CATEGORÍA 1: Sobre el club -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text">Sobre el club</span>
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <!-- Pregunta 1 -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Qué es Club Pata Amiga?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Aquí va la explicación de qué es el Club Pata Amiga y
+                principales beneficios.
+              </p>
+            </div>
+          </div>
+
+          <!-- Pregunta 2 -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Cuánto dura la membresía?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                La membresía tiene una vigencia de 12 meses a partir de la
+                fecha de activación y se puede renovar al finalizar.
+              </p>
+            </div>
+          </div>
+
+          <!-- Más preguntas de "Sobre el club" duplicando .pata-faq-item -->
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 2: Sobre la membresía y pagos -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text"
+            >Sobre la membresía y pagos</span
+          >
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Qué métodos de pago aceptan?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Aceptamos tarjetas de crédito y débito, así como pagos en
+                línea a través de las plataformas disponibles en nuestro
+                checkout.
+              </p>
+            </div>
+          </div>
+
+          <!-- Más preguntas de "Sobre la membresía y pagos" duplicando .pata-faq-item -->
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 3: Sobre el fondo y los apoyos -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text"
+            >Sobre el fondo y los apoyos</span
+          >
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <!-- Preguntas de "Sobre el fondo y los apoyos" -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Cómo funciona el fondo solidario?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Aquí puedes explicar brevemente cómo se administra el fondo y
+                cómo se otorgan los apoyos.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 4: Sobre transparencia -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text">Sobre transparencia</span>
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <!-- Preguntas de "Sobre transparencia" -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Cómo aseguran la transparencia en el uso del fondo?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Aquí puedes describir los reportes, auditorías u otros
+                mecanismos de transparencia que utilicen.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 5: Sobre embajadores -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text">Sobre embajadores</span>
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <!-- Preguntas de "Sobre embajadores" -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Cómo puedo ser embajador del club?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Explica aquí los requisitos y el proceso para registrarse como
+                embajador.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CATEGORÍA 6: Sobre el uso del sitio -->
+      <div class="pata-faq-category-group">
+        <button
+          class="pata-faq-category-btn"
+          type="button"
+          aria-expanded="false"
+        >
+          <span class="pata-faq-category-text">Sobre el uso del sitio</span>
+          <span class="pata-faq-icon-circle" aria-hidden="true">
+            <span class="pata-faq-icon-chevron"></span>
+          </span>
+        </button>
+
+        <div class="pata-faq-category-panel" hidden>
+          <!-- Preguntas de "Sobre el uso del sitio" -->
+          <div class="pata-faq-item">
+            <button
+              class="pata-faq-question"
+              type="button"
+              aria-expanded="false"
+            >
+              <span class="pata-faq-question-text">
+                ¿Necesito una cuenta para usar el sitio?
+              </span>
+              <span class="pata-faq-icon-circle" aria-hidden="true">
+                <span class="pata-faq-icon-chevron"></span>
+              </span>
+            </button>
+            <div class="pata-faq-answer" hidden>
+              <p>
+                Aquí puedes aclarar qué se puede hacer sin cuenta y qué
+                funciones requieren iniciar sesión.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        document.addEventListener("DOMContentLoaded", function () {
+          const roots = document.querySelectorAll("[data-pata-faq-root]");
+          if (!roots.length) return;
+
+          roots.forEach(function (root) {
+            const categoryGroups = root.querySelectorAll(
+              ".pata-faq-category-group"
+            );
+
+            /* ---------- CATEGORÍAS ---------- */
+            categoryGroups.forEach(function (group, index) {
+              const catBtn = group.querySelector(".pata-faq-category-btn");
+              const catPanel = group.querySelector(".pata-faq-category-panel");
+              if (!catBtn || !catPanel) return;
+
+              // Opcional: abrir la primera categoría por defecto
+              if (index === 0) {
+                group.classList.add("is-open");
+                catPanel.hidden = false;
+                catBtn.setAttribute("aria-expanded", "true");
+              }
+
+              catBtn.addEventListener("click", function () {
+                const isOpen = group.classList.contains("is-open");
+
+                // Solo una categoría abierta a la vez
+                categoryGroups.forEach(function (g) {
+                  if (g !== group) {
+                    g.classList.remove("is-open");
+                    const btn = g.querySelector(".pata-faq-category-btn");
+                    const panel = g.querySelector(
+                      ".pata-faq-category-panel"
+                    );
+                    if (btn && panel) {
+                      btn.setAttribute("aria-expanded", "false");
+                      panel.hidden = true;
+                    }
+                  }
+                });
+
+                if (isOpen) {
+                  group.classList.remove("is-open");
+                  catPanel.hidden = true;
+                  catBtn.setAttribute("aria-expanded", "false");
+                } else {
+                  group.classList.add("is-open");
+                  catPanel.hidden = false;
+                  catBtn.setAttribute("aria-expanded", "true");
+                }
+              });
+
+              /* ---------- PREGUNTAS DENTRO DE CADA CATEGORÍA ---------- */
+              const items = group.querySelectorAll(".pata-faq-item");
+              items.forEach(function (item) {
+                const qBtn = item.querySelector(".pata-faq-question");
+                const answer = item.querySelector(".pata-faq-answer");
+                if (!qBtn || !answer) return;
+
+                qBtn.addEventListener("click", function (e) {
+                  e.stopPropagation(); // no dispare el toggle de la categoría
+                  const open = item.classList.contains("is-open");
+
+                  // Si solo quieres una pregunta abierta por categoría, descomenta:
+                  // const siblings = group.querySelectorAll(".pata-faq-item");
+                  // siblings.forEach(function (s) {
+                  //   if (s !== item) {
+                  //     s.classList.remove("is-open");
+                  //     const sAns = s.querySelector(".pata-faq-answer");
+                  //     const sBtn = s.querySelector(".pata-faq-question");
+                  //     if (sAns && sBtn) {
+                  //       sAns.hidden = true;
+                  //       sBtn.setAttribute("aria-expanded", "false");
+                  //     }
+                  //   }
+                  // });
+
+                  if (open) {
+                    item.classList.remove("is-open");
+                    answer.hidden = true;
+                    qBtn.setAttribute("aria-expanded", "false");
+                  } else {
+                    item.classList.add("is-open");
+                    answer.hidden = false;
+                    qBtn.setAttribute("aria-expanded", "true");
+                  }
+                });
+              });
+            });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
+

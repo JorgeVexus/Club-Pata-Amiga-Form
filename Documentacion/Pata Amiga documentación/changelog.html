@@ -337,9 +337,13 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-09')">
-                <span>9 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-10')">
+                <span>10 de Feb, 2026</span>
                 <span class="badge">Hoy</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-09')">
+                <span>9 de Feb, 2026</span>
+                <span class="badge">Ayer</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-07')">
                 <span>7 de Feb, 2026</span>
@@ -364,8 +368,86 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 9 de Febrero (HOY) -->
-            <div id="2026-02-09" class="changelog-entry active">
+            <!-- Entrada: 10 de Febrero (HOY) -->
+            <div id="2026-02-10" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Correcciones de Registro & Diseño Landing</h1>
+                        <div class="entry-meta">Martes, 10 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.4.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🐾 Registro de Mascotas (Fixes)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Contador de Mascotas:</strong> Se corrigió el error "0 Mascotas" en el
+                                dashboard.
+                                Ahora consume directamente la tabla <code>pets</code> de Supabase para mayor precisión.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Fotos de Mascotas:</strong> Solución al problema de imágenes rotas. Se
+                                normalizó el guardado de URLs (foto 1 y 2) en la base de datos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Periodo de Espera:</strong> Se agregaron columnas dedicadas
+                                (<code>waiting_period_start</code>, <code>waiting_period_end</code>) para rastrear
+                                oficialmente cuándo inicia y termina la carencia de cada mascota.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🤝 Sistema de Embajadores</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">VERIFY</span>
+                            <div class="change-desc">
+                                <strong>Validación de Lógica:</strong> Se auditó el flujo completo de referidos.
+                                <ul style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li>Compatibilidad de IDs (Memberstack vs Supabase).</li>
+                                    <li>Prevención de duplicados.</li>
+                                    <li>Asignación correcta de comisiones.</li>
+                                </ul>
+                                <em>Resultado: El sistema es robusto y no fue afectado por los cambios recientes.</em>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🎨 Frontend & Pagos</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">DONE</span>
+                            <div class="change-desc">
+                                <strong>Nueva Landing Page:</strong> Diseño completado al 100% siguiendo las guías de
+                                Figma. Estructura y estilos listos, solo pendiente la capa de animación.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">REVIEW</span>
+                            <div class="change-desc">
+                                <strong>Configuración Stripe:</strong> Revisión de credenciales y webhooks para asegurar
+                                el flujo de pagos en producción.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 9 de Febrero (AYER) -->
+            <div id="2026-02-09" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Mantenimiento & Dashboard UI</h1>
