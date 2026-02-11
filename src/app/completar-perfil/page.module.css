@@ -1,67 +1,83 @@
-.container {
-    width: 100%;
+/* Completar Perfil - Diseño Figma Pata Amiga */
+
+.pageBackground {
     min-height: 100vh;
-}
-
-.formContainer {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem 2rem;
-}
-
-.navigationButtons {
-    display: flex;
-    gap: 1rem;
-    justify-content: space-between;
-    margin-top: 2rem;
-    padding: 0 1rem;
-}
-
-.btnPrevious,
-.btnNext {
-    padding: 10px 18px;
-    border-radius: 50px;
-    border: 2px solid #000000;
-    font-family: 'Fraiche', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btnPrevious {
     background: #00BBB4;
-    color: #000000;
+    padding: 2rem 1.5rem 3rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
 }
 
-.btnPrevious:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 187, 180, 0.3);
+/* Contenedor blanco centrado - tal cual la imagen */
+.whiteCard {
+    width: 100%;
+    max-width: 1200px;
+    background: #ffffff;
+    border-radius: 32px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+    padding: 2rem 2.5rem 2.5rem;
 }
 
-.btnNext {
-    background: #FE8F15;
-    color: #000000;
+.mainTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    color: #9fd406;
+    text-align: center;
+    margin: 0 0 1.5rem 0;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
-.btnNext:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(254, 143, 21, 0.3);
+.contentLayout {
+    display: grid;
+    grid-template-columns: 1fr 280px;
+    gap: 2rem;
+    align-items: start;
+    margin-top: 1.5rem;
 }
 
-.btnPrevious:disabled,
-.btnNext:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
+.formColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.decorativeColumn {
+    position: sticky;
+    top: 2rem;
+}
+
+.decorativeImage {
+    width: 100%;
+    min-height: 320px;
+    background: linear-gradient(135deg, rgba(159, 212, 6, 0.15) 0%, rgba(21, 190, 178, 0.15) 100%);
+    border-radius: 24px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cpath fill='%239fd406' fill-opacity='0.2' d='M100 20c-44 0-80 36-80 80s36 80 80 80 80-36 80-80-36-80-80-80zm0 140c-33 0-60-27-60-60s27-60 60-60 60 27 60 60-27 60-60 60z'/%3E%3C/svg%3E");
+}
+
+@media (max-width: 1024px) {
+    .contentLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .decorativeColumn {
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
-    .formContainer {
-        padding: 0 0.5rem 1rem;
+    .pageBackground {
+        padding: 1rem 1rem 2rem;
     }
 
-    .navigationButtons {
-        padding: 0 0.5rem;
+    .whiteCard {
+        padding: 1.5rem 1.25rem;
+        border-radius: 24px;
+    }
+
+    .mainTitle {
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
     }
 }

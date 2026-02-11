@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import StepIndicator from '@/components/UI/StepIndicator';
 import RegistrationForm from '@/components/RegistrationForm/RegistrationForm';
+import HelpSection from '@/components/UI/HelpSection';
 import { getRegistrationProgress, markStepComplete, getCompletedSteps } from '@/utils/registration-progress';
+import styles from './page.module.css';
 
 export default function CompleteProfilePage() {
     const router = useRouter();
@@ -41,13 +43,29 @@ export default function CompleteProfilePage() {
     };
 
     return (
-        <div style={{ minHeight: '100vh', background: '#00BBB4', padding: '2rem 0' }}>
-            <StepIndicator
-                currentStep={1}
-                completedSteps={completedSteps}
-                onStepClick={handleStepClick}
-            />
-            <RegistrationForm onSuccess={handleFormSuccess} />
+        <div className={styles.pageBackground}>
+            <div className={styles.whiteCard}>
+                {/* Título principal */}
+                <h1 className={styles.mainTitle}>Únete a la manada</h1>
+
+                <StepIndicator
+                    currentStep={1}
+                    completedSteps={completedSteps}
+                    onStepClick={handleStepClick}
+                />
+
+                <div className={styles.contentLayout}>
+                    <div className={styles.formColumn}>
+                        <RegistrationForm onSuccess={handleFormSuccess} />
+                        <HelpSection />
+                    </div>
+                    <div className={styles.decorativeColumn}>
+                        <div className={styles.decorativeImage} aria-hidden="true">
+                            {/* Placeholder para imagen decorativa - mujer con cachorros */}
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

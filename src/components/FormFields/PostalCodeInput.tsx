@@ -212,10 +212,10 @@ export default function PostalCodeInput({
                 {errors.state && <p className="error-text">{errors.state}</p>}
             </div>
 
-            {/* Ciudad */}
+            {/* Alcaldía/Municipio */}
             <div className={styles.fieldWrapper}>
                 <label htmlFor="city" className={styles.label}>
-                    Ciudad <span className={styles.required}>*</span>
+                    Alcaldía/municipio <span className={styles.required}>*</span>
                 </label>
                 <input
                     id="city"
@@ -253,7 +253,7 @@ export default function PostalCodeInput({
             {/* Dirección (calle y número) */}
             <div className={styles.fieldWrapper}>
                 <label htmlFor="address" className={styles.label}>
-                    Calle y número (opcional)
+                    Cambiar a calle y número (int y ext)
                 </label>
                 <input
                     id="address"

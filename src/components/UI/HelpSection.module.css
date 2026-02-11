@@ -1,0 +1,89 @@
+/* Help Section - Diseño Figma Pata Amiga */
+
+.helpSection {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: rgba(245, 245, 245, 0.9);
+    border-radius: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    max-width: 360px;
+}
+
+.dogIcon {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    color: #9fd406;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dogIcon svg {
+    width: 100%;
+    height: 100%;
+}
+
+.helpContent {
+    flex: 1;
+    min-width: 0;
+}
+
+.helpTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #9fd406;
+    margin: 0 0 0.25rem 0;
+}
+
+.helpSubtitle {
+    font-size: 0.9rem;
+    color: #2d3748;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+}
+
+.contactInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.contactLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #2d3748;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.contactLink:hover {
+    color: #15BEB2;
+}
+
+.contactLink svg {
+    flex-shrink: 0;
+    color: #9fd406;
+}
+
+@media (max-width: 768px) {
+    .helpSection {
+        max-width: 100%;
+        padding: 1rem 1.25rem;
+    }
+
+    .dogIcon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+    }
+
+    .helpTitle {
+        font-size: 1rem;
+    }
+}

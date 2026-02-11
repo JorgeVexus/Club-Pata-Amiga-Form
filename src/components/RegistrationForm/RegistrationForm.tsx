@@ -12,6 +12,7 @@ import DatePicker from '@/components/FormFields/DatePicker';
 import FileUpload from '@/components/FormFields/FileUpload';
 import PostalCodeInput from '@/components/FormFields/PostalCodeInput';
 import PhoneInput from '@/components/FormFields/PhoneInput';
+import Toggle from '@/components/FormFields/Toggle';
 import { checkCurpAvailability, registerUserInSupabase, updateUserCrmContactId } from '@/app/actions/user.actions';
 import { createMemberstackUser, completeMemberProfile } from '@/services/memberstack.service';
 import { uploadMultipleFiles, uploadFile } from '@/services/supabase.service';
@@ -23,9 +24,10 @@ import styles from './RegistrationForm.module.css';
 
 interface RegistrationFormProps {
     onSuccess?: () => void;
+    onCancel?: () => void;
 }
 
-export default function RegistrationForm({ onSuccess }: RegistrationFormProps = {}) {
+export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFormProps = {}) {
     const [member, setMember] = useState<any>(null); // Store current member
 
     // Check auth on mount
@@ -371,9 +373,15 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
 
     return (
         <div className={styles.formContainer}>
-            {/* Header */}
+            {/* Header - Diseño Figma */}
             <div className={styles.header}>
-                <h1 className={styles.title}>Cuéntanos sobre ti</h1>
+                <h2 className={styles.title}>
+                    Cuéntanos sobre ti
+                    <span className={styles.titleHearts} aria-hidden="true">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#E91E63"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#E91E63"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                    </span>
+                </h2>
                 <p className={styles.subtitle}>
                     Para formar parte de esta manada, necesitamos conocerte un poquito
                 </p>
@@ -409,8 +417,6 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                 <div className={styles.columnsWrapper}>
                     {/* Columna Izquierda */}
                     <div className={styles.column}>
-                        <h3 className={styles.columnTitle}>👤 Nombre Completo</h3>
-
                         <TextInput
                             label="Nombre(s)"
                             name="firstName"
@@ -441,13 +447,14 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                                 onChange={(value) => setFormData({ ...formData, maternalLastName: value })}
                                 placeholder="García"
                                 error={errors.maternalLastName}
+                                helpText="Como aparece en tu identificación oficial"
                                 required
                                 memberstackField="maternal-last-name"
                             />
                         )}
 
                         <RadioGroup
-                            label="🧑‍🦰 ¿Cómo te identificas?"
+                            label="¿Cómo te identificas?"
                             name="gender"
                             options={[
                                 { value: 'hombre', label: 'Hombre' },
@@ -462,12 +469,12 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                         />
 
                         <DatePicker
-                            label="🎂 Fecha de nacimiento"
+                            label="Fecha de nacimiento"
                             name="birthDate"
                             value={formData.birthDate || ''}
                             onChange={(value) => setFormData({ ...formData, birthDate: value })}
                             error={errors.birthDate}
-                            helpText="Debes ser mayor de 18 años para registrarte"
+                            helpText="Para celebrar contigo cuando sea tu día"
                             required
                             memberstackField="birth-date"
                             maxDate={getMaxBirthDateForAdult()}
@@ -475,7 +482,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
 
                         {!formData.isForeigner && (
                             <TextInput
-                                label="🆔 CURP"
+                                label="CURP"
                                 name="curp"
                                 value={formData.curp || ''}
                                 onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
@@ -489,42 +496,26 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                             />
                         )}
 
-                        <div className={styles.checkboxWrapper} style={{ marginBottom: '1.5rem' }}>
-                            <label className={styles.checkboxLabel} style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-                                <input
-                                    type="checkbox"
-                                    checked={formData.isForeigner}
-                                    onChange={(e) => setFormData({ ...formData, isForeigner: e.target.checked })}
-                                    style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                                />
-                                <span style={{ fontWeight: 500 }}>¿Eres extranjero?</span>
-                            </label>
-                            <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '4px' }}>
-                                Si marcas esta opción, podrás subir tu pasaporte en lugar del INE.
-                            </p>
-                        </div>
-
-                        <FileUpload
-                            label={formData.isForeigner ? "🛂 Pasaporte (Portada)" : "🪪 INE - Frente"}
-                            name="ineFront"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            maxSize={5}
-                            maxFiles={1}
-                            instruction={formData.isForeigner ? "Sube la portada de tu pasaporte vigente" : "Sube el frente de tu INE (lado con foto)"}
-                            onChange={(files) => setFormData({ ...formData, ineFrontFile: files[0] || null })}
-                            error={errors.ineFrontFile}
-                            required
+                        <Toggle
+                            label="¿Eres extranjero?"
+                            checked={formData.isForeigner ?? false}
+                            onChange={(checked) => setFormData({ ...formData, isForeigner: checked })}
+                            helpText="Si activas esta opción, podrás subir tu pasaporte en lugar del INE."
                         />
 
                         <FileUpload
-                            label={formData.isForeigner ? "🛂 Pasaporte (Sello / Visa)" : "🪪 INE - Reverso"}
-                            name="ineBack"
+                            label={formData.isForeigner ? "Sube tu pasaporte (portada y sello/visa)" : "Sube tu INE por ambos lados"}
+                            name="ineDocuments"
                             accept=".pdf,.jpg,.jpeg,.png"
                             maxSize={5}
-                            maxFiles={1}
-                            instruction={formData.isForeigner ? "Sube la página con el sello de entrada o tu visa" : "Sube el reverso de tu INE (lado trasero)"}
-                            onChange={(files) => setFormData({ ...formData, ineBackFile: files[0] || null })}
-                            error={errors.ineBackFile}
+                            maxFiles={2}
+                            instruction={formData.isForeigner ? "Sube la portada y la página con sello o visa" : "Asegúrate de que se vea clara y completa"}
+                            onChange={(files) => setFormData({
+                                ...formData,
+                                ineFrontFile: files[0] || null,
+                                ineBackFile: files[1] || null
+                            })}
+                            error={errors.ineFrontFile || errors.ineBackFile}
                             required
                         />
                     </div>
@@ -557,7 +548,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                         {/* Comprobante de domicilio eliminado - ya no es necesario */}
 
                         <TextInput
-                            label="📧 Correo electrónico"
+                            label="Correo electrónico"
                             name="email"
                             type="email"
                             value={formData.email || ''}
@@ -571,7 +562,7 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                         />
 
                         <PhoneInput
-                            label="📞 Número de teléfono"
+                            label="Número de teléfono"
                             name="phone"
                             value={formData.phone || ''}
                             onChange={(value) => setFormData({ ...formData, phone: value })}
@@ -585,14 +576,23 @@ export default function RegistrationForm({ onSuccess }: RegistrationFormProps = 
                     </div>
                 </div>
 
-                {/* Botón de Submit */}
+                {/* Botones - Diseño Figma */}
                 <div className={styles.submitWrapper}>
+                    <button
+                        type="button"
+                        className={styles.cancelButton}
+                        onClick={() => onCancel ? onCancel() : window.history.back()}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        Cancelar
+                    </button>
                     <button
                         type="submit"
                         className={styles.submitButton}
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? 'Procesando...' : 'Siguiente'}
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                     </button>
                 </div>
             </form>
