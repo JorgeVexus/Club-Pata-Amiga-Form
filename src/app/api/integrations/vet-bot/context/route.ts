@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get('userId');
+        const email = searchParams.get('email');
         const apiKey = request.headers.get('x-vet-bot-key');
 
         // 1. Security Check
@@ -23,21 +24,27 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized', message: 'Invalid API Key' }, { status: 401 });
         }
 
-        if (!userId) {
-            return NextResponse.json({ error: 'Missing userId parameter' }, { status: 400 });
+        if (!userId && !email) {
+            return NextResponse.json({ error: 'Missing userId or email parameter' }, { status: 400 });
         }
 
-        console.log(`🤖 [VET_BOT] Fetching context for user: ${userId}`);
+        console.log(`🤖 [VET_BOT] Fetching context for ${email ? 'email: ' + email : 'user: ' + userId}`);
 
-        // 2. Fetch User Profile
-        const { data: user, error: userError } = await supabaseAdmin
+        // 2. Fetch User Profile (by memberstack_id OR by email)
+        let query = supabaseAdmin
             .from('users')
-            .select('id, first_name, last_name, email, membership_status')
-            .eq('memberstack_id', userId)
-            .single();
+            .select('id, first_name, last_name, email, membership_status');
+
+        if (email) {
+            query = query.eq('email', email.toLowerCase().trim());
+        } else {
+            query = query.eq('memberstack_id', userId!);
+        }
+
+        const { data: user, error: userError } = await query.single();
 
         if (userError || !user) {
-            console.warn(`⚠️ [VET_BOT] User not found: ${userId}`);
+            console.warn(`⚠️ [VET_BOT] User not found: ${email || userId}`);
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
         }
 
