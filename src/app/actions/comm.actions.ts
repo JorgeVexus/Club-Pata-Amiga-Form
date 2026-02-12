@@ -116,7 +116,7 @@ export async function sendCustomNotification(params: {
             await commService.logCommunication({
                 user_id: params.userId,
                 admin_id: params.adminId,
-                type: 'whatsapp', // Usamos whatsapp como proxy para 'mensaje directo' en el log actual o podemos expandir tipos
+                type: 'app', // Notificación in-app (campana)
                 status: 'sent',
                 content: `[Notificación App] ${params.title}: ${params.message}`,
                 metadata: { is_custom_notification: true }

@@ -19,7 +19,7 @@ export interface CommLog {
     id: string;
     user_id: string;
     admin_id?: string;
-    type: 'email' | 'whatsapp';
+    type: 'email' | 'whatsapp' | 'app';
     template_id?: string;
     status: 'sent' | 'failed' | 'pending';
     content: string;

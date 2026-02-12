@@ -23,7 +23,7 @@
 
     // ========== CONFIGURACIÓN ==========
     const CONFIG = {
-        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://www.pataamiga.mx',
+        apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
         supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q',
         // Mapeo de rutas de backend -> rutas de Webflow
