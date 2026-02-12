@@ -50,6 +50,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [petLogs, setPetLogs] = useState<Record<string, AppealLog[]>>({});      // 🆕 Logs por mascota
     const [loadingLogs, setLoadingLogs] = useState<Record<string, boolean>>({}); // 🆕 Loading state por mascota
     const [appealLogs, setAppealLogs] = useState<AppealLog[]>([]);
+    const [isRefunding, setIsRefunding] = useState(false);
+    const [refundDone, setRefundDone] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
@@ -158,6 +160,30 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             alert('Error de conexión');
         } finally {
             setUpdatingPetId(null);
+        }
+    }
+
+    // Refund handler
+    async function handleRefund() {
+        if (!confirm('¿Estás seguro de reembolsar el pago de este miembro? Esta acción no se puede deshacer.')) return;
+        setIsRefunding(true);
+        try {
+            const response = await fetch(`/api/admin/members/${member.id}/refund`, {
+                method: 'POST',
+            });
+            const data = await response.json();
+            if (data.success) {
+                setRefundDone(true);
+                alert(`✅ ${data.message}`);
+                if (onDataChange) onDataChange();
+            } else {
+                alert('❌ Error: ' + (data.error || 'Intenta de nuevo'));
+            }
+        } catch (error) {
+            console.error('Refund error:', error);
+            alert('Error de conexión al procesar el reembolso.');
+        } finally {
+            setIsRefunding(false);
         }
     }
 
@@ -520,23 +546,53 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                     </div>
                 </div>
 
-                {/* Footer Actions - Solo mostrar si el usuario NO está aprobado */}
-                {fields['approval-status'] !== 'approved' && (
-                    <div className={styles.footer}>
+                <div className={styles.footer}>
+                    {fields['approval-status'] !== 'approved' && (
+                        <>
+                            <button
+                                className={`${styles.actionButton} ${styles.approveButton}`}
+                                onClick={() => onApprove(member.id)}
+                            >
+                                Aprobar Solicitud
+                            </button>
+                            <button
+                                className={`${styles.actionButton} ${styles.rejectButton}`}
+                                onClick={() => onReject(member.id)}
+                            >
+                                Rechazar Solicitud
+                            </button>
+                        </>
+                    )}
+                    {fields['approval-status'] === 'rejected' && !refundDone && (
                         <button
-                            className={`${styles.actionButton} ${styles.approveButton}`}
-                            onClick={() => onApprove(member.id)}
+                            className={`${styles.actionButton}`}
+                            style={{
+                                background: '#7c3aed',
+                                color: 'white',
+                                opacity: isRefunding ? 0.7 : 1,
+                            }}
+                            onClick={handleRefund}
+                            disabled={isRefunding}
                         >
-                            Aprobar Solicitud
+                            {isRefunding ? '⏳ Procesando...' : '💳 Reembolsar Pago'}
                         </button>
-                        <button
-                            className={`${styles.actionButton} ${styles.rejectButton}`}
-                            onClick={() => onReject(member.id)}
-                        >
-                            Rechazar Solicitud
-                        </button>
-                    </div>
-                )}
+                    )}
+                    {refundDone && (
+                        <span style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                            padding: '10px 20px',
+                            borderRadius: '12px',
+                            background: '#e8f5e9',
+                            color: '#2e7d32',
+                            fontWeight: 600,
+                            fontSize: '0.9rem',
+                        }}>
+                            ✅ Pago reembolsado
+                        </span>
+                    )}
+                </div>
             </div>
         </div>
     );

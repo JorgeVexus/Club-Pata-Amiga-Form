@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './PlanSelection.module.css';
+import TermsModal from './TermsModal';
 
 // Memberstack Price IDs (connected to Stripe)
 const PLANS = {
@@ -28,6 +29,8 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [termsAccepted, setTermsAccepted] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
 
     // Persistencia básica si recargan la página
     useEffect(() => {
@@ -46,6 +49,11 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const handleNext = useCallback(async () => {
         if (!selectedPlanId) {
             setError('⚠️ ¡No te quedes sin plan! Elige mensualidad o anualidad para continuar.');
+            return;
+        }
+
+        if (!termsAccepted) {
+            setError('⚠️ Debes aceptar los términos y condiciones para continuar.');
             return;
         }
 
@@ -84,7 +92,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         } finally {
             setIsProcessing(false);
         }
-    }, [selectedPlanId, onSuccess]);
+    }, [selectedPlanId, termsAccepted, onSuccess]);
 
     return (
         <div className={styles.container}>
@@ -139,6 +147,34 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                 <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado, tiene RUAC o llegas con código referido).</p>
             </div>
 
+            {/* Terms & Conditions Checkbox */}
+            <div className={styles.termsSection}>
+                <label className={styles.termsLabel}>
+                    <input
+                        type="checkbox"
+                        checked={termsAccepted}
+                        onChange={(e) => {
+                            setTermsAccepted(e.target.checked);
+                            setError(null);
+                        }}
+                        className={styles.termsCheckbox}
+                    />
+                    <span className={styles.termsText}>
+                        He leído y acepto los{' '}
+                        <button
+                            type="button"
+                            className={styles.termsLink}
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setShowTermsModal(true);
+                            }}
+                        >
+                            Términos y Condiciones, Política de Privacidad y documentos legales
+                        </button>
+                    </span>
+                </label>
+            </div>
+
             {/* Navegación */}
             <div className={styles.navigationButtons}>
                 <button
@@ -158,7 +194,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     <button
                         className={styles.nextButton}
                         onClick={handleNext}
-                        disabled={!selectedPlanId || isProcessing}
+                        disabled={!selectedPlanId || !termsAccepted || isProcessing}
                     >
                         {isProcessing ? '⏳ Procesando...' : 'Ir a Pagar'}
                     </button>
@@ -171,6 +207,12 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     {error}
                 </div>
             )}
+
+            {/* Terms Modal */}
+            <TermsModal
+                isOpen={showTermsModal}
+                onClose={() => setShowTermsModal(false)}
+            />
         </div>
     );
 }

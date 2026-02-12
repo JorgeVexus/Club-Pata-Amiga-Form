@@ -5,8 +5,8 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all' | 'admins';
-    onFilterChange: (filter: RequestType | 'all' | 'admins') => void;
+    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs';
+    onFilterChange: (filter: RequestType | 'all' | 'admins' | 'legal-docs') => void;
     pendingCounts: Record<RequestType, number>;
     isMobileOpen?: boolean;
     onClose?: () => void;
@@ -113,6 +113,13 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                     >
                         <span className={styles.menuIcon}>👨‍💼</span>
                         <span className={styles.menuLabel}>Administradores</span>
+                    </button>
+                    <button
+                        className={`${styles.menuItem} ${activeFilter === 'legal-docs' ? styles.active : ''}`}
+                        onClick={() => onFilterChange('legal-docs')}
+                    >
+                        <span className={styles.menuIcon}>📄</span>
+                        <span className={styles.menuLabel}>Documentos Legales</span>
                     </button>
                 </nav>
             )}

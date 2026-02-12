@@ -16,10 +16,11 @@ import AdminsTable from './AdminsTable';
 import CommunicationsHub from './Communications/CommunicationsHub';
 import AmbassadorsTable from './AmbassadorsTable';
 import AmbassadorDetailModal from './AmbassadorDetailModal';
+import LegalDocsManager from './LegalDocsManager';
 import { Ambassador } from '@/types/ambassador.types';
 
 export default function AdminDashboard() {
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null); // Para apelaciones por mascota
@@ -337,7 +338,8 @@ export default function AdminDashboard() {
                                             activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
                                                 activeFilter === 'admins' ? 'Administradores' :
                                                     activeFilter === 'appeals' ? 'Apelaciones' :
-                                                        'Fondo Solidario'}
+                                                        activeFilter === 'legal-docs' ? 'Documentos Legales' :
+                                                            'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {
@@ -375,6 +377,8 @@ export default function AdminDashboard() {
                         <AmbassadorsTable
                             onViewDetails={(amb) => setSelectedAmbassador(amb)}
                         />
+                    ) : activeFilter === 'legal-docs' ? (
+                        <LegalDocsManager />
                     ) : (
                         <>
                             {/* Requests Table */}
