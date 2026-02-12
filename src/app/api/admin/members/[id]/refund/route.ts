@@ -8,10 +8,9 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 // POST: Refund a rejected member's payment
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     try {
         const { id: memberId } = await params;
 
