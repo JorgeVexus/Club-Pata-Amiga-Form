@@ -60,6 +60,9 @@ export async function GET(request: NextRequest) {
         // Filter out admins from the member list
         const filteredMembers = result.data?.filter(member => !adminMemberstackIds.has(member.id)) || [];
 
+        console.log(`[API] Member filter: Total fetched ${result.data?.length}, Admins hidden: ${(result.data?.length || 0) - filteredMembers.length}`);
+
+
         // ENRICHMENT: Fetch real pet counts from Supabase
         // 1. Get mapping of Memberstack ID -> Supabase User ID
         const memberstackIds = filteredMembers.map(m => m.id);
