@@ -128,7 +128,7 @@
 /* Botones de Navegación - usando estilos globales */
 .navigationButtons {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding-top: 2rem;
     border-top: 1px solid #eee;

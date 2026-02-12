@@ -15,7 +15,8 @@
     background: #EFEFEF;
     border-radius: 999px;
     padding: 1rem 1.5rem;
-    gap: 0.5rem;
+    gap: 0.25rem;
+    flex-wrap: nowrap;
 }
 
 .stepWrapper {
@@ -46,9 +47,9 @@
     background: transparent;
 }
 
-/* Círculos - Active: turquesa con icono blanco */
+/* Círculos - Active: turquesa/princ azul con icono blanco (Figma 111-2205) */
 .stepWrapper.active .stepCircle {
-    background-color: #00C9A7;
+    background-color: #15BEB2;
     border: none;
     color: #ffffff;
 }
@@ -60,7 +61,7 @@
 
 /* Completed: turquesa con check blanco */
 .stepWrapper.completed .stepCircle {
-    background-color: #00C9A7;
+    background-color: #15BEB2;
     border: none;
     color: #ffffff;
 }
@@ -70,7 +71,7 @@
     font-weight: 600;
 }
 
-/* Pending: gris con icono blanco */
+/* Pending: gris claro con icono blanco */
 .stepWrapper.pending .stepCircle {
     background-color: #D3D3D3;
     border: none;

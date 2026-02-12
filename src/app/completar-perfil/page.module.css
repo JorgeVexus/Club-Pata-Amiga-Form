@@ -1,22 +1,42 @@
-/* Completar Perfil - Diseño Figma Pata Amiga */
+/* Completar Perfil - Diseño Figma Pata Amiga
+   Todo en un div blanco centrado: título, barra de pasos y formulario */
 
 .pageBackground {
     min-height: 100vh;
     background: #00BBB4;
     padding: 2rem 1.5rem 3rem;
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     justify-content: center;
+    box-sizing: border-box;
 }
 
-/* Contenedor blanco centrado - tal cual la imagen */
+/* Contenedor blanco centrado - título, steps y form dentro */
 .whiteCard {
+    position: relative;
     width: 100%;
     max-width: 1200px;
     background: #ffffff;
     border-radius: 32px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
     padding: 2rem 2.5rem 2.5rem;
+    box-sizing: border-box;
+    overflow: visible;
+}
+
+/* Imagen decorativa - posición absoluta inferior derecha, por encima del formulario */
+.decorativeImage {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    max-width: 600px;
+    width: 60%;
+    min-width: 200px;
+    height: auto;
+    object-fit: contain;
+    object-position: bottom right;
+    z-index: 10;
+    pointer-events: none;
 }
 
 .mainTitle {
@@ -30,10 +50,6 @@
 }
 
 .contentLayout {
-    display: grid;
-    grid-template-columns: 1fr 280px;
-    gap: 2rem;
-    align-items: start;
     margin-top: 1.5rem;
 }
 
@@ -41,29 +57,6 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-}
-
-.decorativeColumn {
-    position: sticky;
-    top: 2rem;
-}
-
-.decorativeImage {
-    width: 100%;
-    min-height: 320px;
-    background: linear-gradient(135deg, rgba(159, 212, 6, 0.15) 0%, rgba(21, 190, 178, 0.15) 100%);
-    border-radius: 24px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cpath fill='%239fd406' fill-opacity='0.2' d='M100 20c-44 0-80 36-80 80s36 80 80 80 80-36 80-80-36-80-80-80zm0 140c-33 0-60-27-60-60s27-60 60-60 60 27 60 60-27 60-60 60z'/%3E%3C/svg%3E");
-}
-
-@media (max-width: 1024px) {
-    .contentLayout {
-        grid-template-columns: 1fr;
-    }
-
-    .decorativeColumn {
-        display: none;
-    }
 }
 
 @media (max-width: 768px) {
@@ -79,5 +72,10 @@
     .mainTitle {
         font-size: 1.75rem;
         margin-bottom: 1.25rem;
+    }
+
+    .decorativeImage {
+        max-width: 180px;
+        min-width: 120px;
     }
 }

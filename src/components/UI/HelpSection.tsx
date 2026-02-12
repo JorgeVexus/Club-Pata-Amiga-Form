@@ -19,18 +19,12 @@ export default function HelpSection({
 }: HelpSectionProps) {
     return (
         <div className={styles.helpSection}>
-            <div className={styles.dogIcon}>
-                <svg
-                    viewBox="0 0 64 64"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    aria-hidden="true"
-                >
-                    <circle cx="32" cy="20" r="12" fill="currentColor" opacity="0.8" />
-                    <ellipse cx="32" cy="45" rx="18" ry="12" fill="currentColor" opacity="0.8" />
-                    <circle cx="24" cy="16" r="2" fill="white" />
-                    <circle cx="40" cy="16" r="2" fill="white" />
-                </svg>
+            <div className={styles.dogPhoto}>
+                <img
+                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698df7162dcc8cf77605f9c4_3a36b4693a9c0f39d18d08ff201360e0_help%20box%20img.png"
+                    alt="French Bulldog"
+                    className={styles.dogImage}
+                />
             </div>
             <div className={styles.helpContent}>
                 <h3 className={styles.helpTitle}>¿Necesitas ayuda?</h3>

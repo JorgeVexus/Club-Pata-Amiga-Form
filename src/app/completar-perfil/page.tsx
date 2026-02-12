@@ -45,6 +45,14 @@ export default function CompleteProfilePage() {
     return (
         <div className={styles.pageBackground}>
             <div className={styles.whiteCard}>
+                {/* Imagen decorativa - posición absoluta inferior derecha */}
+                <img
+                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698d0b80e195b787d42d4707_registro-miembro-img-min.webp"
+                    alt=""
+                    className={styles.decorativeImage}
+                    aria-hidden
+                />
+
                 {/* Título principal */}
                 <h1 className={styles.mainTitle}>Únete a la manada</h1>
 
@@ -58,11 +66,6 @@ export default function CompleteProfilePage() {
                     <div className={styles.formColumn}>
                         <RegistrationForm onSuccess={handleFormSuccess} />
                         <HelpSection />
-                    </div>
-                    <div className={styles.decorativeColumn}>
-                        <div className={styles.decorativeImage} aria-hidden="true">
-                            {/* Placeholder para imagen decorativa - mujer con cachorros */}
-                        </div>
                     </div>
                 </div>
             </div>

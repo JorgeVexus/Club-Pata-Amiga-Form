@@ -1,18 +1,18 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import styles from './PlanSelection.module.css';
 
-// Placeholder IDs - REPLACE WITH REAL MEMBERSTACK PRICE IDS LATER
+// Memberstack Price IDs (connected to Stripe)
 const PLANS = {
     MONTHLY: {
-        id: 'pln_monthly_fake_id', // TODO: User needs to update this
+        id: 'prc_mensual-452k30jah',
         name: 'Mensualidad',
         price: '159',
         description: 'Perfecto para empezar a formar parte de la comunidad y cuidar con respaldo.\nIncluye acceso al fondo solidario y beneficios exclusivos de la manada.'
     },
     ANNUAL: {
-        id: 'pln_annual_fake_id', // TODO: User needs to update this
+        id: 'prc_anual-o9d101ta',
         name: 'Anualidad',
         price: '1,699',
         description: 'Tu apoyo y el de tus compañeros ayudan a más familias todo el año.\nAhorra y asegura 12 meses de respaldo continuo.'
@@ -27,6 +27,7 @@ interface PlanSelectionProps {
 export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps = {}) {
     const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
 
     // Persistencia básica si recargan la página
     useEffect(() => {
@@ -42,22 +43,48 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         localStorage.setItem('selectedPlanId', planId);
     };
 
-    const handleNext = () => {
+    const handleNext = useCallback(async () => {
         if (!selectedPlanId) {
             setError('⚠️ ¡No te quedes sin plan! Elige mensualidad o anualidad para continuar.');
             return;
         }
 
-        // Aquí iría la lógica de redirección a Payment o Checkout de Memberstack
-        console.log('Plan seleccionado:', selectedPlanId);
-
-        // Llamar callback si existe, sino mostrar alert
-        if (onSuccess) {
-            onSuccess();
-        } else {
-            alert(`Plan seleccionado: ${selectedPlanId === PLANS.MONTHLY.id ? 'Mensual' : 'Anual'}. Listo para ir a pagar.`);
+        // Verificar que Memberstack esté cargado
+        if (!window.$memberstackDom) {
+            setError('⚠️ Error de conexión. Recarga la página e intenta de nuevo.');
+            return;
         }
-    };
+
+        setIsProcessing(true);
+        setError(null);
+
+        try {
+            console.log('🛒 Iniciando checkout con plan:', selectedPlanId);
+
+            // Lanzar el checkout de Stripe a través de Memberstack
+            const result = await window.$memberstackDom.purchasePlansWithCheckout({
+                priceId: selectedPlanId,
+            });
+
+            console.log('✅ Checkout completado:', result);
+
+            // Si el checkout fue exitoso, llamar al callback
+            if (onSuccess) {
+                onSuccess();
+            }
+        } catch (err: any) {
+            console.error('❌ Error en checkout:', err);
+
+            // Si el usuario cerró el checkout (canceló), no mostrar error
+            if (err?.message?.includes('cancel') || err?.message?.includes('closed')) {
+                console.log('ℹ️ El usuario canceló el checkout.');
+            } else {
+                setError('❌ Hubo un problema al procesar el pago. Inténtalo de nuevo.');
+            }
+        } finally {
+            setIsProcessing(false);
+        }
+    }, [selectedPlanId, onSuccess]);
 
     return (
         <div className={styles.container}>
@@ -131,9 +158,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     <button
                         className={styles.nextButton}
                         onClick={handleNext}
-                        disabled={!selectedPlanId}
+                        disabled={!selectedPlanId || isProcessing}
                     >
-                        Siguiente
+                        {isProcessing ? '⏳ Procesando...' : 'Ir a Pagar'}
                     </button>
                 </div>
             </div>

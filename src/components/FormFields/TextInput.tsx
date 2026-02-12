@@ -21,6 +21,8 @@ interface TextInputProps {
     pattern?: string;
     onBlur?: () => void;
     readOnly?: boolean;
+    /** Evita error de hidratación cuando el valor viene de APIs solo-cliente (ej. Memberstack) */
+    suppressHydrationWarning?: boolean;
 }
 
 export default function TextInput({
@@ -38,6 +40,7 @@ export default function TextInput({
     pattern,
     onBlur,
     readOnly,
+    suppressHydrationWarning,
 }: TextInputProps) {
     return (
         <div className={styles.fieldWrapper}>
@@ -51,6 +54,7 @@ export default function TextInput({
                 name={name}
                 type={type}
                 value={value}
+                suppressHydrationWarning={suppressHydrationWarning}
                 onChange={(e) => onChange(e.target.value)}
                 onBlur={onBlur}
                 placeholder={placeholder}

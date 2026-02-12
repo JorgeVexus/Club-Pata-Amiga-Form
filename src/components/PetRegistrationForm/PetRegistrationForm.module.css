@@ -126,7 +126,7 @@
 /* Botones de navegación - usando estilos globales */
 .navigationButtons {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-top: 3rem;
     gap: 1rem;
