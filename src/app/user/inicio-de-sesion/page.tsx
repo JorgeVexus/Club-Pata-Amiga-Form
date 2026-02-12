@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './login.module.css';
 
-export default function LoginPage() {
+function LoginPageContent() {
     const searchParams = useSearchParams();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -210,5 +210,13 @@ export default function LoginPage() {
                 </div>
             </section>
         </>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div style={{ backgroundColor: '#15beb2', minHeight: '100vh' }} />}>
+            <LoginPageContent />
+        </Suspense>
     );
 }
