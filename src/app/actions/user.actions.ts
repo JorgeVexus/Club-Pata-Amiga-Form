@@ -195,6 +195,7 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             name: pet.name,
             breed: pet.breed || (pet.isMixed ? 'Mestizo' : ''),
             breed_size: pet.breedSize,
+            age: pet.age || null, // Guardar edad (texto o número)
             birth_date: null, // Podríamos calcular la fecha aproximada basándonos en la edad
             // Prioritize specific fields, fallback to array
             photo_url: pet.photo1Url || pet.photoUrls?.[0] || null,
