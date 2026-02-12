@@ -103,23 +103,27 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                 )}
             </nav>
 
+            <nav className={styles.menuSection}>
+                <h3 className={styles.menuTitle}>Legal</h3>
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'legal-docs' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('legal-docs')}
+                >
+                    <span className={styles.menuIcon}>📄</span>
+                    <span className={styles.menuLabel}>Documentos Legales</span>
+                </button>
+            </nav>
+
             {/* Super Admin Only: Admins Section */}
             {isSuperAdmin && (
                 <nav className={styles.menuSection}>
-                    <h3 className={styles.menuTitle}>Administración</h3>
+                    <h3 className={styles.menuTitle}>Configuración de Acceso</h3>
                     <button
                         className={`${styles.menuItem} ${activeFilter === 'admins' ? styles.active : ''}`}
                         onClick={() => onFilterChange('admins')}
                     >
                         <span className={styles.menuIcon}>👨‍💼</span>
                         <span className={styles.menuLabel}>Administradores</span>
-                    </button>
-                    <button
-                        className={`${styles.menuItem} ${activeFilter === 'legal-docs' ? styles.active : ''}`}
-                        onClick={() => onFilterChange('legal-docs')}
-                    >
-                        <span className={styles.menuIcon}>📄</span>
-                        <span className={styles.menuLabel}>Documentos Legales</span>
                     </button>
                 </nav>
             )}
