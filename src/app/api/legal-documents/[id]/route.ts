@@ -8,8 +8,9 @@ const supabaseAdmin = createClient(
 );
 
 // PATCH: Update document (title, description, order, is_active)
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         const body = await request.json();
         const { title, description, display_order, is_active } = body;
 
@@ -22,7 +23,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
         const { data, error } = await supabaseAdmin
             .from('legal_documents')
             .update(updates)
-            .eq('id', params.id)
+            .eq('id', id)
             .select()
             .single();
 
@@ -36,20 +37,21 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 // DELETE: Remove document and its file from storage
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
+        const { id } = await params;
         // Get file info first
         const { data: doc } = await supabaseAdmin
             .from('legal_documents')
             .select('file_url, file_name')
-            .eq('id', params.id)
+            .eq('id', id)
             .single();
 
         // Delete from DB
         const { error: deleteError } = await supabaseAdmin
             .from('legal_documents')
             .delete()
-            .eq('id', params.id);
+            .eq('id', id);
 
         if (deleteError) throw deleteError;
 
