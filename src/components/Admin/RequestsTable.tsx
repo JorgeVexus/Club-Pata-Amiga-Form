@@ -495,20 +495,19 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                 </td>
                                 <td data-label="Acciones">
                                     <div className={styles.actionButtons}>
-                                        {request.status === 'rejected' ? (
+                                        <button
+                                            className={styles.viewButton}
+                                            onClick={() => onViewDetails(request.id, request.type)}
+                                        >
+                                            Ver Detalles
+                                        </button>
+                                        {request.status === 'rejected' && (
                                             <button
                                                 className={styles.rejectButton}
                                                 onClick={() => onViewRejectionReason?.(request.id)}
-                                                style={{ width: '50%', borderRadius: '50px' }}
+                                                style={{ fontSize: '0.8rem', padding: '4px 8px' }}
                                             >
-                                                Ver Motivo
-                                            </button>
-                                        ) : (
-                                            <button
-                                                className={styles.viewButton}
-                                                onClick={() => onViewDetails(request.id, request.type)}
-                                            >
-                                                Ver Detalles
+                                                Motivo
                                             </button>
                                         )}
                                         {request.status === 'pending' && (
