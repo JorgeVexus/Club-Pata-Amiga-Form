@@ -1,0 +1,554 @@
+<!-- ============================================= -->
+<!-- BENEFITS SLIDER - Club Pata Amiga              -->
+<!-- Embed in Webflow Custom Code                    -->
+<!-- Assets: Upload images from benefits-slider-assets/ -->
+<!-- to Webflow Assets and replace URLs below        -->
+<!-- ============================================= -->
+
+<!-- Outfit Font -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
+
+<style>
+    #pata-benefits-widget {
+        font-family: 'Outfit', sans-serif;
+        width: 100%;
+        overflow: hidden;
+        padding: 40px 0 80px 0;
+        background: transparent;
+        position: relative;
+    }
+
+    .pata-section-title {
+        text-align: left;
+        font-size: 48px;
+        line-height: 1.1;
+        font-weight: 800;
+        color: #FF0055;
+        margin-bottom: 20px;
+        padding-left: 20px;
+        max-width: 90%;
+    }
+
+    @media (min-width: 768px) {
+        .pata-section-title {
+            font-size: 64px;
+            padding-left: 5%;
+            max-width: 800px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .pata-section-title {
+            font-size: 80px;
+            max-width: 1000px;
+        }
+    }
+
+    /* Container del slider */
+    .stacked-slider-container {
+        position: relative;
+        width: 100%;
+        height: 520px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Cada card */
+    .stacked-card {
+        position: absolute;
+        width: 280px;
+        height: 420px;
+        border-radius: 50px;
+        overflow: hidden;
+        background: #fff;
+        user-select: none;
+        cursor: pointer;
+
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.4s ease,
+            box-shadow 0.4s ease;
+
+        opacity: 0;
+        transform: scale(0.6) translateX(0);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    @media (min-width: 768px) {
+        .stacked-card {
+            width: 380px;
+            height: 507px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .stacked-card {
+            width: 420px;
+            height: 560px;
+        }
+
+        .stacked-card.is-active {
+            width: 470px;
+            height: 615px;
+        }
+    }
+
+    /* ========== ESTADOS DE LAS CARDS ========== */
+
+    .stacked-card.is-active {
+        opacity: 1;
+        transform: scale(1) translateX(0);
+        z-index: 50;
+        pointer-events: auto;
+        box-shadow: -5px 4px 8px rgba(0, 0, 0, 0.25), 5px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .stacked-card.is-prev-1 {
+        opacity: 1;
+        transform: scale(0.88) translateX(-70%);
+        z-index: 40;
+        pointer-events: auto;
+        box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15), -2px 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .stacked-card.is-next-1 {
+        opacity: 1;
+        transform: scale(0.88) translateX(70%);
+        z-index: 40;
+        pointer-events: auto;
+        box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15), -2px 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .stacked-card.is-prev-2 {
+        opacity: 1;
+        transform: scale(0.76) translateX(-120%);
+        z-index: 30;
+        pointer-events: auto;
+        box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15), -2px 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    .stacked-card.is-next-2 {
+        opacity: 1;
+        transform: scale(0.76) translateX(120%);
+        z-index: 30;
+        pointer-events: auto;
+        box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15), -2px 4px 15px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 768px) {
+        .stacked-slider-container {
+            height: 450px;
+        }
+
+        .stacked-card.is-prev-1 {
+            transform: scale(0.85) translateX(-55%);
+        }
+
+        .stacked-card.is-next-1 {
+            transform: scale(0.85) translateX(55%);
+        }
+
+        .stacked-card.is-prev-2 {
+            transform: scale(0.7) translateX(-95%);
+        }
+
+        .stacked-card.is-next-2 {
+            transform: scale(0.7) translateX(95%);
+        }
+    }
+
+    /* Contenido de la Card */
+    .pata-card-content {
+        height: 100%;
+        padding: 39px 39px 25px 39px;
+        display: flex;
+        flex-direction: column;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+
+    .pata-card-icon {
+        width: 96px;
+        height: 72px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .pata-card-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        object-position: left center;
+    }
+
+    .pata-card-title {
+        font-size: 48px;
+        font-weight: 800;
+        line-height: 1.0;
+        margin-bottom: 4px;
+    }
+
+    @media (min-width: 768px) {
+        .pata-card-title {
+            font-size: 60px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .pata-card-title {
+            font-size: 70px;
+        }
+    }
+
+    .pata-card-desc {
+        font-size: 14px;
+        line-height: 1.5;
+        opacity: 0.95;
+        max-width: 375px;
+    }
+
+    @media (min-width: 768px) {
+        .pata-card-desc {
+            font-size: 16px;
+        }
+    }
+
+    .pata-card-image {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: 45%;
+        z-index: 1;
+        overflow: hidden;
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+    }
+
+    .pata-card-image img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        object-position: top center;
+    }
+
+    /* Colores Figma */
+    .bg-teal {
+        background: #15BEB2;
+    }
+
+    .bg-orange {
+        background: #FF8400;
+    }
+
+    .bg-pink {
+        background: #FF0063;
+    }
+
+    .bg-lime {
+        background: #9FD406;
+    }
+
+    .bg-yellow {
+        background: #FFBD00;
+    }
+
+    /* Botones de Navegación - Estilo Figma (círculos con flecha) */
+    .slider-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 60px;
+        height: 60px;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 100;
+        transition: transform 0.2s, box-shadow 0.2s;
+        padding: 0;
+        box-shadow: 3px 4px 5.8px rgba(0, 0, 0, 0.31);
+        overflow: hidden;
+    }
+
+    .slider-nav-btn:hover {
+        transform: translateY(-50%) scale(1.1);
+    }
+
+    .slider-nav-btn img {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
+
+    .slider-nav-prev {
+        left: 50%;
+        margin-left: -285px;
+    }
+
+    .slider-nav-prev img {
+        transform: rotate(180deg);
+    }
+
+    .slider-nav-next {
+        right: 50%;
+        margin-right: -285px;
+    }
+
+    @media (max-width: 1200px) {
+        .slider-nav-prev {
+            margin-left: -240px;
+        }
+
+        .slider-nav-next {
+            margin-right: -240px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .slider-nav-btn {
+            width: 44px;
+            height: 44px;
+        }
+
+        .slider-nav-prev {
+            margin-left: -170px;
+        }
+
+        .slider-nav-next {
+            margin-right: -170px;
+        }
+    }
+
+    /* Paginación */
+    .slider-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .slider-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #ddd;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .slider-dot.active {
+        background: #FF0055;
+        transform: scale(1.2);
+    }
+</style>
+
+<div id="pata-benefits-widget">
+    <h2 class="pata-section-title">lo que nuestra membresía ofrece</h2>
+
+    <div class="stacked-slider-container" id="stackedSlider">
+
+        <!-- Card 0: Apoyo en momentos difíciles (Teal) -->
+        <div class="stacked-card bg-teal" data-index="0">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <!-- TODO: Upload icon-ribbon.png to Webflow Assets and replace URL -->
+                    <img src="benefits-slider-assets/icon-ribbon.png" alt="Icono listón">
+                </div>
+                <div class="pata-card-title">Apoyo en momentos difíciles</div>
+                <div class="pata-card-desc">Hasta $2,000 al año, te ayudamos a cubrir gastos cuando llega el momento de
+                    decir adiós, con todo el amor que merecen.</div>
+            </div>
+            <div class="pata-card-image">
+                <!-- TODO: Upload pet-fallecimiento.png to Webflow Assets and replace URL -->
+                <img src="benefits-slider-assets/pet-fallecimiento.png" alt="Mascota">
+            </div>
+        </div>
+
+        <!-- Card 1: Vacunación anual (Naranja) -->
+        <div class="stacked-card bg-orange" data-index="1">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <!-- TODO: Upload icon-syringe.png to Webflow Assets and replace URL -->
+                    <img src="benefits-slider-assets/icon-syringe.png" alt="Icono jeringa">
+                </div>
+                <div class="pata-card-title">Vacunación anual</div>
+                <div class="pata-card-desc">Hasta $300 al año, porque cuidar también es prevenir. Te ayudamos a mantener
+                    al día las vacunas de tu peludo.</div>
+            </div>
+            <div class="pata-card-image">
+                <!-- TODO: Upload pet-vacunas.png to Webflow Assets and replace URL -->
+                <img src="benefits-slider-assets/pet-vacunas.png" alt="Mascota vacunas">
+            </div>
+        </div>
+
+        <!-- Card 2: Emergencia médica (Rosa) - INICIAL ACTIVA -->
+        <div class="stacked-card bg-pink" data-index="2">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <!-- TODO: Upload icon-ambulance.png to Webflow Assets and replace URL -->
+                    <img src="benefits-slider-assets/icon-ambulance.png" alt="Icono ambulancia">
+                </div>
+                <div class="pata-card-title">Emergencia médica</div>
+                <div class="pata-card-desc">Hasta $3,000 al año, Porque los sustos no avisan y tu peludo no puede
+                    espera.</div>
+            </div>
+            <div class="pata-card-image">
+                <!-- TODO: Upload pet-emergencia.png to Webflow Assets and replace URL -->
+                <img src="benefits-slider-assets/pet-emergencia.png" alt="Perro Golden emergencia">
+            </div>
+        </div>
+
+        <!-- Card 3: Chat veterinario (Lima) -->
+        <div class="stacked-card bg-lime" data-index="3">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <!-- TODO: Upload icon-chat.png to Webflow Assets and replace URL -->
+                    <img src="benefits-slider-assets/icon-chat.png" alt="Icono chat">
+                </div>
+                <div class="pata-card-title">Chat veterinario</div>
+                <div class="pata-card-desc">Siempre disponible, consejos y apoyo para cuidar mejor a tu lomito, siempre
+                    con empatía y responsabilidad.</div>
+            </div>
+            <div class="pata-card-image">
+                <!-- TODO: Upload pet-chat.png to Webflow Assets and replace URL -->
+                <img src="benefits-slider-assets/pet-chat.png" alt="Gato veterinario">
+            </div>
+        </div>
+
+        <!-- Card 4: Donaciones a refugios (Amarillo) -->
+        <div class="stacked-card bg-yellow" data-index="4">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <!-- TODO: Upload icon-heart.png to Webflow Assets and replace URL -->
+                    <img src="benefits-slider-assets/icon-heart.png" alt="Icono corazón">
+                </div>
+                <div class="pata-card-title">Donaciones a refugios</div>
+                <div class="pata-card-desc">Cada 1000 miembros, juntos destinamos parte del fondo para apoyar refugios y
+                    rescates que salvan vidas.</div>
+            </div>
+            <div class="pata-card-image">
+                <!-- TODO: Upload pet-donaciones.png to Webflow Assets and replace URL -->
+                <img src="benefits-slider-assets/pet-donaciones.png" alt="Mascota rescate">
+            </div>
+        </div>
+
+        <!-- Flechas de Navegación (Arrow from Figma) -->
+        <button class="slider-nav-btn slider-nav-prev" id="prevBtn">
+            <!-- TODO: Upload arrow-btn.svg to Webflow Assets and replace URL -->
+            <img src="benefits-slider-assets/arrow-btn.svg" alt="Anterior">
+        </button>
+        <button class="slider-nav-btn slider-nav-next" id="nextBtn">
+            <!-- TODO: Upload arrow-btn.svg to Webflow Assets and replace URL -->
+            <img src="benefits-slider-assets/arrow-btn.svg" alt="Siguiente">
+        </button>
+    </div>
+
+    <!-- Paginación -->
+    <div class="slider-pagination" id="sliderPagination"></div>
+</div>
+
+<script>
+    (function () {
+        const cards = document.querySelectorAll('.stacked-card');
+        const totalCards = cards.length;
+        let activeIndex = 2; // Empezar en la card rosa (Emergencia - índice 2)
+
+        // Crear dots de paginación
+        const pagination = document.getElementById('sliderPagination');
+        for (let i = 0; i < totalCards; i++) {
+            const dot = document.createElement('button');
+            dot.className = 'slider-dot';
+            dot.dataset.index = i;
+            dot.addEventListener('click', () => goToSlide(i));
+            pagination.appendChild(dot);
+        }
+
+        function getCircularIndex(index) {
+            return ((index % totalCards) + totalCards) % totalCards;
+        }
+
+        function updateSlider() {
+            cards.forEach((card) => {
+                card.classList.remove('is-active', 'is-prev-1', 'is-prev-2', 'is-next-1', 'is-next-2');
+            });
+
+            const active = getCircularIndex(activeIndex);
+            const prev1 = getCircularIndex(activeIndex - 1);
+            const prev2 = getCircularIndex(activeIndex - 2);
+            const next1 = getCircularIndex(activeIndex + 1);
+            const next2 = getCircularIndex(activeIndex + 2);
+
+            cards[active].classList.add('is-active');
+            cards[prev1].classList.add('is-prev-1');
+            cards[prev2].classList.add('is-prev-2');
+            cards[next1].classList.add('is-next-1');
+            cards[next2].classList.add('is-next-2');
+
+            document.querySelectorAll('.slider-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === active);
+            });
+        }
+
+        function goToSlide(index) {
+            activeIndex = index;
+            updateSlider();
+        }
+
+        function nextSlide() {
+            activeIndex = getCircularIndex(activeIndex + 1);
+            updateSlider();
+        }
+
+        function prevSlide() {
+            activeIndex = getCircularIndex(activeIndex - 1);
+            updateSlider();
+        }
+
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        // Swipe support para mobile
+        let touchStartX = 0;
+        const slider = document.getElementById('stackedSlider');
+
+        slider.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        slider.addEventListener('touchend', (e) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchStartX - touchEndX;
+            if (Math.abs(diff) > 50) {
+                if (diff > 0) nextSlide();
+                else prevSlide();
+            }
+        }, { passive: true });
+
+        // Click en cards para navegar
+        cards.forEach((card, i) => {
+            card.addEventListener('click', () => {
+                if (!card.classList.contains('is-active')) {
+                    goToSlide(i);
+                }
+            });
+        });
+
+        // Auto-play (opcional)
+        // setInterval(nextSlide, 5000);
+
+        // Inicializar
+        updateSlider();
+    })();
+</script>
