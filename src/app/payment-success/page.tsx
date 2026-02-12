@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 export default function PaymentSuccessRedirect() {
     useEffect(() => {
-        // Redirect to Webflow login page with success parameter
-        window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion?payment=success';
+        // Redirect to login page with success parameter
+        window.location.href = '/user/inicio-de-sesion?payment=success';
     }, []);
 
     return (
