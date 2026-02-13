@@ -10,16 +10,18 @@
 }
 
 /* Contenedor blanco centrado - título, steps y form dentro */
-.whiteCard {
+/* Contenedor blanco centrado - título, steps y form dentro */
+.registrationCard {
     position: relative;
     width: 100%;
     max-width: 1200px;
-    background: #ffffff;
+    background: #ffffff !important;
     border-radius: 32px;
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
     padding: 2rem 2.5rem 2.5rem;
     box-sizing: border-box;
     overflow: visible;
+    z-index: 1;
 }
 
 /* Imagen decorativa - posición absoluta inferior derecha, por encima del formulario */
@@ -62,7 +64,7 @@
         padding: 1rem 1rem 2rem;
     }
 
-    .whiteCard {
+    .registrationCard {
         padding: 1.5rem 1.25rem;
         border-radius: 24px;
     }

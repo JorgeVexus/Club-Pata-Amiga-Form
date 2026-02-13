@@ -32,7 +32,7 @@ export default function PetRegistrationPage() {
 
     return (
         <div className={styles.pageBackground}>
-            <div className={styles.whiteCard}>
+            <div className={styles.registrationCard}>
                 {/* Imagen decorativa - misma posición que pantalla anterior (bottom right) */}
                 <img
                     src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698f84e6bfdd6719e9bd52aa_peludos-img.webp"
@@ -53,7 +53,10 @@ export default function PetRegistrationPage() {
                 <div className={styles.contentLayout}>
                     <div className={styles.formColumn}>
                         <PetRegistrationForm />
-                        <HelpSection />
+
+                        <div style={{ marginTop: '2rem', position: 'relative', zIndex: 10 }}>
+                            <HelpSection />
+                        </div>
                     </div>
                 </div>
             </div>
