@@ -1,10 +1,5 @@
 .formContainer {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: var(--spacing-2xl);
-    animation: fadeIn 0.6s ease-out;
-    padding-bottom: 0;
-    /* Align with bottom image */
+    width: 100%;
 }
 
 .header {
@@ -13,10 +8,9 @@
 }
 
 .title {
-    font-size: 2.5rem;
+    font-size: 2rem;
     font-weight: 700;
     color: #9fd406;
-    /* Green title like RegistrationForm */
     margin-bottom: var(--spacing-sm);
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
@@ -35,10 +29,6 @@
     padding: var(--spacing-2xl);
     box-shadow: var(--shadow-lg);
     animation: slideIn 0.6s ease-out;
-    overflow: visible;
-    /* Allow absolute image to overflow */
-    padding-bottom: 4rem;
-    /* Space for bottom elements */
 }
 
 /* Badge/Image Styles */
@@ -49,19 +39,6 @@
     width: 85px;
     height: 85px;
     z-index: 10;
-    pointer-events: none;
-}
-
-/* The Dog Group Image at Bottom Right */
-.dogImage {
-    position: absolute;
-    bottom: -100px;
-    /* Adjust as needed based on image size */
-    right: -50px;
-    width: 350px;
-    /* Estimate size, adjust later */
-    height: auto;
-    z-index: 20;
     pointer-events: none;
 }
 

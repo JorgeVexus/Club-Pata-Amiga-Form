@@ -1,10 +1,16 @@
 .petCard {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 30px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    background: transparent;
+    border-radius: 0;
+    padding: 0;
+    margin-bottom: 3rem;
+    box-shadow: none;
     animation: slideIn 0.4s ease-out;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+    padding-bottom: 2rem;
+}
+
+.petCard:last-child {
+    border-bottom: none;
 }
 
 .cardHeader {
