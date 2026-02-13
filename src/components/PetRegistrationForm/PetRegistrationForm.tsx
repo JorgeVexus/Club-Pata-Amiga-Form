@@ -311,52 +311,39 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
     return (
         <div className={styles.formContainer}>
-            {/* Popup de notificación */}
-            {showPopup && (
-                <div style={{
-                    position: 'fixed',
-                    top: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    background: 'linear-gradient(135deg, #EF4444, #DC2626)',
-                    color: 'white',
-                    padding: '16px 24px',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 40px rgba(239, 68, 68, 0.4)',
-                    zIndex: 9999,
-                    maxWidth: '90%',
-                    textAlign: 'center',
-                    fontWeight: 500,
-                    fontSize: '16px'
-                }}>
-                    {showPopup}
-                    <button
-                        onClick={() => setShowPopup(null)}
-                        style={{
-                            marginLeft: '16px',
-                            background: 'rgba(255,255,255,0.2)',
-                            border: 'none',
-                            color: 'white',
-                            padding: '4px 12px',
-                            borderRadius: '6px',
-                            cursor: 'pointer',
-                            fontSize: '14px'
-                        }}
-                    >
-                        ✕
-                    </button>
-                </div>
-            )}
-
-            {/* Header */}
+            {/* Header - Diseño Figma */}
             <div className={styles.header}>
-                <h1 className={styles.title}>Ahora sí, cuéntanos de tus peludos</h1>
+                <h1 className={styles.title}>
+                    Ahora sí, cuéntanos de tus peludos
+                    <span style={{ display: 'inline-flex', gap: '0.25rem', marginLeft: '0.5rem' }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#E91E63"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="#E91E63"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" /></svg>
+                    </span>
+                </h1>
                 <p className={styles.subtitle}>
                     Puedes registrar hasta 3 compañeros de cuatro patas
                 </p>
             </div>
 
             <form onSubmit={handleSubmit} className={styles.form} noValidate>
+                {/* Badge Esquina Superior Derecha (Naranja) */}
+                <div className={styles.formBadge}>
+                    <svg width="85" height="85" viewBox="0 0 85 85" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="42.5" cy="42.5" r="42.5" fill="#FF8300" />
+                        <rect x="23" y="28" width="40" height="28" rx="4" stroke="white" strokeWidth="4" />
+                        <circle cx="43" cy="42" r="8" stroke="white" strokeWidth="4" />
+                        <path d="M55 24H31V28H55V24Z" fill="white" />
+                        <rect x="52" y="32" width="6" height="4" rx="2" fill="white" />
+                    </svg>
+                </div>
+
+                {/* Imagen Peludos Esquina Inferior Derecha */}
+                <img
+                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698f84e6bfdd6719e9bd52aa_peludos-img.webp"
+                    alt="Peludos"
+                    className={styles.dogImage}
+                />
+
                 {/* Tarjetas de mascotas */}
                 {pets.map((pet, index) => (
                     <PetCard
@@ -379,10 +366,10 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                             className={styles.addPetButton}
                             aria-label="Agregar otra mascota"
                         >
-                            <span className={styles.plusIcon}>+</span>
+                            <span style={{ fontSize: '2rem', lineHeight: '1', fontWeight: 'bold' }}>+</span>
                         </button>
                         <p className={styles.addPetText}>
-                            Agregar otro peludo (Puedes registrar hasta 3)
+                            Agregar otro peludo
                         </p>
                     </div>
                 )}
@@ -410,11 +397,9 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                         <p
                             className={styles.validationMessage}
                             style={{
-                                color: ambassadorValidation.isValid === true ? '#22C55E' :
-                                    ambassadorValidation.isValid === false ? '#EF4444' : '#666',
-                                marginTop: '8px',
-                                fontSize: '0.9rem',
-                                fontWeight: ambassadorValidation.isValid === true ? '500' : 'normal'
+                                color: ambassadorValidation.isValid === true ? '#166534' :
+                                    ambassadorValidation.isValid === false ? '#991B1B' : '#666',
+                                fontWeight: '600'
                             }}
                         >
                             {ambassadorValidation.message}
