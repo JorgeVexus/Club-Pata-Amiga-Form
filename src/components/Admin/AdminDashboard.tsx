@@ -44,6 +44,7 @@ export default function AdminDashboard() {
 
     // Admin Identity & Activity State
     const [currentAdminId, setCurrentAdminId] = useState('Admin');
+    const [adminMemberstackId, setAdminMemberstackId] = useState<string | null>(null);
     const [adminName, setAdminName] = useState('Cargando...');
     const [adminRoleLabel, setAdminRoleLabel] = useState('Verificando...');
     const [isAdminSuper, setIsAdminSuper] = useState(false);
@@ -179,6 +180,7 @@ export default function AdminDashboard() {
                         setIsAdminSuper(data.isSuperAdmin);
                         // Update UI with real data
                         setCurrentAdminId(data.name || 'Admin');
+                        setAdminMemberstackId(currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
 
@@ -387,7 +389,7 @@ export default function AdminDashboard() {
                                     const res = await fetch('/api/admin/settings/skip-payment', {
                                         method: 'PUT',
                                         headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ enabled, adminId: currentAdminId })
+                                        body: JSON.stringify({ enabled, adminId: adminMemberstackId })
                                     });
                                     if (res.ok) setSkipPaymentEnabled(enabled);
                                     else alert('Error al actualizar');
