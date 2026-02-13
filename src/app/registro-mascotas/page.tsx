@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import PetRegistrationForm from '@/components/PetRegistrationForm/PetRegistrationForm';
 import StepIndicator from '@/components/UI/StepIndicator';
+import HelpSection from '@/components/UI/HelpSection';
 import { getRegistrationProgress, getCompletedSteps } from '@/utils/registration-progress';
 import styles from './page.module.css';
 
@@ -52,6 +53,7 @@ export default function PetRegistrationPage() {
                 <div className={styles.contentLayout}>
                     <div className={styles.formColumn}>
                         <PetRegistrationForm />
+                        <HelpSection />
                     </div>
                 </div>
             </div>
