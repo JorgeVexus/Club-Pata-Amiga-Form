@@ -362,20 +362,38 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                     />
                 ))}
 
-                {/* Botón agregar mascota */}
+                {/* Botón para agregar nueva mascota (si hay menos de 3) - Diseño Figma */}
                 {pets.length < 3 && (
-                    <div className={styles.addPetWrapper}>
-                        <button
-                            type="button"
-                            onClick={handleAddPet}
-                            className={styles.addPetButton}
-                            aria-label="Agregar otra mascota"
-                        >
-                            <span style={{ fontSize: '2rem', lineHeight: '1', fontWeight: 'bold' }}>+</span>
-                        </button>
-                        <p className={styles.addPetText}>
-                            Agregar otro peludo
-                        </p>
+                    <div className={styles.addPetCard} onClick={handleAddPet}>
+                        <div className={styles.addPetLeft}>
+                            <div className={styles.addPetIcon}>
+                                <img
+                                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698f931826f8df80c7f6bd7d_huella%20plus.svg"
+                                    alt="Agregar"
+                                />
+                            </div>
+                            <div className={styles.addPetTexts}>
+                                <p className={styles.addPetTitle}>Agregar otro peludo</p>
+                                <p className={styles.addPetSubtitle}>Puedes registrar hasta 3</p>
+                            </div>
+                        </div>
+
+                        {/* Lista de compañeros ya registrados */}
+                        <div className={styles.addPetRight}>
+                            <p className={styles.registeredLabel}>Compañeros registrados</p>
+                            <div className={styles.registeredPetsList}>
+                                {pets.map((pet, idx) => (
+                                    <div key={idx} className={styles.petPill}>
+                                        <span className={styles.petPillName}>
+                                            {pet.name || `Peludo ${idx + 1}`}
+                                        </span>
+                                        <div className={styles.petPillIcon}>
+                                            {pet.petType === 'gato' ? '🐱' : '🐶'}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                     </div>
                 )}
 

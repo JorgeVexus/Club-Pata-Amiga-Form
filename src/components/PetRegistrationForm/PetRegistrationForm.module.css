@@ -43,52 +43,85 @@
 }
 
 /* Sección de agregar mascota - Redesigned */
-.addPetWrapper {
+/* Sección de agregar mascota - Rediseño estilo Figma */
+.addPetCard {
+    background: #15BEB2;
+    border-radius: 18px;
+    padding: 10px 27px;
     display: flex;
-    flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    /* Center appropriately */
     margin: 2rem 0;
-    gap: 1rem;
-    animation: fadeIn 0.3s ease-out;
-    background: rgba(255, 255, 255, 0.2);
-    padding: 1.5rem;
-    border-radius: 20px;
-    border: 2px dashed rgba(255, 255, 255, 0.5);
-}
-
-.addPetButton {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: #ffffff !important;
-    color: var(--verde, #9FD406);
-    border: none;
-    font-size: 2rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    padding-bottom: 4px;
-    /* Visual adj */
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
 }
 
-.addPetButton:hover {
-    transform: scale(1.1);
+.addPetCard:hover {
+    transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
 }
 
-.addPetText {
-    color: #ffffff;
-    font-size: 1.2rem;
-    font-weight: 700;
+.addPetLeft {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.addPetIcon {
+    width: 65px;
+    height: 65px;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.addPetIcon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.addPetTexts {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.addPetTitle {
     font-family: 'Fraiche', sans-serif;
-    /* Assuming font availability */
+    font-size: 28px;
+    color: #ffffff;
+    line-height: 1.1;
     margin: 0;
+}
+
+.addPetSubtitle {
+    font-size: 12px;
+    color: #ffffff;
+    margin: 0;
+    opacity: 0.9;
+    font-family: 'Outfit', sans-serif;
+}
+
+.addPetRight {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+
+/* Estilos para lista de mascotas (si se implementa en futuro) */
+.registeredLabel {
+    font-size: 12px;
+    color: #ffffff;
+    margin: 0;
+    font-family: 'Outfit', sans-serif;
 }
 
 /* Sección de código de embajador */
