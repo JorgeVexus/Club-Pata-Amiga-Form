@@ -11,6 +11,10 @@ export interface MemberstackMember {
     };
     customFields: Record<string, any>;
     createdAt: string;
+    planConnections?: {
+        priceId: string;
+        status: string;
+    }[];
 }
 
 export interface AdminApiResponse<T = any> {

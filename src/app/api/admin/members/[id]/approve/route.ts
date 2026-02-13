@@ -1,11 +1,11 @@
 /**
  * API Route: /api/admin/members/[id]/approve
- * Aprueba la solicitud de un miembro
+ * Aprueba la solicitud de un miembro y sincroniza con CRM
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { approveMemberApplication } from '@/services/memberstack-admin.service';
+import { approveMemberApplication, getMemberDetails } from '@/services/memberstack-admin.service';
 import { registerUserInSupabase } from '@/app/actions/user.actions';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { updateContactAsActive } from '@/services/crm.service';
@@ -74,11 +74,32 @@ export async function POST(
             });
 
             if (user?.crm_contact_id) {
-                // Por ahora usamos valores por defecto, después se puede mejorar
+                // 1. Obtener detalles del plan desde Memberstack
+                const memberDetails = await getMemberDetails(memberId);
+                let planType = 'Mensual'; // Fallback
+                let planCost = '$159';
+
+                if (memberDetails.success && memberDetails.data?.planConnections?.length) {
+                    const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
+                    const priceId = activePlan.priceId;
+
+                    // Mapeo de precios
+                    // PRD: prc_mensual-452k30jah / prc_anual-o9d101ta
+                    if (priceId === 'prc_anual-o9d101ta') {
+                        planType = 'Anual';
+                        planCost = '$1,699';
+                    } else {
+                        // Default mensual
+                        planType = 'Mensual';
+                        planCost = '$159';
+                    }
+                    console.log(`💳 CRM: Detectado plan ${planType} (${planCost})`);
+                }
+
                 const crmResult = await updateContactAsActive(
                     user.crm_contact_id,
-                    'Mensual',  // Valor por defecto
-                    '$159'      // Valor por defecto
+                    planType,
+                    planCost
                 );
                 console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
             } else {
