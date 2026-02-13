@@ -1,5 +1,4 @@
 /* Registro Mascotas - Diseño consistente con Completar Perfil */
-
 .pageBackground {
     min-height: 100vh;
     background: #00BBB4;
@@ -10,7 +9,7 @@
     box-sizing: border-box;
 }
 
-/* Contenedor blanco centrado */
+/* Contenedor blanco centrado - título, steps y form dentro */
 .whiteCard {
     position: relative;
     width: 100%;
@@ -23,7 +22,7 @@
     overflow: visible;
 }
 
-/* Imagen decorativa - posición absoluta inferior derecha */
+/* Imagen decorativa - posición absoluta inferior derecha, por encima del formulario */
 .decorativeImage {
     position: absolute;
     bottom: 0;
@@ -52,7 +51,12 @@
     margin-top: 1.5rem;
 }
 
-/* Ajustes responsive */
+.formColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
 @media (max-width: 768px) {
     .pageBackground {
         padding: 1rem 1rem 2rem;

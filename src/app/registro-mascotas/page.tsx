@@ -50,7 +50,9 @@ export default function PetRegistrationPage() {
                 />
 
                 <div className={styles.contentLayout}>
-                    <PetRegistrationForm />
+                    <div className={styles.formColumn}>
+                        <PetRegistrationForm />
+                    </div>
                 </div>
             </div>
         </div>
