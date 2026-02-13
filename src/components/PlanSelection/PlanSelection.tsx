@@ -31,6 +31,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const [isProcessing, setIsProcessing] = useState(false);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     // Persistencia básica si recargan la página
     useEffect(() => {
@@ -38,6 +39,11 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         if (savedPlan) {
             setSelectedPlanId(savedPlan);
         }
+        // Check if skip payment is enabled
+        fetch('/api/admin/settings/skip-payment')
+            .then(r => r.json())
+            .then(d => setSkipPaymentEnabled(d.enabled))
+            .catch(() => { });
     }, []);
 
     const handleSelectPlan = (planId: string) => {
@@ -200,6 +206,21 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     </button>
                 </div>
             </div>
+
+            {/* Skip Payment (Test Mode) */}
+            {skipPaymentEnabled && (
+                <div className={styles.skipPaymentSection}>
+                    <button
+                        className={styles.skipPaymentLink}
+                        onClick={() => {
+                            if (onSuccess) onSuccess();
+                            window.location.href = '/user/inicio-de-sesion';
+                        }}
+                    >
+                        Continuar sin pagar (modo prueba) →
+                    </button>
+                </div>
+            )}
 
             {/* Error Toast */}
             {error && (

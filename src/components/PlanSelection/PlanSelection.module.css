@@ -456,3 +456,26 @@
         text-align: center;
     }
 }
+
+/* Skip Payment (Test Mode) */
+.skipPaymentSection {
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px dashed #ccc;
+}
+
+.skipPaymentLink {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 0.85rem;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.skipPaymentLink:hover {
+    color: #666;
+}

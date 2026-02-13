@@ -337,9 +337,13 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-10')">
-                <span>10 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-12')">
+                <span>12 de Feb, 2026</span>
                 <span class="badge">Hoy</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-10')">
+                <span>10 de Feb, 2026</span>
+                <span class="badge">Pets</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-09')">
                 <span>9 de Feb, 2026</span>
@@ -368,8 +372,138 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 10 de Febrero (HOY) -->
-            <div id="2026-02-10" class="changelog-entry active">
+            <!-- Entrada: 12 de Febrero (HOY) -->
+            <div id="2026-02-12" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Producción, Notificaciones & Bot Veterinario</h1>
+                        <div class="entry-meta">Jueves, 12 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.6.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🚀 Migración a Producción</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">LIVE</span>
+                            <div class="change-desc">
+                                <strong>Memberstack Live Mode:</strong> Se configuraron los dominios de producción
+                                en Memberstack para activar el modo Live. Se resolvió el error
+                                "You're in test mode, but tried to login with a live account" identificando que los
+                                dominios no estaban asignados como Live en la configuración de Memberstack.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Script de Limpieza Supabase:</strong> Se actualizó el SQL de limpieza para
+                                cubrir todas las tablas actuales: <code>legal_documents</code>,
+                                <code>ambassador_sessions</code>, <code>ambassador_payouts</code>,
+                                <code>communication_logs</code>, y verificación final con conteos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Filtro de Admins:</strong> Se corrigió la visibilidad del admin en la lista
+                                de Solicitudes. El filtro ya existía en la API pero el <code>memberstack_id</code>
+                                no estaba asociado correctamente en Supabase.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔔 Widget de Notificaciones</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>API URL Incorrecta:</strong> Se corrigió el bug crítico por el cual las
+                                notificaciones no aparecían en el widget de campana. La URL apuntaba a
+                                <code>www.pataamiga.mx</code> (Webflow, 404) en lugar de
+                                <code>app.pataamiga.mx</code> (Vercel, API real).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">FIX</span>
+                            <div class="change-desc">
+                                <strong>Tipo de Comunicación:</strong> Se corrigió el campo <code>type</code> en
+                                <code>communication_logs</code> de <code>'whatsapp'</code> a <code>'app'</code> para
+                                notificaciones in-app. Se actualizó la interfaz <code>CommLog</code> y el badge
+                                en el historial del dashboard.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🤖 Bot Veterinario (API)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Endpoint Veterinario:</strong> Se creó el endpoint
+                                <code>/api/vet-bot/consultations</code> para que el bot veterinario externo
+                                pueda guardar consultas directamente en Supabase. Incluye autenticación
+                                por API Key y validación de datos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">SUPPORT</span>
+                            <div class="change-desc">
+                                <strong>Soporte al Equipo del Bot:</strong> Se brindó asistencia al equipo
+                                de desarrollo del bot veterinario para la configuración e integración
+                                con la plataforma.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🎨 Componentes Webflow</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">UPDATE</span>
+                            <div class="change-desc">
+                                <strong>Benefits Slider:</strong> Múltiples refinamientos visuales:
+                                <ul style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li>Imágenes de mascotas: <code>object-fit: contain</code> para evitar recorte.</li>
+                                    <li>Tipografía actualizada a fuente Fraiche.</li>
+                                    <li>Título cambiado a "lo que nuestra manada ofrece".</li>
+                                    <li>URLs de iconos y flechas migrados a CDN de Webflow.</li>
+                                    <li>Botones de navegación sin fondo circular.</li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📜 Legal & Datos</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Cálculo de Edad:</strong> Nueva migración SQL para agregar campo
+                                <code>age_text</code> a la tabla <code>pets</code> con cálculo automático
+                                en formato legible (ej: "2 años, 3 meses").
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Documentos Legales:</strong> Nueva tabla <code>legal_documents</code>
+                                para almacenar firmas digitales de términos y condiciones.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 10 de Febrero -->
+            <div id="2026-02-10" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Correcciones de Registro & Diseño Landing</h1>

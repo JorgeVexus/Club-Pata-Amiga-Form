@@ -17,10 +17,11 @@ import CommunicationsHub from './Communications/CommunicationsHub';
 import AmbassadorsTable from './AmbassadorsTable';
 import AmbassadorDetailModal from './AmbassadorDetailModal';
 import LegalDocsManager from './LegalDocsManager';
+import SettingsPanel from './SettingsPanel';
 import { Ambassador } from '@/types/ambassador.types';
 
 export default function AdminDashboard() {
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null); // Para apelaciones por mascota
@@ -48,6 +49,7 @@ export default function AdminDashboard() {
     const [isAdminSuper, setIsAdminSuper] = useState(false);
     const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
     const [hasMounted, setHasMounted] = useState(false);
+    const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     // Estado para embajadores
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
@@ -184,6 +186,14 @@ export default function AdminDashboard() {
                         loadMetrics();
                         loadPendingCounts(data.isSuperAdmin);
                         loadActivityLogs();
+
+                        // Cargar skip payment flag si es super admin
+                        if (data.isSuperAdmin) {
+                            fetch('/api/admin/settings/skip-payment')
+                                .then(r => r.json())
+                                .then(d => setSkipPaymentEnabled(d.enabled))
+                                .catch(() => { });
+                        }
                     }
                 } catch (e) {
                     console.error("Error checking permissions", e);
@@ -198,7 +208,7 @@ export default function AdminDashboard() {
     // Seguridad: Redirigir si intenta entrar a filtros de superadmin no siendo uno
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
-            if (activeFilter === 'appeals' || activeFilter === 'admins') {
+            if (activeFilter === 'appeals' || activeFilter === 'admins' || activeFilter === 'settings') {
                 setActiveFilter('all');
             }
         }
@@ -339,7 +349,8 @@ export default function AdminDashboard() {
                                                 activeFilter === 'admins' ? 'Administradores' :
                                                     activeFilter === 'appeals' ? 'Apelaciones' :
                                                         activeFilter === 'legal-docs' ? 'Documentos Legales' :
-                                                            'Fondo Solidario'}
+                                                            activeFilter === 'settings' ? 'Configuración' :
+                                                                'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {
@@ -368,6 +379,21 @@ export default function AdminDashboard() {
                     {/* Admins Table - Only for Super Admins */}
                     {activeFilter === 'admins' ? (
                         <AdminsTable />
+                    ) : activeFilter === 'settings' ? (
+                        <SettingsPanel
+                            skipPaymentEnabled={skipPaymentEnabled}
+                            onToggleSkipPayment={async (enabled: boolean) => {
+                                try {
+                                    const res = await fetch('/api/admin/settings/skip-payment', {
+                                        method: 'PUT',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ enabled, adminId: currentAdminId })
+                                    });
+                                    if (res.ok) setSkipPaymentEnabled(enabled);
+                                    else alert('Error al actualizar');
+                                } catch { alert('Error de conexión'); }
+                            }}
+                        />
                     ) : activeFilter === 'communications' ? (
                         <CommunicationsHub
                             adminName={adminName}

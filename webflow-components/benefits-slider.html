@@ -5,7 +5,7 @@
 <!-- to Webflow Assets and replace URLs below        -->
 <!-- ============================================= -->
 
-<!-- Outfit Font -->
+<!-- Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
 
 <style>
@@ -22,7 +22,8 @@
         text-align: left;
         font-size: 48px;
         line-height: 1.1;
-        font-weight: 800;
+        font-weight: 400;
+        font-family: 'Fraiche', sans-serif;
         color: #FF0055;
         margin-bottom: 20px;
         padding-left: 20px;
@@ -162,7 +163,7 @@
     /* Contenido de la Card */
     .pata-card-content {
         height: 100%;
-        padding: 39px 39px 25px 39px;
+        padding: 30px 30px 20px 30px;
         display: flex;
         flex-direction: column;
         color: white;
@@ -187,8 +188,9 @@
     }
 
     .pata-card-title {
+        font-family: 'Fraiche', sans-serif;
         font-size: 48px;
-        font-weight: 800;
+        font-weight: 400;
         line-height: 1.0;
         margin-bottom: 4px;
     }
@@ -233,10 +235,12 @@
     }
 
     .pata-card-image img {
-        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
         height: auto;
-        object-fit: cover;
-        object-position: top center;
+        object-fit: contain;
+        object-position: bottom center;
     }
 
     /* Colores Figma */
@@ -267,18 +271,18 @@
         transform: translateY(-50%);
         width: 60px;
         height: 60px;
-        background: transparent;
+        background: none;
         border: none;
-        border-radius: 50%;
+        border-radius: 0;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         z-index: 100;
-        transition: transform 0.2s, box-shadow 0.2s;
+        transition: transform 0.2s;
         padding: 0;
-        box-shadow: 3px 4px 5.8px rgba(0, 0, 0, 0.31);
-        overflow: hidden;
+        box-shadow: none;
+        overflow: visible;
     }
 
     .slider-nav-btn:hover {
@@ -294,10 +298,6 @@
     .slider-nav-prev {
         left: 50%;
         margin-left: -285px;
-    }
-
-    .slider-nav-prev img {
-        transform: rotate(180deg);
     }
 
     .slider-nav-next {
@@ -355,7 +355,7 @@
 </style>
 
 <div id="pata-benefits-widget">
-    <h2 class="pata-section-title">lo que nuestra membresía ofrece</h2>
+    <h2 class="pata-section-title">lo que nuestra manada ofrece</h2>
 
     <div class="stacked-slider-container" id="stackedSlider">
 
@@ -363,16 +363,16 @@
         <div class="stacked-card bg-teal" data-index="0">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
-                    <!-- TODO: Upload icon-ribbon.png to Webflow Assets and replace URL -->
-                    <img src="benefits-slider-assets/icon-ribbon.png" alt="Icono listón">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124d8390154d6e6f9e9_icon-ribbon.png"
+                        alt="Icono listón">
                 </div>
                 <div class="pata-card-title">Apoyo en momentos difíciles</div>
                 <div class="pata-card-desc">Hasta $2,000 al año, te ayudamos a cubrir gastos cuando llega el momento de
                     decir adiós, con todo el amor que merecen.</div>
             </div>
             <div class="pata-card-image">
-                <!-- TODO: Upload pet-fallecimiento.png to Webflow Assets and replace URL -->
-                <img src="benefits-slider-assets/pet-fallecimiento.png" alt="Mascota">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3a7c986e76c7d6ec54_pet-fallecimiento.webp"
+                    alt="Mascota">
             </div>
         </div>
 
@@ -380,16 +380,16 @@
         <div class="stacked-card bg-orange" data-index="1">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
-                    <!-- TODO: Upload icon-syringe.png to Webflow Assets and replace URL -->
-                    <img src="benefits-slider-assets/icon-syringe.png" alt="Icono jeringa">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124b1c5fbeffc5845f9_icon-syringe.png"
+                        alt="Icono jeringa">
                 </div>
                 <div class="pata-card-title">Vacunación anual</div>
                 <div class="pata-card-desc">Hasta $300 al año, porque cuidar también es prevenir. Te ayudamos a mantener
                     al día las vacunas de tu peludo.</div>
             </div>
             <div class="pata-card-image">
-                <!-- TODO: Upload pet-vacunas.png to Webflow Assets and replace URL -->
-                <img src="benefits-slider-assets/pet-vacunas.png" alt="Mascota vacunas">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f373ed54e8f33736029_pet-vacunas.webp"
+                    alt="Mascota vacunas">
             </div>
         </div>
 
@@ -397,16 +397,16 @@
         <div class="stacked-card bg-pink" data-index="2">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
-                    <!-- TODO: Upload icon-ambulance.png to Webflow Assets and replace URL -->
-                    <img src="benefits-slider-assets/icon-ambulance.png" alt="Icono ambulancia">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51239fb4154de69395b8_icon-ambulance.png"
+                        alt="Icono ambulancia">
                 </div>
                 <div class="pata-card-title">Emergencia médica</div>
                 <div class="pata-card-desc">Hasta $3,000 al año, Porque los sustos no avisan y tu peludo no puede
                     espera.</div>
             </div>
             <div class="pata-card-image">
-                <!-- TODO: Upload pet-emergencia.png to Webflow Assets and replace URL -->
-                <img src="benefits-slider-assets/pet-emergencia.png" alt="Perro Golden emergencia">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3972782a8e9dc93f43_pet-emergencia.webp"
+                    alt="Perro Golden emergencia">
             </div>
         </div>
 
@@ -414,16 +414,16 @@
         <div class="stacked-card bg-lime" data-index="3">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
-                    <!-- TODO: Upload icon-chat.png to Webflow Assets and replace URL -->
-                    <img src="benefits-slider-assets/icon-chat.png" alt="Icono chat">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5123c2f3d6ca8c73261e_icon-chat.png"
+                        alt="Icono chat">
                 </div>
                 <div class="pata-card-title">Chat veterinario</div>
                 <div class="pata-card-desc">Siempre disponible, consejos y apoyo para cuidar mejor a tu lomito, siempre
                     con empatía y responsabilidad.</div>
             </div>
             <div class="pata-card-image">
-                <!-- TODO: Upload pet-chat.png to Webflow Assets and replace URL -->
-                <img src="benefits-slider-assets/pet-chat.png" alt="Gato veterinario">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4fc278a9d558c9cbd86f_pet-chat.webp"
+                    alt="Gato veterinario">
             </div>
         </div>
 
@@ -431,27 +431,27 @@
         <div class="stacked-card bg-yellow" data-index="4">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
-                    <!-- TODO: Upload icon-heart.png to Webflow Assets and replace URL -->
-                    <img src="benefits-slider-assets/icon-heart.png" alt="Icono corazón">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51232db47414a6dd8fdd_icon-heart.png"
+                        alt="Icono corazón">
                 </div>
                 <div class="pata-card-title">Donaciones a refugios</div>
                 <div class="pata-card-desc">Cada 1000 miembros, juntos destinamos parte del fondo para apoyar refugios y
                     rescates que salvan vidas.</div>
             </div>
             <div class="pata-card-image">
-                <!-- TODO: Upload pet-donaciones.png to Webflow Assets and replace URL -->
-                <img src="benefits-slider-assets/pet-donaciones.png" alt="Mascota rescate">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f38f2a0d2f49df1875c_pet-donaciones.webp"
+                    alt="Mascota rescate">
             </div>
         </div>
 
-        <!-- Flechas de Navegación (Arrow from Figma) -->
+        <!-- Flechas de Navegación -->
         <button class="slider-nav-btn slider-nav-prev" id="prevBtn">
-            <!-- TODO: Upload arrow-btn.svg to Webflow Assets and replace URL -->
-            <img src="benefits-slider-assets/arrow-btn.svg" alt="Anterior">
+            <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e518b107f43f17c6baeee_flecha%20atras.png"
+                alt="Anterior">
         </button>
         <button class="slider-nav-btn slider-nav-next" id="nextBtn">
-            <!-- TODO: Upload arrow-btn.svg to Webflow Assets and replace URL -->
-            <img src="benefits-slider-assets/arrow-btn.svg" alt="Siguiente">
+            <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e518b491f40402a88188a_flecha%20adelante.png"
+                alt="Siguiente">
         </button>
     </div>
 
