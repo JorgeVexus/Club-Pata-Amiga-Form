@@ -39,8 +39,14 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
             if (window.$memberstackDom) {
                 const { data: member } = await window.$memberstackDom.getCurrentMember();
                 if (!member) {
-                    // Si no hay usuario, mandar al login
-                    window.location.href = '/';
+                    // Si no hay usuario, mandar al login (solo en producción o si no es localhost)
+                    if (window.location.hostname !== 'localhost') {
+                        window.location.href = '/';
+                    } else {
+                        console.log('🚧 Localhost detectado: Bypass de redirección de sesión para desarrollo.');
+                        // En localhost, permitimos ver el form aunque no haya sesión
+                        // Podríamos mockear un member si fuera necesario
+                    }
                 } else {
                     setMember(member);
                     setFormData(prev => ({

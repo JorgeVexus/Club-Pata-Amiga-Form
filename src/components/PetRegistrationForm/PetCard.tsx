@@ -140,7 +140,7 @@ export default function PetCard({
                 {/* Columna Izquierda */}
                 <div className={styles.column}>
                     <TextInput
-                        label="🏷️ ¿Cómo se llama tu peludo?"
+                        label="¿Cómo se llama tu peludo?"
                         name={`pet-${petNum}-name`}
                         value={petData.name || ''}
                         onChange={(value) => onUpdate({ ...petData, name: value })}
@@ -159,7 +159,7 @@ export default function PetCard({
                     />
 
                     <RadioGroup
-                        label="🐶 ¿Qué tipo de peludo es?"
+                        label="¿Qué tipo de peludo es?"
                         name={`pet-${petNum}-type`}
                         options={[
                             { value: 'perro', label: 'Perro' },
@@ -172,7 +172,7 @@ export default function PetCard({
                     />
 
                     <RadioGroup
-                        label="🌿 ¿Es mestizo/peludo?"
+                        label="¿Tu peludo tiene más años?"
                         name={`pet-${petNum}-mixed`}
                         options={[
                             { value: 'true', label: 'Mestizo/Doméstico' },
@@ -211,7 +211,7 @@ export default function PetCard({
                     )}
 
                     <RadioGroup
-                        label="🆘 ¿Tu peludo fue adoptado o rescatado?"
+                        label="¿Tu peludo fue adoptado o rescatado?"
                         name={`pet-${petNum}-adopted`}
                         options={[
                             { value: 'true', label: 'Sí, lo adopté o rescaté' },
@@ -226,7 +226,7 @@ export default function PetCard({
                     {petData.isAdopted && (
                         <div className={styles.adoptionStorySection}>
                             <TextArea
-                                label="📜 Cuéntanos su historia de adopción (opcional)"
+                                label="Cuéntanos su historia de adopción (opcional)"
                                 name={`pet-${petNum}-adoption-story`}
                                 value={petData.adoptionStory || ''}
                                 onChange={(value) => onUpdate({ ...petData, adoptionStory: value })}
@@ -244,7 +244,7 @@ export default function PetCard({
                 {/* Columna Derecha */}
                 <div className={styles.column}>
                     <SelectWithInfo
-                        label="🎂 ¿Qué edad tiene?"
+                        label="¿Qué edad tiene?"
                         name={`pet-${petNum}-age`}
                         value={petData.age || ''}
                         onChange={handleAgeChange}
@@ -281,7 +281,7 @@ export default function PetCard({
                     )}
 
                     <FileUpload
-                        label="📸 Muéstranos a quien te acompaña todos los días"
+                        label="Muéstranos a tu peludo* ❤️"
                         name={`pet-${petNum}-photos`}
                         accept=".jpg,.jpeg,.png"
                         maxSize={5}
@@ -293,7 +293,7 @@ export default function PetCard({
                     />
 
                     <TextInput
-                        label="🆔 ¿Tienes RUAC?"
+                        label="¿Tienes RUAC?"
                         name={`pet-${petNum}-ruac`}
                         value={petData.ruac || ''}
                         onChange={(value) => onUpdate({ ...petData, ruac: value })}

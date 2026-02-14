@@ -55,16 +55,19 @@ export default function AuthRedirector() {
                         }
                     } else {
                         console.log('❌ No hay sesión activa, redirigiendo a Login/Registro...');
-                        window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+                        const target = window.location.hostname === 'localhost' ? '/completar-perfil' : 'https://app.pataamiga.mx/usuarios/registro';
+                        window.location.href = target;
                     }
                 } catch (e) {
                     console.log('Error chequeando sesión con Memberstack:', e);
                     // Fallback final
-                    window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+                    const target = window.location.hostname === 'localhost' ? '/completar-perfil' : 'https://app.pataamiga.mx/usuarios/registro';
+                    window.location.href = target;
                 }
             } else {
                 console.log('⚠️ Memberstack no cargó a tiempo, redirigiendo a registro...');
-                window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+                const target = window.location.hostname === 'localhost' ? '/completar-perfil' : 'https://app.pataamiga.mx/usuarios/registro';
+                window.location.href = target;
             }
         };
         checkSession();
