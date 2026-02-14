@@ -15,7 +15,7 @@ const PLANS = {
     ANNUAL: {
         id: 'prc_anual-o9d101ta',
         name: 'Anualidad',
-        price: '1,909',
+        price: '1,699',
         description: 'Tu apoyo y el de tus compañeros ayudan a más familias todo el año.\nAhorra y asegura 12 meses de respaldo continuo.'
     }
 };
