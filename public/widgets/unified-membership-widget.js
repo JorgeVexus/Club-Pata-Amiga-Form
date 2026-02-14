@@ -245,6 +245,61 @@
             font-size: 18px;
         }
 
+        /* Modal Styles */
+        .pata-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .pata-modal-overlay.show { display: flex; }
+
+        .pata-modal {
+            background: #FFFFFF;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            animation: pataModalSlideUp 0.3s ease-out;
+        }
+
+        @keyframes pataModalSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .pata-modal-header {
+            padding: 25px;
+            background: #F8FBFF;
+            border-bottom: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pata-modal-title { font-size: 20px; font-weight: 900; color: #1A1A1A; margin: 0; }
+        .pata-modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #A0A0A0; line-height: 1; }
+
+        .pata-modal-body { padding: 30px; }
+        .pata-modal-pet-details { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .pata-detail-item { margin-bottom: 15px; }
+        .pata-detail-label { font-size: 13px; font-weight: 700; color: #A0A0A0; text-transform: uppercase; margin-bottom: 5px; }
+        .pata-detail-value { font-size: 16px; font-weight: 900; color: #1A1A1A; }
+
+        .pata-modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid #E0E0E0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
         .pata-btn-ver-detalles {
             background: #FFBD12;
             color: #1A1A1A !important;
@@ -254,7 +309,6 @@
             font-size: 14px;
             font-weight: 900;
             cursor: pointer;
-            text-decoration: none;
             display: inline-block;
             text-align: center;
         }
@@ -660,7 +714,7 @@
                 <div class="pata-unified-panel show">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
-                    <span class="pata-tab-label">Tus mascotas con carencia activa</span>
+
                     <div class="pata-pet-tabs">
                         ${this.pets.map((p, i) => `
                             <button class="pata-tab-btn ${i === this.currentIndex ? 'active' : ''}" data-idx="${i}">
@@ -835,7 +889,7 @@
 
         renderApprovedContent(pet) {
             const carencia = this.calculateCarencia(pet);
-            const petImage = pet.image_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+            const petImage = pet.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
 
             // Lógica de mensaje de aliento
             let encouragement = "¡Sigue así!";
@@ -880,7 +934,7 @@
                                     <li>${pet.type || 'Lomito'}</li>
                                     <li>${pet.breed || 'Mestizo'}</li>
                                 </ul>
-                                <a href="https://www.pataamiga.mx/beneficios" class="pata-btn-ver-detalles">Ver detalles</a>
+                                <button class="pata-btn-ver-detalles" id="pata-btn-pet-details" data-pet-id="${pet.id}">Ver detalles</button>
                             </div>
                         </div>
                     </div>
@@ -1026,6 +1080,56 @@
             `;
         }
 
+        renderPetDetailsModal(pet) {
+            const carencia = this.calculateCarencia(pet);
+            const petImage = pet.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+
+            return `
+                <div class="pata-modal-overlay show" id="pata-pet-details-modal">
+                    <div class="pata-modal">
+                        <div class="pata-modal-header">
+                            <h3 class="pata-modal-title">Detalles de ${pet.name}</h3>
+                            <button class="pata-modal-close" id="pata-close-details">&times;</button>
+                        </div>
+                        <div class="pata-modal-body">
+                            <div style="text-align:center; margin-bottom: 25px;">
+                                <img src="${petImage}" style="width:120px; height:120px; border-radius:60px; object-fit:cover; border:3px solid #00BBB4;">
+                            </div>
+                            <div class="pata-modal-pet-details">
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Tipo</div>
+                                    <div class="pata-detail-value">${pet.type}</div>
+                                </div>
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Género</div>
+                                    <div class="pata-detail-value">${pet.gender || 'Sin especificar'}</div>
+                                </div>
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Raza</div>
+                                    <div class="pata-detail-value">${pet.breed}</div>
+                                </div>
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Edad</div>
+                                    <div class="pata-detail-value">${pet.age}</div>
+                                </div>
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Peso</div>
+                                    <div class="pata-detail-value">${pet.weight || 'Desconocido'}</div>
+                                </div>
+                                <div class="pata-detail-item">
+                                    <div class="pata-detail-label">Carencia</div>
+                                    <div class="pata-detail-value">${carencia.percentage}% (${carencia.daysRemaining} días restantes)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="pata-modal-footer">
+                            <button class="pata-btn pata-btn-outline" id="pata-close-details-btn">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         attachEvents() {
             // Tab switch
             this.container.querySelectorAll('.pata-tab-btn').forEach(btn => {
@@ -1035,6 +1139,28 @@
                     this.render();
                 };
             });
+
+            const detailsBtn = document.getElementById('pata-btn-pet-details');
+            if (detailsBtn) {
+                detailsBtn.onclick = () => {
+                    const pet = this.pets[this.currentIndex];
+                    const modalHtml = this.renderPetDetailsModal(pet);
+                    const modalDiv = document.createElement('div');
+                    modalDiv.id = 'pata-details-modal-wrapper';
+                    modalDiv.innerHTML = modalHtml;
+                    document.body.appendChild(modalDiv);
+
+                    // Close events
+                    const close = () => {
+                        modalDiv.remove();
+                    };
+                    document.getElementById('pata-close-details').onclick = close;
+                    document.getElementById('pata-close-details-btn').onclick = close;
+                    document.getElementById('pata-pet-details-modal').onclick = (e) => {
+                        if (e.target.id === 'pata-pet-details-modal') close();
+                    };
+                };
+            }
 
             // Reveal appeal form
             const revealBtn = document.getElementById('pata-btn-reveal-appeal');
