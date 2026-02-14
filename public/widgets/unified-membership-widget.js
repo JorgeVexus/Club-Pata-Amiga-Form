@@ -382,7 +382,8 @@
 
                 if (data.success) {
                     this.pets = data.pets || [];
-                    this.membershipStatus = data.membership_status || 'approved';
+                    this.membershipStatus = (data.membership_status || 'approved').toLowerCase();
+                    console.log(`📊 Unified Widget: Status="${this.membershipStatus}", Pets=${this.pets.length}`);
                     this.userExtra = {
                         lastAdminResponse: data.last_admin_response || '',
                         actionRequiredFields: data.action_required_fields || []
@@ -420,15 +421,24 @@
         }
 
         render() {
-            const pet = this.pets[this.currentIndex];
-            if (!pet) return;
-
             const firstName = this.member.customFields?.['first-name'] || 'Socio';
 
-            // 1. Mostrar vista global de usuario si está pendiente
-            if (this.membershipStatus === 'pending') {
+            // 🆕 Lógica de Estatus Global: Solo mostramos la vista global si:
+            // 1. El estatus es 'pending' Y (no hay mascotas o todas están en 'pending')
+            const allPetsPending = this.pets.length === 0 || this.pets.every(p => p.status === 'pending');
+            const isPending = this.membershipStatus === 'pending' && allPetsPending;
+
+            if (isPending) {
+                console.log('⏳ Unified Widget: User status is pending. Rendering global pending view.');
                 this.container.innerHTML = this.renderUserPendingView(firstName);
                 this.container.classList.add('show');
+                return;
+            }
+
+            const pet = this.pets[this.currentIndex];
+            if (!pet) {
+                // Si no hay mascota seleccionada pero no es pending global, mostramos un estado vacío o cargando
+                this.container.innerHTML = `<div class="pata-welcome-title" style="color:white; padding:40px;">Cargando mascotas...</div>`;
                 return;
             }
 
