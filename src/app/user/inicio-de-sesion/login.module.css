@@ -1,85 +1,35 @@
-/* Login Page - Pixel Perfect from Webflow */
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+/* Login Page - Success View Redesign */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;900&display=swap');
 
-/* ============ SUCCESS BANNER ============ */
-.successBanner {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(135deg, #2e7d32, #43a047);
-    color: white;
-    padding: 16px 32px;
-    border-radius: 16px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
-    z-index: 99999;
-    font-family: 'Outfit', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    animation: slideDown 0.5s ease;
-    max-width: 90vw;
-}
-
-.bannerClose {
-    background: none;
-    border: none;
-    color: white;
-    font-size: 1.2rem;
-    cursor: pointer;
-    opacity: 0.8;
-    padding: 0;
-    line-height: 1;
-}
-
-.bannerClose:hover {
-    opacity: 1;
-}
-
-@keyframes slideDown {
-    from {
-        transform: translateX(-50%) translateY(-100px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-    }
-}
-
-/* ============ SECTION ============ */
 .section {
     background-color: #15beb2;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 120px 7.5% 75px;
-    position: relative;
+    padding: 60px 20px;
     font-family: 'Outfit', sans-serif;
+    position: relative;
 }
 
-/* ============ LOGO ============ */
 .logo {
     position: absolute;
-    top: 30px;
+    top: 40px;
     left: 40px;
-    width: 160px;
-    z-index: 10;
+    width: 140px;
 }
 
-/* ============ CARD ============ */
 .card {
     background: white;
-    border-radius: 30px;
-    display: flex;
-    max-width: 960px;
+    border-radius: 60px;
+    max-width: 900px;
     width: 100%;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    padding: 60px 80px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
     animation: fadeIn 0.6s ease;
 }
 
@@ -95,306 +45,173 @@
     }
 }
 
-/* ============ FORM SIDE ============ */
-.formSide {
-    flex: 1;
-    padding: 50px 45px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.headerStyle {
-    margin-bottom: 28px;
-}
-
 .title {
-    font-family: 'Outfit', sans-serif;
-    font-size: 42px;
-    font-weight: 700;
+    font-size: 72px;
+    font-weight: 900;
+    color: #9fd406;
+    margin: 0 0 40px 0;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+/* ============ STEPPER ============ */
+.stepper {
+    background: #f0f2f5;
+    border-radius: 50px;
+    display: flex;
+    align-items: center;
+    padding: 10px 40px;
+    margin-bottom: 40px;
+    gap: 15px;
+}
+
+.step {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #555;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.stepActive {
     color: #000;
-    margin: 0 0 8px 0;
+}
+
+.stepIcon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.stepActive .stepIcon {
+    background: #15beb2;
+}
+
+.stepArrow {
+    color: #bbb;
+    font-size: 18px;
+}
+
+/* ============ SUCCESS BANNER ============ */
+.successBox {
+    background: #9fd406;
+    border-radius: 30px;
+    padding: 40px;
+    width: 100%;
+    text-align: left;
+    color: white;
+    position: relative;
+    margin-bottom: 40px;
+}
+
+.successTitle {
+    font-size: 42px;
+    font-weight: 900;
+    margin: 0 0 10px 0;
     line-height: 1.1;
 }
 
-.subtitle {
-    font-family: 'Outfit', sans-serif;
+.successSubtitle {
     font-size: 15px;
-    font-weight: 400;
-    color: #555;
-    margin: 0;
-    line-height: 1.5;
-}
-
-/* ============ FORM ============ */
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-}
-
-.inputWrap {
-    margin-bottom: 16px;
-}
-
-.fieldLabel {
-    display: block;
-    font-family: 'Outfit', sans-serif;
-    font-size: 14px;
     font-weight: 600;
-    color: #333;
-    margin-bottom: 6px;
+    opacity: 0.9;
+    margin-bottom: 20px;
+    display: block;
 }
 
-.fieldInput {
-    width: 100%;
-    padding: 12px 18px;
-    border: none;
-    border-radius: 50px;
-    background-color: #e8f0d0;
-    font-family: 'Outfit', sans-serif;
-    font-size: 15px;
-    font-weight: 400;
-    color: #333;
-    outline: none;
-    transition: box-shadow 0.2s ease;
-    box-sizing: border-box;
+.successText {
+    font-size: 14px;
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 650px;
+    margin-bottom: 20px;
 }
 
-.fieldInput::placeholder {
-    color: #8a9a5c;
-    font-weight: 400;
+.successDetail {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-top: 20px;
+    font-weight: 500;
 }
 
-.fieldInput:focus {
-    box-shadow: 0 0 0 2px #9fd406;
-}
-
-/* ============ PASSWORD ============ */
-.passwordWrap {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-.passwordWrap .fieldInput {
-    padding-right: 48px;
-}
-
-.eyeButton {
+.successIcon {
     position: absolute;
-    right: 14px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #888;
-    padding: 4px;
+    top: 30px;
+    right: 30px;
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: color 0.2s;
 }
 
-.eyeButton:hover {
-    color: #555;
-}
-
-.eyeButton svg {
-    width: 22px;
-    height: 22px;
-}
-
-/* ============ ERROR ============ */
-.errorMessage {
-    background: #fff0f0;
-    color: #d32f2f;
-    border: 1px solid #ffcdd2;
-    border-radius: 12px;
-    padding: 10px 16px;
-    font-size: 13px;
-    font-weight: 500;
-    margin-bottom: 12px;
-}
-
-/* ============ SUBMIT BUTTON ============ */
-.submitButton {
-    width: 100%;
-    padding: 14px;
-    border: none;
+/* ============ BUTTON ============ */
+.loginButton {
+    background: #9fd406;
+    color: white;
+    padding: 14px 40px;
     border-radius: 50px;
-    background-color: #9fd406;
-    color: #fff;
-    font-family: 'Outfit', sans-serif;
     font-size: 16px;
     font-weight: 700;
-    cursor: pointer;
-    transition: background-color 0.2s, transform 0.1s;
-    margin-top: 4px;
-}
-
-.submitButton:hover {
-    background-color: #8ab30e;
-}
-
-.submitButton:active {
-    transform: scale(0.98);
-}
-
-.submitButton:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* ============ BOTTOM LINKS ============ */
-.bottomLinks {
-    margin-top: 14px;
-    text-align: left;
-}
-
-.forgotLink {
-    background: none;
-    border: none;
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 500;
-    color: #15beb2;
-    cursor: pointer;
-    padding: 0;
-    text-decoration: underline;
-}
-
-.forgotLink:hover {
-    color: #0d9a90;
-}
-
-/* ============ DIVIDER ============ */
-.dividerWrap {
+    text-decoration: none;
     display: flex;
     align-items: center;
-    justify-content: center;
-    margin: 18px 0;
+    gap: 12px;
+    align-self: flex-start;
+    transition: all 0.2s;
 }
 
-.dividerText {
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: #333;
+.loginButton:hover {
+    background: #8ab30e;
+    transform: translateY(-2px);
 }
 
-/* ============ GOOGLE BUTTON ============ */
-.googleButton {
-    width: 48px;
-    height: 48px;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    background: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: box-shadow 0.2s, transform 0.1s;
-    padding: 10px;
-}
-
-.googleButton:hover {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-    transform: scale(1.05);
-}
-
-.googleIcon {
+.buttonArrow {
     width: 24px;
     height: 24px;
-}
-
-/* ============ REGISTER TEXT ============ */
-.registerText {
-    margin-top: 16px;
-    font-family: 'Outfit', sans-serif;
-    font-size: 13px;
-    font-weight: 400;
-    color: #555;
-    text-align: center;
-}
-
-.registerLink {
-    color: #15beb2;
-    text-decoration: none;
-}
-
-.registerLink:hover {
-    text-decoration: underline;
-}
-
-/* ============ IMAGE SIDE ============ */
-.imageSide {
-    width: 45%;
-    max-width: 400px;
+    background: white;
+    border-radius: 50%;
     display: flex;
-    align-items: stretch;
-    overflow: hidden;
-    border-radius: 0 30px 30px 0;
+    align-items: center;
+    justify-content: center;
+    color: #9fd406;
 }
 
-.loginImage {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-/* ============ RESPONSIVE ============ */
+/* RESPONSIVE */
 @media (max-width: 768px) {
-    .section {
-        padding: 100px 20px 40px;
+    .card {
+        padding: 40px 30px;
+        border-radius: 40px;
+    }
+
+    .title {
+        font-size: 48px;
+    }
+
+    .stepper {
+        padding: 10px 20px;
+        flex-direction: column;
+        border-radius: 20px;
         align-items: flex-start;
     }
 
-    .logo {
-        width: 120px;
-        top: 20px;
-        left: 20px;
+    .stepArrow {
+        display: none;
     }
 
-    .card {
-        flex-direction: column;
-        border-radius: 24px;
-    }
-
-    .formSide {
-        padding: 35px 28px;
-    }
-
-    .title {
-        font-size: 32px;
-    }
-
-    .imageSide {
-        width: 100%;
-        max-width: 100%;
-        height: 200px;
-        border-radius: 0 0 24px 24px;
-        order: -1;
-    }
-}
-
-@media (max-width: 480px) {
-    .section {
-        padding: 90px 16px 30px;
-    }
-
-    .formSide {
-        padding: 28px 22px;
-    }
-
-    .title {
+    .successTitle {
         font-size: 28px;
     }
 
-    .subtitle {
-        font-size: 14px;
-    }
-
-    .imageSide {
-        height: 160px;
+    .successIcon {
+        display: none;
     }
 }
