@@ -337,9 +337,13 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-12')">
+            <button class="nav-item active" onclick="switchTab('2026-02-14')">
+                <span>14 de Feb, 2026</span>
+                <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-12')">
                 <span>12 de Feb, 2026</span>
-                <span class="badge">Hoy</span>
+                <span class="badge">Anterior</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-10')">
                 <span>10 de Feb, 2026</span>
@@ -372,8 +376,92 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 12 de Febrero (HOY) -->
-            <div id="2026-02-12" class="changelog-entry active">
+            <!-- Entrada: 14 de Febrero (HOY) -->
+            <div id="2026-02-14" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Sistema de Facturación & Rediseño de Manada</h1>
+                        <div class="entry-meta">Sábado, 14 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.7.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📄 Sistema de Facturación Centralizado</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Módulo de Facturación:</strong> Implementación del sistema opcional de
+                                facturación durante la selección de plan. Incluye checkbox "¿Quieres facturar?" y modal premium de recolección de datos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Validación Fiscal:</strong> Soporte completo para RFC, Razón Social, Régimen Fiscal y Uso de CFDI. Diseño optimizado para evitar cortes en dispositivos móviles.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">STORAGE</span>
+                            <div class="change-desc">
+                                <strong>Constancia Fiscal:</strong> Integración con Supabase Storage para la subida y almacenamiento seguro de la Constancia de Situación Fiscal (PDF/Imágenes).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">ADMIN</span>
+                            <div class="change-desc">
+                                <strong>Dashboard para Admins:</strong> Se habilitó la visualización de datos fiscales en el <code>MemberDetailModal</code>. Los administradores ahora pueden ver y descargar la documentación fiscal de cualquier miembro.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🎨 Rediseño "Mi Manada" (Pet Cards)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">DESIGN</span>
+                            <div class="change-desc">
+                                <strong>Premium Square Look:</strong> Rediseño total del widget de tarjetas de mascotas. Ahora utiliza un formato cuadrado (260x260px) con bordes ultra-redondeados (40px) y sombras suaves.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Título "Mi Manada":</strong> Se incorporó un título de sección prominente en color amarillo (#FFBD12) para personalizar el espacio del usuario.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Agregar Peludo:</strong> La tarjeta de invitación a agregar nuevas mascotas fue rediseñada con bordes punteados y un ícono "+" vibrante para mejorar la conversión.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">⚖️ Legal & Seguridad</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">LEGAL</span>
+                            <div class="change-desc">
+                                <strong>Clickwrap Acceptance:</strong> Implementación del cuadro de aceptación electrónica obligatorio en el paso final. Incluye sección expandible "Ver más" para lectura de términos legales extensos sin saturar la UI.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">POLICIES</span>
+                            <div class="change-desc">
+                                <strong>RLS Storage:</strong> Se configuraron políticas de seguridad en Supabase Storage para el bucket <code>billing-docs</code>, garantizando que solo el dueño y los administradores puedan acceder a los documentos.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 12 de Febrero (ANTERIOR) -->
+            <div id="2026-02-12" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Producción, Notificaciones & Bot Veterinario</h1>
