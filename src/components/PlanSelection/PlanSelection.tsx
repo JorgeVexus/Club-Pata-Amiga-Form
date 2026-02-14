@@ -30,6 +30,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const [error, setError] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [marketingConsent, setMarketingConsent] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
@@ -58,8 +59,8 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             return;
         }
 
-        if (!termsAccepted) {
-            setError('⚠️ Debes aceptar los términos y condiciones para continuar.');
+        if (!termsAccepted || !marketingConsent) {
+            setError('⚠️ Debes aceptar los términos y el consentimiento de comunicación para continuar.');
             return;
         }
 
@@ -98,7 +99,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         } finally {
             setIsProcessing(false);
         }
-    }, [selectedPlanId, termsAccepted, onSuccess]);
+    }, [selectedPlanId, termsAccepted, marketingConsent, onSuccess]);
 
     return (
         <div className={styles.container}>
@@ -178,7 +179,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                 <p>Tu membresía se renovará automáticamente. Cancela cuando quieras</p>
             </div>
 
-            {/* Terms & Conditions Checkbox */}
+            {/* Terms & Conditions & Consent Section */}
             <div className={styles.termsSection}>
                 <label className={styles.termsLabel}>
                     <input
@@ -204,6 +205,21 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                         </button>
                     </span>
                 </label>
+
+                <label className={styles.termsLabel} style={{ marginTop: '1rem' }}>
+                    <input
+                        type="checkbox"
+                        checked={marketingConsent}
+                        onChange={(e) => {
+                            setMarketingConsent(e.target.checked);
+                            setError(null);
+                        }}
+                        className={styles.termsCheckbox}
+                    />
+                    <span className={styles.termsText}>
+                        Autorizo a Pata Amiga enviarme notificaciones, mensajes informativos y promociones vía WhatsApp y correo electrónico, utilizando los datos que proporciono, conforme a su Aviso de Privacidad.
+                    </span>
+                </label>
             </div>
 
             {/* Navegación */}
@@ -226,7 +242,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     <button
                         className={styles.nextButton}
                         onClick={handleNext}
-                        disabled={!selectedPlanId || !termsAccepted || isProcessing}
+                        disabled={!selectedPlanId || !termsAccepted || !marketingConsent || isProcessing}
                     >
                         {isProcessing ? 'Procesando...' : 'Siguiente'}
                         <div className={styles.nextIcon}>
