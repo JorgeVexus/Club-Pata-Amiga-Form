@@ -31,6 +31,8 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const [isProcessing, setIsProcessing] = useState(false);
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [marketingConsent, setMarketingConsent] = useState(false);
+    const [clickwrapAccepted, setClickwrapAccepted] = useState(false);
+    const [showFullLegal, setShowFullLegal] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
@@ -59,8 +61,8 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             return;
         }
 
-        if (!termsAccepted || !marketingConsent) {
-            setError('⚠️ Debes aceptar los términos y el consentimiento de comunicación para continuar.');
+        if (!termsAccepted || !marketingConsent || !clickwrapAccepted) {
+            setError('⚠️ Debes aceptar todos los términos y consentimientos para continuar.');
             return;
         }
 
@@ -99,7 +101,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         } finally {
             setIsProcessing(false);
         }
-    }, [selectedPlanId, termsAccepted, marketingConsent, onSuccess]);
+    }, [selectedPlanId, termsAccepted, marketingConsent, clickwrapAccepted, onSuccess]);
 
     return (
         <div className={styles.container}>
@@ -220,6 +222,49 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                         Autorizo a Pata Amiga enviarme notificaciones, mensajes informativos y promociones vía WhatsApp y correo electrónico, utilizando los datos que proporciono, conforme a su Aviso de Privacidad.
                     </span>
                 </label>
+
+                <div className={styles.clickwrapSection}>
+                    <label className={styles.termsLabel}>
+                        <input
+                            type="checkbox"
+                            checked={clickwrapAccepted}
+                            onChange={(e) => {
+                                setClickwrapAccepted(e.target.checked);
+                                setError(null);
+                            }}
+                            className={styles.termsCheckbox}
+                        />
+                        <span className={styles.clickwrapTitle}>
+                            ACEPTACIÓN ELECTRÓNICA Y AUTORIZACIONES (CLICKWRAP)
+                        </span>
+                    </label>
+                    <div className={`${styles.clickwrapContent} ${showFullLegal ? styles.expanded : ''}`}>
+                        <p>
+                            Al dar clic en el botón “ACEPTO”, el Titular manifiesta bajo protesta de decir verdad que (i) ha leído íntegramente y acepta obligarse conforme a los siguientes instrumentos vigentes del Proyecto “Pata Amiga / Club Pata Amiga”, los cuales se incorporan por referencia: (a) los Términos y Condiciones de GIRBAZ, S.A. de C.V...
+                        </p>
+                        {showFullLegal && (
+                            <div className={styles.legalFullText}>
+                                <p>(uso de Plataforma y cobros); (b) el Aviso de Privacidad aplicable; (c) el Convenio de Adhesión con CLUB PATA AMIGA, A.C. (modalidad de Asociado Adherente y reglas asociativas); (d) el Reglamento del Fondo Solidario; y (e) el Reglamento de Integridad (Antifraude, PLD y Anticorrupción).</p>
+                                <p><strong>Asimismo, el Titular autoriza expresamente:</strong></p>
+                                <ul>
+                                    <li>Cargos recurrentes por la Membresía (mensual o anual), conforme al plan elegido y lo mostrado en la Plataforma al momento de contratar o renovar.</li>
+                                    <li>Preautorización/retención temporal del importe total de la Membresía por un plazo no mayor a 48 (cuarenta y ocho) horas, con el único fin de que CLUB PATA AMIGA, A.C. evalúe la solicitud de incorporación como Asociado Adherente. Si dentro de dicho plazo la A.C. no acepta la solicitud o no emite determinación, la operación no se perfecciona y la retención deberá liberarse conforme a las reglas del emisor/adquirente/pasarela de pagos, sin que el importe se considere cobrado.</li>
+                                    <li>En caso de aceptación como Asociado Adherente dentro del plazo, el Titular autoriza que el cargo se haga efectivo y que el pago se distribuya conforme al desglose mostrado en Plataforma: 70% como contraprestación a favor de GIRBAZ, S.A. de C.V. por el uso y operación de la Plataforma, y 30% como Aportación al Fondo Solidario a favor de CLUB PATA AMIGA, A.C.</li>
+                                    <li>Canalización excepcional (mandato/instrucción): únicamente si por causas técnicas no fuera posible la dispersión directa del 30% a la A.C. mediante pasarela, el Titular instruye y autoriza a GIRBAZ a recibir y transferir a la A.C. dicha Aportación al Fondo, sin apropiación, en los términos de los instrumentos aplicables.</li>
+                                    <li>El Titular reconoce que la Membresía no es un seguro, no existe cobertura garantizada, y cualquier Apoyo del Fondo es discrecional, sujeto a Carencia/Tiempo de Espera, validación, límites, exclusiones y Suficiencia del Fondo conforme a los documentos aceptados.</li>
+                                    <li>El Titular acepta que GIRBAZ conservará evidencia de esta aceptación electrónica (incluyendo fecha/hora, versión, IP, ID de Cuenta y registro de aceptación) como constancia del consentimiento.</li>
+                                </ul>
+                            </div>
+                        )}
+                        <button
+                            type="button"
+                            className={styles.readMoreBtn}
+                            onClick={() => setShowFullLegal(!showFullLegal)}
+                        >
+                            {showFullLegal ? 'Ver menos' : '... Ver más'}
+                        </button>
+                    </div>
+                </div>
             </div>
 
             {/* Navegación */}
@@ -242,7 +287,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     <button
                         className={styles.nextButton}
                         onClick={handleNext}
-                        disabled={!selectedPlanId || !termsAccepted || !marketingConsent || isProcessing}
+                        disabled={!selectedPlanId || !termsAccepted || !marketingConsent || !clickwrapAccepted || isProcessing}
                     >
                         {isProcessing ? 'Procesando...' : 'Siguiente'}
                         <div className={styles.nextIcon}>

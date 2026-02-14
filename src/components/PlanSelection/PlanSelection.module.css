@@ -227,6 +227,74 @@
     display: inline;
 }
 
+/* Clickwrap Section */
+.clickwrapSection {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 20px;
+}
+
+.clickwrapTitle {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #111827;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.clickwrapContent {
+    margin-top: 1rem;
+    padding-left: 36px;
+    font-size: 0.85rem;
+    color: #4B5563;
+    line-height: 1.6;
+}
+
+.legalFullText {
+    margin-top: 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.legalFullText ul {
+    margin-top: 1rem;
+    padding-left: 1.2rem;
+}
+
+.legalFullText li {
+    margin-bottom: 0.75rem;
+}
+
+.readMoreBtn {
+    background: transparent;
+    border: none;
+    color: #00BBB4;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 0;
+    margin-top: 0.5rem;
+    display: block;
+}
+
+.readMoreBtn:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* Navegación */
 .navigationButtons {
     display: flex;
