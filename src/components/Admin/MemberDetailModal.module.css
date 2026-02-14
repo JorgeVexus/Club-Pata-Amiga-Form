@@ -733,3 +733,26 @@
 .loadHistoryBtn:hover {
     background: #e0e0e0;
 }
+
+.billingContainer {
+    background: var(--gray-50);
+    padding: var(--spacing-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--gray-200);
+}
+
+.noBilling {
+    padding: var(--spacing-lg);
+    background: #FFF7ED;
+    border: 1px solid #FFEDD5;
+    border-radius: var(--radius-md);
+    color: #9A3412;
+    font-style: italic;
+    font-size: 0.875rem;
+    text-align: center;
+}
+
+.docDesc {
+    font-size: 0.7rem;
+    color: var(--gray-500);
+}

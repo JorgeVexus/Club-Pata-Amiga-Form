@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './MemberDetailModal.module.css';
-import { getPetsByUserId } from '@/app/actions/user.actions';
+import { getPetsByUserId, getBillingDetailsByUserId } from '@/app/actions/user.actions';
 
 interface Pet {
     id: string;
@@ -52,12 +52,29 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [appealLogs, setAppealLogs] = useState<AppealLog[]>([]);
     const [isRefunding, setIsRefunding] = useState(false);
     const [refundDone, setRefundDone] = useState(false);
+    const [billingDetails, setBillingDetails] = useState<any>(null);
+    const [loadingBilling, setLoadingBilling] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
+            loadBillingDetails();
         }
     }, [isOpen, member]);
+
+    async function loadBillingDetails() {
+        setLoadingBilling(true);
+        try {
+            const result = await getBillingDetailsByUserId(member.id);
+            if (result.success) {
+                setBillingDetails(result.billingDetails);
+            }
+        } catch (error) {
+            console.error('Error loading billing details:', error);
+        } finally {
+            setLoadingBilling(false);
+        }
+    }
 
     async function loadPets() {
         setLoadingPets(true);
@@ -284,6 +301,68 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 <span className={styles.value}>{fields['postal-code']}</span>
                             </div>
                         </div>
+                    </div>
+
+                    {/* Billing Details */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            Datos de Facturación 📄
+                            {loadingBilling && <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Cargando...)</span>}
+                        </h3>
+                        {!loadingBilling && billingDetails ? (
+                            <div className={styles.billingContainer}>
+                                <div className={styles.grid}>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>RFC</span>
+                                        <span className={styles.value} style={{ fontWeight: 700 }}>{billingDetails.rfc}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Nombre/Razón Social</span>
+                                        <span className={styles.value}>{billingDetails.business_name}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Correo de Facturación</span>
+                                        <span className={styles.value}>{billingDetails.email}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Uso de CFDI</span>
+                                        <span className={styles.value}>{billingDetails.cfdi_use}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Régimen Fiscal</span>
+                                        <span className={styles.value}>{billingDetails.tax_regime}</span>
+                                    </div>
+                                </div>
+                                <div className={styles.field} style={{ marginTop: '1rem' }}>
+                                    <span className={styles.label}>Dirección Fiscal</span>
+                                    <span className={styles.value}>{billingDetails.fiscal_address}</span>
+                                </div>
+
+                                {billingDetails.tax_certificate_url && (
+                                    <div className={styles.documentCard} style={{ marginTop: '1.25rem', background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                                        <span className={styles.documentIcon}>📄</span>
+                                        <div className={styles.documentInfo}>
+                                            <div className={styles.documentName}>Constancia de Situación Fiscal</div>
+                                            <div className={styles.docDesc}>Archivo oficial subido por el miembro</div>
+                                        </div>
+                                        <div className={styles.docActions}>
+                                            <a href={billingDetails.tax_certificate_url} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => handleDownload(e, billingDetails.tax_certificate_url, `constancia-${billingDetails.rfc}`)}
+                                                className={styles.viewDocButton}
+                                            >
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : !loadingBilling ? (
+                            <div className={styles.noBilling}>
+                                <p>Este miembro no ha registrado datos de facturación.</p>
+                            </div>
+                        ) : null}
                     </div>
 
                     {/* Documents */}

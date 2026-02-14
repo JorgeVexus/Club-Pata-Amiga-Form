@@ -301,3 +301,29 @@ export async function getPetsByUserId(memberstackId: string) {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Obtiene los detalles de facturación de un usuario
+ */
+export async function getBillingDetailsByUserId(userId: string) {
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { data, error } = await supabase
+            .from('billing_details')
+            .select('*')
+            .eq('user_id', userId)
+            .maybeSingle();
+
+        if (error) {
+            console.error('❌ [Server Action] Error fetching billing details:', error);
+            return { success: false, error: error.message };
+        }
+
+        return { success: true, billingDetails: data };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado en getBillingDetails:', error);
+        return { success: false, error: error.message };
+    }
+}
