@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
         // 2. Fetch User Profile (by memberstack_id OR by email)
         let query = supabaseAdmin
             .from('users')
-            .select('id, first_name, last_name, email, membership_status');
+            .select('id, first_name, last_name, email, phone, membership_status');
 
         if (email) {
             query = query.eq('email', email.toLowerCase().trim());
@@ -86,6 +86,8 @@ export async function GET(request: NextRequest) {
         const responsePayload = {
             user: {
                 name: `${user.first_name} ${user.last_name}`,
+                email: user.email,
+                phone: user.phone,
                 status: user.membership_status,
                 id: userId
             },
