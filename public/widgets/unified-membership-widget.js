@@ -46,33 +46,123 @@
         }
 
         .pata-welcome-title {
-            font-size: 72px;
+            font-size: 100px;
             font-weight: 900;
             margin: 0;
             line-height: 1.1;
-            letter-spacing: -1px;
+            letter-spacing: -2px;
         }
 
         .pata-welcome-subtitle {
             font-size: 18px;
             font-weight: 400;
-            margin: 15px 0 0 0;
+            margin: 20px 0 0 0;
             line-height: 1.5;
             max-width: 600px;
         }
 
         .pata-pet-tabs { 
             display: flex; 
-            gap: 10px; 
+            gap: 8px; 
             margin-bottom: 30px; 
             flex-wrap: wrap;
-            background: #F5F7F8;
-            padding: 6px;
-            border-radius: 50px;
+            background: #F0F2F5;
+            padding: 8px;
+            border-radius: 60px;
             width: fit-content;
         }
- 
-        /* ... existing tab styles ... */
+
+        .pata-tab-btn {
+            background: transparent;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 28px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 900;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #1A1A1A;
+            font-size: 16px;
+        }
+
+        .pata-tab-btn:hover { background: rgba(0, 0, 0, 0.05); }
+        .pata-tab-btn.active { 
+            background: #FFFFFF; 
+            color: #1A1A1A; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Contenido del Panel */
+        .pata-panel-container { position: relative; }
+
+        @media (max-width: 768px) { 
+            .pata-pet-tabs { width: 100%; justify-content: center; }
+            .pata-welcome-title { font-size: 60px; }
+        }
+
+        .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
+        .pata-subtitle { font-size: 18px; font-weight: 600; margin: 0 0 20px 0; color: #444; }
+
+        /* Estado Activo - Circular Progress */
+        .pata-active-container {
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .pata-active-container { grid-template-columns: 1fr; justify-items: center; }
+        }
+
+        .pata-circular-progress {
+            width: 180px;
+            height: 180px;
+            position: relative;
+        }
+
+        .pata-circular-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .pata-circular-bg {
+            fill: none;
+            stroke: #F0F2F5;
+            stroke-width: 12;
+        }
+
+        .pata-circular-fill {
+            fill: none;
+            stroke: #9FD406;
+            stroke-width: 12;
+            stroke-linecap: round;
+            transition: stroke-dasharray 1s ease;
+        }
+
+        .pata-circular-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .pata-days-num { font-size: 48px; font-weight: 900; line-height: 1; color: #1A1A1A; }
+        .pata-days-label { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; }
+
+        .pata-info-card {
+            background: #F8FBFF;
+            border-left: 6px solid #00BBB4;
+            padding: 24px;
+            border-radius: 20px;
+        }
+
+        .pata-info-title { font-size: 20px; font-weight: 700; color: #00BBB4; margin-bottom: 8px; }
+        .pata-info-text { font-size: 15px; color: #555; line-height: 1.5; margin: 0; }
 
         /* Horizontal Progress Bar */
         .pata-horizontal-progress-container {
@@ -142,6 +232,50 @@
             text-align: left;
         }
 
+        /* Estado Rechazado */
+        .pata-rejected-card {
+            background: #FFF2F2;
+            border: 2px solid #FFCDD2;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            width: 100%;
+        }
+
+        .pata-rejected-icon { font-size: 48px; margin-bottom: 20px; display: block; }
+        .pata-rejected-title { font-size: 28px; font-weight: 900; color: #D32F2F; margin-bottom: 12px; }
+        .pata-rejected-text { font-size: 16px; color: #777; margin-bottom: 24px; }
+
+        /* Botones */
+        .pata-btn {
+            background: #1A1A1A;
+            color: #fff;
+            padding: 16px 36px;
+            border-radius: 60px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none !important;
+        }
+        .pata-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+        .pata-btn-white { background: #fff; color: #1A1A1A; }
+        .pata-btn-brand { background: #00BBB4; color: #FFFFFF; }
+        .pata-btn-red { background: #D32F2F; }
+        .pata-btn-outline { background: transparent; border: 2px solid #1A1A1A; color: #1A1A1A; }
+
+        .pata-btn-conocer {
+            background: #00BBB4;
+            color: #000000 !important;
+            padding: 18px 48px;
+            font-weight: 900;
+            text-transform: none;
+        }
+
         /* Decoration */
         .pata-decoration-paws {
             position: absolute;
@@ -151,8 +285,6 @@
             opacity: 0.05;
             pointer-events: none;
         }
- 
-        /* existing styles below ... */
     `;
 
 
@@ -374,7 +506,7 @@
                     </p>
 
                     <div style="text-align: center; margin-top: 30px;">
-                        <a href="https://www.pataamiga.mx/beneficios" class="pata-btn" style="background: #00BBB4; padding: 16px 40px;">
+                        <a href="https://www.pataamiga.mx/beneficios" class="pata-btn pata-btn-conocer">
                             Conocer más de pata amiga
                         </a>
                     </div>
