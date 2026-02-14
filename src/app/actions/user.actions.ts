@@ -89,6 +89,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 colony: userData.colony,
                 address: userData.address,
                 membership_status: 'pending',
+                approval_status: 'pending',
                 is_foreigner: userData.isForeigner || false,
                 created_at: new Date().toISOString(),
             })

@@ -7,6 +7,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { rejectMemberApplication } from '@/services/memberstack-admin.service';
 import { createServerNotification } from '@/app/actions/notification.actions';
 
+import { createClient } from '@supabase/supabase-js';
+
+// Cliente Supabase para operaciones admin
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -58,6 +66,22 @@ export async function POST(
         });
 
         console.log(`✅ Miembro ${memberId} rechazado exitosamente`);
+
+        // Actualizar estados en Supabase
+        const { error: supabaseError } = await supabaseAdmin
+            .from('users')
+            .update({
+                approval_status: 'rejected',
+                membership_status: 'rejected',
+                rejected_at: new Date().toISOString(),
+                rejected_by: adminId || 'admin',
+                rejection_reason: reason
+            })
+            .eq('memberstack_id', memberId);
+
+        if (supabaseError) {
+            console.error('❌ Error sincronizando estatus en Supabase:', supabaseError);
+        }
 
         return NextResponse.json({
             success: true,

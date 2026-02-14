@@ -209,7 +209,10 @@ async function updateMemberStatusFromPets(memberstackId: string, userId: string)
         // Actualizar el usuario
         await supabaseAdmin
             .from('users')
-            .update({ membership_status: derivedStatus })
+            .update({
+                membership_status: derivedStatus,
+                approval_status: derivedStatus === 'appealed' ? 'appealed' : undefined
+            })
             .eq('memberstack_id', memberstackId);
 
         console.log(`📊 Status del miembro ${memberstackId} actualizado a: ${derivedStatus}`);

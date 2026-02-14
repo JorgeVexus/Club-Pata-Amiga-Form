@@ -119,6 +119,22 @@ export async function POST(
             link: '/dashboard'
         });
 
+        // Actualizar estados en Supabase
+        const { error: supabaseError } = await supabaseAdmin
+            .from('users')
+            .update({
+                approval_status: 'approved',
+                membership_status: 'active',
+                approved_at: new Date().toISOString(),
+                approved_by: adminId || 'admin'
+            })
+            .eq('memberstack_id', memberId);
+
+        if (supabaseError) {
+            console.error('❌ Error sincronizando estatus en Supabase:', supabaseError);
+            // No fallamos la respuesta principal porque Memberstack ya se actualizó
+        }
+
         console.log(`✅ Miembro ${memberId} aprobado exitosamente`);
 
         return NextResponse.json({
