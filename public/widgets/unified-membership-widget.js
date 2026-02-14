@@ -1097,14 +1097,6 @@
                             </div>
                             <div class="pata-modal-pet-details">
                                 <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Tipo</div>
-                                    <div class="pata-detail-value">${pet.type}</div>
-                                </div>
-                                <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Género</div>
-                                    <div class="pata-detail-value">${pet.gender || 'Sin especificar'}</div>
-                                </div>
-                                <div class="pata-detail-item">
                                     <div class="pata-detail-label">Raza</div>
                                     <div class="pata-detail-value">${pet.breed}</div>
                                 </div>
