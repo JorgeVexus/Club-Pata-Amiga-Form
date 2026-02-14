@@ -31,8 +31,19 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
         try {
             const response = await fetch('/api/legal-documents');
             const data = await response.json();
+
+            const hardcodedDoc: Document = {
+                id: 'hardcoded-reglamento',
+                title: 'Reglamento del fondo solidario "Club Pata Amiga"',
+                description: 'Consulta las reglas y condiciones del fondo de apoyo.',
+                file_url: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b8bccea76df450705_REGLAMENTO%20DEL%20FONDO%20SOLIDARIO%20CLUB%20PATA%20AMIGA.zip',
+                file_name: 'REGLAMENTO_CLUB_PATA_AMIGA.zip'
+            };
+
             if (data.success) {
-                setDocuments(data.documents || []);
+                setDocuments([hardcodedDoc, ...(data.documents || [])]);
+            } else {
+                setDocuments([hardcodedDoc]);
             }
         } catch (error) {
             console.error('Error fetching legal documents:', error);

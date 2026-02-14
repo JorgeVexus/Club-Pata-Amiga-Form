@@ -748,6 +748,8 @@
                 return;
             }
 
+            const pet = this.pets[this.currentIndex];
+            const isApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
             const isRejected = pet?.status === 'rejected' || this.membershipStatus === 'rejected' || this.membershipStatus === 'denied';
 
             // Actualizar el tema del contenedor
@@ -1044,6 +1046,9 @@
         renderRejectedContent(pet) {
             const adminMsg = pet.last_admin_response || pet.admin_notes || 'Identificamos un requisito que no está alineado con las reglas de ingreso del club.';
             const dogImage = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5dd0cf5c9243b55fa43_Recurso%2011%202.png';
+            const appealCount = pet.appeal_count || 0;
+            const maxAppeals = 2;
+            const canAppeal = appealCount < maxAppeals;
 
             return `
                 <div class="pata-rejected-wrapper">
@@ -1067,13 +1072,30 @@
                         <div class="pata-dog-placeholder"></div>
                     </div>
 
-                    <div style="text-align: center; margin-top: 40px; position: relative; z-index: 10;">
-                        <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" style="background: #00BBB4; padding: 18px 50px;">
-                            Apelar mi solicitud
-                        </button>
-                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
-                            Revisaremos tu apelación con gusto ♡
-                        </p>
+                    <div id="pata-appeal-section" style="text-align: center; margin-top: 40px; position: relative; z-index: 10;">
+                        ${!canAppeal ? `
+                            <p style="color: #FFFFFF; font-size: 14px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; display: inline-block;">
+                                Has agotado el límite de apelaciones para esta mascota.
+                            </p>
+                        ` : !this.showAppealForm ? `
+                            <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; padding: 18px 50px;">
+                                Apelar mi solicitud
+                            </button>
+                            <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
+                                Revisaremos tu apelación con gusto ♡
+                            </p>
+                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6;">Intentos restantes: ${maxAppeals - appealCount}</p>
+                        ` : `
+                            <div class="pata-appeal-form active" style="text-align: left; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto;">
+                                <p style="font-size:16px; margin-bottom:15px; font-weight: 700; color: #1A1A1A;">Explícanos por qué debemos reconsiderar el caso:</p>
+                                <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Escribe aquí los detalles de tu apelación..." data-pet-id="${pet.id}" style="min-height: 120px; margin-bottom: 20px; border: 1px solid #E0E0E0; border-radius: 12px; padding: 15px; width: 100%; font-family: inherit; color: #333;"></textarea>
+                                
+                                <div style="display:flex; gap:15px; justify-content: flex-end;">
+                                    <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-appeal" style="border: 1px solid #DDD; color: #666; background: transparent;">Cancelar</button>
+                                    <button class="pata-btn" id="pata-btn-submit-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; color: white;">Enviar Apelación</button>
+                                </div>
+                            </div>
+                        `}
                     </div>
                 </div>
             `;
