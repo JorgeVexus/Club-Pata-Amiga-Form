@@ -23,7 +23,7 @@
             border-radius: 30px;
             padding: 40px;
             max-width: 920px;
-            margin: 20px auto;
+            margin: 0 auto 20px auto;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
             font-family: 'Outfit', sans-serif;
             color: #1A1A1A;
@@ -36,12 +36,29 @@
 
         @keyframes pataFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        .pata-welcome-msg { 
-            color: #1A1A1A; 
-            font-size: 24px; 
-            font-weight: 700; 
-            margin-bottom: 24px; 
-            line-height: 1.2;
+        /* External Greeting */
+        .pata-external-greeting {
+            max-width: 920px;
+            margin: 40px auto 20px auto;
+            font-family: 'Outfit', sans-serif;
+            color: #FFFFFF;
+            text-align: left;
+        }
+
+        .pata-welcome-title {
+            font-size: 72px;
+            font-weight: 900;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .pata-welcome-subtitle {
+            font-size: 18px;
+            font-weight: 400;
+            margin: 15px 0 0 0;
+            line-height: 1.5;
+            max-width: 600px;
         }
 
         .pata-pet-tabs { 
@@ -54,153 +71,78 @@
             border-radius: 50px;
             width: fit-content;
         }
+ 
+        /* ... existing tab styles ... */
 
-        .pata-tab-btn {
-            background: transparent;
-            border: none;
-            border-radius: 50px;
-            padding: 10px 24px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-weight: 600;
+        /* Horizontal Progress Bar */
+        .pata-horizontal-progress-container {
+            margin: 30px 0;
+        }
+
+        .pata-progress-labels-top {
             display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #666;
+            justify-content: space-between;
             font-size: 14px;
+            font-weight: 600;
+            color: #1A1A1A;
+            margin-bottom: 12px;
         }
 
-        .pata-tab-btn:hover { background: rgba(0, 187, 180, 0.05); color: #00BBB4; }
-        .pata-tab-btn.active { 
-            background: #00BBB4; 
-            color: #fff; 
-            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.2);
-        }
-
-        /* Contenido del Panel */
-        .pata-panel-content { 
-            display: flex;
-            gap: 40px;
-            align-items: center;
-        }
-
-        @media (max-width: 768px) { 
-            .pata-panel-content { flex-direction: column; text-align: center; } 
-            .pata-pet-tabs { width: 100%; justify-content: center; }
-        }
-
-        .pata-title { font-size: 32px; font-weight: 900; margin: 0 0 12px 0; color: #1A1A1A; }
-        .pata-subtitle { font-size: 18px; font-weight: 600; margin: 0 0 20px 0; color: #444; }
-
-        /* Estado Activo - Circular Progress */
-        .pata-active-container {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        @media (max-width: 768px) {
-            .pata-active-container { grid-template-columns: 1fr; justify-items: center; }
-        }
-
-        .pata-circular-progress {
-            width: 180px;
-            height: 180px;
-            position: relative;
-        }
-
-        .pata-circular-svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .pata-circular-bg {
-            fill: none;
-            stroke: #F0F2F5;
-            stroke-width: 12;
-        }
-
-        .pata-circular-fill {
-            fill: none;
-            stroke: #9FD406;
-            stroke-width: 12;
-            stroke-linecap: round;
-            transition: stroke-dasharray 1s ease;
-        }
-
-        .pata-circular-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .pata-days-num { font-size: 48px; font-weight: 900; line-height: 1; color: #1A1A1A; }
-        .pata-days-label { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; }
-
-        .pata-info-card {
-            background: #F8FBFF;
-            border-left: 6px solid #00BBB4;
-            padding: 24px;
-            border-radius: 20px;
-        }
-
-        .pata-info-title { font-size: 20px; font-weight: 700; color: #00BBB4; margin-bottom: 8px; }
-        .pata-info-text { font-size: 15px; color: #555; line-height: 1.5; margin: 0; }
-
-        /* Estado Pendiente (En Revisión) */
-        .pata-pending-card {
-            background: #00BBB4;
-            border-radius: 24px;
-            padding: 40px;
-            color: #fff;
-            text-align: center;
-            width: 100%;
-        }
-
-        .pata-pending-icon { font-size: 48px; margin-bottom: 20px; display: block; }
-        .pata-pending-title { font-size: 28px; font-weight: 900; margin-bottom: 12px; }
-        .pata-pending-text { font-size: 16px; opacity: 0.9; margin-bottom: 24px; }
-
-        /* Estado Rechazado */
-        .pata-rejected-card {
-            background: #FFF2F2;
-            border: 2px solid #FFCDD2;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            width: 100%;
-        }
-
-        .pata-rejected-icon { font-size: 48px; margin-bottom: 20px; display: block; }
-        .pata-rejected-title { font-size: 28px; font-weight: 900; color: #D32F2F; margin-bottom: 12px; }
-        .pata-rejected-text { font-size: 16px; color: #777; margin-bottom: 24px; }
-
-        /* Botones */
-        .pata-btn {
-            background: #1A1A1A;
-            color: #fff;
-            padding: 14px 32px;
+        .pata-progress-bar-horizontal {
+            height: 22px;
+            background: #FFFFFF;
             border-radius: 50px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 15px;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
+            overflow: hidden;
+            border: 1px solid #E0E0E0;
+            padding: 3px;
         }
-        .pata-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-        .pata-btn-white { background: #fff; color: #00BBB4; }
-        .pata-btn-red { background: #D32F2F; }
-        .pata-btn-outline { background: transparent; border: 2px solid #1A1A1A; color: #1A1A1A; }
 
-        /* Paws decoration */
+        .pata-progress-fill-horizontal {
+            height: 100%;
+            background: #00BBB4;
+            border-radius: 50px;
+            transition: width 1s ease;
+        }
+
+        /* Checklist */
+        .pata-checklist {
+            margin-top: 30px;
+        }
+
+        .pata-checklist-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1A1A1A;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .pata-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 16px;
+            color: #1A1A1A;
+        }
+
+        .pata-checklist-icon {
+            color: #9FD406;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .pata-disclaimer {
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        /* Decoration */
         .pata-decoration-paws {
             position: absolute;
             bottom: -20px;
@@ -209,6 +151,8 @@
             opacity: 0.05;
             pointer-events: none;
         }
+ 
+        /* existing styles below ... */
     `;
 
 
@@ -345,11 +289,19 @@
             const pet = this.pets[this.currentIndex];
             if (!pet) return;
 
+            const firstName = this.member.customFields?.['first-name'] || 'Socio';
+
             this.container.innerHTML = `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        Gracias por tu paciencia<br>
+                        En un máximo de 24 horas te notificaremos por correo o WhatsApp el resultado. Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.
+                    </p>
+                </div>
+
                 <div class="pata-unified-panel show">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
-                    
-                    <h2 class="pata-welcome-msg">¡Hola, ${this.member.customFields?.['first-name'] || 'Socio'}! 👋</h2>
                     
                     <div class="pata-pet-tabs">
                         ${this.pets.map((p, i) => `
@@ -384,11 +336,48 @@
 
         renderPendingContent(pet) {
             return `
-                <div class="pata-pending-card">
-                    <span class="pata-pending-icon">📄</span>
-                    <h2 class="pata-pending-title">¡Solicitud enviada!</h2>
-                    <p class="pata-pending-text">Estamos validando los documentos de <strong>${pet.name}</strong>. Recibirás una notificación pronto.</p>
-                    <a href="https://www.pataamiga.mx/beneficios" class="pata-btn pata-btn-white">Conocer más de pata amiga</a>
+                <div class="pata-pending-view">
+                    <h2 class="pata-title" style="margin-bottom: 8px;">tu solicitud está en revisión</h2>
+                    <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px;">
+                        Nuestro equipo la está revisando con calma y cuidado (así como cuidamos a cada miembro de la manada).
+                    </p>
+
+                    <div class="pata-horizontal-progress-container">
+                        <div class="pata-progress-labels-top">
+                            <span>Solicitud enviada</span>
+                            <span>En revisión...</span>
+                        </div>
+                        <div class="pata-progress-bar-horizontal">
+                            <div class="pata-progress-fill-horizontal" style="width: 85%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="pata-checklist">
+                        <h3 class="pata-checklist-title">¿Qué estamos revisando?</h3>
+                        
+                        <div class="pata-checklist-item">
+                            <span class="pata-checklist-icon">✔</span>
+                            <span>Información de tu mascota</span>
+                        </div>
+                        <div class="pata-checklist-item">
+                            <span class="pata-checklist-icon">✔</span>
+                            <span>Documentación enviada</span>
+                        </div>
+                        <div class="pata-checklist-item">
+                            <span class="pata-checklist-icon">✔</span>
+                            <span>Datos de contacto</span>
+                        </div>
+                    </div>
+
+                    <p class="pata-disclaimer">
+                        No se hará ningún cargo definitivo hasta que tu solicitud sea aprobada.
+                    </p>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <a href="https://www.pataamiga.mx/beneficios" class="pata-btn" style="background: #00BBB4; padding: 16px 40px;">
+                            Conocer más de pata amiga
+                        </a>
+                    </div>
                 </div>
             `;
         }
