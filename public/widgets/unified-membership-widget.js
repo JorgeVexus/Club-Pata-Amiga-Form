@@ -293,6 +293,7 @@
             this.container = document.getElementById(containerId);
             this.member = null;
             this.pets = [];
+            this.membershipStatus = 'approved';
             this.userExtra = { lastAdminResponse: '', actionRequiredFields: [] };
             this.currentIndex = 0;
             this.showAppealForm = false;
@@ -325,7 +326,7 @@
 
                 console.log('📊 Unified Widget: Pets found:', this.pets.length);
 
-                if (this.pets.length > 0) {
+                if (this.pets.length > 0 || this.membershipStatus === 'pending') {
                     console.log('✨ Unified Widget: Rendering panel...');
                     this.container.classList.add('show');
                     this.render();
@@ -381,6 +382,7 @@
 
                 if (data.success) {
                     this.pets = data.pets || [];
+                    this.membershipStatus = data.membership_status || 'approved';
                     this.userExtra = {
                         lastAdminResponse: data.last_admin_response || '',
                         actionRequiredFields: data.action_required_fields || []
@@ -423,6 +425,13 @@
 
             const firstName = this.member.customFields?.['first-name'] || 'Socio';
 
+            // 1. Mostrar vista global de usuario si está pendiente
+            if (this.membershipStatus === 'pending') {
+                this.container.innerHTML = this.renderUserPendingView(firstName);
+                this.container.classList.add('show');
+                return;
+            }
+
             this.container.innerHTML = `
                 <div class="pata-external-greeting">
                     <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
@@ -450,6 +459,66 @@
             `;
 
             this.attachEvents();
+        }
+
+        renderUserPendingView(firstName) {
+            return `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        Gracias por unirte a la manada. <br>
+                        Estamos verificando tu perfil para que tú y tus mascotas disfruten de todos los beneficios de Pata Amiga.
+                    </p>
+                </div>
+
+                <div class="pata-unified-panel show">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
+                    
+                    <div class="pata-pending-view">
+                        <h2 class="pata-title" style="margin-bottom: 8px;">tu membresía está en revisión</h2>
+                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px;">
+                            Nuestro equipo está validando tus datos de registro. En menos de 24 horas recibirás una confirmación.
+                        </p>
+
+                        <div class="pata-horizontal-progress-container">
+                            <div class="pata-progress-labels-top">
+                                <span>Registro recibido</span>
+                                <span>Validando perfil...</span>
+                            </div>
+                            <div class="pata-progress-bar-horizontal">
+                                <div class="pata-progress-fill-horizontal" style="width: 60%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="pata-checklist">
+                            <h3 class="pata-checklist-title">¿Qué estamos validando?</h3>
+                            
+                            <div class="pata-checklist-item">
+                                <span class="pata-checklist-icon">✔</span>
+                                <span>Tus datos de contacto</span>
+                            </div>
+                            <div class="pata-checklist-item">
+                                <span class="pata-checklist-icon">✔</span>
+                                <span>Información de facturación</span>
+                            </div>
+                            <div class="pata-checklist-item">
+                                <span class="pata-checklist-icon">✔</span>
+                                <span>Verificación de identidad</span>
+                            </div>
+                        </div>
+
+                        <p class="pata-disclaimer">
+                            Te notificaremos por correo una vez que tu cuenta sea activada.
+                        </p>
+
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="https://www.pataamiga.mx/beneficios" class="pata-btn pata-btn-conocer">
+                                Conocer beneficios de socio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         renderPetContent(pet) {

@@ -237,7 +237,7 @@ export async function getPetsByUserId(memberstackId: string) {
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('id, last_admin_response, action_required_fields')
+                .select('id, last_admin_response, action_required_fields, membership_status')
                 .eq('memberstack_id', memberstackId)
                 .single();
 
@@ -293,7 +293,8 @@ export async function getPetsByUserId(memberstackId: string) {
             success: true,
             pets,
             last_admin_response: lastAdminMsg,
-            action_required_fields: userData.action_required_fields
+            action_required_fields: userData.action_required_fields,
+            membership_status: userData.membership_status || 'pending'
         };
     } catch (error: any) {
         return { success: false, error: error.message };

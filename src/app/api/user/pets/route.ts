@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
             success: true,
             pets: result.pets,
             last_admin_response: result.last_admin_response,
-            action_required_fields: result.action_required_fields
+            action_required_fields: result.action_required_fields,
+            membership_status: result.membership_status
         });
 
         response.headers.set('Access-Control-Allow-Origin', '*');
