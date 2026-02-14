@@ -41,6 +41,11 @@
         .pata-theme-yellow .pata-welcome-title { color: #FFFFFF; }
         .pata-theme-yellow .pata-welcome-subtitle { color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
+        /* Orange Theme Support */
+        .pata-theme-orange .pata-external-greeting { color: #FFFFFF; }
+        .pata-theme-orange .pata-welcome-title { color: #FFFFFF; }
+        .pata-theme-orange .pata-welcome-subtitle { color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
         /* External Greeting */
         .pata-external-greeting {
             max-width: 920px;
@@ -467,19 +472,92 @@
             text-align: left;
         }
 
-        /* Estado Rechazado */
-        .pata-rejected-card {
-            background: #FFF2F2;
-            border: 2px solid #FFCDD2;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            width: 100%;
+        /* Rejected View Layout */
+        .pata-rejected-wrapper {
+            position: relative;
+            max-width: 920px;
+            margin: 0 auto;
         }
 
-        .pata-rejected-icon { font-size: 48px; margin-bottom: 20px; display: block; }
-        .pata-rejected-title { font-size: 28px; font-weight: 900; color: #D32F2F; margin-bottom: 12px; }
-        .pata-rejected-text { font-size: 16px; color: #777; margin-bottom: 24px; }
+        .pata-rejected-white-card {
+            background: #FFFFFF;
+            border-radius: 60px;
+            padding: 60px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 40px;
+            z-index: 1;
+            min-height: 380px;
+            align-items: center;
+        }
+
+        .pata-rejected-dog-popout {
+            position: absolute;
+            right: -80px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 520px;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        @media (max-width: 850px) {
+            .pata-rejected-white-card { 
+                grid-template-columns: 1fr; 
+                padding: 40px; 
+                border-radius: 40px;
+                text-align: center;
+            }
+            .pata-rejected-dog-popout { 
+                position: relative; 
+                width: 100%; 
+                right: 0; 
+                top: 0; 
+                transform: none;
+                margin-top: 20px;
+            }
+        }
+
+        .pata-rejected-title-hero {
+            font-size: 32px;
+            font-weight: 900;
+            color: #1A1A1A;
+            margin: 0 0 15px 0;
+            line-height: 1.1;
+        }
+
+        .pata-rejected-text-hero {
+            font-size: 16px;
+            color: #555;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .pata-rejected-reason-box {
+            padding-top: 25px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .pata-reason-label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pata-reason-text {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .pata-theme-orange .pata-btn-success {
+            background: #00BBB4; /* Teal for the button */
+        }
 
         /* Botones */
         .pata-btn {
@@ -670,16 +748,19 @@
                 return;
             }
 
-            const pet = this.pets[this.currentIndex];
-            const isApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
+            const isRejected = pet?.status === 'rejected' || this.membershipStatus === 'rejected' || this.membershipStatus === 'denied';
 
-            // Actualizar el tema del contenedor (opcional: inyectar clase al body o parent)
+            // Actualizar el tema del contenedor
             if (isApproved) {
                 this.container.parentElement?.classList.add('pata-theme-yellow');
-                // Intentar poner fondo amarillo si el widget es el componente principal
+                this.container.parentElement?.classList.remove('pata-theme-orange');
                 document.body.style.backgroundColor = '#FFBD12';
-            } else {
+            } else if (isRejected) {
+                this.container.parentElement?.classList.add('pata-theme-orange');
                 this.container.parentElement?.classList.remove('pata-theme-yellow');
+                document.body.style.backgroundColor = '#FFBD12'; // Usaremos el mismo naranja del mockup
+            } else {
+                this.container.parentElement?.classList.remove('pata-theme-yellow', 'pata-theme-orange');
                 document.body.style.backgroundColor = ''; // Reset
             }
 
@@ -708,8 +789,18 @@
                 </div>
             `;
 
+            const rejectedGreeting = `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga.<br>
+                        Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.
+                    </p>
+                </div>
+            `;
+
             this.container.innerHTML = `
-                ${isApproved ? activeGreeting : pendingGreeting}
+                ${isApproved ? activeGreeting : (isRejected ? rejectedGreeting : pendingGreeting)}
 
                 <div class="pata-unified-panel show">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
@@ -951,43 +1042,38 @@
         }
 
         renderRejectedContent(pet) {
-            const appealCount = pet.appeal_count || 0;
-            const maxAppeals = 2;
-            const canAppeal = appealCount < maxAppeals;
-            const adminMsg = pet.last_admin_response || pet.admin_notes;
+            const adminMsg = pet.last_admin_response || pet.admin_notes || 'Identificamos un requisito que no está alineado con las reglas de ingreso del club.';
+            const dogImage = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5dd0cf5c9243b55fa43_Recurso%2011%202.png';
 
             return `
-                <div class="pata-rejected-card">
-                    <span class="pata-rejected-icon">❌</span>
-                    <h2 class="pata-rejected-title">Solicitud rechazada</h2>
-                    <p class="pata-rejected-text">Lamentablemente no pudimos aprobar la solicitud de <strong>${pet.name}</strong>.</p>
+                <div class="pata-rejected-wrapper">
+                    <!-- Dog pop-out image -->
+                    <img src="${dogImage}" class="pata-rejected-dog-popout" alt="Pata Amiga">
                     
-                    ${adminMsg ? `
-                        <div style="background: white; padding: 20px; border-radius: 16px; margin-bottom: 24px; text-align: left; border: 1px solid #FFCDD2;">
-                            <p style="margin: 0; font-size: 13px; color: #D32F2F; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Motivo del rechazo:</p>
-                            <p style="margin: 10px 0 0 0; font-size: 15px; color: #333;">${adminMsg}</p>
-                        </div>
-                    ` : ''}
+                    <div class="pata-rejected-white-card">
+                        <div class="pata-rejected-main-info">
+                            <h2 class="pata-rejected-title-hero">tu solicitud no fue aprobada</h2>
+                            <p class="pata-rejected-text-hero">
+                                Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.
+                            </p>
 
-                    <div id="pata-appeal-section">
-                        ${!canAppeal ? `
-                            <p style="color: #666; font-size: 14px;">Has agotado el límite de apelaciones para esta mascota.</p>
-                        ` : !this.showAppealForm ? `
-                            <button class="pata-btn pata-btn-red" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}">
-                                ⚖️ Apelar mi solicitud
-                            </button>
-                            <p style="margin-top: 15px; font-size: 12px; color: #888;">Intentos restantes: ${maxAppeals - appealCount}</p>
-                        ` : `
-                            <div class="pata-appeal-form active" style="text-align: left;">
-                                <p style="font-size:14px; margin-bottom:10px; font-weight: 600;">Explícanos por qué debemos reconsiderar el caso:</p>
-                                <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Escribe aquí los detalles de tu apelación..." data-pet-id="${pet.id}"></textarea>
-                                
-                                <div style="display:flex; gap:10px; margin-top:15px; justify-content: center;">
-                                    <button class="pata-btn" id="pata-btn-submit-appeal" data-pet-id="${pet.id}">Enviar Apelación</button>
-                                    <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-appeal">Cancelar</button>
-                                </div>
+                            <div class="pata-rejected-reason-box">
+                                <div class="pata-reason-label">Motivo del rechazo:</div>
+                                <p class="pata-reason-text">${adminMsg}</p>
                             </div>
-                        `}
+                        </div>
+                        
+                        <!-- Empty space for the dog in desktop -->
+                        <div class="pata-dog-placeholder"></div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 40px; position: relative; z-index: 10;">
+                        <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" style="background: #00BBB4; padding: 18px 50px;">
+                            Apelar mi solicitud
+                        </button>
+                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
+                            Revisaremos tu apelación con gusto ♡
+                        </p>
                     </div>
                 </div>
             `;
