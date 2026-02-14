@@ -36,6 +36,11 @@
 
         @keyframes pataFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Yellow Theme Support */
+        .pata-theme-yellow .pata-external-greeting { color: #FFFFFF; }
+        .pata-theme-yellow .pata-welcome-title { color: #FFFFFF; }
+        .pata-theme-yellow .pata-welcome-subtitle { color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
         /* External Greeting */
         .pata-external-greeting {
             max-width: 920px;
@@ -49,22 +54,23 @@
             font-size: 100px;
             font-weight: 900;
             margin: 0;
-            line-height: 1.1;
+            line-height: 0.9;
             letter-spacing: -2px;
         }
 
         .pata-welcome-subtitle {
-            font-size: 18px;
-            font-weight: 400;
+            font-size: 20px;
+            font-weight: 600;
             margin: 20px 0 0 0;
-            line-height: 1.5;
-            max-width: 600px;
+            line-height: 1.4;
+            max-width: 700px;
+            opacity: 0.9;
         }
 
         .pata-pet-tabs { 
             display: flex; 
             gap: 8px; 
-            margin-bottom: 30px; 
+            margin-bottom: 20px; 
             flex-wrap: wrap;
             background: #F0F2F5;
             padding: 8px;
@@ -72,27 +78,202 @@
             width: fit-content;
         }
 
+        .pata-tab-label {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #1A1A1A;
+            display: block;
+        }
+
         .pata-tab-btn {
             background: transparent;
-            border: none;
+            border: 1px solid #E0E0E0;
             border-radius: 50px;
-            padding: 12px 28px;
+            padding: 10px 24px;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             font-weight: 900;
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #1A1A1A;
+            color: #A0A0A0;
             font-size: 16px;
         }
 
         .pata-tab-btn:hover { background: rgba(0, 0, 0, 0.05); }
         .pata-tab-btn.active { 
-            background: #FFFFFF; 
-            color: #1A1A1A; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            background: #00BBB4; 
+            color: #FFFFFF; 
+            border-color: #00BBB4;
+            box-shadow: 0 4px 15px rgba(0, 187, 180, 0.2);
         }
+
+        /* Approved View Layout */
+        .pata-approved-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px;
+            gap: 30px;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 850px) {
+            .pata-approved-grid { grid-template-columns: 1fr; }
+        }
+
+        .pata-carencia-title {
+            font-size: 44px;
+            font-weight: 900;
+            color: #00BBB4;
+            margin: 0 0 10px 0;
+            line-height: 1.1;
+        }
+
+        .pata-carencia-subtitle {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 25px;
+        }
+
+        .pata-carencia-remaining {
+            font-size: 22px;
+            font-weight: 700;
+            color: #00BBB4;
+            margin-bottom: 30px;
+        }
+
+        .pata-carencia-remaining strong {
+            font-size: 28px;
+            font-weight: 900;
+        }
+
+        /* Progress Bar Revamp */
+        .pata-progress-container-v2 {
+            margin: 40px 0;
+        }
+
+        .pata-progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .pata-bar-v2 {
+            height: 24px;
+            background: #FFFFFF;
+            border-radius: 50px;
+            border: 2px solid #1A1A1A;
+            padding: 3px;
+            position: relative;
+        }
+
+        .pata-fill-v2 {
+            height: 100%;
+            background: #00BBB4;
+            border-radius: 50px;
+            transition: width 1s ease;
+        }
+
+        .pata-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 10px;
+        }
+
+        /* Pet Profile Cards */
+        .pata-pet-profile {
+            display: flex;
+            gap: 15px;
+        }
+
+        .pata-pet-photo-box {
+            width: 160px;
+            height: 160px;
+            background: #00BBB4;
+            border-radius: 24px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .pata-pet-photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .pata-pet-info-box {
+            flex: 1;
+            background: #00BBB4;
+            border-radius: 24px;
+            padding: 20px;
+            color: #FFFFFF;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .pata-pet-info-box h3 {
+            font-size: 20px;
+            font-weight: 900;
+            margin: 0 0 10px 0;
+        }
+
+        .pata-pet-info-box ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 15px 0;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .pata-pet-info-box li {
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pata-pet-info-box li::before {
+            content: "•";
+            font-size: 18px;
+        }
+
+        .pata-btn-ver-detalles {
+            background: #FFBD12;
+            color: #1A1A1A !important;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-size: 14px;
+            font-weight: 900;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        /* Orange Banner Alert */
+        .pata-orange-alert {
+            background: #FFBD12;
+            border-radius: 15px;
+            padding: 15px 25px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 30px;
+            color: #1A1A1A;
+        }
+
+        .pata-orange-alert-icon { font-size: 32px; }
+        .pata-orange-alert-text { font-size: 14px; font-weight: 700; line-height: 1.4; }
+        .pata-orange-alert-text strong { font-size: 15px; }
 
         /* Contenido del Panel */
         .pata-panel-container { position: relative; }
@@ -436,13 +617,34 @@
             }
 
             const pet = this.pets[this.currentIndex];
+            const isApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
+
+            // Actualizar el tema del contenedor (opcional: inyectar clase al body o parent)
+            if (isApproved) {
+                this.container.parentElement?.classList.add('pata-theme-yellow');
+                // Intentar poner fondo amarillo si el widget es el componente principal
+                document.body.style.backgroundColor = '#FFBD12';
+            } else {
+                this.container.parentElement?.classList.remove('pata-theme-yellow');
+                document.body.style.backgroundColor = ''; // Reset
+            }
+
             if (!pet) {
-                // Si no hay mascota seleccionada pero no es pending global, mostramos un estado vacío o cargando
                 this.container.innerHTML = `<div class="pata-welcome-title" style="color:white; padding:40px;">Cargando mascotas...</div>`;
                 return;
             }
 
-            this.container.innerHTML = `
+            const activeGreeting = `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}! bienvenida</h1>
+                    <p class="pata-welcome-subtitle">
+                        Tu membresía está activa, pero algunos beneficios estarán disponibles pronto.<br>
+                        Nos encanta tenerte aquí. Mientras termina tu periodo de carencia, sigue explorando lo que Pata Amiga tiene para ti.
+                    </p>
+                </div>
+            `;
+
+            const pendingGreeting = `
                 <div class="pata-external-greeting">
                     <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
                     <p class="pata-welcome-subtitle">
@@ -450,10 +652,15 @@
                         En un máximo de 24 horas te notificaremos por correo o WhatsApp el resultado. Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.
                     </p>
                 </div>
+            `;
+
+            this.container.innerHTML = `
+                ${isApproved ? activeGreeting : pendingGreeting}
 
                 <div class="pata-unified-panel show">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
+                    <span class="pata-tab-label">Tus mascotas con carencia activa</span>
                     <div class="pata-pet-tabs">
                         ${this.pets.map((p, i) => `
                             <button class="pata-tab-btn ${i === this.currentIndex ? 'active' : ''}" data-idx="${i}">
@@ -628,37 +835,62 @@
 
         renderApprovedContent(pet) {
             const carencia = this.calculateCarencia(pet);
-            const radius = 80;
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (carencia.percentage / 100) * circumference;
+            const petImage = pet.image_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+
+            // Lógica de mensaje de aliento
+            let encouragement = "¡Sigue así!";
+            if (carencia.percentage > 75) encouragement = "¡Ya casi lo logras!";
+            else if (carencia.percentage > 50) encouragement = "¡Ya recorriste más de la mitad del camino!";
+            else if (carencia.percentage > 25) encouragement = "¡Vas por excelente camino!";
 
             return `
-                <div class="pata-active-container">
-                    <div class="pata-circular-progress">
-                        <svg class="pata-circular-svg" viewBox="0 0 200 200">
-                            <circle class="pata-circular-bg" cx="100" cy="100" r="${radius}"></circle>
-                            <circle class="pata-circular-fill" cx="100" cy="100" r="${radius}" 
-                                style="stroke-dasharray: ${circumference}; stroke-dashoffset: ${offset};">
-                            </circle>
-                        </svg>
-                        <div class="pata-circular-content">
-                            <div class="pata-days-num">${carencia.daysRemaining}</div>
-                            <div class="pata-days-label">Días</div>
+                <div class="pata-approved-grid">
+                    <div class="pata-approved-main">
+                        <h2 class="pata-carencia-title">tu periodo de carencia</h2>
+                        <p class="pata-carencia-subtitle">${encouragement}</p>
+                        
+                        <div class="pata-carencia-remaining">
+                            Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo solidario completo
+                        </div>
+
+                        <div class="pata-progress-container-v2">
+                            <div class="pata-progress-header">
+                                <span>Inicio de membresía</span>
+                                <span style="color: #00BBB4; font-weight: 900;">${carencia.percentage}% completado</span>
+                            </div>
+                            <div class="pata-bar-v2">
+                                <div class="pata-fill-v2" style="width: ${carencia.percentage}%;"></div>
+                            </div>
+                            <div class="pata-bar-labels">
+                                <span>Día 1</span>
+                                <span>Día 180</span>
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="pata-active-info">
-                        <h2 class="pata-title" style="color: #9FD406;">Tu membresía está activa 🐾</h2>
-                        <p class="pata-subtitle">Falta poco para que <strong>${pet.name}</strong> esté totalmente protegido.</p>
-                        
-                        <div class="pata-info-card">
-                            <h3 class="pata-info-title">¡Vas por buen camino!</h3>
-                            <p class="pata-info-text">Faltan <strong>${carencia.daysRemaining} días</strong> para activar el fondo de gastos médicos mayores completo.</p>
+
+                    <div class="pata-approved-sidebar">
+                        <div class="pata-pet-profile">
+                            <div class="pata-pet-photo-box">
+                                <img src="${petImage}" alt="${pet.name}">
+                            </div>
+                            <div class="pata-pet-info-box">
+                                <h3>${pet.name}</h3>
+                                <ul>
+                                    <li>${pet.age || '1 año'}</li>
+                                    <li>${pet.type || 'Lomito'}</li>
+                                    <li>${pet.breed || 'Mestizo'}</li>
+                                </ul>
+                                <a href="https://www.pataamiga.mx/beneficios" class="pata-btn-ver-detalles">Ver detalles</a>
+                            </div>
                         </div>
-                        
-                        <div style="margin-top: 24px;">
-                            <a href="https://www.pataamiga.mx/beneficios" class="pata-btn">Conocer más beneficios</a>
-                        </div>
+                    </div>
+                </div>
+
+                <div class="pata-orange-alert">
+                    <div class="pata-orange-alert-icon">🔔</div>
+                    <div class="pata-orange-alert-text">
+                        <strong>¿Adoptaste a alguno de tus compañeros o tienes RUAC?</strong><br>
+                        Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.
                     </div>
                 </div>
             `;
