@@ -15,7 +15,7 @@ const PLANS = {
     ANNUAL: {
         id: 'prc_anual-o9d101ta',
         name: 'Anualidad',
-        price: '1,699',
+        price: '1,909',
         description: 'Tu apoyo y el de tus compañeros ayudan a más familias todo el año.\nAhorra y asegura 12 meses de respaldo continuo.'
     }
 };
@@ -104,9 +104,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         <div className={styles.container}>
             {/* Header */}
             <div className={styles.header}>
-                <h1 className={styles.title}>Elige cómo quieres formar parte</h1>
+                <h1 className={styles.title}>Ya casi! Elige el plan que más te funcione 😊</h1>
                 <p className={styles.subtitle}>
-                    Todos incluyen el mismo cariño, respaldo y beneficios para ti y tu peludo.
+                    Ambos planes incluyen el mismo cariño y respaldo para ti y tu peludo 🐾❤️
                 </p>
             </div>
 
@@ -114,36 +114,60 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             <div className={styles.plansGrid}>
                 {/* Tarjeta Mensual */}
                 <div
-                    className={`${styles.planCard} ${selectedPlanId === PLANS.MONTHLY.id ? styles.selected : ''}`}
+                    className={`${styles.planCard} ${styles.monthlyCard} ${selectedPlanId === PLANS.MONTHLY.id ? styles.selected : ''}`}
                     onClick={() => handleSelectPlan(PLANS.MONTHLY.id)}
                 >
-                    <div className={styles.price}>${PLANS.MONTHLY.price}</div>
+                    <div className={styles.price}>
+                        <span className={styles.currencySymbol}>$</span>{PLANS.MONTHLY.price}
+                    </div>
                     <div className={styles.planName}>{PLANS.MONTHLY.name}</div>
                     <div className={styles.description}>
                         {PLANS.MONTHLY.description.split('\n').map((line, i) => (
-                            <p key={i} style={{ margin: '5px 0' }}>{line}</p>
+                            <p key={i}>{line}</p>
                         ))}
                     </div>
                     <button className={styles.selectButton}>
-                        {selectedPlanId === PLANS.MONTHLY.id ? 'Seleccionado' : 'Seleccionar'}
+                        Seleccionar {selectedPlanId === PLANS.MONTHLY.id && (
+                            <span className={styles.checkIcon}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                        )}
                     </button>
+
+                    <img
+                        src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990ae4949db4f4093a15453_mensual.png"
+                        alt=""
+                        className={styles.planImage}
+                    />
                 </div>
 
                 {/* Tarjeta Anual */}
                 <div
-                    className={`${styles.planCard} ${selectedPlanId === PLANS.ANNUAL.id ? styles.selected : ''}`}
+                    className={`${styles.planCard} ${styles.annualCard} ${selectedPlanId === PLANS.ANNUAL.id ? styles.selected : ''}`}
                     onClick={() => handleSelectPlan(PLANS.ANNUAL.id)}
                 >
-                    <div className={styles.price}>${PLANS.ANNUAL.price}</div>
+                    <div className={styles.price}>
+                        <span className={styles.currencySymbol}>$</span>{PLANS.ANNUAL.price}
+                    </div>
                     <div className={styles.planName}>{PLANS.ANNUAL.name}</div>
                     <div className={styles.description}>
                         {PLANS.ANNUAL.description.split('\n').map((line, i) => (
-                            <p key={i} style={{ margin: '5px 0' }}>{line}</p>
+                            <p key={i}>{line}</p>
                         ))}
                     </div>
                     <button className={styles.selectButton}>
-                        {selectedPlanId === PLANS.ANNUAL.id ? 'Seleccionado' : 'Seleccionar'}
+                        Seleccionar {selectedPlanId === PLANS.ANNUAL.id && (
+                            <span className={styles.checkIcon}>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </span>
+                        )}
                     </button>
+
+                    <img
+                        src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990ae49067f9da81f95979e_anual.png"
+                        alt=""
+                        className={styles.planImage}
+                    />
                 </div>
             </div>
 
@@ -151,6 +175,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             <div className={styles.footerInfo}>
                 <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo solidario.</p>
                 <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado, tiene RUAC o llegas con código referido).</p>
+                <p>Tu membresía se renovará automáticamente. Cancela cuando quieras</p>
             </div>
 
             {/* Terms & Conditions Checkbox */}
@@ -184,17 +209,18 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             {/* Navegación */}
             <div className={styles.navigationButtons}>
                 <button
-                    className={styles.cancelButton}
+                    className={styles.cancelLink}
                     onClick={() => window.location.href = '/'}
                 >
                     Cancelar
                 </button>
 
-                <div className={styles.rightButtons}>
+                <div className={styles.navActionButtons}>
                     <button
                         className={styles.previousButton}
                         onClick={() => onBack ? onBack() : window.history.back()}
                     >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
                         Anterior
                     </button>
                     <button
@@ -202,7 +228,10 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                         onClick={handleNext}
                         disabled={!selectedPlanId || !termsAccepted || isProcessing}
                     >
-                        {isProcessing ? '⏳ Procesando...' : 'Ir a Pagar'}
+                        {isProcessing ? 'Procesando...' : 'Siguiente'}
+                        <div className={styles.nextIcon}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </div>
                     </button>
                 </div>
             </div>

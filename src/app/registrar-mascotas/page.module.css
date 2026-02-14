@@ -9,6 +9,7 @@
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    position: relative;
 }
 
 .whiteCard {
@@ -59,12 +60,12 @@
 
 @media (max-width: 768px) {
     .pageBackground {
-        padding: 1rem 1rem 2rem;
+        padding: 0.75rem 0.75rem 2rem;
     }
 
     .whiteCard {
-        padding: 1.5rem 1.25rem;
-        border-radius: 24px;
+        padding: 1.25rem 1rem;
+        border-radius: 20px;
     }
 
     .mainTitle {

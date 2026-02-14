@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import StepIndicator from '@/components/UI/StepIndicator';
 import RegistrationForm from '@/components/RegistrationForm/RegistrationForm';
 import HelpSection from '@/components/UI/HelpSection';
+import BrandLogo from '@/components/UI/BrandLogo';
 import { getRegistrationProgress, markStepComplete, getCompletedSteps } from '@/utils/registration-progress';
 import styles from './page.module.css';
 
@@ -44,6 +45,7 @@ export default function CompleteProfilePage() {
 
     return (
         <div className={styles.pageBackground}>
+            <BrandLogo />
             <div className={styles.whiteCard}>
                 {/* Imagen decorativa - posición absoluta inferior derecha */}
                 <img
