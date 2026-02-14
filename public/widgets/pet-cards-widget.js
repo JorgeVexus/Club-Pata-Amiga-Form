@@ -298,7 +298,7 @@
 
         createAddCardHtml() {
             return `
-                <div class="pata-add-card" onclick="window.ManadaWidget.showAddForm()">
+                <div class="pata-add-card" onclick="if(window.ManadaWidget) window.ManadaWidget.showAddForm()">
                     <div class="pata-add-icon-circle">+</div>
                     <h3 class="pata-add-text-title">Agregar otro peludo</h3>
                     <p class="pata-add-text-subtitle">Periodo de carencia de 6 meses</p>
@@ -367,6 +367,7 @@
         }
 
         showAddForm() {
+            console.log('🐾 Intentando abrir formulario para agregar mascota...');
             // Estado para fotos
             this.newPetPhotos = { photo1: null, photo2: null };
 
@@ -1083,7 +1084,10 @@
         }
     }
 
+    // Exponer al global inmediatamente
     if (!window.ManadaWidget) {
         window.ManadaWidget = new ManadaWidget('pata-amiga-manada-widget');
+    } else {
+        console.log('🐾 El widget ya estaba inicializado en el global.');
     }
 })();

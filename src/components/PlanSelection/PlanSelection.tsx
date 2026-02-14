@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './PlanSelection.module.css';
 import TermsModal from './TermsModal';
+import BillingModal from './BillingModal';
 
 // Memberstack Price IDs (connected to Stripe)
 const PLANS = {
@@ -34,6 +35,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
     const [clickwrapAccepted, setClickwrapAccepted] = useState(false);
     const [showFullLegal, setShowFullLegal] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    const [wantsBilling, setWantsBilling] = useState(false);
+    const [showBillingModal, setShowBillingModal] = useState(false);
+    const [billingDetails, setBillingDetails] = useState<any>(null);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     // Persistencia básica si recargan la página
@@ -265,6 +269,25 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                         </button>
                     </div>
                 </div>
+
+                <label className={styles.termsLabel} style={{ marginTop: '1.5rem' }}>
+                    <input
+                        type="checkbox"
+                        checked={wantsBilling}
+                        onChange={(e) => {
+                            setWantsBilling(e.target.checked);
+                            if (e.target.checked) {
+                                setShowBillingModal(true);
+                            } else {
+                                setBillingDetails(null);
+                            }
+                        }}
+                        className={styles.termsCheckbox}
+                    />
+                    <span className={styles.termsText}>
+                        ¿Quieres facturar? {billingDetails && <span style={{ color: '#10b981', fontSize: '0.8rem', marginLeft: '5px' }}>(✅ Datos guardados)</span>}
+                    </span>
+                </label>
             </div>
 
             {/* Navegación */}
@@ -299,13 +322,14 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
 
             {/* Skip Payment (Test Mode) */}
             {skipPaymentEnabled && (
-                <div className={styles.skipPaymentSection}>
+                <div className={styles.skipPaymentSection} style={{ marginTop: '2rem', textAlign: 'center' }}>
                     <button
                         className={styles.skipPaymentLink}
                         onClick={() => {
                             if (onSuccess) onSuccess();
                             window.location.href = '/user/inicio-de-sesion';
                         }}
+                        style={{ background: 'none', border: 'none', color: '#888', textDecoration: 'underline', cursor: 'pointer' }}
                     >
                         Continuar sin pagar (modo prueba) →
                     </button>
@@ -323,6 +347,20 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             <TermsModal
                 isOpen={showTermsModal}
                 onClose={() => setShowTermsModal(false)}
+            />
+
+            {/* Billing Modal */}
+            <BillingModal
+                isOpen={showBillingModal}
+                onClose={() => {
+                    setShowBillingModal(false);
+                    if (!billingDetails) setWantsBilling(false);
+                }}
+                onSave={(details) => {
+                    setBillingDetails(details);
+                    setShowBillingModal(false);
+                    setWantsBilling(true);
+                }}
             />
         </div>
     );
