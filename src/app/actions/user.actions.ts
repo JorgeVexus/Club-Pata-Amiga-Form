@@ -327,3 +327,28 @@ export async function getBillingDetailsByUserId(userId: string) {
         return { success: false, error: error.message };
     }
 }
+/**
+ * Obtiene los datos de un usuario por su Memberstack ID desde Supabase
+ */
+export async function getUserDataByMemberstackId(memberstackId: string) {
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (error) {
+            console.error('❌ [Server Action] Error fetching user data by MS ID:', error);
+            return { success: false, error: error.message };
+        }
+
+        return { success: true, userData: data };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado en getUserDataByMSID:', error);
+        return { success: false, error: error.message };
+    }
+}
