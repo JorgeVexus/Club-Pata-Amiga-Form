@@ -47,6 +47,8 @@ export async function GET(
                     'postal-code': userData.postal_code || member.customFields['postal-code'],
                     'phone': userData.phone || member.customFields['phone'],
                     'curp': userData.curp || member.customFields['curp'],
+                    'ine-front-url': userData.ine_front_url || member.customFields['ine-front-url'],
+                    'ine-back-url': userData.ine_back_url || member.customFields['ine-back-url'],
                 };
 
                 console.log(`✅ Datos de Supabase combinados para ${memberId}`);

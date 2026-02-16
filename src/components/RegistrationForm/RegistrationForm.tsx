@@ -297,7 +297,11 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
 
                 const supabaseResult = await registerUserInSupabase(
                     cleanData,
-                    finalMemberId
+                    finalMemberId,
+                    {
+                        ineFront: ineUploads[0].publicUrl,
+                        ineBack: ineUploads[1].publicUrl
+                    }
                 );
 
                 if (!supabaseResult.success) {

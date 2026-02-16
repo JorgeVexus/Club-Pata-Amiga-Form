@@ -1,0 +1,35 @@
+{
+  "docs_error": {
+    "code": "PGRST205",
+    "details": null,
+    "hint": "Perhaps you meant the table 'public.legal_documents'",
+    "message": "Could not find the table 'public.documents' in the schema cache"
+  },
+  "sample_users": [
+    {
+      "id": "8076f4df-4197-4e77-8661-33654da202a8",
+      "memberstack_id": "mem_cmlk5xqa202ui0spshddq0ppz",
+      "email": "chrystyanarmtz@gmail.com"
+    },
+    {
+      "id": "9ef7ee43-f326-4f9c-80c9-8cc76b5866f8",
+      "memberstack_id": "mem_cmlk2hrn866y30smu6dlg6xly",
+      "email": "jorge@vexusagency.com"
+    },
+    {
+      "id": "3625ef4f-fb06-4ed0-a827-c5602b598ae5",
+      "memberstack_id": "mem_cmlmr27zw0ezd0smv7pkiewfj",
+      "email": "mvzlucerocontreras@gmail.com"
+    },
+    {
+      "id": "a1fcc841-d293-4fea-a6df-3e3fdd81c0f3",
+      "memberstack_id": "mem_cmlmt47bk50bi0sqj5alb00v3",
+      "email": "clubpataamiga@gbtravel.com.mx"
+    },
+    {
+      "id": "6ae728e0-5f39-4cbd-87cf-75c9e56eeaf1",
+      "memberstack_id": "mem_cmllf3gyo0a9r0srf735tfusf",
+      "email": "asahizv@gmail.com"
+    }
+  ]
+}

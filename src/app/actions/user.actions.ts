@@ -57,7 +57,7 @@ export async function checkCurpAvailability(curp: string) {
  * Registra un usuario en la tabla 'public.users' de Supabase
  * Se usa después de crear el usuario en Memberstack
  */
-export async function registerUserInSupabase(userData: any, memberstackId: string) {
+export async function registerUserInSupabase(userData: any, memberstackId: string, documentUrls?: { ineFront?: string, ineBack?: string }) {
     console.log('🔄 [Server Action] Intentando registrar usuario en Supabase:', {
         memberstackId,
         email: userData.email,
@@ -91,6 +91,8 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 membership_status: 'pending',
                 approval_status: 'pending',
                 is_foreigner: userData.isForeigner || false,
+                ine_front_url: documentUrls?.ineFront || null,
+                ine_back_url: documentUrls?.ineBack || null,
                 created_at: new Date().toISOString(),
             })
             .select() // Seleccionar para confirmar inserción
