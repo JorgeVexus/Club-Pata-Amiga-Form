@@ -63,24 +63,16 @@ export async function GET(request: NextRequest) {
         // Simplify structure for the LLM to consume easily
         const petsContext = pets.map(pet => ({
             name: pet.name,
-            type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro', // Simplistic inference if type column missing
+            type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro',
             breed: pet.breed || 'Mestizo',
             size: pet.breed_size,
-            age: pet.age || 'Desconocida', // If age column exists in pets table? Need to check schema. 
-            // Schema check: 'age' is not in standard schema I saw earlier, usually computed or in custom fields? 
-            // Double check: we insert 'age' in previous steps? 
-            // Re-reading 'registerPetsInSupabase': we insert name, breed, breed_size, birth_date(null).
-            // Wait, previous `PetFormData` interface had `age`. 
-            // Let's check `pets` table schema again or rely on what's likely there. 
-            // If `age` is not in DB, we might omit it or calculate from birth_date if available.
-            // For now, let's send what we have.
+            age: pet.age || 'Desconocida',
             status: pet.status,
             waiting_period: {
                 start: pet.waiting_period_start,
                 end: pet.waiting_period_end,
                 is_active: pet.status === 'approved' && (!pet.waiting_period_end || new Date() > new Date(pet.waiting_period_end))
-            },
-            medical_alert: pet.admin_notes ? `Notas de Admin: ${pet.admin_notes}` : 'Ninguna'
+            }
         }));
 
         const responsePayload = {
@@ -88,8 +80,7 @@ export async function GET(request: NextRequest) {
                 name: `${user.first_name} ${user.last_name}`,
                 email: user.email,
                 phone: user.phone,
-                status: user.membership_status,
-                id: userId
+                status: user.membership_status
             },
             pets: petsContext,
             timestamp: new Date().toISOString()
