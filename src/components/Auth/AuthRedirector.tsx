@@ -9,10 +9,10 @@ export default function AuthRedirector() {
     React.useEffect(() => {
         const checkSession = async () => {
             let attempts = 0;
-            // Esperar activamente a Memberstack (hasta 3s)
+            // Esperar activamente a Memberstack (hasta 6s - aumentado para dar tiempo a cargar)
             // IMPORTANTE: Asegurarse de que en Memberstack Dashboard -> Settings -> Domains
             // esté configurado "pataamiga.mx" (sin www ni app) para que las cookies se compartan.
-            while (!window.$memberstackDom && attempts < 15) {
+            while (!window.$memberstackDom && attempts < 30) {
                 await new Promise(resolve => setTimeout(resolve, 200));
                 attempts++;
             }

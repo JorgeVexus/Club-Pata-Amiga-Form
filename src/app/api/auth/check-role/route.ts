@@ -1,6 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Headers CORS
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+}
+
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -10,12 +19,16 @@ import { AdminAuthService } from '@/services/admin-auth.service';
 
 // ... imports remain ...
 
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders() });
+}
+
 export async function POST(request: NextRequest) {
     try {
         const { memberstackId } = await request.json();
 
         if (!memberstackId) {
-            return NextResponse.json({ success: false, error: 'ID requerido' }, { status: 400 });
+            return NextResponse.json({ success: false, error: 'ID requerido' }, { status: 400, headers: corsHeaders() });
         }
 
         // 1. Check if user is Admin/SuperAdmin
@@ -33,7 +46,7 @@ export async function POST(request: NextRequest) {
                 success: true,
                 role: 'admin',
                 adminType: adminRole
-            });
+            }, { headers: corsHeaders() });
         }
 
         // 2. Check if user is an Ambassador
@@ -50,7 +63,7 @@ export async function POST(request: NextRequest) {
                 success: true,
                 role: 'ambassador',
                 status: ambassador.status
-            });
+            }, { headers: corsHeaders() });
         }
 
         console.log(`ℹ️ [Check-Role] No es embajador activo (Status: ${ambassador?.status})`);
@@ -58,10 +71,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             role: 'member'
-        });
+        }, { headers: corsHeaders() });
 
     } catch (error) {
         console.error('Check Role Error:', error);
-        return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500, headers: corsHeaders() });
     }
 }
