@@ -1,0 +1,221 @@
+<!-- ============================================ -->
+<!-- Script de Redirección Post-Login v2 -->
+<!-- CORREGIDO: Maneja el delay de Memberstack -->
+<!-- ============================================ -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    const CONFIG = {
+        apiUrl: 'https://app.pataamiga.mx/api',
+        dashboards: {
+            member: 'https://www.pataamiga.mx/pets/pet-waiting-period',
+            ambassador: 'https://www.pataamiga.mx/embajadores/dashboard',
+            admin: 'https://app.pataamiga.mx/admin/dashboard'
+        },
+        debug: true
+    };
+    
+    const logger = {
+        log: (...args) => CONFIG.debug && console.log('[LoginRedirect]', ...args),
+        error: (...args) => CONFIG.debug && console.error('[LoginRedirect]', ...args)
+    };
+    
+    // ============================================
+    // OBTENER SESIÓN CON RETRY
+    // ============================================
+    async function getMemberWithRetry(maxAttempts = 10, delay = 500) {
+        for (let i = 0; i < maxAttempts; i++) {
+            const member = await window.$memberstackDom.getCurrentMember();
+            
+            if (member && member.data && member.data.id) {
+                logger.log('✅ Sesión detectada en intento', i + 1);
+                return member.data;
+            }
+            
+            logger.log(`⏳ Esperando sesión... intento ${i + 1}/${maxAttempts}`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+        
+        logger.error('❌ No se pudo obtener la sesión después de', maxAttempts, 'intentos');
+        return null;
+    }
+    
+    // ============================================
+    // VERIFICAR ROL Y REDIRIGIR
+    // ============================================
+    async function checkRoleAndRedirect(member) {
+        if (!member || !member.id) {
+            logger.log('No hay sesión válida');
+            return;
+        }
+        
+        logger.log('Verificando rol para:', member.auth?.email);
+        
+        // Mostrar mensaje de "Verificando..."
+        showLoadingMessage('Verificando tu cuenta...');
+        
+        try {
+            const response = await fetch(`${CONFIG.apiUrl}/auth/check-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ memberstackId: member.id })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error('API returned error');
+            }
+            
+            logger.log('Rol detectado:', data.role);
+            
+            // Determinar URL según rol
+            let redirectUrl;
+            switch (data.role) {
+                case 'admin':
+                    redirectUrl = CONFIG.dashboards.admin;
+                    break;
+                case 'ambassador':
+                    redirectUrl = CONFIG.dashboards.ambassador;
+                    break;
+                case 'member':
+                default:
+                    redirectUrl = CONFIG.dashboards.member;
+                    break;
+            }
+            
+            logger.log('Redirigiendo a:', redirectUrl);
+            
+            // Mostrar mensaje de éxito antes de redirigir
+            showLoadingMessage('¡Bienvenido! Redirigiendo...');
+            
+            // Redirigir después de un momento para que se vea el mensaje
+            setTimeout(() => {
+                window.location.href = redirectUrl;
+            }, 500);
+            
+        } catch (error) {
+            logger.error('Error verificando rol:', error);
+            // Fallback: ir al dashboard de miembro
+            window.location.href = CONFIG.dashboards.member;
+        }
+    }
+    
+    // ============================================
+    // MOSTRAR MENSAJE DE CARGA
+    // ============================================
+    function showLoadingMessage(text) {
+        // Buscar o crear un contenedor de mensaje
+        let messageEl = document.getElementById('login-redirect-message');
+        
+        if (!messageEl) {
+            messageEl = document.createElement('div');
+            messageEl.id = 'login-redirect-message';
+            messageEl.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 30px 50px;
+                border-radius: 10px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+                z-index: 9999;
+                text-align: center;
+                font-family: sans-serif;
+            `;
+            document.body.appendChild(messageEl);
+        }
+        
+        messageEl.innerHTML = `
+            <div style="
+                width: 40px;
+                height: 40px;
+                border: 4px solid #e0e0e0;
+                border-top-color: #00BBB4;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+                margin: 0 auto 15px;
+            "></div>
+            <p style="margin: 0; color: #333; font-size: 16px;">${text}</p>
+            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        `;
+    }
+    
+    // ============================================
+    // INICIALIZAR
+    // ============================================
+    function init() {
+        logger.log('Inicializando detector de login v2...');
+        
+        if (!window.$memberstackDom) {
+            logger.error('Memberstack no encontrado');
+            return;
+        }
+        
+        // ===== OPCIÓN 1: Escuchar evento de login =====
+        window.$memberstackDom.onAuthChange(async (event) => {
+            logger.log('Evento de auth detectado:', event.type);
+            
+            if (event.type === 'login' || event.type === 'signup') {
+                logger.log('Login/signup detectado, esperando sesión...');
+                
+                // Esperar a que Memberstack actualice la sesión
+                // Esto puede tardar 1-3 segundos
+                const member = await getMemberWithRetry(15, 400); // 15 intentos, 400ms cada uno = 6 segundos max
+                
+                if (member) {
+                    await checkRoleAndRedirect(member);
+                } else {
+                    logger.error('No se pudo obtener sesión después del login');
+                    // Intentar una vez más con más tiempo
+                    setTimeout(async () => {
+                        const retryMember = await window.$memberstackDom.getCurrentMember();
+                        if (retryMember && retryMember.data) {
+                            await checkRoleAndRedirect(retryMember.data);
+                        }
+                    }, 2000);
+                }
+            }
+        });
+        
+        // ===== OPCIÓN 2: Si ya está logueado al cargar la página =====
+        // (por si el usuario recarga la página de login estando logueado)
+        setTimeout(async () => {
+            const member = await window.$memberstackDom.getCurrentMember();
+            
+            if (member && member.data) {
+                const currentPath = window.location.pathname;
+                const isLoginPage = currentPath.includes('inicio-de-sesion') || 
+                                   currentPath.includes('login');
+                
+                if (isLoginPage) {
+                    logger.log('Usuario ya logueado en página de login, redirigiendo...');
+                    await checkRoleAndRedirect(member.data);
+                }
+            }
+        }, 500);
+    }
+    
+    // ============================================
+    // ARRANCAR
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>
