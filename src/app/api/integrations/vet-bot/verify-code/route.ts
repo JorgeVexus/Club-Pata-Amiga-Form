@@ -180,7 +180,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 id: cons.id,
                 date: cons.created_at,
                 summary: cons.summary,
-                petName: cons.pets?.name || null
+                petName: cons.pets?.[0]?.name || null
             }))
         };
 

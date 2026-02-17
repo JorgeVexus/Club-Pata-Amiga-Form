@@ -31,8 +31,10 @@ CREATE INDEX IF NOT EXISTS idx_vet_bot_sessions_memberstack_id
     ON public.vet_bot_sessions(memberstack_id);
 
 CREATE INDEX IF NOT EXISTS idx_vet_bot_sessions_expires 
-    ON public.vet_bot_sessions(expires_at) 
-    WHERE expires_at < NOW();
+    ON public.vet_bot_sessions(expires_at);
+
+CREATE INDEX IF NOT EXISTS idx_vet_bot_sessions_active 
+    ON public.vet_bot_sessions(is_active, expires_at);
 
 -- =============================================
 -- RLS (Row Level Security)

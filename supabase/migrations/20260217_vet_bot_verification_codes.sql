@@ -31,12 +31,10 @@ CREATE INDEX IF NOT EXISTS idx_vet_bot_codes_user_id
     ON public.vet_bot_verification_codes(user_id);
 
 CREATE INDEX IF NOT EXISTS idx_vet_bot_codes_expires 
-    ON public.vet_bot_verification_codes(expires_at) 
-    WHERE expires_at < NOW();
+    ON public.vet_bot_verification_codes(expires_at);
 
-CREATE INDEX IF NOT EXISTS idx_vet_bot_codes_active 
-    ON public.vet_bot_verification_codes(code, is_used, expires_at) 
-    WHERE is_used = FALSE AND expires_at > NOW();
+CREATE INDEX IF NOT EXISTS idx_vet_bot_codes_used 
+    ON public.vet_bot_verification_codes(is_used, expires_at);
 
 -- =============================================
 -- RLS (Row Level Security)

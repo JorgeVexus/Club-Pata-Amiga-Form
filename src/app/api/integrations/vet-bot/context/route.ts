@@ -122,7 +122,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (sessionToken) {
             const sessionResult = await validateSessionToken(sessionToken);
             
-            if (!sessionResult.valid) {
+            if (!sessionResult.valid || !sessionResult.memberstackId) {
                 return NextResponse.json(
                     { 
                         success: false, 
@@ -134,8 +134,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             }
             
             memberstackId = sessionResult.memberstackId;
-            resolvedEmail = sessionResult.email;
-            sessionExpiresAt = sessionResult.expiresAt;
+            resolvedEmail = sessionResult.email || null;
+            sessionExpiresAt = sessionResult.expiresAt || null;
             identifiedVia = 'session_token';
             
             console.log(`✅ [VET_BOT] Session valid for: ${resolvedEmail}`);
@@ -273,7 +273,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             date: cons.created_at,
             summary: cons.summary,
             recommendations: cons.recommendations,
-            petName: cons.pets?.name || null
+            petName: cons.pets?.[0]?.name || null
         }));
 
         // Calcular tiempo restante de sesión si aplica
