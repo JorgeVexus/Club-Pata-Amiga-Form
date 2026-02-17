@@ -151,7 +151,7 @@ export default function AuthRedirector() {
                     </p>
                     <div style={{ display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
                         <a 
-                            href="https://www.pataamiga.mx/user-login"
+                            href="https://www.pataamiga.mx/user/inicio-de-sesion"
                             style={{
                                 padding: '15px 40px',
                                 backgroundColor: '#00BBB4',
