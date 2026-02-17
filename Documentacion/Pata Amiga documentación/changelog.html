@@ -337,9 +337,12 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-14')">
-                <span>14 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-17')">
+                <span>17 de Feb, 2026</span>
                 <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-14')">
+                <span>14 de Feb, 2026</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-12')">
                 <span>12 de Feb, 2026</span>
@@ -376,8 +379,103 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 14 de Febrero (HOY) -->
-            <div id="2026-02-14" class="changelog-entry active">
+            <!-- Entrada: 17 de Febrero (HOY) -->
+            <div id="2026-02-17" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>API Vet-Bot v2 & Integración con Webflow</h1>
+                        <div class="entry-meta">Lunes, 17 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.8.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🤖 Vet-Bot v2 - Identificación Automática</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">API</span>
+                            <div class="change-desc">
+                                <strong>Nuevo endpoint de sesiones:</strong> Implementación de <code>/api/auth/session-token</code> para generar tokens temporales de identificación. Permite al bot reconocer usuarios logueados sin preguntar email.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">API</span>
+                            <div class="change-desc">
+                                <strong>Session Tokens:</strong> Nueva tabla <code>vet_bot_sessions</code> en Supabase para almacenar tokens de sesión temporales (expiran en 2 horas).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">API</span>
+                            <div class="change-desc">
+                                <strong>Endpoint de contexto mejorado:</strong> <code>/api/integrations/vet-bot/context</code> ahora acepta tres métodos: <code>sessionToken</code> (nuevo), <code>email</code> (legacy) y <code>userId</code> (legacy).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Corrección de columnas:</strong> Eliminadas referencias a columnas inexistentes (<code>waiting_period_end_date</code> en users, <code>pet_type</code> en pets) que causaban errores 500.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">CODES</span>
+                            <div class="change-desc">
+                                <strong>Códigos de verificación:</strong> Implementación alternativa de identificación vía códigos de 6 dígitos para casos donde el método automático no esté disponible.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔗 Integración Webflow - Login</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">INTEGRATION</span>
+                            <div class="change-desc">
+                                <strong>Script de redirección post-login:</strong> Implementación de <code>login-redirect-handler</code> en Webflow para detectar sesión de Memberstack y redirigir al dashboard correspondiente según el rol (miembro, embajador o admin).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">INTEGRATION</span>
+                            <div class="change-desc">
+                                <strong>Protección de dashboards:</strong> Scripts para proteger dashboards de miembros y embajadores en Webflow, verificando autenticación antes de mostrar contenido.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">CORS</span>
+                            <div class="change-desc">
+                                <strong>Configuración CORS:</strong> Headers CORS agregados a todos los endpoints (<code>/api/auth/*</code>, <code>/api/integrations/vet-bot/*</code>) para permitir peticiones desde www.pataamiga.mx.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📚 Documentación</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">DOCS</span>
+                            <div class="change-desc">
+                                <strong>Guía para agencia:</strong> Creación de documentación completa (<code>RESUMEN_PARA_AGENCIA.md</code>) con instrucciones paso a paso para configurar Custom User Fields y API requests en Chatbot Builder AI.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">DOCS</span>
+                            <div class="change-desc">
+                                <strong>Ejemplos de respuestas API:</strong> Documentación con ejemplos JSON de todas las respuestas posibles del bot (éxito, errores, usuario no encontrado, etc.).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">DOCS</span>
+                            <div class="change-desc">
+                                <strong>Guía de pruebas API:</strong> Documentación con comandos curl para probar endpoints manualmente y verificar funcionamiento.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 14 de Febrero (ANTERIOR) -->
+            <div id="2026-02-14" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Sistema de Facturación & Rediseño de Manada</h1>
