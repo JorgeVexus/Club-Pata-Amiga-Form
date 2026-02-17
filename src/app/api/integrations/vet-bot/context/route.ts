@@ -46,7 +46,6 @@ interface UserContext {
     email: string;
     phone: string | null;
     membershipStatus: string;
-    waitingPeriodEnd?: string;
 }
 
 interface PetContext {
@@ -202,7 +201,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 email,
                 phone,
                 membership_status,
-                waiting_period_end_date,
                 created_at
             `);
 
@@ -293,8 +291,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             lastName: user.last_name,
             email: user.email,
             phone: user.phone,
-            membershipStatus: user.membership_status,
-            waitingPeriodEnd: user.waiting_period_end_date
+            membershipStatus: user.membership_status
         };
 
         const petsContext: PetContext[] = (pets || []).map(pet => {
