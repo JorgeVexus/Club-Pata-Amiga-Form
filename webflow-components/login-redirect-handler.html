@@ -1,0 +1,144 @@
+<!-- ============================================ -->
+<!-- Script de Redirección Post-Login para Webflow -->
+<!-- ============================================ -->
+<!-- Este script debe ir en la página de login de Webflow -->
+<!-- O en el header/footer de todo el sitio -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    const CONFIG = {
+        apiUrl: 'https://app.pataamiga.mx/api',
+        dashboards: {
+            member: 'https://www.pataamiga.mx/pets/pet-waiting-period',
+            ambassador: 'https://www.pataamiga.mx/embajadores/dashboard',
+            admin: 'https://app.pataamiga.mx/admin/dashboard'
+        },
+        debug: true
+    };
+    
+    const logger = {
+        log: (...args) => CONFIG.debug && console.log('[LoginRedirect]', ...args),
+        error: (...args) => CONFIG.debug && console.error('[LoginRedirect]', ...args)
+    };
+    
+    // ============================================
+    // VERIFICAR ROL Y REDIRIGIR
+    // ============================================
+    async function checkRoleAndRedirect(member) {
+        if (!member || !member.id) {
+            logger.log('No hay sesión activa');
+            return;
+        }
+        
+        logger.log('Verificando rol para:', member.auth?.email);
+        
+        try {
+            const response = await fetch(`${CONFIG.apiUrl}/auth/check-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ memberstackId: member.id })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                throw new Error('API returned error');
+            }
+            
+            logger.log('Rol detectado:', data.role);
+            
+            // Redirigir según el rol
+            let redirectUrl;
+            switch (data.role) {
+                case 'admin':
+                    redirectUrl = CONFIG.dashboards.admin;
+                    break;
+                case 'ambassador':
+                    redirectUrl = CONFIG.dashboards.ambassador;
+                    break;
+                case 'member':
+                default:
+                    redirectUrl = CONFIG.dashboards.member;
+                    break;
+            }
+            
+            logger.log('Redirigiendo a:', redirectUrl);
+            window.location.href = redirectUrl;
+            
+        } catch (error) {
+            logger.error('Error verificando rol:', error);
+            // Fallback: ir al dashboard de miembro
+            logger.log('Fallback: redirigiendo a dashboard de miembro');
+            window.location.href = CONFIG.dashboards.member;
+        }
+    }
+    
+    // ============================================
+    // DETECTAR LOGIN
+    // ============================================
+    function initLoginRedirect() {
+        logger.log('Inicializando detector de login...');
+        
+        // Método 1: Escuchar eventos de Memberstack
+        if (window.$memberstackDom) {
+            logger.log('Memberstack detectado, configurando listeners...');
+            
+            // Escuchar cambios de autenticación
+            window.$memberstackDom.onAuthChange((event) => {
+                logger.log('Evento de auth:', event.type);
+                
+                if (event.type === 'login' || event.type === 'signup') {
+                    // Usuario acaba de iniciar sesión
+                    logger.log('Login detectado, obteniendo datos...');
+                    
+                    setTimeout(async () => {
+                        const member = await window.$memberstackDom.getCurrentMember();
+                        if (member && member.data) {
+                            await checkRoleAndRedirect(member.data);
+                        }
+                    }, 500); // Pequeña espera para que Memberstack actualice todo
+                }
+            });
+            
+            // Método 2: Verificar si ya hay sesión al cargar la página
+            // (por si el usuario recarga la página de login estando logueado)
+            window.$memberstackDom.getCurrentMember().then((member) => {
+                if (member && member.data) {
+                    const currentPath = window.location.pathname;
+                    const isLoginPage = currentPath.includes('inicio-de-sesion') || 
+                                       currentPath.includes('login') ||
+                                       currentPath.includes('user-login');
+                    
+                    if (isLoginPage) {
+                        logger.log('Usuario logueado en página de login, redirigiendo...');
+                        checkRoleAndRedirect(member.data);
+                    }
+                }
+            });
+        } else {
+            logger.error('Memberstack no encontrado');
+        }
+    }
+    
+    // ============================================
+    // INICIAR
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initLoginRedirect);
+    } else {
+        initLoginRedirect();
+    }
+})();
+</script>

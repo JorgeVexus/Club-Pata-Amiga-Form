@@ -1,0 +1,193 @@
+<!-- ============================================ -->
+<!-- Script de Protección de Dashboards (Webflow) -->
+<!-- ============================================ -->
+<!-- Este script debe ir en las páginas de dashboard -->
+<!-- Protege: /pets/pet-waiting-period y /embajadores/dashboard -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    const CONFIG = {
+        loginUrl: 'https://www.pataamiga.mx/user/inicio-de-sesion',
+        apiUrl: 'https://app.pataamiga.mx/api',
+        debug: true
+    };
+    
+    const logger = {
+        log: (...args) => CONFIG.debug && console.log('[DashboardProtector]', ...args),
+        error: (...args) => CONFIG.debug && console.error('[DashboardProtector]', ...args)
+    };
+    
+    // ============================================
+    // VERIFICAR ACCESO
+    // ============================================
+    async function verifyAccess() {
+        logger.log('Verificando acceso al dashboard...');
+        
+        // Esperar a Memberstack
+        let attempts = 0;
+        while (!window.$memberstackDom && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            attempts++;
+        }
+        
+        if (!window.$memberstackDom) {
+            logger.error('Memberstack no cargó, redirigiendo a login...');
+            redirectToLogin('Memberstack no disponible');
+            return;
+        }
+        
+        try {
+            const member = await window.$memberstackDom.getCurrentMember();
+            
+            if (!member || !member.data) {
+                logger.log('No hay sesión activa, redirigiendo a login...');
+                redirectToLogin('No session');
+                return;
+            }
+            
+            logger.log('✅ Sesión activa:', member.data.auth?.email);
+            
+            // Verificar que el usuario tenga acceso a este dashboard
+            const currentPath = window.location.pathname;
+            const isAmbassadorDashboard = currentPath.includes('/embajadores/');
+            
+            // Verificar rol con la API
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/auth/check-role`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ memberstackId: member.data.id })
+                });
+                
+                if (!response.ok) throw new Error('API error');
+                
+                const data = await response.json();
+                
+                if (!data.success) {
+                    redirectToLogin('Invalid role');
+                    return;
+                }
+                
+                // Verificar que esté en el dashboard correcto
+                if (isAmbassadorDashboard && data.role !== 'ambassador') {
+                    logger.log('Usuario no es embajador, redirigiendo a dashboard de miembro...');
+                    window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
+                    return;
+                }
+                
+                logger.log('✅ Acceso permitido para rol:', data.role);
+                
+                // Mostrar contenido (por si está oculto)
+                showDashboardContent();
+                
+            } catch (error) {
+                logger.error('Error verificando rol:', error);
+                // Permitir acceso igual (fail-open) pero loguear error
+                showDashboardContent();
+            }
+            
+        } catch (error) {
+            logger.error('Error verificando sesión:', error);
+            redirectToLogin('Session error');
+        }
+    }
+    
+    // ============================================
+    // REDIRIGIR A LOGIN
+    // ============================================
+    function redirectToLogin(reason) {
+        logger.log('Redirigiendo a login. Razón:', reason);
+        
+        // Guardar la URL actual para volver después del login
+        const currentUrl = window.location.href;
+        sessionStorage.setItem('redirectAfterLogin', currentUrl);
+        
+        // Redirigir
+        window.location.href = CONFIG.loginUrl;
+    }
+    
+    // ============================================
+    // MOSTRAR CONTENIDO
+    // ============================================
+    function showDashboardContent() {
+        // Si tienes el contenido del dashboard oculto con CSS, mostrarlo
+        const dashboardContent = document.querySelector('.dashboard-content, [data-dashboard]');
+        if (dashboardContent) {
+            dashboardContent.style.opacity = '1';
+            dashboardContent.style.pointerEvents = 'auto';
+        }
+        
+        // Ocultar loader si existe
+        const loader = document.querySelector('.loading-screen, [data-loader]');
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
+    
+    // ============================================
+    // INICIAR
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', verifyAccess);
+    } else {
+        verifyAccess();
+    }
+})();
+</script>
+
+<!-- CSS opcional para mostrar un loader mientras verifica -->
+<style>
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-screen .spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #e0e0e0;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-screen p {
+    margin-top: 20px;
+    color: #666;
+    font-family: sans-serif;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Opcional: Ocultar contenido hasta verificar */
+.dashboard-content {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+</style>
+
+<!-- HTML del loader (opcional, puedes personalizarlo) -->
+<div class="loading-screen" data-loader>
+    <div class="spinner"></div>
+    <p>Verificando tu sesión...</p>
+</div>
