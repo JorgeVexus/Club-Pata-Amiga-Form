@@ -101,8 +101,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         
         // 1. Validar API Key
         const apiKey = request.headers.get('x-vet-bot-key');
+        
+        // DEBUG: Log de headers recibidos (ocultando el valor real por seguridad)
+        console.log('🤖 [VET_BOT] Headers received:', {
+            'x-vet-bot-key': apiKey ? 'Present (length: ' + apiKey.length + ')' : 'MISSING',
+            'user-agent': request.headers.get('user-agent')?.substring(0, 50)
+        });
+        
         if (apiKey !== VET_BOT_API_KEY) {
-            console.warn('🚫 [VET_BOT] Intento de acceso no autorizado');
+            console.warn('🚫 [VET_BOT] API Key mismatch');
+            console.warn('   Expected:', VET_BOT_API_KEY?.substring(0, 10) + '...');
+            console.warn('   Received:', apiKey ? apiKey.substring(0, 10) + '...' : 'undefined');
             return NextResponse.json(
                 { success: false, error: 'Unauthorized', message: 'Invalid API Key' },
                 { status: 401, headers: corsHeaders() }
