@@ -114,8 +114,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const email = searchParams.get('email');
         const userId = searchParams.get('userId');
 
+        // DEBUG: Log de parámetros recibidos
+        console.log('🤖 [VET_BOT] Params received:', { 
+            sessionToken: sessionToken ? '***' : null, 
+            email: email, 
+            userId: userId 
+        });
+
         // Debe proporcionarse al menos un método de identificación
         if (!sessionToken && !email && !userId) {
+            console.log('🤖 [VET_BOT] ERROR: No identification parameter provided');
             return NextResponse.json(
                 { 
                     success: false, 
