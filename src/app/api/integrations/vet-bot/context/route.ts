@@ -247,8 +247,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 age,
                 status,
                 waiting_period_start,
-                waiting_period_end,
-                pet_type
+                waiting_period_end
             `)
             .eq('owner_id', user.id)
             .order('created_at', { ascending: true });
@@ -301,7 +300,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             return {
                 id: pet.id,
                 name: pet.name,
-                type: pet.pet_type || (pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro'),
+                type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro',
                 breed: pet.breed || 'Mestizo',
                 size: pet.breed_size,
                 age: pet.age,

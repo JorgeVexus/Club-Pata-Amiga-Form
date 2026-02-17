@@ -140,7 +140,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         // 6. Obtener mascotas
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, breed, breed_size, age, status, pet_type')
+            .select('id, name, breed, breed_size, age, status')
             .eq('owner_id', user.id)
             .order('created_at', { ascending: true });
 
@@ -171,7 +171,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             pets: (pets || []).map(pet => ({
                 id: pet.id,
                 name: pet.name,
-                type: pet.pet_type || (pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro'),
+                type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro',
                 breed: pet.breed || 'Mestizo',
                 size: pet.breed_size,
                 age: pet.age
