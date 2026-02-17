@@ -14,6 +14,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Headers CORS
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, x-vet-bot-key',
+    };
+}
+
 // Cliente Supabase con Service Role
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -77,6 +86,13 @@ interface VetBotContextResponse {
 }
 
 /**
+ * OPTIONS /api/integrations/vet-bot/context
+ */
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders() });
+}
+
+/**
  * GET /api/integrations/vet-bot/context
  */
 export async function GET(request: NextRequest): Promise<NextResponse> {
@@ -89,7 +105,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             console.warn('🚫 [VET_BOT] Intento de acceso no autorizado');
             return NextResponse.json(
                 { success: false, error: 'Unauthorized', message: 'Invalid API Key' },
-                { status: 401 }
+                { status: 401, headers: corsHeaders() }
             );
         }
 
@@ -106,7 +122,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     error: 'Missing identification parameter',
                     message: 'Provide sessionToken, email, or userId' 
                 },
-                { status: 400 }
+                { status: 400, headers: corsHeaders() }
             );
         }
 
@@ -129,7 +145,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                         error: 'Invalid or expired session token',
                         code: 'SESSION_EXPIRED'
                     },
-                    { status: 401 }
+                    { status: 401, headers: corsHeaders() }
                 );
             }
             
@@ -185,7 +201,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     error: 'User not found',
                     code: 'USER_NOT_FOUND'
                 },
-                { status: 404 }
+                { status: 404, headers: corsHeaders() }
             );
         }
 
@@ -210,7 +226,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             console.error('❌ [VET_BOT] Error fetching pets:', petsError);
             return NextResponse.json(
                 { success: false, error: 'Error fetching pet data' },
-                { status: 500 }
+                { status: 500, headers: corsHeaders() }
             );
         }
 
@@ -302,13 +318,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         console.log(`   - Consultations: ${consultationHistory.length}`);
         console.log(`   - Method: ${identifiedVia}`);
 
-        return NextResponse.json(responsePayload);
+        return NextResponse.json(responsePayload, { headers: corsHeaders() });
 
     } catch (error: any) {
         console.error('❌ [VET_BOT] Server Error:', error);
         return NextResponse.json(
             { success: false, error: 'Internal Server Error', details: error.message },
-            { status: 500 }
+            { status: 500, headers: corsHeaders() }
         );
     }
 }

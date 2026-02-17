@@ -16,6 +16,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
 
+// Headers CORS para permitir peticiones desde Webflow/pataamiga.mx
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+}
+
 // Cliente Supabase con Service Role (acceso completo)
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -45,6 +54,14 @@ interface SessionTokenResponse {
 }
 
 /**
+ * OPTIONS /api/auth/session-token
+ * Maneja preflight requests CORS
+ */
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders() });
+}
+
+/**
  * POST /api/auth/session-token
  * Genera un nuevo token de sesión para el Vet-Bot
  */
@@ -58,14 +75,14 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (!memberstackId || typeof memberstackId !== 'string') {
             return NextResponse.json(
                 { success: false, error: 'memberstackId es requerido' } as SessionTokenResponse,
-                { status: 400 }
+                { status: 400, headers: corsHeaders() }
             );
         }
 
         if (!email || typeof email !== 'string' || !isValidEmail(email)) {
             return NextResponse.json(
                 { success: false, error: 'email válido es requerido' } as SessionTokenResponse,
-                { status: 400 }
+                { status: 400, headers: corsHeaders() }
             );
         }
 
@@ -119,7 +136,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                     success: false, 
                     error: 'Error al crear la sesión. Intente nuevamente.' 
                 } as SessionTokenResponse,
-                { status: 500 }
+                { status: 500, headers: corsHeaders() }
             );
         }
 
@@ -130,7 +147,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
             success: true,
             sessionToken: token,
             expiresAt: expiresAt.toISOString()
-        } as SessionTokenResponse);
+        } as SessionTokenResponse, { headers: corsHeaders() });
 
     } catch (error: any) {
         console.error('❌ [SessionToken] Error inesperado:', error);
@@ -139,7 +156,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 success: false, 
                 error: 'Error interno del servidor' 
             } as SessionTokenResponse,
-            { status: 500 }
+            { status: 500, headers: corsHeaders() }
         );
     }
 }
@@ -156,7 +173,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (!token) {
             return NextResponse.json(
                 { success: false, error: 'Token es requerido como query param' },
-                { status: 400 }
+                { status: 400, headers: corsHeaders() }
             );
         }
 
@@ -171,7 +188,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     error: 'Token inválido o expirado',
                     isValid: false 
                 },
-                { status: 401 }
+                { status: 401, headers: corsHeaders() }
             );
         }
 
@@ -185,13 +202,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 email: session.email,
                 expiresAt: session.expires_at
             }
-        });
+        }, { headers: corsHeaders() });
 
     } catch (error: any) {
         console.error('❌ [SessionToken] Error validando token:', error);
         return NextResponse.json(
             { success: false, error: 'Error interno del servidor' },
-            { status: 500 }
+            { status: 500, headers: corsHeaders() }
         );
     }
 }
@@ -208,7 +225,7 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
         if (!token) {
             return NextResponse.json(
                 { success: false, error: 'Token es requerido' },
-                { status: 400 }
+                { status: 400, headers: corsHeaders() }
             );
         }
 
@@ -221,20 +238,20 @@ export async function DELETE(request: NextRequest): Promise<NextResponse> {
             console.error('❌ [SessionToken] Error invalidando token:', error);
             return NextResponse.json(
                 { success: false, error: 'Error al cerrar sesión' },
-                { status: 500 }
+                { status: 500, headers: corsHeaders() }
             );
         }
 
         return NextResponse.json({
             success: true,
             message: 'Sesión cerrada exitosamente'
-        });
+        }, { headers: corsHeaders() });
 
     } catch (error: any) {
         console.error('❌ [SessionToken] Error en logout:', error);
         return NextResponse.json(
             { success: false, error: 'Error interno del servidor' },
-            { status: 500 }
+            { status: 500, headers: corsHeaders() }
         );
     }
 }
