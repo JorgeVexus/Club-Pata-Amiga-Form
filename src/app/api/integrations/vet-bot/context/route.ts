@@ -187,6 +187,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         }
 
         // 4. Buscar usuario en la base de datos
+        console.log('🤖 [VET_BOT] Buscando usuario con:');
+        console.log('   - memberstackId:', memberstackId);
+        console.log('   - resolvedEmail:', resolvedEmail);
+        
         let userQuery = supabaseAdmin
             .from('users')
             .select(`
@@ -205,13 +209,25 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (memberstackId) {
             userQuery = userQuery.eq('memberstack_id', memberstackId);
         } else if (resolvedEmail) {
-            userQuery = userQuery.eq('email', resolvedEmail);
+            // Usar ilike para case-insensitive matching
+            userQuery = userQuery.ilike('email', resolvedEmail);
         }
 
-        const { data: user, error: userError } = await userQuery.single();
+        const { data: user, error: userError } = await userQuery.maybeSingle();
+
+        if (userError) {
+            console.error('❌ [VET_BOT] Error en query:', userError);
+        }
 
         if (userError || !user) {
             console.warn(`⚠️ [VET_BOT] User not found: ${resolvedEmail || memberstackId}`);
+            
+            // DEBUG: Buscar todos los usuarios para ver qué emails existen
+            const { data: allUsers } = await supabaseAdmin
+                .from('users')
+                .select('email')
+                .limit(5);
+            console.log('🤖 [VET_BOT] Muestra de emails en BD:', allUsers?.map(u => u.email));
             return NextResponse.json(
                 { 
                     success: false, 
