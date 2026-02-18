@@ -9,6 +9,7 @@ interface Pet {
     name: string;
     breed: string;
     breed_size: string;
+    gender?: string;
     age?: string;
     type?: string;
     status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
@@ -441,7 +442,14 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <div className={styles.petAvatar}>🐶</div>
                                             <div className={styles.petInfo}>
                                                 <h4>{pet.name}</h4>
-                                                <div className={styles.petBreed}>{pet.breed} • {pet.breed_size}</div>
+                                                <div className={styles.petBreed}>
+                                                    {pet.breed} • {pet.breed_size}
+                                                    {pet.gender && (
+                                                        <span className={styles.petGender}>
+                                                            {' '}| {pet.gender === 'macho' ? '♂️ Macho' : '♀️ Hembra'}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </div>
                                             <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
                                                 {pet.status === 'pending' ? 'Pendiente' :

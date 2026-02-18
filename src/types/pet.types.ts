@@ -8,6 +8,7 @@ export interface PetFormData {
     name: string;
     lastName: string;
     petType: 'perro' | 'gato' | string;
+    gender: 'macho' | 'hembra' | string;
     isMixed: boolean;
     breed: string;
     breedSize: 'pequeño' | 'mediano' | 'grande' | 'gigante' | string;

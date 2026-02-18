@@ -159,6 +159,19 @@ export default function PetCard({
                     />
 
                     <RadioGroup
+                        label="¿Cuál es su sexo?"
+                        name={`pet-${petNum}-gender`}
+                        options={[
+                            { value: 'macho', label: 'Macho ♂️' },
+                            { value: 'hembra', label: 'Hembra ♀️' },
+                        ]}
+                        value={petData.gender || ''}
+                        onChange={(value) => onUpdate({ ...petData, gender: value })}
+                        error={errors[`pet-${petNum}-gender`]}
+                        required
+                    />
+
+                    <RadioGroup
                         label="¿Qué tipo de peludo es?"
                         name={`pet-${petNum}-type`}
                         options={[

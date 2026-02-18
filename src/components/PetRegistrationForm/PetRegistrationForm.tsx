@@ -141,6 +141,10 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 newErrors[`pet-${petNum}-name`] = 'El nombre es requerido';
             }
 
+            if (!pet.gender) {
+                newErrors[`pet-${petNum}-gender`] = 'Selecciona el sexo de la mascota';
+            }
+
             if (!pet.petType) {
                 newErrors[`pet-${petNum}-type`] = 'Selecciona el tipo de mascota';
             }
