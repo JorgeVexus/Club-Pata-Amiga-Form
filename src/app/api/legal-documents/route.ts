@@ -36,6 +36,23 @@ export async function GET(request: NextRequest) {
     }
 }
 
+// Helper function to sanitize filename for Supabase Storage
+function sanitizeFileName(fileName: string): string {
+    return fileName
+        // Normalize to decomposed form (separate base characters from diacritics)
+        .normalize('NFD')
+        // Remove diacritics (tildes)
+        .replace(/[\u0300-\u036f]/g, '')
+        // Replace spaces with underscores
+        .replace(/\s+/g, '_')
+        // Remove any character that is not alphanumeric, underscore, hyphen, or dot
+        .replace(/[^a-zA-Z0-9_.-]/g, '')
+        // Replace multiple underscores with single
+        .replace(/_+/g, '_')
+        // Lowercase for consistency
+        .toLowerCase();
+}
+
 // POST: Upload new legal document (admin only)
 export async function POST(request: NextRequest) {
     try {
@@ -55,8 +72,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid target_audience. Must be: members, ambassadors, or both' }, { status: 400 });
         }
 
-        // Upload file to Supabase Storage
-        const fileName = `${Date.now()}_${file.name}`;
+        // Sanitize filename for Supabase Storage (remove tildes, spaces, special chars)
+        const sanitizedFileName = sanitizeFileName(file.name);
+        const fileName = `${Date.now()}_${sanitizedFileName}`;
         const bytes = await file.arrayBuffer();
         const buffer = Buffer.from(bytes);
 
