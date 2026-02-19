@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from './PlanSelection.module.css';
+import styles from './TermsModal.module.css';
 
 interface Document {
     id: string;
@@ -32,8 +32,8 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
         setLoading(true);
         setError(null);
         try {
-            // Fetch documents for members (includes 'members' and 'both')
-            const response = await fetch('/api/legal-documents?audience=members');
+            // Fetch documents for ambassadors (includes 'ambassadors' and 'both')
+            const response = await fetch('/api/legal-documents?audience=ambassadors');
             const data = await response.json();
 
             if (data.success) {
@@ -61,8 +61,8 @@ export default function TermsModal({ isOpen, onClose }: TermsModalProps) {
 
                 <div className={styles.modalBody}>
                     <p className={styles.modalDescription}>
-                        Descarga y revisa los siguientes documentos antes de continuar con tu membresía.
-                        Es importante que conozcas todos los términos, condiciones y políticas de la comunidad.
+                        Descarga y revisa los siguientes documentos antes de enviar tu solicitud como embajador.
+                        Es importante que conozcas todos los términos, condiciones y políticas del programa.
                     </p>
 
                     {loading ? (

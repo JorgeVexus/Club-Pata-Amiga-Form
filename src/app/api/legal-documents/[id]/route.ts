@@ -7,18 +7,25 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-// PATCH: Update document (title, description, order, is_active)
+// PATCH: Update document (title, description, order, is_active, target_audience)
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
         const body = await request.json();
-        const { title, description, display_order, is_active } = body;
+        const { title, description, display_order, is_active, target_audience } = body;
 
         const updates: any = { updated_at: new Date().toISOString() };
         if (title !== undefined) updates.title = title;
         if (description !== undefined) updates.description = description;
         if (display_order !== undefined) updates.display_order = display_order;
         if (is_active !== undefined) updates.is_active = is_active;
+        if (target_audience !== undefined) {
+            const validAudiences = ['members', 'ambassadors', 'both'];
+            if (!validAudiences.includes(target_audience)) {
+                return NextResponse.json({ error: 'Invalid target_audience' }, { status: 400 });
+            }
+            updates.target_audience = target_audience;
+        }
 
         const { data, error } = await supabaseAdmin
             .from('legal_documents')

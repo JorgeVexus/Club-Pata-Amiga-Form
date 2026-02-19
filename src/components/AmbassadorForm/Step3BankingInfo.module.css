@@ -279,6 +279,62 @@
 }
 
 /* ============================================
+   SECCIÓN DE DOCUMENTOS LEGALES
+   ============================================ */
+
+.legalDocumentsSection {
+    margin: 1rem 0 1.5rem 0;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.viewDocumentsBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: white;
+    color: #333;
+    border: 2px solid #333;
+    border-radius: 50px;
+    font-family: 'Fraiche', sans-serif;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.viewDocumentsBtn:hover {
+    background: #f8f9fa;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.legalHint {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 8px 0 0 0;
+}
+
+.inlineLink {
+    background: none;
+    border: none;
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.inlineLink:hover {
+    text-decoration: none;
+}
+
+/* ============================================
    BOTONES - Estilos según diseño de referencia
    ============================================ */
 

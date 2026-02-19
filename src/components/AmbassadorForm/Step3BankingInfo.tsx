@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { AmbassadorStep3Data, PaymentMethod } from '@/types/ambassador.types';
 import HelpSection from '@/components/UI/HelpSection';
+import TermsModal from './TermsModal';
 import styles from './Step3BankingInfo.module.css';
 
 interface Step3Props {
@@ -16,6 +17,7 @@ interface Step3Props {
 }
 
 export default function Step3BankingInfo({ data, onChange, errors, onBlur, onBack, onNext, isSubmitting }: Step3Props) {
+    const [showTermsModal, setShowTermsModal] = useState(false);
 
     const handlePaymentMethod = (method: PaymentMethod) => {
         onChange('payment_method', method);
@@ -159,6 +161,20 @@ export default function Step3BankingInfo({ data, onChange, errors, onBlur, onBac
                         implica que no podrás continuar como embajador.
                     </p>
 
+                    {/* Enlace para ver documentos legales */}
+                    <div className={styles.legalDocumentsSection}>
+                        <button
+                            type="button"
+                            className={styles.viewDocumentsBtn}
+                            onClick={() => setShowTermsModal(true)}
+                        >
+                            📋 Ver documentos legales y términos
+                        </button>
+                        <p className={styles.legalHint}>
+                            Revisa los términos y condiciones, política anti-fraude y aviso de privacidad
+                        </p>
+                    </div>
+
                     <div className={styles.checkboxGroup}>
                         <label className={styles.checkboxLabel}>
                             <input
@@ -167,9 +183,14 @@ export default function Step3BankingInfo({ data, onChange, errors, onBlur, onBac
                                 onChange={(e) => onChange('accept_terms', e.target.checked)}
                             />
                             <span>
-                                Acepto los <a href="/terminos" target="_blank">términos y condiciones</a>,{' '}
-                                <a href="/anti-fraude" target="_blank">política anti-fraude</a> y{' '}
-                                <a href="/privacidad" target="_blank">aviso de privacidad</a>
+                                He leído y acepto los{' '}
+                                <button
+                                    type="button"
+                                    className={styles.inlineLink}
+                                    onClick={() => setShowTermsModal(true)}
+                                >
+                                    términos y condiciones, política anti-fraude y aviso de privacidad
+                                </button>
                             </span>
                         </label>
                         {errors.accept_terms && (
@@ -231,6 +252,12 @@ export default function Step3BankingInfo({ data, onChange, errors, onBlur, onBac
 
             {/* Help Section */}
             <HelpSection email="contacto@pataamiga.mx" />
+
+            {/* Terms Modal */}
+            <TermsModal
+                isOpen={showTermsModal}
+                onClose={() => setShowTermsModal(false)}
+            />
         </div>
     );
 }

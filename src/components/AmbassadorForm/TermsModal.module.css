@@ -1,0 +1,291 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background: white;
+    border-radius: 24px;
+    width: 100%;
+    max-width: 600px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.3s ease-out;
+    overflow: hidden;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #eee;
+    background: linear-gradient(135deg, #7DD8D5 0%, #00BBB4 100%);
+}
+
+.modalTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    margin: 0;
+    font-family: 'Fraiche', sans-serif;
+}
+
+.modalClose {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.modalClose:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+}
+
+.modalBody {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.modalDescription {
+    color: #666;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border-left: 4px solid #7DD8D5;
+}
+
+.loadingDocs {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    color: #888;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #eee;
+    border-top-color: #7DD8D5;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.errorState {
+    text-align: center;
+    padding: 40px;
+    color: #e53e3e;
+}
+
+.retryBtn {
+    margin-top: 12px;
+    padding: 8px 20px;
+    background: #7DD8D5;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.retryBtn:hover {
+    background: #00BBB4;
+}
+
+.noDocs {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+
+.noDocs p:first-child {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.docsList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.docItem {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    border: 1px solid #eee;
+    transition: all 0.2s;
+}
+
+.docItem:hover {
+    background: #f0f7ff;
+    border-color: #7DD8D5;
+    transform: translateX(4px);
+}
+
+.docInfo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 0;
+}
+
+.docIcon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+}
+
+.docTitle {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+    margin-bottom: 2px;
+}
+
+.docDesc {
+    font-size: 0.8rem;
+    color: #888;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.downloadBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #FE8F15;
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.2s;
+    border: 2px solid #000;
+}
+
+.downloadBtn:hover {
+    background: #e67f00;
+    transform: scale(1.02);
+}
+
+.modalFooter {
+    padding: 16px 24px;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    background: #f8f9fa;
+}
+
+.modalCloseBtn {
+    padding: 10px 24px;
+    background: #00BBB4;
+    color: white;
+    border: 2px solid #000;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Fraiche', sans-serif;
+}
+
+.modalCloseBtn:hover {
+    background: #009b94;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .modalOverlay {
+        padding: 10px;
+    }
+
+    .modalContent {
+        max-height: 90vh;
+        border-radius: 20px;
+    }
+
+    .modalHeader {
+        padding: 16px 20px;
+    }
+
+    .modalTitle {
+        font-size: 1.1rem;
+    }
+
+    .modalBody {
+        padding: 16px;
+    }
+
+    .docItem {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .docInfo {
+        width: 100%;
+    }
+
+    .downloadBtn {
+        width: 100%;
+        justify-content: center;
+    }
+}

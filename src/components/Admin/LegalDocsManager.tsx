@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 
+type TargetAudience = 'members' | 'ambassadors' | 'both';
+
 interface LegalDocument {
     id: string;
     title: string;
@@ -10,9 +12,22 @@ interface LegalDocument {
     file_name: string;
     display_order: number;
     is_active: boolean;
+    target_audience: TargetAudience;
     created_at: string;
     updated_at: string;
 }
+
+const AUDIENCE_LABELS: Record<TargetAudience, string> = {
+    members: '👤 Miembros',
+    ambassadors: '⭐ Embajadores',
+    both: '🌐 Ambos'
+};
+
+const AUDIENCE_BADGES: Record<TargetAudience, { bg: string; color: string }> = {
+    members: { bg: '#e3f2fd', color: '#1565c0' },
+    ambassadors: { bg: '#fff3e0', color: '#ef6c00' },
+    both: { bg: '#f3e5f5', color: '#7b1fa2' }
+};
 
 export default function LegalDocsManager() {
     const [documents, setDocuments] = useState<LegalDocument[]>([]);
@@ -20,7 +35,10 @@ export default function LegalDocsManager() {
     const [uploading, setUploading] = useState(false);
     const [newTitle, setNewTitle] = useState('');
     const [newDescription, setNewDescription] = useState('');
+    const [newAudience, setNewAudience] = useState<TargetAudience>('both');
     const [showUploadForm, setShowUploadForm] = useState(false);
+    const [editingDoc, setEditingDoc] = useState<string | null>(null);
+    const [editAudience, setEditAudience] = useState<TargetAudience>('both');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -29,7 +47,7 @@ export default function LegalDocsManager() {
 
     const fetchDocuments = async () => {
         try {
-            const response = await fetch('/api/legal-documents');
+            const response = await fetch('/api/legal-documents?audience=both');
             const data = await response.json();
             if (data.success) {
                 setDocuments(data.documents || []);
@@ -54,6 +72,7 @@ export default function LegalDocsManager() {
             formData.append('file', file);
             formData.append('title', newTitle.trim());
             formData.append('description', newDescription.trim());
+            formData.append('target_audience', newAudience);
 
             const response = await fetch('/api/legal-documents', {
                 method: 'POST',
@@ -65,6 +84,7 @@ export default function LegalDocsManager() {
                 setDocuments(prev => [...prev, data.document]);
                 setNewTitle('');
                 setNewDescription('');
+                setNewAudience('both');
                 setShowUploadForm(false);
                 if (fileInputRef.current) fileInputRef.current.value = '';
                 alert('✅ Documento subido exitosamente.');
@@ -93,6 +113,24 @@ export default function LegalDocsManager() {
             }
         } catch (error) {
             console.error('Toggle error:', error);
+        }
+    };
+
+    const handleUpdateAudience = async (id: string) => {
+        try {
+            const response = await fetch(`/api/legal-documents/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ target_audience: editAudience }),
+            });
+            if (response.ok) {
+                setDocuments(prev =>
+                    prev.map(doc => doc.id === id ? { ...doc, target_audience: editAudience } : doc)
+                );
+                setEditingDoc(null);
+            }
+        } catch (error) {
+            console.error('Update error:', error);
         }
     };
 
@@ -159,6 +197,19 @@ export default function LegalDocsManager() {
         boxSizing: 'border-box',
     };
 
+    const selectStyle: React.CSSProperties = {
+        width: '100%',
+        padding: '10px 14px',
+        borderRadius: '10px',
+        border: '1px solid #ddd',
+        fontSize: '0.95rem',
+        marginBottom: '0.8rem',
+        fontFamily: 'inherit',
+        boxSizing: 'border-box',
+        backgroundColor: 'white',
+        cursor: 'pointer',
+    };
+
     const tableStyle: React.CSSProperties = {
         width: '100%',
         borderCollapse: 'collapse' as const,
@@ -195,7 +246,17 @@ export default function LegalDocsManager() {
         color: active ? '#2e7d32' : '#999',
     });
 
-    const actionBtn = (variant: 'toggle' | 'delete' | 'view'): React.CSSProperties => ({
+    const audienceBadge = (audience: TargetAudience): React.CSSProperties => ({
+        display: 'inline-block',
+        padding: '4px 10px',
+        borderRadius: '12px',
+        fontSize: '0.75rem',
+        fontWeight: 600,
+        background: AUDIENCE_BADGES[audience].bg,
+        color: AUDIENCE_BADGES[audience].color,
+    });
+
+    const actionBtn = (variant: 'toggle' | 'delete' | 'view' | 'edit'): React.CSSProperties => ({
         padding: '6px 12px',
         borderRadius: '8px',
         border: 'none',
@@ -203,8 +264,9 @@ export default function LegalDocsManager() {
         fontWeight: 600,
         cursor: 'pointer',
         marginRight: '6px',
-        background: variant === 'delete' ? '#ffebee' : variant === 'toggle' ? '#e3f2fd' : '#f0f0f0',
-        color: variant === 'delete' ? '#c62828' : variant === 'toggle' ? '#1565c0' : '#555',
+        marginBottom: '4px',
+        background: variant === 'delete' ? '#ffebee' : variant === 'toggle' ? '#e3f2fd' : variant === 'edit' ? '#fff3e0' : '#f0f0f0',
+        color: variant === 'delete' ? '#c62828' : variant === 'toggle' ? '#1565c0' : variant === 'edit' ? '#ef6c00' : '#555',
     });
 
     if (loading) {
@@ -228,8 +290,8 @@ export default function LegalDocsManager() {
             </div>
 
             <p style={{ color: '#888', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-                Administra los documentos legales que se muestran en la pantalla de selección de plan.
-                Los usuarios deben aceptar estos documentos antes de pagar.
+                Administra los documentos legales que se muestran a miembros y embajadores.
+                Selecciona la audiencia para cada documento.
             </p>
 
             {/* Upload Form */}
@@ -252,6 +314,15 @@ export default function LegalDocsManager() {
                         value={newDescription}
                         onChange={(e) => setNewDescription(e.target.value)}
                     />
+                    <select
+                        style={selectStyle}
+                        value={newAudience}
+                        onChange={(e) => setNewAudience(e.target.value as TargetAudience)}
+                    >
+                        <option value="both">🌐 Ambos (Miembros y Embajadores)</option>
+                        <option value="members">👤 Solo Miembros</option>
+                        <option value="ambassadors">⭐ Solo Embajadores</option>
+                    </select>
                     <input
                         ref={fileInputRef}
                         type="file"
@@ -289,6 +360,7 @@ export default function LegalDocsManager() {
                         <tr>
                             <th style={thStyle}>#</th>
                             <th style={thStyle}>Título</th>
+                            <th style={thStyle}>Audiencia</th>
                             <th style={thStyle}>Archivo</th>
                             <th style={thStyle}>Estado</th>
                             <th style={thStyle}>Fecha</th>
@@ -305,6 +377,44 @@ export default function LegalDocsManager() {
                                         <div style={{ color: '#888', fontSize: '0.8rem', marginTop: '2px' }}>
                                             {doc.description}
                                         </div>
+                                    )}
+                                </td>
+                                <td style={tdStyle}>
+                                    {editingDoc === doc.id ? (
+                                        <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                            <select
+                                                style={{ ...selectStyle, marginBottom: '4px', fontSize: '0.8rem' }}
+                                                value={editAudience}
+                                                onChange={(e) => setEditAudience(e.target.value as TargetAudience)}
+                                            >
+                                                <option value="both">Ambos</option>
+                                                <option value="members">Miembros</option>
+                                                <option value="ambassadors">Embajadores</option>
+                                            </select>
+                                            <button
+                                                style={{ ...actionBtn('toggle'), padding: '4px 8px', fontSize: '0.75rem' }}
+                                                onClick={() => handleUpdateAudience(doc.id)}
+                                            >
+                                                ✓ Guardar
+                                            </button>
+                                            <button
+                                                style={{ ...actionBtn('view'), padding: '4px 8px', fontSize: '0.75rem' }}
+                                                onClick={() => setEditingDoc(null)}
+                                            >
+                                                ✕ Cancelar
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <span
+                                            style={audienceBadge(doc.target_audience)}
+                                            onClick={() => {
+                                                setEditingDoc(doc.id);
+                                                setEditAudience(doc.target_audience);
+                                            }}
+                                            title="Click para cambiar"
+                                        >
+                                            {AUDIENCE_LABELS[doc.target_audience]}
+                                        </span>
                                     )}
                                 </td>
                                 <td style={tdStyle}>
@@ -336,6 +446,15 @@ export default function LegalDocsManager() {
                                         onClick={() => handleToggleActive(doc.id, doc.is_active)}
                                     >
                                         {doc.is_active ? '⏸️ Desactivar' : '▶️ Activar'}
+                                    </button>
+                                    <button
+                                        style={actionBtn('edit')}
+                                        onClick={() => {
+                                            setEditingDoc(doc.id);
+                                            setEditAudience(doc.target_audience);
+                                        }}
+                                    >
+                                        🎯 Audiencia
                                     </button>
                                     <button
                                         style={actionBtn('delete')}

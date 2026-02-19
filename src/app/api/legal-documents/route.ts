@@ -7,14 +7,25 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-// GET: Fetch all active legal documents (public)
-export async function GET() {
+// GET: Fetch legal documents (public)
+// Query params: ?audience=members|ambassadors (default returns all active)
+export async function GET(request: NextRequest) {
     try {
-        const { data, error } = await supabaseAdmin
+        const { searchParams } = new URL(request.url);
+        const audience = searchParams.get('audience'); // 'members' | 'ambassadors'
+
+        let query = supabaseAdmin
             .from('legal_documents')
             .select('*')
             .eq('is_active', true)
             .order('display_order', { ascending: true });
+
+        // Filter by audience if specified
+        if (audience) {
+            query = query.or(`target_audience.eq.${audience},target_audience.eq.both`);
+        }
+
+        const { data, error } = await query;
 
         if (error) throw error;
 
@@ -32,9 +43,16 @@ export async function POST(request: NextRequest) {
         const file = formData.get('file') as File;
         const title = formData.get('title') as string;
         const description = formData.get('description') as string;
+        const targetAudience = (formData.get('target_audience') as string) || 'both';
 
         if (!file || !title) {
             return NextResponse.json({ error: 'File and title are required' }, { status: 400 });
+        }
+
+        // Validate target_audience
+        const validAudiences = ['members', 'ambassadors', 'both'];
+        if (!validAudiences.includes(targetAudience)) {
+            return NextResponse.json({ error: 'Invalid target_audience. Must be: members, ambassadors, or both' }, { status: 400 });
         }
 
         // Upload file to Supabase Storage
@@ -78,6 +96,7 @@ export async function POST(request: NextRequest) {
                 file_url: urlData.publicUrl,
                 file_name: file.name,
                 display_order: nextOrder,
+                target_audience: targetAudience,
             })
             .select()
             .single();
