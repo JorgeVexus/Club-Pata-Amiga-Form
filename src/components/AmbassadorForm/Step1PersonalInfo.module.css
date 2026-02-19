@@ -1,0 +1,462 @@
+/* ============================================
+   Step 1 - Datos Personales (Diseño Naranja)
+   ============================================ */
+
+.pageContainer {
+    position: relative;
+    width: 100%;
+}
+
+/* Subtítulo */
+.landingSubtitle {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+}
+
+.landingSubtitle h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #FE8F15;
+    margin: 0 0 8px 0;
+    font-family: 'Fraiche', sans-serif;
+}
+
+.landingSubtitle p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0 0 5px 0;
+}
+
+.privacyNote {
+    font-size: 0.75rem;
+    color: #888;
+}
+
+/* Formulario naranja */
+.orangeFormBox {
+    position: relative;
+    background: #FE8F15;
+    border-radius: 50px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    margin-bottom: 1.5rem;
+}
+
+/* Badge icono */
+.formBadge {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 85px;
+    height: 85px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.formBadge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Grid de 2 columnas */
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+}
+
+.formColumnInner {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Inputs naranja */
+.orangeInput,
+.orangeSelect {
+    width: 100%;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-family: 'Outfit', sans-serif;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.orangeInput::placeholder {
+    color: #888;
+}
+
+.orangeSelect {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 35px;
+}
+
+.orangeInput.error,
+.orangeSelect.error {
+    border: 2px solid #ef4444;
+}
+
+/* Mensajes de error */
+.errorMessage {
+    font-size: 0.75rem;
+    color: #fee2e2;
+    background: rgba(239, 68, 68, 0.9);
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Hints debajo de inputs */
+.inputHint {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 2px;
+}
+
+/* Grupos de campos */
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.groupLabel {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 2px;
+}
+
+/* Género */
+.genderGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 0.5rem 0;
+}
+
+.radioLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.radioLabel input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    accent-color: white;
+    cursor: pointer;
+}
+
+/* Teléfono */
+.phoneWrapper {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.countryCode {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 12px 10px;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+}
+
+.phoneWrapper .orangeInput {
+    flex: 1;
+}
+
+/* Eye button para contraseña */
+.eyeButton {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #666;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+}
+
+/* Upload INE */
+.uploadSection {
+    margin-top: 1.5rem;
+}
+
+.uploadLabel {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.uploadHint {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 10px;
+    display: block;
+}
+
+.uploadGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.uploadBox {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.uploadBox:hover {
+    border-color: #FE8F15;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.uploadLabelArea {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.uploadIcon {
+    width: 45px;
+    height: 45px;
+    background: #FE8F15;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.fileSelected .uploadIcon {
+    background: #22c55e;
+}
+
+.uploadText p {
+    margin: 0 0 4px 0;
+    font-size: 0.8rem;
+    color: #555;
+    line-height: 1.3;
+}
+
+.uploadText span {
+    color: #FE8F15;
+    text-decoration: underline;
+}
+
+.uploadText span:last-child {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.7rem;
+}
+
+.fileSelected .uploadText p {
+    color: #22c55e;
+}
+
+.fileName {
+    font-weight: 600;
+    color: #333 !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.fileStatus {
+    color: #22c55e !important;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.uploadError {
+    display: block;
+    color: #fee2e2;
+    font-size: 0.75rem;
+    margin-top: 8px;
+    background: rgba(239, 68, 68, 0.8);
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+/* ============================================
+   BOTONES - Estilos corregidos según diseño
+   ============================================ */
+
+.buttonsRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Botón Cancelar - Gris */
+.cancelButton {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #9CA3AF !important;
+    color: white !important;
+    border: 2px solid #6B7280 !important;
+    border-radius: 50px;
+    font-family: 'Fraiche', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.cancelButton:hover {
+    background: #6B7280 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(107, 114, 128, 0.3);
+}
+
+.cancelIcon {
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+}
+
+/* Botón Siguiente - Naranja */
+.nextButton {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 24px;
+    background: #FE8F15 !important;
+    color: white !important;
+    border: 2px solid #000000 !important;
+    border-radius: 50px;
+    font-family: 'Fraiche', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.nextButton:hover {
+    background: #e67e00 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(254, 143, 21, 0.4);
+}
+
+.nextIcon {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: #FE8F15;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .uploadGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .uploadBox {
+        max-width: 100%;
+    }
+
+    .decorativeImage {
+        max-width: 350px;
+        width: 40%;
+    }
+}
+
+@media (max-width: 768px) {
+    .pageContainer {
+        padding-bottom: 150px;
+    }
+
+    .orangeFormBox {
+        padding: 1.5rem;
+        border-radius: 30px;
+    }
+
+    .formBadge {
+        width: 60px;
+        height: 60px;
+        top: -10px;
+        right: -10px;
+    }
+
+    .uploadBox {
+        max-width: 100%;
+    }
+
+    .buttonsRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cancelButton,
+    .nextButton {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .decorativeImage {
+        max-width: 200px;
+        min-width: 150px;
+    }
+
+    .landingSubtitle h2 {
+        font-size: 28px;
+    }
+}

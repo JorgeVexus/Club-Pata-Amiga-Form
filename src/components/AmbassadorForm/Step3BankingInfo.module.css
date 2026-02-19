@@ -1,0 +1,472 @@
+/* ============================================
+   Step 3 - Datos Bancarios y RFC (Diseño Naranja)
+   ============================================ */
+
+.pageContainer {
+    position: relative;
+    width: 100%;
+}
+
+/* Subtítulo */
+.landingSubtitle {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+}
+
+.landingSubtitle h2 {
+    font-size: 40px;
+    font-weight: 700;
+    color: #FE8F15;
+    margin: 0 0 8px 0;
+    font-family: 'Fraiche', sans-serif;
+}
+
+.landingSubtitle p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0 0 5px 0;
+    font-weight: 500;
+}
+
+.privacyNote {
+    font-size: 0.8rem;
+    color: #666;
+    display: block;
+    margin-top: 4px;
+}
+
+/* Formulario naranja */
+.orangeFormBox {
+    position: relative;
+    background: #FE8F15;
+    border-radius: 50px;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    overflow: visible;
+    margin-bottom: 1.5rem;
+}
+
+/* Badge icono */
+.formBadge {
+    position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 85px;
+    height: 85px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.formBadge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Grupos de campos */
+.fieldGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 1rem;
+}
+
+.groupLabel {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 4px;
+}
+
+/* Inputs naranja */
+.orangeInput,
+.orangeSelect {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    outline: none;
+    box-sizing: border-box;
+}
+
+.orangeInput::placeholder {
+    color: #888;
+}
+
+.orangeSelect {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 35px;
+}
+
+.orangeInput.error,
+.orangeSelect.error {
+    border: 2px solid #ef4444;
+}
+
+/* Hints debajo de inputs */
+.inputHint {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 4px;
+}
+
+/* Mensajes de error */
+.errorMessage {
+    font-size: 0.75rem;
+    color: #fee2e2;
+    background: rgba(239, 68, 68, 0.9);
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+/* Sección de datos bancarios */
+.bankingSection {
+    margin-top: 1.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: white;
+    margin: 0 0 4px 0;
+}
+
+.sectionSubtitle {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 1rem;
+}
+
+/* Tarjetas de selección de pago */
+.paymentCards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.paymentCard {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 3px solid transparent;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.paymentCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.paymentCard.selected {
+    border-color: #333;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cardIconGreen {
+    width: 56px;
+    height: 56px;
+    background: #9FD406;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.cardIconPink {
+    width: 56px;
+    height: 56px;
+    background: #E91E63;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.cardContent h4 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #333;
+    margin: 0;
+}
+
+.cardContent p {
+    font-size: 0.85rem;
+    color: #666;
+    margin: 4px 0 0 0;
+}
+
+/* Campos bancarios adicionales */
+.bankingFields {
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Grid de 2 columnas */
+.formGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 2rem;
+}
+
+/* Recuadro verde de términos - FUERA del formulario naranja */
+.termsBox {
+    background: #9FD406;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+/* Contenido interno del recuadro verde - máximo 60% de ancho */
+.termsContent {
+    max-width: 60%;
+}
+
+.termsText {
+    font-size: 0.8rem;
+    color: white;
+    line-height: 1.5;
+    margin: 0 0 1.5rem 0;
+}
+
+.checkboxGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: white;
+    line-height: 1.4;
+}
+
+.checkboxLabel input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    accent-color: white;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.checkboxLabel a {
+    color: white;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+/* ============================================
+   BOTONES - Estilos según diseño de referencia
+   ============================================ */
+
+.buttonsRow {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Cancelar - texto gris sin fondo */
+.cancelButton {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px !important;
+    background: transparent !important;
+    color: #6B7280 !important;
+    border: none !important;
+    font-family: 'Fraiche', sans-serif !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem !important;
+}
+
+.cancelButton:hover {
+    color: #374151 !important;
+}
+
+.navButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Anterior - gris con fondo gris claro */
+.backButton {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px !important;
+    background: #D1D5DB !important;
+    color: #6B7280 !important;
+    border: none !important;
+    border-radius: 50px !important;
+    font-family: 'Fraiche', sans-serif !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem !important;
+}
+
+.backButton:hover {
+    background: #9CA3AF !important;
+    color: #ffffff !important;
+    transform: translateY(-2px);
+}
+
+/* Siguiente - naranja con borde negro */
+.nextButton {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 10px 20px 10px 24px !important;
+    background: #FE8F15 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+    border-radius: 50px !important;
+    font-family: 'Fraiche', sans-serif !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95rem !important;
+}
+
+.nextButton:hover:not(:disabled) {
+    background: #e67e00 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(254, 143, 21, 0.4);
+}
+
+.nextButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* Icono circular para botón Anterior (gris) */
+.btnIconCircle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: #9CA3AF;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    margin-right: 4px;
+}
+
+/* Icono circular para botón Siguiente (blanco) */
+.btnIconCircleWhite {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: white;
+    color: #FE8F15;
+    border-radius: 50%;
+    font-size: 0.7rem;
+    margin-left: 4px;
+}
+
+/* Spinner para estado de carga */
+.spinner {
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    display: inline-block;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 1024px) {
+    .paymentCards {
+        gap: 1rem;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .orangeFormBox {
+        padding: 1.5rem;
+        border-radius: 30px;
+    }
+
+    .formBadge {
+        width: 60px;
+        height: 60px;
+        top: -10px;
+        right: -10px;
+    }
+
+    .paymentCards {
+        grid-template-columns: 1fr;
+    }
+
+    .paymentCard {
+        padding: 1rem;
+    }
+
+    .landingSubtitle h2 {
+        font-size: 28px;
+    }
+
+    .termsBox {
+        padding: 1rem;
+    }
+
+    .buttonsRow {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .navButtons {
+        flex-direction: column;
+    }
+
+    .backButton,
+    .nextButton {
+        width: 100%;
+        justify-content: center;
+    }
+}

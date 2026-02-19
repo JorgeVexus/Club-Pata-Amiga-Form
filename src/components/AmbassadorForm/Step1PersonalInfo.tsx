@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { AmbassadorStep1Data } from '@/types/ambassador.types';
-import styles from './AmbassadorForm.module.css';
+import HelpSection from '@/components/UI/HelpSection';
+import styles from './Step1PersonalInfo.module.css';
 
 interface Step1Props {
     data: AmbassadorStep1Data;
@@ -10,39 +11,25 @@ interface Step1Props {
     errors: Partial<Record<keyof AmbassadorStep1Data, string>>;
     onFileUpload: (field: 'ine_front' | 'ine_back', file: File) => void;
     onBlur?: (field: keyof AmbassadorStep1Data) => void;
+    onNext?: () => void;
+    onBack?: () => void;
 }
 
-// Estados de México
+// Estados de Mexico
 const ESTADOS_MEXICO = [
     'Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche',
-    'Chiapas', 'Chihuahua', 'Ciudad de México', 'Coahuila', 'Colima',
-    'Durango', 'Estado de México', 'Guanajuato', 'Guerrero', 'Hidalgo',
-    'Jalisco', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca',
-    'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa',
-    'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'
+    'Chiapas', 'Chihuahua', 'Ciudad de Mexico', 'Coahuila', 'Colima',
+    'Durango', 'Estado de Mexico', 'Guanajuato', 'Guerrero', 'Hidalgo',
+    'Jalisco', 'Michoacan', 'Morelos', 'Nayarit', 'Nuevo Leon', 'Oaxaca',
+    'Puebla', 'Queretaro', 'Quintana Roo', 'San Luis Potosi', 'Sinaloa',
+    'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatan', 'Zacatecas'
 ];
 
-export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload, onBlur }: Step1Props) {
-
+export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload, onBlur, onNext, onBack }: Step1Props) {
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleFileChange = (field: 'ine_front' | 'ine_back') => (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (file) {
-            onFileUpload(field, file);
-        }
-    };
-
-    const handleDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-
-    const handleDrop = (field: 'ine_front' | 'ine_back') => (e: React.DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
-        const file = e.dataTransfer.files?.[0];
         if (file) {
             onFileUpload(field, file);
         }
@@ -54,369 +41,338 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
     const maxDateString = maxDate.toISOString().split('T')[0];
 
     return (
-        <div>
-            <div className={styles['ambassador-form-title']}>
-                <h2>¡Cuéntanos sobre ti! Futuro Embajador 🐾</h2>
+        <div className={styles.pageContainer}>
+            {/* Subtitulo */}
+            <div className={styles.landingSubtitle}>
+                <h2>¡cuentanos sobre ti! futuro embajador 😉</h2>
                 <p>Para formar parte de esta manada, necesitamos conocerte un poquito</p>
-                <div className={styles['ambassador-form-subtitle']}>
-                    <span>🔒</span>
-                    <span>Toda tu información es privada y se usa solo para fines de verificación.</span>
-                </div>
+                <span className={styles.privacyNote}>Toda tu informacion es privada y se usa solo para fines de verificacion.</span>
             </div>
 
-            <div className={styles['ambassador-form-grid']}>
-                {/* --- SECCIÓN IDENTIDAD --- */}
-
-                {/* Nombre */}
-                <div className={styles['ambassador-field']}>
-                    <label>Nombre(s) *</label>
-                    <input
-                        type="text"
-                        value={data.first_name}
-                        onChange={(e) => onChange('first_name', e.target.value)}
-                        placeholder="Nombre(s)"
-                        className={errors.first_name ? styles.error : ''}
-                    />
-                    {errors.first_name && <span className={styles['error-message']}>{errors.first_name}</span>}
-                </div>
-
-                {/* Apellido Paterno */}
-                <div className={styles['ambassador-field']}>
-                    <label>Apellido paterno *</label>
-                    <input
-                        type="text"
-                        value={data.paternal_surname}
-                        onChange={(e) => onChange('paternal_surname', e.target.value)}
-                        placeholder="Apellido paterno"
-                        className={errors.paternal_surname ? styles.error : ''}
-                    />
-                    {errors.paternal_surname && <span className={styles['error-message']}>{errors.paternal_surname}</span>}
-                </div>
-
-                {/* Apellido Materno */}
-                <div className={styles['ambassador-field']}>
-                    <label>Apellido materno</label>
-                    <input
-                        type="text"
-                        value={data.maternal_surname}
-                        onChange={(e) => onChange('maternal_surname', e.target.value)}
-                        placeholder="Apellido materno"
+            {/* Formulario naranja */}
+            <div className={styles.orangeFormBox}>
+                {/* Badge icono verde */}
+                <div className={styles.formBadge}>
+                    <img 
+                        src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771516837/identification_logo_green_uppgsy.svg"
+                        alt=""
+                        width="85"
+                        height="85"
                     />
                 </div>
 
-                {/* Género */}
-                <div className={styles['ambassador-field']}>
-                    <label>¿Cómo te identificas?</label>
-                    <div className={styles['ambassador-radio-group']}>
-                        <label className={styles['ambassador-radio-option']}>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="male"
-                                checked={data.gender === 'male'}
-                                onChange={(e) => onChange('gender', e.target.value)}
-                            />
-                            <span>Hombre</span>
-                        </label>
-                        <label className={styles['ambassador-radio-option']}>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="female"
-                                checked={data.gender === 'female'}
-                                onChange={(e) => onChange('gender', e.target.value)}
-                            />
-                            <span>Mujer</span>
-                        </label>
-                        <label className={styles['ambassador-radio-option']}>
-                            <input
-                                type="radio"
-                                name="gender"
-                                value="not_specified"
-                                checked={data.gender === 'not_specified'}
-                                onChange={(e) => onChange('gender', e.target.value)}
-                            />
-                            <span>Prefiero no especificar</span>
-                        </label>
-                    </div>
-                </div>
-
-                {/* Fecha de nacimiento */}
-                <div className={styles['ambassador-field']}>
-                    <label>Fecha de nacimiento *</label>
-                    <input
-                        type="date"
-                        value={data.birth_date}
-                        max={maxDateString}
-                        onChange={(e) => onChange('birth_date', e.target.value)}
-                        className={errors.birth_date ? styles.error : ''}
-                    />
-                    <span className={styles['helper-text']}>Debes ser mayor de 18 años para ser embajador</span>
-                    {errors.birth_date && <span className={styles['error-message']}>{errors.birth_date}</span>}
-                </div>
-
-                {/* CURP */}
-                <div className={styles['ambassador-field']}>
-                    <label>CURP *</label>
-                    <input
-                        type="text"
-                        value={data.curp}
-                        onChange={(e) => onChange('curp', e.target.value.toUpperCase())}
-                        placeholder="CURP"
-                        maxLength={18}
-                        className={errors.curp ? styles.error : ''}
-                        onBlur={() => onBlur?.('curp')}
-                    />
-                    <span className={styles['helper-text']}>Lo necesitamos para cumplir requisitos fiscales</span>
-                    {errors.curp && <span className={styles['error-message']}>{errors.curp}</span>}
-                </div>
-
-                {/* --- SECCIÓN CONTACTO --- */}
-
-                {/* Email */}
-                <div className={styles['ambassador-field']}>
-                    <label>Correo electrónico *</label>
-                    <input
-                        type="email"
-                        value={data.email}
-                        onChange={(e) => onChange('email', e.target.value)}
-                        placeholder="tu@email.com"
-                        className={errors.email ? styles.error : ''}
-                        onBlur={() => onBlur?.('email')}
-                    />
-                    <span className={styles['helper-text']}>Aquí te enviaremos noticias de tu patudo y de la comunidad</span>
-                    {errors.email && <span className={styles['error-message']}>{errors.email}</span>}
-                </div>
-
-                {/* Teléfono */}
-                <div className={styles['ambassador-field']}>
-                    <label>Número de teléfono *</label>
-                    <div className={styles['ambassador-phone-input']}>
-                        <div className="country-code">
-                            🇲🇽 +52
-                        </div>
-                        <input
-                            type="tel"
-                            value={data.phone}
-                            onChange={(e) => onChange('phone', e.target.value.replace(/\D/g, ''))}
-                            placeholder="123 123 1234"
-                            maxLength={10}
-                            className={errors.phone ? styles.error : ''}
+                {/* Grid del formulario */}
+                <div className={styles.formGrid}>
+                    {/* Columna izquierda */}
+                    <div className={styles.formColumnInner}>
+                        <input 
+                            type="text" 
+                            placeholder="Nombre(s)" 
+                            className={`${styles.orangeInput} ${errors.first_name ? styles.error : ''}`}
+                            value={data.first_name}
+                            onChange={(e) => onChange('first_name', e.target.value)}
                         />
+                        <input 
+                            type="text" 
+                            placeholder="Apellido paterno" 
+                            className={`${styles.orangeInput} ${errors.paternal_surname ? styles.error : ''}`}
+                            value={data.paternal_surname}
+                            onChange={(e) => onChange('paternal_surname', e.target.value)}
+                        />
+                        <input 
+                            type="text" 
+                            placeholder="Apellido materno" 
+                            className={styles.orangeInput}
+                            value={data.maternal_surname}
+                            onChange={(e) => onChange('maternal_surname', e.target.value)}
+                        />
+                        <span className={styles.inputHint}>Como aparece en tu identificacion oficial</span>
+
+                        {/* Genero */}
+                        <div className={styles.genderGroup}>
+                            <label className={styles.groupLabel}>Como te identificas?</label>
+                            <label className={styles.radioLabel}>
+                                <input 
+                                    type="radio" 
+                                    name="gender" 
+                                    value="male" 
+                                    checked={data.gender === 'male'}
+                                    onChange={(e) => onChange('gender', e.target.value)}
+                                />
+                                <span>Hombre</span>
+                            </label>
+                            <label className={styles.radioLabel}>
+                                <input 
+                                    type="radio" 
+                                    name="gender" 
+                                    value="female"
+                                    checked={data.gender === 'female'}
+                                    onChange={(e) => onChange('gender', e.target.value)}
+                                />
+                                <span>Mujer</span>
+                            </label>
+                            <label className={styles.radioLabel}>
+                                <input 
+                                    type="radio" 
+                                    name="gender" 
+                                    value="not_specified"
+                                    checked={data.gender === 'not_specified'}
+                                onChange={(e) => onChange('gender', e.target.value)}
+                                />
+                                <span>Prefiero no especificar</span>
+                            </label>
+                        </div>
+
+                        {/* Fecha de nacimiento */}
+                        <div className={styles.fieldGroup}>
+                            <label className={styles.groupLabel}>Fecha de nacimiento</label>
+                            <input 
+                                type="date" 
+                                max={maxDateString}
+                                className={`${styles.orangeInput} ${errors.birth_date ? styles.error : ''}`}
+                                value={data.birth_date}
+                                onChange={(e) => onChange('birth_date', e.target.value)}
+                            />
+                            <span className={styles.inputHint}>Debes ser mayor de 18 años para ser embajador</span>
+                        </div>
+
+                        {/* CURP */}
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="text" 
+                                placeholder="CURP" 
+                                maxLength={18}
+                                className={`${styles.orangeInput} ${errors.curp ? styles.error : ''}`}
+                                value={data.curp}
+                                onChange={(e) => onChange('curp', e.target.value.toUpperCase())}
+                                onBlur={() => onBlur?.('curp')}
+                            />
+                            <span className={styles.inputHint}>Lo necesitamos para cumplir con requisitos fiscales</span>
+                        </div>
                     </div>
-                    <span className={styles['helper-text']}>Para comunicarnos cuando sea importante. Sin spam, lo prometemos</span>
-                    {errors.phone && <span className={styles['error-message']}>{errors.phone}</span>}
+
+                    {/* Columna derecha */}
+                    <div className={styles.formColumnInner}>
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="text" 
+                                placeholder="Codigo postal" 
+                                maxLength={5}
+                                className={`${styles.orangeInput} ${errors.postal_code ? styles.error : ''}`}
+                                value={data.postal_code}
+                                onChange={(e) => onChange('postal_code', e.target.value)}
+                            />
+                            {errors.postal_code && <span className={styles.errorMessage}>{errors.postal_code}</span>}
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <select 
+                                className={`${styles.orangeSelect} ${errors.state ? styles.error : ''}`}
+                                value={data.state}
+                                onChange={(e) => onChange('state', e.target.value)}
+                            >
+                                <option value="">Estado</option>
+                                {ESTADOS_MEXICO.map(estado => (
+                                    <option key={estado} value={estado}>{estado}</option>
+                                ))}
+                            </select>
+                            {errors.state && <span className={styles.errorMessage}>{errors.state}</span>}
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="text" 
+                                placeholder="Ciudad" 
+                                className={`${styles.orangeInput} ${errors.city ? styles.error : ''}`}
+                                value={data.city}
+                                onChange={(e) => onChange('city', e.target.value)}
+                            />
+                            {errors.city && <span className={styles.errorMessage}>{errors.city}</span>}
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="text" 
+                                placeholder="Colonia" 
+                                className={`${styles.orangeInput} ${errors.neighborhood ? styles.error : ''}`}
+                                value={data.neighborhood}
+                                onChange={(e) => onChange('neighborhood', e.target.value)}
+                            />
+                            {errors.neighborhood && <span className={styles.errorMessage}>{errors.neighborhood}</span>}
+                        </div>
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="text" 
+                                placeholder="Calle y numero (int y ext)" 
+                                className={styles.orangeInput}
+                                value={data.address}
+                                onChange={(e) => onChange('address', e.target.value)}
+                            />
+                            <span className={styles.inputHint}>Queremos conocer de donde vienes</span>
+                        </div>
+
+                        {/* Email */}
+                        <div className={styles.fieldGroup}>
+                            <input 
+                                type="email" 
+                                placeholder="Correo electronico" 
+                                className={`${styles.orangeInput} ${errors.email ? styles.error : ''}`}
+                                value={data.email}
+                                onChange={(e) => onChange('email', e.target.value)}
+                                onBlur={() => onBlur?.('email')}
+                            />
+                            <span className={styles.inputHint}>Aqui te enviaremos noticias de tu peludo y de la comunidad</span>
+                        </div>
+
+                        {/* Contrasena */}
+                        <div className={styles.fieldGroup}>
+                            <div style={{ position: 'relative' }}>
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Contrasena" 
+                                    className={`${styles.orangeInput} ${errors.password ? styles.error : ''}`}
+                                    value={data.password}
+                                    onChange={(e) => onChange('password', e.target.value)}
+                                    style={{ paddingRight: '40px' }}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className={styles.eyeButton}
+                                    title={showPassword ? "Ocultar contrasena" : "Mostrar contrasena"}
+                                >
+                                    {showPassword ? '👁️' : '🙈'}
+                                </button>
+                            </div>
+                            {errors.password && <span className={styles.errorMessage}>{errors.password}</span>}
+                            <span className={styles.inputHint}>Minimo 8 caracteres</span>
+                        </div>
+
+                        {/* Confirmar Contrasena */}
+                        <div className={styles.fieldGroup}>
+                            <div style={{ position: 'relative' }}>
+                                <input 
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Confirmar contrasena" 
+                                    className={`${styles.orangeInput} ${errors.confirm_password ? styles.error : ''}`}
+                                    value={data.confirm_password}
+                                    onChange={(e) => onChange('confirm_password', e.target.value)}
+                                    style={{ paddingRight: '40px' }}
+                                />
+                            </div>
+                            {errors.confirm_password && <span className={styles.errorMessage}>{errors.confirm_password}</span>}
+                        </div>
+
+                        {/* Telefono */}
+                        <div className={styles.fieldGroup}>
+                            <label className={styles.groupLabel}>Numero de telefono</label>
+                            <div className={styles.phoneWrapper}>
+                                <span className={styles.countryCode}>MX 52</span>
+                                <input 
+                                    type="tel" 
+                                    placeholder="123 123 1234" 
+                                    maxLength={10}
+                                    className={`${styles.orangeInput} ${errors.phone ? styles.error : ''}`}
+                                    value={data.phone}
+                                    onChange={(e) => onChange('phone', e.target.value.replace(/\D/g, ''))}
+                                />
+                            </div>
+                            <span className={styles.inputHint}>Para comunicarnos cuando tengas dudas o buenas noticias sobre tus comisiones</span>
+                        </div>
+                    </div>
                 </div>
 
-                {/* --- SECCIÓN DIRECCIÓN --- */}
-
-                {/* Código Postal */}
-                <div className={styles['ambassador-field']}>
-                    <label>Código postal *</label>
-                    <input
-                        type="text"
-                        value={data.postal_code}
-                        onChange={(e) => onChange('postal_code', e.target.value)}
-                        placeholder="Código postal"
-                        maxLength={5}
-                        className={errors.postal_code ? styles.error : ''}
-                    />
-                    {errors.postal_code && <span className={styles['error-message']}>{errors.postal_code}</span>}
-                </div>
-
-                {/* Estado */}
-                <div className={styles['ambassador-field']}>
-                    <label>Estado *</label>
-                    <select
-                        value={data.state}
-                        onChange={(e) => onChange('state', e.target.value)}
-                        className={errors.state ? styles.error : ''}
-                    >
-                        <option value="">Selecciona un estado</option>
-                        {ESTADOS_MEXICO.map(estado => (
-                            <option key={estado} value={estado}>{estado}</option>
-                        ))}
-                    </select>
-                    {errors.state && <span className={styles['error-message']}>{errors.state}</span>}
-                </div>
-
-                {/* Ciudad */}
-                <div className={styles['ambassador-field']}>
-                    <label>Ciudad *</label>
-                    <input
-                        type="text"
-                        value={data.city}
-                        onChange={(e) => onChange('city', e.target.value)}
-                        placeholder="Ciudad"
-                        className={errors.city ? styles.error : ''}
-                    />
-                    {errors.city && <span className={styles['error-message']}>{errors.city}</span>}
-                </div>
-
-                {/* Colonia */}
-                <div className={styles['ambassador-field']}>
-                    <label>Colonia *</label>
-                    <input
-                        type="text"
-                        value={data.neighborhood}
-                        onChange={(e) => onChange('neighborhood', e.target.value)}
-                        placeholder="Colonia"
-                        className={errors.neighborhood ? styles.error : ''}
-                    />
-                    {errors.neighborhood && <span className={styles['error-message']}>{errors.neighborhood}</span>}
-                </div>
-
-                {/* Dirección */}
-                <div className={`${styles['ambassador-field']} ${styles['ambassador-form-full']}`}>
-                    <label>Dirección</label>
-                    <input
-                        type="text"
-                        value={data.address}
-                        onChange={(e) => onChange('address', e.target.value)}
-                        placeholder="Calle y número"
-                    />
-                    <span className={styles['helper-text']}>Queremos saber de dónde vienes</span>
-                </div>
-
-                {/* --- SECCIÓN DOCUMENTOS --- */}
-
-                {/* INE Upload */}
-                <div className={`${styles['ambassador-field']} ${styles['ambassador-form-full']}`}>
-                    <label>Sube tu INE por ambos lados *</label>
-                    <span className={styles['helper-text']}>Asegúrate de que se vea claro y completo</span>
-
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '15px', marginTop: '10px' }}>
+                {/* Upload INE */}
+                <div className={styles.uploadSection}>
+                    <label className={styles.uploadLabel}>Sube tu INE por ambos lados</label>
+                    <span className={styles.uploadHint}>Asegurate de que se vea claro y completa</span>
+                    
+                    <div className={styles.uploadGrid}>
                         {/* INE Frente */}
-                        <label
-                            className={`${styles['ambassador-file-upload']} ${data.ine_front ? styles['has-file'] : ''}`}
-                            onDragOver={handleDragOver}
-                            onDrop={handleDrop('ine_front')}
-                        >
+                        <div className={styles.uploadBox}>
                             <input
                                 type="file"
                                 accept="image/*,.pdf"
                                 onChange={handleFileChange('ine_front')}
                                 style={{ display: 'none' }}
+                                id="ine-front"
                             />
-                            <div className={styles['ambassador-file-upload-icon']}>
-                                {data.ine_front ? '✅' : '📄'}
-                            </div>
-                            <div className={styles['ambassador-file-upload-text']}>
-                                {data.ine_front
-                                    ? (data.ine_front as File).name
-                                    : <>Frente del INE - <a>explorar</a></>
-                                }
-                            </div>
-                        </label>
+                            <label htmlFor="ine-front" className={styles.uploadLabelArea}>
+                                {data.ine_front ? (
+                                    <div className={styles.fileSelected}>
+                                        <div className={styles.uploadIcon}>✓</div>
+                                        <div className={styles.uploadText}>
+                                            <p className={styles.fileName}>{data.ine_front.name}</p>
+                                            <span className={styles.fileStatus}>Frente seleccionado</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={styles.uploadIcon}>⬆️</div>
+                                        <div className={styles.uploadText}>
+                                            <p><strong>Frente:</strong> Arrastra o <span>explora</span></p>
+                                            <span>PDF, JPG o PNG - Max. 5MB</span>
+                                        </div>
+                                    </>
+                                )}
+                            </label>
+                        </div>
 
                         {/* INE Reverso */}
-                        <label
-                            className={`${styles['ambassador-file-upload']} ${data.ine_back ? styles['has-file'] : ''}`}
-                            onDragOver={handleDragOver}
-                            onDrop={handleDrop('ine_back')}
-                        >
+                        <div className={styles.uploadBox}>
                             <input
                                 type="file"
                                 accept="image/*,.pdf"
                                 onChange={handleFileChange('ine_back')}
                                 style={{ display: 'none' }}
+                                id="ine-back"
                             />
-                            <div className={styles['ambassador-file-upload-icon']}>
-                                {data.ine_back ? '✅' : '📄'}
-                            </div>
-                            <div className={styles['ambassador-file-upload-text']}>
-                                {data.ine_back
-                                    ? (data.ine_back as File).name
-                                    : <>Reverso del INE - <a>explorar</a></>
-                                }
-                            </div>
-                        </label>
+                            <label htmlFor="ine-back" className={styles.uploadLabelArea}>
+                                {data.ine_back ? (
+                                    <div className={styles.fileSelected}>
+                                        <div className={styles.uploadIcon}>✓</div>
+                                        <div className={styles.uploadText}>
+                                            <p className={styles.fileName}>{data.ine_back.name}</p>
+                                            <span className={styles.fileStatus}>Reverso seleccionado</span>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <div className={styles.uploadIcon}>⬆️</div>
+                                        <div className={styles.uploadText}>
+                                            <p><strong>Reverso:</strong> Arrastra o <span>explora</span></p>
+                                            <span>PDF, JPG o PNG - Max. 5MB</span>
+                                        </div>
+                                    </>
+                                )}
+                            </label>
+                        </div>
                     </div>
-                    <div className={styles['ambassador-file-upload-formats']}>
-                        PDF, JPG o PNG - Máx. 5MB
-                    </div>
-                    {errors.ine_front && <span className={styles['error-message']}>{errors.ine_front}</span>}
+                    
+                    {errors.ine_front && <span className={styles.uploadError}>{errors.ine_front}</span>}
+                    {errors.ine_back && <span className={styles.uploadError}>{errors.ine_back}</span>}
                 </div>
-
-                {/* --- SECCIÓN SEGURIDAD --- */}
-
-                {/* Contraseña */}
-                <div className={styles['ambassador-field']}>
-                    <label>Contraseña *</label>
-                    <div style={{ position: 'relative' }}>
-                        <input
-                            type={showPassword ? "text" : "password"}
-                            value={data.password}
-                            onChange={(e) => onChange('password', e.target.value)}
-                            placeholder="Mínimo 8 caracteres"
-                            className={errors.password ? styles.error : ''}
-                            onBlur={() => onBlur?.('password')}
-                            style={{ paddingRight: '40px' }}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowPassword(!showPassword)}
-                            style={{
-                                position: 'absolute',
-                                right: '10px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '1.2rem',
-                                color: '#666',
-                                padding: '4px',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                            title={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                        >
-                            {showPassword ? '👁️' : '🙈'}
-                        </button>
-                    </div>
-                    {errors.password && <span className={styles['error-message']}>{errors.password}</span>}
-                </div>
-
-                {/* Confirmar contraseña */}
-                <div className={styles['ambassador-field']}>
-                    <label>Confirmar contraseña *</label>
-                    <div style={{ position: 'relative' }}>
-                        <input
-                            type={showConfirmPassword ? "text" : "password"}
-                            value={data.confirm_password}
-                            onChange={(e) => onChange('confirm_password', e.target.value)}
-                            placeholder="Repite tu contraseña"
-                            className={errors.confirm_password ? styles.error : ''}
-                            onBlur={() => onBlur?.('confirm_password')}
-                            style={{ paddingRight: '40px' }}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            style={{
-                                position: 'absolute',
-                                right: '10px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                background: 'none',
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: '1.2rem',
-                                color: '#666',
-                                padding: '4px',
-                                display: 'flex',
-                                alignItems: 'center'
-                            }}
-                            title={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
-                        >
-                            {showConfirmPassword ? '👁️' : '🙈'}
-                        </button>
-                    </div>
-                    {errors.confirm_password && <span className={styles['error-message']}>{errors.confirm_password}</span>}
-                </div>
-
             </div>
+
+            {/* Botones */}
+            <div className={styles.buttonsRow}>
+                <button 
+                    type="button" 
+                    className={styles.cancelButton}
+                    onClick={onBack}
+                >
+                    Cancelar
+                    <span className={styles.cancelIcon}>✕</span>
+                </button>
+                <button 
+                    type="button" 
+                    className={styles.nextButton}
+                    onClick={onNext}
+                >
+                    Siguiente
+                    <span className={styles.nextIcon}>→</span>
+                </button>
+            </div>
+
+            {/* Help Section */}
+            <HelpSection email="contacto@pataamiga.mx" />
         </div>
     );
 }

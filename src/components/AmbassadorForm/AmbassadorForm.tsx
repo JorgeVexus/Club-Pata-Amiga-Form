@@ -12,6 +12,7 @@ import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
 import Step1PersonalInfo from './Step1PersonalInfo';
 import Step2AdditionalInfo from './Step2AdditionalInfo';
 import Step3BankingInfo from './Step3BankingInfo';
+import Step4Success from './Step4Success';
 import styles from './AmbassadorForm.module.css';
 
 // Initial values
@@ -49,7 +50,8 @@ const initialStep3: AmbassadorStep3Data = {
     bank_name: '',
     card_number: '',
     clabe: '',
-    accept_terms: false
+    accept_terms: false,
+    accept_communications: false
 };
 
 interface PreloadedMemberData {
@@ -65,11 +67,14 @@ interface Props {
     onSuccess?: () => void;
     linkedMemberstackId?: string;
     preloadedData?: PreloadedMemberData;
+    startAtStep?: number;
+    hideHeader?: boolean;
+    onStepChange?: (step: number) => void;
 }
 
-export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preloadedData }: Props) {
-    // Si viene preloadedData, empezar en paso 2 y marcar como miembro existente
-    const [currentStep, setCurrentStep] = useState(preloadedData ? 2 : 1);
+export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preloadedData, startAtStep, hideHeader, onStepChange }: Props) {
+    // Si viene preloadedData o startAtStep, empezar en ese paso
+    const [currentStep, setCurrentStep] = useState(startAtStep || (preloadedData ? 2 : 1));
     const [isExistingMember, setIsExistingMember] = useState(!!preloadedData);
 
     // Inicializar step1Data con los datos precargados si existen
@@ -105,6 +110,47 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     const [showSuccess, setShowSuccess] = useState(false);
     const [isLoadingMember, setIsLoadingMember] = useState(!preloadedData);
     const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
+
+    // Controlar visibilidad de las imágenes según el paso actual
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const catImage = document.getElementById('embajador-img-gato') as HTMLImageElement;
+            const girlImage = document.getElementById('embajador-img-nina') as HTMLImageElement;
+            const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement;
+            const exitoImage = document.getElementById('embajador-img-exito') as HTMLImageElement;
+            
+            // Ocultar todas primero
+            if (catImage) catImage.style.display = 'none';
+            if (girlImage) girlImage.style.display = 'none';
+            if (manImage) manImage.style.display = 'none';
+            if (exitoImage) exitoImage.style.display = 'none';
+            
+            // Si es éxito, mostrar imagen de éxito
+            if (showSuccess && exitoImage) {
+                exitoImage.style.display = '';
+                return;
+            }
+            
+            // Mostrar la correspondiente al paso actual
+            if (currentStep === 2 && girlImage) {
+                girlImage.style.display = '';
+            } else if (currentStep === 3 && manImage) {
+                manImage.style.display = '';
+            } else if (catImage) {
+                catImage.style.display = '';
+            }
+        }
+    }, [currentStep, showSuccess]);
+
+    // Notificar al padre cuando cambia el paso
+    useEffect(() => {
+        // Si es éxito, notificar como paso 4
+        if (showSuccess) {
+            onStepChange?.(4);
+        } else {
+            onStepChange?.(currentStep);
+        }
+    }, [currentStep, showSuccess, onStepChange]);
 
     // Cargar datos del miembro de Memberstack si está logueado
     useEffect(() => {
@@ -367,6 +413,14 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
             newErrors.confirm_password = 'Las contraseñas no coinciden';
         }
 
+        // Validar archivos INE
+        if (!step1Data.ine_front) {
+            newErrors.ine_front = 'Debes subir el frente de tu INE';
+        }
+        if (!step1Data.ine_back) {
+            newErrors.ine_back = 'Debes subir el reverso de tu INE';
+        }
+
         // Verificar edad mínima (18 años)
         if (step1Data.birth_date) {
             const birthDate = new Date(step1Data.birth_date);
@@ -429,48 +483,62 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     const handleNext = async () => {
         let isValid = false;
 
-        switch (currentStep) {
-            case 1:
-                isValid = validateStep1();
-                if (isValid) {
-                    // Verificar disponibilidad antes de avanzar
-                    const [curpCheck, emailCheck] = await Promise.all([
-                        checkAmbassadorAvailability('curp', step1Data.curp),
-                        checkAmbassadorAvailability('email', step1Data.email)
-                    ]);
+        try {
+            switch (currentStep) {
+                case 1:
+                    isValid = validateStep1();
+                    if (isValid) {
+                        try {
+                            // Verificar disponibilidad antes de avanzar
+                            const [curpCheck, emailCheck] = await Promise.all([
+                                checkAmbassadorAvailability('curp', step1Data.curp),
+                                checkAmbassadorAvailability('email', step1Data.email)
+                            ]);
 
-                    if (!curpCheck.available) {
-                        setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
-                        isValid = false;
+                            if (!curpCheck.available) {
+                                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
+                                isValid = false;
+                            }
+                            if (!emailCheck.available) {
+                                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+                                isValid = false;
+                            }
+                        } catch (err) {
+                            console.error('Error verificando disponibilidad:', err);
+                            // Si falla la verificación, permitir continuar igual
+                        }
                     }
-                    if (!emailCheck.available) {
-                        setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
-                        isValid = false;
-                    }
-                }
-                break;
-            case 2:
-                isValid = validateStep2();
-                break;
-            case 3:
-                isValid = validateStep3();
-                if (isValid) {
-                    // Verificar RFC antes de enviar
-                    const rfcCheck = await checkAmbassadorAvailability('rfc', step3Data.rfc);
-                    if (!rfcCheck.available) {
-                        setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
-                        return; // Detener envío
-                    }
+                    break;
+                case 2:
+                    isValid = validateStep2();
+                    break;
+                case 3:
+                    isValid = validateStep3();
+                    if (isValid) {
+                        try {
+                            // Verificar RFC antes de enviar
+                            const rfcCheck = await checkAmbassadorAvailability('rfc', step3Data.rfc);
+                            if (!rfcCheck.available) {
+                                setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
+                                return; // Detener envío
+                            }
+                        } catch (err) {
+                            console.error('Error verificando RFC:', err);
+                        }
 
-                    handleSubmit();
-                    return;
-                }
-                break;
-        }
+                        handleSubmit();
+                        return;
+                    }
+                    break;
+            }
 
-        if (isValid && currentStep < 3) {
-            setCurrentStep(prev => prev + 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (isValid && currentStep < 3) {
+                setCurrentStep(prev => prev + 1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        } catch (error) {
+            console.error('Error en handleNext:', error);
+            setErrors(prev => ({ ...prev, submit: 'Ocurrió un error. Intenta de nuevo.' }));
         }
     };
 
@@ -610,99 +678,9 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
         }
     };
 
-    // Pantalla de éxito - Modal
+    // Pantalla de éxito - Step 4
     if (showSuccess) {
-        return (
-            <div className={styles['ambassador-success-overlay']}>
-                <div className={styles['ambassador-success-modal']}>
-                    {/* Close button */}
-                    <button
-                        className={styles['ambassador-success-close']}
-                        onClick={() => window.location.href = '/'}
-                    >
-                        ✕
-                    </button>
-
-                    {/* Icon */}
-                    <div className={styles['ambassador-success-check']}>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
-                            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg>
-                    </div>
-
-                    {/* Title */}
-                    <h2 className={styles['ambassador-success-title']}>Tu solicitud fue enviada</h2>
-                    <p className={styles['ambassador-success-subtitle']}>
-                        Queremos que todo sea claro, justo y con amor por la comunidad.
-                    </p>
-
-                    {/* Main message */}
-                    <div className={styles['ambassador-success-message']}>
-                        <p>
-                            Gracias por querer sumar tu voz a la manada. Tu registro como Embajador está
-                            en revisión y recibirá respuesta en las próximas <strong>24-48 horas</strong>.
-                        </p>
-                        <p>
-                            Mientras tanto, siéntete con la tranquilidad de que ya diste el primer paso
-                            para ayudar a que más familias y sus compañeros estén protegidos.
-                        </p>
-                    </div>
-
-                    {/* What's next */}
-                    <div className={styles['ambassador-success-steps']}>
-                        <h4>¿Qué sigue?</h4>
-                        <ol>
-                            <li>
-                                <strong>Revisaremos tu solicitud en 24-48 horas</strong><br />
-                                Nuestro equipo verificará que todo esté en orden
-                            </li>
-                            <li>
-                                <strong>Te enviaremos tu código personal</strong><br />
-                                Si eres aprobado, recibirás un correo con tu código único y materiales para empezar
-                            </li>
-                            <li>
-                                <strong>¡Empieza a compartir!</strong><br />
-                                Usa tu código, comparte en redes, habla con amigos y empieza a generar comisiones
-                            </li>
-                            <li>
-                                <strong>Recibe tus pagos mensuales</strong><br />
-                                Cada mes depositaremos tus comisiones en la cuenta que registraste
-                            </li>
-                        </ol>
-                    </div>
-
-                    {/* Contact */}
-                    <div className={styles['ambassador-success-contact']}>
-                        <h4>¿Tienes dudas? Comunícate con nosotros</h4>
-                        <div className={styles['ambassador-success-contact-items']}>
-                            <a href="mailto:embajadores@clubpataamiga.com">
-                                <span>✉️</span> embajadores@clubpataamiga.com
-                            </a>
-                            <a href="https://wa.me/526448995874" target="_blank" rel="noopener noreferrer">
-                                <span>💬</span> WhatsApp: +52 644 899 5874
-                            </a>
-                        </div>
-                        <p className={styles['ambassador-success-contact-note']}>
-                            Respondemos en menos de 24 horas.
-                        </p>
-                    </div>
-
-                    {/* Footer */}
-                    <div className={styles['ambassador-success-footer']}>
-                        <p>
-                            Te avisaremos por correo y dentro de tu panel cuando tengamos noticias.
-                            <strong> ¡Qué alegría tenerte por aquí!</strong>
-                        </p>
-                        <button
-                            className={styles['ambassador-success-btn']}
-                            onClick={() => window.location.href = '/'}
-                        >
-                            Ir al inicio
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
+        return <Step4Success />;
     }
 
     // Estado de carga mientras se obtienen datos del miembro
@@ -726,49 +704,44 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     }
 
     return (
-        <div className={styles['ambassador-form-container']}>
-            {/* Header */}
-            <div className={styles['ambassador-header']}>
-                <img
-                    src="/images/logo-pata-amiga.png"
-                    alt="Pata Amiga"
-                    className={styles['ambassador-logo']}
-                />
-                <h1 className={styles['ambassador-title']}>Sé embajador pata amiga</h1>
-            </div>
+        <>
+            {/* Header - oculto cuando hideHeader es true */}
+            {!hideHeader && (
+                <>
+                    {/* Título principal */}
+                    <h1 className={styles.mainTitle}>sé embajador pata amiga</h1>
 
-            {/* Stepper */}
-            <div className={styles['ambassador-stepper']}>
-                <div className={`${styles['ambassador-step']} ${currentStep >= 1 || isExistingMember ? styles.active : ''} ${currentStep > 1 || isExistingMember ? styles.completed : ''}`}>
-                    <div className={styles['ambassador-step-icon']}>
-                        {currentStep > 1 || isExistingMember ? '✓' : '👤'}
+                    {/* Stepper */}
+                    <div className={styles.stepper}>
+                        <div className={styles.stepperItem}>
+                            <div className={`${styles.stepIcon} ${currentStep === 1 ? styles.stepIconActive : currentStep > 1 ? styles.stepIconCompleted : styles.stepIconInactive}`}>
+                                {currentStep > 1 ? '✓' : '👤'}
+                            </div>
+                            <span className={`${styles.stepLabel} ${currentStep === 1 ? styles.stepLabelActive : currentStep > 1 ? styles.stepLabelCompleted : styles.stepLabelInactive}`}>
+                                Completa tu perfil
+                            </span>
+                        </div>
+                        <span className={styles.stepArrow}>→</span>
+                        <div className={styles.stepperItem}>
+                            <div className={`${styles.stepIcon} ${currentStep === 2 ? styles.stepIconActive : currentStep > 2 ? styles.stepIconCompleted : styles.stepIconInactive}`}>
+                                {currentStep > 2 ? '✓' : '📋'}
+                            </div>
+                            <span className={`${styles.stepLabel} ${currentStep === 2 ? styles.stepLabelActive : currentStep > 2 ? styles.stepLabelCompleted : styles.stepLabelInactive}`}>
+                                información adicional
+                            </span>
+                        </div>
+                        <span className={styles.stepArrow}>→</span>
+                        <div className={styles.stepperItem}>
+                            <div className={`${styles.stepIcon} ${currentStep === 3 ? styles.stepIconActive : styles.stepIconInactive}`}>
+                                💰
+                            </div>
+                            <span className={`${styles.stepLabel} ${currentStep === 3 ? styles.stepLabelActive : styles.stepLabelInactive}`}>
+                                datos bancario y rfc
+                            </span>
+                        </div>
                     </div>
-                    <span className={styles['ambassador-step-label']}>
-                        {isExistingMember ? 'Perfil verificado' : 'Completa tu perfil'}
-                    </span>
-                </div>
-
-                <div className={`${styles['ambassador-step-line']} ${currentStep > 1 || isExistingMember ? styles.completed : ''}`}></div>
-
-                <div className={`${styles['ambassador-step']} ${currentStep >= 2 ? styles.active : ''} ${currentStep > 2 ? styles.completed : ''}`}>
-                    <div className={styles['ambassador-step-icon']}>
-                        {currentStep > 2 ? '✓' : '📋'}
-                    </div>
-                    <span className={styles['ambassador-step-label']}>Información adicional</span>
-                </div>
-
-                <div className={`${styles['ambassador-step-line']} ${currentStep > 2 ? styles.completed : ''}`}></div>
-
-                <div className={`${styles['ambassador-step']} ${currentStep >= 3 ? styles.active : ''}`}>
-                    <div className={styles['ambassador-step-icon']}>
-                        💰
-                    </div>
-                    <span className={styles['ambassador-step-label']}>Datos bancarios y RFC</span>
-                </div>
-            </div>
-
-            {/* Form Card */}
-            <div className={styles['ambassador-form-card']}>
+                </>
+            )}
                 {/* Mostrar error general */}
                 {errors.submit && (
                     <div style={{
@@ -813,6 +786,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         onFileUpload={handleFileUpload}
                         // @ts-ignore
                         onBlur={handleBlur}
+                        onNext={handleNext}
+                        onBack={() => window.location.href = '/'}
                     />
                 )}
 
@@ -821,6 +796,8 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         data={step2Data}
                         onChange={handleStep2Change}
                         errors={errors}
+                        onBack={handleBack}
+                        onNext={handleNext}
                     />
                 )}
 
@@ -831,61 +808,12 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                         errors={errors}
                         // @ts-ignore
                         onBlur={handleBlur}
+                        onBack={handleBack}
+                        onNext={handleNext}
+                        isSubmitting={isSubmitting}
                     />
                 )}
 
-                {/* Navigation */}
-                <div className={styles['ambassador-form-actions']}>
-                    <button
-                        type="button"
-                        className={styles['ambassador-btn-cancel']}
-                        onClick={() => window.history.back()}
-                    >
-                        Cancelar
-                    </button>
-                    {/* 5. Vincular a Memberstack (Actualizar Custom Fields LIGEROS) - MOVIDO AL SUBMIT */}
-
-                    <div className={styles['ambassador-nav-buttons']}>
-                        {/* Mostrar botón Anterior solo si puede retroceder */}
-                        {currentStep > 1 && !(isExistingMember && currentStep === 2) && (
-                            <button
-                                type="button"
-                                className={`${styles['ambassador-btn']} ${styles['ambassador-btn-secondary']}`}
-                                onClick={handleBack}
-                            >
-                                Anterior
-                            </button>
-                        )}
-
-                        <button
-                            type="button"
-                            className={`${styles['ambassador-btn']} ${styles['ambassador-btn-primary']}`}
-                            onClick={handleNext}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <span className={styles['ambassador-loading']}>
-                                    <span className={styles['ambassador-spinner']}></span>
-                                    Enviando...
-                                </span>
-                            ) : (
-                                currentStep === 3 ? 'Enviar solicitud' : 'Siguiente'
-                            )}
-                        </button>
-                    </div>
-                </div>
-
-                {/* Help floating */}
-                <div className={styles['ambassador-help']}>
-                    <div className={styles['ambassador-help-icon']}>❓</div>
-                    <div className={styles['ambassador-help-text']}>
-                        <p>¿Necesitas ayuda?</p>
-                        <p><strong>Contáctanos</strong></p>
-                        <a href="mailto:pata_amiga@gmail.com">📧 pata_amiga@gmail.com</a>
-                        <a href="tel:+526448995874">📞 +52 644 899 5874</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </>
     );
 }

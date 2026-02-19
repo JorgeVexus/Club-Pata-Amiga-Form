@@ -212,6 +212,7 @@ export interface AmbassadorStep3Data {
     card_number: string;
     clabe: string;
     accept_terms: boolean;
+    accept_communications?: boolean;
 }
 
 // Formulario completo
