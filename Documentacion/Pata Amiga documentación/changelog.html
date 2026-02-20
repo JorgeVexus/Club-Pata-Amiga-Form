@@ -475,6 +475,48 @@
                 </div>
 
                 <div class="section-card">
+                    <div class="section-title">🎨 Widget Unificado - Verificación de Pago</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">SECURITY</span>
+                            <div class="change-desc">
+                                <strong>Verificación de plan activo:</strong> El <code>unified-membership-widget.js</code> ahora verifica el estado de pago antes de mostrar cualquier contenido. Si el usuario no ha pagado, muestra la vista de "Completa tu membresía" en lugar del estado de revisión.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Vista de pago requerido:</strong> Nueva vista <code>renderPaymentRequiredView</code> con diseño naranja que muestra mensaje claro de "Completa tu membresía" y botón para ir a selección de plan.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Vista de pago en proceso:</strong> Nueva vista <code>renderPaymentProcessingView</code> con spinner de carga para usuarios cuyo pago está siendo confirmado por Stripe.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔐 Dashboard Protector & Webflow</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">SECURITY</span>
+                            <div class="change-desc">
+                                <strong>Protección de dashboards:</strong> El <code>dashboard-protector.html</code> ahora detecta usuarios sin plan activo (<code>pending_payment</code>) y redirige automáticamente a la página de selección de plan.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Corrección de URL:</strong> La URL de redirección para <code>payment_processing</code> en el login redirect handler se corrigió de <code>www.pataamiga.mx/pets/esperando-confirmacion</code> a <code>app.pataamiga.mx/payment-processing</code>.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
                     <div class="section-title">🔐 Fix: Registro con Google OAuth (v3)</div>
                     <ul class="change-list">
                         <li class="change-item">
