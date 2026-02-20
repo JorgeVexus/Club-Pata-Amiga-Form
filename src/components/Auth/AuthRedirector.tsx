@@ -38,13 +38,14 @@ export default function AuthRedirector() {
                         id: member.id,
                         email: member.auth?.email,
                         customFields: member.customFields,
-                        hasFirstName: !!member.customFields?.['first-name'],
-                        firstNameValue: member.customFields?.['first-name']
+                        hasPostalCode: !!member.customFields?.['postal-code'],
+                        postalCodeValue: member.customFields?.['postal-code']
                     }, null, 2));
 
-                    // Verificar si el usuario ya completó su perfil (tiene first-name con valor real)
-                    const firstNameValue = member.customFields?.['first-name'];
-                    const hasCompletedProfile = !!(firstNameValue && firstNameValue.trim() !== '');
+                    // Verificar si el usuario ya completó su perfil (tiene postal-code con valor real)
+                    // Nota: Usamos postal-code porque Google NO lo proporciona, a diferencia de first-name
+                    const postalCodeValue = member.customFields?.['postal-code'];
+                    const hasCompletedProfile = !!(postalCodeValue && postalCodeValue.trim() !== '');
                     
                     console.log(`🔍 [AuthRedirector] Verificación de perfil: hasCompletedProfile=${hasCompletedProfile}`);
                     
