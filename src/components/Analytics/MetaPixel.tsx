@@ -4,8 +4,8 @@ import { usePathname } from 'next/navigation';
 import Script from 'next/script';
 import { useEffect } from 'react';
 
-// Meta Pixel ID
-const PIXEL_ID = '881661401454063';
+// Meta Pixel ID proporcionado
+const PIXEL_ID = '205003538845205';
 
 // Extend Window interface for fbq
 declare global {
@@ -27,7 +27,7 @@ export default function MetaPixel() {
 
     return (
         <>
-            {/* Global Site Code Pixel - Facebook Pixel */}
+            {/* Meta Pixel Code */}
             <Script
                 id="fb-pixel"
                 strategy="afterInteractive"
@@ -46,6 +46,39 @@ export default function MetaPixel() {
           `,
                 }}
             />
+            <noscript>
+                <img
+                    height="1"
+                    width="1"
+                    style={{ display: 'none' }}
+                    src={`https://www.facebook.com/tr?id=${PIXEL_ID}&ev=PageView&noscript=1`}
+                    alt=""
+                />
+            </noscript>
         </>
     );
 }
+
+// Helper functions for tracking custom events
+export const trackEvent = (eventName: string, params?: Record<string, any>) => {
+    if (typeof window !== 'undefined' && window.fbq) {
+        window.fbq('track', eventName, params);
+    }
+};
+
+// Predefined events for common use cases
+export const trackLead = (params?: Record<string, any>) => {
+    trackEvent('Lead', params);
+};
+
+export const trackCompleteRegistration = (params?: Record<string, any>) => {
+    trackEvent('CompleteRegistration', params);
+};
+
+export const trackSubmitApplication = (params?: Record<string, any>) => {
+    trackEvent('SubmitApplication', params);
+};
+
+export const trackContact = (params?: Record<string, any>) => {
+    trackEvent('Contact', params);
+};

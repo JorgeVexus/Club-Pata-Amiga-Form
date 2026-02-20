@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 import styles from './AuthLanding.module.css';
 
 export default function AuthLanding() {
@@ -111,6 +112,9 @@ export default function AuthLanding() {
             await window.$memberstackDom.signupWithProvider({
                 provider: 'google'
             });
+            // Trackear registro exitoso con Google
+            trackLead({ content_name: 'User Registration - Google', content_category: 'signup' });
+            trackCompleteRegistration({ content_name: 'User Registration - Google', content_category: 'signup' });
             // Al regresar de Google, si es login, la página suele recargarse o el estado cambia.
             // Si es SPA, activamos la verificación de nuevo.
             window.location.reload();
@@ -132,6 +136,9 @@ export default function AuthLanding() {
             });
 
             if (data) {
+                // Trackear registro exitoso con Email
+                trackLead({ content_name: 'User Registration - Email', content_category: 'signup', email: email });
+                trackCompleteRegistration({ content_name: 'User Registration - Email', content_category: 'signup', email: email });
                 // Éxito, redirigir
                 router.push('/completar-perfil');
             } else {

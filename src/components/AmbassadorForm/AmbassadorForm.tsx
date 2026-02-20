@@ -13,6 +13,7 @@ import Step1PersonalInfo from './Step1PersonalInfo';
 import Step2AdditionalInfo from './Step2AdditionalInfo';
 import Step3BankingInfo from './Step3BankingInfo';
 import Step4Success from './Step4Success';
+import { trackLead, trackCompleteRegistration, trackSubmitApplication } from '@/components/Analytics/MetaPixel';
 import styles from './AmbassadorForm.module.css';
 
 // Initial values
@@ -662,9 +663,24 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
 
             if (data.success) {
                 // Track Meta Pixel Conversion
-                if (typeof window !== 'undefined' && (window as any).fbq) {
-                    (window as any).fbq('track', 'CompleteRegistration');
-                }
+                trackLead({
+                    content_name: 'Ambassador Registration',
+                    content_category: 'ambassador_signup',
+                    email: step1Data.email,
+                    phone: step1Data.phone
+                });
+                trackCompleteRegistration({
+                    content_name: 'Ambassador Registration',
+                    content_category: 'ambassador_signup',
+                    email: step1Data.email,
+                    city: step1Data.city,
+                    state: step1Data.state
+                });
+                trackSubmitApplication({
+                    content_name: 'Ambassador Application',
+                    content_category: 'ambassador_signup',
+                    email: step1Data.email
+                });
                 setShowSuccess(true);
                 onSuccess?.();
             } else {
