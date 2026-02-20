@@ -35,6 +35,15 @@ export default function AuthRedirector() {
                 if (member && member.id) {
                     console.log('✅ [AuthRedirector] Sesión detectada:', member.auth?.email);
 
+                    // Verificar si el usuario ya completó su perfil (tiene first-name)
+                    const hasCompletedProfile = !!member.customFields?.['first-name'];
+                    
+                    if (!hasCompletedProfile) {
+                        console.log('📝 [AuthRedirector] Usuario sin perfil completo, redirigiendo a completar-perfil');
+                        window.location.href = 'https://app.pataamiga.mx/completar-perfil';
+                        return;
+                    }
+
                     try {
                         const res = await fetch('/api/auth/check-role', {
                             method: 'POST',
