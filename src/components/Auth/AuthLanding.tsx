@@ -45,6 +45,17 @@ export default function AuthLanding() {
 
                 console.log('✅ Usuario detectado con sesión activa:', member.auth?.email);
 
+                // Verificar si el usuario ya completó su perfil (tiene first-name)
+                const hasCompletedProfile = !!member.customFields?.['first-name'];
+                
+                // Si el usuario NO ha completado su perfil, redirigir a completar-perfil
+                // Esto pasa cuando se registra con Google por primera vez
+                if (!hasCompletedProfile) {
+                    console.log('📝 Usuario con sesión pero sin perfil completo, redirigiendo a completar-perfil');
+                    router.push('/completar-perfil');
+                    return;
+                }
+
                 try {
                     const res = await fetch('/api/auth/check-role', {
                         method: 'POST',
@@ -88,7 +99,7 @@ export default function AuthLanding() {
             }
         };
         checkSession();
-    }, []);
+    }, [router]);
 
     // Función para cerrar sesión y permitir nuevo registro
     const handleLogoutAndRegister = async () => {
@@ -110,7 +121,12 @@ export default function AuthLanding() {
         setIsLoading(true);
         try {
             await window.$memberstackDom.signupWithProvider({
-                provider: 'google'
+                provider: 'google',
+                options: {
+                    // Forzar a Google a mostrar el selector de cuentas
+                    // para permitir cambiar de cuenta si se cierra sesión
+                    prompt: 'select_account'
+                }
             });
             // Trackear registro exitoso con Google
             trackLead({ content_name: 'User Registration - Google', content_category: 'signup' });

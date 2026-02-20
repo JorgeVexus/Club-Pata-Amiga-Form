@@ -473,6 +473,24 @@
                         </li>
                     </ul>
                 </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔐 Fix: Registro con Google OAuth</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Redirección post-registro Google:</strong> Al registrarse con Google, los usuarios nuevos ahora son redirigidos correctamente a <code>/completar-perfil</code> en lugar de quedar atorados en la pantalla de "sesión existente". Se verifica el campo <code>first-name</code> para detectar si el perfil está incompleto.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Selector de cuentas de Google:</strong> Se agregó el parámetro <code>prompt: 'select_account'</code> al flujo OAuth para permitir cambiar de cuenta de Google después de cerrar sesión, en lugar de forzar el uso de la cuenta anterior.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
             <!-- Entrada: 18 de Febrero -->
