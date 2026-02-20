@@ -687,8 +687,37 @@
 
         async loadData() {
             try {
+                // 🔴 PRIMERO: Verificar si tiene plan activo
+                console.log('📡 Unified Widget: Checking payment status...');
+                const roleRes = await fetch(`${CONFIG.apiUrl}/api/auth/check-role`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ memberstackId: this.member.id })
+                });
+                const roleData = await roleRes.json();
+                
+                if (roleData.success) {
+                    console.log('📊 Unified Widget: Role check result:', roleData.role);
+                    
+                    // Si no tiene plan activo, marcar como pending_payment
+                    if (roleData.role === 'pending_payment') {
+                        console.log('⚠️ Unified Widget: User has no active plan!');
+                        this.membershipStatus = 'pending_payment';
+                        this.pets = [];
+                        return; // No cargar mascotas, mostrar vista de pago
+                    }
+                    
+                    if (roleData.role === 'payment_processing') {
+                        console.log('⏳ Unified Widget: Payment is processing');
+                        this.membershipStatus = 'payment_processing';
+                        this.pets = [];
+                        return;
+                    }
+                }
+                
+                // ✅ Si tiene plan, cargar mascotas normalmente
                 const url = `${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`;
-                console.log('📡 Unified Widget: Fetching from:', url);
+                console.log('📡 Unified Widget: Fetching pets from:', url);
                 const res = await fetch(url);
                 const data = await res.json();
                 console.log('📥 Unified Widget: Received data:', data);
@@ -735,6 +764,22 @@
 
         render() {
             const firstName = this.member.customFields?.['first-name'] || 'Socio';
+
+            // 🔴 NUEVO: Verificar primero si no ha pagado
+            if (this.membershipStatus === 'pending_payment') {
+                console.log('💳 Unified Widget: User has not paid. Rendering payment required view.');
+                this.container.innerHTML = this.renderPaymentRequiredView(firstName);
+                this.container.classList.add('show');
+                return;
+            }
+
+            // ⏳ Si el pago está en proceso
+            if (this.membershipStatus === 'payment_processing') {
+                console.log('⏳ Unified Widget: Payment processing. Rendering processing view.');
+                this.container.innerHTML = this.renderPaymentProcessingView(firstName);
+                this.container.classList.add('show');
+                return;
+            }
 
             // 🆕 Lógica de Estatus Global: Solo mostramos la vista global si:
             // 1. El estatus es 'pending' Y (no hay mascotas o todas están en 'pending')
@@ -880,6 +925,77 @@
                                 Conocer beneficios de socio
                             </a>
                         </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 🔴 NUEVO: Vista cuando no ha pagado
+        renderPaymentRequiredView(firstName) {
+            return `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        Estás a un paso de unirte a la manada. <br>
+                        Completa tu membresía para activar todos los beneficios de Pata Amiga.
+                    </p>
+                </div>
+
+                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); border: 2px solid #FF9800;">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
+                    
+                    <div class="pata-pending-view">
+                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">💳</div>
+                        <h2 class="pata-title" style="margin-bottom: 8px; color: #E65100; text-align: center;">Completa tu membresía</h2>
+                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
+                            Vimos que aún no has completado el pago de tu membresía.<br>
+                            Selecciona un plan para activar todos los beneficios de la manada.
+                        </p>
+
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="https://app.pataamiga.mx/seleccion-plan?reason=complete_payment" class="pata-btn" style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
+                                Seleccionar Plan
+                            </a>
+                        </div>
+
+                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                            ¿Tienes problemas? Escríbenos a <a href="mailto:hola@pataamiga.mx" style="color: #00BBB4;">hola@pataamiga.mx</a>
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ⏳ NUEVO: Vista cuando el pago está en proceso
+        renderPaymentProcessingView(firstName) {
+            return `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        Estamos confirmando tu pago. <br>
+                        Esto puede tomar unos momentos...
+                    </p>
+                </div>
+
+                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #E0F7F6 0%, #B8E8E6 100%); border: 2px solid #00BBB4;">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
+                    
+                    <div class="pata-pending-view">
+                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">⏳</div>
+                        <h2 class="pata-title" style="margin-bottom: 8px; color: #00695C; text-align: center;">Confirmando tu pago</h2>
+                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
+                            Estamos procesando tu pago con Stripe.<br>
+                            Por favor, no cierres esta ventana.
+                        </p>
+
+                        <div style="text-align: center; margin: 30px 0;">
+                            <div style="width: 50px; height: 50px; border: 5px solid #E0F7F6; border-top-color: #00BBB4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                        </div>
+
+                        <p style="font-size: 14px; color: #666; text-align: center;">
+                            Se verificará automáticamente en unos segundos...
+                        </p>
                     </div>
                 </div>
             `;
