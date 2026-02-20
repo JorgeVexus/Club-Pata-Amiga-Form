@@ -486,6 +486,12 @@
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
+                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) ahora también verifica si el usuario tiene el perfil completo antes de redirigir al dashboard. Esto corrige el caso donde los usuarios de Google terminaban en el dashboard sin completar su perfil.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
                                 <strong>Selector de cuentas de Google:</strong> Se agregó el parámetro <code>prompt: 'select_account'</code> al flujo OAuth para permitir cambiar de cuenta de Google después de cerrar sesión, en lugar de forzar el uso de la cuenta anterior.
                             </div>
                         </li>
