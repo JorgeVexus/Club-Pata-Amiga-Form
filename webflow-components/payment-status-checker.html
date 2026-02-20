@@ -1,0 +1,159 @@
+<!-- ============================================ -->
+<!-- Script de Verificación de Estado de Pago -->
+<!-- ============================================ -->
+<!-- Este script debe ir en páginas que muestran estado de membresía -->
+<!-- Verifica si el usuario tiene plan activo antes de mostrar contenido -->
+
+<script>
+(function() {
+    'use strict';
+    
+    // ============================================
+    // CONFIGURACIÓN
+    // ============================================
+    const CONFIG = {
+        apiUrl: 'https://app.pataamiga.mx/api',
+        paymentUrl: 'https://app.pataamiga.mx/seleccion-plan?reason=complete_payment',
+        processingUrl: 'https://app.pataamiga.mx/payment-processing',
+        debug: true
+    };
+    
+    const logger = {
+        log: (...args) => CONFIG.debug && console.log('[PaymentChecker]', ...args),
+        error: (...args) => CONFIG.debug && console.error('[PaymentChecker]', ...args)
+    };
+    
+    // ============================================
+    // VERIFICAR ESTADO DE PAGO
+    // ============================================
+    async function checkPaymentStatus() {
+        logger.log('Verificando estado de pago...');
+        
+        // Esperar a Memberstack
+        let attempts = 0;
+        while (!window.$memberstackDom && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            attempts++;
+        }
+        
+        if (!window.$memberstackDom) {
+            logger.error('Memberstack no cargó');
+            return;
+        }
+        
+        try {
+            const member = await window.$memberstackDom.getCurrentMember();
+            
+            if (!member || !member.data) {
+                logger.log('No hay sesión activa');
+                return;
+            }
+            
+            logger.log('Verificando pago para:', member.data.auth?.email);
+            
+            // Verificar estado con la API
+            const response = await fetch(`${CONFIG.apiUrl}/auth/check-role`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ memberstackId: member.data.id })
+            });
+            
+            if (!response.ok) throw new Error('API error');
+            
+            const data = await response.json();
+            
+            if (!data.success) {
+                logger.error('Error en API:', data.error);
+                return;
+            }
+            
+            // Manejar según el rol/estado
+            if (data.role === 'pending_payment') {
+                logger.log('⚠️ Sin plan activo, redirigiendo a pago...');
+                showPaymentRequiredMessage();
+                return;
+            }
+            
+            if (data.role === 'payment_processing') {
+                logger.log('⏳ Pago en proceso, redirigiendo...');
+                window.location.href = CONFIG.processingUrl;
+                return;
+            }
+            
+            logger.log('✅ Tiene plan activo, mostrando contenido normal');
+            // El contenido normal se muestra (no hacemos nada)
+            
+        } catch (error) {
+            logger.error('Error verificando pago:', error);
+        }
+    }
+    
+    // ============================================
+    // MOSTRAR MENSAJE DE PAGO REQUERIDO
+    // ============================================
+    function showPaymentRequiredMessage() {
+        // Buscar el contenedor del widget
+        const widgetContainer = document.querySelector('.membership-status-widget, [data-membership-status], .waiting-period-container');
+        
+        if (widgetContainer) {
+            // Reemplazar el contenido con mensaje de pago
+            widgetContainer.innerHTML = `
+                <div style="
+                    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+                    border: 2px solid #FF9800;
+                    border-radius: 20px;
+                    padding: 40px;
+                    text-align: center;
+                    max-width: 600px;
+                    margin: 0 auto;
+                    font-family: 'Outfit', sans-serif;
+                ">
+                    <div style="font-size: 60px; margin-bottom: 20px;">💳</div>
+                    <h2 style="
+                        font-family: 'Fraiche', sans-serif;
+                        font-size: 28px;
+                        color: #E65100;
+                        margin-bottom: 15px;
+                    ">Completa tu membresía</h2>
+                    <p style="
+                        font-size: 16px;
+                        color: #666;
+                        margin-bottom: 25px;
+                        line-height: 1.6;
+                    ">
+                        Vimos que aún no has completado el pago de tu membresía.<br>
+                        Selecciona un plan para activar todos los beneficios de la manada.
+                    </p>
+                    <button onclick="window.location.href='${CONFIG.paymentUrl}'" style="
+                        background: #FE8F15;
+                        color: white;
+                        border: 2px solid #000;
+                        border-radius: 50px;
+                        padding: 16px 40px;
+                        font-size: 18px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        font-family: 'Fraiche', sans-serif;
+                    ">Seleccionar Plan</button>
+                </div>
+            `;
+        } else {
+            // Si no encontramos el widget, redirigir directamente
+            logger.log('Widget no encontrado, redirigiendo...');
+            window.location.href = CONFIG.paymentUrl;
+        }
+    }
+    
+    // ============================================
+    // INICIAR
+    // ============================================
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', checkPaymentStatus);
+    } else {
+        checkPaymentStatus();
+    }
+})();
+</script>

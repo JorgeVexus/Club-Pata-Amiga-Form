@@ -83,6 +83,19 @@
                     return;
                 }
                 
+                // 🔴 NUEVO: Verificar si tiene plan activo
+                if (data.role === 'pending_payment') {
+                    logger.log('⚠️ Usuario sin plan activo, redirigiendo a selección de plan...');
+                    window.location.href = 'https://app.pataamiga.mx/seleccion-plan?reason=complete_payment';
+                    return;
+                }
+                
+                if (data.role === 'payment_processing') {
+                    logger.log('⏳ Pago en proceso, redirigiendo a página de espera...');
+                    window.location.href = 'https://app.pataamiga.mx/payment-processing';
+                    return;
+                }
+                
                 logger.log('✅ Acceso permitido para rol:', data.role);
                 
                 // Mostrar contenido (por si está oculto)
