@@ -475,30 +475,24 @@
                 </div>
 
                 <div class="section-card">
-                    <div class="section-title">🔐 Fix: Registro con Google OAuth (v2)</div>
+                    <div class="section-title">🔐 Fix: Registro con Google OAuth (v3)</div>
                     <ul class="change-list">
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Redirección post-registro Google:</strong> Al registrarse con Google, los usuarios nuevos ahora son redirigidos correctamente a <code>/completar-perfil</code> en lugar de quedar atorados en la pantalla de "sesión existente". Se verifica el campo <code>first-name</code> para detectar si el perfil está incompleto.
+                                <strong>Detección correcta de perfil incompleto:</strong> Se cambió la validación de <code>first-name</code> a <code>postal-code</code>. Google OAuth proporciona automáticamente nombre y apellido, por lo que usar <code>first-name</code> no detectaba usuarios nuevos. El código postal es un campo obligatorio que solo se obtiene en el formulario de registro.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) ahora también verifica si el usuario tiene el perfil completo antes de redirigir al dashboard.
+                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) también verifica <code>postal-code</code> antes de redirigir al dashboard.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">IMPROVEMENT</span>
                             <div class="change-desc">
-                                <strong>Logout de Google:</strong> Al cerrar sesión, ahora se abre una ventana a <code>accounts.google.com/logout</code> para limpiar también la sesión de Google. Esto permite seleccionar una cuenta diferente al volver a intentar registrar.
-                            </div>
-                        </li>
-                        <li class="change-item">
-                            <span class="tag improvement">DEBUG</span>
-                            <div class="change-desc">
-                                <strong>Logging detallado:</strong> Se agregaron logs en consola para depurar los valores de <code>customFields</code> y verificar por qué no se detecta correctamente el perfil incompleto.
+                                <strong>Logout de Google:</strong> Al cerrar sesión, se abre una ventana a <code>accounts.google.com/logout</code> para limpiar la sesión de Google y permitir cambiar de cuenta.
                             </div>
                         </li>
                     </ul>
