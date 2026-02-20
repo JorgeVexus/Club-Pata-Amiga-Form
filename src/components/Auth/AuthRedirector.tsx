@@ -34,9 +34,19 @@ export default function AuthRedirector() {
 
                 if (member && member.id) {
                     console.log('✅ [AuthRedirector] Sesión detectada:', member.auth?.email);
+                    console.log('📝 [AuthRedirector] Member data:', JSON.stringify({
+                        id: member.id,
+                        email: member.auth?.email,
+                        customFields: member.customFields,
+                        hasFirstName: !!member.customFields?.['first-name'],
+                        firstNameValue: member.customFields?.['first-name']
+                    }, null, 2));
 
-                    // Verificar si el usuario ya completó su perfil (tiene first-name)
-                    const hasCompletedProfile = !!member.customFields?.['first-name'];
+                    // Verificar si el usuario ya completó su perfil (tiene first-name con valor real)
+                    const firstNameValue = member.customFields?.['first-name'];
+                    const hasCompletedProfile = !!(firstNameValue && firstNameValue.trim() !== '');
+                    
+                    console.log(`🔍 [AuthRedirector] Verificación de perfil: hasCompletedProfile=${hasCompletedProfile}`);
                     
                     if (!hasCompletedProfile) {
                         console.log('📝 [AuthRedirector] Usuario sin perfil completo, redirigiendo a completar-perfil');

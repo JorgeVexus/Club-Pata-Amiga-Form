@@ -44,15 +44,25 @@ export default function AuthLanding() {
                 }
 
                 console.log('✅ Usuario detectado con sesión activa:', member.auth?.email);
+                console.log('📝 Memberstack member data:', JSON.stringify({
+                    id: member.id,
+                    email: member.auth?.email,
+                    customFields: member.customFields,
+                    hasFirstName: !!member.customFields?.['first-name'],
+                    firstNameValue: member.customFields?.['first-name']
+                }, null, 2));
 
-                // Verificar si el usuario ya completó su perfil (tiene first-name)
-                const hasCompletedProfile = !!member.customFields?.['first-name'];
+                // Verificar si el usuario ya completó su perfil (tiene first-name con valor real)
+                const firstNameValue = member.customFields?.['first-name'];
+                const hasCompletedProfile = !!(firstNameValue && firstNameValue.trim() !== '');
+                
+                console.log(`🔍 Verificación de perfil: hasCompletedProfile=${hasCompletedProfile}, firstNameValue="${firstNameValue}"`);
                 
                 // Si el usuario NO ha completado su perfil, redirigir a completar-perfil
                 // Esto pasa cuando se registra con Google por primera vez
                 if (!hasCompletedProfile) {
                     console.log('📝 Usuario con sesión pero sin perfil completo, redirigiendo a completar-perfil');
-                    router.push('/completar-perfil');
+                    window.location.href = '/completar-perfil';
                     return;
                 }
 
@@ -107,7 +117,19 @@ export default function AuthLanding() {
         try {
             await window.$memberstackDom.logout();
             setExistingSession(null);
-            setIsLoading(false);
+            
+            // Abrir logout de Google en una ventana emergente para limpiar la sesión de Google
+            // Esto permite que al volver a intentar registrar con Google, se muestre el selector de cuentas
+            const googleLogoutWindow = window.open('https://accounts.google.com/logout', 'google_logout', 'width=500,height=500');
+            
+            // Cerrar la ventana de logout después de 2 segundos y recargar
+            setTimeout(() => {
+                if (googleLogoutWindow && !googleLogoutWindow.closed) {
+                    googleLogoutWindow.close();
+                }
+                window.location.reload();
+            }, 2000);
+            
         } catch (e) {
             console.error('Error cerrando sesión:', e);
             setIsLoading(false);
@@ -120,22 +142,27 @@ export default function AuthLanding() {
     const handleGoogleLogin = async () => {
         setIsLoading(true);
         try {
+            console.log('🔐 Iniciando registro con Google...');
+            
+            // Intentar forzar el selector de cuentas con prompt
+            // Nota: Esto depende de si Memberstack pasa estos parámetros a Google
             await window.$memberstackDom.signupWithProvider({
                 provider: 'google',
                 options: {
-                    // Forzar a Google a mostrar el selector de cuentas
-                    // para permitir cambiar de cuenta si se cierra sesión
-                    prompt: 'select_account'
+                    prompt: 'select_account consent',
+                    access_type: 'offline'
                 }
             });
+            
             // Trackear registro exitoso con Google
             trackLead({ content_name: 'User Registration - Google', content_category: 'signup' });
             trackCompleteRegistration({ content_name: 'User Registration - Google', content_category: 'signup' });
-            // Al regresar de Google, si es login, la página suele recargarse o el estado cambia.
-            // Si es SPA, activamos la verificación de nuevo.
+            
+            // Al regresar de Google, la página recarga
             window.location.reload();
         } catch (error) {
-            console.error('Signup error', error);
+            console.error('❌ Signup error:', error);
+            setError('Error al iniciar sesión con Google. Intenta de nuevo.');
             setIsLoading(false);
         }
     };
