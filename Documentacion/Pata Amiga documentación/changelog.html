@@ -337,9 +337,16 @@
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
             <!-- Los items del menú se generarán aquí -->
-            <button class="nav-item active" onclick="switchTab('2026-02-17')">
-                <span>17 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-20')">
+                <span>20 de Feb, 2026</span>
                 <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-18')">
+                <span>18 de Feb, 2026</span>
+                <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-17')">
+                <span>17 de Feb, 2026</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-14')">
                 <span>14 de Feb, 2026</span>
@@ -379,8 +386,162 @@
     <main class="main-content">
         <div class="changelog-container">
 
-            <!-- Entrada: 17 de Febrero (HOY) -->
-            <div id="2026-02-17" class="changelog-entry active">
+            <!-- Entrada: 20 de Febrero (HOY) -->
+            <div id="2026-02-20" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Persistencia de Registro & Manejo de Miembros sin Pagar</h1>
+                        <div class="entry-meta">Jueves, 20 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.9.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔄 Persistencia de Datos en Registro</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">UX</span>
+                            <div class="change-desc">
+                                <strong>Carga automática de datos personales:</strong> El formulario de registro (paso 1) ahora carga automáticamente los datos existentes desde Supabase si el usuario ya había iniciado el registro anteriormente.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">VALIDATION</span>
+                            <div class="change-desc">
+                                <strong>CURP reclamable:</strong> La validación de CURP ahora permite reutilizar el CURP propio si ya fue registrado previamente por el mismo usuario (detectado por memberstack_id).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">DATABASE</span>
+                            <div class="change-desc">
+                                <strong>UPSERT en Supabase:</strong> Cambio de INSERT a UPSERT en la tabla users, permitiendo actualizar registros existentes en lugar de crear duplicados.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🐾 Persistencia de Mascotas & Embajador</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">UX</span>
+                            <div class="change-desc">
+                                <strong>Carga automática de mascotas:</strong> El paso 2 de registro ahora carga automáticamente las mascotas previamente registradas desde Supabase, incluyendo URLs de fotos ya subidas.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Código de embajador persistente:</strong> Nueva columna <code>ambassador_code</code> en tabla users. El código se guarda en Supabase y se recupera automáticamente al volver al paso 2.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UI</span>
+                            <div class="change-desc">
+                                <strong>Indicador de carga:</strong> Se agregó spinner de carga mientras se recuperan las mascotas existentes del servidor.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">💳 Manejo de Miembros sin Pagar</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">SECURITY</span>
+                            <div class="change-desc">
+                                <strong>Verificación de plan activo:</strong> El endpoint <code>/api/auth/check-role</code> ahora verifica si el usuario tiene un plan activo en Memberstack antes de permitir el acceso al dashboard.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">REDIRECT</span>
+                            <div class="change-desc">
+                                <strong>Redirección inteligente:</strong> Usuarios sin plan activo son redirigidos a <code>/seleccion-plan?reason=complete_payment</code> con mensaje explicativo especial.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Página de procesamiento:</strong> Nueva página <code>/payment-processing</code> para mostrar a usuarios cuyo pago está siendo confirmado por Stripe, con verificación automática cada 10 segundos.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">WEBFLOW</span>
+                            <div class="change-desc">
+                                <strong>Login redirect handler:</strong> Actualización del script en Webflow para manejar los nuevos roles <code>pending_payment</code> y <code>payment_processing</code>.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 18 de Febrero -->
+            <div id="2026-02-18" class="changelog-entry">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Documentos Legales, Meta Pixel & Fixes</h1>
+                        <div class="entry-meta">Martes, 18 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v2.8.5</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📄 Sistema de Documentos Legales</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Audiencia segmentada:</strong> Implementación del sistema de documentos legales con soporte para audiencia segmentada. Permite definir qué usuarios ven qué documentos según reglas de segmentación.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">DATABASE</span>
+                            <div class="change-desc">
+                                <strong>Nueva migración SQL:</strong> <code>20260219_legal_docs_audience.sql</code> agrega campos de audiencia a la tabla <code>legal_documents</code>.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📊 Marketing & Analytics</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">NEW</span>
+                            <div class="change-desc">
+                                <strong>Meta Pixel instalado:</strong> Implementación del Pixel de Meta (Facebook) con ID <code>205003538845205</code> para tracking de registros y conversiones.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">TRACKING</span>
+                            <div class="change-desc">
+                                <strong>Eventos de conversión:</strong> Tracking de <code>Lead</code> y <code>CompleteRegistration</code> tanto para registro con Google como con Email.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔧 Fixes & Mejoras</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Sanitización de nombres de archivo:</strong> Corrección en la sanitización de nombres de archivo para Supabase Storage para prevenir errores con caracteres especiales.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">FORM</span>
+                            <div class="change-desc">
+                                <strong>Campo género de mascota:</strong> Se agregó el campo de género (Macho/Hembra) al formulario de registro de mascotas.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Entrada: 17 de Febrero -->
+            <div id="2026-02-17" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>API Vet-Bot v2 & Integración con Webflow</h1>
