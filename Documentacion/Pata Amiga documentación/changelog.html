@@ -475,7 +475,7 @@
                 </div>
 
                 <div class="section-card">
-                    <div class="section-title">🔐 Fix: Registro con Google OAuth</div>
+                    <div class="section-title">🔐 Fix: Registro con Google OAuth (v2)</div>
                     <ul class="change-list">
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
@@ -486,13 +486,19 @@
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) ahora también verifica si el usuario tiene el perfil completo antes de redirigir al dashboard. Esto corrige el caso donde los usuarios de Google terminaban en el dashboard sin completar su perfil.
+                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) ahora también verifica si el usuario tiene el perfil completo antes de redirigir al dashboard.
                             </div>
                         </li>
                         <li class="change-item">
-                            <span class="tag fix">BUGFIX</span>
+                            <span class="tag improvement">IMPROVEMENT</span>
                             <div class="change-desc">
-                                <strong>Selector de cuentas de Google:</strong> Se agregó el parámetro <code>prompt: 'select_account'</code> al flujo OAuth para permitir cambiar de cuenta de Google después de cerrar sesión, en lugar de forzar el uso de la cuenta anterior.
+                                <strong>Logout de Google:</strong> Al cerrar sesión, ahora se abre una ventana a <code>accounts.google.com/logout</code> para limpiar también la sesión de Google. Esto permite seleccionar una cuenta diferente al volver a intentar registrar.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">DEBUG</span>
+                            <div class="change-desc">
+                                <strong>Logging detallado:</strong> Se agregaron logs en consola para depurar los valores de <code>customFields</code> y verificar por qué no se detecta correctamente el perfil incompleto.
                             </div>
                         </li>
                     </ul>
