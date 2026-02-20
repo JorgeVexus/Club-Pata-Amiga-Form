@@ -1,114 +1,38 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import StepIndicator from '@/components/UI/StepIndicator';
-import PlanSelection from '@/components/PlanSelection/PlanSelection';
-import { getRegistrationProgress, markStepComplete, canAccessStep, getCompletedSteps, resetRegistrationProgress } from '@/utils/registration-progress';
-import HelpSection from '@/components/UI/HelpSection';
-import BrandLogo from '@/components/UI/BrandLogo';
-import styles from './page.module.css';
+import { Suspense } from 'react';
+import PlanSelectionContent from './PlanSelectionContent';
 
 export default function PlanSelectionPage() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-    const [isCompletingPayment, setIsCompletingPayment] = useState(false);
-
-    useEffect(() => {
-        // Detectar si viene de login sin pagar
-        const reason = searchParams.get('reason');
-        if (reason === 'complete_payment') {
-            setIsCompletingPayment(true);
-            // No verificar progreso de registro, ya tiene cuenta
-            return;
-        }
-
-        // Verificar si puede acceder a este paso (solo en producción o si no es localhost)
-        if (window.location.hostname !== 'localhost' && !canAccessStep(3)) {
-            const progress = getRegistrationProgress();
-            if (!progress.step1Complete) {
-                router.push('/completar-perfil');
-            } else if (!progress.step2Complete) {
-                router.push('/registrar-mascotas');
-            }
-            return;
-        }
-
-        // Cargar pasos completados
-        const completed = getCompletedSteps();
-        setCompletedSteps(completed);
-    }, [router, searchParams]);
-
-    const handleStepClick = (step: number) => {
-        const progress = getRegistrationProgress();
-
-        if (step === 1) {
-            router.push('/completar-perfil');
-        } else if (step === 2 && progress.step1Complete) {
-            router.push('/registrar-mascotas');
-        } else if (step === 3 && progress.step1Complete && progress.step2Complete) {
-            router.push('/seleccion-plan');
-        }
-    };
-
-    const handlePlanSuccess = () => {
-        // Marcar paso 3 como completo
-        markStepComplete(3);
-
-        // Limpiar progreso ya que el registro está completo
-        resetRegistrationProgress();
-
-        // Redirigir a página de éxito o dashboard
-        // router.push('/registro-exitoso');
-        console.log('¡Registro completo!');
-    };
-
-    const handleGoBack = () => {
-        router.push('/registrar-mascotas');
-    };
-
     return (
-        <div className={styles.pageBackground}>
-            <BrandLogo />
-            <div className={styles.whiteCard}>
-                {/* Imagen decorativa de las patas */}
-                <img
-                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990ae4a1602b7aad2a19aa3_pagos%20img.png"
-                    alt=""
-                    className={styles.decorativeImage}
-                    aria-hidden
-                />
-
-                <h1 className={styles.mainTitle}>
-                    {isCompletingPayment ? 'Completa tu membresía 🐾' : 'Únete a la manada'}
-                </h1>
-
-                {isCompletingPayment && (
-                    <div className={styles.paymentAlert}>
-                        <p>👋 ¡Hola de nuevo! Vimos que aún no has completado el pago de tu membresía.</p>
-                        <p>Selecciona un plan para activar todos los beneficios de la manada.</p>
-                    </div>
-                )}
-
-                {!isCompletingPayment && (
-                    <StepIndicator
-                        currentStep={3}
-                        completedSteps={completedSteps}
-                        onStepClick={handleStepClick}
-                    />
-                )}
-
-                <div className={styles.contentLayout}>
-                    <div className={styles.formColumn}>
-                        <PlanSelection
-                            onSuccess={handlePlanSuccess}
-                            onBack={isCompletingPayment ? undefined : handleGoBack}
-                        />
-                        <HelpSection />
-                    </div>
+        <Suspense fallback={
+            <div style={{
+                minHeight: '100vh',
+                background: '#00BBB4',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontFamily: 'Outfit, sans-serif'
+            }}>
+                <div style={{
+                    background: 'white',
+                    padding: '40px',
+                    borderRadius: '20px',
+                    textAlign: 'center'
+                }}>
+                    <div style={{
+                        width: '50px',
+                        height: '50px',
+                        border: '4px solid #E0F7F6',
+                        borderTopColor: '#00BBB4',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 20px'
+                    }}></div>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                    <p>Cargando...</p>
                 </div>
             </div>
-        </div>
+        }>
+            <PlanSelectionContent />
+        </Suspense>
     );
 }
