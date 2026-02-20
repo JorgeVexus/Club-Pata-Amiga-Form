@@ -14,7 +14,7 @@ import {
     formatWaitingPeriodMessage
 } from '@/services/pet.service';
 import { uploadMultipleFiles } from '@/services/supabase.service';
-import { syncPetStoriesToSupabase, registerPetsInSupabase } from '@/app/actions/user.actions';
+import { syncPetStoriesToSupabase, registerPetsInSupabase, getPetsByUserId, getUserDataByMemberstackId, updateUserAmbassadorCode } from '@/app/actions/user.actions';
 import type { PetFormData } from '@/types/pet.types';
 import styles from './PetRegistrationForm.module.css';
 
@@ -31,6 +31,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
             registrationDate: new Date().toISOString(),
         },
     ]);
+    const [isLoadingPets, setIsLoadingPets] = useState(true);
     const [ambassadorCode, setAmbassadorCode] = useState('');
     const [ambassadorValidation, setAmbassadorValidation] = useState<{
         isValidating: boolean;
@@ -41,6 +42,79 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPopup, setShowPopup] = useState<string | null>(null);
+
+    // Cargar mascotas existentes desde Supabase al montar
+    React.useEffect(() => {
+        const loadExistingPets = async () => {
+            try {
+                // Esperar a que Memberstack cargue
+                let attempts = 0;
+                while (!window.$memberstackDom && attempts < 20) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                    attempts++;
+                }
+
+                if (!window.$memberstackDom) {
+                    setIsLoadingPets(false);
+                    return;
+                }
+
+                const { data: member } = await window.$memberstackDom.getCurrentMember();
+                if (!member?.id) {
+                    setIsLoadingPets(false);
+                    return;
+                }
+
+                console.log('📥 Cargando mascotas existentes desde Supabase...');
+                
+                // Cargar mascotas
+                const result = await getPetsByUserId(member.id);
+                // Cargar datos del usuario (incluye código de embajador)
+                const userResult = await getUserDataByMemberstackId(member.id);
+
+                if (userResult.success && userResult.userData?.ambassador_code) {
+                    setAmbassadorCode(userResult.userData.ambassador_code);
+                    // Validar el código para mostrar el nombre del embajador
+                    validateAmbassadorCode(userResult.userData.ambassador_code);
+                }
+
+                if (result.success && result.pets && result.pets.length > 0) {
+                    console.log('✅ Mascotas cargadas:', result.pets);
+
+                    // Mapear datos de Supabase al formato del formulario
+                    const mappedPets: Partial<PetFormData>[] = result.pets.map((pet: any) => ({
+                        name: pet.name || '',
+                        petType: pet.breed?.toLowerCase().includes('gato') ? 'gato' : 'perro',
+                        gender: pet.gender || '',
+                        isMixed: pet.breed === 'Mestizo',
+                        breed: pet.breed || '',
+                        breedSize: pet.breed_size || '',
+                        age: pet.age || '',
+                        // No podemos recuperar los archivos File, solo las URLs
+                        photo1Url: pet.photo_url || '',
+                        photo2Url: pet.photo2_url || '',
+                        vetCertificateUrl: pet.vet_certificate_url || '',
+                        // Período de carencia
+                        waitingPeriodEnd: pet.waiting_period_end || '',
+                        waitingPeriodDays: pet.waiting_period_end 
+                            ? Math.ceil((new Date(pet.waiting_period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                            : 0,
+                        isOriginal: true,
+                        isActive: pet.status !== 'inactive',
+                        registrationDate: pet.created_at || new Date().toISOString(),
+                    }));
+
+                    setPets(mappedPets);
+                }
+            } catch (error) {
+                console.error('Error cargando mascotas:', error);
+            } finally {
+                setIsLoadingPets(false);
+            }
+        };
+
+        loadExistingPets();
+    }, []);
 
     // Agregar otra mascota
     const handleAddPet = () => {
@@ -239,6 +313,19 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 console.error('Error no crítico sincronizando historias:', syncError);
             }
 
+            // 1.6 Guardar código de embajador en Supabase
+            if (ambassadorCode && ambassadorValidation.isValid) {
+                try {
+                    const currentMember = await window.$memberstackDom.getCurrentMember();
+                    if (currentMember?.data?.id) {
+                        await updateUserAmbassadorCode(currentMember.data.id, ambassadorCode);
+                        console.log('✅ Código de embajador guardado en Supabase');
+                    }
+                } catch (ambassadorError) {
+                    console.error('Error no crítico guardando código de embajador:', ambassadorError);
+                }
+            }
+
             // 2. SEGUNDO: Subir fotos a Supabase y actualizar URLs
             console.log('Subiendo fotos a Supabase...');
 
@@ -351,6 +438,14 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                         <path d="M40.1442 54.4845H26.0236C24.9183 54.4845 24.0256 53.5917 24.0256 52.4865C24.0256 51.3812 24.9183 50.4885 26.0236 50.4885H40.1442C41.2495 50.4885 42.1422 51.3812 42.1422 52.4865C42.1422 53.5917 41.2495 54.4845 40.1442 54.4845Z" fill="white" />
                     </svg>
                 </div>
+
+                {/* Indicador de carga */}
+                {isLoadingPets && (
+                    <div className={styles.loadingPets}>
+                        <div className={styles.spinner}></div>
+                        <p>Cargando tus mascotas...</p>
+                    </div>
+                )}
 
                 {/* Tarjetas de mascotas */}
                 {pets.map((pet, index) => (

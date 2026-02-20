@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import StepIndicator from '@/components/UI/StepIndicator';
 import PlanSelection from '@/components/PlanSelection/PlanSelection';
 import { getRegistrationProgress, markStepComplete, canAccessStep, getCompletedSteps, resetRegistrationProgress } from '@/utils/registration-progress';
@@ -11,9 +11,19 @@ import styles from './page.module.css';
 
 export default function PlanSelectionPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
+    const [isCompletingPayment, setIsCompletingPayment] = useState(false);
 
     useEffect(() => {
+        // Detectar si viene de login sin pagar
+        const reason = searchParams.get('reason');
+        if (reason === 'complete_payment') {
+            setIsCompletingPayment(true);
+            // No verificar progreso de registro, ya tiene cuenta
+            return;
+        }
+
         // Verificar si puede acceder a este paso (solo en producción o si no es localhost)
         if (window.location.hostname !== 'localhost' && !canAccessStep(3)) {
             const progress = getRegistrationProgress();
@@ -28,7 +38,7 @@ export default function PlanSelectionPage() {
         // Cargar pasos completados
         const completed = getCompletedSteps();
         setCompletedSteps(completed);
-    }, [router]);
+    }, [router, searchParams]);
 
     const handleStepClick = (step: number) => {
         const progress = getRegistrationProgress();
@@ -70,19 +80,30 @@ export default function PlanSelectionPage() {
                     aria-hidden
                 />
 
-                <h1 className={styles.mainTitle}>Únete a la manada</h1>
+                <h1 className={styles.mainTitle}>
+                    {isCompletingPayment ? 'Completa tu membresía 🐾' : 'Únete a la manada'}
+                </h1>
 
-                <StepIndicator
-                    currentStep={3}
-                    completedSteps={completedSteps}
-                    onStepClick={handleStepClick}
-                />
+                {isCompletingPayment && (
+                    <div className={styles.paymentAlert}>
+                        <p>👋 ¡Hola de nuevo! Vimos que aún no has completado el pago de tu membresía.</p>
+                        <p>Selecciona un plan para activar todos los beneficios de la manada.</p>
+                    </div>
+                )}
+
+                {!isCompletingPayment && (
+                    <StepIndicator
+                        currentStep={3}
+                        completedSteps={completedSteps}
+                        onStepClick={handleStepClick}
+                    />
+                )}
 
                 <div className={styles.contentLayout}>
                     <div className={styles.formColumn}>
                         <PlanSelection
                             onSuccess={handlePlanSuccess}
-                            onBack={handleGoBack}
+                            onBack={isCompletingPayment ? undefined : handleGoBack}
                         />
                         <HelpSection />
                     </div>

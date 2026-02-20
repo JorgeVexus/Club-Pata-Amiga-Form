@@ -4,6 +4,41 @@
     width: 100%;
 }
 
+/* Loading Pets Styles */
+.loadingPets {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.loadingPets p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: #666;
+    margin: 0;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #E0F7F6;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .form {
     position: relative;
     background: var(--verde, #9FD406);

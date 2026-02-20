@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { memberstackAdmin } from '@/services/memberstack-admin.service';
 
 // Headers CORS
 function corsHeaders() {
@@ -32,7 +33,6 @@ export async function POST(request: NextRequest) {
         }
 
         // 1. Check if user is Admin/SuperAdmin
-        // Usamos el cliente con SERVICE_ROLE para bypass RLS, ya que AdminAuthService usa el cliente público
         const { data: user } = await supabase
             .from('users')
             .select('role')
@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
             .from('ambassadors')
             .select('id, status')
             .eq('linked_memberstack_id', memberstackId)
-            .eq('linked_memberstack_id', memberstackId)
             .maybeSingle();
 
         if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended') {
@@ -66,7 +65,40 @@ export async function POST(request: NextRequest) {
             }, { headers: corsHeaders() });
         }
 
-        console.log(`ℹ️ [Check-Role] No es embajador activo (Status: ${ambassador?.status})`);
+        // 3. Check if user has an active plan in Memberstack
+        const memberDetails = await memberstackAdmin.getMember(memberstackId);
+        
+        if (memberDetails.success && memberDetails.data) {
+            const planConnections = memberDetails.data.planConnections || [];
+            const hasActivePlan = planConnections.some(
+                (p: any) => p.status === 'ACTIVE' || p.status === 'TRIAL'
+            );
+            
+            // Also check for pending/succeeded payments in Stripe
+            const hasPendingPayment = planConnections.some(
+                (p: any) => p.status === 'PENDING' || p.status === 'INCOMPLETE'
+            );
+
+            if (!hasActivePlan && !hasPendingPayment) {
+                console.log(`⚠️ [Check-Role] Miembro sin plan activo: ${memberstackId}`);
+                return NextResponse.json({
+                    success: true,
+                    role: 'pending_payment',
+                    message: 'Debes completar el pago de tu membresía para continuar'
+                }, { headers: corsHeaders() });
+            }
+
+            if (hasPendingPayment && !hasActivePlan) {
+                console.log(`⏳ [Check-Role] Miembro con pago pendiente: ${memberstackId}`);
+                return NextResponse.json({
+                    success: true,
+                    role: 'payment_processing',
+                    message: 'Tu pago está siendo procesado'
+                }, { headers: corsHeaders() });
+            }
+        }
+
+        console.log(`✅ [Check-Role] Miembro activo: ${memberstackId}`);
 
         return NextResponse.json({
             success: true,

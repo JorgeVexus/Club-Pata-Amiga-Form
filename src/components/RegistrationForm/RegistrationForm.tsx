@@ -13,7 +13,7 @@ import FileUpload from '@/components/FormFields/FileUpload';
 import PostalCodeInput from '@/components/FormFields/PostalCodeInput';
 import PhoneInput from '@/components/FormFields/PhoneInput';
 import Toggle from '@/components/FormFields/Toggle';
-import { checkCurpAvailability, registerUserInSupabase, updateUserCrmContactId } from '@/app/actions/user.actions';
+import { checkCurpAvailability, registerUserInSupabase, updateUserCrmContactId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 import { createMemberstackUser, completeMemberProfile } from '@/services/memberstack.service';
 import { uploadMultipleFiles, uploadFile } from '@/services/supabase.service';
 import { validateCURP, formatCURP } from '@/utils/curp-validator';
@@ -30,7 +30,7 @@ interface RegistrationFormProps {
 export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFormProps = {}) {
     const [member, setMember] = useState<any>(null); // Store current member
 
-    // Check auth on mount
+    // Check auth on mount and load existing data from Supabase
     React.useEffect(() => {
         const checkAuth = async () => {
             // Pequeño delay para asegurar carga script
@@ -44,18 +44,58 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                         window.location.href = '/';
                     } else {
                         console.log('🚧 Localhost detectado: Bypass de redirección de sesión para desarrollo.');
-                        // En localhost, permitimos ver el form aunque no haya sesión
-                        // Podríamos mockear un member si fuera necesario
                     }
                 } else {
                     setMember(member);
-                    setFormData(prev => ({
-                        ...prev,
-                        email: member.auth.email,
-                        // Pre-fill name if available (e.g. from Google)
-                        firstName: member.customFields?.['first-name'] || prev.firstName || '',
-                        paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
-                    }));
+                    
+                    // Cargar datos existentes desde Supabase
+                    try {
+                        console.log('📥 Cargando datos existentes desde Supabase...');
+                        const result = await getUserDataByMemberstackId(member.id);
+                        
+                        if (result.success && result.userData) {
+                            const userData = result.userData;
+                            console.log('✅ Datos cargados de Supabase:', userData);
+                            
+                            // Pre-llenar formulario con datos existentes
+                            setFormData(prev => ({
+                                ...prev,
+                                email: member.auth.email,
+                                firstName: userData.first_name || member.customFields?.['first-name'] || prev.firstName || '',
+                                paternalLastName: userData.last_name || member.customFields?.['paternal-last-name'] || prev.paternalLastName || '',
+                                maternalLastName: userData.mother_last_name || prev.maternalLastName || '',
+                                gender: userData.gender || prev.gender || undefined,
+                                birthDate: userData.birth_date || prev.birthDate || '',
+                                curp: userData.curp || prev.curp || '',
+                                // Note: isForeigner no está en Supabase, se mantiene en Memberstack
+                                postalCode: userData.postal_code || prev.postalCode || '',
+                                state: userData.state || prev.state || '',
+                                city: userData.city || prev.city || '',
+                                colony: userData.colony || prev.colony || '',
+                                address: userData.address || prev.address || '',
+                                phone: userData.phone || prev.phone || '',
+                            }));
+                            
+                            showToast('Hemos recuperado tus datos guardados.', 'success');
+                        } else {
+                            // No hay datos en Supabase, usar solo Memberstack
+                            setFormData(prev => ({
+                                ...prev,
+                                email: member.auth.email,
+                                firstName: member.customFields?.['first-name'] || prev.firstName || '',
+                                paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
+                            }));
+                        }
+                    } catch (error) {
+                        console.error('Error cargando datos de Supabase:', error);
+                        // Fallback a datos de Memberstack
+                        setFormData(prev => ({
+                            ...prev,
+                            email: member.auth.email,
+                            firstName: member.customFields?.['first-name'] || prev.firstName || '',
+                            paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
+                        }));
+                    }
                 }
             }
         };
@@ -183,25 +223,21 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
         // Primero validamos formato localmente
         const curpValidation = validateCURP(formData.curp);
         if (!curpValidation.isValid) {
-            // El error ya lo maneja validateForm, pero aquí forcejeamos update
-            // O mejor dejamos que validateForm lo maneje en submit, 
-            // pero para UX en blur es bueno mostrar formato invalido.
             setErrors(prev => ({ ...prev, curp: curpValidation.error || 'CURP inválida' }));
             return;
         }
 
-        // Verificar disponibilidad en servidor
+        // Verificar disponibilidad en servidor (pasando member.id para permitir reclamar CURP propio)
         try {
-            const { available, error } = await checkCurpAvailability(formData.curp);
+            const { available, error } = await checkCurpAvailability(formData.curp, member?.id);
 
             if (error) {
-                // Si hay error de sistema, no bloqueamos pero logueamos
                 console.error('Error verificando CURP:', error);
                 return;
             }
 
             if (!available) {
-                const msg = 'Este CURP ya está registrado en nuestra manada.';
+                const msg = 'Este CURP ya está registrado por otro usuario.';
                 setErrors(prev => ({ ...prev, curp: msg }));
                 showToast('⚠️ ' + msg, 'warning');
             } else {
@@ -237,11 +273,11 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
 
         setIsSubmitting(true);
 
-        // Validar unicidad de CURP antes de enviar
+        // Validar unicidad de CURP antes de enviar (pasando member.id para permitir reclamar CURP propio)
         if (formData.curp) {
-            const { available, error } = await checkCurpAvailability(formData.curp);
+            const { available, error } = await checkCurpAvailability(formData.curp, member?.id);
             if (!available && !error) { // Solo bloqueamos si confirmado no disponible
-                const msg = 'Este CURP ya está registrado.';
+                const msg = 'Este CURP ya está registrado por otro usuario.';
                 setErrors(prev => ({ ...prev, curp: msg }));
                 showToast('⚠️ ' + msg, 'warning');
                 scrollToError(['curp'], { curp: msg });

@@ -38,7 +38,10 @@ CREATE TABLE IF NOT EXISTS users (
     -- Membership Information
     membership_status VARCHAR(50) DEFAULT 'pending',
     waiting_period_end_date DATE, -- 90 days from registration
-    solidarity_fund_available BOOLEAN DEFAULT FALSE
+    solidarity_fund_available BOOLEAN DEFAULT FALSE,
+    
+    -- Referral Information
+    ambassador_code VARCHAR(50)
 );
 
 -- =============================================

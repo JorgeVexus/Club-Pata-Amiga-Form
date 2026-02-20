@@ -29,36 +29,51 @@ const getServiceRoleClient = () => {
 
 /**
  * Verifica si un CURP ya está registrado en la base de datos.
+ * Si se proporciona currentMemberId, permite "reclamar" el CURP si pertenece al mismo usuario.
  */
-export async function checkCurpAvailability(curp: string) {
+export async function checkCurpAvailability(curp: string, currentMemberId?: string) {
     const supabase = getServiceRoleClient()
     if (!supabase) return { available: true, error: 'configuration_missing' }
 
     try {
-        const { count, error } = await supabase
+        // Buscar si existe el CURP
+        const { data: existingUser, error } = await supabase
             .from('users')
-            .select('id', { count: 'exact', head: true })
+            .select('id, memberstack_id, curp')
             .eq('curp', curp)
+            .maybeSingle()
 
         if (error) {
             console.error('Error al verificar CURP:', error)
             return { available: true, error: error.message }
         }
 
-        return { available: count === 0 }
+        // Si no existe, está disponible
+        if (!existingUser) {
+            return { available: true }
+        }
+
+        // Si existe pero pertenece al mismo usuario (mismo memberstack_id), está disponible
+        if (currentMemberId && existingUser.memberstack_id === currentMemberId) {
+            console.log('✅ CURP pertenece al usuario actual, permitiendo reutilización');
+            return { available: true, isOwnData: true }
+        }
+
+        // Si existe y no es del usuario actual, no está disponible
+        return { available: false }
     } catch (error) {
         console.error('Error inesperado al verificar CURP:', error)
-        // En caso de error, preferimos no bloquear el registro
         return { available: true, error: 'unknown_error' }
     }
 }
 
 /**
- * Registra un usuario en la tabla 'public.users' de Supabase
+ * Registra o actualiza un usuario en la tabla 'public.users' de Supabase
  * Se usa después de crear el usuario en Memberstack
+ * Usa UPSERT: si el usuario ya existe (por memberstack_id), actualiza sus datos
  */
 export async function registerUserInSupabase(userData: any, memberstackId: string, documentUrls?: { ineFront?: string, ineBack?: string }) {
-    console.log('🔄 [Server Action] Intentando registrar usuario en Supabase:', {
+    console.log('🔄 [Server Action] Intentando registrar/actualizar usuario en Supabase:', {
         memberstackId,
         email: userData.email,
         curp: userData.curp
@@ -71,9 +86,11 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
     }
 
     try {
+        // Usar UPSERT: inserta si no existe, actualiza si existe (basado en memberstack_id)
+        // Nota: updated_at se maneja automáticamente por el trigger en la base de datos
         const { data, error } = await supabase
             .from('users')
-            .insert({
+            .upsert({
                 memberstack_id: memberstackId,
                 first_name: userData.firstName,
                 last_name: userData.paternalLastName,
@@ -89,20 +106,20 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
                 colony: userData.colony,
                 address: userData.address,
                 membership_status: 'pending',
-                approval_status: 'pending',
-                is_foreigner: userData.isForeigner || false,
-                ine_front_url: documentUrls?.ineFront || null,
-                ine_back_url: documentUrls?.ineBack || null,
-                created_at: new Date().toISOString(),
+                // NOTA: Los documentos INE se manejan en Memberstack, no en Supabase
+                // NOTA: No incluimos updated_at, se actualiza automáticamente por el trigger
+            }, {
+                onConflict: 'memberstack_id', // Si existe memberstack_id, actualiza
+                ignoreDuplicates: false // No ignorar, actualizar
             })
-            .select() // Seleccionar para confirmar inserción
+            .select()
 
         if (error) {
             console.error('❌ [Server Action] Error de Supabase:', error)
             return { success: false, error: error.message }
         }
 
-        console.log('✅ [Server Action] Usuario registrado en Supabase exitosamente:', data)
+        console.log('✅ [Server Action] Usuario registrado/actualizado en Supabase exitosamente:', data)
         return { success: true }
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error)
@@ -352,6 +369,35 @@ export async function getUserDataByMemberstackId(memberstackId: string) {
         return { success: true, userData: data };
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado en getUserDataByMSID:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Actualiza el código de embajador de un usuario
+ * Se usa en el paso 2 de registro de mascotas
+ */
+export async function updateUserAmbassadorCode(memberstackId: string, ambassadorCode: string) {
+    console.log('🔄 [Server Action] Actualizando código de embajador:', { memberstackId, ambassadorCode });
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({ ambassador_code: ambassadorCode })
+            .eq('memberstack_id', memberstackId);
+
+        if (error) {
+            console.error('❌ [Server Action] Error actualizando código de embajador:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ [Server Action] Código de embajador actualizado');
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado:', error);
         return { success: false, error: error.message };
     }
 }

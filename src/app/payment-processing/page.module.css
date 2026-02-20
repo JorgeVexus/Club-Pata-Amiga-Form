@@ -1,0 +1,105 @@
+.pageBackground {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #E0F7F6 0%, #B8E8E6 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem;
+}
+
+.whiteCard {
+    background: white;
+    border-radius: 50px;
+    padding: 3rem;
+    width: 100%;
+    max-width: 600px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+    margin-top: 2rem;
+    position: relative;
+}
+
+.content {
+    text-align: center;
+}
+
+.icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.8rem;
+    color: #2D3748;
+    margin-bottom: 1rem;
+}
+
+.message {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    color: #718096;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #E0F7F6;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1.5rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.subMessage {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #A0AEC0;
+    margin-bottom: 2rem;
+}
+
+.helpSection {
+    padding-top: 2rem;
+    border-top: 1px solid #E2E8F0;
+}
+
+.helpSection p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #718096;
+    margin-bottom: 0.5rem;
+}
+
+.contactLink {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: #00BBB4;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.contactLink:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .whiteCard {
+        padding: 2rem 1.5rem;
+        border-radius: 30px;
+    }
+
+    .title {
+        font-size: 1.4rem;
+    }
+
+    .message {
+        font-size: 1rem;
+    }
+}
