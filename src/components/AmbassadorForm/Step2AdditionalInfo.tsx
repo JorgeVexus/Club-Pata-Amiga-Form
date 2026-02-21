@@ -8,7 +8,7 @@ import styles from './Step2AdditionalInfo.module.css';
 interface Step2Props {
     data: AmbassadorStep2Data;
     onChange: (field: keyof AmbassadorStep2Data, value: string) => void;
-    errors: Partial<Record<keyof AmbassadorStep2Data, string>>;
+    errors: Partial<Record<keyof AmbassadorStep2Data, string>> & Record<string, string>;
     onBack?: () => void;
     onNext?: () => void;
 }
