@@ -356,6 +356,49 @@ export default function AmbassadorDetailModal({
                                     <p>{amb.rejection_reason}</p>
                                 </div>
                             )}
+
+                            {/* INE Documents */}
+                            {(amb.ine_front_url || amb.ine_back_url) && (
+                                <div className={`${styles.section} ${styles.fullWidth}`}>
+                                    <h4>🪪 Identificación Oficial (INE)</h4>
+                                    <div className={styles.ineContainer}>
+                                        {amb.ine_front_url && (
+                                            <div className={styles.ineImageWrapper}>
+                                                <p className={styles.ineLabel}>Frente</p>
+                                                <a 
+                                                    href={amb.ine_front_url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className={styles.ineLink}
+                                                >
+                                                    <img 
+                                                        src={amb.ine_front_url} 
+                                                        alt="INE Frente" 
+                                                        className={styles.ineImage}
+                                                    />
+                                                </a>
+                                            </div>
+                                        )}
+                                        {amb.ine_back_url && (
+                                            <div className={styles.ineImageWrapper}>
+                                                <p className={styles.ineLabel}>Reverso</p>
+                                                <a 
+                                                    href={amb.ine_back_url} 
+                                                    target="_blank" 
+                                                    rel="noopener noreferrer"
+                                                    className={styles.ineLink}
+                                                >
+                                                    <img 
+                                                        src={amb.ine_back_url} 
+                                                        alt="INE Reverso" 
+                                                        className={styles.ineImage}
+                                                    />
+                                                </a>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     ) : activeTab === 'referrals' ? (
                         <div className={styles.referralsList}>
