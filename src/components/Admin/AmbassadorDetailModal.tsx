@@ -187,8 +187,8 @@ export default function AmbassadorDetailModal({
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
-                <div className={styles.header}>
-                    <div className={styles.headerInfo}>
+                <div className={styles.modalHeader}>
+                    <div className={styles.headerMain}>
                         <div className={styles.avatar}>
                             {amb.first_name[0]}{amb.paternal_surname[0]}
                         </div>
@@ -368,15 +368,15 @@ export default function AmbassadorDetailModal({
                                         {amb.ine_front_url ? (
                                             <div className={styles.ineImageWrapper}>
                                                 <p className={styles.ineLabel}>Frente</p>
-                                                <a 
-                                                    href={amb.ine_front_url} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={amb.ine_front_url}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className={styles.ineLink}
                                                 >
-                                                    <img 
-                                                        src={amb.ine_front_url} 
-                                                        alt="INE Frente" 
+                                                    <img
+                                                        src={amb.ine_front_url}
+                                                        alt="INE Frente"
                                                         className={styles.ineImage}
                                                         onError={(e) => {
                                                             console.error('❌ Error loading INE front image:', amb.ine_front_url);
@@ -394,15 +394,15 @@ export default function AmbassadorDetailModal({
                                         {amb.ine_back_url ? (
                                             <div className={styles.ineImageWrapper}>
                                                 <p className={styles.ineLabel}>Reverso</p>
-                                                <a 
-                                                    href={amb.ine_back_url} 
-                                                    target="_blank" 
+                                                <a
+                                                    href={amb.ine_back_url}
+                                                    target="_blank"
                                                     rel="noopener noreferrer"
                                                     className={styles.ineLink}
                                                 >
-                                                    <img 
-                                                        src={amb.ine_back_url} 
-                                                        alt="INE Reverso" 
+                                                    <img
+                                                        src={amb.ine_back_url}
+                                                        alt="INE Reverso"
                                                         className={styles.ineImage}
                                                         onError={(e) => {
                                                             console.error('❌ Error loading INE back image:', amb.ine_back_url);

@@ -119,19 +119,19 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
             const girlImage = document.getElementById('embajador-img-nina') as HTMLImageElement;
             const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement;
             const exitoImage = document.getElementById('embajador-img-exito') as HTMLImageElement;
-            
+
             // Ocultar todas primero
             if (catImage) catImage.style.display = 'none';
             if (girlImage) girlImage.style.display = 'none';
             if (manImage) manImage.style.display = 'none';
             if (exitoImage) exitoImage.style.display = 'none';
-            
+
             // Si es éxito, mostrar imagen de éxito
             if (showSuccess && exitoImage) {
                 exitoImage.style.display = '';
                 return;
             }
-            
+
             // Mostrar la correspondiente al paso actual
             if (currentStep === 2 && girlImage) {
                 girlImage.style.display = '';
@@ -599,6 +599,11 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                 const uploadData = await uploadRes.json();
                 if (uploadData.success) {
                     ineFrontUrl = uploadData.url;
+                } else {
+                    console.error('Error uploading front INE:', uploadData.error);
+                    setErrors({ submit: 'Error al subir el frente de tu INE. Por favor intenta de nuevo.' });
+                    setIsSubmitting(false);
+                    return;
                 }
             }
 
@@ -614,6 +619,11 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                 const uploadData = await uploadRes.json();
                 if (uploadData.success) {
                     ineBackUrl = uploadData.url;
+                } else {
+                    console.error('Error uploading back INE:', uploadData.error);
+                    setErrors({ submit: 'Error al subir el reverso de tu INE. Por favor intenta de nuevo.' });
+                    setIsSubmitting(false);
+                    return;
                 }
             }
 
@@ -758,77 +768,77 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
                     </div>
                 </>
             )}
-                {/* Mostrar error general */}
-                {errors.submit && (
-                    <div style={{
-                        background: 'rgba(239, 68, 68, 0.1)',
-                        border: '1px solid #ef4444',
-                        borderRadius: '8px',
-                        padding: '15px',
-                        marginBottom: '20px',
-                        color: '#ef4444'
-                    }}>
-                        {errors.submit}
-                    </div>
-                )}
+            {/* Mostrar error general */}
+            {errors.submit && (
+                <div style={{
+                    background: 'rgba(239, 68, 68, 0.1)',
+                    border: '1px solid #ef4444',
+                    borderRadius: '8px',
+                    padding: '15px',
+                    marginBottom: '20px',
+                    color: '#ef4444'
+                }}>
+                    {errors.submit}
+                </div>
+            )}
 
-                {/* Mensaje de bienvenida para miembros existentes */}
-                {isExistingMember && currentStep === 2 && (
-                    <div style={{
-                        background: 'linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05))',
-                        border: '1px solid #00BBB4',
-                        borderRadius: '12px',
-                        padding: '20px',
-                        marginBottom: '25px',
-                        textAlign: 'center'
-                    }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>👋</div>
-                        <h3 style={{ color: '#00BBB4', margin: '0 0 8px 0', fontSize: '1.1rem' }}>
-                            ¡Hola, {step1Data.first_name}!
-                        </h3>
-                        <p style={{ color: '#555', margin: 0, fontSize: '0.95rem' }}>
-                            Tus datos personales ya están registrados en tu cuenta.
-                            Solo necesitas completar la información adicional para ser embajador.
-                        </p>
-                    </div>
-                )}
+            {/* Mensaje de bienvenida para miembros existentes */}
+            {isExistingMember && currentStep === 2 && (
+                <div style={{
+                    background: 'linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05))',
+                    border: '1px solid #00BBB4',
+                    borderRadius: '12px',
+                    padding: '20px',
+                    marginBottom: '25px',
+                    textAlign: 'center'
+                }}>
+                    <div style={{ fontSize: '2rem', marginBottom: '10px' }}>👋</div>
+                    <h3 style={{ color: '#00BBB4', margin: '0 0 8px 0', fontSize: '1.1rem' }}>
+                        ¡Hola, {step1Data.first_name}!
+                    </h3>
+                    <p style={{ color: '#555', margin: 0, fontSize: '0.95rem' }}>
+                        Tus datos personales ya están registrados en tu cuenta.
+                        Solo necesitas completar la información adicional para ser embajador.
+                    </p>
+                </div>
+            )}
 
-                {/* Steps Content */}
-                {currentStep === 1 && (
-                    <Step1PersonalInfo
-                        data={step1Data}
-                        onChange={handleStep1Change}
-                        errors={errors}
-                        onFileUpload={handleFileUpload}
-                        // @ts-ignore
-                        onBlur={handleBlur}
-                        onNext={handleNext}
-                        onBack={() => window.location.href = '/'}
-                    />
-                )}
+            {/* Steps Content */}
+            {currentStep === 1 && (
+                <Step1PersonalInfo
+                    data={step1Data}
+                    onChange={handleStep1Change}
+                    errors={errors}
+                    onFileUpload={handleFileUpload}
+                    // @ts-ignore
+                    onBlur={handleBlur}
+                    onNext={handleNext}
+                    onBack={() => window.location.href = '/'}
+                />
+            )}
 
-                {currentStep === 2 && (
-                    <Step2AdditionalInfo
-                        data={step2Data}
-                        onChange={handleStep2Change}
-                        errors={errors}
-                        onBack={handleBack}
-                        onNext={handleNext}
-                    />
-                )}
+            {currentStep === 2 && (
+                <Step2AdditionalInfo
+                    data={step2Data}
+                    onChange={handleStep2Change}
+                    errors={errors}
+                    onBack={handleBack}
+                    onNext={handleNext}
+                />
+            )}
 
-                {currentStep === 3 && (
-                    <Step3BankingInfo
-                        data={step3Data}
-                        onChange={handleStep3Change}
-                        errors={errors}
-                        // @ts-ignore
-                        onBlur={handleBlur}
-                        onBack={handleBack}
-                        onNext={handleNext}
-                        isSubmitting={isSubmitting}
-                    />
-                )}
+            {currentStep === 3 && (
+                <Step3BankingInfo
+                    data={step3Data}
+                    onChange={handleStep3Change}
+                    errors={errors}
+                    // @ts-ignore
+                    onBlur={handleBlur}
+                    onBack={handleBack}
+                    onNext={handleNext}
+                    isSubmitting={isSubmitting}
+                />
+            )}
 
         </>
     );
