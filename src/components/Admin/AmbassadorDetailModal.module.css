@@ -521,3 +521,41 @@
     object-fit: cover;
     display: block;
 }
+
+.inePlaceholder {
+    width: 100%;
+    height: 180px;
+    background: #f0f0f0;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.noIneSection {
+    background: #FFF8E1;
+    border: 1px solid #FFE082;
+}
+
+.noIneSection h4 {
+    color: #F57C00;
+}
+
+.noIneMessage {
+    color: #F57C00;
+    font-weight: 500;
+    margin: 8px 0;
+}
+
+.debugInfo {
+    font-size: 0.75rem;
+    color: #888;
+    font-family: monospace;
+    margin-top: 8px;
+    padding: 4px 8px;
+    background: #f5f5f5;
+    border-radius: 4px;
+}

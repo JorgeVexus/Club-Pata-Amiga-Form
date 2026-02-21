@@ -31,6 +31,9 @@ export default function AmbassadorDetailModal({
             const response = await fetch(`/api/ambassadors/${ambassador.id}`);
             const data = await response.json();
             if (data.success) {
+                console.log('🔍 Ambassador data loaded:', data.data);
+                console.log('🪪 INE Front URL:', data.data.ine_front_url);
+                console.log('🪪 INE Back URL:', data.data.ine_back_url);
                 setFullDetails(data.data);
                 setReferrals(data.data.referrals || []);
                 setPayouts(data.data.payouts || []);
@@ -358,11 +361,11 @@ export default function AmbassadorDetailModal({
                             )}
 
                             {/* INE Documents */}
-                            {(amb.ine_front_url || amb.ine_back_url) && (
+                            {(amb.ine_front_url || amb.ine_back_url) ? (
                                 <div className={`${styles.section} ${styles.fullWidth}`}>
                                     <h4>🪪 Identificación Oficial (INE)</h4>
                                     <div className={styles.ineContainer}>
-                                        {amb.ine_front_url && (
+                                        {amb.ine_front_url ? (
                                             <div className={styles.ineImageWrapper}>
                                                 <p className={styles.ineLabel}>Frente</p>
                                                 <a 
@@ -375,11 +378,20 @@ export default function AmbassadorDetailModal({
                                                         src={amb.ine_front_url} 
                                                         alt="INE Frente" 
                                                         className={styles.ineImage}
+                                                        onError={(e) => {
+                                                            console.error('❌ Error loading INE front image:', amb.ine_front_url);
+                                                            (e.target as HTMLImageElement).style.display = 'none';
+                                                        }}
                                                     />
                                                 </a>
                                             </div>
+                                        ) : (
+                                            <div className={styles.ineImageWrapper}>
+                                                <p className={styles.ineLabel}>Frente</p>
+                                                <div className={styles.inePlaceholder}>No disponible</div>
+                                            </div>
                                         )}
-                                        {amb.ine_back_url && (
+                                        {amb.ine_back_url ? (
                                             <div className={styles.ineImageWrapper}>
                                                 <p className={styles.ineLabel}>Reverso</p>
                                                 <a 
@@ -392,11 +404,26 @@ export default function AmbassadorDetailModal({
                                                         src={amb.ine_back_url} 
                                                         alt="INE Reverso" 
                                                         className={styles.ineImage}
+                                                        onError={(e) => {
+                                                            console.error('❌ Error loading INE back image:', amb.ine_back_url);
+                                                            (e.target as HTMLImageElement).style.display = 'none';
+                                                        }}
                                                     />
                                                 </a>
                                             </div>
+                                        ) : (
+                                            <div className={styles.ineImageWrapper}>
+                                                <p className={styles.ineLabel}>Reverso</p>
+                                                <div className={styles.inePlaceholder}>No disponible</div>
+                                            </div>
                                         )}
                                     </div>
+                                </div>
+                            ) : (
+                                <div className={`${styles.section} ${styles.fullWidth} ${styles.noIneSection}`}>
+                                    <h4>🪪 Identificación Oficial (INE)</h4>
+                                    <p className={styles.noIneMessage}>⚠️ Este embajador no tiene INE subida</p>
+                                    <p className={styles.debugInfo}>DEBUG: ine_front_url={amb.ine_front_url || 'null'}, ine_back_url={amb.ine_back_url || 'null'}</p>
                                 </div>
                             )}
                         </div>
