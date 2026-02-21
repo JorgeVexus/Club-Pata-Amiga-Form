@@ -445,6 +445,17 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     const validateStep2 = (): boolean => {
         const newErrors: Record<string, string> = {};
 
+        // Validar que al menos una red social esté presente
+        const hasSocialNetwork = 
+            step2Data.instagram.trim() || 
+            step2Data.facebook.trim() || 
+            step2Data.tiktok.trim() || 
+            step2Data.other_social.trim();
+        
+        if (!hasSocialNetwork) {
+            newErrors.social_networks = 'Debes proporcionar al menos una red social';
+        }
+
         if (!step2Data.motivation.trim()) {
             newErrors.motivation = 'Cuéntanos por qué quieres ser embajador';
         } else if (step2Data.motivation.length < 50) {

@@ -19,8 +19,8 @@ export default function Step2AdditionalInfo({ data, onChange, errors, onBack, on
             {/* Subtítulo -- La imagen de la niña se maneja desde page.tsx -- */}
             <div className={styles.landingSubtitle}>
                 <h2>información adicional</h2>
-                <p>Comparte tus redes sociales <span className={styles.optionalTag}>(Opcional)</span></p>
-                <span className={styles.privacyNote}>Aunque no es obligatorio, nos ayuda a entender como te gusta compartir y cómo podemos apoyarte mejor</span>
+                <p>Comparte tus redes sociales <span className={styles.requiredTag}>(Al menos una es obligatoria)</span></p>
+                <span className={styles.privacyNote}>Nos ayuda a entender como te gusta compartir y cómo podemos apoyarte mejor</span>
             </div>
 
             {/* Formulario naranja */}
@@ -37,6 +37,9 @@ export default function Step2AdditionalInfo({ data, onChange, errors, onBack, on
 
                 {/* Redes sociales */}
                 <div className={styles.sectionTitle}>Redes sociales</div>
+                {errors.social_networks && (
+                    <div className={styles.errorBanner}>{errors.social_networks}</div>
+                )}
 
                 <div className={styles.socialInputs}>
                     {/* Instagram */}
