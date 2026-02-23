@@ -1211,6 +1211,68 @@
         `;
     }
 
+    // Estado: Aprobado pero sin código - Necesita elegir código
+    function renderApprovedNoCode(ambassador) {
+        return `
+            <div class="ambassador-pending-card" style="background: linear-gradient(135deg, #FFD93D 0%, #F59E0B 100%);">
+                <div class="ambassador-pending-title">
+                    ¡Felicidades! Eres Embajador
+                    <span style="font-size: 2.5rem;">🎉</span>
+                </div>
+                
+                <p class="ambassador-pending-subtitle">
+                    Tu solicitud ha sido aprobada. Ahora necesitas elegir tu código de embajador único.<br>
+                    Este código te identificará y tus referidos lo usarán para obtener beneficios.
+                </p>
+
+                <div style="background: rgba(255,255,255,0.2); border-radius: 15px; padding: 20px; margin: 20px 0;">
+                    <p style="margin: 0 0 15px 0; font-size: 0.95rem;">
+                        📧 Te hemos enviado un email con un link para elegir tu código.<br>
+                        Revisa tu bandeja de entrada (y spam).
+                    </p>
+                </div>
+
+                <button class="ambassador-btn-apply" onclick="window.requestNewCodeEmail('${ambassador.id}')">
+                    📧 Reenviar email
+                </button>
+            </div>
+
+            <div class="ambassador-benefits-grid">
+                <div class="ambassador-benefit-card yellow">
+                    <div class="ambassador-benefit-icon">💰</div>
+                    <div class="ambassador-benefit-title">Gana por compartir</div>
+                    <div class="ambassador-benefit-desc">
+                        Recibe una comisión del 10% por cada persona que se una usando tu código.
+                    </div>
+                </div>
+
+                <div class="ambassador-benefit-card orange">
+                    <div class="ambassador-benefit-icon">🔗</div>
+                    <div class="ambassador-benefit-title">Invita a tu manera</div>
+                    <div class="ambassador-benefit-desc">
+                        Materiales digitales listos para compartir en tus redes.
+                    </div>
+                </div>
+
+                <div class="ambassador-benefit-card coral">
+                    <div class="ambassador-benefit-icon">❤️</div>
+                    <div class="ambassador-benefit-title">Haz crecer la manada</div>
+                    <div class="ambassador-benefit-desc">
+                        Ayuda a que más peludos reciban protección médica.
+                    </div>
+                </div>
+
+                <div class="ambassador-benefit-card green">
+                    <div class="ambassador-benefit-icon">📊</div>
+                    <div class="ambassador-benefit-title">Todo desde tu panel</div>
+                    <div class="ambassador-benefit-desc">
+                        Administra tus referidos y ganancias fácilmente.
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
     // Estado: Aprobado - Dashboard completo (Diseño Figma)
     function renderApproved(ambassador) {
         const formatCurrency = (amount) => {
@@ -1226,6 +1288,14 @@
                 year: 'numeric'
             });
         };
+
+        // Verificar si tiene código activo
+        const hasActiveCode = ambassador.referral_code && ambassador.referral_code_status === 'active';
+        
+        // Si no tiene código, mostrar estado especial
+        if (!hasActiveCode) {
+            return renderApprovedNoCode(ambassador);
+        }
 
         // Estadísticas del embajador
         const totalReferrals = ambassador.referrals_count || 0;
@@ -1270,6 +1340,13 @@
                                 Compartir ➜
                             </button>
                         </div>
+                        ${ambassador.can_change_referral_code && !ambassador.referral_code_changed_at ? `
+                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
+                            <button class="amb-btn-outline" onclick="window.requestCodeChange('${ambassador.id}')" style="width: 100%;">
+                                🔄 Cambiar mi código (una vez)
+                            </button>
+                        </div>
+                        ` : ''}
                     </div>
                     
                     <div class="amb-how-it-works">
@@ -1497,6 +1574,56 @@
             if (choice === '1') window.shareOnWhatsApp(code);
             else if (choice === '2') window.shareOnFacebook(code);
             else if (choice === '3') window.copyReferralLink(code);
+        }
+    };
+
+    // Solicitar cambio de código (una vez)
+    window.requestCodeChange = async function (ambassadorId) {
+        if (!confirm('¿Deseas cambiar tu código de embajador?\n\n⚠️ Esto solo se puede hacer UNA VEZ.\nTu código actual dejará de funcionar.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/request-code-change`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Hemos enviado un email con el link para cambiar tu código. Revisa tu bandeja de entrada.');
+            } else {
+                alert('❌ ' + (data.error || 'No se pudo procesar la solicitud'));
+            }
+        } catch (error) {
+            console.error('Error solicitando cambio:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
+        }
+    };
+
+    // Solicitar reenvío de email para elegir código
+    window.requestNewCodeEmail = async function (ambassadorId) {
+        if (!confirm('¿Deseas que te reenviemos el email para elegir tu código de embajador?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/resend-code-email`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Email enviado. Revisa tu bandeja de entrada (y spam).');
+            } else {
+                alert('❌ Error: ' + (data.error || 'No se pudo enviar el email'));
+            }
+        } catch (error) {
+            console.error('Error enviando email:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
         }
     };
 
