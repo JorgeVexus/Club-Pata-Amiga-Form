@@ -1232,9 +1232,20 @@
                     </p>
                 </div>
 
-                <button class="ambassador-btn-apply" onclick="window.requestNewCodeEmail('${ambassador.id}')">
-                    📧 Reenviar email
-                </button>
+                <div style="display: flex; flex-direction: column; gap: 10px; align-items: center;">
+                    <button class="ambassador-btn-apply" onclick="window.generateCodeLink('${ambassador.id}')">
+                        🎯 Elegir código ahora
+                    </button>
+                    
+                    <button class="ambassador-btn-retry" onclick="window.requestNewCodeEmail('${ambassador.id}')" 
+                            style="background: transparent; border: 2px solid white; color: white;">
+                        📧 Reenviar email
+                    </button>
+                </div>
+                
+                <p style="margin-top: 15px; font-size: 0.8rem; opacity: 0.9;">
+                    💡 Si no recibiste el email, usa "Elegir código ahora" para continuar.
+                </p>
             </div>
 
             <div class="ambassador-benefits-grid">
@@ -1574,6 +1585,37 @@
             if (choice === '1') window.shareOnWhatsApp(code);
             else if (choice === '2') window.shareOnFacebook(code);
             else if (choice === '3') window.copyReferralLink(code);
+        }
+    };
+
+    // Generar link directo para elegir código (fallback)
+    window.generateCodeLink = async function (ambassadorId) {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = '⏳ Generando link...';
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/generate-code-link`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.data?.selection_url) {
+                // Redirigir a la página de selección de código
+                window.location.href = data.data.selection_url;
+            } else {
+                alert('❌ Error: ' + (data.error || 'No se pudo generar el link'));
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        } catch (error) {
+            console.error('Error generando link:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
+            btn.textContent = originalText;
+            btn.disabled = false;
         }
     };
 
