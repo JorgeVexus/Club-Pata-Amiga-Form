@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import crypto from 'crypto';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -177,14 +178,25 @@ export async function PATCH(
         if (body.status === 'approved') {
             console.log(`✅ Embajador ${currentAmbassador.email} aprobado`);
 
-            // 1. Enviar email de bienvenida (Notificación)
+            // 1. Generar token temporal para selección de código
+            const selectionToken = crypto.randomUUID();
+            const expiresAt = new Date();
+            expiresAt.setDate(expiresAt.getDate() + 7); // Válido por 7 días
+
+            await supabase.from('ambassador_sessions').insert({
+                ambassador_id: currentAmbassador.id,
+                session_token: selectionToken,
+                expires_at: expiresAt.toISOString()
+            });
+
+            // 2. Enviar email de bienvenida con link para elegir código
             try {
                 const { notifyAmbassadorApproval } = await import('@/app/actions/ambassador-comm.actions');
                 await notifyAmbassadorApproval({
                     userId: currentAmbassador.linked_memberstack_id || currentAmbassador.id,
                     email: currentAmbassador.email,
                     name: currentAmbassador.first_name,
-                    referralCode: currentAmbassador.referral_code
+                    selectionToken: selectionToken
                 });
                 console.log(`📧 Email de bienvenida enviado a ${currentAmbassador.email}`);
             } catch (emailError) {

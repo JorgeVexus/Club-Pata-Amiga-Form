@@ -53,7 +53,12 @@ export interface Ambassador {
     clabe?: string;
     
     // Código de referido
-    referral_code: string; // Ej: "PATA-MARIA-2024"
+    referral_code: string | null; // Ej: "PATA-MARIA-2024" o null si aún no elige
+    referral_code_status?: 'pending' | 'active' | 'inactive' | 'changed';
+    referral_code_selected_at?: string;
+    previous_referral_code?: string;
+    referral_code_changed_at?: string;
+    can_change_referral_code?: boolean;
     
     // Estado
     status: AmbassadorStatus;

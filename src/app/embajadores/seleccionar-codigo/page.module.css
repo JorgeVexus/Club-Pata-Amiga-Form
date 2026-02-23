@@ -1,0 +1,223 @@
+/* 🎯 Estilos para la página de selección de código */
+
+.pageBackground {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #00BBB4 0%, #7DD8D5 100%);
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.whiteCard {
+    background: var(--color-white, #FFFFFF);
+    border-radius: var(--radius-container, 50px);
+    border: 2px solid #000000;
+    padding: 2.5rem;
+    max-width: 700px;
+    width: 100%;
+    margin: 2rem auto;
+    position: relative;
+}
+
+/* Loading State */
+.loadingContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid #e2e8f0;
+    border-top-color: var(--color-primary, #7DD8D5);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loadingContainer p {
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    color: var(--color-text-light, #718096);
+    font-size: 1rem;
+}
+
+/* Error State */
+.errorContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.errorIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.errorTitle {
+    font-family: var(--font-heading, 'Fraiche', sans-serif);
+    font-size: 1.75rem;
+    color: var(--color-text-dark, #2D3748);
+    margin-bottom: 1rem;
+}
+
+.errorMessage {
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    font-size: 1rem;
+    color: var(--color-text-light, #718096);
+    max-width: 400px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.retryButton {
+    font-family: var(--font-heading, 'Fraiche', sans-serif);
+    font-weight: 300;
+    padding: 0.875rem 2rem;
+    background: #FE8F15;
+    color: var(--color-white, #FFFFFF);
+    border: 2px solid #000000;
+    border-radius: 50px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.retryButton:hover {
+    background: #e88213;
+    transform: translateY(-1px);
+}
+
+/* Success State */
+.successContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem 2rem;
+    text-align: center;
+}
+
+.successIcon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.successTitle {
+    font-family: var(--font-heading, 'Fraiche', sans-serif);
+    font-size: 2rem;
+    color: var(--color-text-dark, #2D3748);
+    margin-bottom: 1.5rem;
+}
+
+.successCode {
+    background: linear-gradient(135deg, #7DD8D5 0%, #00BBB4 100%);
+    padding: 1.5rem 3rem;
+    border-radius: 16px;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.codeLabel {
+    display: block;
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 0.5rem;
+}
+
+.codeValue {
+    display: block;
+    font-family: 'Courier New', monospace;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-white, #FFFFFF);
+    letter-spacing: 0.15em;
+}
+
+.successMessage {
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    font-size: 1rem;
+    color: var(--color-text-light, #718096);
+    max-width: 400px;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.shareSection {
+    background: #f7fafc;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+}
+
+.shareLabel {
+    font-family: var(--font-body, 'Outfit', sans-serif);
+    font-size: 0.85rem;
+    color: var(--color-text-light, #718096);
+    margin-bottom: 0.5rem;
+}
+
+.shareUrl {
+    font-family: 'Courier New', monospace;
+    font-size: 0.95rem;
+    color: var(--color-text-dark, #2D3748);
+    word-break: break-all;
+}
+
+.dashboardButton {
+    font-family: var(--font-heading, 'Fraiche', sans-serif);
+    font-weight: 300;
+    padding: 1rem 2.5rem;
+    background: #FE8F15;
+    color: var(--color-white, #FFFFFF);
+    border: 2px solid #000000;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dashboardButton:hover {
+    background: #e88213;
+    transform: translateY(-1px);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .pageBackground {
+        padding: 1rem;
+    }
+
+    .whiteCard {
+        padding: 1.5rem;
+        border-radius: 24px;
+        margin: 1rem 0;
+    }
+
+    .successTitle {
+        font-size: 1.5rem;
+    }
+
+    .codeValue {
+        font-size: 1.5rem;
+    }
+
+    .successCode {
+        padding: 1rem 1.5rem;
+    }
+}

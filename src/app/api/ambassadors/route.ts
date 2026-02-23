@@ -15,13 +15,10 @@ function generateAmbassadorCode(): string {
     return `EMB-${year}-${random}`;
 }
 
-// Función para generar código de referido único
-function generateReferralCode(firstName: string, paternalSurname: string): string {
-    const year = new Date().getFullYear();
-    const name = firstName.split(' ')[0].toUpperCase().slice(0, 5);
-    const surname = paternalSurname.toUpperCase().slice(0, 3);
-    const random = Math.random().toString(36).substring(2, 5).toUpperCase();
-    return `PATA-${name}${surname}-${random}`;
+// Función para generar código temporal (placeholder hasta que el embajador elija)
+function generateTempReferralCode(): string {
+    const timestamp = Date.now().toString(36).substring(0, 4).toUpperCase();
+    return `TMP${timestamp}`;
 }
 
 // CORS headers
@@ -181,26 +178,26 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Generar códigos únicos
+        // Generar código de embajador único (sistema interno)
         let ambassadorCode = generateAmbassadorCode();
-        let referralCode = generateReferralCode(body.first_name, body.paternal_surname);
-
-        // Asegurar que los códigos sean únicos
         let codeExists = true;
         while (codeExists) {
             const { data: existing } = await supabase
                 .from('ambassadors')
                 .select('id')
-                .or(`ambassador_code.eq.${ambassadorCode},referral_code.eq.${referralCode}`)
+                .eq('ambassador_code', ambassadorCode)
                 .single();
 
             if (!existing) {
                 codeExists = false;
             } else {
                 ambassadorCode = generateAmbassadorCode();
-                referralCode = generateReferralCode(body.first_name, body.paternal_surname);
             }
         }
+
+        // El código de referido se establecerá después de la aprobación
+        // Por ahora usamos null para indicar que está pendiente
+        const referralCode = null;
 
         // Hash de la contraseña
         const passwordHash = await bcrypt.hash(body.password, 10);
@@ -246,6 +243,7 @@ export async function POST(request: NextRequest) {
                 card_last_digits: sanitize(body.card_last_digits),
                 clabe: sanitize(body.clabe),
                 referral_code: referralCode,
+                referral_code_status: 'pending',
                 status: 'pending',
                 commission_percentage: commissionPercentage,
                 linked_memberstack_id: sanitize(body.linked_memberstack_id)
@@ -273,11 +271,12 @@ export async function POST(request: NextRequest) {
 
         return NextResponse.json({
             success: true,
-            message: 'Solicitud enviada correctamente',
+            message: 'Solicitud enviada correctamente. Podrás elegir tu código de embajador después de que sea aprobada.',
             data: {
                 id: ambassador.id,
                 ambassador_code: ambassador.ambassador_code,
-                referral_code: ambassador.referral_code
+                referral_code: null, // Se establecerá después de la aprobación
+                next_step: 'wait_for_approval'
             }
         }, { status: 201, headers: corsHeaders() });
 

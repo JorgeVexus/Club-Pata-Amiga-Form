@@ -21,8 +21,11 @@ export async function OPTIONS() {
 // GET - Verificar sesión y obtener datos del embajador
 export async function GET(request: NextRequest) {
     try {
+        const { searchParams } = new URL(request.url);
+        const tokenFromQuery = searchParams.get('token');
         const authHeader = request.headers.get('authorization');
-        const token = authHeader?.replace('Bearer ', '');
+        const tokenFromHeader = authHeader?.replace('Bearer ', '');
+        const token = tokenFromQuery || tokenFromHeader;
 
         if (!token) {
             return NextResponse.json(
@@ -96,6 +99,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             authenticated: true,
+            data: safeAmbassador,  // Para compatibilidad
             ambassador: safeAmbassador,
             stats: {
                 total_referrals: totalReferrals || 0,

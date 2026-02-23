@@ -8,25 +8,34 @@ import { sendAdminEmail } from './comm.actions';
 
 /**
  * Notifica al embajador que su cuenta ha sido aprobada
+ * Incluye link para elegir el código de referido
  */
 export async function notifyAmbassadorApproval(params: {
     userId: string;
     email: string;
     name: string;
-    referralCode: string;
+    selectionToken: string;
 }) {
-    const { userId, email, name, referralCode } = params;
+    const { userId, email, name, selectionToken } = params;
+
+    const selectionUrl = `https://clubpataamiga.com/embajadores/seleccionar-codigo?token=${selectionToken}`;
 
     const subject = '¡Bienvenido a la manada, Embajador! 🐾';
     const content = `¡Hola ${name}! 
 
 Tu solicitud para ser embajador de Club Pata Amiga ha sido aprobada. ¡Estamos muy felices de tenerte con nosotros!
 
-Ya puedes acceder a tu dashboard de embajador para ver tus estadísticas y compartir tu código de referido.
+Ahora necesitas elegir tu código de embajador único. Este código te identificará y tus referidos lo usarán para obtener beneficios especiales.
 
-Tu código único es: **${referralCode}**
+👉 **Elige tu código aquí:** ${selectionUrl}
 
-Accede aquí: https://clubpataamiga.com/dashboard-embajadores (asegúrate de haber iniciado sesión con tu cuenta).
+Este enlace es válido por 7 días. Una vez que elijas tu código, podrás acceder a tu dashboard de embajador y comenzar a compartirlo.
+
+Recuerda:
+• Tu código debe tener entre 2 y 8 caracteres
+• Solo puedes usar letras (A-Z) y números (0-9)
+• No se permiten O, I ni L para evitar confusiones
+• Una vez elegido, no podrás cambiarlo
 
 ¡Mucho éxito compartiendo el amor por los peludos!
 `;
@@ -36,7 +45,7 @@ Accede aquí: https://clubpataamiga.com/dashboard-embajadores (asegúrate de hab
         to: email,
         subject,
         content,
-        metadata: { type: 'ambassador_approval', referralCode }
+        metadata: { type: 'ambassador_approval', selectionUrl }
     });
 }
 
@@ -70,5 +79,126 @@ Este monto ya ha sido sumado a tu saldo pendiente en tu dashboard de embajador. 
         subject,
         content,
         metadata: { type: 'commission_earned', referralName, amount }
+    });
+}
+
+/**
+ * Notifica al embajador que ha establecido su código de referido
+ */
+export async function notifyAmbassadorReferralCodeSet(params: {
+    userId: string;
+    email: string;
+    name: string;
+    referralCode: string;
+}) {
+    const { userId, email, name, referralCode } = params;
+
+    const subject = '¡Tu código de embajador está listo! 🎉';
+    const content = `¡Hola ${name}! 
+
+Has elegido tu código de embajador: **${referralCode}**
+
+Este código es único y te identificará como embajador de Club Pata Amiga. Compártelo con tus amigos y conocidos para que obtengan beneficios especiales al registrarse.
+
+📌 Tu enlace de referido: https://clubpataamiga.com?ref=${referralCode}
+
+Recuerda:
+• Por cada persona que se registre usando tu código, ganarás comisiones
+• Puedes ver tus estadísticas en tu dashboard de embajador
+• El código no puede ser modificado una vez establecido
+
+¡Mucho éxito compartiendo!
+`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        metadata: { type: 'referral_code_set', referralCode }
+    });
+}
+
+/**
+ * Notifica al embajador que su código ha sido cambiado
+ */
+export async function notifyAmbassadorReferralCodeChanged(params: {
+    userId: string;
+    email: string;
+    name: string;
+    oldCode: string;
+    newCode: string;
+}) {
+    const { userId, email, name, oldCode, newCode } = params;
+
+    const subject = 'Tu código de embajador ha sido actualizado 🔄';
+    const content = `¡Hola ${name}! 
+
+Tu código de embajador ha sido cambiado exitosamente.
+
+📌 Código anterior: **${oldCode}**
+📌 Nuevo código: **${newCode}**
+
+Tu nuevo enlace de referido: https://clubpataamiga.com?ref=${newCode}
+
+⚠️ **Importante:** Este cambio solo se puede hacer una vez. Tu nuevo código es permanente y no podrá ser modificado nuevamente.
+
+Asegúrate de actualizar cualquier lugar donde hayas compartido tu código anterior.
+
+¡Sigue compartiendo y ganando comisiones!
+`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        metadata: { type: 'referral_code_changed', oldCode, newCode }
+    });
+}
+
+/**
+ * Notifica al embajador que puede cambiar su código
+ */
+export async function notifyAmbassadorCodeChangeEnabled(params: {
+    userId: string;
+    email: string;
+    name: string;
+    currentCode: string;
+    changeToken: string;
+}) {
+    const { userId, email, name, currentCode, changeToken } = params;
+
+    const changeUrl = `https://clubpataamiga.com/embajadores/cambiar-codigo?token=${changeToken}`;
+
+    const subject = 'Puedes cambiar tu código de embajador 🔄';
+    const content = `¡Hola ${name}! 
+
+Te informamos que ahora puedes cambiar tu código de embajador.
+
+📌 Código actual: **${currentCode}**
+
+👉 **Cambiar tu código aquí:** ${changeUrl}
+
+**Importante:**
+• Este cambio solo se puede hacer **UNA VEZ**
+• Tu código actual dejará de funcionar inmediatamente después del cambio
+• El nuevo código será permanente y no podrás modificarlo nuevamente
+• Este enlace es válido por 7 días
+
+Recuerda que tu código debe:
+• Tener entre 2 y 8 caracteres
+• Usar solo letras (A-Z) y números (0-9)
+• No usar O, I ni L para evitar confusiones
+
+¡Elige sabiamente!
+`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        metadata: { type: 'code_change_enabled', changeUrl }
     });
 }
