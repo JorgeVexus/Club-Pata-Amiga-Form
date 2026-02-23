@@ -13,7 +13,8 @@ interface SendEmailParams {
     templateId?: string;
     to: string;
     subject: string;
-    content: string; // Ya procesada con placeholders
+    content: string; // Texto plano
+    html?: string;   // Versión HTML opcional
     metadata?: any;
 }
 
@@ -21,7 +22,7 @@ interface SendEmailParams {
  * Envía un email a través de Resend y lo registra en la base de datos
  */
 export async function sendAdminEmail(params: SendEmailParams) {
-    const { userId, adminId, templateId, to, subject, content, metadata } = params;
+    const { userId, adminId, templateId, to, subject, content, html, metadata } = params;
 
     console.log(`📧 [Server Action] Intentando enviar email a ${to}`);
 
@@ -36,8 +37,8 @@ export async function sendAdminEmail(params: SendEmailParams) {
             from: `${DEFAULT_FROM_NAME} <${DEFAULT_FROM_EMAIL}>`,
             to: [to],
             subject: subject,
-            text: content.replace(/<[^>]*>?/gm, ''), // Versión texto plano simple
-            html: content.replace(/\n/g, '<br/>'), // Conversión básica a HTML
+            text: content, // Versión texto plano
+            html: html || content.replace(/\n/g, '<br/>'), // HTML o conversión básica
         });
 
         if (resendError) {
