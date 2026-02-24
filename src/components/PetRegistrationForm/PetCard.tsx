@@ -262,7 +262,6 @@ export default function PetCard({
                         value={petData.age || ''}
                         onChange={handleAgeChange}
                         options={ageOptions}
-                        infoText="La edad nos ayuda a calcular las coberturas adecuadas"
                         error={errors[`pet-${petNum}-age`]}
                         required
                     />
