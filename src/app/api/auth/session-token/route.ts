@@ -29,11 +29,11 @@ function corsHeaders() {
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { 
-        auth: { 
-            autoRefreshToken: false, 
-            persistSession: false 
-        } 
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
     }
 );
 
@@ -90,28 +90,19 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
         // 2. Generar token criptográficamente seguro
         const token = crypto.randomBytes(TOKEN_LENGTH_BYTES).toString('hex');
-        
+
         // 3. Calcular fecha de expiración
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + SESSION_DURATION_HOURS);
 
         // 4. Obtener metadata de la request
-        const ipAddress = request.headers.get('x-forwarded-for') || 
-                         request.headers.get('x-real-ip') || 
-                         'unknown';
+        const ipAddress = request.headers.get('x-forwarded-for') ||
+            request.headers.get('x-real-ip') ||
+            'unknown';
         const userAgent = request.headers.get('user-agent') || 'unknown';
 
-        // 5. Desactivar sesiones previas del mismo usuario
-        const { error: deactivateError } = await supabaseAdmin
-            .from('vet_bot_sessions')
-            .update({ is_active: false })
-            .eq('memberstack_id', memberstackId)
-            .eq('is_active', true);
-
-        if (deactivateError) {
-            console.warn('⚠️ [SessionToken] Error desactivando sesiones previas:', deactivateError);
-            // Continuamos de todos modos
-        }
+        // 5. Inserción Directa (Permitimos múltiples sesiones activas temporales para evitar race conditions)
+        // La limpieza se hará automáticamente por expiración o por la función cleanup_expired_vet_sessions
 
         // 6. Insertar nueva sesión en la base de datos
         const { data: sessionData, error: insertError } = await supabaseAdmin
@@ -132,9 +123,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         if (insertError) {
             console.error('❌ [SessionToken] Error insertando sesión:', insertError);
             return NextResponse.json(
-                { 
-                    success: false, 
-                    error: 'Error al crear la sesión. Intente nuevamente.' 
+                {
+                    success: false,
+                    error: 'Error al crear la sesión. Intente nuevamente.'
                 } as SessionTokenResponse,
                 { status: 500, headers: corsHeaders() }
             );
@@ -152,9 +143,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     } catch (error: any) {
         console.error('❌ [SessionToken] Error inesperado:', error);
         return NextResponse.json(
-            { 
-                success: false, 
-                error: 'Error interno del servidor' 
+            {
+                success: false,
+                error: 'Error interno del servidor'
             } as SessionTokenResponse,
             { status: 500, headers: corsHeaders() }
         );
@@ -183,10 +174,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
         if (error || !data || data.length === 0) {
             return NextResponse.json(
-                { 
-                    success: false, 
+                {
+                    success: false,
                     error: 'Token inválido o expirado',
-                    isValid: false 
+                    isValid: false
                 },
                 { status: 401, headers: corsHeaders() }
             );

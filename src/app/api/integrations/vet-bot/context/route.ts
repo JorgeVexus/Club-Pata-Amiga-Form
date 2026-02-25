@@ -376,6 +376,31 @@ async function validateSessionToken(token: string): Promise<SessionValidationRes
 
         if (!data || data.length === 0) {
             console.warn('⚠️ [VET_BOT] No data returned from RPC for token');
+
+            // DIAGNÓSTICO: Buscar el token sin filtros para ver qué está pasando
+            const { data: diagnostic, error: diagError } = await supabaseAdmin
+                .from('vet_bot_sessions')
+                .select('id, is_active, expires_at, created_at')
+                .eq('token', token)
+                .maybeSingle();
+
+            if (diagError) {
+                console.error('❌ [VET_BOT] Diagnostic query error:', diagError);
+            } else if (diagnostic) {
+                const now = new Date();
+                const expires = new Date(diagnostic.expires_at);
+                console.log('🔍 [VET_BOT] Diagnostic result:', {
+                    exists: true,
+                    is_active: diagnostic.is_active,
+                    expired: expires < now,
+                    created_at: diagnostic.created_at,
+                    expires_at: diagnostic.expires_at,
+                    now: now.toISOString()
+                });
+            } else {
+                console.log('🔍 [VET_BOT] Diagnostic result: Token DOES NOT EXIST in database');
+            }
+
             return { valid: false };
         }
 

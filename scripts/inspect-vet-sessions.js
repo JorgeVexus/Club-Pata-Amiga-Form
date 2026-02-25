@@ -7,15 +7,13 @@ const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function inspectSessions() {
-    const email = 'asahizv1@gmail.com';
-    console.log(`\n🔍 Inspeccionando sesiones para: ${email}`);
+    console.log(`\n🔍 Inspeccionando las últimas 10 sesiones globales...`);
 
     const { data, error } = await supabase
         .from('vet_bot_sessions')
         .select('*')
-        .eq('email', email)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(10);
 
     if (error) {
         console.error('Error al consultar DB:', error);
@@ -23,7 +21,7 @@ async function inspectSessions() {
     }
 
     if (!data || data.length === 0) {
-        console.log('No se encontraron sesiones para este email.');
+        console.log('No se encontraron sesiones.');
         return;
     }
 
