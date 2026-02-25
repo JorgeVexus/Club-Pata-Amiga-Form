@@ -53,7 +53,7 @@ async function inspectSessions() {
     if (rpcError) {
         console.error('Error en RPC:', rpcError);
     } else {
-        console.log('Resultado RPC:', rpcData);
+        console.log('Resultado RPC:', JSON.stringify(rpcData, null, 2));
     }
 }
 

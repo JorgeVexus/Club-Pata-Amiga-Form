@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preview - Widget Embajador</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fraiche:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Outfit', sans-serif;
+            /* Fondo verde como en Webflow */
+            background: linear-gradient(135deg, #8BC34A 0%, #CDDC39 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Decoraciones de fondo tipo blobs */
+        .bg-decoration {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.3;
+            z-index: 0;
+        }
+        
+        .bg-decoration-1 {
+            width: 400px;
+            height: 400px;
+            background: #7CB342;
+            top: -100px;
+            right: -100px;
+        }
+        
+        .bg-decoration-2 {
+            width: 300px;
+            height: 300px;
+            background: #AED581;
+            bottom: 20%;
+            left: -100px;
+        }
+        
+        .bg-decoration-3 {
+            width: 250px;
+            height: 250px;
+            background: #9CCC65;
+            top: 40%;
+            right: 5%;
+        }
+        
+        /* Contenedor principal */
+        .preview-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* Controles de prueba */
+        .test-controls {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .test-controls h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .test-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .test-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .test-btn.active {
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.2);
+        }
+        
+        .test-btn-pending {
+            background: #FFC107;
+            color: #333;
+        }
+        
+        .test-btn-approved {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .test-btn-rejected {
+            background: #F44336;
+            color: white;
+        }
+        
+        .test-btn-no-code {
+            background: #FF9800;
+            color: white;
+        }
+        
+        .test-btn-not-found {
+            background: #9E9E9E;
+            color: white;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+        
+        .info-text {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #666;
+        }
+        
+        .info-text code {
+            background: #e0e0e0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* GANANCIAS - Preview styles */
+        .amb-earnings-card .amb-card-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 5px 0;
+            line-height: 63px;
+        }
+
+        .amb-earnings-card .amb-card-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #9B9B9B;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .amb-earnings-value {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+        }
+
+        .amb-earnings-available {
+            border-radius: 43px;
+            border: 2px dashed #BBECE9;
+            background: #BBECE9;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .amb-earnings-available-value {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+        }
+
+        .amb-earnings-note {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: normal;
+            margin: 0;
+        }
+
+        /* REFERIDOS - Preview styles */
+        .amb-referrals-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 5px 0;
+            line-height: 1;
+        }
+
+        .amb-referrals-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin: 0 0 20px 0;
+        }
+
+        .amb-referrals-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .amb-search-box {
+            display: flex;
+            width: 300px;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .amb-search-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .amb-filter-container {
+            display: flex;
+            height: 31px;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .amb-filter-label {
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+        }
+
+        /* REFERIDOS CARDS - Preview styles */
+        .amb-referral-item {
+            border-radius: 35px;
+            background: #FFF;
+            display: flex;
+            padding: 15px 30px 15px 50px;
+            justify-content: space-between;
+            align-items: center;
+            align-self: stretch;
+            margin-bottom: 12px;
+        }
+
+        .amb-referral-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .amb-referral-name {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 20px;
+        }
+
+        .amb-referral-email {
+            color: #9B9B9B;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 16px;
+        }
+
+        .amb-referral-date {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .amb-referral-date-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .amb-referral-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .amb-referral-commission-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            color: #9B9B9B;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .amb-referral-commission-value {
+            color: #000;
+            text-align: center;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 65px;
+            font-weight: 600;
+            line-height: 60px;
+        }
+
+        .amb-referral-status-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .amb-referral-status-badge {
+            display: flex;
+            height: 25px;
+            padding: 4px 12px 4px 30px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 33554400px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: lowercase;
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+        }
+
+        .amb-referral-status-badge.approved {
+            background: #9FD406;
+            color: #FFF;
+        }
+
+        .amb-referral-status-badge.process {
+            background: #FE8F15;
+            color: #FFF;
+        }
+
+        .amb-referral-status-badge.rejected {
+            background: #FF0063;
+            color: #FFF;
+        }
+
+        .amb-status-icon {
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .amb-earnings-value,
+            .amb-earnings-available-value {
+                font-size: 60px;
+            }
+            .amb-earnings-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-referrals-title {
+                font-size: 48px;
+            }
+            .amb-search-box {
+                width: 100%;
+            }
+            .amb-referral-item {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .amb-referral-name {
+                font-size: 24px;
+            }
+            .amb-referral-commission-value {
+                font-size: 48px;
+                line-height: 50px;
+            }
+            .amb-referral-center {
+                align-items: flex-start;
+            }
+        }
+
+        /* MATERIAL DIGITAL - Preview styles */
+        .amb-material-card {
+            border-radius: 68px;
+            background: #FFF;
+            display: flex;
+            padding: 13px 21px 23px 50px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            align-self: stretch;
+            position: relative;
+            overflow: visible;
+            min-height: 250px;
+        }
+
+        .amb-material-content {
+            max-width: 50%;
+        }
+
+        .amb-material-title {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            line-height: 63px;
+            margin: 0;
+        }
+
+        .amb-material-text {
+            color: #9B9B9B;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: normal;
+            margin: 0 0 10px 0;
+        }
+
+        .amb-btn-pink {
+            background: #E91E63;
+            color: white;
+            border: none;
+            display: flex;
+            width: 160px;
+            height: 42px;
+            padding-right: 1px;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .amb-btn-pink:hover {
+            background: #C2185B;
+            transform: translateY(-2px);
+        }
+
+        .amb-material-image {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            height: auto;
+            z-index: 10;
+            border-radius: 0 0 68px 0;
+        }
+
+        @media (max-width: 768px) {
+            .amb-material-card {
+                padding: 25px;
+            }
+            .amb-material-content {
+                max-width: 100%;
+                padding-bottom: 180px;
+            }
+            .amb-material-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-material-image {
+                position: absolute;
+                right: 10px;
+                bottom: 0;
+                width: 180px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Decoraciones de fondo -->
+    <div class="bg-decoration bg-decoration-1"></div>
+    <div class="bg-decoration bg-decoration-2"></div>
+    <div class="bg-decoration bg-decoration-3"></div>
+    
+    <div class="preview-container">
+        <!-- Controles de prueba -->
+        <div class="test-controls">
+            <h2>🎮 Controles de Prueba</h2>
+            <p style="margin-bottom: 15px; color: #666; font-size: 0.9rem;">
+                Haz clic en los botones para ver cada estado del widget:
+            </p>
+            <div class="test-buttons">
+                <button class="test-btn test-btn-approved active" onclick="showState('approved')">
+                    ✅ Aprobado (Dashboard)
+                </button>
+                <button class="test-btn test-btn-pending" onclick="showState('pending')">
+                    ⏳ Pendiente
+                </button>
+                <button class="test-btn test-btn-rejected" onclick="showState('rejected')">
+                    ❌ Rechazado
+                </button>
+                <button class="test-btn test-btn-no-code" onclick="showState('no-code')">
+                    🎯 Aprobado sin código
+                </button>
+                <button class="test-btn test-btn-not-found" onclick="showState('not-found')">
+                    👤 No es embajador
+                </button>
+            </div>
+            
+            <div class="info-text">
+                <strong>💡 Para usar en Webflow:</strong><br>
+                1. Sube el archivo <code>ambassador-widget.js</code> a tu CDN o servidor<br>
+                2. En Webflow, agrega un <code>div</code> con ID <code>ambassador-widget</code><br>
+                3. Incluye el script: <code>&lt;script src="URL_DEL_WIDGET"&gt;&lt;/script&gt;</code>
+            </div>
+        </div>
+        
+        <!-- Contenedor del Widget -->
+        <div id="ambassador-widget"></div>
+    </div>
+
+    <!-- Script del Widget -->
+    <script src="ambassador-widget.js"></script>
+    
+    <script>
+        // Mock data para cada estado
+        const mockData = {
+            approved: {
+                status: 'approved',
+                id: 'test-123',
+                referral_code: 'PATA123',
+                referral_code_status: 'active',
+                total_earnings: 156,
+                pending_payout: 48,
+                referrals_count: 5,
+                approved_referrals: 3,
+                review_referrals: 1,
+                rejected_referrals: 1,
+                payment_method: 'mastercard',
+                card_last4: '8832',
+                recent_referrals: [
+                    { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'approved' },
+                    { name: 'Carlos López', email: 'carlos.lopez@gmail.com', date: '14 de junio de 2025', commission: 16, status: 'process' },
+                    { name: 'Ana Martínez', email: 'ana.martinez@gmail.com', date: '10 de junio de 2025', commission: 16, status: 'rejected' }
+                ]
+            },
+            pending: {
+                status: 'pending',
+                id: 'test-456'
+            },
+            rejected: {
+                status: 'rejected',
+                id: 'test-789',
+                rejection_reason: 'La información proporcionada no cumple con nuestros requisitos de verificación. Por favor revisa tus documentos e intenta nuevamente.'
+            },
+            'no-code': {
+                status: 'approved',
+                id: 'test-abc',
+                referral_code: null,
+                referral_code_status: null
+            },
+            'not-found': null
+        };
+
+        // Función para mostrar cada estado
+        function showState(state) {
+            // Actualizar botones activos
+            document.querySelectorAll('.test-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Simular el renderizado del widget
+            const container = document.getElementById('ambassador-widget');
+            const data = mockData[state];
+            
+            // Override la función de checkAmbassadorStatus para devolver datos de prueba
+            window.mockAmbassadorData = data;
+            
+            // Recargar el widget
+            if (window.initAmbassadorWidget) {
+                // Limpiar el contenedor
+                container.innerHTML = '';
+                
+                // Simular el flujo de inicialización con datos mock
+                simulateWidgetRender(state, data);
+            }
+        }
+
+        function simulateWidgetRender(state, data) {
+            const container = document.getElementById('ambassador-widget');
+            
+            // Renderizar según el estado
+            let content = '';
+            
+            if (!data) {
+                // No es embajador
+                content = renderNotAmbassadorMock();
+            } else if (state === 'pending') {
+                content = renderPendingMock();
+            } else if (state === 'rejected') {
+                content = renderRejectedMock(data);
+            } else if (state === 'no-code') {
+                content = renderNoCodeMock(data);
+            } else if (state === 'approved') {
+                content = renderApprovedMock(data);
+            }
+            
+            container.innerHTML = `
+                <div class="ambassador-widget-container">
+                    <div class="ambassador-widget-content">
+                        ${content}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Templates mock (simplificados para preview)
+        function renderNotAmbassadorMock() {
+            return `
+                <div class="ambassador-not-found">
+                    <div class="ambassador-not-found-icon">🎯</div>
+                    <h2>¿Quieres ser Embajador Pata Amiga?</h2>
+                    <p>Únete a nuestra manada y gana comisiones por cada familia que ayudes a proteger a sus peludos.</p>
+                    <button class="ambassador-btn-apply" onclick="alert('Redirigiendo a registro...')">
+                        Quiero ser Embajador
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderPendingMock() {
+            return `
+                <div class="ambassador-pending-card">
+                    <h2 class="ambassador-pending-title">Tu solicitud está en revisión</h2>
+                    <p class="ambassador-pending-subtitle">
+                        Estamos revisando tu registro para convertirte en Embajador.<br>
+                        En 24-48 horas te avisaremos si fue aprobado.
+                    </p>
+                    <div class="ambassador-progress-container">
+                        <div class="ambassador-progress-labels">
+                            <span>Solicitud enviada</span>
+                            <span>En revisión...</span>
+                        </div>
+                        <div class="ambassador-progress-bar">
+                            <div class="ambassador-progress-fill" style="width: 60%;">
+                                <span class="ambassador-progress-paw">🐾</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="ambassador-pending-message">Gracias por querer sumar tu voz a la manada</p>
+                </div>
+            `;
+        }
+
+        function renderRejectedMock(data) {
+            return `
+                <div class="ambassador-rejected-card">
+                    <div class="ambassador-rejected-icon">😔</div>
+                    <h2 class="ambassador-rejected-title">Tu solicitud no fue aprobada</h2>
+                    ${data.rejection_reason ? `
+                        <div class="ambassador-rejected-reason">
+                            <h4>Motivo:</h4>
+                            <p>${data.rejection_reason}</p>
+                        </div>
+                    ` : ''}
+                    <p class="ambassador-rejected-message">
+                        Sabemos que esto puede ser decepcionante. Si crees que hubo un error, puedes volver a aplicar.
+                    </p>
+                    <button class="ambassador-btn-retry" onclick="alert('Redirigiendo...')">
+                        Volver a aplicar
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderNoCodeMock(data) {
+            return `
+                <div class="ambassador-pending-card" style="background: linear-gradient(135deg, #FFD93D 0%, #F59E0B 100%);">
+                    <div class="ambassador-pending-title">
+                        ¡Felicidades! Eres Embajador
+                        <span style="font-size: 2.5rem;">🎉</span>
+                    </div>
+                    <p class="ambassador-pending-subtitle">
+                        Tu solicitud ha sido aprobada. Ahora necesitas elegir tu código de embajador único.
+                    </p>
+                    <button class="ambassador-btn-apply" onclick="alert('Abriendo selector de código...')">
+                        🎯 Elegir código ahora
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderApprovedMock(data) {
+            const CLOUDINARY_URL = 'https://res.cloudinary.com/dqy07kgu6/image/upload';
+            
+            return `
+                <div class="amb-dashboard">
+                    <!-- Header -->
+                    <header class="amb-header">
+                        <div class="amb-header-top">
+                            <a href="#perfil" class="amb-profile-link">Perfil | Embajadores</a>
+                        </div>
+                        <div class="amb-header-content">
+                            <h1 class="amb-header-title">gana por compartir el amor por los peludos</h1>
+                            <p class="amb-header-subtitle">
+                                Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.
+                            </p>
+                        </div>
+                    </header>
+
+                    <!-- Código de Referido -->
+                    <section class="amb-code-section">
+                        <div class="amb-code-card">
+                            <img src="${CLOUDINARY_URL}/v1772036421/gift_icon_wrrk9f.png" 
+                                 alt="Regalo" class="amb-float-icon gift">
+                            
+                            <h2 class="amb-card-title">tu código de referido</h2>
+                            <p class="amb-card-subtitle">
+                                Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.
+                            </p>
+                            
+                            <div class="amb-code-box">
+                                <span class="amb-code-label">Tu código único</span>
+                                <div class="amb-code-value">${data.referral_code}</div>
+                                <div class="amb-code-buttons">
+                                    <button class="amb-btn-cancel" onclick="alert('Cancelar solicitud')">
+                                        Cancelar solicitud
+                                    </button>
+                                    <button class="amb-btn-orange" onclick="alert('Compartiendo...')">
+                                        Compartir 🔗
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="amb-how-it-works-inline">
+                                <h3>¿cómo funciona?</h3>
+                                <p>Comparte tu código con tus amigos. Si su solicitud es aprobada y pagan su membresía, tú ganas una comisión.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Grid: Ganancias y Estadísticas -->
+                    <div class="amb-two-columns">
+                        <section class="amb-earnings-section">
+                            <img src="${CLOUDINARY_URL}/v1772036420/money_icon_gyxpwi.png" 
+                                 alt="Dinero" class="amb-float-icon money">
+                            <div class="amb-earnings-card">
+                                <h2 class="amb-card-title">tus ganancias</h2>
+                                <p class="amb-card-subtitle">Historial de comisiones</p>
+                                
+                                <div class="amb-earnings-total">
+                                    <span class="amb-earnings-label">Total ganado histórico</span>
+                                    <span class="amb-earnings-value">$${data.total_earnings}</span>
+                                </div>
+                                
+                                <div class="amb-earnings-available">
+                                    <span class="amb-earnings-label">Disponible para retirar</span>
+                                    <span class="amb-earnings-available-value">$${data.pending_payout}</span>
+                                </div>
+                                
+                                <p class="amb-earnings-note">
+                                    El día 6 de cada mes, tus ganancias se transfieren de forma automática a tu cuenta bancaria registrada.
+                                </p>
+                            </div>
+                        </section>
+
+                        <section class="amb-stats-section">
+                            <img src="${CLOUDINARY_URL}/v1772036421/estaduisticas_icon_ntslcc.png" 
+                                 alt="Estadísticas" class="amb-float-icon stats">
+                            <div class="amb-stats-card">
+                                <h2 class="amb-card-title">estadísticas</h2>
+                                <p class="amb-card-subtitle">Resumen de tus referidos</p>
+                                
+                                <div class="amb-stats-grid">
+                                    <div class="amb-stat-box approved">
+                                        <span class="amb-stat-label">Aprobados</span>
+                                        <span class="amb-stat-num">${data.approved_referrals}</span>
+                                    </div>
+                                    <div class="amb-stat-box review">
+                                        <span class="amb-stat-label">En revisión</span>
+                                        <span class="amb-stat-num">${data.review_referrals}</span>
+                                    </div>
+                                    <div class="amb-stat-box rejected">
+                                        <span class="amb-stat-label">Rechazados</span>
+                                        <span class="amb-stat-num">${data.rejected_referrals}</span>
+                                    </div>
+                                    <div class="amb-stat-box total">
+                                        <span class="amb-stat-label">Total</span>
+                                        <span class="amb-stat-num">${data.referrals_count}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <!-- Método de Pago -->
+                    <section class="amb-payment-section">
+                        <div class="amb-payment-card">
+                            <div class="amb-payment-info">
+                                <div style="width: 40px; height: 40px; background: #EB001B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">MC</div>
+                                <div class="amb-payment-details">
+                                    <span class="amb-payment-label">Cuenta registrada</span>
+                                    <span class="amb-payment-card-info">Débito Mastercard •••• ${data.card_last4}</span>
+                                </div>
+                            </div>
+                            <div class="amb-payment-actions">
+                                <span class="amb-payment-status">Predeterminado</span>
+                                <button class="amb-payment-link" onclick="alert('Eliminar tarjeta')">Eliminar tarjeta</button>
+                            </div>
+                            <div class="amb-payment-divider"></div>
+                            <button class="amb-payment-add" onclick="alert('Agregar método')">
+                                <span class="amb-payment-add-icon">+</span>
+                                Agregar otro método de pago
+                            </button>
+                            <button class="amb-payment-history" onclick="alert('Ver historial')">Ver historial de pagos</button>
+                        </div>
+                    </section>
+
+                    <!-- Estado de Referidos -->
+                    <section class="amb-referrals-section">
+                        <div class="amb-referrals-header">
+                            <h2 class="amb-referrals-title">estado de tus referidos</h2>
+                            <p class="amb-referrals-subtitle">Personas que usaron tu código</p>
+                            
+                            <div class="amb-referrals-filters">
+                                <div class="amb-search-box">
+                                    <img src="${CLOUDINARY_URL}/v1772043289/search_1_iucddd.svg" 
+                                         alt="Buscar" class="amb-search-icon">
+                                    <input type="text" class="amb-search-input" placeholder="Buscar...">
+                                </div>
+                                <div class="amb-filter-container">
+                                    <span class="amb-filter-label">Filtrar por:</span>
+                                    <select class="amb-filter-dropdown">
+                                        <option>Recientes ↓</option>
+                                        <option>Más antiguos</option>
+                                        <option>Por monto</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="amb-referrals-list">
+                            ${data.recent_referrals.map(ref => {
+                                const statusText = ref.status === 'approved' ? 'aprobada' : ref.status === 'process' ? 'proceso' : 'rechazada';
+                                const statusIcon = ref.status === 'approved' 
+                                    ? `${CLOUDINARY_URL}/v1772044135/palomita_3_brc5do.svg`
+                                    : `${CLOUDINARY_URL}/v1772044134/time_1_xbstfg.svg`;
+                                return `
+                                <div class="amb-referral-item">
+                                    <div class="amb-referral-left">
+                                        <span class="amb-referral-name">${ref.name}</span>
+                                        <span class="amb-referral-email">${ref.email}</span>
+                                        <span class="amb-referral-date">
+                                            <img src="${CLOUDINARY_URL}/v1772043745/calendario_1_n3pzcf.svg" alt="" class="amb-referral-date-icon">
+                                            ${ref.date}
+                                        </span>
+                                    </div>
+                                    <div class="amb-referral-center">
+                                        <span class="amb-referral-commission-label">Comisión</span>
+                                        <span class="amb-referral-commission-value">$${ref.commission}</span>
+                                    </div>
+                                    <div class="amb-referral-status-wrapper">
+                                        <img src="${statusIcon}" alt="" class="amb-status-icon">
+                                        <span class="amb-referral-status-badge ${ref.status}">${statusText}</span>
+                                    </div>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </section>
+
+                    <!-- Material Digital -->
+                    <section class="amb-material-section">
+                        <div class="amb-material-card">
+                            <div class="amb-material-content">
+                                <h2 class="amb-material-title">material digital para compartir</h2>
+                                <p class="amb-material-text">
+                                    Lleva el espíritu de Pata Amiga contigo. Aquí encontrarás imágenes, mensajes y recursos listos para descargar y compartir en tus redes. Úsalos libremente para invitar a más personas a unirse al club y ayudar a que más peludos reciban el apoyo que merecen.
+                                </p>
+                                <p class="amb-material-text">
+                                    Comparte tu link, difunde la manada y sigue sumando huellitas. ¡Tu voz también salva!
+                                </p>
+                                <button class="amb-btn-pink" onclick="alert('Descargando kit...')">
+                                    Descargar kit
+                                </button>
+                            </div>
+                            <img src="${CLOUDINARY_URL}/v1772036493/perro_imag_shqipi.webp" 
+                                 alt="Perro feliz" class="amb-material-image">
+                        </div>
+                    </section>
+
+                    <!-- Cómo funciona -->
+                    <section class="amb-how-section">
+                        <div class="amb-how-card">
+                            <div class="amb-how-content">
+                                <h2 class="amb-how-title">¿cómo funciona ser embajador?</h2>
+                                <div class="amb-how-list">
+                                    <div class="amb-how-item">
+                                        <span class="amb-how-check">✓</span>
+                                        <span>Recibe un porcentaje real de cada membresía adquirida con tu código.</span>
+                                    </div>
+                                    <div class="amb-how-item">
+                                        <span class="amb-how-check">✓</span>
+                                        <span>La comisión se libera cuando el referido es aprobado y completa su pago.</span>
+                                    </div>
+                                    <div class="amb-how-item">
+                                        <span class="amb-how-check">✓</span>
+                                        <span>Consulta tus movimientos en cualquier momento desde tu panel.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <img src="${CLOUDINARY_URL}/v1772036454/como_funciona_ser_embajador_img_xdvqwn.webp" 
+                                 alt="Perro embajador" class="amb-how-image">
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        // Inicializar con el estado aprobado
+        window.onload = function() {
+            // Simular carga inicial
+            setTimeout(() => {
+                simulateWidgetRender('approved', mockData.approved);
+            }, 500);
+        };
+    </script>
+</body>
+</html>

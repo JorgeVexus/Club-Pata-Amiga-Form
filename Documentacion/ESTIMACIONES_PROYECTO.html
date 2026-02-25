@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="es">
 
 <head>
@@ -240,140 +240,142 @@
 
         <div class="phase-grid">
             <!-- Fase 2.5 -->
-            <div class="phase-card">
-                <div class="phase-number">2.5</div>
-                <div class="phase-content">
-                    <span class="phase-time">Estimación: 3-4 Días</span>
-                    <div class="phase-title">Cierre de Comunicaciones y Registro</div>
-                    <ul class="feature-list">
-                        <li><strong>Lógica para Extranjeros:</strong> Switch INE/Pasaporte en el registro.</li>
-                        <li><strong>Historias de Adopción:</strong> Campo para relatos y autorización legal.</li>
-                        <li><strong>Página de Notificaciones:</strong> Centro de alertas para el usuario.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Fase 3 -->
-            <div class="phase-card">
-                <div class="phase-number">03</div>
-                <div class="phase-content">
-                    <span class="phase-time">Estimación: 1 Semana</span>
-                    <div class="phase-title">Sistema de Apelaciones Inteligente</div>
-                    <ul class="feature-list">
-                        <li><strong>Botón de Apelación:</strong> Visible solo en la página de rechazo.</li>
-                        <li><strong>Dashboard Super Admin:</strong> Vista unificada de apelaciones pendientes.</li>
-                        <li><strong>Feedback Bidireccional:</strong> Mensajes del admin que aparecen en la página de
-                            estatus y notificaciones (vía plantillas Email/WA).</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Fase 4 -->
-            <div class="phase-card high">
-                <div class="phase-number">04</div>
-                <div class="phase-content">
-                    <span class="phase-time">Estimación: 2 Semanas</span>
-                    <div class="phase-title">Programa de Embajadores</div>
-                    <ul class="feature-list">
-                        <li><strong>Códigos y Enlaces:</strong> Generación de tracking para referidos.</li>
-                        <li><strong>Comisiones y Dashbhoard:</strong> Visualización de ganancias y número de registros.
-                        </li>
-                        <li><strong>Bóveda de Pagos:</strong> Captura de CLABE y datos para dispersión de fondos.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Fase 5 -->
-            <div class="phase-card high">
-                <div class="phase-number">05</div>
-                <div class="phase-content">
-                    <span class="phase-time">Estimación: 2 Semanas</span>
-                    <div class="phase-title">Fondo Solidario y Apoyos</div>
-                    <ul class="feature-list">
-                        <li><strong>Solicitudes de Apoyo:</strong> Urgencias, vacunación y fallecimiento.</li>
-                        <li><strong>Validación de Carencia:</strong> El sistema bloquea solicitudes si el periodo no ha
-                            terminado.</li>
-                        <li><strong>Pruebas Médicas:</strong> Carga de facturas y evidencias para auditoría.</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Fase 6 -->
-            <div class="phase-card">
-                <div class="phase-number">06</div>
-                <div class="phase-content">
-                    <span class="phase-time">Estimación: 2 Semanas</span>
-                    <div class="phase-title">Centros de Bienestar (Full)</div>
-                    <ul class="feature-list">
-                        <li><strong>Registro de Clínicas:</strong> Onboarding especializado para establecimientos.</li>
-                        <li><strong>Control de Usuarios:</strong> Las clínicas pueden ver y gestionar a los pacientes de
-                            la app que atienden.</li>
-                        <li><strong>Vinculación de Apoyos:</strong> El usuario puede seleccionar una clínica registrada
-                            para redirigir su solicitud de fondo solidario.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="highlight">
-            <strong>Arquitectura Multi-Estatus:</strong> No necesitamos integraciones externas extras para referidos.
-            Toda la lógica se desarrollará directamente en nuestra infraestructura, aprovechando
-            <strong>Supabase</strong> para la base de datos y <strong>Memberstack</strong> para la seguridad.
-        </div>
-
-        <h2>📅 Cronograma de Ejecución (Gantt)</h2>
-        <div class="gantt-section">
-            <div class="mermaid">
-                gantt
-                title Plan de Lanzamiento Club Pata Amiga
-                dateFormat YYYY-WW
-                section Actual
-                Mejoras Registro (Pasaporte/Historias) :active, a0, 2026-01, 2d
-                Cierre Comms (Pág. Notif) : a1, after a0, 2d
-                section Fase 3
-                Sistema de Apelaciones (Feedback) : b1, after a1, 1w
-                section Fase 4
-                Reg. Embajadores (Codes/Comms) : c1, after b1, 2w
-                section Fase 5
-                Gestión Fondo Solidario : d1, after c1, 2w
-                section Fase 6
-                Control Centros Bienestar : e1, after d1, 2w
-                section Lanzamiento
-                Migración y Dominio Final : f1, after e1, 1w
-            </div>
-        </div>
-
-        <h2>🛸 Detalles de Formulario (Actualización Inmediata)</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Escenario</th>
-                    <th>Acción del Sistema</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>Usuario es Extranjero</strong></td>
-                    <td>El campo "INE" se oculta y se solicita "Pasaporte Vigente" de forma obligatoria.</td>
-                </tr>
-                <tr>
-                    <td><strong>Mascota es Adoptada</strong></td>
-                    <td>Se habilita un campo de redacción para la historia de adopción con aviso de consentimiento legal
-                        para su publicación en la web.</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <div class="footer">
-            <p>Roadmap con estimaciones para las siguientes etapas del desarrollo de Club Pata Amiga
-            </p>
-            <p>© 2026 | Vexus Agency</p>
-        </div>
+<div class="phase-card">
+    <div class="phase-number">2.5</div>
+    <div class="phase-content">
+        <span class="phase-time">Estimación: 3-4 Días</span>
+        <div class="phase-title">Cierre de Comunicaciones y Registro</div>
+        <ul class="feature-list">
+            <li><strong>Lógica para Extranjeros:</strong> Switch INE/Pasaporte en el registro.</li>
+            <li><strong>Historias de Adopción:</strong> Campo para relatos y autorización legal.</li>
+            <li><strong>Página de Notificaciones:</strong> Centro de alertas para el usuario.</li>
+        </ul>
     </div>
+</div>
 
-    <script>
-        mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
-    </script>
+<!-- Fase 3 -->
+<div class="phase-card">
+    <div class="phase-number">03</div>
+    <div class="phase-content">
+        <span class="phase-time">Estimación: 1 Semana</span>
+        <div class="phase-title">Sistema de Apelaciones Inteligente</div>
+        <ul class="feature-list">
+            <li><strong>Botón de Apelación:</strong> Visible solo en la página de rechazo.</li>
+            <li><strong>Dashboard Super Admin:</strong> Vista unificada de apelaciones pendientes.</li>
+            <li><strong>Feedback Bidireccional:</strong> Mensajes del admin que aparecen en la página de
+                estatus y notificaciones (vía plantillas Email/WA).</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Fase 4 -->
+<div class="phase-card high">
+    <div class="phase-number">04</div>
+    <div class="phase-content">
+        <span class="phase-time">Estimación: 2 Semanas</span>
+        <div class="phase-title">Programa de Embajadores</div>
+        <ul class="feature-list">
+            <li><strong>Códigos y Enlaces:</strong> Generación de tracking para referidos.</li>
+            <li><strong>Comisiones y Dashbhoard:</strong> Visualización de ganancias y número de registros.
+            </li>
+            <li><strong>Bóveda de Pagos:</strong> Captura de CLABE y datos para dispersión de fondos.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Fase 5 -->
+<div class="phase-card high">
+    <div class="phase-number">05</div>
+    <div class="phase-content">
+        <span class="phase-time">Estimación: 2 Semanas</span>
+        <div class="phase-title">Fondo Solidario y Apoyos</div>
+        <ul class="feature-list">
+            <li><strong>Solicitudes de Apoyo:</strong> Urgencias, vacunación y fallecimiento.</li>
+            <li><strong>Validación de Carencia:</strong> El sistema bloquea solicitudes si el periodo no ha
+                terminado.</li>
+            <li><strong>Pruebas Médicas:</strong> Carga de facturas y evidencias para auditoría.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- Fase 6 -->
+<div class="phase-card">
+    <div class="phase-number">06</div>
+    <div class="phase-content">
+        <span class="phase-time">Estimación: 2 Semanas</span>
+        <div class="phase-title">Centros de Bienestar (Full)</div>
+        <ul class="feature-list">
+            <li><strong>Registro de Clínicas:</strong> Onboarding especializado para establecimientos.</li>
+            <li><strong>Control de Usuarios:</strong> Las clínicas pueden ver y gestionar a los pacientes de
+                la app que atienden.</li>
+            <li><strong>Vinculación de Apoyos:</strong> El usuario puede seleccionar una clínica registrada
+                para redirigir su solicitud de fondo solidario.</li>
+        </ul>
+    </div>
+</div>
+</div>
+
+<div class="highlight">
+    <strong>Arquitectura Multi-Estatus:</strong> No necesitamos integraciones externas extras para referidos.
+    Toda la lógica se desarrollará directamente en nuestra infraestructura, aprovechando
+    <strong>Supabase</strong> para la base de datos y <strong>Memberstack</strong> para la seguridad.
+</div>
+
+<h2>📅 Cronograma de Ejecución (Gantt)</h2>
+<div class="gantt-section">
+    <div class="mermaid">
+        gantt
+        title Plan de Lanzamiento Club Pata Amiga
+        dateFormat YYYY-WW
+        section Actual
+        Mejoras Registro (Pasaporte/Historias) :active, a0, 2026-01, 2d
+        Cierre Comms (Pág. Notif) : a1, after a0, 2d
+        section Fase 3
+        Sistema de Apelaciones (Feedback) : b1, after a1, 1w
+        section Fase 4
+        Reg. Embajadores (Codes/Comms) : c1, after b1, 2w
+        section Fase 5
+        Gestión Fondo Solidario : d1, after c1, 2w
+        section Fase 6
+        Control Centros Bienestar : e1, after d1, 2w
+        section Lanzamiento
+        Migración y Dominio Final : f1, after e1, 1w
+    </div>
+</div>
+
+<h2>🛸 Detalles de Formulario (Actualización Inmediata)</h2>
+<table>
+    <thead>
+        <tr>
+            <th>Escenario</th>
+            <th>Acción del Sistema</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>Usuario es Extranjero</strong></td>
+            <td>El campo "INE" se oculta y se solicita "Pasaporte Vigente" de forma obligatoria.</td>
+        </tr>
+        <tr>
+            <td><strong>Mascota es Adoptada</strong></td>
+            <td>Se habilita un campo de redacción para la historia de adopción con aviso de consentimiento legal
+                para su publicación en la web.</td>
+        </tr>
+    </tbody>
+</table>
+
+<div class="footer">
+    <p>Roadmap con estimaciones para las siguientes etapas del desarrollo de Club Pata Amiga
+    </p>
+    <p>© 2026 | Vexus Agency</p>
+</div>
+</div>
+
+<script>
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+</script>
 </body>
+
+-->
 
 </html>

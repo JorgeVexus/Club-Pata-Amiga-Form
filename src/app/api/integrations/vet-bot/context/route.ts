@@ -27,11 +27,11 @@ function corsHeaders() {
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { 
-        auth: { 
-            autoRefreshToken: false, 
-            persistSession: false 
-        } 
+    {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
     }
 );
 
@@ -97,16 +97,16 @@ export async function OPTIONS() {
 export async function GET(request: NextRequest): Promise<NextResponse> {
     try {
         const { searchParams } = new URL(request.url);
-        
+
         // 1. Validar API Key
         const apiKey = request.headers.get('x-vet-bot-key');
-        
+
         // DEBUG: Log de headers recibidos (ocultando el valor real por seguridad)
         console.log('🤖 [VET_BOT] Headers received:', {
             'x-vet-bot-key': apiKey ? 'Present (length: ' + apiKey.length + ')' : 'MISSING',
             'user-agent': request.headers.get('user-agent')?.substring(0, 50)
         });
-        
+
         if (apiKey !== VET_BOT_API_KEY) {
             console.warn('🚫 [VET_BOT] API Key mismatch');
             console.warn('   Expected:', VET_BOT_API_KEY?.substring(0, 10) + '...');
@@ -117,32 +117,32 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             );
         }
 
-        // 2. Obtener parámetros de identificación
-        const sessionToken = searchParams.get('sessionToken');
-        const email = searchParams.get('email');
-        const userId = searchParams.get('userId');
+        // 2. Obtener parámetros de identificación (Manejar camelCase y snake_case)
+        const sessionToken = searchParams.get('sessionToken') || searchParams.get('session_token');
+        const email = searchParams.get('email') || searchParams.get('user_email');
+        const userId = searchParams.get('userId') || searchParams.get('memberstack_id');
 
         // DEBUG: Log de parámetros recibidos
-        console.log('🤖 [VET_BOT] Params received:', { 
-            sessionToken: sessionToken ? '***' : null, 
-            email: email, 
-            userId: userId 
+        console.log('🤖 [VET_BOT] Params received:', {
+            sessionToken: sessionToken ? '***' : null,
+            email: email,
+            userId: userId
         });
 
         // Debe proporcionarse al menos un método de identificación
         if (!sessionToken && !email && !userId) {
             console.log('🤖 [VET_BOT] ERROR: No identification parameter provided');
             return NextResponse.json(
-                { 
-                    success: false, 
+                {
+                    success: false,
                     error: 'Missing identification parameter',
-                    message: 'Provide sessionToken, email, or userId' 
+                    message: 'Provide sessionToken, email, or userId'
                 },
                 { status: 400, headers: corsHeaders() }
             );
         }
 
-        console.log(`🤖 [VET_BOT] Fetching context via ${sessionToken ? 'sessionToken' : email ? 'email' : 'userId'}`);
+        console.log(`🤖 [VET_BOT] Identificando via: ${sessionToken ? 'SessionToken' : email ? 'Email' : 'UserId'}`);
 
         // 3. Resolver identificación a memberstack_id
         let memberstackId: string | null = null;
@@ -150,46 +150,45 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         let identifiedVia: 'session_token' | 'email' | 'memberstack_id' = 'memberstack_id';
         let sessionExpiresAt: string | null = null;
 
-        // Método 1: Session Token (nuevo, preferido)
+        // Método 1: Session Token (Eficaz y seguro)
         if (sessionToken) {
+            console.log('🧪 [VET_BOT] Validando token de sesión...');
             const sessionResult = await validateSessionToken(sessionToken);
-            
+
             if (!sessionResult.valid || !sessionResult.memberstackId) {
+                console.warn('⚠️ [VET_BOT] Sesión inválida o expirada');
                 return NextResponse.json(
-                    { 
-                        success: false, 
+                    {
+                        success: false,
                         error: 'Invalid or expired session token',
                         code: 'SESSION_EXPIRED'
                     },
                     { status: 401, headers: corsHeaders() }
                 );
             }
-            
+
             memberstackId = sessionResult.memberstackId;
             resolvedEmail = sessionResult.email || null;
             sessionExpiresAt = sessionResult.expiresAt || null;
             identifiedVia = 'session_token';
-            
-            console.log(`✅ [VET_BOT] Session valid for: ${resolvedEmail}`);
+
+            console.log(`✅ [VET_BOT] Sesión válida para: ${resolvedEmail} (${memberstackId})`);
         }
-        // Método 2: Email (legacy)
+        // Método 2: Email (legacy/fallback)
         else if (email) {
             resolvedEmail = email.toLowerCase().trim();
             identifiedVia = 'email';
-            console.log(`📧 [VET_BOT] Looking up by email: ${resolvedEmail}`);
+            console.log(`📧 [VET_BOT] Buscando por email: ${resolvedEmail}`);
         }
-        // Método 3: Memberstack ID (legacy)
+        // Método 3: Memberstack ID (legacy/fallback)
         else if (userId) {
             memberstackId = userId;
             identifiedVia = 'memberstack_id';
-            console.log(`🆔 [VET_BOT] Looking up by memberstackId: ${userId}`);
+            console.log(`🆔 [VET_BOT] Buscando por memberstackId: ${userId}`);
         }
 
         // 4. Buscar usuario en la base de datos
-        console.log('🤖 [VET_BOT] Buscando usuario con:');
-        console.log('   - memberstackId:', memberstackId);
-        console.log('   - resolvedEmail:', resolvedEmail);
-        
+        console.log('🔍 [VET_BOT] Consultando tabla USERS...');
         let userQuery = supabaseAdmin
             .from('users')
             .select(`
@@ -207,36 +206,31 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         if (memberstackId) {
             userQuery = userQuery.eq('memberstack_id', memberstackId);
         } else if (resolvedEmail) {
-            // Usar ilike para case-insensitive matching
             userQuery = userQuery.ilike('email', resolvedEmail);
         }
 
         const { data: user, error: userError } = await userQuery.maybeSingle();
 
         if (userError) {
-            console.error('❌ [VET_BOT] Error en query:', userError);
+            console.error('❌ [VET_BOT] Error en query de usuario:', userError);
+            return NextResponse.json(
+                { success: false, error: 'Database error fetching user', details: userError.message },
+                { status: 500, headers: corsHeaders() }
+            );
         }
 
-        if (userError || !user) {
-            console.warn(`⚠️ [VET_BOT] User not found: ${resolvedEmail || memberstackId}`);
-            
-            // DEBUG: Buscar todos los usuarios para ver qué emails existen
-            const { data: allUsers } = await supabaseAdmin
-                .from('users')
-                .select('email')
-                .limit(5);
-            console.log('🤖 [VET_BOT] Muestra de emails en BD:', allUsers?.map(u => u.email));
+        if (!user) {
+            console.warn(`⚠️ [VET_BOT] Usuario no encontrado en BD: ${resolvedEmail || memberstackId}`);
             return NextResponse.json(
-                { 
-                    success: false, 
-                    error: 'User not found',
-                    code: 'USER_NOT_FOUND'
-                },
+                { success: false, error: 'User not found in database', code: 'USER_NOT_FOUND' },
                 { status: 404, headers: corsHeaders() }
             );
         }
 
+        console.log(`✅ [VET_BOT] Usuario identificado: ${user.email} (UUID: ${user.id})`);
+
         // 5. Buscar mascotas del usuario
+        console.log('🐾 [VET_BOT] Consultando tabla PETS...');
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
             .select(`
@@ -261,6 +255,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         }
 
         // 6. Buscar historial de consultas
+        console.log('🩺 [VET_BOT] Consultando historial de consultas...');
         const { data: consultations, error: consultationsError } = await supabaseAdmin
             .from('consultations')
             .select(`
@@ -277,12 +272,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
         if (consultationsError) {
             console.warn('⚠️ [VET_BOT] Error fetching consultations:', consultationsError);
-            // No fallamos por esto, solo lo logueamos
+            // No fallamos por esto, solo una advertencia
         }
 
         // 7. Formatear respuesta
+        console.log('🎁 [VET_BOT] Formateando payload final...');
         const now = new Date();
-        
+
         const userContext: UserContext = {
             id: user.id,
             name: `${user.first_name} ${user.last_name}`.trim(),
@@ -296,7 +292,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const petsContext: PetContext[] = (pets || []).map(pet => {
             const waitingEnd = pet.waiting_period_end ? new Date(pet.waiting_period_end) : null;
             const isWaitingActive = waitingEnd ? now < waitingEnd : false;
-            
+
             return {
                 id: pet.id,
                 name: pet.name,
@@ -318,7 +314,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             date: cons.created_at,
             summary: cons.summary,
             recommendations: cons.recommendations,
-            petName: cons.pets?.[0]?.name || null
+            petName: Array.isArray(cons.pets) ? cons.pets[0]?.name : (cons.pets as any)?.name || null
         }));
 
         // Calcular tiempo restante de sesión si aplica
@@ -342,10 +338,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             timestamp: now.toISOString()
         };
 
-        console.log(`✅ [VET_BOT] Context delivered for: ${user.email} (${user.first_name})`);
-        console.log(`   - Pets: ${petsContext.length}`);
-        console.log(`   - Consultations: ${consultationHistory.length}`);
-        console.log(`   - Method: ${identifiedVia}`);
+        console.log(`🚀 [VET_BOT] Contexto entregado para: ${user.email}. Pets: ${petsContext.length}, Method: ${identifiedVia}`);
 
         return NextResponse.json(responsePayload, { headers: corsHeaders() });
 
@@ -371,16 +364,23 @@ interface SessionValidationResult {
 
 async function validateSessionToken(token: string): Promise<SessionValidationResult> {
     try {
+        console.log('🧪 [VET_BOT] Validating session token via RPC...');
         // Usar RPC para validar y actualizar en una sola operación
         const { data, error } = await supabaseAdmin
             .rpc('get_valid_vet_session', { p_token: token });
 
-        if (error || !data || data.length === 0) {
+        if (error) {
+            console.error('❌ [VET_BOT] RPC Error:', error);
+            return { valid: false };
+        }
+
+        if (!data || data.length === 0) {
+            console.warn('⚠️ [VET_BOT] No data returned from RPC for token');
             return { valid: false };
         }
 
         const session = data[0];
-        
+
         return {
             valid: session.is_valid,
             memberstackId: session.memberstack_id,

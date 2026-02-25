@@ -2,6 +2,8 @@
  * 🎯 Widget Dashboard Embajador - Club Pata Amiga
  * Widget para embajadores con estados: pendiente, aprobado, rechazado
  * Para integrar en Webflow
+ * 
+ * DISEÑO ACTUALIZADO - Basado en imagen de referencia
  */
 
 (function () {
@@ -13,6 +15,7 @@
     const CONFIG = {
         API_BASE_URL: 'https://app.pataamiga.mx',
         IMAGES_BASE_URL: 'https://app.pataamiga.mx/embajadores-images',
+        CLOUDINARY_URL: 'https://res.cloudinary.com/dqy07kgu6/image/upload',
         DEBUG: false
     };
 
@@ -23,33 +26,1068 @@
         /* Container Principal */
         .ambassador-widget-container {
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-            min-height: 100vh;
             position: relative;
-            overflow: hidden;
-        }
-
-        .ambassador-widget-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('${CONFIG.IMAGES_BASE_URL}/bienvenida background.png');
-            background-size: cover;
-            background-position: center;
-            z-index: 0;
+            width: 100%;
         }
 
         .ambassador-widget-content {
-            position: relative;
-            z-index: 1;
-            padding: 40px 20px;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         /* ============================================
-           ESTADO: PENDIENTE / EN REVISIÓN
+           HEADER / HERO
+           ============================================ */
+        .amb-header {
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .amb-header-top {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .amb-profile-link {
+            color: #333;
+            text-decoration: underline;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .amb-header-content {
+            text-align: left;
+        }
+
+        .amb-header-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 15px 0;
+            line-height: 1.2;
+        }
+
+        .amb-header-subtitle {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            max-width: 600px;
+        }
+
+        @media (max-width: 768px) {
+            .amb-header-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* ============================================
+           CARDS GENERALES
+           ============================================ */
+        .amb-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .amb-card-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 8px 0;
+        }
+
+        .amb-card-subtitle {
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0 0 20px 0;
+        }
+
+        /* Iconos flotantes */
+        .amb-float-icon {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            z-index: 10;
+        }
+
+        .amb-float-icon.gift {
+            top: -20px;
+            right: 20px;
+            width: 70px;
+            height: 70px;
+        }
+
+        .amb-float-icon.money {
+            top: -20px;
+            right: -10px;
+            width: 70px;
+            height: 70px;
+        }
+
+        .amb-float-icon.stats {
+            top: -20px;
+            right: -10px;
+            width: 60px;
+            height: 60px;
+        }
+
+        @media (max-width: 768px) {
+            .amb-float-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .amb-float-icon.gift {
+                width: 50px;
+                height: 50px;
+                top: -15px;
+            }
+            .amb-float-icon.money {
+                width: 50px;
+                height: 50px;
+                top: -20px;
+                right: 10px;
+            }
+            .amb-float-icon.stats {
+                width: 50px;
+                height: 50px;
+                top: -15px;
+            }
+        }
+
+        /* ============================================
+           CÓDIGO DE REFERIDO
+           ============================================ */
+        .amb-code-section {
+            margin-bottom: 30px;
+        }
+
+        .amb-code-card {
+            border-radius: 66px;
+            background: #FFF;
+            padding: 40px;
+            position: relative;
+        }
+
+        .amb-code-card .amb-card-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 10px 0;
+            line-height: 63px;
+        }
+
+        .amb-code-card .amb-card-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: rgba(0, 0, 0, 0.40);
+            margin: 0 0 30px 0;
+            font-weight: 700;
+        }
+
+        .amb-code-box {
+            display: flex;
+            width: 476px;
+            height: 228px;
+            padding: 28px 21px 16px 21px;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+            border-radius: 40px;
+            border: 3px dashed #9FD406;
+            background: #15BEB2;
+            margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .amb-code-box {
+                width: 100%;
+                max-width: 476px;
+                height: auto;
+                min-height: 228px;
+            }
+            .amb-code-card {
+                padding: 25px;
+            }
+            .amb-code-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-code-card .amb-card-subtitle {
+                font-size: 16px;
+            }
+        }
+
+        .amb-code-label {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.9);
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .amb-code-value {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: 4px;
+        }
+
+        @media (max-width: 768px) {
+            .amb-code-value {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        .amb-code-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .amb-btn-orange {
+            background: #FE8F15;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }
+
+        .amb-btn-orange:hover {
+            background: #e67a12;
+            transform: translateY(-2px);
+        }
+
+        .amb-btn-cancel {
+            background: #9FD406;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .amb-btn-cancel:hover {
+            background: #8bc306;
+            transform: translateY(-2px);
+        }
+
+        .amb-how-it-works-inline {
+            margin-top: 30px;
+        }
+
+        .amb-how-it-works-inline h3 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 8px 0;
+            line-height: 63px;
+        }
+
+        @media (max-width: 768px) {
+            .amb-how-it-works-inline h3 {
+                font-size: 32px;
+                line-height: 40px;
+            }
+        }
+
+        .amb-how-it-works-inline p {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            color: rgba(0, 0, 0, 0.40);
+            margin: 0;
+            line-height: normal;
+            font-weight: 700;
+        }
+
+        /* ============================================
+           GRID 2 COLUMNAS
+           ============================================ */
+        .amb-two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            align-items: stretch;
+        }
+
+        .amb-earnings-card,
+        .amb-stats-card {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .amb-stats-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            align-content: center;
+        }
+
+        @media (max-width: 900px) {
+            .amb-two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ============================================
+           GANANCIAS
+           ============================================ */
+        .amb-earnings-section {
+            position: relative;
+        }
+
+        .amb-earnings-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .amb-earnings-card .amb-card-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 5px 0;
+            line-height: 63px;
+        }
+
+        .amb-earnings-card .amb-card-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #9B9B9B;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .amb-earnings-total {
+            margin-bottom: 20px;
+        }
+
+        .amb-earnings-label {
+            font-size: 0.8rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .amb-earnings-value {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+        }
+
+        .amb-earnings-available {
+            border-radius: 43px;
+            border: 2px dashed #BBECE9;
+            background: #BBECE9;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        .amb-earnings-available-value {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: #333;
+            line-height: 1;
+        }
+
+        .amb-earnings-note {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 400;
+            line-height: normal;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .amb-earnings-value,
+            .amb-earnings-available-value {
+                font-size: 60px;
+            }
+            .amb-earnings-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+        }
+
+        /* ============================================
+           ESTADÍSTICAS
+           ============================================ */
+        .amb-stats-section {
+            position: relative;
+        }
+
+        .amb-stats-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .amb-stats-card .amb-card-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 5px 0;
+            line-height: 63px;
+        }
+
+        .amb-stats-card .amb-card-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #9B9B9B;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .amb-stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .amb-stat-box {
+            display: flex;
+            width: 100%;
+            height: auto;
+            min-height: 120px;
+            padding: 15px 20px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 0;
+            border-radius: 40px;
+            color: white;
+        }
+
+        .amb-stat-box.approved {
+            background: #7CB342;
+        }
+
+        .amb-stat-box.review {
+            background: #FF8C42;
+        }
+
+        .amb-stat-box.rejected {
+            background: #E91E63;
+        }
+
+        .amb-stat-box.total {
+            background: #00BCD4;
+        }
+
+        .amb-stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.95;
+        }
+
+        .amb-stat-num {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: #FFF;
+            text-align: center;
+            line-height: normal;
+        }
+
+        @media (max-width: 768px) {
+            .amb-stats-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-stat-box {
+                width: 100%;
+                height: auto;
+                min-height: 100px;
+                padding: 15px;
+            }
+            .amb-stat-num {
+                font-size: 60px;
+            }
+        }
+
+        /* ============================================
+           MÉTODO DE PAGO
+           ============================================ */
+        .amb-payment-section {
+            margin-bottom: 30px;
+        }
+
+        .amb-payment-card {
+            background: white;
+            border-radius: 24px;
+            padding: 25px 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .amb-payment-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .amb-payment-icon {
+            width: 40px;
+            height: 40px;
+        }
+
+        .amb-payment-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .amb-payment-label {
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .amb-payment-card-info {
+            font-size: 0.95rem;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .amb-payment-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .amb-payment-status {
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .amb-payment-link {
+            color: #E91E63;
+            text-decoration: underline;
+            font-size: 0.85rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .amb-payment-divider {
+            width: 100%;
+            border-bottom: 2px dashed #15BEB2;
+            margin: 5px 0;
+        }
+
+        .amb-payment-add {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            font-weight: 500;
+            cursor: pointer;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+        }
+
+        .amb-payment-add-icon {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #333;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .amb-payment-history {
+            color: #666;
+            font-size: 0.85rem;
+            text-decoration: underline;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .amb-payment-empty {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .amb-payment-empty-text {
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .amb-btn-primary {
+            background: #00BCD4;
+            color: white;
+            border: 2px solid #333;
+            padding: 14px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+
+        .amb-btn-primary:hover {
+            background: #00ACC1;
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           ESTADO DE REFERIDOS
+           ============================================ */
+        .amb-referrals-section {
+            margin-bottom: 30px;
+        }
+
+        .amb-referrals-header {
+            margin-bottom: 25px;
+        }
+
+        .amb-referrals-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 100px;
+            font-weight: 600;
+            color: white;
+            margin: 0 0 5px 0;
+            line-height: 1;
+        }
+
+        .amb-referrals-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: rgba(255,255,255,0.9);
+            margin: 0 0 20px 0;
+        }
+
+        .amb-referrals-filters {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .amb-search-box {
+            display: flex;
+            width: 300px;
+            align-items: center;
+            gap: 5px;
+            flex-shrink: 0;
+        }
+
+        .amb-search-input {
+            width: 100%;
+            padding: 8px 15px 8px 35px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            font-size: 0.9rem;
+        }
+
+        .amb-search-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .amb-filter-container {
+            display: flex;
+            height: 31px;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .amb-filter-label {
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+        }
+
+        .amb-filter-dropdown {
+            height: 31px;
+            padding: 0 12px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.9);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .amb-referrals-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .amb-referral-item {
+            border-radius: 35px;
+            background: #FFF;
+            display: flex;
+            padding: 15px 30px 15px 50px;
+            justify-content: space-between;
+            align-items: center;
+            align-self: stretch;
+            margin-bottom: 12px;
+        }
+
+        .amb-referral-left {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .amb-referral-name {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 30px;
+            font-weight: 600;
+            line-height: 20px;
+        }
+
+        .amb-referral-email {
+            color: #9B9B9B;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: 16px;
+        }
+
+        .amb-referral-date {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            line-height: 16px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .amb-referral-date-icon {
+            width: 16px;
+            height: 16px;
+        }
+
+        .amb-referral-center {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .amb-referral-commission-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            color: #9B9B9B;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .amb-referral-commission-value {
+            color: #000;
+            text-align: center;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 65px;
+            font-weight: 600;
+            line-height: 60px;
+        }
+
+        .amb-referral-status-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .amb-referral-status-badge {
+            display: flex;
+            height: 25px;
+            padding: 4px 12px 4px 30px;
+            align-items: center;
+            justify-content: center;
+            border-radius: 33554400px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: lowercase;
+            font-family: 'Outfit', sans-serif;
+            position: relative;
+        }
+
+        .amb-referral-status-badge.approved {
+            background: #9FD406;
+            color: #FFF;
+        }
+
+        .amb-referral-status-badge.process {
+            background: #FE8F15;
+            color: #FFF;
+        }
+
+        .amb-referral-status-badge.rejected {
+            background: #FF0063;
+            color: #FFF;
+        }
+
+        .amb-status-icon {
+            position: absolute;
+            left: -12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .amb-referral-item {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .amb-referral-name {
+                font-size: 24px;
+            }
+            .amb-referral-commission-value {
+                font-size: 48px;
+                line-height: 50px;
+            }
+            .amb-referral-center {
+                align-items: flex-start;
+            }
+        }
+
+        /* ============================================
+           MATERIAL DIGITAL
+           ============================================ */
+        .amb-material-section {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .amb-material-card {
+            border-radius: 68px;
+            background: #FFF;
+            display: flex;
+            padding: 13px 21px 23px 50px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            align-self: stretch;
+            position: relative;
+            overflow: visible;
+            min-height: 250px;
+        }
+
+        .amb-material-content {
+            max-width: 50%;
+        }
+
+        .amb-material-title {
+            color: #000;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            line-height: 63px;
+            margin: 0;
+        }
+
+        .amb-material-text {
+            color: #9B9B9B;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            line-height: normal;
+            margin: 0;
+        }
+
+        .amb-btn-pink {
+            background: #E91E63;
+            color: white;
+            border: none;
+            display: flex;
+            width: 160px;
+            height: 42px;
+            padding-right: 1px;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .amb-btn-pink:hover {
+            background: #C2185B;
+            transform: translateY(-2px);
+        }
+
+        .amb-material-image {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            height: auto;
+            z-index: 10;
+            border-radius: 0 0 68px 0;
+        }
+
+        @media (max-width: 768px) {
+            .amb-material-card {
+                padding: 25px;
+            }
+            .amb-material-content {
+                max-width: 100%;
+                padding-bottom: 180px;
+            }
+            .amb-material-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-material-image {
+                position: absolute;
+                right: 10px;
+                bottom: 0;
+                width: 180px;
+            }
+        }
+
+        /* ============================================
+           CÓMO FUNCIONA
+           ============================================ */
+        .amb-how-section {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .amb-how-card {
+            background: #7DD8D5;
+            border-radius: 24px;
+            padding: 40px;
+            position: relative;
+            overflow: visible;
+            min-height: 250px;
+        }
+
+        .amb-how-content {
+            max-width: 60%;
+        }
+
+        .amb-how-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 1.8rem;
+            color: white;
+            margin: 0 0 25px 0;
+        }
+
+        .amb-how-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .amb-how-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: white;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .amb-how-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+        }
+
+        .amb-how-image {
+            position: absolute;
+            right: 20px;
+            bottom: -30px;
+            width: 220px;
+            height: auto;
+            z-index: 10;
+        }
+
+        @media (max-width: 768px) {
+            .amb-how-card {
+                padding: 25px;
+            }
+            .amb-how-content {
+                max-width: 100%;
+                padding-bottom: 180px;
+            }
+            .amb-how-title {
+                font-size: 1.4rem;
+            }
+            .amb-how-image {
+                position: relative;
+                right: auto;
+                bottom: auto;
+                width: 160px;
+                margin: -160px auto 0;
+                display: block;
+            }
+        }
+
+        /* ============================================
+           ESTADOS: PENDIENTE / RECHAZADO / NO EMBAJADOR
            ============================================ */
         .ambassador-pending-card {
             background: linear-gradient(135deg, #00BBB4 0%, #00a09a 100%);
@@ -73,11 +1111,6 @@
             gap: 15px;
         }
 
-        .ambassador-pending-title img {
-            width: 50px;
-            height: 50px;
-        }
-
         .ambassador-pending-subtitle {
             font-size: 1rem;
             opacity: 0.95;
@@ -85,7 +1118,6 @@
             line-height: 1.6;
         }
 
-        /* Progress Bar */
         .ambassador-progress-container {
             margin: 30px 0;
         }
@@ -123,14 +1155,6 @@
             font-size: 1.8rem;
         }
 
-        .ambassador-pending-message {
-            margin-top: 25px;
-            font-size: 1rem;
-            font-weight: 500;
-            opacity: 0.95;
-        }
-
-        /* Decorative Elements */
         .ambassador-deco-flag {
             position: absolute;
             left: -30px;
@@ -152,31 +1176,153 @@
             .ambassador-deco-megaphone {
                 display: none;
             }
-            
             .ambassador-pending-card {
                 padding: 30px 20px;
             }
-            
             .ambassador-pending-title {
                 font-size: 1.6rem;
             }
         }
 
-        /* ============================================
-           TARJETAS DE BENEFICIOS
-           ============================================ */
-        .ambassador-breadcrumb {
-            text-align: right;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
+        .ambassador-rejected-card {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #ef4444;
+            margin-bottom: 30px;
+        }
+
+        .ambassador-rejected-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: #FFEBEE;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+
+        .ambassador-rejected-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .ambassador-rejected-reason {
+            background: #f9f9f9;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .ambassador-rejected-reason h4 {
+            color: #ef4444;
+            margin: 0 0 10px 0;
+            font-size: 0.95rem;
+        }
+
+        .ambassador-rejected-reason p {
+            color: #555;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .ambassador-rejected-message {
             color: #666;
+            font-size: 0.95rem;
+            margin-bottom: 25px;
         }
 
-        .ambassador-breadcrumb a {
-            color: #00BBB4;
-            text-decoration: underline;
+        .ambassador-btn-retry {
+            background: #00BBB4;
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
+        .ambassador-btn-retry:hover {
+            background: #00a09a;
+            transform: translateY(-2px);
+        }
+
+        .ambassador-not-found {
+            background: white;
+            border-radius: 24px;
+            padding: 50px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .ambassador-not-found-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .ambassador-not-found h2 {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .ambassador-not-found p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .ambassador-btn-apply {
+            background: linear-gradient(135deg, #00BBB4, #00a09a);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 187, 180, 0.3);
+        }
+
+        .ambassador-btn-apply:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 187, 180, 0.4);
+        }
+
+        /* ============================================
+           LOADING STATE
+           ============================================ */
+        .ambassador-loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .ambassador-loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #eee;
+            border-top-color: #00BBB4;
+            border-radius: 50%;
+            animation: ambassadorSpin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes ambassadorSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           BENEFICIOS GRID (para estados no aprobados)
+           ============================================ */
         .ambassador-benefits-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -265,779 +1411,6 @@
             color: #666;
             line-height: 1.4;
         }
-
-        /* ============================================
-           ESTADO: RECHAZADO
-           ============================================ */
-        .ambassador-rejected-card {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
-            border-top: 5px solid #ef4444;
-            margin-bottom: 30px;
-        }
-
-        .ambassador-rejected-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            background: #FFEBEE;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 20px;
-            font-size: 2.5rem;
-        }
-
-        .ambassador-rejected-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .ambassador-rejected-reason {
-            background: #f9f9f9;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: left;
-        }
-
-        .ambassador-rejected-reason h4 {
-            color: #ef4444;
-            margin: 0 0 10px 0;
-            font-size: 0.95rem;
-        }
-
-        .ambassador-rejected-reason p {
-            color: #555;
-            margin: 0;
-            line-height: 1.6;
-        }
-
-        .ambassador-rejected-message {
-            color: #666;
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-        }
-
-        .ambassador-btn-retry {
-            background: #00BBB4;
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 30px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .ambassador-btn-retry:hover {
-            background: #00a09a;
-            transform: translateY(-2px);
-        }
-
-        /* ============================================
-           LOADING STATE
-           ============================================ */
-        .ambassador-loading {
-            text-align: center;
-            padding: 60px 20px;
-        }
-
-        .ambassador-loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #eee;
-            border-top-color: #00BBB4;
-            border-radius: 50%;
-            animation: ambassadorSpin 0.8s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes ambassadorSpin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ============================================
-           NOT AMBASSADOR STATE
-           ============================================ */
-        .ambassador-not-found {
-            background: white;
-            border-radius: 24px;
-            padding: 50px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-        }
-
-        .ambassador-not-found-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-        }
-
-        .ambassador-not-found h2 {
-            font-size: 1.5rem;
-            color: #333;
-            margin-bottom: 15px;
-        }
-
-        .ambassador-not-found p {
-            color: #666;
-            margin-bottom: 25px;
-        }
-
-        .ambassador-btn-apply {
-            background: linear-gradient(135deg, #00BBB4, #00a09a);
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 30px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 4px 15px rgba(0, 187, 180, 0.3);
-        }
-
-        .ambassador-btn-apply:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 187, 180, 0.4);
-        }
-
-        /* ============================================
-           PAW BUTTON
-           ============================================ */
-        .ambassador-paw-btn {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: #FFC107;
-            border: none;
-            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            transition: transform 0.2s;
-            z-index: 100;
-        }
-
-        .ambassador-paw-btn:hover {
-            transform: scale(1.1);
-        }
-
-        /* ============================================
-           APPROVED DASHBOARD STYLES (Figma Design)
-           ============================================ */
-        .amb-dashboard {
-            padding: 20px 0;
-        }
-
-        /* Header */
-        .amb-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 30px;
-            padding: 0 10px;
-        }
-
-        .amb-header-content {
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-        }
-
-        .amb-header-icon {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-        }
-
-        .amb-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            color: #333;
-            margin: 0 0 8px 0;
-        }
-
-        .amb-subtitle {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin: 0;
-        }
-
-        .amb-help-link {
-            color: #15BEB2;
-            text-decoration: underline;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        /* Code Section */
-        .amb-code-section {
-            background: white;
-            border: 3px solid #333;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .amb-section-title-alt {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #333;
-            margin: 0 0 10px 0;
-        }
-
-        .amb-code-desc {
-            color: #666;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-
-        .amb-code-box {
-            background: white;
-            border: 3px dashed #15BEB2;
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .amb-code-label {
-            font-size: 0.85rem;
-            color: #888;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .amb-code-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #333;
-            letter-spacing: 3px;
-            margin-bottom: 20px;
-            font-family: 'Fraiche', sans-serif;
-        }
-
-        .amb-code-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .amb-btn-yellow {
-            background: #FFD93D;
-            color: #333;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .amb-btn-yellow:hover {
-            background: #FFC700;
-            transform: translateY(-2px);
-        }
-
-        .amb-btn-green {
-            background: #4ADE80;
-            color: #333;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .amb-btn-green:hover {
-            background: #22C55E;
-            transform: translateY(-2px);
-        }
-
-        .amb-how-it-works {
-            background: #FFF9E6;
-            border-radius: 12px;
-            padding: 15px;
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-        }
-
-        .amb-star {
-            font-size: 1.2rem;
-        }
-
-        .amb-how-it-works strong {
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .amb-how-it-works p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        /* Two Columns Grid */
-        .amb-two-columns {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 700px) {
-            .amb-two-columns {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Earnings Card */
-        .amb-earnings-card {
-            background: white;
-            border: 3px solid #333;
-            border-radius: 20px;
-            padding: 25px;
-        }
-
-        .amb-card-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .amb-card-icon {
-            font-size: 1.8rem;
-        }
-
-        .amb-card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #333;
-            margin: 0;
-        }
-
-        .amb-card-subtitle {
-            font-size: 0.85rem;
-            color: #888;
-            margin: 2px 0 0 0;
-        }
-
-        .amb-earnings-total {
-            margin-bottom: 15px;
-        }
-
-        .amb-earnings-label {
-            display: block;
-            font-size: 0.85rem;
-            color: #888;
-            margin-bottom: 5px;
-        }
-
-        .amb-earnings-value {
-            font-size: 3rem;
-            font-weight: 800;
-            color: #15BEB2;
-            display: block;
-        }
-
-        .amb-earnings-pending {
-            background: #F0FDF4;
-            border-radius: 10px;
-            padding: 15px;
-        }
-
-        .amb-earnings-pending-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #22C55E;
-            display: block;
-        }
-
-        /* Stats Card */
-        .amb-stats-card {
-            background: white;
-            border: 3px solid #333;
-            border-radius: 20px;
-            padding: 25px;
-        }
-
-        .amb-stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .amb-stat {
-            border-radius: 12px;
-            padding: 20px 15px;
-            text-align: center;
-        }
-
-        .amb-stat.cyan { background: #CFFAFE; }
-        .amb-stat.blue { background: #DBEAFE; }
-        .amb-stat.yellow { background: #FEF9C3; }
-        .amb-stat.green { background: #DCFCE7; }
-
-        .amb-stat-num {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #333;
-            display: block;
-        }
-
-        .amb-stat-label {
-            font-size: 0.8rem;
-            color: #666;
-            display: block;
-            margin-top: 5px;
-        }
-
-        /* Bank Alert */
-        .amb-bank-alert {
-            background: white;
-            border: 2px solid #333;
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .amb-bank-alert-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .amb-bank-icon {
-            font-size: 1.5rem;
-        }
-
-        .amb-bank-alert strong {
-            display: block;
-            margin-bottom: 3px;
-        }
-
-        .amb-bank-alert p {
-            margin: 0;
-            font-size: 0.85rem;
-            color: #666;
-        }
-
-        .amb-btn-outline {
-            background: white;
-            border: 2px solid #15BEB2;
-            color: #15BEB2;
-            padding: 12px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .amb-btn-outline:hover {
-            background: #15BEB2;
-            color: white;
-        }
-
-        /* Referrals Section */
-        .amb-referrals-section {
-            background: #15BEB2;
-            border-radius: 25px;
-            padding: 30px;
-            margin-bottom: 25px;
-        }
-
-        .amb-section-title-dark {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: white;
-            margin: 0 0 5px 0;
-        }
-
-        .amb-section-subtitle {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-            margin: 0 0 20px 0;
-        }
-
-        .amb-referrals-table {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .amb-table-header {
-            display: flex;
-            gap: 10px;
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-        }
-
-        .amb-search-input {
-            flex: 1;
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-
-        .amb-filter-select {
-            padding: 10px 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            background: white;
-            cursor: pointer;
-        }
-
-        .amb-table-body {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .amb-referral-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-
-        .amb-referral-row:last-child {
-            border-bottom: none;
-        }
-
-        .amb-referral-info {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .amb-referral-info strong {
-            font-size: 0.95rem;
-            color: #333;
-        }
-
-        .amb-referral-email {
-            font-size: 0.8rem;
-            color: #888;
-        }
-
-        .amb-referral-date {
-            font-size: 0.75rem;
-            color: #aaa;
-        }
-
-        .amb-referral-right {
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-        }
-
-        .amb-referral-amount {
-            font-weight: 600;
-            color: #333;
-        }
-
-        .amb-referral-status {
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 500;
-        }
-
-        .amb-referral-status.paid {
-            background: #DCFCE7;
-            color: #16A34A;
-        }
-
-        .amb-referral-status.pending {
-            background: #FEF3C7;
-            color: #D97706;
-        }
-
-        .amb-empty-referrals {
-            text-align: center;
-            padding: 40px 20px;
-            color: #888;
-        }
-
-        .amb-empty-icon {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 10px;
-        }
-
-        .amb-empty-hint {
-            font-size: 0.85rem;
-            color: #aaa;
-        }
-
-        /* Material Section */
-        .amb-material-section {
-            background: linear-gradient(135deg, #FF0063, #FF3D7F);
-            border-radius: 25px;
-            padding: 30px;
-            text-align: center;
-            color: white;
-            margin-bottom: 25px;
-        }
-
-        .amb-material-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin: 0 0 15px 0;
-        }
-
-        .amb-material-desc {
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin: 0 0 20px 0;
-            opacity: 0.95;
-        }
-
-        .amb-material-cta {
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 0.9rem;
-        }
-
-        .amb-btn-green-solid {
-            background: #22C55E;
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            border-radius: 25px;
-            font-weight: 600;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .amb-btn-green-solid:hover {
-            background: #16A34A;
-            transform: translateY(-2px);
-        }
-
-        /* How Section */
-        .amb-how-section {
-            background: white;
-            border: 3px solid #333;
-            border-radius: 20px;
-            padding: 25px;
-        }
-
-        .amb-how-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #333;
-            margin: 0 0 20px 0;
-            text-align: center;
-        }
-
-        .amb-how-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .amb-how-item {
-            background: #F8FAFC;
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9rem;
-            color: #333;
-        }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .amb-header {
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .amb-title {
-                font-size: 1.3rem;
-            }
-            
-            .amb-code-value {
-                font-size: 1.8rem;
-            }
-            
-            .amb-earnings-value {
-                font-size: 2rem;
-            }
-            
-            .amb-stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .amb-stat-num {
-                font-size: 1.8rem;
-            }
-            
-            .amb-bank-alert {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .amb-bank-alert-content {
-                flex-direction: column;
-            }
-        }
-
-        .amb-btn-primary {
-            background: #15BEB2;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            margin-top: 15px;
-        }
-
-        .amb-btn-primary:hover:not(:disabled) {
-            background: #00a09a;
-            transform: translateY(-2px);
-        }
-
-        .amb-btn-primary:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
     `;
 
     // ============================================
@@ -1076,13 +1449,11 @@
     function renderPending(ambassador) {
         return `
             <div class="ambassador-pending-card">
-                <!-- Decorative elements -->
                 <img src="${CONFIG.IMAGES_BASE_URL}/bandera.png" alt="" class="ambassador-deco-flag">
                 <img src="${CONFIG.IMAGES_BASE_URL}/altavoz.png" alt="" class="ambassador-deco-megaphone">
 
                 <h2 class="ambassador-pending-title">
                     Tu solicitud está en revisión
-                    <img src="${CONFIG.IMAGES_BASE_URL}/clock icon.png" alt="clock">
                 </h2>
                 
                 <p class="ambassador-pending-subtitle">
@@ -1105,10 +1476,6 @@
                 <p class="ambassador-pending-message">
                     Gracias por querer sumar tu voz a la manada
                 </p>
-            </div>
-
-            <div class="ambassador-breadcrumb">
-                <a href="/perfil">Perfil</a> &gt; <a href="#">Embajadores</a>
             </div>
 
             <div class="ambassador-benefits-grid">
@@ -1211,7 +1578,7 @@
         `;
     }
 
-    // Estado: Aprobado pero sin código - Necesita elegir código
+    // Estado: Aprobado pero sin código
     function renderApprovedNoCode(ambassador) {
         return `
             <div class="ambassador-pending-card" style="background: linear-gradient(135deg, #FFD93D 0%, #F59E0B 100%);">
@@ -1247,44 +1614,10 @@
                     💡 Si no recibiste el email, usa "Elegir código ahora" para continuar.
                 </p>
             </div>
-
-            <div class="ambassador-benefits-grid">
-                <div class="ambassador-benefit-card yellow">
-                    <div class="ambassador-benefit-icon">💰</div>
-                    <div class="ambassador-benefit-title">Gana por compartir</div>
-                    <div class="ambassador-benefit-desc">
-                        Recibe una comisión del 10% por cada persona que se una usando tu código.
-                    </div>
-                </div>
-
-                <div class="ambassador-benefit-card orange">
-                    <div class="ambassador-benefit-icon">🔗</div>
-                    <div class="ambassador-benefit-title">Invita a tu manera</div>
-                    <div class="ambassador-benefit-desc">
-                        Materiales digitales listos para compartir en tus redes.
-                    </div>
-                </div>
-
-                <div class="ambassador-benefit-card coral">
-                    <div class="ambassador-benefit-icon">❤️</div>
-                    <div class="ambassador-benefit-title">Haz crecer la manada</div>
-                    <div class="ambassador-benefit-desc">
-                        Ayuda a que más peludos reciban protección médica.
-                    </div>
-                </div>
-
-                <div class="ambassador-benefit-card green">
-                    <div class="ambassador-benefit-icon">📊</div>
-                    <div class="ambassador-benefit-title">Todo desde tu panel</div>
-                    <div class="ambassador-benefit-desc">
-                        Administra tus referidos y ganancias fácilmente.
-                    </div>
-                </div>
-            </div>
         `;
     }
 
-    // Estado: Aprobado - Dashboard completo (Diseño Figma)
+    // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
     function renderApproved(ambassador) {
         const formatCurrency = (amount) => {
             return '$' + (amount || 0).toLocaleString('es-MX');
@@ -1303,7 +1636,6 @@
         // Verificar si tiene código activo
         const hasActiveCode = ambassador.referral_code && ambassador.referral_code_status === 'active';
         
-        // Si no tiene código, mostrar estado especial
         if (!hasActiveCode) {
             return renderApprovedNoCode(ambassador);
         }
@@ -1313,229 +1645,284 @@
         const totalEarnings = ambassador.total_earnings || 0;
         const pendingPayout = ambassador.pending_payout || 0;
         const referralCode = ambassador.referral_code || 'PATA123';
-        const monthlyReferrals = ambassador.monthly_referrals || 0;
-        const paidReferrals = ambassador.paid_referrals || 0;
-        const pendingReferrals = ambassador.pending_referrals || 0;
-        const hasBankData = ambassador.payment_method && ambassador.payment_method !== 'pending';
+        const approvedReferrals = ambassador.approved_referrals || 3;
+        const reviewReferrals = ambassador.review_referrals || 1;
+        const rejectedReferrals = ambassador.rejected_referrals || 1;
+        
+        // Mock de datos de pago
+        const hasPaymentMethod = ambassador.payment_method && ambassador.payment_method !== 'pending';
+        const cardLast4 = ambassador.card_last4 || '8832';
+        const cardType = ambassador.card_type || 'mastercard';
+        const cardLabel = cardType === 'mastercard' ? 'Mastercard' : 'Visa';
 
-        // Mock de referidos para la tabla (se reemplazará con datos reales)
-        const referrals = ambassador.recent_referrals || [];
+        // Mock de referidos
+        const referrals = ambassador.recent_referrals || [
+            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'approved' },
+            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'process' },
+            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'rejected' }
+        ];
 
         return `
             <div class="amb-dashboard">
                 <!-- Header -->
-                <div class="amb-header">
-                    <div class="amb-header-content">
-                        <img src="${CONFIG.IMAGES_BASE_URL}/altavoz.png" alt="" class="amb-header-icon">
-                        <div>
-                            <h1 class="amb-title">Gana por compartir el amor por los peludos</h1>
-                            <p class="amb-subtitle">Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.</p>
-                        </div>
+                <header class="amb-header">
+                    <div class="amb-header-top">
+                        <a href="#perfil" class="amb-profile-link">Perfil | Embajadores</a>
                     </div>
-                    <a href="#help" class="amb-help-link">¿Qué es esto?</a>
-                </div>
+                    <div class="amb-header-content">
+                        <h1 class="amb-header-title">gana por compartir el amor por los peludos</h1>
+                        <p class="amb-header-subtitle">
+                            Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.
+                        </p>
+                    </div>
+                </header>
 
                 <!-- Código de Referido -->
-                <div class="amb-code-section">
-                    <h2 class="amb-section-title-alt">Tu código de referido</h2>
-                    <p class="amb-code-desc">Comparte tu código con tus amigos. Si se unirán al ejército+que y pagan una membresía real por cada membresía que invitas.<br>Es muy fácil, tú ganas una comisión.</p>
-                    
-                    <div class="amb-code-box">
-                        <span class="amb-code-label">Código único:</span>
-                        <div class="amb-code-value">${referralCode}</div>
-                        <div class="amb-code-buttons">
-                            <button class="amb-btn-yellow" onclick="copyReferralCode('${referralCode}')">
-                                Copiar código
-                            </button>
-                            <button class="amb-btn-green" onclick="shareCode('${referralCode}')">
-                                Compartir ➜
-                            </button>
+                <section class="amb-code-section">
+                    <div class="amb-code-card">
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/gift_icon_wrrk9f.png" 
+                             alt="Regalo" class="amb-float-icon gift">
+                        
+                        <h2 class="amb-card-title">tu código de referido</h2>
+                        <p class="amb-card-subtitle">
+                            Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.
+                        </p>
+                        
+                        <div class="amb-code-box">
+                            <span class="amb-code-label">Tu código único</span>
+                            <div class="amb-code-value">${referralCode}</div>
+                            <div class="amb-code-buttons">
+                                <button class="amb-btn-cancel" onclick="window.cancelAmbassadorRequest('${ambassador.id}')">
+                                    Cancelar solicitud
+                                </button>
+                                <button class="amb-btn-orange" onclick="window.shareCode('${referralCode}')">
+                                    Compartir 🔗
+                                </button>
+                            </div>
                         </div>
-                        ${ambassador.can_change_referral_code && !ambassador.referral_code_changed_at ? `
-                        <div style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ddd;">
-                            <button class="amb-btn-outline" onclick="window.requestCodeChange('${ambassador.id}')" style="width: 100%;">
-                                🔄 Cambiar mi código (una vez)
-                            </button>
+                        
+                        <div class="amb-how-it-works-inline">
+                            <h3>¿cómo funciona?</h3>
+                            <p>Comparte tu código con tus amigos. Si su solicitud es aprobada y pagan su membresía, tú ganas una comisión.</p>
                         </div>
-                        ` : ''}
                     </div>
-                    
-                    <div class="amb-how-it-works">
-                        <span class="amb-star">⭐</span>
-                        <strong>¿Cómo funciona?</strong>
-                        <p>Comparte tu código con tus amigos. Si se unirán al ejército+que y pagan una membresía, tú ganas una comisión.</p>
-                    </div>
-                </div>
+                </section>
 
                 <!-- Grid: Ganancias y Estadísticas -->
                 <div class="amb-two-columns">
-                    <!-- Tus Ganancias -->
-                    <div class="amb-earnings-card">
-                        <div class="amb-card-header">
-                            <span class="amb-card-icon">💰</span>
-                            <div>
-                                <h3 class="amb-card-title">Tus ganancias</h3>
-                                <p class="amb-card-subtitle">Historial de comisiones</p>
-                            </div>
-                        </div>
-                        <div class="amb-earnings-total">
-                            <span class="amb-earnings-label">Total acumulado:</span>
-                            <span class="amb-earnings-value">${formatCurrency(totalEarnings)}</span>
-                        </div>
-                        <div class="amb-earnings-pending">
-                            <span class="amb-earnings-label">Disponible:</span>
-                            <span class="amb-earnings-pending-value">${formatCurrency(pendingPayout)}</span>
+                    <!-- Ganancias -->
+                    <section class="amb-earnings-section">
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/money_icon_gyxpwi.png" 
+                             alt="Dinero" class="amb-float-icon money">
+                        <div class="amb-earnings-card">
+                            <h2 class="amb-card-title">tus ganancias</h2>
+                            <p class="amb-card-subtitle">Historial de comisiones</p>
                             
-                            <button class="amb-btn-primary" 
-                                    onclick="requestWithdraw('${ambassador.id}', ${pendingPayout})"
-                                    ${pendingPayout <= 0 ? 'disabled' : ''}>
-                                Solicitar retiro
-                            </button>
+                            <div class="amb-earnings-total">
+                                <span class="amb-earnings-label">Total ganado histórico</span>
+                                <span class="amb-earnings-value">${formatCurrency(totalEarnings || 156)}</span>
+                            </div>
+                            
+                            <div class="amb-earnings-available">
+                                <span class="amb-earnings-label">Disponible para retirar</span>
+                                <span class="amb-earnings-available-value">${formatCurrency(pendingPayout || 48)}</span>
+                            </div>
+                            
+                            <p class="amb-earnings-note">
+                                El día 6 de cada mes, tus ganancias se transfieren de forma automática a tu cuenta bancaria registrada.
+                            </p>
                         </div>
-                    </div>
+                    </section>
 
                     <!-- Estadísticas -->
-                    <div class="amb-stats-card">
-                        <div class="amb-card-header">
-                            <span class="amb-card-icon">📊</span>
-                            <div>
-                                <h3 class="amb-card-title">Estadísticas</h3>
-                                <p class="amb-card-subtitle">Resumen de tus referidos</p>
+                    <section class="amb-stats-section">
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/estaduisticas_icon_ntslcc.png" 
+                             alt="Estadísticas" class="amb-float-icon stats">
+                        <div class="amb-stats-card">
+                            <h2 class="amb-card-title">estadísticas</h2>
+                            <p class="amb-card-subtitle">Resumen de tus referidos</p>
+                            
+                            <div class="amb-stats-grid">
+                                <div class="amb-stat-box approved">
+                                    <span class="amb-stat-label">Aprobados</span>
+                                    <span class="amb-stat-num">${approvedReferrals}</span>
+                                </div>
+                                <div class="amb-stat-box review">
+                                    <span class="amb-stat-label">En revisión</span>
+                                    <span class="amb-stat-num">${reviewReferrals}</span>
+                                </div>
+                                <div class="amb-stat-box rejected">
+                                    <span class="amb-stat-label">Rechazados</span>
+                                    <span class="amb-stat-num">${rejectedReferrals}</span>
+                                </div>
+                                <div class="amb-stat-box total">
+                                    <span class="amb-stat-label">Total</span>
+                                    <span class="amb-stat-num">${totalReferrals || 5}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="amb-stats-grid">
-                            <div class="amb-stat cyan">
-                                <span class="amb-stat-num">${totalReferrals}</span>
-                                <span class="amb-stat-label">Total</span>
-                            </div>
-                            <div class="amb-stat blue">
-                                <span class="amb-stat-num">${monthlyReferrals}</span>
-                                <span class="amb-stat-label">Este mes</span>
-                            </div>
-                            <div class="amb-stat yellow">
-                                <span class="amb-stat-num">${pendingReferrals}</span>
-                                <span class="amb-stat-label">Pendientes</span>
-                            </div>
-                            <div class="amb-stat green">
-                                <span class="amb-stat-num">${paidReferrals}</span>
-                                <span class="amb-stat-label">Pagados</span>
-                            </div>
-                        </div>
-                    </div>
+                    </section>
                 </div>
 
-                <!-- Alerta Datos Bancarios -->
-                ${!hasBankData ? `
-                <div class="amb-bank-alert">
-                    <div class="amb-bank-alert-content">
-                        <span class="amb-bank-icon">🏦</span>
-                        <div>
-                            <strong>Agrega tus datos bancarios</strong>
-                            <p>Para poder recibir tus pagos, por favor agrega tus datos bancarios en tu perfil. 💳</p>
+                <!-- Método de Pago -->
+                <section class="amb-payment-section">
+                    ${hasPaymentMethod ? `
+                    <div class="amb-payment-card">
+                        <div class="amb-payment-info">
+                            <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/mastercard_icon.png" 
+                                 alt="${cardLabel}" class="amb-payment-icon" 
+                                 onerror="this.style.display='none'">
+                            <div class="amb-payment-details">
+                                <span class="amb-payment-label">Cuenta registrada</span>
+                                <span class="amb-payment-card-info">Débito ${cardLabel} •••• ${cardLast4}</span>
+                            </div>
                         </div>
+                        <div class="amb-payment-actions">
+                            <span class="amb-payment-status">Predeterminado</span>
+                            <button class="amb-payment-link" onclick="window.removePaymentMethod()">Eliminar tarjeta</button>
+                        </div>
+                        <div class="amb-payment-divider"></div>
+                        <button class="amb-payment-add" onclick="window.addPaymentMethod()">
+                            <span class="amb-payment-add-icon">+</span>
+                            Agregar otro método de pago
+                        </button>
+                        <button class="amb-payment-history" onclick="window.viewPaymentHistory()">Ver historial de pagos</button>
                     </div>
-                    <button class="amb-btn-outline" onclick="window.location.href='/perfil#bancarios'">
-                        Agregar datos bancarios
-                    </button>
-                </div>
-                ` : ''}
+                    ` : `
+                    <div class="amb-payment-empty">
+                        <p class="amb-payment-empty-text">No tienes métodos de pago registrados</p>
+                        <button class="amb-btn-primary" onclick="window.addPaymentMethod()">
+                            Agregar método de pago
+                        </button>
+                    </div>
+                    `}
+                </section>
 
-                <!-- Estado de tus referidos -->
-                <div class="amb-referrals-section">
-                    <h2 class="amb-section-title-dark">Estado de tus referidos</h2>
-                    <p class="amb-section-subtitle">Personas que usaron tu código</p>
-                    
-                    <div class="amb-referrals-table">
-                        <div class="amb-table-header">
-                            <input type="text" placeholder="🔍 Buscar..." class="amb-search-input">
-                            <select class="amb-filter-select">
-                                <option>Todos 📋</option>
-                                <option>Pagados</option>
-                                <option>Pendientes</option>
-                            </select>
-                        </div>
+                <!-- Estado de Referidos -->
+                <section class="amb-referrals-section">
+                    <div class="amb-referrals-header">
+                        <h2 class="amb-referrals-title">estado de tus referidos</h2>
+                        <p class="amb-referrals-subtitle">Personas que usaron tu código</p>
                         
-                        <div class="amb-table-body">
-                            ${referrals.length > 0 ? referrals.map(ref => `
-                                <div class="amb-referral-row">
-                                    <div class="amb-referral-info">
-                                        <strong>${ref.referred_user_name || 'Usuario'}</strong>
-                                        <span class="amb-referral-email">${ref.referred_user_email || ''}</span>
-                                        <span class="amb-referral-date">📅 ${formatDate(ref.created_at)}</span>
-                                    </div>
-                                    <div class="amb-referral-right">
-                                        <span class="amb-referral-amount">${formatCurrency(ref.commission_amount)}</span>
-                                        <span class="amb-referral-status ${ref.commission_status === 'paid' ? 'paid' : 'pending'}">
-                                            ${ref.commission_status === 'paid' ? '✅ Pagado' : '⏳ Pendiente'}
-                                        </span>
-                                    </div>
-                                </div>
-                            `).join('') : `
-                                <div class="amb-empty-referrals">
-                                    <span class="amb-empty-icon">🐾</span>
-                                    <p>Aún no tienes referidos</p>
-                                    <p class="amb-empty-hint">¡Comparte tu código para empezar a ganar!</p>
-                                </div>
-                            `}
+                        <div class="amb-referrals-filters">
+                            <div class="amb-search-box">
+                                <img src="${CONFIG.CLOUDINARY_URL}/v1772043289/search_1_iucddd.svg" 
+                                     alt="Buscar" class="amb-search-icon">
+                                <input type="text" class="amb-search-input" placeholder="Buscar...">
+                            </div>
+                            <div class="amb-filter-container">
+                                <span class="amb-filter-label">Filtrar por:</span>
+                                <select class="amb-filter-dropdown">
+                                    <option>Recientes ↓</option>
+                                    <option>Más antiguos</option>
+                                    <option>Por monto</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="amb-referrals-list">
+                        ${referrals.map(ref => {
+                            const status = ref.status || ref.commission_status || 'approved';
+                            const statusText = status === 'approved' || status === 'paid' ? 'aprobada' : 
+                                              status === 'process' || status === 'pending' ? 'proceso' : 'rechazada';
+                            const statusIcon = status === 'approved' || status === 'paid'
+                                ? `${CONFIG.CLOUDINARY_URL}/v1772044135/palomita_3_brc5do.svg`
+                                : `${CONFIG.CLOUDINARY_URL}/v1772044134/time_1_xbstfg.svg`;
+                            return `
+                            <div class="amb-referral-item">
+                                <div class="amb-referral-left">
+                                    <span class="amb-referral-name">${ref.name || ref.referred_user_name || 'Usuario'}</span>
+                                    <span class="amb-referral-email">${ref.email || ref.referred_user_email || ''}</span>
+                                    <span class="amb-referral-date">
+                                        <img src="${CONFIG.CLOUDINARY_URL}/v1772043745/calendario_1_n3pzcf.svg" alt="" class="amb-referral-date-icon">
+                                        ${ref.date || formatDate(ref.created_at)}
+                                    </span>
+                                </div>
+                                <div class="amb-referral-center">
+                                    <span class="amb-referral-commission-label">Comisión</span>
+                                    <span class="amb-referral-commission-value">$${ref.commission || ref.commission_amount || 16}</span>
+                                </div>
+                                <div class="amb-referral-status-wrapper">
+                                    <img src="${statusIcon}" alt="" class="amb-status-icon">
+                                    <span class="amb-referral-status-badge ${status === 'paid' ? 'approved' : status === 'pending' ? 'process' : status}">${statusText}</span>
+                                </div>
+                            </div>
+                            `;
+                        }).join('')}
+                    </div>
+                </section>
 
                 <!-- Material Digital -->
-                <div class="amb-material-section">
-                    <h2 class="amb-material-title">Material digital para compartir</h2>
-                    <p class="amb-material-desc">
-                        Hemos creado un kit lleno de material promocional, logos, plantillas, imágenes y recursos listos 
-                        para descargar y compartir en tus redes. Todo diseñado para que invites de manera fácil y estética, 
-                        y todos salgamos ganando con más amigos peludos en la manada.
-                    </p>
-                    <div class="amb-material-cta">
-                        Comparte la info, difunde la manada y sigue ayudando hocikitos. ¡Te estaremos esperando!
+                <section class="amb-material-section">
+                    <div class="amb-material-card">
+                        <div class="amb-material-content">
+                            <h2 class="amb-material-title">material digital para compartir</h2>
+                            <p class="amb-material-text">
+                                Lleva el espíritu de <span class="amb-material-highlight">Pata Amiga</span> contigo. Aquí encontrarás imágenes, mensajes y recursos listos para descargar y compartir en tus redes. Úsalos libremente para invitar a más personas a unirse al club y ayudar a que más peludos reciban el apoyo que merecen.
+                            </p>
+                            <p class="amb-material-text">
+                                Comparte tu link, difunde la manada y sigue sumando huellitas. ¡Tu voz también salva!
+                            </p>
+                            <button class="amb-btn-pink" onclick="window.open('/materiales-embajador', '_blank')">
+                                Descargar kit
+                            </button>
+                        </div>
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036493/perro_imag_shqipi.webp" 
+                             alt="Perro feliz" class="amb-material-image">
                     </div>
-                    <button class="amb-btn-green-solid" onclick="window.open('/materiales-embajador', '_blank')">
-                        Descargar kit
-                    </button>
-                </div>
+                </section>
 
                 <!-- Cómo funciona -->
-                <div class="amb-how-section">
-                    <h3 class="amb-how-title">¿Cómo funciona ser embajador?</h3>
-                    <div class="amb-how-list">
-                        <div class="amb-how-item">✅ Recibe un porcentaje real de cada membresía adquirida con tu código.</div>
-                        <div class="amb-how-item">✅ La comisión se abona a saldo una vez que se inicie el período de cobertura a quien invitaste.</div>
-                        <div class="amb-how-item">✅ Consulta tus recomendaciones y comisiones directamente desde tu panel.</div>
+                <section class="amb-how-section">
+                    <div class="amb-how-card">
+                        <div class="amb-how-content">
+                            <h2 class="amb-how-title">¿cómo funciona ser embajador?</h2>
+                            <div class="amb-how-list">
+                                <div class="amb-how-item">
+                                    <span class="amb-how-check">✓</span>
+                                    <span>Recibe un porcentaje real de cada membresía adquirida con tu código.</span>
+                                </div>
+                                <div class="amb-how-item">
+                                    <span class="amb-how-check">✓</span>
+                                    <span>La comisión se libera cuando el referido es aprobado y completa su pago.</span>
+                                </div>
+                                <div class="amb-how-item">
+                                    <span class="amb-how-check">✓</span>
+                                    <span>Consulta tus movimientos en cualquier momento desde tu panel.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036454/como_funciona_ser_embajador_img_xdvqwn.webp" 
+                             alt="Perro embajador" class="amb-how-image">
                     </div>
-                </div>
+                </section>
             </div>
         `;
     }
 
     // ============================================
-    // FUNCIONES AUXILIARES (compartir, copiar, etc.)
+    // FUNCIONES AUXILIARES
     // ============================================
 
-    // Función para copiar código de referido
     window.copyReferralCode = function (code) {
         navigator.clipboard.writeText(code).then(() => {
-            const btn = document.querySelector('.amb-btn-yellow') || document.querySelector('.ambassador-copy-btn');
+            const btn = document.querySelector('.amb-btn-orange');
             if (btn) {
-                const originalText = btn.textContent;
-                btn.textContent = '✅ ¡Copiado!';
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '✓ Copiado';
                 btn.style.background = '#22C55E';
                 setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '#FFD93D';
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#FF8C42';
                 }, 2000);
             }
-            // También mostrar alerta para feedback
-            console.log('Código copiado:', code);
         }).catch(err => {
             console.error('Error al copiar:', err);
             alert('Tu código es: ' + code);
         });
     };
 
-    // Copiar link de registro con código
     window.copyReferralLink = function (code) {
         const link = `https://www.clubpataamiga.com/registro?ref=${code}`;
         navigator.clipboard.writeText(link).then(() => {
@@ -1545,21 +1932,18 @@
         });
     };
 
-    // Compartir en WhatsApp
     window.shareOnWhatsApp = function (code) {
         const message = `¡Únete a Club Pata Amiga y protege a tus peludos! 🐾\n\nUsa mi código de referido: ${code}\n\nRegístrate aquí: https://www.clubpataamiga.com/registro?ref=${code}`;
         const url = `https://wa.me/?text=${encodeURIComponent(message)}`;
         window.open(url, '_blank');
     };
 
-    // Compartir en Facebook
     window.shareOnFacebook = function (code) {
         const url = `https://www.clubpataamiga.com/registro?ref=${code}`;
         const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}&quote=${encodeURIComponent('¡Únete a Club Pata Amiga con mi código: ' + code)}`;
         window.open(fbUrl, '_blank');
     };
 
-    // Compartir código (usa Web Share API si está disponible)
     window.shareCode = function (code) {
         const shareData = {
             title: 'Club Pata Amiga',
@@ -1570,11 +1954,9 @@
         if (navigator.share) {
             navigator.share(shareData).catch(err => {
                 console.log('Error compartiendo:', err);
-                // Fallback a WhatsApp
                 window.shareOnWhatsApp(code);
             });
         } else {
-            // Fallback: mostrar opciones
             const options = [
                 { name: 'WhatsApp', action: () => window.shareOnWhatsApp(code) },
                 { name: 'Facebook', action: () => window.shareOnFacebook(code) },
@@ -1588,7 +1970,6 @@
         }
     };
 
-    // Generar link directo para elegir código (fallback)
     window.generateCodeLink = async function (ambassadorId) {
         const btn = event.target;
         const originalText = btn.textContent;
@@ -1604,7 +1985,6 @@
             const data = await response.json();
 
             if (data.success && data.data?.selection_url) {
-                // Redirigir a la página de selección de código
                 window.location.href = data.data.selection_url;
             } else {
                 alert('❌ Error: ' + (data.error || 'No se pudo generar el link'));
@@ -1619,7 +1999,6 @@
         }
     };
 
-    // Solicitar cambio de código (una vez)
     window.requestCodeChange = async function (ambassadorId) {
         if (!confirm('¿Deseas cambiar tu código de embajador?\n\n⚠️ Esto solo se puede hacer UNA VEZ.\nTu código actual dejará de funcionar.')) {
             return;
@@ -1644,7 +2023,6 @@
         }
     };
 
-    // Solicitar reenvío de email para elegir código
     window.requestNewCodeEmail = async function (ambassadorId) {
         if (!confirm('¿Deseas que te reenviemos el email para elegir tu código de embajador?')) {
             return;
@@ -1669,16 +2047,53 @@
         }
     };
 
-    // Solicitar retiro
+    window.cancelAmbassadorRequest = async function (ambassadorId) {
+        if (!confirm('¿Deseas cancelar tu solicitud de embajador?\n\nEsta acción no se puede deshacer.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/cancel`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Tu solicitud ha sido cancelada.');
+                location.reload();
+            } else {
+                alert('❌ ' + (data.error || 'No se pudo cancelar la solicitud'));
+            }
+        } catch (error) {
+            console.error('Error cancelando:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
+        }
+    };
+
+    window.addPaymentMethod = function () {
+        window.location.href = `${CONFIG.API_BASE_URL}/embajadores/pagos`;
+    };
+
+    window.removePaymentMethod = async function () {
+        if (!confirm('¿Deseas eliminar este método de pago?')) {
+            return;
+        }
+        // Implementar eliminación de método de pago
+        alert('Método de pago eliminado');
+    };
+
+    window.viewPaymentHistory = function () {
+        window.location.href = `${CONFIG.API_BASE_URL}/embajadores/historial`;
+    };
+
     window.requestWithdraw = async function (ambassadorId, amount) {
         if (!confirm(`¿Deseas solicitar un retiro de ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)}?`)) {
             return;
         }
 
         try {
-            const btn = document.querySelector('.amb-btn-primary');
-            if (btn) btn.disabled = true;
-
             const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/payouts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
@@ -1687,18 +2102,14 @@
             const data = await response.json();
 
             if (data.success) {
-                alert('✅ Tu solicitud de retiro ha sido enviada con éxito. Te contactaremos pronto para procesar el pago.');
-                // Recargar el widget para mostrar saldo en 0 y el nuevo pago en la lista (si lo estuviéramos recargando)
+                alert('✅ Tu solicitud de retiro ha sido enviada con éxito.');
                 location.reload();
             } else {
                 alert('❌ Error: ' + (data.error || 'No se pudo procesar el retiro'));
             }
         } catch (error) {
             console.error('Error solicitando retiro:', error);
-            alert('❌ Hubo un error al procesar tu solicitud. Por favor intenta más tarde.');
-        } finally {
-            const btn = document.querySelector('.amb-btn-primary');
-            if (btn) btn.disabled = false;
+            alert('❌ Hubo un error al procesar tu solicitud.');
         }
     };
 
@@ -1708,21 +2119,18 @@
 
     async function checkAmbassadorStatus(email) {
         try {
-            // Primero buscar embajador por email
             const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors?search=${encodeURIComponent(email)}&limit=1`);
             const data = await response.json();
 
             if (data.success && data.data && data.data.length > 0) {
                 const ambassador = data.data[0];
 
-                // Si está aprobado, obtener datos completos incluyendo referidos
                 if (ambassador.status === 'approved') {
                     try {
                         const detailResponse = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}`);
                         const detailData = await detailResponse.json();
 
                         if (detailData.success && detailData.data) {
-                            console.log('📊 Ambassador data con referidos:', detailData.data);
                             return {
                                 ...detailData.data,
                                 recent_referrals: detailData.data.referrals || []
@@ -1760,7 +2168,6 @@
         // Show loading
         container.innerHTML = `
             <div class="ambassador-widget-container">
-                <div class="ambassador-widget-bg"></div>
                 <div class="ambassador-widget-content">
                     ${renderLoading()}
                 </div>
@@ -1811,11 +2218,9 @@
 
         container.innerHTML = `
             <div class="ambassador-widget-container">
-                <div class="ambassador-widget-bg"></div>
                 <div class="ambassador-widget-content">
                     ${content}
                 </div>
-                <button class="ambassador-paw-btn" title="Ayuda">🐾</button>
             </div>
         `;
     }
@@ -1824,7 +2229,6 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initWidget);
     } else {
-        // Small delay to ensure Memberstack is loaded
         setTimeout(initWidget, 500);
     }
 
