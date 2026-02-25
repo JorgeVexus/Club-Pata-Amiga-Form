@@ -155,7 +155,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             console.log('🧪 [VET_BOT] Validando token de sesión...');
             const sessionResult = await validateSessionToken(sessionToken);
 
-            if (!sessionResult.valid || !sessionResult.memberstackId) {
+            if (sessionResult.valid && sessionResult.memberstackId) {
+                memberstackId = sessionResult.memberstackId;
+                resolvedEmail = sessionResult.email || null;
+                sessionExpiresAt = sessionResult.expiresAt || null;
+                identifiedVia = 'session_token';
+                console.log(`✅ [VET_BOT] Sesión válida para: ${resolvedEmail} (${memberstackId})`);
+            }
+            // NUEVO: Fallback si el token enviado es en realidad un email (error común de configuración del bot)
+            else if (isValidEmail(sessionToken)) {
+                console.warn('💡 [VET_BOT] Token no válido como sesión, pero es un email válido. Usando como fallback.');
+                resolvedEmail = sessionToken.toLowerCase().trim();
+                identifiedVia = 'email';
+            }
+            else {
                 console.warn('⚠️ [VET_BOT] Sesión inválida o expirada');
                 return NextResponse.json(
                     {
@@ -166,13 +179,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                     { status: 401, headers: corsHeaders() }
                 );
             }
-
-            memberstackId = sessionResult.memberstackId;
-            resolvedEmail = sessionResult.email || null;
-            sessionExpiresAt = sessionResult.expiresAt || null;
-            identifiedVia = 'session_token';
-
-            console.log(`✅ [VET_BOT] Sesión válida para: ${resolvedEmail} (${memberstackId})`);
         }
         // Método 2: Email (legacy/fallback)
         else if (email) {
@@ -435,4 +441,14 @@ async function validateSessionToken(token: string): Promise<SessionValidationRes
         console.error('❌ [VET_BOT] Error validating session:', error);
         return { valid: false };
     }
+}
+
+// =============================================
+// Helpers
+// =============================================
+
+function isValidEmail(email: string | null): boolean {
+    if (!email) return false;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
 }
