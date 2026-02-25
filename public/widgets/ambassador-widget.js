@@ -80,7 +80,66 @@
 
         @media (max-width: 768px) {
             .amb-header-title {
-                font-size: 1.8rem;
+                font-size: 40px;
+                line-height: 1.2;
+            }
+            .amb-header-subtitle {
+                font-size: 16px;
+            }
+            .amb-profile-link {
+                font-size: 14px;
+            }
+            .ambassador-widget-content {
+                padding: 15px;
+            }
+            /* Reducir border radius */
+            .amb-code-card,
+            .amb-earnings-card,
+            .amb-stats-card,
+            .amb-material-card,
+            .amb-how-card,
+            .amb-referral-item {
+                border-radius: 20px;
+            }
+            .amb-code-box {
+                border-radius: 20px;
+            }
+            .amb-earnings-available {
+                border-radius: 20px;
+            }
+            .amb-stat-box {
+                border-radius: 20px;
+            }
+            /* Alturas auto */
+            .amb-code-box,
+            .amb-stat-box {
+                height: auto;
+                min-height: auto;
+            }
+            /* Títulos cards */
+            .amb-code-card .amb-card-title,
+            .amb-earnings-card .amb-card-title,
+            .amb-stats-card .amb-card-title {
+                font-size: 30px;
+                line-height: 1.2;
+            }
+            .amb-material-title,
+            .amb-how-title {
+                font-size: 24px;
+                line-height: 1.2;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+            /* Textos */
+            .amb-code-card .amb-card-subtitle,
+            .amb-earnings-card .amb-card-subtitle,
+            .amb-stats-card .amb-card-subtitle,
+            .amb-material-text,
+            .amb-how-item {
+                font-size: 16px;
+            }
+            .amb-referrals-title {
+                font-size: 35px;
             }
         }
 
@@ -650,16 +709,106 @@
         }
 
         .amb-payment-empty {
-            background: white;
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-radius: 55px;
+            background: #FFBD00;
+            display: flex;
+            padding: 18px 40px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
-        .amb-payment-empty-text {
-            color: #888;
-            margin-bottom: 20px;
+        .amb-payment-empty-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .amb-payment-empty-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .amb-payment-empty-content {
+            flex: 1;
+        }
+
+        .amb-payment-empty-content strong {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .amb-payment-empty-content p {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Alerta datos bancarios */
+        .amb-bank-alert {
+            border-radius: 55px;
+            background: #FFBD00;
+            display: flex;
+            padding: 18px 40px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .amb-bank-alert-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .amb-bank-alert-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .amb-bank-alert-text {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        .amb-bank-alert-text strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .amb-btn-bank {
+            display: flex;
+            width: 252px;
+            height: 42px;
+            justify-content: center;
+            align-items: center;
+            background: #15BEB2;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amb-btn-bank:hover {
+            background: #00a09a;
+            transform: translateY(-2px);
         }
 
         .amb-btn-primary {
@@ -677,6 +826,181 @@
         .amb-btn-primary:hover {
             background: #00ACC1;
             transform: translateY(-2px);
+        }
+
+        /* ============================================
+           MODALES
+           ============================================ */
+        .amb-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .amb-modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+            animation: ambModalIn 0.3s ease;
+        }
+
+        @keyframes ambModalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .amb-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: #888;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .amb-modal-close:hover {
+            color: #333;
+        }
+
+        .amb-modal-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 28px;
+            color: #333;
+            margin: 0 0 25px 0;
+            text-align: center;
+        }
+
+        .amb-form-group {
+            margin-bottom: 20px;
+        }
+
+        .amb-form-group label {
+            display: block;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .amb-form-group input,
+        .amb-form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.2s;
+        }
+
+        .amb-form-group input:focus,
+        .amb-form-group select:focus {
+            outline: none;
+            border-color: #15BEB2;
+        }
+
+        .amb-history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .amb-history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            background: #F8F9FA;
+            border-radius: 16px;
+        }
+
+        .amb-history-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .amb-history-date {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .amb-history-concept {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .amb-history-amount {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .amb-history-amount.income {
+            color: #22C55E;
+        }
+
+        .amb-history-amount.expense {
+            color: #EF4444;
+        }
+
+        @media (max-width: 768px) {
+            .amb-modal-content {
+                padding: 25px;
+                border-radius: 20px;
+            }
+            .amb-modal-title {
+                font-size: 24px;
+            }
+            .amb-history-item {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-payment-empty {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .amb-bank-alert {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .amb-bank-alert-left {
+                flex-direction: column;
+            }
+            .amb-btn-bank {
+                width: 100%;
+                max-width: 252px;
+            }
         }
 
         /* ============================================
@@ -890,17 +1214,38 @@
                 padding: 15px 20px;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 15px;
+                gap: 10px;
             }
             .amb-referral-name {
-                font-size: 24px;
+                font-size: 22px;
+                line-height: 1.2;
+            }
+            .amb-referral-email {
+                font-size: 14px;
             }
             .amb-referral-commission-value {
-                font-size: 48px;
-                line-height: 50px;
+                font-size: 36px;
+                line-height: 1;
             }
             .amb-referral-center {
                 align-items: flex-start;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .amb-referral-status-wrapper {
+                align-self: flex-start;
+            }
+            .amb-referral-status-badge {
+                width: auto;
+                min-width: 90px;
+                padding: 4px 12px 4px 25px;
+            }
+            .amb-status-icon {
+                width: 20px;
+                height: 20px;
+                left: -10px;
             }
         }
 
@@ -909,7 +1254,8 @@
            ============================================ */
         .amb-material-section {
             position: relative;
-            margin-bottom: 30px;
+            margin-top: 150px;
+            margin-bottom: 75px;
         }
 
         .amb-material-card {
@@ -928,16 +1274,17 @@
         }
 
         .amb-material-content {
-            max-width: 50%;
+            max-width: 70%;
         }
 
         .amb-material-title {
             color: #000;
             font-family: 'Fraiche', sans-serif;
-            font-size: 50px;
+            font-size: 36px;
             font-weight: 600;
-            line-height: 63px;
+            line-height: 1.2;
             margin: 0;
+            white-space: nowrap;
         }
 
         .amb-material-text {
@@ -964,6 +1311,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
+            margin: 0 auto;
         }
 
         .amb-btn-pink:hover {
@@ -975,29 +1323,59 @@
             position: absolute;
             right: 0;
             bottom: 0;
-            width: 280px;
+            width: 320px;
             height: auto;
             z-index: 10;
-            border-radius: 0 0 68px 0;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        @media (max-width: 1200px) {
+            .amb-material-title,
+            .amb-how-title {
+                font-size: 32px;
+            }
         }
 
         @media (max-width: 768px) {
             .amb-material-card {
-                padding: 25px;
+                padding: 25px !important;
+                align-items: center !important;
+            }
+            .amb-material-content {
+                max-width: 100% !important;
+                padding-bottom: 0 !important;
+                text-align: center !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 20px !important;
+            }
+            .amb-material-title {
+                font-size: 26px;
+                white-space: normal;
+                margin: 0 !important;
+            }
+            .amb-material-text {
+                margin: 0 !important;
+            }
+            .amb-material-image {
+                display: none !important;
             }
             .amb-material-content {
                 max-width: 100%;
-                padding-bottom: 180px;
+                padding-bottom: 20px;
             }
-            .amb-material-title {
-                font-size: 32px;
-                line-height: 40px;
+            .amb-how-title {
+                font-size: 28px;
+                white-space: normal;
             }
-            .amb-material-image {
-                position: absolute;
-                right: 10px;
-                bottom: 0;
-                width: 180px;
+            .amb-how-image {
+                display: none;
+            }
+            .amb-how-content {
+                max-width: 100%;
+                padding-bottom: 20px;
             }
         }
 
@@ -1010,23 +1388,28 @@
         }
 
         .amb-how-card {
-            background: #7DD8D5;
-            border-radius: 24px;
-            padding: 40px;
+            background: #15BEB2;
+            border-radius: 68px;
+            padding: 40px 60px;
             position: relative;
             overflow: visible;
-            min-height: 250px;
+            min-height: 200px;
         }
 
         .amb-how-content {
-            max-width: 60%;
+            max-width: 70%;
+            position: relative;
+            z-index: 5;
         }
 
         .amb-how-title {
-            font-family: 'Fraiche', 'Outfit', sans-serif;
-            font-size: 1.8rem;
-            color: white;
+            color: #FFF;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 36px;
+            font-weight: 600;
+            line-height: 1.2;
             margin: 0 0 25px 0;
+            white-space: normal;
         }
 
         .amb-how-list {
@@ -1039,9 +1422,11 @@
             display: flex;
             align-items: flex-start;
             gap: 12px;
-            color: white;
-            font-size: 0.95rem;
-            line-height: 1.5;
+            color: #FFF;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: normal;
         }
 
         .amb-how-check {
@@ -1058,31 +1443,40 @@
 
         .amb-how-image {
             position: absolute;
-            right: 20px;
-            bottom: -30px;
-            width: 220px;
-            height: auto;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
             z-index: 10;
+            border-radius: 0 0 68px 0;
         }
 
         @media (max-width: 768px) {
             .amb-how-card {
-                padding: 25px;
+                padding: 25px !important;
+                min-height: auto !important;
             }
             .amb-how-content {
-                max-width: 100%;
-                padding-bottom: 180px;
+                max-width: 100% !important;
+                padding-bottom: 0 !important;
+                text-align: center !important;
             }
             .amb-how-title {
-                font-size: 1.4rem;
+                font-size: 24px;
+                line-height: 1.2;
+                text-align: center;
+                margin-bottom: 20px !important;
+            }
+            .amb-how-list {
+                gap: 15px !important;
+            }
+            .amb-how-item {
+                text-align: left;
             }
             .amb-how-image {
-                position: relative;
-                right: auto;
-                bottom: auto;
-                width: 160px;
-                margin: -160px auto 0;
-                display: block;
+                display: none !important;
             }
         }
 
@@ -1649,8 +2043,9 @@
         const reviewReferrals = ambassador.review_referrals || 1;
         const rejectedReferrals = ambassador.rejected_referrals || 1;
         
-        // Mock de datos de pago
+        // Datos de pago
         const hasPaymentMethod = ambassador.payment_method && ambassador.payment_method !== 'pending';
+        const paymentMethodId = ambassador.payment_method_id || ambassador.id;
         const cardLast4 = ambassador.card_last4 || '8832';
         const cardType = ambassador.card_type || 'mastercard';
         const cardLabel = cardType === 'mastercard' ? 'Mastercard' : 'Visa';
@@ -1764,6 +2159,22 @@
                     </section>
                 </div>
 
+                ${!hasPaymentMethod ? `
+                <!-- Alerta Datos Bancarios -->
+                <div class="amb-bank-alert">
+                    <div class="amb-bank-alert-left">
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="" class="amb-bank-alert-icon">
+                        <div class="amb-bank-alert-text">
+                            <strong>Agrega tus datos bancarios</strong>
+                            Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.
+                        </div>
+                    </div>
+                    <button class="amb-btn-bank" onclick="window.addPaymentMethod()">
+                        Agregar datos bancarios
+                    </button>
+                </div>
+                ` : ''}
+
                 <!-- Método de Pago -->
                 <section class="amb-payment-section">
                     ${hasPaymentMethod ? `
@@ -1779,7 +2190,7 @@
                         </div>
                         <div class="amb-payment-actions">
                             <span class="amb-payment-status">Predeterminado</span>
-                            <button class="amb-payment-link" onclick="window.removePaymentMethod()">Eliminar tarjeta</button>
+                            <button class="amb-payment-link" onclick="window.removePaymentMethod('${paymentMethodId}')">Eliminar tarjeta</button>
                         </div>
                         <div class="amb-payment-divider"></div>
                         <button class="amb-payment-add" onclick="window.addPaymentMethod()">
@@ -1790,7 +2201,13 @@
                     </div>
                     ` : `
                     <div class="amb-payment-empty">
-                        <p class="amb-payment-empty-text">No tienes métodos de pago registrados</p>
+                        <div class="amb-payment-empty-icon">
+                            <img src="${CONFIG.CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="Tarjeta">
+                        </div>
+                        <div class="amb-payment-empty-content">
+                            <strong>No tienes métodos de pago registrados</strong>
+                            <p>Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.</p>
+                        </div>
                         <button class="amb-btn-primary" onclick="window.addPaymentMethod()">
                             Agregar método de pago
                         </button>
@@ -2072,21 +2489,181 @@
         }
     };
 
+    // ============================================
+    // MODALES DE PAGO
+    // ============================================
+    
     window.addPaymentMethod = function () {
-        window.location.href = `${CONFIG.API_BASE_URL}/embajadores/pagos`;
-    };
-
-    window.removePaymentMethod = async function () {
-        if (!confirm('¿Deseas eliminar este método de pago?')) {
-            return;
-        }
-        // Implementar eliminación de método de pago
-        alert('Método de pago eliminado');
+        openPaymentModal();
     };
 
     window.viewPaymentHistory = function () {
-        window.location.href = `${CONFIG.API_BASE_URL}/embajadores/historial`;
+        openHistoryModal();
     };
+
+    function openPaymentModal() {
+        const modal = document.createElement('div');
+        modal.id = 'amb-payment-modal';
+        modal.innerHTML = `
+            <div class="amb-modal-overlay" onclick="closePaymentModal(event)">
+                <div class="amb-modal-content" onclick="event.stopPropagation()">
+                    <button class="amb-modal-close" onclick="closePaymentModal()">&times;</button>
+                    <h3 class="amb-modal-title">Agregar método de pago</h3>
+                    <form id="amb-payment-form" onsubmit="submitPaymentMethod(event)">
+                        <div class="amb-form-group">
+                            <label>Tipo de cuenta</label>
+                            <select name="account_type" required>
+                                <option value="">Selecciona...</option>
+                                <option value="debit">Débito</option>
+                                <option value="credit">Crédito</option>
+                                <option value="clabe">CLABE</option>
+                            </select>
+                        </div>
+                        <div class="amb-form-group">
+                            <label>Banco</label>
+                            <input type="text" name="bank_name" placeholder="Ej: BBVA, Santander..." required>
+                        </div>
+                        <div class="amb-form-group">
+                            <label>Número de tarjeta / CLABE</label>
+                            <input type="text" name="account_number" placeholder="**** **** **** ****" maxlength="18" required>
+                        </div>
+                        <div class="amb-form-group">
+                            <label>Titular de la cuenta</label>
+                            <input type="text" name="account_holder" placeholder="Nombre completo" required>
+                        </div>
+                        <button type="submit" class="amb-btn-primary" style="width: 100%; margin-top: 20px;">
+                            Guardar método de pago
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.closePaymentModal = function(event) {
+        if (!event || event.target === event.currentTarget) {
+            const modal = document.getElementById('amb-payment-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+    };
+
+    window.submitPaymentMethod = async function(event) {
+        event.preventDefault();
+        const form = event.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        const formData = {
+            account_type: form.account_type.value,
+            bank_name: form.bank_name.value,
+            account_number: form.account_number.value,
+            account_holder: form.account_holder.value
+        };
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-methods`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Método de pago guardado correctamente');
+                closePaymentModal();
+                location.reload();
+            } else {
+                alert('❌ ' + (data.error || 'No se pudo guardar el método de pago'));
+            }
+        } catch (error) {
+            console.error('Error guardando método de pago:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar método de pago';
+        }
+    };
+
+    window.removePaymentMethod = async function (paymentMethodId) {
+        if (!confirm('¿Deseas eliminar este método de pago?')) {
+            return;
+        }
+        
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-methods/${paymentMethodId}`, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                alert('✅ Método de pago eliminado correctamente');
+                location.reload();
+            } else {
+                const data = await response.json();
+                alert('❌ ' + (data.error || 'No se pudo eliminar el método de pago'));
+            }
+        } catch (error) {
+            console.error('Error eliminando método de pago:', error);
+            alert('❌ Hubo un error al eliminar. Por favor intenta más tarde.');
+        }
+    };
+
+    function openHistoryModal() {
+        // Cargar historial desde el backend
+        loadPaymentHistory().then(history => {
+            const modal = document.createElement('div');
+            modal.id = 'amb-history-modal';
+            modal.innerHTML = `
+                <div class="amb-modal-overlay" onclick="closeHistoryModal(event)">
+                    <div class="amb-modal-content" onclick="event.stopPropagation()" style="max-width: 600px;">
+                        <button class="amb-modal-close" onclick="closeHistoryModal()">&times;</button>
+                        <h3 class="amb-modal-title">Historial de pagos</h3>
+                        <div class="amb-history-list">
+                            ${history.length > 0 ? history.map(item => `
+                                <div class="amb-history-item">
+                                    <div class="amb-history-info">
+                                        <span class="amb-history-date">${formatDate(item.date)}</span>
+                                        <span class="amb-history-concept">${item.concept}</span>
+                                    </div>
+                                    <span class="amb-history-amount ${item.type}">${formatCurrency(item.amount)}</span>
+                                </div>
+                            `).join('') : '<p style="text-align: center; color: #888; padding: 40px;">No hay movimientos registrados</p>'}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+        });
+    }
+
+    window.closeHistoryModal = function(event) {
+        if (!event || event.target === event.currentTarget) {
+            const modal = document.getElementById('amb-history-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+    };
+
+    async function loadPaymentHistory() {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-history`);
+            const data = await response.json();
+            return data.success ? data.data : [];
+        } catch (error) {
+            console.error('Error cargando historial:', error);
+            return [];
+        }
+    }
 
     window.requestWithdraw = async function (ambassadorId, amount) {
         if (!confirm(`¿Deseas solicitar un retiro de ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)}?`)) {

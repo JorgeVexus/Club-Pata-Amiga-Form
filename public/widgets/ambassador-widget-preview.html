@@ -118,6 +118,11 @@
             color: white;
         }
         
+        .test-btn-no-bank {
+            background: #FFBD00;
+            color: #333;
+        }
+        
         .test-btn-not-found {
             background: #9E9E9E;
             color: white;
@@ -367,6 +372,67 @@
             z-index: 10;
         }
 
+        /* ALERTA DATOS BANCARIOS - Preview styles */
+        .amb-bank-alert {
+            border-radius: 55px;
+            background: #FFBD00;
+            display: flex;
+            padding: 18px 40px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            align-self: stretch;
+            margin-bottom: 30px;
+        }
+
+        .amb-bank-alert-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .amb-bank-alert-icon {
+            width: 50px;
+            height: 50px;
+            aspect-ratio: 1/1;
+        }
+
+        .amb-bank-alert-text {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        .amb-bank-alert-text strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .amb-btn-bank {
+            display: flex;
+            width: 252px;
+            height: 42px;
+            justify-content: center;
+            align-items: center;
+            background: #15BEB2;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .amb-btn-bank:hover {
+            background: #00a09a;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 768px) {
             .amb-earnings-value,
             .amb-earnings-available-value {
@@ -377,10 +443,18 @@
                 line-height: 40px;
             }
             .amb-referrals-title {
-                font-size: 48px;
+                font-size: 35px;
             }
             .amb-search-box {
                 width: 100%;
+            }
+            .amb-bank-alert {
+                flex-direction: column;
+                padding: 20px;
+                text-align: center;
+            }
+            .amb-bank-alert-left {
+                flex-direction: column;
             }
             .amb-referral-item {
                 padding: 15px 20px;
@@ -401,6 +475,11 @@
         }
 
         /* MATERIAL DIGITAL - Preview styles */
+        .amb-material-section {
+            margin-top: 150px;
+            margin-bottom: 75px;
+        }
+
         .amb-material-card {
             border-radius: 68px;
             background: #FFF;
@@ -417,16 +496,17 @@
         }
 
         .amb-material-content {
-            max-width: 50%;
+            max-width: 70%;
         }
 
         .amb-material-title {
             color: #000;
             font-family: 'Fraiche', sans-serif;
-            font-size: 50px;
+            font-size: 36px;
             font-weight: 600;
-            line-height: 63px;
+            line-height: 1.2;
             margin: 0;
+            white-space: nowrap;
         }
 
         .amb-material-text {
@@ -453,6 +533,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-size: 14px;
+            margin: 0 auto;
         }
 
         .amb-btn-pink:hover {
@@ -464,10 +545,18 @@
             position: absolute;
             right: 0;
             bottom: 0;
-            width: 280px;
+            width: 320px;
             height: auto;
             z-index: 10;
-            border-radius: 0 0 68px 0;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        @media (max-width: 1200px) {
+            .amb-material-title,
+            .amb-how-title {
+                font-size: 32px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -479,14 +568,312 @@
                 padding-bottom: 180px;
             }
             .amb-material-title {
-                font-size: 32px;
-                line-height: 40px;
+                font-size: 26px;
+                white-space: normal;
             }
             .amb-material-image {
                 position: absolute;
                 right: 10px;
                 bottom: 0;
-                width: 180px;
+                width: 200px;
+                height: 110%;
+            }
+            .amb-how-title {
+                font-size: 28px;
+                white-space: normal;
+            }
+        }
+
+        /* ALERTA DATOS BANCARIOS - Preview styles */
+        .amb-payment-empty {
+            border-radius: 55px;
+            background: #FFBD00;
+            display: flex;
+            padding: 18px 40px;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .amb-payment-empty-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .amb-payment-empty-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .amb-payment-empty-content {
+            flex: 1;
+        }
+
+        .amb-payment-empty-content strong {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .amb-payment-empty-content p {
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        @media (max-width: 768px) {
+            .amb-payment-empty {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+        }
+
+        /* CÓMO FUNCIONA - Preview styles */
+        .amb-how-card {
+            background: #15BEB2;
+            border-radius: 68px;
+            padding: 40px 60px;
+            position: relative;
+            overflow: visible;
+            min-height: 200px;
+        }
+
+        .amb-how-content {
+            max-width: 60%;
+            position: relative;
+            z-index: 5;
+        }
+
+        .amb-how-title {
+            color: #FFF;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 42px;
+            font-weight: 600;
+            line-height: 1.2;
+            margin: 0 0 25px 0;
+            white-space: normal;
+        }
+
+        .amb-how-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .amb-how-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #FFF;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            line-height: normal;
+        }
+
+        .amb-how-check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+        }
+
+        .amb-how-image {
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 280px;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            z-index: 10;
+            border-radius: 0 0 68px 0;
+        }
+
+        @media (max-width: 768px) {
+            /* Header */
+            .amb-header-title {
+                font-size: 40px;
+                line-height: 1.2;
+            }
+            .amb-header-subtitle {
+                font-size: 16px;
+            }
+            /* Reducir border radius */
+            .amb-code-card,
+            .amb-earnings-card,
+            .amb-stats-card,
+            .amb-material-card,
+            .amb-how-card,
+            .amb-referral-item {
+                border-radius: 20px;
+            }
+            .amb-code-box,
+            .amb-earnings-available,
+            .amb-stat-box {
+                border-radius: 20px;
+            }
+            /* Alturas auto */
+            .amb-code-box,
+            .amb-stat-box {
+                height: auto;
+                min-height: auto;
+            }
+            /* Títulos cards */
+            .amb-code-card .amb-card-title,
+            .amb-earnings-card .amb-card-title,
+            .amb-stats-card .amb-card-title {
+                font-size: 30px;
+                line-height: 1.2;
+            }
+            .amb-material-title,
+            .amb-how-title {
+                font-size: 24px;
+                line-height: 1.2;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+            .amb-referrals-title {
+                font-size: 35px;
+            }
+            /* Textos */
+            .amb-code-card .amb-card-subtitle,
+            .amb-earnings-card .amb-card-subtitle,
+            .amb-stats-card .amb-card-subtitle,
+            .amb-material-text,
+            .amb-how-item,
+            .amb-referral-email {
+                font-size: 16px;
+            }
+            /* Code section */
+            .amb-code-card {
+                padding: 25px;
+            }
+            .amb-code-box {
+                width: 100%;
+                padding: 20px 15px;
+            }
+            .amb-code-value {
+                font-size: 2rem;
+            }
+            .amb-code-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            .amb-btn-orange,
+            .amb-btn-cancel {
+                width: 100%;
+            }
+            /* Material y How */
+            .amb-material-card {
+                padding: 25px !important;
+                align-items: center !important;
+            }
+            .amb-how-card {
+                padding: 25px !important;
+                min-height: auto !important;
+            }
+            .amb-material-content {
+                max-width: 100% !important;
+                padding-bottom: 0 !important;
+                text-align: center !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                gap: 20px !important;
+            }
+            .amb-how-content {
+                max-width: 100% !important;
+                padding-bottom: 0 !important;
+                text-align: center !important;
+            }
+            .amb-how-title {
+                font-size: 24px !important;
+                text-align: center !important;
+                margin-bottom: 20px !important;
+            }
+            .amb-how-list {
+                gap: 15px !important;
+            }
+            .amb-how-item {
+                text-align: left !important;
+            }
+            .amb-material-title {
+                margin: 0 !important;
+            }
+            .amb-material-text {
+                margin: 0 !important;
+            }
+            .amb-material-image,
+            .amb-how-image {
+                display: none;
+            }
+            /* Referrals */
+            .amb-referral-item {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .amb-referral-name {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+            .amb-referral-commission-value {
+                font-size: 36px;
+                line-height: 1;
+            }
+            .amb-referral-center {
+                align-items: flex-start;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .amb-referral-status-wrapper {
+                align-self: flex-start;
+            }
+            .amb-referral-status-badge {
+                width: auto;
+                min-width: 90px;
+                padding: 4px 12px 4px 25px;
+            }
+            .amb-status-icon {
+                width: 20px;
+                height: 20px;
+                left: -10px;
+            }
+            /* Icons */
+            .amb-float-icon.gift,
+            .amb-float-icon.money,
+            .amb-float-icon.stats {
+                width: 40px;
+                height: 40px;
+            }
+            .amb-float-icon.gift {
+                top: -10px;
+                right: 10px;
+            }
+            .amb-float-icon.money {
+                top: -15px;
+                right: 10px;
+            }
+            .amb-float-icon.stats {
+                top: -10px;
+                right: 10px;
             }
         }
     </style>
@@ -516,6 +903,9 @@
                 </button>
                 <button class="test-btn test-btn-no-code" onclick="showState('no-code')">
                     🎯 Aprobado sin código
+                </button>
+                <button class="test-btn test-btn-no-bank" onclick="showState('no-bank')">
+                    💳 Sin datos bancarios
                 </button>
                 <button class="test-btn test-btn-not-found" onclick="showState('not-found')">
                     👤 No es embajador
@@ -574,6 +964,24 @@
                 referral_code: null,
                 referral_code_status: null
             },
+            'no-bank': {
+                status: 'approved',
+                id: 'test-nobank',
+                referral_code: 'PATA456',
+                referral_code_status: 'active',
+                total_earnings: 156,
+                pending_payout: 48,
+                referrals_count: 5,
+                approved_referrals: 3,
+                review_referrals: 1,
+                rejected_referrals: 1,
+                payment_method: null,
+                card_last4: null,
+                recent_referrals: [
+                    { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'approved' },
+                    { name: 'Carlos López', email: 'carlos.lopez@gmail.com', date: '14 de junio de 2025', commission: 16, status: 'process' }
+                ]
+            },
             'not-found': null
         };
 
@@ -617,8 +1025,8 @@
                 content = renderRejectedMock(data);
             } else if (state === 'no-code') {
                 content = renderNoCodeMock(data);
-            } else if (state === 'approved') {
-                content = renderApprovedMock(data);
+            } else if (state === 'approved' || state === 'no-bank') {
+                content = renderApprovedMock(data, state === 'no-bank');
             }
             
             container.innerHTML = `
@@ -706,7 +1114,7 @@
             `;
         }
 
-        function renderApprovedMock(data) {
+        function renderApprovedMock(data, showBankAlert = false) {
             const CLOUDINARY_URL = 'https://res.cloudinary.com/dqy07kgu6/image/upload';
             
             return `
@@ -809,8 +1217,25 @@
                         </section>
                     </div>
 
+                    ${showBankAlert ? `
+                    <!-- Alerta Datos Bancarios -->
+                    <div class="amb-bank-alert">
+                        <div class="amb-bank-alert-left">
+                            <img src="${CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="" class="amb-bank-alert-icon">
+                            <div class="amb-bank-alert-text">
+                                <strong>Agrega tus datos bancarios</strong>
+                                Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.
+                            </div>
+                        </div>
+                        <button class="amb-btn-bank" onclick="alert('Agregar datos bancarios...')">
+                            Agregar datos bancarios
+                        </button>
+                    </div>
+                    ` : ''}
+
                     <!-- Método de Pago -->
                     <section class="amb-payment-section">
+                        ${data.payment_method ? `
                         <div class="amb-payment-card">
                             <div class="amb-payment-info">
                                 <div style="width: 40px; height: 40px; background: #EB001B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 0.7rem;">MC</div>
@@ -830,6 +1255,20 @@
                             </button>
                             <button class="amb-payment-history" onclick="alert('Ver historial')">Ver historial de pagos</button>
                         </div>
+                        ` : `
+                        <div class="amb-payment-empty">
+                            <div class="amb-payment-empty-icon">
+                                <img src="${CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="Tarjeta">
+                            </div>
+                            <div class="amb-payment-empty-content">
+                                <strong>No tienes métodos de pago registrados</strong>
+                                <p>Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.</p>
+                            </div>
+                            <button class="amb-btn-primary" onclick="alert('Agregar método de pago')">
+                                Agregar método de pago
+                            </button>
+                        </div>
+                        `}
                     </section>
 
                     <!-- Estado de Referidos -->
