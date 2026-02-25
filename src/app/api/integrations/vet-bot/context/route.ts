@@ -375,12 +375,12 @@ async function validateSessionToken(token: string): Promise<SessionValidationRes
         }
 
         if (!data || data.length === 0) {
-            console.warn('⚠️ [VET_BOT] No data returned from RPC for token');
+            console.warn(`⚠️ [VET_BOT] No data returned from RPC for token (Length: ${token?.length})`);
 
             // DIAGNÓSTICO: Buscar el token sin filtros para ver qué está pasando
             const { data: diagnostic, error: diagError } = await supabaseAdmin
                 .from('vet_bot_sessions')
-                .select('id, is_active, expires_at, created_at')
+                .select('id, is_active, expires_at, created_at, token')
                 .eq('token', token)
                 .maybeSingle();
 
@@ -398,7 +398,25 @@ async function validateSessionToken(token: string): Promise<SessionValidationRes
                     now: now.toISOString()
                 });
             } else {
-                console.log('🔍 [VET_BOT] Diagnostic result: Token DOES NOT EXIST in database');
+                console.log(`🔍 [VET_BOT] Diagnostic result: Token DOES NOT EXIST in database. 
+                    - Received length: ${token?.length}
+                    - Starts with: ${token?.substring(0, 4)}...
+                    - Ends with: ...${token?.substring(token.length - 4)}
+                `);
+
+                // Buscar tokens recientes para ver si hay alguno parecido
+                const { data: recent } = await supabaseAdmin
+                    .from('vet_bot_sessions')
+                    .select('token, email, created_at')
+                    .order('created_at', { ascending: false })
+                    .limit(3);
+
+                if (recent && recent.length > 0) {
+                    console.log('📄 [VET_BOT] Last 3 tokens in DB:');
+                    recent.forEach(r => {
+                        console.log(`  - ${r.token.substring(0, 4)}...${r.token.substring(60)} (Created: ${r.created_at}, User: ${r.email})`);
+                    });
+                }
             }
 
             return { valid: false };

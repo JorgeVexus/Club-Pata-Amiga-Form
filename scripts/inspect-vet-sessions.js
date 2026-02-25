@@ -26,20 +26,12 @@ async function inspectSessions() {
     }
 
     console.log(`Se encontraron ${data.length} sesiones:`);
-    data.forEach((s, i) => {
+    data.forEach((session, index) => {
+        const expires = new Date(session.expires_at);
         const now = new Date();
-        const expires = new Date(s.expires_at);
-        const isValid = s.is_active && expires > now;
+        const isValid = session.is_active && expires > now;
 
-        console.log(`\n[${i + 1}] Token: ${s.token.substring(0, 8)}...`);
-        console.log(`    Status: ${s.is_active ? 'ACTIVE' : 'INACTIVE'}`);
-        console.log(`    Created: ${s.created_at}`);
-        console.log(`    Expires: ${s.expires_at}`);
-        console.log(`    Valid now?: ${isValid ? 'SÍ ✅' : 'NO ❌'}`);
-        if (!isValid) {
-            if (!s.is_active) console.log('    Reason: Marcado como inactivo manualmente.');
-            if (expires <= now) console.log(`    Reason: Expirado (hace ${Math.floor((now - expires) / 1000 / 60)} min).`);
-        }
+        console.log(`${index + 1}. Token: ${session.token.substring(0, 8)}... | Email: ${session.email} | Active: ${session.is_active} | Valid: ${isValid}`);
     });
 
     // Probar el RPC de validación manualmente con el último token
