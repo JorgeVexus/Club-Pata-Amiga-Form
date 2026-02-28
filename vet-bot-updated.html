@@ -1,5 +1,5 @@
 <!-- ============================================ -->
-<!-- Vet-Bot Integration v2.1 - Solo usuarios con MEMBRESÍA ACTIVA -->
+<!-- Vet-Bot Integration v3.0 - setCustomFields -->
 <!-- app.pataamiga.mx | Chatbot Builder AI v6 -->
 <!-- ============================================ -->
 
@@ -67,51 +67,54 @@
                     return;
                 }
 
-                // 2. VERIFICACIÓN DE MEMBRESÍA PAGADA (NUEVO)
-                // Revisamos las conexiones a planes del miembro
+                // 2. VERIFICACIÓN DE MEMBRESÍA PAGADA
                 const planConnections = member.data.planConnections || [];
-
-                // Filtramos por planes que tengan status 'ACTIVE' o 'TRIALING'
                 const hasActivePaidPlan = planConnections.some(plan =>
                     plan.status === 'ACTIVE' || plan.status === 'TRIALING'
                 );
 
                 if (!hasActivePaidPlan) {
                     console.log('[VetBot] User logged in but has no active paid plan - bot hidden');
-                    // Si quieres que el bot se oculte si el usuario cancela su membresía:
                     return;
                 }
 
-                console.log('[VetBot] Active membership confirmed for:', member.data.auth?.email);
+                const userEmail = member.data.auth?.email;
+                console.log('[VetBot] Active membership confirmed for:', userEmail);
 
                 // Generar token de sesión
                 const sessionToken = await generateSessionToken(
                     member.data.id,
-                    member.data.auth?.email
+                    userEmail
                 );
 
                 // Obtener nombre del usuario
                 const firstName = member.data.customFields?.['first-name'] ||
-                    member.data.auth?.email?.split('@')[0] ||
+                    userEmail?.split('@')[0] ||
                     'Usuario';
 
-                // Preparar datos para el bot
-                const userData = {
-                    session_token: sessionToken,
-                    user_email: member.data.auth?.email,
-                    first_name: firstName,
-                    memberstack_id: member.data.id
-                };
+                console.log('[VetBot] Initializing bot with setCustomFields...');
+                console.log('[VetBot] Token:', sessionToken ? sessionToken.substring(0, 8) + '...' : 'null');
+                console.log('[VetBot] Email:', userEmail);
 
-                console.log('[VetBot] Initializing bot with user data...');
-
-                // Inicializar Chatbot Builder AI con userData
+                // ============================================
+                // INICIALIZAR CON setCustomFields (CBB API)
+                // Ref: https://docs.chatbotbuilder.ai
+                // setCustomFields usa un array de {id, value}
+                // donde "id" es el nombre del Custom User Field
+                // ============================================
                 ktt10.setup({
                     id: "K4THS5LyA99jKDKYNgD3",
                     accountId: "1146761",
                     color: "#36D6B5",
-                    userData: userData
+                    setCustomFields: [
+                        { id: "session_token", value: sessionToken || "" },
+                        { id: "user_email", value: userEmail || "" },
+                        { id: "first_name", value: firstName || "" },
+                        { id: "memberstack_id", value: member.data.id || "" }
+                    ]
                 });
+
+                console.log('[VetBot] ✅ Bot initialized with setCustomFields successfully');
 
             } catch (error) {
                 console.error('[VetBot] Initialization error:', error);
@@ -121,7 +124,6 @@
         // ============================================
         // EJECUTAR
         // ============================================
-        // Esperar a que todo cargue
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initVetBot);
         } else {
