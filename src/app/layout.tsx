@@ -4,6 +4,7 @@ import './globals.css';
 import '@/styles/fonts.css';
 import Script from 'next/script';
 import MetaPixel from '@/components/Analytics/MetaPixel';
+import GoogleTagManager, { GoogleTagManagerNoScript } from '@/components/Analytics/GoogleTagManager';
 
 const outfit = Outfit({
     subsets: ['latin'],
@@ -31,6 +32,9 @@ export default function RootLayout({
     return (
         <html lang="es" className={outfit.variable} suppressHydrationWarning>
             <head>
+                {/* Google Tag Manager - Lo más arriba posible */}
+                <GoogleTagManager gtmId="GTM-N3WV4GPT" />
+                
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"
@@ -40,6 +44,9 @@ export default function RootLayout({
                 />
             </head>
             <body>
+                {/* Google Tag Manager (noscript) - Después de la etiqueta body */}
+                <GoogleTagManagerNoScript gtmId="GTM-N3WV4GPT" />
+                
                 {/* Google Places API - Cargar después de que la página sea interactiva */}
                 <Script
                     src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAei8wBZ0fQRWGY9nInhuCep5K8cHkDtqs&libraries=places&loading=async"
