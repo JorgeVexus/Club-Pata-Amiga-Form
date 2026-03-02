@@ -8,7 +8,7 @@
 - [x] Stripe integration via Memberstack.
 - [x] Post-payment profile completion.
 - [x] Post-payment pet detail completion.
-- [ ] Automated catalog integration ([In Progress]).
+- [x] Automated catalog integration (Colores, Razas).
 
 ## Phases
 
@@ -26,10 +26,10 @@
 - [x] Supabase persistence for partial registrations.
 
 ### Phase 3: Post-Payment & Polish
-**Status**: 🚧 In Progress
+**Status**: ✅ Completed
 **Objective**: Complete pet information and refine the UX.
 - [x] Breed Autocomplete (Sanity/Supabase integration).
-- [x] Implement Pet Color Selection (Current Task).
+- [x] Implement Pet Color Selection (Generic system for Hair, Nose, Eyes).
 - [ ] Photo upload with 15-day deadline tracking.
 - [ ] Senior pet certificate logic (10+ years).
 
