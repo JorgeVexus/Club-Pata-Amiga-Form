@@ -11,7 +11,7 @@ interface TextInputProps {
     name: string;
     type?: 'text' | 'email' | 'password' | 'tel';
     value: string;
-    onChange: (value: string) => void;
+    onChange?: (value: string) => void;
     placeholder?: string;
     error?: string;
     helpText?: string;
@@ -21,6 +21,7 @@ interface TextInputProps {
     pattern?: string;
     onBlur?: () => void;
     readOnly?: boolean;
+    disabled?: boolean;
     /** Evita error de hidratación cuando el valor viene de APIs solo-cliente (ej. Memberstack) */
     suppressHydrationWarning?: boolean;
 }
@@ -40,6 +41,7 @@ export default function TextInput({
     pattern,
     onBlur,
     readOnly,
+    disabled,
     suppressHydrationWarning,
 }: TextInputProps) {
     return (
@@ -55,7 +57,7 @@ export default function TextInput({
                 type={type}
                 value={value}
                 suppressHydrationWarning={suppressHydrationWarning}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(e) => onChange?.(e.target.value)}
                 onBlur={onBlur}
                 placeholder={placeholder}
                 className={`${styles.input} ${error ? 'input-error' : ''} ${readOnly ? styles.readOnly : ''}`}
@@ -64,6 +66,7 @@ export default function TextInput({
                 maxLength={maxLength}
                 pattern={pattern}
                 readOnly={readOnly}
+                disabled={disabled}
             />
 
             {helpText && !error && (

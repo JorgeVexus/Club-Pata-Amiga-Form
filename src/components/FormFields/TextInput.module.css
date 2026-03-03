@@ -3,6 +3,11 @@
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Cuando está dentro de una fila (.row), no agregar margin-bottom */
+:global(.row) .fieldWrapper {
+    margin-bottom: 0;
+}
+
 .label {
     font-size: 0.95rem;
     font-weight: 600;
@@ -20,7 +25,7 @@
     padding: 0.875rem 1.5rem;
     font-size: 1rem;
     background: rgba(255, 255, 255, var(--opacity-60));
-    border: 2px solid transparent;
+    border: 2px solid #E2E8F0;
     border-radius: var(--radius-input);
     transition: all 0.3s ease;
     color: var(--color-text-dark);
@@ -48,6 +53,17 @@
 
 .inputError:focus {
     box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+}
+
+.readOnly {
+    background: rgba(248, 249, 250, 0.8);
+    cursor: default;
+}
+
+.input:disabled {
+    background: rgba(248, 249, 250, 0.8);
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
 /* Animación al aparecer */

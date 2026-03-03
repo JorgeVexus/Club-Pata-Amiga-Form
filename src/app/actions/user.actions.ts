@@ -72,11 +72,12 @@ export async function checkCurpAvailability(curp: string, currentMemberId?: stri
  * Se usa después de crear el usuario en Memberstack
  * Usa UPSERT: si el usuario ya existe (por memberstack_id), actualiza sus datos
  */
-export async function registerUserInSupabase(userData: any, memberstackId: string, documentUrls?: { ineFront?: string, ineBack?: string }) {
+export async function registerUserInSupabase(userData: any, memberstackId: string) {
     console.log('🔄 [Server Action] Intentando registrar/actualizar usuario en Supabase:', {
         memberstackId,
         email: userData.email,
-        curp: userData.curp
+        curp: userData.curp,
+        step: userData.registration_step
     });
 
     const supabase = getServiceRoleClient()
@@ -86,31 +87,41 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
     }
 
     try {
-        // Usar UPSERT: inserta si no existe, actualiza si existe (basado en memberstack_id)
-        // Nota: updated_at se maneja automáticamente por el trigger en la base de datos
+        // Mapeo seguro de campos para UPSERT
+        const dataToSave = {
+            memberstack_id: memberstackId,
+            email: userData.email,
+            // Perfil
+            first_name: userData.first_name || userData.firstName,
+            last_name: userData.last_name || userData.paternalLastName,
+            mother_last_name: userData.mother_last_name || userData.maternalLastName,
+            gender: userData.gender,
+            birth_date: userData.birth_date || userData.birthDate,
+            curp: (userData.curp || userData.CURP)?.trim() || null,
+            phone: userData.phone,
+            nationality: userData.nationality,
+            nationality_code: userData.nationality_code || userData.nationalityCode,
+            // Dirección
+            postal_code: userData.postal_code || userData.postalCode,
+            state: userData.state,
+            city: userData.city,
+            colony: userData.colony,
+            address: userData.address,
+            // Tracking
+            registration_step: userData.registration_step,
+            membership_status: userData.membership_status || 'pending',
+            // Mascotas (campos temporales en users si se usan para tracking rápido)
+            pet_name: userData.pet_name,
+            pet_type: userData.pet_type,
+            pet_age: userData.pet_age,
+            pet_age_unit: userData.pet_age_unit,
+        };
+
         const { data, error } = await supabase
             .from('users')
-            .upsert({
-                memberstack_id: memberstackId,
-                first_name: userData.firstName,
-                last_name: userData.paternalLastName,
-                mother_last_name: userData.maternalLastName,
-                gender: userData.gender,
-                birth_date: userData.birthDate,
-                curp: userData.curp?.trim() || null,
-                email: userData.email,
-                phone: userData.phone,
-                postal_code: userData.postalCode,
-                state: userData.state,
-                city: userData.city,
-                colony: userData.colony,
-                address: userData.address,
-                membership_status: 'pending',
-                // NOTA: Los documentos INE se manejan en Memberstack, no en Supabase
-                // NOTA: No incluimos updated_at, se actualiza automáticamente por el trigger
-            }, {
-                onConflict: 'memberstack_id', // Si existe memberstack_id, actualiza
-                ignoreDuplicates: false // No ignorar, actualizar
+            .upsert(dataToSave, {
+                onConflict: 'memberstack_id',
+                ignoreDuplicates: false
             })
             .select()
 
@@ -119,7 +130,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             return { success: false, error: error.message }
         }
 
-        console.log('✅ [Server Action] Usuario registrado/actualizado en Supabase exitosamente:', data)
+        console.log('✅ [Server Action] Usuario registrado/actualizado en Supabase exitosamente');
         return { success: true }
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error)
@@ -212,20 +223,36 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
         // 2. Preparar los datos de las mascotas
         const petsToInsert = pets.map(pet => ({
             owner_id: userData.id,
-            name: pet.name,
-            breed: pet.breed || (pet.isMixed ? 'Mestizo' : ''),
+            name: pet.name || pet.petName,
+            pet_type: (pet.petType || 'perro') === 'perro' ? 'dog' : 'cat',
+            breed: pet.breed || (pet.isMixedBreed ? 'Mestizo' : ''),
             breed_size: pet.breedSize,
-            gender: pet.gender || null, // Guardar sexo (macho/hembra)
-            age: pet.age || null, // Guardar edad (texto o número)
-            birth_date: null, // Podríamos calcular la fecha aproximada basándonos en la edad
-            // Prioritize specific fields, fallback to array
-            photo_url: pet.photo1Url || pet.photoUrls?.[0] || null,
-            photo2_url: pet.photo2Url || pet.photoUrls?.[1] || null,
-            vet_certificate_url: pet.vetCertificateUrl || null,
-            // Waiting period
-            waiting_period_start: pet.waitingPeriodStart || new Date().toISOString(),
-            waiting_period_end: pet.waitingPeriodEnd || null,
-            status: 'pending',
+            gender: pet.gender || null,
+            age_value: pet.age || pet.petAge,
+            age_unit: pet.ageUnit || pet.petAgeUnit || 'years',
+
+            // Colores (Catálogos)
+            coat_color: pet.coatColor,
+            nose_color: pet.noseColor,
+            eye_color: pet.eyeColor,
+
+            // Fotos y Certificados
+            primary_photo_url: pet.primaryPhotoUrl || pet.photo1Url,
+            vet_certificate_url: pet.vetCertificateUrl,
+
+            // Mestizos / Adoptados
+            is_mixed_breed: pet.isMixedBreed || false,
+            is_adopted: pet.isAdopted || false,
+            adoption_story: pet.adoptionStory || null,
+
+            // Senior logic
+            is_senior: pet.is_senior || false,
+            vet_certificate_required: pet.vet_certificate_required || false,
+
+            // Tracking
+            status: pet.status || 'pending',
+            basic_info_completed: true,
+            complementary_info_completed: pet.isComplete || false,
             created_at: new Date().toISOString()
         }));
 

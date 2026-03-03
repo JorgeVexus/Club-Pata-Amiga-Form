@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo Flujo de Registro - Pet Membership</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Fraiche:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #7DD8D5;
+            --color-secondary: #00BBB4;
+            --color-accent: #FE8F15;
+            --color-white: #FFFFFF;
+            --color-text-dark: #2D3748;
+            --color-text-light: #718096;
+            --color-error: #E53E3E;
+            --color-success: #38A169;
+            --color-warning: #F6AD55;
+            --color-bg-light: #F7FAFC;
+            --color-border: #E2E8F0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: var(--color-text-dark);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 40px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 2.5rem;
+            color: var(--color-text-dark);
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.2rem;
+            color: var(--color-text-light);
+            margin-bottom: 20px;
+        }
+
+        .header .meta {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .meta-item {
+            background: var(--color-bg-light);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--color-text-dark);
+        }
+
+        .meta-item strong {
+            color: var(--color-secondary);
+        }
+
+        /* Comparative Section */
+        .comparative-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        @media (max-width: 900px) {
+            .comparative-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .flow-card {
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .flow-card.current::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--color-error), #FC8181);
+        }
+
+        .flow-card.proposed::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--color-success), #68D391);
+        }
+
+        .flow-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .flow-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .current .flow-icon {
+            background: #FED7D7;
+        }
+
+        .proposed .flow-icon {
+            background: #C6F6D5;
+        }
+
+        .flow-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.4rem;
+        }
+
+        .flow-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: var(--color-bg-light);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .step-number {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .current .step-number {
+            background: var(--color-error);
+            color: white;
+        }
+
+        .proposed .step-number {
+            background: var(--color-success);
+            color: white;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 3px;
+        }
+
+        .step-detail {
+            font-size: 0.85rem;
+            color: var(--color-text-light);
+        }
+
+        .step-fields {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .field-tag {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 50px;
+            background: white;
+            color: var(--color-text-light);
+            border: 1px solid var(--color-border);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+
+        .stats-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-header h2 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 25px;
+            background: var(--color-bg-light);
+            border-radius: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--color-secondary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        .stat-highlight {
+            background: linear-gradient(135deg, var(--color-accent), #F6AD55);
+            color: white;
+        }
+
+        .stat-highlight .stat-number {
+            color: white;
+        }
+
+        .stat-highlight .stat-label {
+            color: rgba(255,255,255,0.9);
+        }
+
+        /* Detailed Flow Section */
+        .detailed-flow {
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.8rem;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .flow-timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .flow-timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, var(--color-secondary), var(--color-accent));
+            border-radius: 3px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 40px;
+            background: var(--color-bg-light);
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 30px;
+            width: 20px;
+            height: 20px;
+            background: var(--color-secondary);
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .timeline-item.priority::before {
+            background: var(--color-accent);
+        }
+
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .timeline-badge {
+            background: var(--color-secondary);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .timeline-badge.priority {
+            background: var(--color-accent);
+        }
+
+        .timeline-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.3rem;
+        }
+
+        .timeline-content {
+            color: var(--color-text-light);
+            line-height: 1.7;
+        }
+
+        .timeline-content ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .timeline-content li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .timeline-content li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--color-success);
+            font-weight: bold;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 4px solid var(--color-secondary);
+        }
+
+        .feature-item.warning {
+            border-left-color: var(--color-warning);
+        }
+
+        /* Pet Type Selection Preview */
+        .pet-selection-preview {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .pet-option {
+            width: 150px;
+            height: 150px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            border: 3px solid var(--color-border);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pet-option:hover {
+            border-color: var(--color-secondary);
+            transform: scale(1.05);
+        }
+
+        .pet-option.selected {
+            border-color: var(--color-accent);
+            background: #FFF5EB;
+        }
+
+        .pet-icon {
+            font-size: 3rem;
+        }
+
+        .pet-label {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        /* Changes Section */
+        .changes-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+
+        .change-card {
+            background: white;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+        }
+
+        .change-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .change-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+        }
+
+        .change-icon.add {
+            background: #C6F6D5;
+        }
+
+        .change-icon.remove {
+            background: #FED7D7;
+        }
+
+        .change-icon.modify {
+            background: #FEEBC8;
+        }
+
+        .change-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.2rem;
+        }
+
+        .change-list {
+            list-style: none;
+        }
+
+        .change-list li {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--color-border);
+            font-size: 0.95rem;
+        }
+
+        .change-list li:last-child {
+            border-bottom: none;
+        }
+
+        .change-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .tag-new {
+            background: #C6F6D5;
+            color: #276749;
+        }
+
+        .tag-removed {
+            background: #FED7D7;
+            color: #9B2C2C;
+        }
+
+        .tag-modified {
+            background: #FEEBC8;
+            color: #975A16;
+        }
+
+        /* Click Goal Section */
+        .click-goal {
+            background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+            border-radius: 30px;
+            padding: 40px;
+            color: white;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .click-goal h2 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 30px;
+        }
+
+        .click-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .click-step {
+            background: rgba(255,255,255,0.2);
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .click-arrow {
+            font-size: 1.5rem;
+            opacity: 0.8;
+        }
+
+        /* Design Considerations */
+        .design-section {
+            background: white;
+            border-radius: 30px;
+            padding: 35px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            margin-bottom: 50px;
+        }
+
+        .design-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .design-card {
+            background: var(--color-bg-light);
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .design-visual {
+            width: 100%;
+            height: 120px;
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--color-border);
+        }
+
+        .design-visual .mock-input {
+            width: 80%;
+            height: 40px;
+            background: var(--color-bg-light);
+            border-radius: 50px;
+            border: 2px solid var(--color-border);
+        }
+
+        .design-visual .mock-input.full {
+            width: 90%;
+        }
+
+        .design-visual .mock-columns {
+            display: flex;
+            gap: 10px;
+            width: 90%;
+        }
+
+        .design-visual .mock-columns .mock-input {
+            flex: 1;
+        }
+
+        .design-card h4 {
+            font-family: 'Fraiche', sans-serif;
+            margin-bottom: 8px;
+        }
+
+        .design-card p {
+            font-size: 0.9rem;
+            color: var(--color-text-light);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--color-text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .flow-timeline {
+                padding-left: 30px;
+            }
+
+            .timeline-item::before {
+                left: -23px;
+            }
+
+            .pet-selection-preview {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .click-flow {
+                flex-direction: column;
+            }
+
+            .click-arrow {
+                transform: rotate(90deg);
+            }
+        }
+
+        /* Animation */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .flow-card, .stat-card, .timeline-item, .change-card, .design-card {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        /* Hover effects for interactive elements */
+        .pet-option {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pet-option:hover {
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .stat-card, .change-card, .design-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover, .change-card:hover, .design-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 50px rgba(0,0,0,0.12);
+        }
+
+        /* New fields highlight */
+        .new-field {
+            background: linear-gradient(135deg, #C6F6D5, #9AE6B4);
+            color: #276749;
+        }
+
+        .removed-field {
+            background: linear-gradient(135deg, #FED7D7, #FC8181);
+            color: #9B2C2C;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🐾 Nuevo Flujo de Registro</h1>
+            <p class="subtitle">Propuesta de reestructuración para optimizar la conversión</p>
+            <div class="meta">
+                <div class="meta-item">📅 Fecha: <strong>Febrero 2026</strong></div>
+                <div class="meta-item">👤 Responsable: <strong>Jorge</strong></div>
+                <div class="meta-item">🎯 Meta: <strong>3 días</strong></div>
+                <div class="meta-item">📱 Clicks objetivo: <strong>4-5</strong></div>
+            </div>
+        </div>
+
+        <!-- Comparative Section -->
+        <div class="comparative-section">
+            <div class="flow-card current">
+                <div class="flow-header">
+                    <div class="flow-icon">📋</div>
+                    <h2 class="flow-title">Flujo Actual</h2>
+                </div>
+                <div class="flow-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Correo y contraseña</div>
+                            <div class="step-detail">Registro inicial en Memberstack</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Datos del contratante</div>
+                            <div class="step-detail">Nombre, CURP, INE, dirección completa</div>
+                            <div class="step-fields">
+                                <span class="field-tag">~15 campos</span>
+                                <span class="field-tag removed-field">INE obligatorio</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Datos de la mascota</div>
+                            <div class="step-detail">Información completa + fotos obligatorias</div>
+                            <div class="step-fields">
+                                <span class="field-tag">~12 campos</span>
+                                <span class="field-tag removed-field">Foto obligatoria</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Selección de plan</div>
+                            <div class="step-detail">Comparación de planes</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Pago</div>
+                            <div class="step-detail">Procesamiento con Stripe</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <div class="step-title">Factura</div>
+                            <div class="step-detail">Datos fiscales (si aplica)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flow-card proposed">
+                <div class="flow-header">
+                    <div class="flow-icon">🚀</div>
+                    <h2 class="flow-title">Flujo Propuesto</h2>
+                </div>
+                <div class="flow-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Correo y contraseña</div>
+                            <div class="step-detail">Registro rápido en Memberstack</div>
+                        </div>
+                    </div>
+                    <div class="step priority">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Datos básicos de mascota</div>
+                            <div class="step-detail">Solo 3 campos esenciales</div>
+                            <div class="step-fields">
+                                <span class="field-tag new-field">Tipo (perro/gato)</span>
+                                <span class="field-tag new-field">Nombre</span>
+                                <span class="field-tag new-field">Edad</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Selección de plan y pago</div>
+                            <div class="step-detail">Inmediato después de datos básicos</div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Datos del contratante</div>
+                            <div class="step-detail">Post-pago: Nombre, teléfono, dirección</div>
+                            <div class="step-fields">
+                                <span class="field-tag">~6 campos</span>
+                                <span class="field-tag removed-field">Sin INE</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Datos complementarios mascota</div>
+                            <div class="step-detail">Post-pago: Características detalladas</div>
+                            <div class="step-fields">
+                                <span class="field-tag new-field">Color pelo/nariz/ojos</span>
+                                <span class="field-tag">Fotos opcionales</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <div class="step-title">Factura (opcional)</div>
+                            <div class="step-detail">Datos fiscales si se requiere</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stats-header">
+                <h2>📊 Problemas Identificados</h2>
+                <p>Análisis de usabilidad y conversión</p>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Usuarios iniciaron pero no completaron<br>(día 3)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">15%</div>
+                    <div class="stat-label">Se quejaron de problemas<br>(15-16 personas)</div>
+                </div>
+                <div class="stat-card stat-highlight">
+                    <div class="stat-number">4-5</div>
+                    <div class="stat-label">Clicks objetivo<br>hasta el pago</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Días para implementar<br>cambios</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Flow -->
+        <div class="detailed-flow">
+            <h2 class="section-title">🗺️ Flujo Detallado - Nuevo Proceso</h2>
+            
+            <div class="flow-timeline">
+                <!-- Step 1 -->
+                <div class="timeline-item priority">
+                    <div class="timeline-header">
+                        <span class="timeline-badge priority">Pre-pago</span>
+                        <h3 class="timeline-title">Paso 1: Registro de Cuenta</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Correo electrónico</li>
+                            <li>Contraseña segura</li>
+                            <li>Confirmación de correo (si aplica)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="timeline-item priority">
+                    <div class="timeline-header">
+                        <span class="timeline-badge priority">Pre-pago</span>
+                        <h3 class="timeline-title">Paso 2: Datos Básicos de la Mascota</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <p style="margin-bottom: 15px;"><strong>Solo 3 campos esenciales:</strong></p>
+                        <div class="pet-selection-preview">
+                            <div class="pet-option">
+                                <div class="pet-icon">🐕</div>
+                                <div class="pet-label">Perro</div>
+                            </div>
+                            <div class="pet-option">
+                                <div class="pet-icon">🐈</div>
+                                <div class="pet-label">Gato</div>
+                            </div>
+                        </div>
+                        <div class="feature-grid" style="margin-top: 20px;">
+                            <div class="feature-item">
+                                <strong>Tipo:</strong> Perro o Gato (selección visual con íconos)
+                            </div>
+                            <div class="feature-item">
+                                <strong>Nombre:</strong> Solo nombre (sin apellido)
+                            </div>
+                            <div class="feature-item">
+                                <strong>Edad:</strong> Número + selector (años/meses)
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem;">
+                            <span class="change-tag tag-modified">Sin límite de 9 años</span>
+                            <span class="change-tag tag-new">Personalización: "peludo" o "michi"</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="timeline-item priority">
+                    <div class="timeline-header">
+                        <span class="timeline-badge priority">Pre-pago</span>
+                        <h3 class="timeline-title">Paso 3: Selección de Plan y Pago</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>Mostrar planes disponibles con beneficios</li>
+                            <li>Selección de plan</li>
+                            <li>Procesamiento de pago con Stripe</li>
+                            <li>Mantener franja de beneficios visible</li>
+                        </ul>
+                        <div class="feature-grid">
+                            <div class="feature-item warning">
+                                <strong>Meta:</strong> Máximo 5 clicks desde Instagram
+                            </div>
+                            <div class="feature-item">
+                                <strong>Competencia:</strong> Cobrar primero, pedir datos después
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <span class="timeline-badge">Post-pago</span>
+                        <h3 class="timeline-title">Paso 4: Datos del Contratante</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <p style="margin-bottom: 15px;"><strong>Después del pago:</strong></p>
+                        <ul>
+                            <li>Nombre y apellido</li>
+                            <li>Fecha de nacimiento</li>
+                            <li>Teléfono de contacto</li>
+                            <li>Correo electrónico (auto-rellenado del paso 1)</li>
+                        </ul>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <strong>Domicilio:</strong>
+                                <ul style="margin-top: 8px; padding-left: 20px;">
+                                    <li>Código postal (auto-completado SEPOMEX)</li>
+                                    <li>Alcaldía/Municipio (auto)</li>
+                                    <li>Estado (auto)</li>
+                                    <li>Colonia (catálogo desplegable)</li>
+                                    <li>Calle y número</li>
+                                </ul>
+                            </div>
+                            <div class="feature-item warning">
+                                <strong>CURP:</strong> Solo este documento
+                                <br><br>
+                                <span class="change-tag tag-removed">INE eliminado</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <span class="timeline-badge">Post-pago</span>
+                        <h3 class="timeline-title">Paso 5: Datos Complementarios de Mascota</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <p style="margin-bottom: 15px;"><strong>Información detallada (dentro de la cuenta):</strong></p>
+                        <div class="feature-grid">
+                            <div class="feature-item">
+                                <strong>Sexo</strong> de la mascota
+                            </div>
+                            <div class="feature-item">
+                                <strong>Raza</strong> (catálogo desplegable)
+                            </div>
+                            <div class="feature-item new-field">
+                                <strong>Color de pelo</strong> <span class="change-tag tag-new">NUEVO</span>
+                            </div>
+                            <div class="feature-item new-field">
+                                <strong>Color de nariz</strong> <span class="change-tag tag-new">NUEVO</span>
+                            </div>
+                            <div class="feature-item new-field">
+                                <strong>Color de ojos</strong> <span class="change-tag tag-new">NUEVO</span>
+                            </div>
+                            <div class="feature-item">
+                                <strong>Fotografía:</strong> 1 obligatoria, hasta 3 adicionales
+                                <br><br>
+                                <span class="change-tag tag-modified">15 días para subir</span>
+                            </div>
+                        </div>
+                        <p style="margin-top: 15px; font-size: 0.9rem;">
+                            <span class="change-tag tag-modified">Mestizo → pregunta adopción en cuenta</span>
+                            <span class="change-tag tag-modified">10+ años → certificado en cuenta</span>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Step 6 -->
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <span class="timeline-badge">Post-pago</span>
+                        <h3 class="timeline-title">Paso 6: Facturación (Opcional)</h3>
+                    </div>
+                    <div class="timeline-content">
+                        <ul>
+                            <li>RFC</li>
+                            <li>Razón social</li>
+                            <li>Dirección fiscal</li>
+                            <li>Uso CFDI</li>
+                        </ul>
+                        <p style="margin-top: 10px; font-size: 0.9rem;">
+                            <em>El usuario puede omitir este paso si no requiere factura</em>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Click Goal -->
+        <div class="click-goal">
+            <h2>🎯 Objetivo de Clicks: Instagram al Pago</h2>
+            <div class="click-flow">
+                <div class="click-step">📱 Instagram</div>
+                <div class="click-arrow">→</div>
+                <div class="click-step">🔗 Suscribirse</div>
+                <div class="click-arrow">→</div>
+                <div class="click-step">🐕/🐈 Tipo mascota</div>
+                <div class="click-arrow">→</div>
+                <div class="click-step">✏️ Datos básicos</div>
+                <div class="click-arrow">→</div>
+                <div class="click-step">💳 Selección plan</div>
+                <div class="click-arrow">→</div>
+                <div class="click-step">✅ PAGO</div>
+            </div>
+            <p style="margin-top: 25px; opacity: 0.9;">
+                <strong>Meta: 4-5 clicks máximo</strong> desde que el usuario llega de Instagram hasta completar el pago
+            </p>
+        </div>
+
+        <!-- Changes Section -->
+        <div class="changes-section">
+            <div class="change-card">
+                <div class="change-header">
+                    <div class="change-icon add">✨</div>
+                    <h3 class="change-title">Nuevos Campos</h3>
+                </div>
+                <ul class="change-list">
+                    <li>Color de pelo <span class="change-tag tag-new">NUEVO</span></li>
+                    <li>Color de nariz <span class="change-tag tag-new">NUEVO</span></li>
+                    <li>Color de ojos <span class="change-tag tag-new">NUEVO</span></li>
+                    <li>Selector años/meses para edad <span class="change-tag tag-new">NUEVO</span></li>
+                    <li>Catálogo de colonias SEPOMEX <span class="change-tag tag-new">NUEVO</span></li>
+                </ul>
+            </div>
+
+            <div class="change-card">
+                <div class="change-header">
+                    <div class="change-icon remove">🗑️</div>
+                    <h3 class="change-title">Campos Eliminados</h3>
+                </div>
+                <ul class="change-list">
+                    <li>INE (frente y reverso) <span class="change-tag tag-removed">ELIMINADO</span></li>
+                    <li>Apellido de mascota <span class="change-tag tag-removed">ELIMINADO</span></li>
+                    <li>Límite de 9 años <span class="change-tag tag-removed">ELIMINADO</span></li>
+                    <li>Foto obligatoria inmediata <span class="change-tag tag-removed">ELIMINADO</span></li>
+                    <li>Certificado veterinario inicial <span class="change-tag tag-removed">ELIMINADO</span></li>
+                </ul>
+            </div>
+
+            <div class="change-card">
+                <div class="change-header">
+                    <div class="change-icon modify">🔄</div>
+                    <h3 class="change-title">Modificaciones</h3>
+                </div>
+                <ul class="change-list">
+                    <li>Orden del flujo: Pago antes de datos completos</li>
+                    <li>Fotos: Opcionales inicialmente, 15 días para subir</li>
+                    <li>Formulario: De 2 columnas a 1 columna</li>
+                    <li>Mascotas: Registro posterior en cuenta</li>
+                    <li>Mestizo: Pregunta adopción en cuenta</li>
+                    <li>Documentos legales: Un solo checkbox</li>
+                </ul>
+            </div>
+
+            <div class="change-card">
+                <div class="change-header">
+                    <div class="change-icon add">🎨</div>
+                    <h3 class="change-title">Diseño y UX</h3>
+                </div>
+                <ul class="change-list">
+                    <li>Selección tipo mascota con íconos/imágenes</li>
+                    <li>Scroll vertical en lugar de múltiples columnas</li>
+                    <li>Franja de beneficios siempre visible</li>
+                    <li>Personalización: "peludo" vs "michi/micho"</li>
+                    <li>Diseño menos "cansado" visualmente</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Design Section -->
+        <div class="design-section">
+            <h2 class="section-title">🎨 Consideraciones de Diseño</h2>
+            <div class="design-grid">
+                <div class="design-card">
+                    <div class="design-visual">
+                        <div class="mock-columns">
+                            <div class="mock-input"></div>
+                            <div class="mock-input"></div>
+                        </div>
+                    </div>
+                    <h4>❌ Actual: Dos Columnas</h4>
+                    <p>Formulario más complejo visualmente</p>
+                </div>
+                <div class="design-card">
+                    <div class="design-visual">
+                        <div class="mock-input full"></div>
+                    </div>
+                    <h4>✅ Nuevo: Una Columna</h4>
+                    <p>Scroll vertical, más simple y claro</p>
+                </div>
+                <div class="design-card">
+                    <div class="design-visual">
+                        <div style="font-size: 2.5rem;">🐕 🐈</div>
+                    </div>
+                    <h4>Selección Visual</h4>
+                    <p>Íconos grandes para tipo de mascota</p>
+                </div>
+                <div class="design-card">
+                    <div class="design-visual">
+                        <div style="background: linear-gradient(90deg, var(--color-secondary), var(--color-accent)); width: 90%; height: 30px; border-radius: 15px;"></div>
+                    </div>
+                    <h4>Franja de Beneficios</h4>
+                    <p>Siempre visible durante el registro</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>📋 Documento generado para reestructuración del flujo de registro</p>
+            <p>Pet Membership Form • Febrero 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Simple interaction for pet selection
+        document.querySelectorAll('.pet-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.pet-option').forEach(o => o.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.flow-card, .stat-card, .timeline-item, .change-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

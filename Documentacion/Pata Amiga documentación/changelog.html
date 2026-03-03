@@ -341,9 +341,12 @@
         </div>
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
-            <button class="nav-item active" onclick="switchTab('2026-02-24')">
-                <span>24 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-02-27')">
+                <span>27 de Feb, 2026</span>
                 <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-24')">
+                <span>24 de Feb, 2026</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-23')">
                 <span>23 de Feb, 2026</span>
@@ -397,8 +400,164 @@
     <main class="main-content">
         <div class="changelog-container">
 
+            <!-- Entrada: 27 de Febrero -->
+            <div id="2026-02-27" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Reestructuración Completa del Flujo de Registro v2.0</h1>
+                        <div class="entry-meta">Viernes, 27 de Febrero de 2026</div>
+                    </div>
+                    <div class="version-tag">v4.0.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔄 Nuevo Flujo de Registro (5 Pasos)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">REESTRUCTURE</span>
+                            <div class="change-desc">
+                                <strong>Flujo optimizado de 5 pasos:</strong> Reducción de ~12 clicks a solo 4-5 clicks antes del pago. Nuevo orden: 
+                                <ol style="margin-top:5px; margin-left:20px; font-size:0.9em;">
+                                    <li><strong>Paso 1:</strong> Cuenta (email, contraseña)</li>
+                                    <li><strong>Paso 2:</strong> Mascota básica (tipo, nombre, edad)</li>
+                                    <li><strong>Paso 3:</strong> Plan + Términos + Pago</li>
+                                    <li><strong>Paso 4:</strong> Perfil completo (CURP, dirección, nacionalidad)</li>
+                                    <li><strong>Paso 5:</strong> Mascota completa (raza, colores, fotos opcionales)</li>
+                                </ol>
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">UX</span>
+                            <div class="change-desc">
+                                <strong>Fotos post-pago:</strong> Las fotos de mascota ahora son opcionales en el registro inicial. Los usuarios tienen 15 días para subirlas desde su cuenta después de completar el pago.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">VALIDATION</span>
+                            <div class="change-desc">
+                                <strong>Sin límite de edad:</strong> Eliminado el límite de 9 años. Mascotas de 10+ años requieren certificado veterinario (indicado en el proceso).
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📍 Integración SEPOMEX (Códigos Postales)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">API</span>
+                            <div class="change-desc">
+                                <strong>API oficial del gobierno:</strong> Integración con <code>api-sepomex.datos.gob.mx</code> para autocompletar dirección (estado, municipio, colonia) al ingresar código postal.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">CACHE</span>
+                            <div class="change-desc">
+                                <strong>Sistema de cache de 2 niveles:</strong> Memoria (Map) + Supabase (<code>catalog_sepomex</code>) para reducir llamadas al API gubernamental. TTL: 24 horas.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Timeout y fallback:</strong> 5 segundos de timeout. Si el servicio falla, el usuario puede ingresar dirección manualmente.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🐾 Selector de Raza Mejorado</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">UI</span>
+                            <div class="change-desc">
+                                <strong>Switch Mestizo/Raza:</strong> Nuevo diseño con bordes redondeados, gradiente en selección, checkmark visual (✓) y sombras mejoradas para distinguir claramente la opción activa.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">AUTOCOMPLETE</span>
+                            <div class="change-desc">
+                                <strong>Autocomplete de razas:</strong> Al seleccionar "Raza", aparece campo de autocompletado con 20 razas populares de perros/gatos. Navegación con teclado (↑↓ Enter) y filtrado en tiempo real.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Label dinámico:</strong> El campo de nombre cambia según tipo: "¿Cómo se llama tu michi?" (gato) o "¿Cómo se llama tu peludo?" (perro).
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📋 Términos y Condiciones Optimizados</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Aceptación con 1 click:</strong> El checkbox de términos ahora acepta todos automáticamente sin abrir modal. El modal solo se abre vía "Ver términos y condiciones" para revisión.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">UI</span>
+                            <div class="change-desc">
+                                <strong>Modal de solo lectura:</strong> El modal de términos ahora muestra los documentos ya aceptados (checkmarks visuales ✓) sin opción de modificar. Botón único "Entendido".
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">📄 Componentes y Documentación</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">COMPONENT</span>
+                            <div class="change-desc">
+                                <strong>AdoptionSection:</strong> Nuevo componente reutilizable <code>AdoptionSection.tsx</code> para historia de adopción. Extracción del paso 5 para uso futuro en dashboard de usuario.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">DOCS</span>
+                            <div class="change-desc">
+                                <strong>Guía de implementación:</strong> Creación de <code>GUIA-IMPLEMENTACION-PRODUCCION.md</code> con migraciones SQL, variables de entorno, checklist pre-deploy y troubleshooting SEPOMEX.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UI</span>
+                            <div class="change-desc">
+                                <strong>Inputs alineados:</strong> Todos los campos del paso 4 ahora están en vertical (nombre, apellidos, fecha, nacionalidad, estado, municipio) para consistencia visual.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔧 Fixes y Mejoras Menores</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Tarjetas de planes:</strong> Restaurados estilos CSS faltantes para las tarjetas de selección de plan (Mensual/Anual) que se habían perdido.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag fix">BUGFIX</span>
+                            <div class="change-desc">
+                                <strong>Checkbox duplicado:</strong> Eliminado elemento <code>checkmark</code> duplicado en el checkbox de términos que causaba visualización de dos checkboxes.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">UX</span>
+                            <div class="change-desc">
+                                <strong>Mensaje senior:</strong> Actualizado texto para mascotas 10+ años: "Tu mascota califica como senior, después necesitaremos conocer el estado de salud de tu peludo".
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Entrada: 24 de Febrero -->
-            <div id="2026-02-24" class="changelog-entry active">
+            <div id="2026-02-24" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Mejoras UI - Formulario de Mascotas</h1>

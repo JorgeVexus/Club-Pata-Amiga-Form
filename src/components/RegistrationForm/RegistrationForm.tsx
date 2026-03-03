@@ -47,16 +47,16 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                     }
                 } else {
                     setMember(member);
-                    
+
                     // Cargar datos existentes desde Supabase
                     try {
                         console.log('📥 Cargando datos existentes desde Supabase...');
                         const result = await getUserDataByMemberstackId(member.id);
-                        
+
                         if (result.success && result.userData) {
                             const userData = result.userData;
                             console.log('✅ Datos cargados de Supabase:', userData);
-                            
+
                             // Pre-llenar formulario con datos existentes
                             setFormData(prev => ({
                                 ...prev,
@@ -75,7 +75,7 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                                 address: userData.address || prev.address || '',
                                 phone: userData.phone || prev.phone || '',
                             }));
-                            
+
                             showToast('Hemos recuperado tus datos guardados.', 'success');
                         } else {
                             // No hay datos en Supabase, usar solo Memberstack
@@ -333,11 +333,7 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
 
                 const supabaseResult = await registerUserInSupabase(
                     cleanData,
-                    finalMemberId,
-                    {
-                        ineFront: ineUploads[0].publicUrl,
-                        ineBack: ineUploads[1].publicUrl
-                    }
+                    finalMemberId
                 );
 
                 if (!supabaseResult.success) {

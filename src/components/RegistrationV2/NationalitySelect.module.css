@@ -1,0 +1,82 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Cuando está dentro de una fila (.row), no agregar margin-bottom */
+:global(.row) .container {
+    margin-bottom: 0;
+}
+
+.label {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #2D3748;
+    margin-bottom: 0;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+}
+
+.required {
+    color: #E53E3E;
+}
+
+.selectWrapper {
+    position: relative;
+}
+
+.select {
+    width: 100%;
+    padding: 0.875rem 3rem 0.875rem 1.5rem;
+    border: 2px solid #E2E8F0;
+    border-radius: 50px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.2s ease;
+    height: 52px;
+    box-sizing: border-box;
+}
+
+.select:focus {
+    outline: none;
+    border-color: #7DD8D5;
+    background: white;
+}
+
+.select.error {
+    border-color: #E53E3E;
+}
+
+.arrow {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #718096;
+}
+
+.errorMessage {
+    color: #E53E3E;
+    font-size: 0.875rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.option {
+    padding: 0.5rem;
+}
+
+.optionPriority {
+    font-weight: 600;
+}
+
+.divider {
+    border-top: 1px solid #E2E8F0;
+    margin: 0.25rem 0;
+}

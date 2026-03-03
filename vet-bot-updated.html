@@ -1,133 +1,109 @@
 <!-- ============================================ -->
-<!-- Vet-Bot Integration v3.0 - setCustomFields -->
+<!-- Vet-Bot Integration v3.4 - Ref Parameter & Diagnostics -->
 <!-- app.pataamiga.mx | Chatbot Builder AI v6 -->
 <!-- ============================================ -->
 
-<!-- Primero cargamos el plugin de Chatbot Builder AI -->
 <script src="https://app.chatgptbuilder.io/webchat/plugin.js?v=6"></script>
 
-<!-- Script de integración -->
 <script>
     (function () {
         'use strict';
 
-        // ============================================
-        // CONFIGURACIÓN
-        // ============================================
         const API_URL = 'https://app.pataamiga.mx/api';
+        const log = (...args) => console.log('[VetBot]', ...args);
 
-        // ============================================
-        // FUNCIÓN: Generar token de sesión
-        // ============================================
+        // Herramienta de Diagnóstico Global
+        window.vetBotDiagnostics = function () {
+            log('Iniciando diagnóstico...');
+            const iframe = document.querySelector('#ktt10-iframe');
+            if (!iframe) {
+                log('❌ Error: No se encontró el iframe del bot.');
+                return;
+            }
+            const src = iframe.getAttribute('data-src') || iframe.getAttribute('src');
+            log('URL del Iframe:', src);
+
+            const urlParams = new URLSearchParams(src.split('?')[1]);
+            log('Parámetros detectados:');
+            log('- ID:', urlParams.get('id'));
+            log('- Ref:', urlParams.get('ref'));
+            log('- SCF (Custom Fields):', urlParams.get('scf'));
+
+            if (urlParams.get('ref')) {
+                log('✅ Parámetro REF presente. Este es el método v3.4.');
+            } else {
+                log('⚠️ Parámetro REF ausente. El bot podría no identificar al usuario.');
+            }
+        };
+
         async function generateSessionToken(memberstackId, email) {
             try {
                 const response = await fetch(`${API_URL}/auth/session-token`, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        memberstackId: memberstackId,
-                        email: email
-                    })
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ memberstackId, email })
                 });
-
-                if (!response.ok) {
-                    console.error('[VetBot] Token request failed:', response.status);
-                    return null;
-                }
-
                 const data = await response.json();
                 return data.success ? data.sessionToken : null;
-
             } catch (error) {
                 console.error('[VetBot] Token error:', error);
                 return null;
             }
         }
 
-        // ============================================
-        // LÓGICA PRINCIPAL
-        // ============================================
         async function initVetBot() {
-            // Verificar que Memberstack esté cargado
-            if (!window.$memberstackDom) {
-                console.log('[VetBot] Memberstack not available');
-                return;
-            }
+            if (!window.$memberstackDom) return;
 
             try {
-                // Obtener usuario actual
                 const member = await window.$memberstackDom.getCurrentMember();
-
-                // 1. Verificar si está logueado
                 if (!member || !member.data) {
-                    console.log('[VetBot] User not logged in - bot hidden');
-                    return;
-                }
-
-                // 2. VERIFICACIÓN DE MEMBRESÍA PAGADA
-                const planConnections = member.data.planConnections || [];
-                const hasActivePaidPlan = planConnections.some(plan =>
-                    plan.status === 'ACTIVE' || plan.status === 'TRIALING'
-                );
-
-                if (!hasActivePaidPlan) {
-                    console.log('[VetBot] User logged in but has no active paid plan - bot hidden');
+                    log('Usuario no logueado.');
                     return;
                 }
 
                 const userEmail = member.data.auth?.email;
-                console.log('[VetBot] Active membership confirmed for:', userEmail);
+                const firstName = member.data.customFields?.['first-name'] || userEmail?.split('@')[0] || 'Usuario';
 
-                // Generar token de sesión
-                const sessionToken = await generateSessionToken(
-                    member.data.id,
-                    userEmail
-                );
+                log('Usuario detectado:', userEmail);
+                const sessionToken = await generateSessionToken(member.data.id, userEmail);
 
-                // Obtener nombre del usuario
-                const firstName = member.data.customFields?.['first-name'] ||
-                    userEmail?.split('@')[0] ||
-                    'Usuario';
+                const executeSetup = () => {
+                    if (typeof ktt10 === 'undefined') {
+                        setTimeout(executeSetup, 500);
+                        return;
+                    }
 
-                console.log('[VetBot] Initializing bot with setCustomFields...');
-                console.log('[VetBot] Token:', sessionToken ? sessionToken.substring(0, 8) + '...' : 'null');
-                console.log('[VetBot] Email:', userEmail);
+                    log('Inicializando CBB v3.4 (Ref Strategy)...');
 
-                // ============================================
-                // INICIALIZAR CON setCustomFields (CBB API)
-                // Ref: https://docs.chatbotbuilder.ai
-                // setCustomFields usa un array de {id, value}
-                // donde "id" es el nombre del Custom User Field
-                // ============================================
-                ktt10.setup({
-                    id: "K4THS5LyA99jKDKYNgD3",
-                    accountId: "1146761",
-                    color: "#36D6B5",
-                    setCustomFields: [
+                    const fields = [
                         { id: "session_token", value: sessionToken || "" },
-                        { id: "user_email", value: userEmail || "" },
-                        { id: "first_name", value: firstName || "" },
-                        { id: "memberstack_id", value: member.data.id || "" }
-                    ]
-                });
+                        { id: "user_email", value: userEmail || "" }
+                    ];
 
-                console.log('[VetBot] ✅ Bot initialized with setCustomFields successfully');
+                    ktt10.setup({
+                        id: "K4THS5LyA99jKDKYNgD3",
+                        accountId: "1146761",
+                        color: "#36D6B5",
+                        // Método 1: setCustomFields (Format oficial)
+                        setCustomFields: fields,
+                        // Método 2: REF parameter (Legacy/Fallback muy potente)
+                        ref: sessionToken || "no-token",
+                        // Otros datos directos
+                        email: userEmail,
+                        first_name: firstName
+                    });
+
+                    log('✅ Bot inicializado v3.4. Ejecuta "vetBotDiagnostics()" para verificar.');
+                };
+
+                executeSetup();
 
             } catch (error) {
-                console.error('[VetBot] Initialization error:', error);
+                console.error('[VetBot] Error fatal:', error);
             }
         }
 
-        // ============================================
-        // EJECUTAR
-        // ============================================
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initVetBot);
-        } else {
-            initVetBot();
-        }
+        // Ejecutar con un pequeño delay
+        setTimeout(initVetBot, 800);
     })();
 </script>

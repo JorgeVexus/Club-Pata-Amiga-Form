@@ -1,0 +1,1046 @@
+/* Estilos compartidos para los pasos del registro */
+
+.stepCard {
+    background: white;
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.stepBadge {
+    display: inline-block;
+    background: #7DD8D5;
+    color: white;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.375rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+}
+
+.title {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: #718096;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sectionTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin: 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #E2E8F0;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 480px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Botones */
+.primaryButton {
+    background: #FE8F15;
+    color: white;
+    border: 2px solid #000000;
+    border-radius: 50px;
+    padding: 1rem 2rem;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+}
+
+.primaryButton:hover:not(:disabled) {
+    background: #E57F12;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(254, 143, 21, 0.4);
+}
+
+.primaryButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.secondaryButton {
+    background: #00BBB4;
+    color: white;
+    border: 2px solid #000000;
+    border-radius: 50px;
+    padding: 1rem 1.5rem;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secondaryButton:hover:not(:disabled) {
+    background: #00A099;
+    transform: translateY(-2px);
+}
+
+.secondaryButton:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.buttonRow {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.buttonRow .primaryButton,
+.buttonRow .secondaryButton {
+    flex: 1;
+}
+
+/* Checkbox y términos */
+.termsLabel,
+.checkboxLabel {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.875rem;
+    color: #4A5568;
+    cursor: pointer;
+}
+
+.termsLabel input,
+.checkboxLabel input {
+    margin-top: 0.25rem;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.termsLabel a,
+.checkboxLabel a {
+    color: #00BBB4;
+    text-decoration: none;
+}
+
+.termsLabel a:hover,
+.checkboxLabel a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================
+   SECCIÓN ADOPCIÓN - DISEÑO MEJORADO
+   ============================================ */
+
+.adoptionSection {
+    background: linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%);
+    border: 2px solid #7DD8D5;
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.adoptionHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.adoptionIcon {
+    font-size: 1.75rem;
+    width: 48px;
+    height: 48px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 187, 180, 0.2);
+}
+
+.adoptionTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #234E52;
+    margin: 0;
+}
+
+.adoptionSubtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #4A7C7F;
+    margin: 0.25rem 0 0 0;
+}
+
+.adoptionCheckboxWrapper {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+
+.adoptionCheckboxWrapper:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-1px);
+}
+
+.adoptionCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+}
+
+.adoptionCheckbox input[type="checkbox"] {
+    width: 24px;
+    height: 24px;
+    accent-color: #00BBB4;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.adoptionCheckboxText {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #2D3748;
+}
+
+.adoptionStoryWrapper {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.adoptionStoryLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2D3748;
+    margin-bottom: 0.75rem;
+}
+
+.adoptionStoryLabel::before {
+    content: '💝';
+    font-size: 1.1rem;
+}
+
+.adoptionTextarea {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    resize: vertical;
+    min-height: 120px;
+    transition: all 0.2s ease;
+}
+
+.adoptionTextarea:focus {
+    outline: none;
+    border-color: #7DD8D5;
+    box-shadow: 0 0 0 4px rgba(125, 216, 213, 0.2);
+}
+
+.adoptionTextarea::placeholder {
+    color: #A0AEC0;
+    font-style: italic;
+}
+
+.adoptionCharCount {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    color: #718096;
+}
+
+.adoptionCharCount strong {
+    color: #00BBB4;
+    font-weight: 600;
+}
+
+.loginLink {
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #718096;
+    margin-top: 1rem;
+}
+
+.loginLink a {
+    color: #00BBB4;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Info boxes */
+.infoBox {
+    background: linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%);
+    border: 1px solid #7DD8D5;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #234E52;
+}
+
+.infoBox.warning {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-color: #F59E0B;
+    color: #92400E;
+}
+
+.infoBox.error {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    border-color: #EF4444;
+    color: #991B1B;
+}
+
+.infoIcon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+/* File Upload */
+.fileUploadLabel {
+    cursor: pointer;
+    display: block;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileUploadBox {
+    border: 2px dashed #CBD5E0;
+    border-radius: 16px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.fileUploadBox:hover {
+    border-color: #7DD8D5;
+    background: rgba(125, 216, 213, 0.05);
+}
+
+.fileIcon {
+    font-size: 2rem;
+}
+
+.helpText {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #718096;
+    margin: 0.5rem 0 0 0;
+    text-align: center;
+}
+
+/* Text Area */
+.textAreaWrapper {
+    margin-top: 1rem;
+}
+
+.textAreaLabel {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #2D3748;
+    margin-bottom: 0.5rem;
+}
+
+.textArea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    resize: vertical;
+    transition: all 0.2s ease;
+}
+
+.textArea:focus {
+    outline: none;
+    border-color: #7DD8D5;
+    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+}
+
+.charCount {
+    display: block;
+    text-align: right;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    color: #A0AEC0;
+    margin-top: 0.25rem;
+}
+
+/* Alert Box (para seniors) */
+.alertBox {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border: 2px solid #F59E0B;
+    border-radius: 16px;
+    padding: 1.25rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.alertIcon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alertBox strong {
+    font-family: 'Fraiche', sans-serif;
+    color: #92400E;
+    font-size: 1rem;
+}
+
+.alertBox p {
+    font-family: 'Outfit', sans-serif;
+    color: #B45309;
+    font-size: 0.9rem;
+    margin: 0.25rem 0 1rem 0;
+    line-height: 1.5;
+}
+
+/* Postal code */
+.postalCodeRow {
+    position: relative;
+    max-width: 200px;
+}
+
+.cpLoadingIndicator {
+    position: absolute;
+    right: -80px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.8rem;
+    color: #00BBB4;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cpLoadingIndicator::before {
+    content: '';
+    width: 14px;
+    height: 14px;
+    border: 2px solid #E2E8F0;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Logged in banner */
+.loggedInBanner {
+    background: linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%);
+    border: 2px solid #7DD8D5;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    .loggedInBanner {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+
+.userInfo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.userIcon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.userLabel {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.75rem;
+    color: #718096;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.userEmail {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin: 0;
+}
+
+.logoutButton {
+    background: transparent;
+    border: 2px solid #00BBB4;
+    color: #00BBB4;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logoutButton:hover {
+    background: #00BBB4;
+    color: white;
+}
+
+/* Terms checkbox and link */
+.termsCheckboxWrapper {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(125, 216, 213, 0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(125, 216, 213, 0.3);
+}
+
+.termsCheckboxWrapper input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: #00BBB4;
+}
+
+.termsText {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.875rem;
+    color: #4A5568;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.termsText a {
+    color: #00BBB4;
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.termsText a:hover {
+    color: #00A099;
+}
+
+.viewTermsLink {
+    background: none;
+    border: none;
+    color: #00BBB4;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: underline;
+    cursor: pointer;
+    padding: 0;
+    text-align: left;
+}
+
+.viewTermsLink:hover {
+    color: #00A099;
+}
+
+/* ============================================
+   SWITCH MESTIZO / RAZA - MEJORADO
+   ============================================ */
+
+.breedTypeSwitch {
+    display: flex;
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 6px;
+    gap: 6px;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.switchButton {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    background: #F7FAFC;
+    color: #718096;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.switchButton:hover:not(.switchActive) {
+    background: #EDF2F7;
+    color: #4A5568;
+    border-color: #CBD5E0;
+}
+
+.switchActive {
+    background: linear-gradient(135deg, #00BBB4 0%, #00A099 100%);
+    color: white;
+    border-color: #008B86;
+    box-shadow: 
+        0 4px 12px rgba(0, 187, 180, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    font-weight: 600;
+}
+
+/* Indicador visual de selección */
+.switchActive::before {
+    content: '✓';
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* Estado deshabilitado/deseleccionado más sutil */
+.switchButton:not(.switchActive) {
+    opacity: 0.85;
+}
+
+.switchButton:not(.switchActive):hover {
+    opacity: 1;
+}
+
+/* ============================================
+   AUTOCOMPLETE PARA RAZAS
+   ============================================ */
+
+.fieldWrapper {
+    margin-bottom: 0.5rem;
+}
+
+.label {
+    display: block;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 0.5rem;
+}
+
+.required {
+    color: #E53E3E;
+}
+
+.autocompleteWrapper {
+    position: relative;
+}
+
+.textInput {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, 0.6);
+    border: 2px solid #E2E8F0;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    color: #2D3748;
+}
+
+.textInput:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.9);
+    border-color: #7DD8D5;
+    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+}
+
+.inputError {
+    border-color: #E53E3E;
+}
+
+.inputError:focus {
+    border-color: #E53E3E;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+}
+
+.suggestionsList {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0;
+    list-style: none;
+    z-index: 100;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.suggestionItem {
+    padding: 0.75rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: #2D3748;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.suggestionItem:hover,
+.suggestionActive {
+    background: #F7FAFC;
+}
+
+.errorText {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #E53E3E;
+    margin: 0.25rem 0 0 0;
+}
+
+/* ============================================
+   PLANES - SELECCIÓN DE PLAN
+   ============================================ */
+
+.plansContainer {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+@media (max-width: 640px) {
+    .plansContainer {
+        grid-template-columns: 1fr;
+    }
+}
+
+.planCard {
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 20px;
+    padding: 1.5rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.planCard:hover {
+    border-color: #7DD8D5;
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.planCard.selected {
+    border-color: #00BBB4;
+    border-width: 3px;
+    background: linear-gradient(135deg, #E6FFFA 0%, #ffffff 100%);
+}
+
+.planCard.popular {
+    border-color: #FE8F15;
+}
+
+.popularBadge {
+    position: absolute;
+    top: -12px;
+    right: 20px;
+    background: #FE8F15;
+    color: white;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.375rem 1rem;
+    border-radius: 20px;
+    text-transform: uppercase;
+}
+
+.planName {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2D3748;
+    margin: 0 0 0.5rem 0;
+}
+
+.planDescription {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #718096;
+    margin: 0 0 1rem 0;
+}
+
+.priceRow {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.price {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #00BBB4;
+}
+
+.period {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #718096;
+}
+
+.featuresList {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    flex-grow: 1;
+}
+
+.feature {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #4A5568;
+    margin-bottom: 0.5rem;
+}
+
+.check {
+    color: #00BBB4;
+    font-weight: bold;
+    flex-shrink: 0;
+}
+
+.selectPlanButton {
+    width: 100%;
+    padding: 0.875rem 1.5rem;
+    background: white;
+    border: 2px solid #00BBB4;
+    border-radius: 50px;
+    color: #00BBB4;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.selectPlanButton:hover {
+    background: #00BBB4;
+    color: white;
+}
+
+.selectPlanButton.selectedButton {
+    background: #00BBB4;
+    color: white;
+}
+
+/* Términos y condiciones */
+.termsSection {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #F7FAFC;
+    border-radius: 16px;
+}
+
+.termsCheckboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #4A5568;
+}
+
+.termsCheckboxLabel input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    accent-color: #00BBB4;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.required {
+    color: #E53E3E;
+}
+
+.securityNote {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 1rem;
+}
+
+/* ============================================
+   ALINEACIÓN DE CAMPOS EN FILA
+   ============================================ */
+
+/* Para campos en .row como DatePicker y NationalitySelect */
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: start;
+}
+
+/* Resetear márgenes en campos dentro de row */
+.row > div {
+    margin-bottom: 0 !important;
+}
+
+/* Asegurar que ambos labels tengan la misma altura y alineación */
+.row label {
+    display: flex;
+    align-items: center;
+    min-height: 24px;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2D3748;
+}
+
+/* Asegurar que ambos inputs/selects tengan la misma altura */
+.row input,
+.row select {
+    height: 52px !important;
+    box-sizing: border-box;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+
+@media (max-width: 480px) {
+    .stepCard {
+        padding: 1.5rem;
+        border-radius: 20px;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .buttonRow {
+        flex-direction: column;
+    }
+
+    .breedTypeSwitch {
+        flex-direction: row;
+    }
+
+    .switchButton {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+}

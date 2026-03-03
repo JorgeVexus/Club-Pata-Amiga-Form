@@ -3,6 +3,11 @@
     animation: fadeIn 0.3s ease-out;
 }
 
+/* Cuando está dentro de una fila (.row), no agregar margin-bottom */
+:global(.row) .fieldWrapper {
+    margin-bottom: 0;
+}
+
 .label {
     font-size: 0.95rem;
     font-weight: 600;
@@ -24,7 +29,7 @@
     padding: 0.875rem 3.5rem 0.875rem 1.5rem;
     font-size: 1rem;
     background: rgba(255, 255, 255, var(--opacity-60));
-    border: 2px solid transparent;
+    border: 2px solid #E2E8F0;
     border-radius: var(--radius-input);
     transition: all 0.3s ease;
     color: var(--color-text-dark);

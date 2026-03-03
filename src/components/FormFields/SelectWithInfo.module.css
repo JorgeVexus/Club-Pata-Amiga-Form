@@ -77,7 +77,7 @@
     padding: 0.875rem 3rem 0.875rem 1.5rem;
     font-size: 1rem;
     background: rgba(255, 255, 255, 0.95);
-    border: 2px solid rgba(125, 216, 213, 0.3);
+    border: 2px solid #E2E8F0;
     border-radius: var(--radius-input);
     transition: all 0.3s ease;
     color: var(--color-text-dark);
@@ -86,7 +86,6 @@
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .select:hover {
