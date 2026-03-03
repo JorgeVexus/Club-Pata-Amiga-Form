@@ -1,18 +1,23 @@
 # STATE.md
 
 ## Last Session Summary
-Successfully transitioned the project to GSD and implemented a generic pet color selection system.
-- Generic `getPetColors` action supporting hair, nose, and eye colors.
-- Integrated `ColorAutocomplete` in `Step5CompletePet.tsx`.
-- Updated ROADMAP to reflect completion of Phase 3 (UI elements).
+Fixed critical persistence gaps and established Supabase as single source of truth:
+- Fixed field name mismatches between `NewRegistrationFlow.tsx` and `registerUserInSupabase`.
+- Implemented `handleStep5Complete` with real pet saving + file uploads (photos & vet certs).
+- Removed redundant Memberstack custom fields (only keeps `registration-step`, `registration-completed`, `first-name`).
+- Updated `registerPetsInSupabase` to include color catalogs, senior flags, and adoption data.
+- Fixed all TypeScript errors (`tsc --noEmit` passes clean with 0 errors).
+- Updated `GUIA-IMPLEMENTACION-PRODUCCION.md` to clarify Memberstack role.
 
 ## Current Context
-Phase 3 (UI) is mostly complete. Ready to tackle **Photo Uploads** and **Senior Pet Logic**.
+Registration flow is **code-complete and type-safe**. Ready for staging testing.
+Remaining before production: Execute SQL migration in Supabase, seed catalog data.
 
 ## Next Steps
-1.  Verify DB seed for colors via UI interaction.
-2.  Implement Photo upload logic (15rd-day deadline).
-3.  Implement Senior pet certificate detection and logic.
+1.  Run `001_reestructuracion_flujo.sql` in Supabase SQL Editor.
+2.  Test full flow end-to-end in staging (create account → pay → complete profile → complete pet).
+3.  Verify photo uploads work with Supabase Storage bucket `pet-photos`.
+4.  Verify senior pet detection triggers vet certificate requirement.
 
 ## Blocks & Risks
 - None currently identified.
