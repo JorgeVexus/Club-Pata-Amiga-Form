@@ -238,41 +238,72 @@ export default function NewRegistrationFlow() {
                 throw new Error('Error creando cuenta');
             }
 
-            const newMember = result.data;
-            const msId = newMember?.id || newMember?.memberId;
+            // Intentar extraer el ID de todas las formas posibles que usa Memberstack en diferentes versiones/wrappers
+            // Extracción robusta del ID
+            const signupData = result.data;
+            let msId =
+                signupData?.id ||
+                signupData?.memberId ||
+                signupData?.member?.id ||
+                result?.id ||
+                result?.member?.id;
 
-            if (!msId) {
-                console.error('❌ Memberstack Signup Result logic error:', newMember);
-                throw new Error('Error de consistencia en Memberstack (ID no encontrado)');
+            console.log('🔍 Memberstack Signup Response:', {
+                success: !!signupData,
+                extractedId: msId,
+                rawResponse: result
+            });
+
+            // Si no hay ID en la respuesta, intentar recuperarlo de la sesión actual (Memberstack suele loguear auto)
+            if (!msId && typeof window !== 'undefined' && window.$memberstackDom) {
+                console.warn('⚠️ ID no encontrado en respuesta, consultando sesión actual...');
+                try {
+                    const session = await window.$memberstackDom.getCurrentMember();
+                    msId = session?.data?.id;
+                    if (msId) console.log('✅ ID recuperado de la sesión:', msId);
+                } catch (e) {
+                    console.error('❌ Error recuperando sesión:', e);
+                }
             }
 
-            setMember(newMember);
+            if (!msId) {
+                console.error('❌ Error crítico: Memberstack no devolvió ID y no hay sesión activa.', result);
+                throw new Error('No se pudo establecer el ID de usuario. Por favor, intenta recargar la página.');
+            }
+
+            setMember(signupData || { id: msId });
 
             // Guardar en Supabase (estado inicial)
+            // IMPORTANTE: Ahora el servidor se encarga de todo, enviamos el ID correcto
             const supabaseResult = await registerUserInSupabase(
-                { email: data.email, registration_step: 2 },
+                {
+                    email: data.email,
+                    registration_step: 2,
+                    membership_status: 'pending'
+                },
                 msId
             );
 
             if (!supabaseResult.success) {
-                console.warn('⚠️ Falló registro inicial en Supabase:', supabaseResult.error);
-                // No lanzamos error para no bloquear al usuario si Memberstack sí funcionó
+                console.warn('⚠️ Supabase sync warning:', supabaseResult.error);
+                // Si es un error de notificación_preferences, es un bug de DB que no debería bloquear el flujo UI
             }
 
             setRegistrationData(prev => ({ ...prev, account: data }));
             setCurrentStep(2);
-            showToast('¡Cuenta creada exitosamente!', 'success');
+            showToast('¡Cuenta creada!', 'success');
 
         } catch (error: any) {
-            console.error('Error:', error);
-            // Propagar el error para que Step1Account lo maneje visualmente
-            if (error?.code === 'email-already-in-use' ||
-                error?.message?.includes('already taken') ||
-                error?.message?.includes('email-already-in-use') ||
-                error?.message?.includes('already exists')) {
-                throw error; // Propagar
+            console.error('❌ Error en Step 1:', error);
+
+            // Caso especial: El correo ya existe
+            const errorMsg = error.message || '';
+            if (errorMsg.includes('already taken') ||
+                errorMsg.includes('already exists') ||
+                error?.code === 'email-already-in-use') {
+                throw error; // Propagar para que el UI muestre el aviso de login
             } else {
-                showToast(error.message || 'Error al crear cuenta', 'error');
+                showToast(errorMsg || 'Error al crear cuenta', 'error');
             }
         } finally {
             setIsLoading(false);
