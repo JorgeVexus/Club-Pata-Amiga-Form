@@ -341,9 +341,12 @@
         </div>
         <nav class="nav-dates" id="nav-list">
             <div class="nav-label">Historial de Cambios</div>
-            <button class="nav-item active" onclick="switchTab('2026-02-27')">
-                <span>27 de Feb, 2026</span>
+            <button class="nav-item active" onclick="switchTab('2026-03-03')">
+                <span>3 de Mar, 2026</span>
                 <span class="badge">Nuevo!</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('2026-02-27')">
+                <span>27 de Feb, 2026</span>
             </button>
             <button class="nav-item" onclick="switchTab('2026-02-24')">
                 <span>24 de Feb, 2026</span>
@@ -400,8 +403,71 @@
     <main class="main-content">
         <div class="changelog-container">
 
+            <!-- Entrada: 3 de Marzo -->
+            <div id="2026-03-03" class="changelog-entry active">
+                <div class="entry-header">
+                    <div class="entry-title">
+                        <h1>Integración Vet-Bot v3.6 - Identificación Automática</h1>
+                        <div class="entry-meta">Martes, 3 de Marzo de 2026</div>
+                    </div>
+                    <div class="version-tag">v4.1.0</div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🤖 Integración Chatbot Builder AI (Vet-Bot)</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag feature">BRIDGE</span>
+                            <div class="change-desc">
+                                <strong>Bridge v3.6 con IDs Numéricos:</strong> Implementación de puente de
+                                autenticación con Chatbot Builder AI usando IDs de campos personalizados (CUFs)
+                                proporcionados por la agencia (673882, 515388, 620522).
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">AUTH</span>
+                            <div class="change-desc">
+                                <strong>Identificación sin Email:</strong> Los usuarios logueados ahora son
+                                identificados automáticamente mediante un token de sesión temporal, eliminando la
+                                necesidad de pedir el correo manualmente.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag feature">TOKEN</span>
+                            <div class="change-desc">
+                                <strong>Sistema Multi-Formato:</strong> El token se envía simultáneamente vía parámetro
+                                <code>ref</code> de la URL y vía <code>setCustomFields</code> para máxima compatibilidad
+                                con CBB.
+                            </div>
+                        </li>
+                        <li class="change-item">
+                            <span class="tag improvement">DEBUG</span>
+                            <div class="change-desc">
+                                <strong>Herramientas de Diagnóstico:</strong> Implementado
+                                <code>window.vetBotDiagnostics()</code> y un simulador de bot completo para verificar la
+                                comunicación de datos en tiempo real.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-title">🔧 Fixes de API de Sesión</div>
+                    <ul class="change-list">
+                        <li class="change-item">
+                            <span class="tag fix">API</span>
+                            <div class="change-desc">
+                                <strong>Normalización de Token:</strong> El script del frontend ahora maneja de forma
+                                flexible los nombres de campos de la API (<code>sessionToken</code>,
+                                <code>session_token</code>) para evitar fallos de inicialización.
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Entrada: 27 de Febrero -->
-            <div id="2026-02-27" class="changelog-entry active">
+            <div id="2026-02-27" class="changelog-entry">
                 <div class="entry-header">
                     <div class="entry-title">
                         <h1>Reestructuración Completa del Flujo de Registro v2.0</h1>
@@ -416,7 +482,8 @@
                         <li class="change-item">
                             <span class="tag feature">REESTRUCTURE</span>
                             <div class="change-desc">
-                                <strong>Flujo optimizado de 5 pasos:</strong> Reducción de ~12 clicks a solo 4-5 clicks antes del pago. Nuevo orden: 
+                                <strong>Flujo optimizado de 5 pasos:</strong> Reducción de ~12 clicks a solo 4-5 clicks
+                                antes del pago. Nuevo orden:
                                 <ol style="margin-top:5px; margin-left:20px; font-size:0.9em;">
                                     <li><strong>Paso 1:</strong> Cuenta (email, contraseña)</li>
                                     <li><strong>Paso 2:</strong> Mascota básica (tipo, nombre, edad)</li>
@@ -429,13 +496,16 @@
                         <li class="change-item">
                             <span class="tag feature">UX</span>
                             <div class="change-desc">
-                                <strong>Fotos post-pago:</strong> Las fotos de mascota ahora son opcionales en el registro inicial. Los usuarios tienen 15 días para subirlas desde su cuenta después de completar el pago.
+                                <strong>Fotos post-pago:</strong> Las fotos de mascota ahora son opcionales en el
+                                registro inicial. Los usuarios tienen 15 días para subirlas desde su cuenta después de
+                                completar el pago.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">VALIDATION</span>
                             <div class="change-desc">
-                                <strong>Sin límite de edad:</strong> Eliminado el límite de 9 años. Mascotas de 10+ años requieren certificado veterinario (indicado en el proceso).
+                                <strong>Sin límite de edad:</strong> Eliminado el límite de 9 años. Mascotas de 10+ años
+                                requieren certificado veterinario (indicado en el proceso).
                             </div>
                         </li>
                     </ul>
@@ -447,19 +517,24 @@
                         <li class="change-item">
                             <span class="tag feature">API</span>
                             <div class="change-desc">
-                                <strong>API oficial del gobierno:</strong> Integración con <code>api-sepomex.datos.gob.mx</code> para autocompletar dirección (estado, municipio, colonia) al ingresar código postal.
+                                <strong>API oficial del gobierno:</strong> Integración con
+                                <code>api-sepomex.datos.gob.mx</code> para autocompletar dirección (estado, municipio,
+                                colonia) al ingresar código postal.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">CACHE</span>
                             <div class="change-desc">
-                                <strong>Sistema de cache de 2 niveles:</strong> Memoria (Map) + Supabase (<code>catalog_sepomex</code>) para reducir llamadas al API gubernamental. TTL: 24 horas.
+                                <strong>Sistema de cache de 2 niveles:</strong> Memoria (Map) + Supabase
+                                (<code>catalog_sepomex</code>) para reducir llamadas al API gubernamental. TTL: 24
+                                horas.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UX</span>
                             <div class="change-desc">
-                                <strong>Timeout y fallback:</strong> 5 segundos de timeout. Si el servicio falla, el usuario puede ingresar dirección manualmente.
+                                <strong>Timeout y fallback:</strong> 5 segundos de timeout. Si el servicio falla, el
+                                usuario puede ingresar dirección manualmente.
                             </div>
                         </li>
                     </ul>
@@ -471,19 +546,24 @@
                         <li class="change-item">
                             <span class="tag feature">UI</span>
                             <div class="change-desc">
-                                <strong>Switch Mestizo/Raza:</strong> Nuevo diseño con bordes redondeados, gradiente en selección, checkmark visual (✓) y sombras mejoradas para distinguir claramente la opción activa.
+                                <strong>Switch Mestizo/Raza:</strong> Nuevo diseño con bordes redondeados, gradiente en
+                                selección, checkmark visual (✓) y sombras mejoradas para distinguir claramente la opción
+                                activa.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">AUTOCOMPLETE</span>
                             <div class="change-desc">
-                                <strong>Autocomplete de razas:</strong> Al seleccionar "Raza", aparece campo de autocompletado con 20 razas populares de perros/gatos. Navegación con teclado (↑↓ Enter) y filtrado en tiempo real.
+                                <strong>Autocomplete de razas:</strong> Al seleccionar "Raza", aparece campo de
+                                autocompletado con 20 razas populares de perros/gatos. Navegación con teclado (↑↓ Enter)
+                                y filtrado en tiempo real.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UX</span>
                             <div class="change-desc">
-                                <strong>Label dinámico:</strong> El campo de nombre cambia según tipo: "¿Cómo se llama tu michi?" (gato) o "¿Cómo se llama tu peludo?" (perro).
+                                <strong>Label dinámico:</strong> El campo de nombre cambia según tipo: "¿Cómo se llama
+                                tu michi?" (gato) o "¿Cómo se llama tu peludo?" (perro).
                             </div>
                         </li>
                     </ul>
@@ -495,13 +575,17 @@
                         <li class="change-item">
                             <span class="tag improvement">UX</span>
                             <div class="change-desc">
-                                <strong>Aceptación con 1 click:</strong> El checkbox de términos ahora acepta todos automáticamente sin abrir modal. El modal solo se abre vía "Ver términos y condiciones" para revisión.
+                                <strong>Aceptación con 1 click:</strong> El checkbox de términos ahora acepta todos
+                                automáticamente sin abrir modal. El modal solo se abre vía "Ver términos y condiciones"
+                                para revisión.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">UI</span>
                             <div class="change-desc">
-                                <strong>Modal de solo lectura:</strong> El modal de términos ahora muestra los documentos ya aceptados (checkmarks visuales ✓) sin opción de modificar. Botón único "Entendido".
+                                <strong>Modal de solo lectura:</strong> El modal de términos ahora muestra los
+                                documentos ya aceptados (checkmarks visuales ✓) sin opción de modificar. Botón único
+                                "Entendido".
                             </div>
                         </li>
                     </ul>
@@ -513,19 +597,24 @@
                         <li class="change-item">
                             <span class="tag feature">COMPONENT</span>
                             <div class="change-desc">
-                                <strong>AdoptionSection:</strong> Nuevo componente reutilizable <code>AdoptionSection.tsx</code> para historia de adopción. Extracción del paso 5 para uso futuro en dashboard de usuario.
+                                <strong>AdoptionSection:</strong> Nuevo componente reutilizable
+                                <code>AdoptionSection.tsx</code> para historia de adopción. Extracción del paso 5 para
+                                uso futuro en dashboard de usuario.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">DOCS</span>
                             <div class="change-desc">
-                                <strong>Guía de implementación:</strong> Creación de <code>GUIA-IMPLEMENTACION-PRODUCCION.md</code> con migraciones SQL, variables de entorno, checklist pre-deploy y troubleshooting SEPOMEX.
+                                <strong>Guía de implementación:</strong> Creación de
+                                <code>GUIA-IMPLEMENTACION-PRODUCCION.md</code> con migraciones SQL, variables de
+                                entorno, checklist pre-deploy y troubleshooting SEPOMEX.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UI</span>
                             <div class="change-desc">
-                                <strong>Inputs alineados:</strong> Todos los campos del paso 4 ahora están en vertical (nombre, apellidos, fecha, nacionalidad, estado, municipio) para consistencia visual.
+                                <strong>Inputs alineados:</strong> Todos los campos del paso 4 ahora están en vertical
+                                (nombre, apellidos, fecha, nacionalidad, estado, municipio) para consistencia visual.
                             </div>
                         </li>
                     </ul>
@@ -537,19 +626,22 @@
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Tarjetas de planes:</strong> Restaurados estilos CSS faltantes para las tarjetas de selección de plan (Mensual/Anual) que se habían perdido.
+                                <strong>Tarjetas de planes:</strong> Restaurados estilos CSS faltantes para las tarjetas
+                                de selección de plan (Mensual/Anual) que se habían perdido.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Checkbox duplicado:</strong> Eliminado elemento <code>checkmark</code> duplicado en el checkbox de términos que causaba visualización de dos checkboxes.
+                                <strong>Checkbox duplicado:</strong> Eliminado elemento <code>checkmark</code> duplicado
+                                en el checkbox de términos que causaba visualización de dos checkboxes.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UX</span>
                             <div class="change-desc">
-                                <strong>Mensaje senior:</strong> Actualizado texto para mascotas 10+ años: "Tu mascota califica como senior, después necesitaremos conocer el estado de salud de tu peludo".
+                                <strong>Mensaje senior:</strong> Actualizado texto para mascotas 10+ años: "Tu mascota
+                                califica como senior, después necesitaremos conocer el estado de salud de tu peludo".
                             </div>
                         </li>
                     </ul>
@@ -572,13 +664,17 @@
                         <li class="change-item">
                             <span class="tag improvement">UI</span>
                             <div class="change-desc">
-                                <strong>Campo de edad simplificado:</strong> Se eliminó el mensaje de ayuda "La edad nos ayuda a calcular las coberturas adecuadas" del campo "¿Qué edad tiene?" para una interfaz más limpia.
+                                <strong>Campo de edad simplificado:</strong> Se eliminó el mensaje de ayuda "La edad nos
+                                ayuda a calcular las coberturas adecuadas" del campo "¿Qué edad tiene?" para una
+                                interfaz más limpia.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UI</span>
                             <div class="change-desc">
-                                <strong>Ícono de información condicional:</strong> El componente <code>SelectWithInfo</code> ahora solo muestra el ícono de información (i) cuando existe texto de ayuda. Sin mensaje = sin ícono.
+                                <strong>Ícono de información condicional:</strong> El componente
+                                <code>SelectWithInfo</code> ahora solo muestra el ícono de información (i) cuando existe
+                                texto de ayuda. Sin mensaje = sin ícono.
                             </div>
                         </li>
                     </ul>
@@ -601,7 +697,9 @@
                         <li class="change-item">
                             <span class="tag feature">MARKETING</span>
                             <div class="change-desc">
-                                <strong>Segundo pixel de Meta agregado:</strong> Implementación del pixel ID <code>881661401454063</code> para tracking adicional de conversiones y optimización de campañas publicitarias.
+                                <strong>Segundo pixel de Meta agregado:</strong> Implementación del pixel ID
+                                <code>881661401454063</code> para tracking adicional de conversiones y optimización de
+                                campañas publicitarias.
                             </div>
                         </li>
                     </ul>
@@ -613,25 +711,31 @@
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Visor de documentos INE:</strong> Nuevo componente <code>AmbassadorDetailModal</code> con capacidad de visualizar documentos INE (frente y reverso) directamente en el panel de administración.
+                                <strong>Visor de documentos INE:</strong> Nuevo componente
+                                <code>AmbassadorDetailModal</code> con capacidad de visualizar documentos INE (frente y
+                                reverso) directamente en el panel de administración.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">DATABASE</span>
                             <div class="change-desc">
-                                <strong>Columnas INE en tabla ambassadors:</strong> Agregadas columnas <code>ine_front_url</code> y <code>ine_back_url</code> a la tabla ambassadors para almacenar URLs de documentos.
+                                <strong>Columnas INE en tabla ambassadors:</strong> Agregadas columnas
+                                <code>ine_front_url</code> y <code>ine_back_url</code> a la tabla ambassadors para
+                                almacenar URLs de documentos.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Fix storage bucket:</strong> Corrección en la configuración del bucket de almacenamiento para documentos de embajadores.
+                                <strong>Fix storage bucket:</strong> Corrección en la configuración del bucket de
+                                almacenamiento para documentos de embajadores.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">DEBUG</span>
                             <div class="change-desc">
-                                <strong>Información de debug:</strong> Agregada información de debug en el modal de detalle de embajador para facilitar troubleshooting de documentos INE.
+                                <strong>Información de debug:</strong> Agregada información de debug en el modal de
+                                detalle de embajador para facilitar troubleshooting de documentos INE.
                             </div>
                         </li>
                     </ul>
@@ -643,31 +747,43 @@
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Sistema completo de códigos personalizados:</strong> Los embajadores ahora pueden elegir su propio código de referido personalizado durante el registro. Incluye validación en tiempo real de disponibilidad.
+                                <strong>Sistema completo de códigos personalizados:</strong> Los embajadores ahora
+                                pueden elegir su propio código de referido personalizado durante el registro. Incluye
+                                validación en tiempo real de disponibilidad.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag widget">WIDGET</span>
                             <div class="change-desc">
-                                <strong>Widgets para Webflow:</strong> Nuevos componentes <code>ambassador-code-selector.js</code> y <code>ambassador-code-changer.js</code> para integración en Webflow. Permiten seleccionar código durante registro y cambiarlo posteriormente.
+                                <strong>Widgets para Webflow:</strong> Nuevos componentes
+                                <code>ambassador-code-selector.js</code> y <code>ambassador-code-changer.js</code> para
+                                integración en Webflow. Permiten seleccionar código durante registro y cambiarlo
+                                posteriormente.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">API</span>
                             <div class="change-desc">
-                                <strong>APIs de validación y cambio:</strong> Nuevos endpoints <code>/api/ambassadors/[id]/request-code-change</code> y <code>/api/ambassadors/[id]/resend-code-email</code> para gestionar códigos con límite de un cambio por embajador.
+                                <strong>APIs de validación y cambio:</strong> Nuevos endpoints
+                                <code>/api/ambassadors/[id]/request-code-change</code> y
+                                <code>/api/ambassadors/[id]/resend-code-email</code> para gestionar códigos con límite
+                                de un cambio por embajador.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">ADMIN</span>
                             <div class="change-desc">
-                                <strong>Dashboard actualizado:</strong> El panel de administración ahora detecta embajadores sin código personalizado y muestra indicadores visuales para facilitar la gestión.
+                                <strong>Dashboard actualizado:</strong> El panel de administración ahora detecta
+                                embajadores sin código personalizado y muestra indicadores visuales para facilitar la
+                                gestión.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BACKFILL</span>
                             <div class="change-desc">
-                                <strong>Backfill de embajadores existentes:</strong> Implementado botón fallback en el widget para que embajadores existentes sin código puedan elegir uno. Script de backfill ejecutado para migrar datos.
+                                <strong>Backfill de embajadores existentes:</strong> Implementado botón fallback en el
+                                widget para que embajadores existentes sin código puedan elegir uno. Script de backfill
+                                ejecutado para migrar datos.
                             </div>
                         </li>
                     </ul>
@@ -679,13 +795,16 @@
                         <li class="change-item">
                             <span class="tag feature">EMAIL</span>
                             <div class="change-desc">
-                                <strong>Nuevo diseño de emails:</strong> Implementación de templates de email con diseño profesional alineado a la marca Pata Amiga. Incluye headers, footers y estilos consistentes.
+                                <strong>Nuevo diseño de emails:</strong> Implementación de templates de email con diseño
+                                profesional alineado a la marca Pata Amiga. Incluye headers, footers y estilos
+                                consistentes.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">RESEND</span>
                             <div class="change-desc">
-                                <strong>Configuración Resend:</strong> Guía completa de configuración para envío de emails transaccionales usando Resend con dominio propio (pataamiga.mx).
+                                <strong>Configuración Resend:</strong> Guía completa de configuración para envío de
+                                emails transaccionales usando Resend con dominio propio (pataamiga.mx).
                             </div>
                         </li>
                     </ul>
@@ -697,13 +816,15 @@
                         <li class="change-item">
                             <span class="tag feature">VALIDATION</span>
                             <div class="change-desc">
-                                <strong>Red social obligatoria:</strong> Ahora es obligatorio proporcionar al menos una red social (Instagram, Facebook, TikTok u otra) al registrarse como embajador.
+                                <strong>Red social obligatoria:</strong> Ahora es obligatorio proporcionar al menos una
+                                red social (Instagram, Facebook, TikTok u otra) al registrarse como embajador.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">TYPESCRIPT</span>
                             <div class="change-desc">
-                                <strong>Corrección de tipos:</strong> Fix en los tipos de errores para permitir campos de validación adicionales en el formulario de embajadores.
+                                <strong>Corrección de tipos:</strong> Fix en los tipos de errores para permitir campos
+                                de validación adicionales en el formulario de embajadores.
                             </div>
                         </li>
                     </ul>
@@ -726,19 +847,24 @@
                         <li class="change-item">
                             <span class="tag feature">UX</span>
                             <div class="change-desc">
-                                <strong>Carga automática de datos personales:</strong> El formulario de registro (paso 1) ahora carga automáticamente los datos existentes desde Supabase si el usuario ya había iniciado el registro anteriormente.
+                                <strong>Carga automática de datos personales:</strong> El formulario de registro (paso
+                                1) ahora carga automáticamente los datos existentes desde Supabase si el usuario ya
+                                había iniciado el registro anteriormente.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">VALIDATION</span>
                             <div class="change-desc">
-                                <strong>CURP reclamable:</strong> La validación de CURP ahora permite reutilizar el CURP propio si ya fue registrado previamente por el mismo usuario (detectado por memberstack_id).
+                                <strong>CURP reclamable:</strong> La validación de CURP ahora permite reutilizar el CURP
+                                propio si ya fue registrado previamente por el mismo usuario (detectado por
+                                memberstack_id).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">DATABASE</span>
                             <div class="change-desc">
-                                <strong>UPSERT en Supabase:</strong> Cambio de INSERT a UPSERT en la tabla users, permitiendo actualizar registros existentes en lugar de crear duplicados.
+                                <strong>UPSERT en Supabase:</strong> Cambio de INSERT a UPSERT en la tabla users,
+                                permitiendo actualizar registros existentes en lugar de crear duplicados.
                             </div>
                         </li>
                     </ul>
@@ -750,19 +876,24 @@
                         <li class="change-item">
                             <span class="tag feature">UX</span>
                             <div class="change-desc">
-                                <strong>Carga automática de mascotas:</strong> El paso 2 de registro ahora carga automáticamente las mascotas previamente registradas desde Supabase, incluyendo URLs de fotos ya subidas.
+                                <strong>Carga automática de mascotas:</strong> El paso 2 de registro ahora carga
+                                automáticamente las mascotas previamente registradas desde Supabase, incluyendo URLs de
+                                fotos ya subidas.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Código de embajador persistente:</strong> Nueva columna <code>ambassador_code</code> en tabla users. El código se guarda en Supabase y se recupera automáticamente al volver al paso 2.
+                                <strong>Código de embajador persistente:</strong> Nueva columna
+                                <code>ambassador_code</code> en tabla users. El código se guarda en Supabase y se
+                                recupera automáticamente al volver al paso 2.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UI</span>
                             <div class="change-desc">
-                                <strong>Indicador de carga:</strong> Se agregó spinner de carga mientras se recuperan las mascotas existentes del servidor.
+                                <strong>Indicador de carga:</strong> Se agregó spinner de carga mientras se recuperan
+                                las mascotas existentes del servidor.
                             </div>
                         </li>
                     </ul>
@@ -774,25 +905,31 @@
                         <li class="change-item">
                             <span class="tag feature">SECURITY</span>
                             <div class="change-desc">
-                                <strong>Verificación de plan activo:</strong> El endpoint <code>/api/auth/check-role</code> ahora verifica si el usuario tiene un plan activo en Memberstack antes de permitir el acceso al dashboard.
+                                <strong>Verificación de plan activo:</strong> El endpoint
+                                <code>/api/auth/check-role</code> ahora verifica si el usuario tiene un plan activo en
+                                Memberstack antes de permitir el acceso al dashboard.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">REDIRECT</span>
                             <div class="change-desc">
-                                <strong>Redirección inteligente:</strong> Usuarios sin plan activo son redirigidos a <code>/seleccion-plan?reason=complete_payment</code> con mensaje explicativo especial.
+                                <strong>Redirección inteligente:</strong> Usuarios sin plan activo son redirigidos a
+                                <code>/seleccion-plan?reason=complete_payment</code> con mensaje explicativo especial.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Página de procesamiento:</strong> Nueva página <code>/payment-processing</code> para mostrar a usuarios cuyo pago está siendo confirmado por Stripe, con verificación automática cada 10 segundos.
+                                <strong>Página de procesamiento:</strong> Nueva página <code>/payment-processing</code>
+                                para mostrar a usuarios cuyo pago está siendo confirmado por Stripe, con verificación
+                                automática cada 10 segundos.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">WEBFLOW</span>
                             <div class="change-desc">
-                                <strong>Login redirect handler:</strong> Actualización del script en Webflow para manejar los nuevos roles <code>pending_payment</code> y <code>payment_processing</code>.
+                                <strong>Login redirect handler:</strong> Actualización del script en Webflow para
+                                manejar los nuevos roles <code>pending_payment</code> y <code>payment_processing</code>.
                             </div>
                         </li>
                     </ul>
@@ -804,19 +941,26 @@
                         <li class="change-item">
                             <span class="tag fix">SECURITY</span>
                             <div class="change-desc">
-                                <strong>Verificación de plan activo:</strong> El <code>unified-membership-widget.js</code> ahora verifica el estado de pago antes de mostrar cualquier contenido. Si el usuario no ha pagado, muestra la vista de "Completa tu membresía" en lugar del estado de revisión.
+                                <strong>Verificación de plan activo:</strong> El
+                                <code>unified-membership-widget.js</code> ahora verifica el estado de pago antes de
+                                mostrar cualquier contenido. Si el usuario no ha pagado, muestra la vista de "Completa
+                                tu membresía" en lugar del estado de revisión.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Vista de pago requerido:</strong> Nueva vista <code>renderPaymentRequiredView</code> con diseño naranja que muestra mensaje claro de "Completa tu membresía" y botón para ir a selección de plan.
+                                <strong>Vista de pago requerido:</strong> Nueva vista
+                                <code>renderPaymentRequiredView</code> con diseño naranja que muestra mensaje claro de
+                                "Completa tu membresía" y botón para ir a selección de plan.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Vista de pago en proceso:</strong> Nueva vista <code>renderPaymentProcessingView</code> con spinner de carga para usuarios cuyo pago está siendo confirmado por Stripe.
+                                <strong>Vista de pago en proceso:</strong> Nueva vista
+                                <code>renderPaymentProcessingView</code> con spinner de carga para usuarios cuyo pago
+                                está siendo confirmado por Stripe.
                             </div>
                         </li>
                     </ul>
@@ -828,13 +972,18 @@
                         <li class="change-item">
                             <span class="tag fix">SECURITY</span>
                             <div class="change-desc">
-                                <strong>Protección de dashboards:</strong> El <code>dashboard-protector.html</code> ahora detecta usuarios sin plan activo (<code>pending_payment</code>) y redirige automáticamente a la página de selección de plan.
+                                <strong>Protección de dashboards:</strong> El <code>dashboard-protector.html</code>
+                                ahora detecta usuarios sin plan activo (<code>pending_payment</code>) y redirige
+                                automáticamente a la página de selección de plan.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Corrección de URL:</strong> La URL de redirección para <code>payment_processing</code> en el login redirect handler se corrigió de <code>www.pataamiga.mx/pets/esperando-confirmacion</code> a <code>app.pataamiga.mx/payment-processing</code>.
+                                <strong>Corrección de URL:</strong> La URL de redirección para
+                                <code>payment_processing</code> en el login redirect handler se corrigió de
+                                <code>www.pataamiga.mx/pets/esperando-confirmacion</code> a
+                                <code>app.pataamiga.mx/payment-processing</code>.
                             </div>
                         </li>
                     </ul>
@@ -846,19 +995,27 @@
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Detección correcta de perfil incompleto:</strong> Se cambió la validación de <code>first-name</code> a <code>postal-code</code>. Google OAuth proporciona automáticamente nombre y apellido, por lo que usar <code>first-name</code> no detectaba usuarios nuevos. El código postal es un campo obligatorio que solo se obtiene en el formulario de registro.
+                                <strong>Detección correcta de perfil incompleto:</strong> Se cambió la validación de
+                                <code>first-name</code> a <code>postal-code</code>. Google OAuth proporciona
+                                automáticamente nombre y apellido, por lo que usar <code>first-name</code> no detectaba
+                                usuarios nuevos. El código postal es un campo obligatorio que solo se obtiene en el
+                                formulario de registro.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal (<code>/</code>) también verifica <code>postal-code</code> antes de redirigir al dashboard.
+                                <strong>AuthRedirector:</strong> El componente de redirección de la página principal
+                                (<code>/</code>) también verifica <code>postal-code</code> antes de redirigir al
+                                dashboard.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">IMPROVEMENT</span>
                             <div class="change-desc">
-                                <strong>Logout de Google:</strong> Al cerrar sesión, se abre una ventana a <code>accounts.google.com/logout</code> para limpiar la sesión de Google y permitir cambiar de cuenta.
+                                <strong>Logout de Google:</strong> Al cerrar sesión, se abre una ventana a
+                                <code>accounts.google.com/logout</code> para limpiar la sesión de Google y permitir
+                                cambiar de cuenta.
                             </div>
                         </li>
                     </ul>
@@ -881,13 +1038,16 @@
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Audiencia segmentada:</strong> Implementación del sistema de documentos legales con soporte para audiencia segmentada. Permite definir qué usuarios ven qué documentos según reglas de segmentación.
+                                <strong>Audiencia segmentada:</strong> Implementación del sistema de documentos legales
+                                con soporte para audiencia segmentada. Permite definir qué usuarios ven qué documentos
+                                según reglas de segmentación.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">DATABASE</span>
                             <div class="change-desc">
-                                <strong>Nueva migración SQL:</strong> <code>20260219_legal_docs_audience.sql</code> agrega campos de audiencia a la tabla <code>legal_documents</code>.
+                                <strong>Nueva migración SQL:</strong> <code>20260219_legal_docs_audience.sql</code>
+                                agrega campos de audiencia a la tabla <code>legal_documents</code>.
                             </div>
                         </li>
                     </ul>
@@ -899,13 +1059,15 @@
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Meta Pixel instalado:</strong> Implementación del Pixel de Meta (Facebook) con ID <code>205003538845205</code> para tracking de registros y conversiones.
+                                <strong>Meta Pixel instalado:</strong> Implementación del Pixel de Meta (Facebook) con
+                                ID <code>205003538845205</code> para tracking de registros y conversiones.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">TRACKING</span>
                             <div class="change-desc">
-                                <strong>Eventos de conversión:</strong> Tracking de <code>Lead</code> y <code>CompleteRegistration</code> tanto para registro con Google como con Email.
+                                <strong>Eventos de conversión:</strong> Tracking de <code>Lead</code> y
+                                <code>CompleteRegistration</code> tanto para registro con Google como con Email.
                             </div>
                         </li>
                     </ul>
@@ -917,13 +1079,16 @@
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Sanitización de nombres de archivo:</strong> Corrección en la sanitización de nombres de archivo para Supabase Storage para prevenir errores con caracteres especiales.
+                                <strong>Sanitización de nombres de archivo:</strong> Corrección en la sanitización de
+                                nombres de archivo para Supabase Storage para prevenir errores con caracteres
+                                especiales.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">FORM</span>
                             <div class="change-desc">
-                                <strong>Campo género de mascota:</strong> Se agregó el campo de género (Macho/Hembra) al formulario de registro de mascotas.
+                                <strong>Campo género de mascota:</strong> Se agregó el campo de género (Macho/Hembra) al
+                                formulario de registro de mascotas.
                             </div>
                         </li>
                     </ul>
@@ -946,31 +1111,40 @@
                         <li class="change-item">
                             <span class="tag feature">API</span>
                             <div class="change-desc">
-                                <strong>Nuevo endpoint de sesiones:</strong> Implementación de <code>/api/auth/session-token</code> para generar tokens temporales de identificación. Permite al bot reconocer usuarios logueados sin preguntar email.
+                                <strong>Nuevo endpoint de sesiones:</strong> Implementación de
+                                <code>/api/auth/session-token</code> para generar tokens temporales de identificación.
+                                Permite al bot reconocer usuarios logueados sin preguntar email.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">API</span>
                             <div class="change-desc">
-                                <strong>Session Tokens:</strong> Nueva tabla <code>vet_bot_sessions</code> en Supabase para almacenar tokens de sesión temporales (expiran en 2 horas).
+                                <strong>Session Tokens:</strong> Nueva tabla <code>vet_bot_sessions</code> en Supabase
+                                para almacenar tokens de sesión temporales (expiran en 2 horas).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">API</span>
                             <div class="change-desc">
-                                <strong>Endpoint de contexto mejorado:</strong> <code>/api/integrations/vet-bot/context</code> ahora acepta tres métodos: <code>sessionToken</code> (nuevo), <code>email</code> (legacy) y <code>userId</code> (legacy).
+                                <strong>Endpoint de contexto mejorado:</strong>
+                                <code>/api/integrations/vet-bot/context</code> ahora acepta tres métodos:
+                                <code>sessionToken</code> (nuevo), <code>email</code> (legacy) y <code>userId</code>
+                                (legacy).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag fix">BUGFIX</span>
                             <div class="change-desc">
-                                <strong>Corrección de columnas:</strong> Eliminadas referencias a columnas inexistentes (<code>waiting_period_end_date</code> en users, <code>pet_type</code> en pets) que causaban errores 500.
+                                <strong>Corrección de columnas:</strong> Eliminadas referencias a columnas inexistentes
+                                (<code>waiting_period_end_date</code> en users, <code>pet_type</code> en pets) que
+                                causaban errores 500.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">CODES</span>
                             <div class="change-desc">
-                                <strong>Códigos de verificación:</strong> Implementación alternativa de identificación vía códigos de 6 dígitos para casos donde el método automático no esté disponible.
+                                <strong>Códigos de verificación:</strong> Implementación alternativa de identificación
+                                vía códigos de 6 dígitos para casos donde el método automático no esté disponible.
                             </div>
                         </li>
                     </ul>
@@ -982,19 +1156,24 @@
                         <li class="change-item">
                             <span class="tag feature">INTEGRATION</span>
                             <div class="change-desc">
-                                <strong>Script de redirección post-login:</strong> Implementación de <code>login-redirect-handler</code> en Webflow para detectar sesión de Memberstack y redirigir al dashboard correspondiente según el rol (miembro, embajador o admin).
+                                <strong>Script de redirección post-login:</strong> Implementación de
+                                <code>login-redirect-handler</code> en Webflow para detectar sesión de Memberstack y
+                                redirigir al dashboard correspondiente según el rol (miembro, embajador o admin).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">INTEGRATION</span>
                             <div class="change-desc">
-                                <strong>Protección de dashboards:</strong> Scripts para proteger dashboards de miembros y embajadores en Webflow, verificando autenticación antes de mostrar contenido.
+                                <strong>Protección de dashboards:</strong> Scripts para proteger dashboards de miembros
+                                y embajadores en Webflow, verificando autenticación antes de mostrar contenido.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">CORS</span>
                             <div class="change-desc">
-                                <strong>Configuración CORS:</strong> Headers CORS agregados a todos los endpoints (<code>/api/auth/*</code>, <code>/api/integrations/vet-bot/*</code>) para permitir peticiones desde www.pataamiga.mx.
+                                <strong>Configuración CORS:</strong> Headers CORS agregados a todos los endpoints
+                                (<code>/api/auth/*</code>, <code>/api/integrations/vet-bot/*</code>) para permitir
+                                peticiones desde www.pataamiga.mx.
                             </div>
                         </li>
                     </ul>
@@ -1006,19 +1185,23 @@
                         <li class="change-item">
                             <span class="tag feature">DOCS</span>
                             <div class="change-desc">
-                                <strong>Guía para agencia:</strong> Creación de documentación completa (<code>RESUMEN_PARA_AGENCIA.md</code>) con instrucciones paso a paso para configurar Custom User Fields y API requests en Chatbot Builder AI.
+                                <strong>Guía para agencia:</strong> Creación de documentación completa
+                                (<code>RESUMEN_PARA_AGENCIA.md</code>) con instrucciones paso a paso para configurar
+                                Custom User Fields y API requests en Chatbot Builder AI.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">DOCS</span>
                             <div class="change-desc">
-                                <strong>Ejemplos de respuestas API:</strong> Documentación con ejemplos JSON de todas las respuestas posibles del bot (éxito, errores, usuario no encontrado, etc.).
+                                <strong>Ejemplos de respuestas API:</strong> Documentación con ejemplos JSON de todas
+                                las respuestas posibles del bot (éxito, errores, usuario no encontrado, etc.).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">DOCS</span>
                             <div class="change-desc">
-                                <strong>Guía de pruebas API:</strong> Documentación con comandos curl para probar endpoints manualmente y verificar funcionamiento.
+                                <strong>Guía de pruebas API:</strong> Documentación con comandos curl para probar
+                                endpoints manualmente y verificar funcionamiento.
                             </div>
                         </li>
                     </ul>
@@ -1042,25 +1225,30 @@
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
                                 <strong>Módulo de Facturación:</strong> Implementación del sistema opcional de
-                                facturación durante la selección de plan. Incluye checkbox "¿Quieres facturar?" y modal premium de recolección de datos.
+                                facturación durante la selección de plan. Incluye checkbox "¿Quieres facturar?" y modal
+                                premium de recolección de datos.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Validación Fiscal:</strong> Soporte completo para RFC, Razón Social, Régimen Fiscal y Uso de CFDI. Diseño optimizado para evitar cortes en dispositivos móviles.
+                                <strong>Validación Fiscal:</strong> Soporte completo para RFC, Razón Social, Régimen
+                                Fiscal y Uso de CFDI. Diseño optimizado para evitar cortes en dispositivos móviles.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">STORAGE</span>
                             <div class="change-desc">
-                                <strong>Constancia Fiscal:</strong> Integración con Supabase Storage para la subida y almacenamiento seguro de la Constancia de Situación Fiscal (PDF/Imágenes).
+                                <strong>Constancia Fiscal:</strong> Integración con Supabase Storage para la subida y
+                                almacenamiento seguro de la Constancia de Situación Fiscal (PDF/Imágenes).
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">ADMIN</span>
                             <div class="change-desc">
-                                <strong>Dashboard para Admins:</strong> Se habilitó la visualización de datos fiscales en el <code>MemberDetailModal</code>. Los administradores ahora pueden ver y descargar la documentación fiscal de cualquier miembro.
+                                <strong>Dashboard para Admins:</strong> Se habilitó la visualización de datos fiscales
+                                en el <code>MemberDetailModal</code>. Los administradores ahora pueden ver y descargar
+                                la documentación fiscal de cualquier miembro.
                             </div>
                         </li>
                     </ul>
@@ -1072,19 +1260,23 @@
                         <li class="change-item">
                             <span class="tag feature">DESIGN</span>
                             <div class="change-desc">
-                                <strong>Premium Square Look:</strong> Rediseño total del widget de tarjetas de mascotas. Ahora utiliza un formato cuadrado (260x260px) con bordes ultra-redondeados (40px) y sombras suaves.
+                                <strong>Premium Square Look:</strong> Rediseño total del widget de tarjetas de mascotas.
+                                Ahora utiliza un formato cuadrado (260x260px) con bordes ultra-redondeados (40px) y
+                                sombras suaves.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag feature">NEW</span>
                             <div class="change-desc">
-                                <strong>Título "Mi Manada":</strong> Se incorporó un título de sección prominente en color amarillo (#FFBD12) para personalizar el espacio del usuario.
+                                <strong>Título "Mi Manada":</strong> Se incorporó un título de sección prominente en
+                                color amarillo (#FFBD12) para personalizar el espacio del usuario.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">UX</span>
                             <div class="change-desc">
-                                <strong>Agregar Peludo:</strong> La tarjeta de invitación a agregar nuevas mascotas fue rediseñada con bordes punteados y un ícono "+" vibrante para mejorar la conversión.
+                                <strong>Agregar Peludo:</strong> La tarjeta de invitación a agregar nuevas mascotas fue
+                                rediseñada con bordes punteados y un ícono "+" vibrante para mejorar la conversión.
                             </div>
                         </li>
                     </ul>
@@ -1096,13 +1288,17 @@
                         <li class="change-item">
                             <span class="tag feature">LEGAL</span>
                             <div class="change-desc">
-                                <strong>Clickwrap Acceptance:</strong> Implementación del cuadro de aceptación electrónica obligatorio en el paso final. Incluye sección expandible "Ver más" para lectura de términos legales extensos sin saturar la UI.
+                                <strong>Clickwrap Acceptance:</strong> Implementación del cuadro de aceptación
+                                electrónica obligatorio en el paso final. Incluye sección expandible "Ver más" para
+                                lectura de términos legales extensos sin saturar la UI.
                             </div>
                         </li>
                         <li class="change-item">
                             <span class="tag improvement">POLICIES</span>
                             <div class="change-desc">
-                                <strong>RLS Storage:</strong> Se configuraron políticas de seguridad en Supabase Storage para el bucket <code>billing-docs</code>, garantizando que solo el dueño y los administradores puedan acceder a los documentos.
+                                <strong>RLS Storage:</strong> Se configuraron políticas de seguridad en Supabase Storage
+                                para el bucket <code>billing-docs</code>, garantizando que solo el dueño y los
+                                administradores puedan acceder a los documentos.
                             </div>
                         </li>
                     </ul>

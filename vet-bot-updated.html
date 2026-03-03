@@ -1,5 +1,5 @@
 <!-- ============================================ -->
-<!-- Vet-Bot Integration v3.4 - Ref Parameter & Diagnostics -->
+<!-- Vet-Bot Integration v3.5 - Numeric IDs Bridge -->
 <!-- app.pataamiga.mx | Chatbot Builder AI v6 -->
 <!-- ============================================ -->
 
@@ -29,10 +29,10 @@
             log('- Ref:', urlParams.get('ref'));
             log('- SCF (Custom Fields):', urlParams.get('scf'));
 
-            if (urlParams.get('ref')) {
-                log('✅ Parámetro REF presente. Este es el método v3.4.');
+            if (urlParams.get('ref') || (urlParams.get('scf') && urlParams.get('scf').includes('673882'))) {
+                log('✅ Datos de identificación presentes en el URL.');
             } else {
-                log('⚠️ Parámetro REF ausente. El bot podría no identificar al usuario.');
+                log('⚠️ Los datos de identificación podrían estar faltando.');
             }
         };
 
@@ -73,27 +73,29 @@
                         return;
                     }
 
-                    log('Inicializando CBB v3.4 (Ref Strategy)...');
+                    log('Inicializando CBB v3.5 (Numeric IDs)...');
 
+                    // Mapeo usando los IDs numéricos exactos de CBB
                     const fields = [
-                        { id: "session_token", value: sessionToken || "" },
-                        { id: "user_email", value: userEmail || "" }
+                        { id: "673882", value: sessionToken || "" },    // session_token
+                        { id: "515388", value: userEmail || "" },       // Correo_Cliente
+                        { id: "620522", value: firstName || "" }        // NombreCliente
                     ];
 
                     ktt10.setup({
                         id: "K4THS5LyA99jKDKYNgD3",
                         accountId: "1146761",
                         color: "#36D6B5",
-                        // Método 1: setCustomFields (Format oficial)
+                        // Método 1: setCustomFields con IDs reales (Fundamental)
                         setCustomFields: fields,
-                        // Método 2: REF parameter (Legacy/Fallback muy potente)
+                        // Método 2: REF como respaldo
                         ref: sessionToken || "no-token",
-                        // Otros datos directos
+                        // Datos adicionales
                         email: userEmail,
                         first_name: firstName
                     });
 
-                    log('✅ Bot inicializado v3.4. Ejecuta "vetBotDiagnostics()" para verificar.');
+                    log('✅ Bot inicializado v3.5. Usa "vetBotDiagnostics()" para verificar.');
                 };
 
                 executeSetup();
@@ -103,7 +105,7 @@
             }
         }
 
-        // Ejecutar con un pequeño delay
+        // Delay para asegurar carga de Memberstack
         setTimeout(initVetBot, 800);
     })();
 </script>
