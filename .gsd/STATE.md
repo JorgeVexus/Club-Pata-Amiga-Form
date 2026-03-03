@@ -10,14 +10,14 @@ Fixed critical persistence gaps and established Supabase as single source of tru
 - Updated `GUIA-IMPLEMENTACION-PRODUCCION.md` to clarify Memberstack role.
 
 ## Current Context
-Registration flow is **code-complete and type-safe**. Ready for staging testing.
-Remaining before production: Execute SQL migration in Supabase, seed catalog data.
+Registration flow is **code-complete, type-safe, and successfully deployed to the `staging` branch**. 
+A "Payment Bypass" has been implemented for testing in production-like environments.
 
 ## Next Steps
-1.  Run `001_reestructuracion_flujo.sql` in Supabase SQL Editor.
-2.  Test full flow end-to-end in staging (create account → pay → complete profile → complete pet).
-3.  Verify photo uploads work with Supabase Storage bucket `pet-photos`.
-4.  Verify senior pet detection triggers vet certificate requirement.
+1.  Configure Vercel (or hosting) to point `staging.pataamiga.com` (or similar) to the `staging` branch.
+2.  Enable "Modo Test (Skip Payment)" in the Admin Dashboard.
+3.  Perform the full End-to-End test on the staging URL.
+4.  Verify data persistence in Supabase from the staging environment.
 
 ## Blocks & Risks
 - None currently identified.
