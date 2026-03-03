@@ -36,11 +36,35 @@ Cuando el bot necesite traer la info del usuario (nombre, mascotas, etc.), debe 
 
 ---
 
-### 4. Preguntas Frecuentes y Escenarios (Troubleshooting)
+### 4. Mapeo de Datos (Qué responde la API)
+Cuando el bot hace la petición a nuestra API, esta le responde con un objeto JSON. Aquí tienen el nombre exacto de los campos para que los mapeen en Chatbot Builder:
+
+#### **A. Datos del Usuario (`user`)**
+*   `user.firstName`: Nombre del cliente.
+*   `user.lastName`: Apellidos.
+*   `user.email`: Correo electrónico registrado.
+*   `user.membershipStatus`: Estatus de la membresía (ej: `active`, `pending`).
+
+#### **B. Lista de Mascotas (`pets`)**
+Es una lista (array). Por cada mascota encontrarán:
+*   `pets[X].name`: Nombre de la mascota.
+*   `pets[X].type`: Especie (`Perro` o `Gato`).
+*   `pets[X].breed`: Raza.
+*   `pets[X].status`: Estatus de protección (ej: `approved`, `waiting_period`).
+*   `pets[X].waitingPeriod.isActive`: `true` si la mascota está en periodo de espera (carencia).
+
+#### **C. Historial (`consultationHistory`)**
+*   `consultationHistory[X].date`: Fecha de la consulta.
+*   `consultationHistory[X].summary`: Resumen de lo que pasó.
+*   `consultationHistory[X].petName`: Nombre de la mascota atendida.
+
+---
+
+### 5. Preguntas Frecuentes y Escenarios (Troubleshooting)
 
 #### **Escenario A: El bot me saluda como "null" o "Usuario"**
-*   **Causa:** El bot no está leyendo correctamente el campo `620522`.
-*   **Solución:** Revisen que en su mensaje de bienvenida estén usando exactamente la variable que corresponde a ese ID.
+*   **Causa:** El bot no está leyendo correctamente el campo `620522` o la respuesta de la API.
+*   **Solución:** Revisen que en su mensaje de bienvenida estén usando el campo `user.firstName` que devuelve nuestra API.
 
 #### **Escenario B: El bot da error al intentar traer las mascotas**
 *   **Causa:** El `sessionToken` que están mandando a nuestra API está vacío o es inválido.
@@ -51,7 +75,7 @@ Cuando el bot necesite traer la info del usuario (nombre, mascotas, etc.), debe 
 
 ---
 
-### 5. Herramienta de Diagnóstico para la Agencia
+### 6. Herramienta de Diagnóstico para la Agencia
 Ustedes pueden verificar qué datos está enviando la web en cualquier momento:
 1.  Entren a la web logueados como un usuario.
 2.  Abran la consola del navegador (`F12`).
