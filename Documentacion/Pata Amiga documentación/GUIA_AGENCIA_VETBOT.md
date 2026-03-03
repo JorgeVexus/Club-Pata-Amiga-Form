@@ -27,12 +27,12 @@ Asegúrense de que en su panel de **Custom User Fields**, los IDs coincidan con 
 ### 3. Configuración del bloque "External Request" (API)
 Cuando el bot necesite traer la info del usuario (nombre, mascotas, etc.), debe llamar a nuestra API. La configuración en su bloque de petición externa debe ser:
 
-*   **URL:** `https://app.pataamiga.mx/api/integrations/vet-bot/context`
+*   **URL:** `https://app.pataamiga.mx/api/integrations/vet-bot/context?sessionToken={{ref}}`
 *   **Método:** `GET`
 *   **Headers:** 
     *   `x-vet-bot-key`: `pata-amiga-vet-bot-secret-2026`
 *   **Query Parameters (Parámetros):**
-    *   `sessionToken`: **Aquí deben poner el valor del campo `673882` o la variable `{{ref}}`**.
+    *   `sessionToken`: **Debe ser la variable `{{ref}}`** (esta variable contiene el token que enviamos desde la web).
 
 ---
 
@@ -50,6 +50,8 @@ Es una lista (array). Por cada mascota encontrarán:
 *   `pets[X].name`: Nombre de la mascota.
 *   `pets[X].type`: Especie (`Perro` o `Gato`).
 *   `pets[X].breed`: Raza.
+*   `pets[X].age`: Edad de la mascota (ej: "2 años").
+*   `pets[X].size`: Tamaño/Peso registrado (ej: "Mediano 10-25kg").
 *   `pets[X].status`: Estatus de protección (ej: `approved`, `waiting_period`).
 *   `pets[X].waitingPeriod.isActive`: `true` si la mascota está en periodo de espera (carencia).
 
