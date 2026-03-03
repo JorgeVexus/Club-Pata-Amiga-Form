@@ -223,6 +223,22 @@ export default function NewRegistrationFlow() {
     const handleStep1Complete = async (data: { email: string; password: string }) => {
         setIsLoading(true);
         try {
+            // Si ya hay usuario logueado con ese email, simplemente avanzar
+            if (member && member.auth?.email === data.email) {
+                console.log('🔄 Usuario ya logueado, avanzando al paso 2...');
+
+                // Asegurarnos de que el paso esté sincronizado en Supabase
+                await registerUserInSupabase({
+                    email: data.email,
+                    registration_step: 2
+                }, member.id);
+
+                setRegistrationData(prev => ({ ...prev, account: data }));
+                setCurrentStep(2);
+                setIsLoading(false);
+                return;
+            }
+
             // Crear usuario en Memberstack
             const result = await window.$memberstackDom.signupMemberEmailPassword({
                 email: data.email,

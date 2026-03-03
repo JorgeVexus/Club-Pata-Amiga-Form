@@ -69,6 +69,9 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
     };
 
     const validateForm = (): boolean => {
+        // Si ya está logueado, no validamos el formulario ya que solo va a "Continuar"
+        if (isLoggedIn) return true;
+
         const newErrors: Record<string, string> = {};
 
         if (!formData.email.trim()) {
