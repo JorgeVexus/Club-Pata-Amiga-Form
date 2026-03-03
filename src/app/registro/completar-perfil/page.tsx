@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
@@ -101,7 +101,7 @@ function SepomexAddressForm({
     );
 }
 
-export default function CompletarPerfil() {
+function CompletarPerfilContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const paymentSuccess = searchParams.get('payment') === 'success';
@@ -354,5 +354,22 @@ export default function CompletarPerfil() {
                 onClose={() => setToast(prev => ({ ...prev, isVisible: false }))}
             />
         </div>
+    );
+}
+
+export default function CompletarPerfil() {
+    return (
+        <Suspense fallback={
+            <div className={styles.page}>
+                <div className={styles.container}>
+                    <div className={styles.formCard} style={{ textAlign: 'center', padding: '3rem' }}>
+                        <div className={styles.loadingSpinner} style={{ margin: '0 auto 1.5rem' }}></div>
+                        <p>Cargando información segura...</p>
+                    </div>
+                </div>
+            </div>
+        }>
+            <CompletarPerfilContent />
+        </Suspense>
     );
 }
