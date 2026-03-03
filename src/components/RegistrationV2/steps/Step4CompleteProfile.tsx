@@ -11,13 +11,14 @@ import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
 import PhoneInput from '@/components/FormFields/PhoneInput';
 import NationalitySelect from '../NationalitySelect';
+import { checkCurpAvailability } from '@/app/actions/user.actions';
 import styles from './steps.module.css';
 
 interface Step4CompleteProfileProps {
     data: any;
     member: any;
     onNext: (data: any) => void;
-    onBack: () => void;
+    onBack?: () => void;
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
 }
 
@@ -41,6 +42,8 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingCP, setIsLoadingCP] = useState(false);
+    const [isCheckingCurp, setIsCheckingCurp] = useState(false);
+    const [curpAvailable, setCurpAvailable] = useState<boolean | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
 
     // Cargar datos guardados al montar
@@ -65,17 +68,64 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 address: profile.address || '',
             }));
             setIsLoaded(true);
+
+            // Si ya hay CURP cargada de 18 caracteres, verificarla
+            if (profile.curp && profile.curp.length === 18) {
+                verifyCurp(profile.curp);
+            }
         }
     }, [data, isLoaded]);
 
+    const verifyCurp = async (curp: string) => {
+        if (curp.length !== 18) {
+            setCurpAvailable(null);
+            return;
+        }
+
+        setIsCheckingCurp(true);
+        try {
+            // El ID de memberstack actual para permitir que su propio CURP sea válido
+            const currentMsId = member?.id || member?.memberId;
+            const result = await checkCurpAvailability(curp, currentMsId);
+
+            if (result.error) {
+                console.error('Error verificando CURP:', result.error);
+                return;
+            }
+
+            setCurpAvailable(result.available);
+
+            if (!result.available) {
+                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado con otra cuenta' }));
+                showToast('El CURP ya está en uso', 'error');
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.curp;
+                    return newErrors;
+                });
+            }
+        } catch (error) {
+            console.error('Catch verifyCurp:', error);
+        } finally {
+            setIsCheckingCurp(false);
+        }
+    };
+
+    const handleCurpBlur = () => {
+        if (formData.curp.length === 18) {
+            verifyCurp(formData.curp);
+        }
+    };
+
     const handlePostalCodeBlur = async () => {
         if (formData.postalCode.length !== 5) return;
-        
+
         setIsLoadingCP(true);
         try {
             const response = await fetch(`/api/sepomex?cp=${formData.postalCode}`);
             const result = await response.json();
-            
+
             if (result.success) {
                 setFormData(prev => ({
                     ...prev,
@@ -144,7 +194,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             <form onSubmit={handleSubmit} className={styles.form}>
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Datos personales</h3>
-                    
+
                     <TextInput
                         label="Nombre"
                         name="firstName"
@@ -183,30 +233,40 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
                     <NationalitySelect
                         value={formData.nationality}
-                        onChange={(value, code) => setFormData({ 
-                            ...formData, 
-                            nationality: value, 
-                            nationalityCode: code 
+                        onChange={(value, code) => setFormData({
+                            ...formData,
+                            nationality: value,
+                            nationalityCode: code
                         })}
                         error={errors.nationality}
                         required
                     />
 
-                    <TextInput
-                        label="CURP"
-                        name="curp"
-                        value={formData.curp}
-                        onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
-                        placeholder="ABCD123456HDFRNN09"
-                        error={errors.curp}
-                        required
-                        maxLength={18}
-                    />
+                    <div className={styles.curpRow}>
+                        <TextInput
+                            label="CURP"
+                            name="curp"
+                            value={formData.curp}
+                            onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
+                            onBlur={handleCurpBlur}
+                            placeholder="ABCD123456HDFRNN09"
+                            error={errors.curp}
+                            required
+                            maxLength={18}
+                            disabled={isCheckingCurp}
+                        />
+                        {isCheckingCurp && (
+                            <span className={styles.inputIndicator}>Verificando...</span>
+                        )}
+                        {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
+                            <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
+                        )}
+                    </div>
                 </div>
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Contacto</h3>
-                    
+
                     <PhoneInput
                         label="Teléfono"
                         name="phone"
@@ -230,7 +290,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Dirección</h3>
-                    
+
                     <div className={styles.postalCodeRow}>
                         <TextInput
                             label="Código Postal"

@@ -1074,3 +1074,71 @@
         font-size: 0.875rem;
     }
 }
+
+/* ============================================
+   VALIDACIÓN DE CURP Y OTROS INPUTS
+   ============================================ */
+
+.curpRow {
+    position: relative;
+    width: 100%;
+}
+
+.inputIndicator {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #718096;
+    font-family: 'Outfit', sans-serif;
+    padding: 2px 8px;
+    background: #EDF2F7;
+    border-radius: 10px;
+    z-index: 5;
+}
+
+.inputIndicatorSuccess {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #48BB78;
+    font-family: 'Outfit', sans-serif;
+    background: #F0FFF4;
+    padding: 2px 8px;
+    border-radius: 10px;
+    border: 1px solid rgba(72, 187, 120, 0.2);
+    z-index: 5;
+}
+
+.postalCodeRow {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.cpLoadingIndicator {
+    font-size: 0.75rem;
+    color: #00BBB4;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    white-space: nowrap;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}

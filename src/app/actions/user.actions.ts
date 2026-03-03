@@ -36,11 +36,13 @@ export async function checkCurpAvailability(curp: string, currentMemberId?: stri
     if (!supabase) return { available: true, error: 'configuration_missing' }
 
     try {
+        const normalizedCurp = curp.trim().toUpperCase();
+
         // Buscar si existe el CURP
         const { data: existingUser, error } = await supabase
             .from('users')
             .select('id, memberstack_id, curp')
-            .eq('curp', curp)
+            .eq('curp', normalizedCurp)
             .maybeSingle()
 
         if (error) {
