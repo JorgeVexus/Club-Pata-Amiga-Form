@@ -101,7 +101,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
 
         setIsSubmitting(true);
         setErrors({}); // Limpiar errores previos
-        
+
         try {
             // Si hay usuario logueado con diferente email, advertir
             if (currentMember?.auth?.email && currentMember.auth.email !== formData.email) {
@@ -109,7 +109,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                     `Ya hay una sesión activa con ${currentMember.auth.email}. ` +
                     `¿Deseas cerrar esa sesión y crear una nueva cuenta con ${formData.email}?`
                 );
-                
+
                 if (confirmChange) {
                     await handleLogout();
                     // Esperar un momento para que se limpie la sesión
@@ -132,7 +132,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
         } catch (error: any) {
             console.error('Error:', error);
             // Si el error es que el email ya existe
-            if (error?.code === 'email-already-in-use' || 
+            if (error?.code === 'email-already-in-use' ||
                 error?.message?.includes('already taken') ||
                 error?.message?.includes('email-already-in-use') ||
                 error?.message?.includes('already exists')) {
@@ -169,7 +169,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                             <p className={styles.userEmail}>{currentMember.auth.email}</p>
                         </div>
                     </div>
-                    <button 
+                    <button
                         type="button"
                         className={styles.logoutButton}
                         onClick={handleLogout}
@@ -193,15 +193,15 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                 />
 
                 {/* Mostrar mensaje si el email ya existe */}
-                {(errors.email?.includes('ya está registrado') || 
-                  errors.email?.includes('already')) && (
-                    <div className={styles.errorHelp}>
-                        <p>¿Ya tienes una cuenta?</p>
-                        <a href="/user/inicio-de-sesion" className={styles.loginLinkButton}>
-                            Inicia sesión aquí
-                        </a>
-                    </div>
-                )}
+                {(errors.email?.includes('ya está registrado') ||
+                    errors.email?.includes('already')) && (
+                        <div className={styles.errorHelp}>
+                            <p>¿Ya tienes una cuenta?</p>
+                            <a href="/user/inicio-de-sesion" className={styles.loginLinkButton}>
+                                Inicia sesión aquí
+                            </a>
+                        </div>
+                    )}
 
                 <TextInput
                     label="Contraseña"
@@ -225,12 +225,13 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                     required
                 />
 
-                <label className={styles.termsLabel}>
-                    <input type="checkbox" required />
-                    <span>
-                        Acepto los <a href="#" target="_blank">Términos y Condiciones</a>
-                    </span>
-                </label>
+                <div className={styles.securityMessage}>
+                    <p>
+                        🔒 <strong>Tus datos están protegidos.</strong> Al continuar, aceptas nuestros
+                        <a href="/terminos" target="_blank"> Términos y Condiciones</a> y
+                        <a href="/privacidad" target="_blank"> Aviso de Privacidad</a>.
+                    </p>
+                </div>
 
                 <button
                     type="submit"

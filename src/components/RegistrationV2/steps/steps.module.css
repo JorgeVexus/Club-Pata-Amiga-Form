@@ -260,6 +260,7 @@
         opacity: 0;
         transform: translateY(-10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -506,7 +507,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Logged in banner */
@@ -619,6 +622,33 @@
     color: #00A099;
 }
 
+.securityMessage {
+    background: rgba(125, 216, 213, 0.1);
+    border: 1px solid rgba(125, 216, 213, 0.3);
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.securityMessage p {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.875rem;
+    color: #4A5568;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.securityMessage a {
+    color: #00BBB4;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.securityMessage a:hover {
+    color: #00A099;
+}
+
 .viewTermsLink {
     background: none;
     border: none;
@@ -676,7 +706,7 @@
     background: linear-gradient(135deg, #00BBB4 0%, #00A099 100%);
     color: white;
     border-color: #008B86;
-    box-shadow: 
+    box-shadow:
         0 4px 12px rgba(0, 187, 180, 0.35),
         inset 0 1px 0 rgba(255, 255, 255, 0.2);
     font-weight: 600;
@@ -995,7 +1025,7 @@
 }
 
 /* Resetear márgenes en campos dentro de row */
-.row > div {
+.row>div {
     margin-bottom: 0 !important;
 }
 
@@ -1026,11 +1056,11 @@
         padding: 1.5rem;
         border-radius: 20px;
     }
-    
+
     .title {
         font-size: 1.5rem;
     }
-    
+
     .buttonRow {
         flex-direction: column;
     }

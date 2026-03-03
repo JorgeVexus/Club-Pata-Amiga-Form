@@ -171,7 +171,8 @@ export default function NewRegistrationFlow() {
 
     // Guardar progreso en Supabase
     const saveProgress = useCallback(async (step: number, data: any) => {
-        if (!member?.id) return;
+        const memberId = member?.id || member?.memberId;
+        if (!memberId) return;
 
         setIsSaving(true);
         try {
@@ -207,8 +208,8 @@ export default function NewRegistrationFlow() {
                 userData.address = data.profile.address;
             }
 
-            await registerUserInSupabase(userData, member.id);
-            console.log('✅ Progreso guardado en Supabase (Source of Truth)', { step });
+            await registerUserInSupabase(userData, memberId);
+            console.log('✅ Progreso guardado en Supabase (Source of Truth)', { step, memberId });
         } catch (error) {
             console.error('Error guardando progreso:', error);
         } finally {
@@ -238,13 +239,25 @@ export default function NewRegistrationFlow() {
             }
 
             const newMember = result.data;
+            const msId = newMember?.id || newMember?.memberId;
+
+            if (!msId) {
+                console.error('❌ Memberstack Signup Result logic error:', newMember);
+                throw new Error('Error de consistencia en Memberstack (ID no encontrado)');
+            }
+
             setMember(newMember);
 
             // Guardar en Supabase (estado inicial)
-            await registerUserInSupabase(
+            const supabaseResult = await registerUserInSupabase(
                 { email: data.email, registration_step: 2 },
-                newMember.id
+                msId
             );
+
+            if (!supabaseResult.success) {
+                console.warn('⚠️ Falló registro inicial en Supabase:', supabaseResult.error);
+                // No lanzamos error para no bloquear al usuario si Memberstack sí funcionó
+            }
 
             setRegistrationData(prev => ({ ...prev, account: data }));
             setCurrentStep(2);
@@ -252,20 +265,17 @@ export default function NewRegistrationFlow() {
 
         } catch (error: any) {
             console.error('Error:', error);
-            setIsLoading(false);
             // Propagar el error para que Step1Account lo maneje visualmente
             if (error?.code === 'email-already-in-use' ||
                 error?.message?.includes('already taken') ||
                 error?.message?.includes('email-already-in-use') ||
                 error?.message?.includes('already exists')) {
-                throw {
-                    code: 'email-already-in-use',
-                    message: 'Este correo ya está registrado'
-                };
+                throw error; // Propagar
+            } else {
+                showToast(error.message || 'Error al crear cuenta', 'error');
             }
-            // Para otros errores, mostrar toast y propagar
-            showToast(error.message || 'Error al crear cuenta', 'error');
-            throw error;
+        } finally {
+            setIsLoading(false);
         }
     };
 
