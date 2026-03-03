@@ -22,6 +22,12 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS pre_payment_completed BOOLEAN DEFAULT
 ALTER TABLE users ADD COLUMN IF NOT EXISTS post_payment_completed BOOLEAN DEFAULT false;
 ALTER TABLE users ADD COLUMN IF NOT EXISTS payment_completed_at TIMESTAMP;
 
+-- Campos rápidos de mascota (para tracking en Step 2)
+ALTER TABLE users ADD COLUMN IF NOT EXISTS pet_name VARCHAR(100);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS pet_type VARCHAR(20);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS pet_age INTEGER;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS pet_age_unit VARCHAR(10);
+
 -- ============================================================
 -- 2. NUEVAS COLUMNAS EN TABLA pets
 -- ============================================================
@@ -57,6 +63,10 @@ ALTER TABLE pets ADD COLUMN IF NOT EXISTS is_mixed_breed BOOLEAN DEFAULT false;
 -- Tracking de completitud
 ALTER TABLE pets ADD COLUMN IF NOT EXISTS basic_info_completed BOOLEAN DEFAULT false;
 ALTER TABLE pets ADD COLUMN IF NOT EXISTS complementary_info_completed BOOLEAN DEFAULT false;
+
+-- Tipo de mascota
+ALTER TABLE pets ADD COLUMN IF NOT EXISTS pet_type VARCHAR(20);
+COMMENT ON COLUMN pets.pet_type IS 'Tipo de mascota: dog o cat';
 
 -- ============================================================
 -- 3. NUEVAS TABLAS DE CATÁLOGOS

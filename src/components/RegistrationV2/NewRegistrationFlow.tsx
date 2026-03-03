@@ -19,6 +19,7 @@ import Step2PetBasic from './steps/Step2PetBasic';
 import Step3PlanSelection from './steps/Step3PlanSelection';
 import Step4CompleteProfile from './steps/Step4CompleteProfile';
 import Step5CompletePet from './steps/Step5CompletePet';
+import Step6Success from './steps/Step6Success';
 import StepIndicator from './StepIndicator';
 import BenefitsBanner from './BenefitsBanner';
 import Toast from '@/components/UI/Toast';
@@ -512,6 +513,7 @@ export default function NewRegistrationFlow() {
                 customFields: {
                     'registration-step': 6,
                     'registration-completed': true,
+                    'approval-status': 'pending', // Asegura visibilidad en el dashboard de admin
                 },
             });
 
@@ -520,10 +522,8 @@ export default function NewRegistrationFlow() {
 
             showToast('¡Registro completado!', 'success');
 
-            // Redirigir al dashboard o página de confirmación
-            setTimeout(() => {
-                router.push('/registro/confirmacion');
-            }, 1500);
+            // En lugar de redirigir, mostramos la pantalla de éxito final
+            setCurrentStep(6);
         } catch (error: any) {
             console.error('Error en Paso 5:', error);
             showToast(error.message || 'Error guardando mascota', 'error');
@@ -557,12 +557,14 @@ export default function NewRegistrationFlow() {
             {currentStep <= 3 && <BenefitsBanner />}
 
             <div className={styles.content}>
-                {/* Indicador de pasos */}
-                <StepIndicator
-                    currentStep={currentStep}
-                    totalSteps={5}
-                    stepLabels={STEPS.map(s => s.label)}
-                />
+                {/* Indicador de pasos (Oculto en el paso de éxito) */}
+                {currentStep <= 5 && (
+                    <StepIndicator
+                        currentStep={currentStep}
+                        totalSteps={5}
+                        stepLabels={STEPS.map(s => s.label)}
+                    />
+                )}
 
                 {/* Indicador de guardado */}
                 {isSaving && (
@@ -626,6 +628,12 @@ export default function NewRegistrationFlow() {
                                         onNext={handleStep5Complete}
                                         onBack={handleBack}
                                         showToast={showToast}
+                                    />
+                                );
+                            case 6:
+                                return (
+                                    <Step6Success
+                                        petName={registrationData.petBasic?.petName || ''}
                                     />
                                 );
                             default:
