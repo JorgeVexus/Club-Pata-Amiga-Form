@@ -163,34 +163,72 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
             {isLoggedIn && (
                 <div className={styles.loggedInBanner}>
                     <div className={styles.userInfo}>
-                        <span className={styles.userIcon}>👤</span>
+                        <div className={styles.userIcon}>👤</div>
                         <div>
                             <p className={styles.userLabel}>Sesión activa</p>
                             <p className={styles.userEmail}>{currentMember.auth.email}</p>
                         </div>
                     </div>
-                    <button
-                        type="button"
-                        className={styles.logoutButton}
-                        onClick={handleLogout}
-                        disabled={isLoggingOut}
-                    >
-                        {isLoggingOut ? 'Cerrando...' : 'No eres tú? Cerrar sesión'}
-                    </button>
+
+                    <div className={styles.bannerActions}>
+                        <button
+                            type="submit"
+                            form="step1-form"
+                            className={styles.primaryButton}
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? 'Cargando...' : 'Continuar registro →'}
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.logoutButtonSecondary}
+                            onClick={handleLogout}
+                            disabled={isLoggingOut}
+                        >
+                            {isLoggingOut ? 'Cerrando...' : 'Cerrar sesión'}
+                        </button>
+                    </div>
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <TextInput
-                    label="Correo electrónico"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(value) => setFormData({ ...formData, email: value })}
-                    placeholder="tu@email.com"
-                    error={errors.email}
-                    required
-                />
+            <form id="step1-form" onSubmit={handleSubmit} className={styles.form}>
+                {!isLoggedIn && (
+                    <>
+                        <TextInput
+                            label="Correo electrónico"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(value) => setFormData({ ...formData, email: value })}
+                            placeholder="tu@email.com"
+                            error={errors.email}
+                            required
+                        />
+
+                        <TextInput
+                            label="Contraseña"
+                            name="password"
+                            type="password"
+                            value={formData.password}
+                            onChange={(value) => setFormData({ ...formData, password: value })}
+                            placeholder="Mínimo 8 caracteres"
+                            error={errors.password}
+                            required
+                        />
+
+                        <TextInput
+                            label="Confirma tu contraseña"
+                            name="confirmPassword"
+                            type="password"
+                            value={formData.confirmPassword}
+                            onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
+                            placeholder="Repite tu contraseña"
+                            error={errors.confirmPassword}
+                            required
+                        />
+                    </>
+                )}
 
                 {/* Mostrar mensaje si el email ya existe */}
                 {(errors.email?.includes('ya está registrado') ||
@@ -203,28 +241,6 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                         </div>
                     )}
 
-                <TextInput
-                    label="Contraseña"
-                    name="password"
-                    type="password"
-                    value={formData.password}
-                    onChange={(value) => setFormData({ ...formData, password: value })}
-                    placeholder="Mínimo 8 caracteres"
-                    error={errors.password}
-                    required
-                />
-
-                <TextInput
-                    label="Confirma tu contraseña"
-                    name="confirmPassword"
-                    type="password"
-                    value={formData.confirmPassword}
-                    onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
-                    placeholder="Repite tu contraseña"
-                    error={errors.confirmPassword}
-                    required
-                />
-
                 <div className={styles.securityMessage}>
                     <p>
                         🔒 <strong>Tus datos están protegidos.</strong> Al continuar, aceptas nuestros
@@ -233,17 +249,21 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                     </p>
                 </div>
 
-                <button
-                    type="submit"
-                    className={styles.primaryButton}
-                    disabled={isSubmitting}
-                >
-                    {isSubmitting ? 'Creando cuenta...' : 'Continuar →'}
-                </button>
+                {!isLoggedIn && (
+                    <button
+                        type="submit"
+                        className={styles.primaryButton}
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? 'Creando cuenta...' : 'Continuar →'}
+                    </button>
+                )}
 
-                <p className={styles.loginLink}>
-                    ¿Ya tienes cuenta? <a href="/user/inicio-de-sesion">Inicia sesión</a>
-                </p>
+                {!isLoggedIn && (
+                    <p className={styles.loginLink}>
+                        ¿Ya tienes cuenta? <a href="/user/inicio-de-sesion">Inicia sesión</a>
+                    </p>
+                )}
             </form>
         </div>
     );
