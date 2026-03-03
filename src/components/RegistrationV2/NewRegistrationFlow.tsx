@@ -93,8 +93,9 @@ export default function NewRegistrationFlow() {
                         console.log('📥 Cargando datos desde Supabase...');
                         const result = await getUserDataByMemberstackId(currentMember.id);
 
+                        let userData: any = null;
                         if (result.success && result.userData) {
-                            const userData = result.userData;
+                            userData = result.userData;
 
                             // Reconstruir datos del registro desde Supabase
                             const loadedData: RegistrationData = {
@@ -129,19 +130,21 @@ export default function NewRegistrationFlow() {
                             console.log('✅ Datos cargados desde Supabase:', loadedData);
                         }
 
-                        // Verificar estado de registro en Memberstack
-                        const registrationStep = currentMember.customFields?.['registration-step'];
+                        // Verificar estado de registro (Comparar Memberstack vs Supabase)
+                        const msStep = Number(currentMember.customFields?.['registration-step'] || 1);
+                        const dbStep = Number(userData?.registration_step || 1);
                         const paymentStatus = currentMember.customFields?.['payment-status'];
 
-                        if (registrationStep) {
-                            const step = Number(registrationStep);
-                            // Si ya pagó, ir al paso 4 o 5 según corresponda
-                            if (paymentStatus === 'completed' && step < 4) {
-                                setCurrentStep(4);
-                            } else {
-                                setCurrentStep(step);
-                            }
+                        // El paso real es el más avanzado entre los dos
+                        let finalStep = Math.max(msStep, dbStep);
+
+                        // Regla de negocio: Si ya pagó, no puede estar antes del paso 4
+                        if (paymentStatus === 'completed' && finalStep < 4) {
+                            finalStep = 4;
                         }
+
+                        console.log(`📊 Progreso detectado: MS(${msStep}), DB(${dbStep}) -> Final(${finalStep})`);
+                        setCurrentStep(finalStep);
                     }
                 }
             } catch (error) {
@@ -225,16 +228,19 @@ export default function NewRegistrationFlow() {
         try {
             // Si ya hay usuario logueado con ese email, simplemente avanzar
             if (member && member.auth?.email === data.email) {
-                console.log('🔄 Usuario ya logueado, avanzando al paso 2...');
+                console.log('🔄 Usuario ya logueado, reanudando registro...');
 
-                // Asegurarnos de que el paso esté sincronizado en Supabase
+                // Determinar a qué paso ir (usar el estado actual que ya se cargó en loadSavedState)
+                // Si por alguna razón currentStep es 1 (porque falló la carga), ir al 2
+                const targetStep = currentStep > 1 ? currentStep : 2;
+
+                // Asegurarnos de que el paso esté sincronizado
                 await registerUserInSupabase({
                     email: data.email,
-                    registration_step: 2
+                    registration_step: targetStep
                 }, member.id);
 
-                setRegistrationData(prev => ({ ...prev, account: data }));
-                setCurrentStep(2);
+                setCurrentStep(targetStep);
                 setIsLoading(false);
                 return;
             }
@@ -326,15 +332,14 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    // Paso 2: Guardar datos básicos de mascota
     const handleStep2Complete = async (data: { petType: 'perro' | 'gato'; petName: string; petAge: number; petAgeUnit: 'years' | 'months' }) => {
         const newData = { ...registrationData, petBasic: data };
         setRegistrationData(newData);
 
-        // Guardar en Supabase (Source of Truth)
-        await saveProgress(2, newData);
+        // Guardar en Supabase - Siguiente paso es el 3
+        await saveProgress(3, newData);
 
-        // Actualizar Memberstack (Solo lo esencial para el flujo/auth)
+        // Actualizar Memberstack
         if (member && window.$memberstackDom) {
             await window.$memberstackDom.updateMember({
                 customFields: {
@@ -351,8 +356,8 @@ export default function NewRegistrationFlow() {
         const newData = { ...registrationData, planId };
         setRegistrationData(newData);
 
-        // Guardar en Supabase
-        await saveProgress(3, newData);
+        // Guardar en Supabase - Siguiente paso es el 4
+        await saveProgress(4, newData);
 
         // Actualizar Memberstack
         if (member && window.$memberstackDom) {
@@ -424,22 +429,20 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    // Paso 4: Completar datos del contratante
     const handleStep4Complete = async (profileData: any) => {
         setIsLoading(true);
         try {
             const newData = { ...registrationData, profile: profileData };
             setRegistrationData(newData);
 
-            // Guardar en Supabase (Source of Truth)
-            // Esto guardará todos los datos de perfil mapeados en saveProgress
-            await saveProgress(4, newData);
+            // Guardar en Supabase - Siguiente paso es el 5
+            await saveProgress(5, newData);
 
-            // Actualizar Memberstack (Solo lo esencial para el flujo y pagos)
+            // Actualizar Memberstack
             await window.$memberstackDom.updateMember({
                 customFields: {
                     'registration-step': 5,
-                    'first-name': profileData.firstName, // Necesario para personalizar el dashboard
+                    'first-name': profileData.firstName,
                 },
             });
 
