@@ -9,17 +9,14 @@
  * 3. Ejecutar migraciones de Supabase
  */
 
-import NewRegistrationFlowDemo from '@/components/RegistrationV2/NewRegistrationFlow.demo';
-// import NewRegistrationFlow from '@/components/RegistrationV2/NewRegistrationFlow'; // Modo producción
+import NewRegistrationFlow from '@/components/RegistrationV2/NewRegistrationFlow';
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Registro - Protege a tu mascota (Demo)',
+    title: 'Registro - Protege a tu mascota',
     description: 'Únete a la manada y protege a tu mascota con la mejor cobertura veterinaria.',
 };
 
 export default function RegistroV2Page() {
-    // Cambiar a NewRegistrationFlow para modo producción
-    return <NewRegistrationFlowDemo />;
-    // return <NewRegistrationFlow />; // Descomentar para producción
+    return <NewRegistrationFlow />;
 }

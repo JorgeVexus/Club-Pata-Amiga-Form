@@ -53,13 +53,22 @@ interface Step3PlanSelectionProps {
     onNext: (planId: string) => void;
     onBack: () => void;
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
+    skipPaymentEnabled?: boolean;
+    onSkipPayment?: (planId: string) => void;
 }
 
-export default function Step3PlanSelection({ data, onNext, onBack, showToast }: Step3PlanSelectionProps) {
+export default function Step3PlanSelection({
+    data,
+    onNext,
+    onBack,
+    showToast,
+    skipPaymentEnabled = false,
+    onSkipPayment
+}: Step3PlanSelectionProps) {
     const [selectedPlan, setSelectedPlan] = useState<string>('');
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    
+
     // Estados de aceptación (guardados cuando se cierra el modal)
     const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
 
@@ -77,20 +86,20 @@ export default function Step3PlanSelection({ data, onNext, onBack, showToast }: 
             showToast('Selecciona un plan primero', 'error');
             return;
         }
-        
+
         const allAccepted: TermsAcceptance = {
             termsAndConditions: true,
             privacyPolicy: true,
             marketingConsent: true,
             clickwrap: true
         };
-        
+
         setTermsAccepted(allAccepted);
         localStorage.setItem('registration_terms_acceptance', JSON.stringify({
             ...allAccepted,
             timestamp: new Date().toISOString()
         }));
-        
+
         showToast('Términos aceptados. Puedes revisarlos haciendo clic en "Ver términos".', 'success');
     };
 
@@ -140,7 +149,7 @@ export default function Step3PlanSelection({ data, onNext, onBack, showToast }: 
                 // Verificar que no sea muy viejo (24 horas)
                 const timestamp = new Date(parsed.timestamp);
                 const hoursDiff = (Date.now() - timestamp.getTime()) / (1000 * 60 * 60);
-                
+
                 if (hoursDiff < 24) {
                     setTermsAccepted(parsed);
                 }
@@ -169,10 +178,10 @@ export default function Step3PlanSelection({ data, onNext, onBack, showToast }: 
                         {plan.popular && (
                             <span className={styles.popularBadge}>Más popular</span>
                         )}
-                        
+
                         <h3 className={styles.planName}>{plan.name}</h3>
                         <p className={styles.planDescription}>{plan.description}</p>
-                        
+
                         <div className={styles.priceRow}>
                             <span className={styles.price}>{plan.priceDisplay}</span>
                             <span className={styles.period}>
@@ -224,8 +233,8 @@ export default function Step3PlanSelection({ data, onNext, onBack, showToast }: 
                     <span className={styles.termsText}>
                         <strong>He leído y acepto todos los términos</strong>
                         <span className={styles.required}>*</span>
-                        <button 
-                            type="button" 
+                        <button
+                            type="button"
                             className={styles.viewTermsLink}
                             onClick={(e) => {
                                 e.preventDefault();
@@ -260,6 +269,36 @@ export default function Step3PlanSelection({ data, onNext, onBack, showToast }: 
             <p className={styles.securityNote}>
                 🔒 Pago seguro procesado por Stripe
             </p>
+
+            {skipPaymentEnabled && (
+                <div style={{
+                    marginTop: '2rem',
+                    padding: '1.5rem',
+                    background: '#FFF3E0',
+                    borderRadius: 12,
+                    border: '1px solid #FFB74D',
+                    textAlign: 'center'
+                }}>
+                    <p style={{ color: '#E65100', fontWeight: 600, marginBottom: '1rem', fontSize: '0.9rem' }}>
+                        ⚠️ Modo de Prueba Activo
+                    </p>
+                    <button
+                        type="button"
+                        className={styles.secondaryButton}
+                        style={{ width: '100%', borderColor: '#FFB74D', color: '#E65100' }}
+                        onClick={() => {
+                            if (!selectedPlan || !termsAccepted) {
+                                showToast('Selecciona un plan y acepta los términos primero', 'warning');
+                                return;
+                            }
+                            onSkipPayment?.(selectedPlan);
+                        }}
+                        disabled={isProcessing}
+                    >
+                        Omitir pago y continuar (Solo Test)
+                    </button>
+                </div>
+            )}
 
             {/* Modal de términos mejorado */}
             <TermsModalEnhanced

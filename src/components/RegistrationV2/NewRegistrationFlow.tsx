@@ -68,6 +68,9 @@ export default function NewRegistrationFlow() {
     // Datos del registro
     const [registrationData, setRegistrationData] = useState<RegistrationData>({});
 
+    // Configuración
+    const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
+
     // Toast
     const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'warning'; isVisible: boolean }>({ message: '', type: 'error', isVisible: false });
 
@@ -142,13 +145,24 @@ export default function NewRegistrationFlow() {
                     }
                 }
             } catch (error) {
-                console.error('Error cargando estado:', error);
+                console.error('Error loading saved state:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
+        const fetchSettings = async () => {
+            try {
+                const response = await fetch('/api/admin/settings/skip-payment');
+                const data = await response.json();
+                setSkipPaymentEnabled(data.enabled);
+            } catch (error) {
+                console.error('Error fetching skip-payment setting:', error);
+            }
+        };
+
         loadSavedState();
+        fetchSettings();
     }, []);
 
     const showToast = (message: string, type: 'error' | 'success' | 'warning' = 'error') => {
@@ -318,10 +332,38 @@ export default function NewRegistrationFlow() {
                 showToast('¡Pago exitoso! Completa tu perfil.', 'success');
             }
         } catch (error: any) {
-            // Usuario canceló o error en pago
-            if (!error?.message?.includes('cancel') && !error?.message?.includes('closed')) {
-                showToast('Error en el pago. Intenta de nuevo.', 'error');
+            console.error('Error en checkout:', error);
+            showToast(error.message || 'Error al procesar el pago', 'error');
+        }
+    };
+
+    const handleSkipPayment = async (planId: string) => {
+        setIsSaving(true);
+        try {
+            const newData = { ...registrationData, planId, paymentCompleted: true };
+            setRegistrationData(newData);
+
+            // Guardar en Supabase
+            await saveProgress(4, newData);
+
+            // Actualizar Memberstack
+            if (member && window.$memberstackDom) {
+                await window.$memberstackDom.updateMember({
+                    customFields: {
+                        'registration-step': 4,
+                        'selected-plan-id': planId,
+                        'payment-status': 'completed'
+                    },
+                });
             }
+
+            setCurrentStep(4);
+            showToast('Modo Test: Pago omitido con éxito.', 'success');
+        } catch (error: any) {
+            console.error('Error skipping payment:', error);
+            showToast('Error al omitir el pago', 'error');
+        } finally {
+            setIsSaving(false);
         }
     };
 
@@ -472,21 +514,64 @@ export default function NewRegistrationFlow() {
 
                 {/* Contenedor del paso */}
                 <div className={styles.stepContainer}>
-                    {CurrentStepComponent && (
-                        <CurrentStepComponent
-                            data={registrationData}
-                            member={member}
-                            onNext={
-                                currentStep === 1 ? handleStep1Complete :
-                                    currentStep === 2 ? handleStep2Complete :
-                                        currentStep === 3 ? handleStep3Complete :
-                                            currentStep === 4 ? handleStep4Complete :
-                                                handleStep5Complete
-                            }
-                            onBack={handleBack}
-                            showToast={showToast}
-                        />
-                    )}
+                    {(() => {
+                        switch (currentStep) {
+                            case 1:
+                                return (
+                                    <Step1Account
+                                        data={registrationData}
+                                        member={member}
+                                        onNext={handleStep1Complete}
+                                        onBack={handleBack}
+                                        showToast={showToast}
+                                    />
+                                );
+                            case 2:
+                                return (
+                                    <Step2PetBasic
+                                        data={registrationData}
+                                        member={member}
+                                        onNext={handleStep2Complete}
+                                        onBack={handleBack}
+                                        showToast={showToast}
+                                    />
+                                );
+                            case 3:
+                                return (
+                                    <Step3PlanSelection
+                                        data={registrationData}
+                                        member={member}
+                                        onNext={handleStep3Complete}
+                                        onBack={() => setCurrentStep(2)}
+                                        showToast={showToast}
+                                        skipPaymentEnabled={skipPaymentEnabled}
+                                        onSkipPayment={handleSkipPayment}
+                                    />
+                                );
+                            case 4:
+                                return (
+                                    <Step4CompleteProfile
+                                        data={registrationData}
+                                        member={member}
+                                        onNext={handleStep4Complete}
+                                        onBack={handleBack}
+                                        showToast={showToast}
+                                    />
+                                );
+                            case 5:
+                                return (
+                                    <Step5CompletePet
+                                        data={registrationData}
+                                        member={member}
+                                        onNext={handleStep5Complete}
+                                        onBack={handleBack}
+                                        showToast={showToast}
+                                    />
+                                );
+                            default:
+                                return null;
+                        }
+                    })()}
                 </div>
             </div>
 

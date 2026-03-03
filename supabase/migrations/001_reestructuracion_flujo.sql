@@ -304,36 +304,36 @@ ALTER TABLE registration_progress ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pending_photos_tracking ENABLE ROW LEVEL SECURITY;
 
 -- Políticas para catálogos (lectura pública)
-CREATE POLICY IF NOT EXISTS "Allow public read nationalities" ON catalog_nationalities
+CREATE POLICY "Allow public read nationalities" ON catalog_nationalities
     FOR SELECT TO public USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public read coat colors" ON catalog_coat_colors
+CREATE POLICY "Allow public read coat colors" ON catalog_coat_colors
     FOR SELECT TO public USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public read nose colors" ON catalog_nose_colors
+CREATE POLICY "Allow public read nose colors" ON catalog_nose_colors
     FOR SELECT TO public USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public read eye colors" ON catalog_eye_colors
+CREATE POLICY "Allow public read eye colors" ON catalog_eye_colors
     FOR SELECT TO public USING (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public read sepomex" ON catalog_sepomex
+CREATE POLICY "Allow public read sepomex" ON catalog_sepomex
     FOR SELECT TO public USING (true);
 
 -- Políticas para registration_progress
-CREATE POLICY IF NOT EXISTS "Users can view own progress" ON registration_progress
+CREATE POLICY "Users can view own progress" ON registration_progress
     FOR SELECT TO authenticated USING (user_id = auth.uid());
 
-CREATE POLICY IF NOT EXISTS "Users can update own progress" ON registration_progress
+CREATE POLICY "Users can update own progress" ON registration_progress
     FOR UPDATE TO authenticated USING (user_id = auth.uid());
 
-CREATE POLICY IF NOT EXISTS "Service role can manage progress" ON registration_progress
+CREATE POLICY "Service role can manage progress" ON registration_progress
     FOR ALL TO service_role USING (true);
 
 -- Políticas para pending_photos_tracking
-CREATE POLICY IF NOT EXISTS "Users can view own pending photos" ON pending_photos_tracking
+CREATE POLICY "Users can view own pending photos" ON pending_photos_tracking
     FOR SELECT TO authenticated USING (user_id = auth.uid());
 
-CREATE POLICY IF NOT EXISTS "Service role can manage pending photos" ON pending_photos_tracking
+CREATE POLICY "Service role can manage pending photos" ON pending_photos_tracking
     FOR ALL TO service_role USING (true);
 
 -- ============================================================
