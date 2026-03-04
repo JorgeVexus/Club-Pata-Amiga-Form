@@ -17,13 +17,28 @@ export default function BenefitsBanner({ showVetCoverage = true }: BenefitsBanne
 
     return (
         <div className={styles.banner}>
-            {benefits.filter(b => b.show).map((benefit, index) => (
-                <div key={index} className={styles.benefit}>
-                    <span className={styles.icon}>{benefit.icon}</span>
-                    <span className={styles.check}>✓</span>
-                    <span>{benefit.text}</span>
-                </div>
-            ))}
+            <div className={styles.marqueeTrack}>
+                {/* Primera tanda de beneficios */}
+                {benefits.filter(b => b.show).map((benefit, index) => (
+                    <div key={`b1-${index}`} className={styles.benefit}>
+                        <span className={styles.icon}>{benefit.icon}</span>
+                        <div className={styles.checkWrapper}>
+                            <span className={styles.check}>✓</span>
+                        </div>
+                        <span className={styles.text}>{benefit.text}</span>
+                    </div>
+                ))}
+                {/* Segunda tanda de beneficios para el efecto infinito */}
+                {benefits.filter(b => b.show).map((benefit, index) => (
+                    <div key={`b2-${index}`} className={styles.benefit}>
+                        <span className={styles.icon}>{benefit.icon}</span>
+                        <div className={styles.checkWrapper}>
+                            <span className={styles.check}>✓</span>
+                        </div>
+                        <span className={styles.text}>{benefit.text}</span>
+                    </div>
+                ))}
+            </div>
         </div>
     );
 }
