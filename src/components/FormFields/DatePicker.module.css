@@ -57,13 +57,17 @@
     background: rgba(255, 255, 255, 0.9);
 }
 
-/* Input de fecha oculto */
+/* Input de fecha oculto - posicionado cerca del botón para anclaje de picker */
 .dateInput {
     position: absolute;
+    right: 1.5rem;
+    top: 50%;
+    transform: translateY(-50%);
     opacity: 0;
     pointer-events: none;
-    width: 0;
-    height: 0;
+    width: 24px;
+    height: 24px;
+    z-index: -1;
 }
 
 /* Botón del calendario */
@@ -85,8 +89,10 @@
 }
 
 .calendarButton:hover {
-    background: rgba(125, 216, 213, 0.1);
-    transform: translateY(-50%) scale(1.1);
+    background: rgba(125, 216, 213, 0.15);
+    color: #008f8a;
+    transform: translateY(-52%) scale(1.05);
+    /* Muy ligero para dar sensación de 'elevación' */
 }
 
 .calendarButton:active {
