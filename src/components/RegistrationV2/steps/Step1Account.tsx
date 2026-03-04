@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/FormFields/TextInput';
+import { checkEmailAvailability } from '@/app/actions/user.actions';
 import styles from './steps.module.css';
 
 interface Step1AccountProps {
@@ -29,6 +30,8 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [currentMember, setCurrentMember] = useState<any>(null);
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+    const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
     // Cargar datos al montar
     useEffect(() => {
@@ -65,6 +68,39 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
             showToast('Error al cerrar sesión', 'error');
         } finally {
             setIsLoggingOut(false);
+        }
+    };
+
+    const verifyEmail = async (email: string) => {
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailAvailable(null);
+            return;
+        }
+
+        setIsCheckingEmail(true);
+        try {
+            const result = await checkEmailAvailability(email);
+            setEmailAvailable(result.available);
+
+            if (!result.available) {
+                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+            } else {
+                setErrors(prev => {
+                    const newErrors = { ...prev };
+                    delete newErrors.email;
+                    return newErrors;
+                });
+            }
+        } catch (error) {
+            console.error('Error verificando email:', error);
+        } finally {
+            setIsCheckingEmail(false);
+        }
+    };
+
+    const handleEmailBlur = () => {
+        if (formData.email) {
+            verifyEmail(formData.email);
         }
     };
 
@@ -198,16 +234,29 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
             <form id="step1-form" onSubmit={handleSubmit} className={styles.form}>
                 {!isLoggedIn && (
                     <>
-                        <TextInput
-                            label="Correo electrónico"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={(value) => setFormData({ ...formData, email: value })}
-                            placeholder="tu@email.com"
-                            error={errors.email}
-                            required
-                        />
+                        <div className={styles.curpRow}>
+                            <TextInput
+                                label="Correo electrónico"
+                                name="email"
+                                type="email"
+                                value={formData.email}
+                                onChange={(value) => {
+                                    setFormData({ ...formData, email: value });
+                                    if (emailAvailable !== null) setEmailAvailable(null);
+                                }}
+                                onBlur={handleEmailBlur}
+                                placeholder="tu@email.com"
+                                error={errors.email}
+                                required
+                                disabled={isSubmitting || isCheckingEmail}
+                            />
+                            {isCheckingEmail && (
+                                <span className={styles.inputIndicator}>Verificando...</span>
+                            )}
+                            {emailAvailable && formData.email.includes('@') && !isCheckingEmail && !errors.email && (
+                                <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
+                            )}
+                        </div>
 
                         <TextInput
                             label="Contraseña"

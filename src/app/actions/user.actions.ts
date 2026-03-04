@@ -70,6 +70,37 @@ export async function checkCurpAvailability(curp: string, currentMemberId?: stri
 }
 
 /**
+ * Verifica si un email ya está registrado en la base de datos de Supabase.
+ */
+export async function checkEmailAvailability(email: string) {
+    const supabase = getServiceRoleClient()
+    if (!supabase) return { available: true, error: 'configuration_missing' }
+
+    try {
+        const normalizedEmail = email.trim().toLowerCase();
+
+        // Buscar si existe el email
+        const { data: existingUser, error } = await supabase
+            .from('users')
+            .select('id, email')
+            .eq('email', normalizedEmail)
+            .maybeSingle()
+
+        if (error) {
+            console.error('Error al verificar Email:', error)
+            // En caso de error, preferimos decir que está disponible para no bloquear
+            return { available: true, error: error.message }
+        }
+
+        // Si no existe, está disponible
+        return { available: !existingUser }
+    } catch (error) {
+        console.error('Error inesperado al verificar Email:', error)
+        return { available: true, error: 'unknown_error' }
+    }
+}
+
+/**
  * Registra o actualiza un usuario en la tabla 'public.users' de Supabase
  * Se usa después de crear el usuario en Memberstack
  * Usa UPSERT: si el usuario ya existe (por memberstack_id), actualiza sus datos
