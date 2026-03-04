@@ -43,36 +43,47 @@ const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
  * Consulta SEPOMEX directamente con Fallback a Zippopotam
  */
 async function querySepomex(cp: string): Promise<SepomexResponse | null> {
-    // 1. Intentar SEPOMEX (Primario)
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
+    // 1. Intentar SEPOMEX (Primario - Oficial)
+    const officialUrls = [
+        `https://api-sepomex.datos.gob.mx/v1/codigo_postal/${cp}`,
+        `http://api-sepomex.datos.gob.mx/v1/codigo_postal/${cp}` // Fallback a HTTP por problemas de SSL
+    ];
 
-        const response = await fetch(
-            `https://api-sepomex.datos.gob.mx/v1/codigo_postal/${cp}`,
-            { signal: controller.signal }
-        );
+    for (const url of officialUrls) {
+        try {
+            console.log(`🌐 Probando SEPOMEX oficial (${url.startsWith('https') ? 'HTTPS' : 'HTTP'}): ${cp}`);
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 3500);
 
-        clearTimeout(timeoutId);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
 
-        if (response.ok) {
-            return await response.json();
+            if (response.ok) {
+                const data = await response.json();
+                if (data && !data.error) {
+                    console.log(`✅ Datos obtenidos de SEPOMEX oficial para CP: ${cp}`);
+                    return data;
+                }
+            }
+        } catch (error) {
+            console.warn(`⚠️ SEPOMEX (${url.split(':')[0]}) falló:`, error);
         }
-    } catch (error) {
-        console.warn('⚠️ SEPOMEX primario falló o timeout, intentando fallback...', error);
     }
 
-    // 2. Fallback a Zippopotam (Muy estable)
+    // 2. Fallback a Zippopotam (Muy estable pero datos simplificados)
     try {
         console.log(`🔄 Intentando fallback Zippopotam para CP: ${cp}`);
         const zipResponse = await fetch(`https://api.zippopotam.us/mx/${cp}`);
 
         if (zipResponse.ok) {
             const zipData = await zipResponse.json();
-
-            // Adaptar formato Zippopotam al formato esperado por la app
             const places = zipData.places || [];
+
             if (places.length > 0) {
+                console.log(`✅ Datos obtenidos de Zippopotam para CP: ${cp} (${places.length} asentamientos)`);
+
+                // NOTA: Zippopotam MX no separa municipio de colonia confiablemente.
+                // Usualmente el primer 'place name' es una colonia.
                 return {
                     error: false,
                     code_error: 0,
@@ -81,7 +92,9 @@ async function querySepomex(cp: string): Promise<SepomexResponse | null> {
                         cp: zipData['post code'],
                         asentamiento: places.map((p: any) => p['place name']),
                         tipo_asentamiento: 'Colonia',
-                        municipio: places[0]['place name'], // Zippopotam no separa bien municipio de colonia en MX a veces
+                        // Si hay muchos lugares, el municipio suele ser constante pero Zippo no lo da.
+                        // Usamos el primer lugar como placeholder, pero marcamos que debe revisarse en el cliente.
+                        municipio: places[0]['place name'],
                         estado: places[0]['state'],
                         ciudad: places[0]['state'],
                         pais: 'México'

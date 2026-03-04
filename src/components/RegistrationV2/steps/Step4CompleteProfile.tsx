@@ -11,6 +11,7 @@ import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
 import PhoneInput from '@/components/FormFields/PhoneInput';
 import NationalitySelect from '../NationalitySelect';
+import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
 import { checkCurpAvailability } from '@/app/actions/user.actions';
 import styles from './steps.module.css';
 
@@ -45,6 +46,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [isCheckingCurp, setIsCheckingCurp] = useState(false);
     const [curpAvailable, setCurpAvailable] = useState<boolean | null>(null);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
     // Cargar datos guardados al montar
     useEffect(() => {
@@ -132,6 +134,10 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                     state: result.data.state,
                     city: result.data.municipality
                 }));
+                // Guardar sugerencias de colonias
+                if (result.data.colonies) {
+                    setColonySuggestions(result.data.colonies);
+                }
                 if (showToast) {
                     showToast('Dirección encontrada', 'success');
                 }
@@ -161,6 +167,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
         if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
+        if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
         if (!formData.address.trim()) newErrors.address = 'Requerido';
 
@@ -319,16 +326,20 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         label="Municipio/Alcaldía"
                         name="city"
                         value={formData.city}
-                        readOnly
+                        onChange={(value) => setFormData({ ...formData, city: value })}
+                        error={errors.city}
+                        required
                     />
 
-                    <TextInput
+                    <ColonyAutocomplete
                         label="Colonia"
                         name="colony"
                         value={formData.colony}
+                        suggestions={colonySuggestions}
                         onChange={(value) => setFormData({ ...formData, colony: value })}
                         error={errors.colony}
                         required
+                        isLoading={isLoadingCP}
                     />
 
                     <TextInput
