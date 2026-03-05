@@ -249,7 +249,7 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             .single();
 
         if (userError || !userData) {
-            console.error('❌ [Server Action] Usuario no encontrado en Supabase:', userError);
+            console.error(`❌ [Server Action] Usuario no encontrado en Supabase para MS_ID: ${memberstackId}. Error:`, userError);
             return { success: false, error: 'Usuario no encontrado' };
         }
 

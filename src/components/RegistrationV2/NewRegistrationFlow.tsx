@@ -89,10 +89,11 @@ export default function NewRegistrationFlow() {
 
                     if (currentMember) {
                         setMember(currentMember);
+                        const msId = currentMember.id || (currentMember as any).memberId;
 
                         // Cargar datos de Supabase
-                        console.log('📥 Cargando datos desde Supabase...');
-                        const result = await getUserDataByMemberstackId(currentMember.id);
+                        console.log('📥 Cargando datos desde Supabase para ID:', msId);
+                        const result = await getUserDataByMemberstackId(msId);
 
                         let userData: any = null;
                         if (result.success && result.userData) {
@@ -342,11 +343,12 @@ export default function NewRegistrationFlow() {
 
         // Actualizar Memberstack
         if (member && window.$memberstackDom) {
-            await window.$memberstackDom.updateMember({
+            const { data: updatedMember } = await window.$memberstackDom.updateMember({
                 customFields: {
                     'registration-step': 3,
                 },
             });
+            if (updatedMember) setMember(updatedMember);
         }
 
         setCurrentStep(3);
@@ -381,12 +383,13 @@ export default function NewRegistrationFlow() {
                 const completedData = { ...newData, paymentCompleted: true };
                 setRegistrationData(completedData);
 
-                await window.$memberstackDom.updateMember({
+                const { data: updatedMember } = await window.$memberstackDom.updateMember({
                     customFields: {
                         'payment-status': 'completed',
                         'registration-step': 4,
                     },
                 });
+                if (updatedMember) setMember(updatedMember);
 
                 // Guardar en Supabase
                 await saveProgress(4, completedData);
@@ -411,13 +414,14 @@ export default function NewRegistrationFlow() {
 
             // Actualizar Memberstack
             if (member && window.$memberstackDom) {
-                await window.$memberstackDom.updateMember({
+                const { data: updatedMember } = await window.$memberstackDom.updateMember({
                     customFields: {
                         'registration-step': 4,
                         'selected-plan-id': planId,
                         'payment-status': 'completed'
                     },
                 });
+                if (updatedMember) setMember(updatedMember);
             }
 
             setCurrentStep(4);
@@ -440,12 +444,16 @@ export default function NewRegistrationFlow() {
             await saveProgress(5, newData);
 
             // Actualizar Memberstack
-            await window.$memberstackDom.updateMember({
+            const msResult = await window.$memberstackDom.updateMember({
                 customFields: {
                     'registration-step': 5,
                     'first-name': profileData.firstName,
                 },
             });
+
+            if (msResult.data) {
+                setMember(msResult.data);
+            }
 
             setCurrentStep(5);
             showToast('Perfil completado', 'success');
@@ -464,12 +472,14 @@ export default function NewRegistrationFlow() {
             let primaryPhotoUrl = '';
             let vetCertificateUrl = '';
 
+            const memberId = member?.id || (member as any)?.memberId;
+
             // 1. Subir archivos si existen
             if (petData.primaryPhoto) {
                 console.log('📸 Subiendo foto principal...');
                 const formData = new FormData();
                 formData.append('file', petData.primaryPhoto);
-                formData.append('userId', member.id);
+                formData.append('userId', memberId);
 
                 const response = await fetch('/api/upload/pet-photo', {
                     method: 'POST',
@@ -483,7 +493,7 @@ export default function NewRegistrationFlow() {
                 console.log('📄 Subiendo certificado veterinario...');
                 const formData = new FormData();
                 formData.append('file', petData.vetCertificate);
-                formData.append('userId', member.id);
+                formData.append('userId', memberId);
 
                 const response = await fetch('/api/upload/pet-photo', { // Reusamos el endpoint de fotos por ahora
                     method: 'POST',
@@ -504,7 +514,7 @@ export default function NewRegistrationFlow() {
 
             // 3. Guardar en Supabase (Source of Truth)
             const { registerPetsInSupabase } = await import('@/app/actions/user.actions');
-            const result = await registerPetsInSupabase(member.id, [completePet]);
+            const result = await registerPetsInSupabase(memberId, [completePet]);
 
             if (!result.success) throw new Error(result.error);
 
