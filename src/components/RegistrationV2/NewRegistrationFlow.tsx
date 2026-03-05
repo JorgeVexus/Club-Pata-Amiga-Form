@@ -504,9 +504,12 @@ export default function NewRegistrationFlow() {
             }
 
             // 2. Preparar el objeto completo de la mascota
+            // Extraemos los archivos (Files) para no pasarlos al Server Action y evitar el límite de 1MB
+            const { primaryPhoto, vetCertificate, ...restPetData } = petData;
+
             const completePet = {
                 ...registrationData.petBasic,
-                ...petData,
+                ...restPetData,
                 primaryPhotoUrl,
                 vetCertificateUrl,
                 isComplete: true
