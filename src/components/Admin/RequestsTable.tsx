@@ -32,7 +32,7 @@ interface AppealedPet {
 
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
-    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals';
+    requestType?: 'all' | 'member' | 'member-pending-payment' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals';
     onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal', extraId?: string) => void;
     onViewRejectionReason?: (id: string) => void;
     onApprove: (id: string, type?: 'member' | 'ambassador') => void;
@@ -94,9 +94,11 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
 
             const promises = [];
 
-            if (requestType === 'all' || requestType === 'member') {
+            if (requestType === 'all' || requestType === 'member' || requestType === 'member-pending-payment') {
+                // Para pendientes de pago o gestión general, a veces necesitamos ver todos para filtrar
+                const targetStatus = (requestType === 'member-pending-payment' || requestType === 'all') ? 'all' : statusParam;
                 promises.push(
-                    fetch(`/api/admin/members?status=${statusParam}`)
+                    fetch(`/api/admin/members?status=${targetStatus}`)
                         .then(res => res.json())
                         .then(data => ({ type: 'member', data }))
                 );
@@ -166,6 +168,18 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                 const email = member.auth?.email?.toLowerCase();
                 const name = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
                 const isNameless = !name;
+                // FILTRADO POR PAGO (Solo aplica para Miembros)
+                const paymentStatus = member.customFields?.['payment-status'];
+                const isPaid = paymentStatus === 'completed';
+
+                if (requestType === 'member' || requestType === 'all') {
+                    // En gestión general o miembros normales, solo mostrar miembros que YA PAGARON
+                    // Si es embajador lo dejamos pasar (se procesa más adelante o ya se filtró)
+                    if (!isPaid) return;
+                } else if (requestType === 'member-pending-payment') {
+                    // En la sección nueva, solo mostrar los que NO han pagado
+                    if (isPaid) return;
+                }
 
                 // Deduplicate Shell Users
                 if (email && ambassadorEmails.has(email) && isNameless) {
