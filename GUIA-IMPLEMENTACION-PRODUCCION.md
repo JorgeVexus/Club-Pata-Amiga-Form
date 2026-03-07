@@ -938,6 +938,157 @@ INSERT INTO catalog_coat_colors (pet_type, name, is_common, display_order) VALUE
 
 ---
 
-**Documento versión:** 2.1  
-**Última actualización:** 02 Marzo 2026  
+## 🔴 BYPASSES TEMPORALES DE PAGO (Reactivar cuando se activen cobros)
+
+> **CRÍTICO:** Estos cambios fueron hechos el 7 de Marzo 2026 para permitir pruebas del dashboard sin que el sistema redirija a la página de pago. **Cuando se activen los cobros en producción, TODOS estos puntos deben revertirse.**
+
+### Resumen de Cambios Temporales
+
+| # | Archivo | Descripción | Estado Actual |
+|---|---------|-------------|---------------|
+| 1 | `webflow-components/login-redirect-handler-v3.html` | Redirección post-login para `pending_payment` | ⚠️ Bypassed → va al dashboard |
+| 2 | `webflow-components/payment-status-checker.html` | Mensaje de pago requerido en dashboard | ⚠️ Bypassed → no muestra mensaje |
+| 3 | `webflow-components/dashboard-protector.html` | Protección de acceso al dashboard sin pago | ⚠️ Bypassed → permite acceso |
+| 4 | `public/widgets/unified-membership-widget.js` | Widget unificado no carga mascotas si no ha pagado | ⚠️ Bypassed → carga mascotas normalmente |
+
+---
+
+### 1️⃣ `login-redirect-handler-v3.html` (Script Webflow)
+
+**Archivo:** `webflow-components/login-redirect-handler-v3.html`  
+**Qué hace:** Después del login, redirige a los usuarios según su rol.
+
+**Estado actual (TEMPORAL):** El caso `pending_payment` redirige al dashboard del miembro en lugar de la página de pago.
+
+**Para reactivar cobros:**
+
+```javascript
+// BUSCAR este bloque (dentro de case 'pending_payment'):
+// TEMPORAL: Redirigir al dashboard mientras se prueba
+logger.log('⚠️ TEMPORAL: Permitiendo acceso al dashboard sin pago (MODO PRUEBA)');
+window.location.href = CONFIG.dashboards.member;
+
+// REEMPLAZAR POR:
+logger.log('⚠️ Usuario sin plan activo, redirigiendo a registro...');
+window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+```
+
+> **NOTA:** La URL antigua era `https://www.pataamiga.mx/seleccion-plan`. La **nueva URL** apunta al flujo de registro-v2: `https://app.pataamiga.mx/usuarios/registro`
+
+---
+
+### 2️⃣ `payment-status-checker.html` (Script Webflow)
+
+**Archivo:** `webflow-components/payment-status-checker.html`  
+**Qué hace:** Verifica el estado de pago dentro del dashboard y muestra mensaje si no ha pagado.
+
+**Estado actual (TEMPORAL):**
+- `CONFIG.paymentUrl` ya apunta a la nueva URL ✅
+- La lógica de `pending_payment` está comentada (no muestra mensaje ni redirige)
+
+**Para reactivar cobros:**
+
+```javascript
+// BUSCAR este bloque dentro de checkPaymentStatus():
+case 'pending_payment':
+    // TEMPORAL: Permitir acceso al dashboard en pruebas
+    logger.log('⚠️ TEMPORAL: Permitiendo paso sin pago (MODO PRUEBA)');
+    // showPaymentRequiredMessage();  ← DESCOMENTARLA
+    break;
+
+// REEMPLAZAR POR:
+case 'pending_payment':
+    logger.log('⚠️ Usuario sin plan activo');
+    showPaymentRequiredMessage();
+    break;
+```
+
+---
+
+### 3️⃣ `dashboard-protector.html` (Script Webflow)
+
+**Archivo:** `webflow-components/dashboard-protector.html`  
+**Qué hace:** Protege el acceso al dashboard. Si el usuario no ha pagado, lo expulsa a la página de pago.
+
+**Estado actual (TEMPORAL):**
+- El bloque `pending_payment` está comentado (permite acceso libre al dashboard)
+- Ya tiene la nueva URL lista en un comentario
+
+**Para reactivar cobros:**
+
+```javascript
+// BUSCAR este bloque:
+if (data.role === 'pending_payment') {
+    // TEMPORAL: Permitir acceso al dashboard en pruebas
+    logger.log('⚠️ Usuario sin plan activo, pero permitiendo paso al dashboard (MODO PRUEBA)');
+    
+    // Cuando actives los cobros, descomenta la siguiente línea con la NUEVA URL:
+    // window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+    
+    // Comentado para permitir el paso
+    // return;
+}
+
+// REEMPLAZAR POR:
+if (data.role === 'pending_payment') {
+    logger.log('⚠️ Usuario sin plan activo, redirigiendo a registro...');
+    window.location.href = 'https://app.pataamiga.mx/usuarios/registro';
+    return;
+}
+```
+
+> **IMPORTANTE:** Actualizar también el script en **Webflow** (copiar/pegar el archivo completo actualizado).
+
+---
+
+### 4️⃣ `unified-membership-widget.js` (Widget del Dashboard)
+
+**Archivo:** `public/widgets/unified-membership-widget.js`  
+**Qué hace:** El widget principal del dashboard que muestra periodo de carencia, mascotas, etc. Cuando el usuario no ha pagado, **no carga mascotas** y muestra una vista de "pago requerido".
+
+**Estado actual (TEMPORAL):**
+- El bloque `pending_payment` en `loadData()` está comentado
+- El widget carga mascotas normalmente aunque el usuario no haya pagado
+
+**Para reactivar cobros:**
+
+```javascript
+// BUSCAR este bloque dentro de loadData():
+if (roleData.role === 'pending_payment') {
+    console.log('⚠️ Unified Widget: User has no active plan, pero permitiendo carga de mascotas (MODO PRUEBA)');
+    // this.membershipStatus = 'pending_payment';
+    // this.pets = [];
+    // return;
+}
+
+// REEMPLAZAR POR:
+if (roleData.role === 'pending_payment') {
+    console.log('⚠️ Unified Widget: User has no active plan!');
+    this.membershipStatus = 'pending_payment';
+    this.pets = [];
+    return; // No cargar mascotas, mostrar vista de pago
+}
+```
+
+---
+
+### Checklist de Reactivación de Cobros
+
+Cuando se reactiven los cobros, seguir este orden:
+
+- [ ] **Paso 1:** Reactivar `unified-membership-widget.js` (descomentar bloque `pending_payment` en `loadData()`)
+- [ ] **Paso 2:** Reactivar `dashboard-protector.html` (descomentar `return` y redirección)
+- [ ] **Paso 3:** Reactivar `payment-status-checker.html` (descomentar `showPaymentRequiredMessage()`)
+- [ ] **Paso 4:** Reactivar `login-redirect-handler-v3.html` (cambiar redirección a nueva URL de registro)
+- [ ] **Paso 5:** Copiar los scripts actualizados a **Webflow** y publicar el sitio
+- [ ] **Paso 6:** Hacer `git push` para que Vercel despliegue los cambios del widget
+- [ ] **Paso 7:** Probar flujo completo: login → redirección a pago → pago → dashboard
+
+> **URL NUEVA de pago/registro:** `https://app.pataamiga.mx/usuarios/registro`  
+> **URL VIEJA (ya NO usar):** `https://www.pataamiga.mx/seleccion-plan` ❌
+
+---
+
+**Documento versión:** 2.2  
+**Última actualización:** 07 Marzo 2026  
 **Próxima revisión:** Post-deploy (día 1, 7, 30)
