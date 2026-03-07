@@ -153,25 +153,39 @@ export async function POST(request: NextRequest) {
         }
 
         // 7. Registrar mascota en Supabase (Tabla pets)
-        // Solo usamos las columnas que existen físicamente en la tabla para evitar errores de PostgREST
-        const { error: insertError } = await supabaseAdmin.from('pets').insert({
+        // Columnas base que siempre existen
+        const basePetData: Record<string, any> = {
             owner_id: user!.id,
             name: petData.name,
-            pet_type: petData.petType === 'perro' ? 'dog' : 'cat',
-            gender: petData.gender || null,
             breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
             breed_size: petData.breedSize,
-            is_mixed_breed: petData.isMixed || false,
-            is_adopted: petData.isAdopted || false,
-            adoption_story: petData.adoptionStory || null,
-            ruac: petData.ruac || null,
-            primary_photo_url: petData.photo1Url,
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
             status: 'pending',
-            basic_info_completed: true,
             created_at: new Date().toISOString()
-        });
+        };
+
+        // Intentar con campos extendidos del registro-v2
+        const extendedPetData = {
+            ...basePetData,
+            ...(petData.petType ? { pet_type: petData.petType === 'perro' ? 'dog' : 'cat' } : {}),
+            ...(petData.gender ? { gender: petData.gender } : {}),
+            ...(petData.isMixed !== undefined ? { is_mixed_breed: petData.isMixed } : {}),
+        };
+
+        let insertError;
+
+        // Primer intento: con campos extendidos
+        const result1 = await supabaseAdmin.from('pets').insert(extendedPetData);
+
+        if (result1.error && result1.error.code === 'PGRST204') {
+            // Fallback: solo campos base (migración no ejecutada aún)
+            console.warn('⚠️ [PET_ADD] Columnas extendidas no existen, usando solo campos base');
+            const result2 = await supabaseAdmin.from('pets').insert(basePetData);
+            insertError = result2.error;
+        } else {
+            insertError = result1.error;
+        }
 
         if (insertError) {
             console.error('❌ [PET_ADD] Error insertando mascota en Supabase:', insertError);
