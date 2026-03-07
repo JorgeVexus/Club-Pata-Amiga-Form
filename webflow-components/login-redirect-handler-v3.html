@@ -80,9 +80,12 @@
                         redirectUrl = CONFIG.dashboards.ambassador;
                         break;
                     case 'pending_payment':
-                        // Usuario registrado pero sin pagar - redirigir a selección de plan
-                        redirectUrl = 'https://app.pataamiga.mx/seleccion-plan?reason=complete_payment';
-                        logger.log('Usuario sin plan activo, redirigiendo a pago');
+                        // TEMPORAL: Redirigiendo al dashboard para permitir pruebas.
+                        // Cuando quieras volver a activar el cobro, descomenta la siguiente línea que ya usa la NUEVA URL:
+                        // redirectUrl = 'https://app.pataamiga.mx/usuarios/registro';
+
+                        redirectUrl = CONFIG.dashboards.member;
+                        logger.log('Usuario sin plan activo, redirigiendo a dashboard (MODO PRUEBA)');
                         break;
                     case 'payment_processing':
                         // Pago en proceso - mostrar mensaje de espera
