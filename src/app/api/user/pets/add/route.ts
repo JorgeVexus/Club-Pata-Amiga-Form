@@ -157,11 +157,19 @@ export async function POST(request: NextRequest) {
         const { error: insertError } = await supabaseAdmin.from('pets').insert({
             owner_id: user!.id,
             name: petData.name,
+            pet_type: petData.petType === 'perro' ? 'dog' : 'cat',
+            gender: petData.gender || null,
             breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
             breed_size: petData.breedSize,
+            is_mixed_breed: petData.isMixed || false,
+            is_adopted: petData.isAdopted || false,
+            adoption_story: petData.adoptionStory || null,
+            ruac: petData.ruac || null,
+            primary_photo_url: petData.photo1Url,
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
             status: 'pending',
+            basic_info_completed: true,
             created_at: new Date().toISOString()
         });
 
