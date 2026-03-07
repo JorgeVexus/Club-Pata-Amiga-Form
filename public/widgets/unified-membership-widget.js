@@ -695,18 +695,22 @@
                     body: JSON.stringify({ memberstackId: this.member.id })
                 });
                 const roleData = await roleRes.json();
-                
+
                 if (roleData.success) {
                     console.log('📊 Unified Widget: Role check result:', roleData.role);
-                    
-                    // Si no tiene plan activo, marcar como pending_payment
+
+                    // TEMPORAL: Bypass de pending_payment para pruebas
+                    // Cuando actives cobros, descomenta el bloque original
                     if (roleData.role === 'pending_payment') {
-                        console.log('⚠️ Unified Widget: User has no active plan!');
-                        this.membershipStatus = 'pending_payment';
-                        this.pets = [];
-                        return; // No cargar mascotas, mostrar vista de pago
+                        console.log('⚠️ Unified Widget: User has no active plan, pero permitiendo carga de mascotas (MODO PRUEBA)');
+                        // this.membershipStatus = 'pending_payment';
+                        // this.pets = [];
+                        // return; // No cargar mascotas, mostrar vista de pago
+
+                        // Cuando reactives cobros, descomenta lo de arriba y comenta lo de abajo:
+                        // NUEVA URL de pago: https://app.pataamiga.mx/usuarios/registro
                     }
-                    
+
                     if (roleData.role === 'payment_processing') {
                         console.log('⏳ Unified Widget: Payment is processing');
                         this.membershipStatus = 'payment_processing';
@@ -714,7 +718,7 @@
                         return;
                     }
                 }
-                
+
                 // ✅ Si tiene plan, cargar mascotas normalmente
                 const url = `${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`;
                 console.log('📡 Unified Widget: Fetching pets from:', url);
