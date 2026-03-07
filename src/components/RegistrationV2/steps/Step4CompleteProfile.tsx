@@ -169,7 +169,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
         if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
-        if (!formData.address.trim()) newErrors.address = 'Requerido';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -340,16 +339,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         error={errors.colony}
                         required
                         isLoading={isLoadingCP}
-                    />
-
-                    <TextInput
-                        label="Calle y número"
-                        name="address"
-                        value={formData.address}
-                        onChange={(value) => setFormData({ ...formData, address: value })}
-                        placeholder="Ej: Av. Insurgentes Sur 1234"
-                        error={errors.address}
-                        required
                     />
                 </div>
 
