@@ -441,25 +441,24 @@
                     <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 20px 0;">Nuevo integrante 🐾</h2>
                     
                     <form id="pata-add-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                        <!-- Información básica -->
-                        <div style="grid-column: 1 / -1;"><label style="font-weight:600; font-size:13px; color:#666;">Información básica</label></div>
+                        <!-- Información básica (= Step 2 registro-v2) -->
+                        <div style="grid-column: 1 / -1;"><label style="font-weight:700; font-size:14px; color:#333;">📋 Información básica</label></div>
                         
-                        <input type="text" name="name" placeholder="Nombre *" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
-                        <input type="text" name="lastName" placeholder="Apellido (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <input type="text" name="name" placeholder="Nombre de tu mascota *" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
                         
-                        <select name="petType" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <select name="petType" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px;">
                             <option value="">Tipo de mascota *</option>
                             <option value="perro">🐕 Perro</option>
                             <option value="gato">🐈 Gato</option>
                         </select>
                         
-                        <select name="gender" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <select name="gender" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px;">
                             <option value="">Sexo *</option>
                             <option value="macho">♂ Macho</option>
                             <option value="hembra">♀ Hembra</option>
                         </select>
                         
-                        <select name="age" id="pata-age-select" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px;">
+                        <select name="age" id="pata-age-select" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
                             <option value="">Edad *</option>
                             <option value="4-6-meses" data-numeric="0">4-6 meses</option>
                             <option value="6-12-meses" data-numeric="0">6-12 meses</option>
@@ -480,56 +479,34 @@
                             <option value="15+-años" data-numeric="15">15+ años</option>
                         </select>
 
-                        <!-- Raza -->
+                        <!-- Raza (= Step 5 registro-v2) -->
+                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:700; font-size:14px; color:#333;">🏷️ Información complementaria</label></div>
+
                         <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px;">
                             <input type="checkbox" id="pata-is-mixed" name="isMixed" style="width:18px; height:18px;">
                             <label for="pata-is-mixed" style="font-size:13px; color:#555;">Es mestizo/criollo</label>
                         </div>
                         
                         <div class="pata-breed-wrapper">
-                            <input type="text" name="breed" id="pata-breed-input" placeholder="Escribe para buscar raza *" required autocomplete="off" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
+                            <input type="text" name="breed" id="pata-breed-input" placeholder="Escribe para buscar raza *" required autocomplete="off" style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
                             <div id="pata-breed-suggestions" class="pata-breed-suggestions"></div>
                             <div id="pata-breed-warning" class="pata-breed-warning" style="display:none;"></div>
                         </div>
                         
-                        <select name="breedSize" id="pata-size-select" required style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
+                        <select name="breedSize" id="pata-size-select" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
                             <option value="">Tamaño * (selecciona tipo primero)</option>
                         </select>
                         
-                        <!-- Certificado veterinario (para mascotas senior) -->
+                        <!-- Certificado veterinario (para mascotas 10+ años - misma lógica registro-v2) -->
                         <div id="pata-vet-cert-section" style="grid-column: 1 / -1; display:none; background:#FEF3C7; padding:15px; border-radius:10px; border:1px solid #FCD34D;">
-                            <p style="margin:0 0 10px 0; color:#92400E; font-weight:500;">⚠️ Tu peludo ya es senior para su talla, pero no te preocupes, aún lo puedes incluir en la manada.</p>
-                            <p style="margin:0 0 10px 0; font-size:12px; color:#A16207;">Solo necesitamos que subas un documento de tu veterinario certificando que está saludable.</p>
-                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📋 Certificado Veterinario *</label>
+                            <p style="margin:0 0 10px 0; color:#92400E; font-weight:600;">⚕️ Certificado veterinario requerido</p>
+                            <p style="margin:0 0 10px 0; font-size:12px; color:#A16207;">Como tu mascota tiene 10 años o más, necesitarás subir un certificado veterinario dentro de los próximos 15 días.</p>
+                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📋 Certificado Veterinario (opcional ahora)</label>
                             <input type="file" name="vetCertificate" id="pata-vet-cert" accept=".pdf,.jpg,.jpeg,.png" style="padding:10px; border:2px dashed #FCD34D; border-radius:8px; width:100%; box-sizing:border-box;">
                         </div>
 
-                        <!-- Adopción -->
-                        <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px; margin-top:5px;">
-                            <input type="checkbox" id="pata-is-adopted" name="isAdopted" style="width:18px; height:18px;">
-                            <label for="pata-is-adopted" style="font-size:13px; color:#555;">Es adoptado/rescatado 🏠</label>
-                        </div>
-                        
-                        <div id="pata-adoption-story-wrapper" style="grid-column: 1 / -1; display:none; margin-top:5px;">
-                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📜 Cuéntanos su historia de adopción</label>
-                            <textarea name="adoptionStory" placeholder="¿Cómo llegó a tu vida?..." style="width:100%; padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; height:80px; box-sizing:border-box; font-family:inherit;"></textarea>
-                            <p style="margin:5px 0 0 0; font-size:11px; color:#888;">Al llenar la historia nos autorizas a compartirla en nuestras redes 🐾</p>
-                        </div>
-
-                        <!-- RUAC -->
-                        <div style="grid-column: 1 / -1;">
-                            <input type="text" name="ruac" placeholder="Código RUAC (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
-                            <p style="margin:5px 0 0 0; font-size:11px; color:#888;">Si tu mascota tiene RUAC, esto reduce el período de carencia.</p>
-                        </div>
-                        
-                        <!-- Código Embajador -->
-                        <div style="grid-column: 1 / -1;">
-                            <input type="text" name="ambassadorCode" id="pata-ambassador-code" placeholder="Código de Embajador (opcional)" style="padding:12px; border-radius:8px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
-                            <p id="pata-ambassador-message" style="margin:5px 0 0 0; font-size:11px; color:#888;">Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí</p>
-                        </div>
-
                         <!-- Fotos -->
-                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:600; font-size:13px; color:#666;">📸 Fotos de tu mascota</label></div>
+                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:700; font-size:14px; color:#333;">📸 Fotos de tu mascota</label></div>
                         
                         <div style="grid-column: 1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                             <div id="pata-add-photo-area-1" style="border:2px dashed #ddd; border-radius:10px; padding:20px; text-align:center; cursor:pointer; background:#fafafa; transition:all 0.2s;">
@@ -547,7 +524,7 @@
                                 </div>
                             </div>
                         </div>
-                        <p style="grid-column: 1 / -1; font-size:11px; color:#888; margin:0;">Sube fotos claras donde se vea bien a tu mascota.</p>
+                        <p style="grid-column: 1 / -1; font-size:11px; color:#888; margin:0;">📅 Tienes 15 días para subir las fotos si no las tienes ahora.</p>
 
                         <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:55px; font-size:16px; margin-top:10px;" id="pata-save-btn">🐾 Dar de alta</button>
                     </form>
@@ -572,27 +549,14 @@
                 }
             };
 
-            // Manejar checkbox de adopción (historia)
-            const adoptedCheckbox = document.getElementById('pata-is-adopted');
-            const storyWrapper = document.getElementById('pata-adoption-story-wrapper');
-            adoptedCheckbox.onchange = () => {
-                storyWrapper.style.display = adoptedCheckbox.checked ? 'block' : 'none';
-                const textarea = storyWrapper.querySelector('textarea');
-                if (adoptedCheckbox.checked) textarea.setAttribute('required', 'true');
-                else textarea.removeAttribute('required');
-            };
-
-            // 🆕 Configurar autocomplete de razas
+            // Configurar autocomplete de razas
             this.setupBreedAutocomplete(modal);
 
-            // 🆕 Configurar opciones de tamaño dinámicas según tipo de mascota
+            // Configurar opciones de tamaño dinámicas según tipo de mascota
             this.setupDynamicSizeOptions(modal);
 
-            // 🆕 Configurar validación de edad senior
+            // Configurar validación de edad senior (10+ años = certificado)
             this.setupSeniorAgeCheck(modal);
-
-            // 🆕 Configurar validación de código embajador
-            this.setupAmbassadorCodeValidation(modal);
 
             const form = document.getElementById('pata-add-form');
             form.onsubmit = async (e) => {
@@ -622,7 +586,7 @@
 
                     btn.innerText = 'Registrando mascota...';
 
-                    // Enviar datos al API
+                    // Enviar datos al API (campos alineados con registro-v2)
                     const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -630,16 +594,12 @@
                             memberstackId: this.member.id,
                             petData: {
                                 name: form.name.value,
-                                lastName: form.lastName.value || '',
                                 petType: form.petType.value,
                                 gender: form.gender.value,
                                 age: form.age.value,
                                 isMixed: form.isMixed.checked,
                                 breed: form.breed.value || 'Mestizo',
                                 breedSize: form.breedSize.value,
-                                isAdopted: form.isAdopted.checked,
-                                adoptionStory: form.adoptionStory ? form.adoptionStory.value : '',
-                                ruac: form.ruac.value || '',
                                 photo1Url: photo1Url,
                                 photo2Url: photo2Url
                             }
@@ -896,43 +856,31 @@
             });
         }
 
-        // 🆕 Configurar validación de edad senior para certificado veterinario
+        // Configurar validación de edad senior (10+ años = certificado, misma lógica registro-v2)
         setupSeniorAgeCheck(modal) {
-            const petTypeSelect = modal.querySelector('[name="petType"]');
-            const sizeSelect = document.getElementById('pata-size-select');
             const ageSelect = document.getElementById('pata-age-select');
             const vetCertSection = document.getElementById('pata-vet-cert-section');
-            const vetCertInput = document.getElementById('pata-vet-cert');
 
-            if (!petTypeSelect || !sizeSelect || !ageSelect || !vetCertSection) return;
+            if (!ageSelect || !vetCertSection) return;
 
             const checkSeniorAge = () => {
-                const petType = petTypeSelect.value;
-                const sizeValue = sizeSelect.value;
                 const ageOption = ageSelect.options[ageSelect.selectedIndex];
-
-                if (!petType || !sizeValue || !ageOption || !ageOption.dataset.numeric) {
+                if (!ageOption || !ageOption.dataset.numeric) {
                     vetCertSection.style.display = 'none';
-                    if (vetCertInput) vetCertInput.removeAttribute('required');
                     return;
                 }
 
                 const numericAge = parseInt(ageOption.dataset.numeric) || 0;
-                const sizeOption = sizeSelect.options[sizeSelect.selectedIndex];
-                const seniorAge = parseInt(sizeOption?.dataset?.senior) || 10;
 
-                if (numericAge >= seniorAge) {
+                // Misma lógica que registro-v2: 10+ años = senior, sin importar talla
+                if (numericAge >= 10) {
                     vetCertSection.style.display = 'block';
-                    if (vetCertInput) vetCertInput.setAttribute('required', 'true');
                 } else {
                     vetCertSection.style.display = 'none';
-                    if (vetCertInput) vetCertInput.removeAttribute('required');
                 }
             };
 
-            // Escuchar cambios en tipo, tamaño y edad
-            petTypeSelect.addEventListener('change', checkSeniorAge);
-            sizeSelect.addEventListener('change', checkSeniorAge);
+            // Solo escuchar cambios en edad
             ageSelect.addEventListener('change', checkSeniorAge);
         }
 
