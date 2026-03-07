@@ -33,6 +33,9 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
     const [isCheckingEmail, setIsCheckingEmail] = useState(false);
     const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
     // Cargar datos al montar
     useEffect(() => {
         if (member) {
@@ -258,27 +261,67 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                             )}
                         </div>
 
-                        <TextInput
-                            label="Contraseña"
-                            name="password"
-                            type="password"
-                            value={formData.password}
-                            onChange={(value) => setFormData({ ...formData, password: value })}
-                            placeholder="Mínimo 8 caracteres"
-                            error={errors.password}
-                            required
-                        />
+                        <div className={styles.passwordContainer}>
+                            <TextInput
+                                label="Contraseña"
+                                name="password"
+                                type={showPassword ? "text" : "password"}
+                                value={formData.password}
+                                onChange={(value) => setFormData({ ...formData, password: value })}
+                                placeholder="Mínimo 8 caracteres"
+                                error={errors.password}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className={styles.passwordToggle}
+                                onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showPassword ? (
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                ) : (
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
 
-                        <TextInput
-                            label="Confirma tu contraseña"
-                            name="confirmPassword"
-                            type="password"
-                            value={formData.confirmPassword}
-                            onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
-                            placeholder="Repite tu contraseña"
-                            error={errors.confirmPassword}
-                            required
-                        />
+                        <div className={styles.passwordContainer}>
+                            <TextInput
+                                label="Confirma tu contraseña"
+                                name="confirmPassword"
+                                type={showConfirmPassword ? "text" : "password"}
+                                value={formData.confirmPassword}
+                                onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
+                                placeholder="Repite tu contraseña"
+                                error={errors.confirmPassword}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className={styles.passwordToggle}
+                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                            >
+                                {showConfirmPassword ? (
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                                    </svg>
+                                ) : (
+                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
                     </>
                 )}
 

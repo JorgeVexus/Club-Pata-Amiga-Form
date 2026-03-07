@@ -1117,6 +1117,33 @@
     z-index: 5;
 }
 
+.passwordContainer {
+    position: relative;
+    width: 100%;
+}
+
+.passwordToggle {
+    position: absolute;
+    right: 15px;
+    top: 42px;
+    /* Alineado verticalmente con el input considerando el label */
+    background: transparent;
+    border: none;
+    color: var(--color-text-light, #666);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.passwordToggle:hover {
+    color: var(--color-primary, #FE8F15);
+}
+
 .postalCodeRow {
     position: relative;
     display: flex;
