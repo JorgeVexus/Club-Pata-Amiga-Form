@@ -282,11 +282,26 @@ export default function AdminDashboard() {
             const response = await fetch('/api/admin/members?status=pending');
             const data = await response.json();
             if (data.success && data.members) {
-                // Miembros 'normales': Solo los que ya completaron el pago
-                setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => m.customFields?.['payment-status'] === 'completed').length }));
+                // Función helper para determinar si un miembro ha pagado
+                const checkIsPaid = (m: any) => {
+                    const customStatus = m.customFields?.['payment-status'] === 'completed';
+                    const hasActivePlan = m.planConnections?.some((p: any) =>
+                        p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
+                    );
+                    return customStatus || hasActivePlan;
+                };
 
-                // Pendientes de pago: Los que no tienen el pago completado
-                setPendingCounts(prev => ({ ...prev, 'member-pending-payment': data.members.filter((m: any) => m.customFields?.['payment-status'] !== 'completed').length }));
+                // Miembros 'normales': Solo los que ya completaron el pago o tienen plan activo
+                setPendingCounts(prev => ({
+                    ...prev,
+                    member: data.members.filter((m: any) => checkIsPaid(m)).length
+                }));
+
+                // Pendientes de pago: Los que no tienen el pago completado ni plan activo
+                setPendingCounts(prev => ({
+                    ...prev,
+                    'member-pending-payment': data.members.filter((m: any) => !checkIsPaid(m)).length
+                }));
             }
 
             // Load appealed counts only if superadmin

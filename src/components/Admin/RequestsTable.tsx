@@ -170,7 +170,10 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                 const isNameless = !name;
                 // FILTRADO POR PAGO (Solo aplica para Miembros)
                 const paymentStatus = member.customFields?.['payment-status'];
-                const isPaid = paymentStatus === 'completed';
+                const hasActivePlan = member.planConnections?.some((p: any) =>
+                    p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
+                );
+                const isPaid = paymentStatus === 'completed' || hasActivePlan;
 
                 if (requestType === 'member' || requestType === 'all') {
                     // En gestión general o miembros normales, solo mostrar miembros que YA PAGARON
