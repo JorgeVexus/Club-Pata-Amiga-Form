@@ -188,12 +188,15 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
         }
     };
 
+    const [isSocialLoading, setIsSocialLoading] = useState(false);
+
     const handleGoogleLogin = async () => {
-        setIsSubmitting(true);
+        setIsSocialLoading(true);
         try {
             console.log('🔐 Iniciando registro con Google...');
             if (!window.$memberstackDom) {
                 showToast('Error: Memberstack no cargado', 'error');
+                setIsSocialLoading(false);
                 return;
             }
 
@@ -204,21 +207,21 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                 }
             });
 
-            // Nota: Al regresar de Google, la página se recargará y NewRegistrationFlow 
-            // detectará la sesión en el useEffect de carga inicial.
+            // No reseteamos loading aquí porque el navegador va a redirigir
         } catch (error: any) {
             console.error('❌ Error en login con Google:', error);
             showToast('Error al iniciar sesión con Google', 'error');
-            setIsSubmitting(false);
+            setIsSocialLoading(false);
         }
     };
 
     const handleFacebookLogin = async () => {
-        setIsSubmitting(true);
+        setIsSocialLoading(true);
         try {
             console.log('🔐 Iniciando registro con Facebook...');
             if (!window.$memberstackDom) {
                 showToast('Error: Memberstack no cargado', 'error');
+                setIsSocialLoading(false);
                 return;
             }
 
@@ -228,7 +231,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
         } catch (error: any) {
             console.error('❌ Error en login con Facebook:', error);
             showToast('Error al iniciar sesión con Facebook', 'error');
-            setIsSubmitting(false);
+            setIsSocialLoading(false);
         }
     };
 
@@ -285,32 +288,15 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                             type="button"
                             className={styles.googleButton}
                             onClick={handleGoogleLogin}
-                            disabled={isSubmitting}
+                            disabled={isSubmitting || isSocialLoading}
                         >
                             <img
                                 src="https://www.svgrepo.com/show/475656/google-color.svg"
                                 alt="Google"
                                 className={styles.socialIcon}
                             />
-                            Google
+                            {isSocialLoading ? 'Conectando...' : 'Google'}
                         </button>
-
-                        {/* Facebook oculto temporalmente hasta completar configuración de FB Developers */}
-                        {/* 
-                        <button
-                            type="button"
-                            className={styles.facebookButton}
-                            onClick={handleFacebookLogin}
-                            disabled={isSubmitting}
-                        >
-                            <img
-                                src="https://www.svgrepo.com/show/448224/facebook.svg"
-                                alt="Facebook"
-                                className={styles.socialIcon}
-                            />
-                            Facebook
-                        </button>
-                        */}
                     </div>
 
                     <div className={styles.divider}>
@@ -336,7 +322,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                                 placeholder="tu@email.com"
                                 error={errors.email}
                                 required
-                                disabled={isSubmitting || isCheckingEmail}
+                                disabled={isSubmitting || isCheckingEmail || isSocialLoading}
                             />
                             {isCheckingEmail && (
                                 <span className={styles.inputIndicator}>Verificando...</span>
@@ -356,6 +342,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                                 placeholder="Mínimo 8 caracteres"
                                 error={errors.password}
                                 required
+                                disabled={isSubmitting || isSocialLoading}
                             />
                             <button
                                 type="button"
@@ -387,6 +374,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                                 placeholder="Repite tu contraseña"
                                 error={errors.confirmPassword}
                                 required
+                                disabled={isSubmitting || isSocialLoading}
                             />
                             <button
                                 type="button"
@@ -433,7 +421,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                     <button
                         type="submit"
                         className={styles.primaryButton}
-                        disabled={isSubmitting}
+                        disabled={isSubmitting || isSocialLoading}
                     >
                         {isSubmitting ? 'Creando cuenta...' : 'Continuar →'}
                     </button>
