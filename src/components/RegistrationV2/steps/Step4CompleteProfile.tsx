@@ -37,8 +37,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         postalCode: '',
         state: '',
         city: '',
-        colony: '',
-        address: ''
+        colony: ''
     });
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
@@ -90,42 +89,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
     };
 
-    const fetchFromGoogle = async (cp: string) => {
-        if (!window.google || !window.google.maps) return null;
-
-        const geocoder = new window.google.maps.Geocoder();
-        try {
-            const response = await geocoder.geocode({
-                address: cp,
-                componentRestrictions: { country: 'MX', postalCode: cp }
-            });
-
-            if (response.results && response.results.length > 0) {
-                const result = response.results[0];
-                let state = '';
-                let city = '';
-                let colony = '';
-
-                result.address_components.forEach((component: any) => {
-                    const types = component.types;
-                    if (types.includes('administrative_area_level_1')) {
-                        state = component.long_name;
-                    }
-                    if (types.includes('locality') || types.includes('administrative_area_level_2')) {
-                        city = component.long_name;
-                    }
-                    if (types.includes('sublocality') || types.includes('neighborhood')) {
-                        colony = component.long_name;
-                    }
-                });
-
-                return { state, city, colony };
-            }
-        } catch (error) {
-            console.error('Google Geocoding error:', error);
-        }
-        return null;
-    };
 
     const fetchColoniesFromSepomex = async (cp: string) => {
         if (!cp || cp.length !== 5) return null;
@@ -168,7 +131,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 state: profile.state || '',
                 city: profile.city || '',
                 colony: profile.colony || '',
-                address: profile.address || '',
             }));
             setIsLoaded(true);
 
@@ -186,15 +148,13 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
         setIsLoadingCP(true);
         try {
-            const googleData = await fetchFromGoogle(cp);
             const sepomexData = await fetchColoniesFromSepomex(cp);
-
-            if (googleData || sepomexData) {
+            if (sepomexData) {
                 setFormData(prev => ({
                     ...prev,
-                    state: googleData?.state || sepomexData?.state || prev.state,
-                    city: googleData?.city || sepomexData?.municipality || prev.city,
-                    postalCode: cp, // Asegurar que el estado este actualizado si viene de onChange
+                    state: sepomexData.state || prev.state,
+                    city: sepomexData.municipality || prev.city,
+                    postalCode: cp,
                 }));
                 showToast('Dirección encontrada', 'success');
             } else {
@@ -242,7 +202,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
         if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
-        if (!formData.address.trim()) newErrors.address = 'Requerido';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -436,15 +395,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         isLoading={isLoadingCP}
                     />
 
-                    <TextInput
-                        label="Calle y número (Int y Ext)"
-                        name="address"
-                        value={formData.address}
-                        onChange={(value) => setFormData({ ...formData, address: value })}
-                        error={errors.address}
-                        placeholder="Ej: Av. Juárez 123 Int 4"
-                        required
-                    />
                 </div>
 
                 <button
