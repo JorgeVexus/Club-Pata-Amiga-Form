@@ -34,7 +34,7 @@ export default function RootLayout({
             <head>
                 {/* Google Tag Manager - Lo más arriba posible */}
                 <GoogleTagManager gtmId="GTM-N3WV4GPT" />
-                
+
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"
@@ -46,10 +46,10 @@ export default function RootLayout({
             <body>
                 {/* Google Tag Manager (noscript) - Después de la etiqueta body */}
                 <GoogleTagManagerNoScript gtmId="GTM-N3WV4GPT" />
-                
+
                 {/* Google Places API - Cargar después de que la página sea interactiva */}
                 <Script
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAei8wBZ0fQRWGY9nInhuCep5K8cHkDtqs&libraries=places&loading=async"
+                    src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`}
                     strategy="afterInteractive"
                 />
                 <MetaPixel />

@@ -48,36 +48,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [isLoaded, setIsLoaded] = useState(false);
     const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
-    // Cargar datos guardados al montar
-    useEffect(() => {
-        if (data?.profile && !isLoaded) {
-            const profile = data.profile;
-            setFormData(prev => ({
-                ...prev,
-                firstName: profile.firstName || '',
-                paternalLastName: profile.paternalLastName || '',
-                maternalLastName: profile.maternalLastName || '',
-                birthDate: profile.birthDate || '',
-                nationality: profile.nationality || '',
-                nationalityCode: profile.nationalityCode || '',
-                phone: profile.phone || '',
-                email: profile.email || prev.email,
-                curp: profile.curp || '',
-                postalCode: profile.postalCode || '',
-                state: profile.state || '',
-                city: profile.city || '',
-                colony: profile.colony || '',
-                address: profile.address || '',
-            }));
-            setIsLoaded(true);
-
-            // Si ya hay CURP cargada de 18 caracteres, verificarla
-            if (profile.curp && profile.curp.length === 18) {
-                verifyCurp(profile.curp);
-            }
-        }
-    }, [data, isLoaded]);
-
     const verifyCurp = async (curp: string) => {
         if (curp.length !== 18) {
             setCurpAvailable(null);
@@ -120,39 +90,168 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
     };
 
+    const fetchFromGoogle = async (cp: string) => {
+        if (!window.google || !window.google.maps) return null;
+
+        const geocoder = new window.google.maps.Geocoder();
+        try {
+            const response = await geocoder.geocode({
+                address: cp,
+                componentRestrictions: { country: 'MX', postalCode: cp }
+            });
+
+            if (response.results && response.results.length > 0) {
+                const result = response.results[0];
+                let state = '';
+                let city = '';
+                let colony = '';
+
+                result.address_components.forEach((component: any) => {
+                    const types = component.types;
+                    if (types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('sublocality') || types.includes('neighborhood')) {
+                        colony = component.long_name;
+                    }
+                });
+
+                return { state, city, colony };
+            }
+        } catch (error) {
+            console.error('Google Geocoding error:', error);
+        }
+        return null;
+    };
+
+    const fetchColoniesFromSepomex = async (cp: string) => {
+        if (!cp || cp.length !== 5) return null;
+        setIsLoadingCP(true);
+        try {
+            const response = await fetch(`/api/sepomex?cp=${cp}`);
+            const result = await response.json();
+            if (result.success) {
+                setColonySuggestions(result.data.colonies || []);
+                if (result.data.colonies?.length === 1) {
+                    setFormData(prev => ({ ...prev, colony: result.data.colonies[0] }));
+                }
+                return result.data;
+            }
+        } catch (error) {
+            console.error('Error SEPOMEX:', error);
+        } finally {
+            setIsLoadingCP(false);
+        }
+        return null;
+    };
+
+    // Inicializar Google Autocomplete para el campo de dirección
+    useEffect(() => {
+        const initGoogle = () => {
+            if (window.google && window.google.maps && window.google.maps.places) {
+                const input = document.getElementById('address-autocomplete') as HTMLInputElement;
+                if (!input) return;
+
+                const autocomplete = new window.google.maps.places.Autocomplete(input, {
+                    componentRestrictions: { country: 'MX' },
+                    fields: ['address_components', 'formatted_address'],
+                    types: ['address']
+                });
+
+                autocomplete.addListener('place_changed', () => {
+                    const place = autocomplete.getPlace();
+                    if (!place.address_components) return;
+
+                    let cp = '';
+                    let state = '';
+                    let city = '';
+                    let colony = '';
+                    let street = '';
+                    let number = '';
+
+                    place.address_components.forEach((component: any) => {
+                        const types = component.types;
+                        if (types.includes('postal_code')) cp = component.long_name;
+                        if (types.includes('administrative_area_level_1')) state = component.long_name;
+                        if (types.includes('locality')) city = component.long_name;
+                        if (types.includes('sublocality') || types.includes('neighborhood')) colony = component.long_name;
+                        if (types.includes('route')) street = component.long_name;
+                        if (types.includes('street_number')) number = component.long_name;
+                    });
+
+                    const fullAddress = `${street} ${number}`.trim();
+
+                    setFormData(prev => ({
+                        ...prev,
+                        postalCode: cp || prev.postalCode,
+                        state: state || prev.state,
+                        city: city || prev.city,
+                        colony: colony || prev.colony,
+                        address: fullAddress || place.formatted_address || prev.address
+                    }));
+
+                    if (cp) {
+                        fetchColoniesFromSepomex(cp);
+                    }
+                });
+            }
+        };
+
+        const timer = setTimeout(initGoogle, 1000);
+        return () => clearTimeout(timer);
+    }, [isLoaded]);
+
+    // Cargar datos guardados al montar
+    useEffect(() => {
+        if (data?.profile && !isLoaded) {
+            const profile = data.profile;
+            setFormData(prev => ({
+                ...prev,
+                firstName: profile.firstName || '',
+                paternalLastName: profile.paternalLastName || '',
+                maternalLastName: profile.maternalLastName || '',
+                birthDate: profile.birthDate || '',
+                nationality: profile.nationality || '',
+                nationalityCode: profile.nationalityCode || '',
+                phone: profile.phone || '',
+                email: profile.email || prev.email,
+                curp: profile.curp || '',
+                postalCode: profile.postalCode || '',
+                state: profile.state || '',
+                city: profile.city || '',
+                colony: profile.colony || '',
+                address: profile.address || '',
+            }));
+            setIsLoaded(true);
+
+            // Si ya hay CURP cargada de 18 caracteres, verificarla
+            if (profile.curp && profile.curp.length === 18) {
+                verifyCurp(profile.curp);
+            }
+        }
+    }, [data, isLoaded]);
+
+
     const handlePostalCodeBlur = async () => {
         if (formData.postalCode.length !== 5) return;
 
         setIsLoadingCP(true);
-        try {
-            const response = await fetch(`/api/sepomex?cp=${formData.postalCode}`);
-            const result = await response.json();
+        const googleData = await fetchFromGoogle(formData.postalCode);
+        const sepomexData = await fetchColoniesFromSepomex(formData.postalCode);
+        setIsLoadingCP(false);
 
-            if (result.success) {
-                setFormData(prev => ({
-                    ...prev,
-                    state: result.data.state,
-                    city: result.data.municipality
-                }));
-                // Guardar sugerencias de colonias
-                if (result.data.colonies) {
-                    setColonySuggestions(result.data.colonies);
-                }
-                if (showToast) {
-                    showToast('Dirección encontrada', 'success');
-                }
-            } else {
-                if (showToast) {
-                    showToast('No se encontró información para este CP', 'warning');
-                }
-            }
-        } catch (error) {
-            console.error('Error consultando CP:', error);
-            if (showToast) {
-                showToast('Error al consultar dirección', 'error');
-            }
-        } finally {
-            setIsLoadingCP(false);
+        if (googleData || sepomexData) {
+            setFormData(prev => ({
+                ...prev,
+                state: googleData?.state || sepomexData?.state || prev.state,
+                city: googleData?.city || sepomexData?.municipality || prev.city,
+            }));
+            showToast('Dirección encontrada', 'success');
+        } else {
+            showToast('No se encontró información para este CP', 'warning');
         }
     };
 
@@ -190,6 +289,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
         if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
+        if (!formData.address.trim()) newErrors.address = 'Requerido';
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -375,6 +475,30 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         error={errors.colony}
                         required
                         isLoading={isLoadingCP}
+                    />
+
+                    <div className={styles.fieldWrapper}>
+                        <label className={styles.label}>
+                            Calle y número <span className={styles.required}>*</span>
+                        </label>
+                        <input
+                            id="address-autocomplete"
+                            type="text"
+                            placeholder="Busca tu calle y número..."
+                            className={styles.input}
+                            autoComplete="off"
+                        />
+                        <p className={styles.helpText}>Comienza a escribir y selecciona tu dirección</p>
+                    </div>
+
+                    <TextInput
+                        label="Dirección (Confirmada)"
+                        name="address"
+                        value={formData.address}
+                        onChange={(value) => setFormData({ ...formData, address: value })}
+                        error={errors.address}
+                        placeholder="Ej: Av. Juárez 123 Int 4"
+                        required
                     />
                 </div>
 
