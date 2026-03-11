@@ -207,7 +207,8 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                 }
             });
 
-            // No reseteamos loading aquí porque el navegador va a redirigir
+            // Si llegamos aquí y no redirigió, forzamos recarga paralimpiarUI y detectar sesión
+            window.location.reload();
         } catch (error: any) {
             console.error('❌ Error en login con Google:', error);
             showToast('Error al iniciar sesión con Google', 'error');
@@ -228,6 +229,8 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
             await window.$memberstackDom.signupWithProvider({
                 provider: 'facebook'
             });
+
+            window.location.reload();
         } catch (error: any) {
             console.error('❌ Error en login con Facebook:', error);
             showToast('Error al iniciar sesión con Facebook', 'error');

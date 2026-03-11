@@ -96,11 +96,18 @@ export default function NewRegistrationFlow() {
                         const result = await getUserDataByMemberstackId(msId);
 
                         let userData: any = null;
+                        let loadedData: RegistrationData = {
+                            account: {
+                                email: currentMember.auth?.email,
+                            }
+                        };
+
                         if (result.success && result.userData) {
                             userData = result.userData;
+                            console.log('✅ Datos de usuario encontrados en DB');
 
                             // Reconstruir datos del registro desde Supabase
-                            const loadedData: RegistrationData = {
+                            loadedData = {
                                 account: {
                                     email: currentMember.auth?.email || userData.email,
                                 },
@@ -132,21 +139,27 @@ export default function NewRegistrationFlow() {
                                     email: currentMember.auth?.email,
                                 } : undefined),
                             };
+                        } else if (result.success && !result.userData) {
+                            // Usuario nuevo logueado con social (Google/FB)
+                            console.log('🆕 Usuario social nuevo, sincronizando con Supabase...');
 
-                            // Si es un usuario nuevo (sin datos en Supabase) pero logueado con social
-                            // Asegurarnos de que tenga una entrada base en Supabase
-                            if (!userData && currentMember) {
-                                console.log('🆕 Usuario social nuevo, sincronizando con Supabase...');
-                                await registerUserInSupabase({
+                            // Pre-llenar datos de perfil desde Memberstack (social auth)
+                            if (currentMember.customFields?.['first-name']) {
+                                loadedData.profile = {
+                                    firstName: currentMember.customFields['first-name'],
+                                    paternalLastName: currentMember.customFields['last-name'] || '',
                                     email: currentMember.auth?.email,
-                                    registration_step: 1,
-                                    membership_status: 'pending'
-                                }, msId);
+                                };
                             }
 
-                            setRegistrationData(loadedData);
-                            console.log('✅ Datos cargados:', loadedData);
+                            await registerUserInSupabase({
+                                email: currentMember.auth?.email,
+                                registration_step: 1,
+                                membership_status: 'pending'
+                            }, msId);
                         }
+
+                        setRegistrationData(loadedData);
 
                         // Verificar estado de registro (Comparar Memberstack vs Supabase)
                         const msStep = Number(currentMember.customFields?.['registration-step'] || 1);
