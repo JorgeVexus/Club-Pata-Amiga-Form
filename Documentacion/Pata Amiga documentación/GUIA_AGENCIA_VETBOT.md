@@ -1,88 +1,65 @@
 # 📖 Guía de Integración Vet-Bot (Chatbot Builder AI)
 **Para: Equipo de Desarrollo del Bot / Agencia**
 
-Esta guía explica cómo el Vet-Bot recibe automáticamente la información de los usuarios desde la web de Pata Amiga. El sistema ha sido diseñado para ser automático; el bot ya recibe los datos sin necesidad de pedirlos.
+Esta guía explica cómo el Vet-Bot recibe automáticamente la información de los usuarios. El sistema es totalmente automático: el bot recibe los datos en cuanto el usuario abre el chat.
 
 ---
 
 ### 1. ¿Cómo recibe el Bot la información?
-Nuestra web envía los datos al bot de **dos formas simultáneas** para asegurar que no fallen:
+Nuestra web envía los datos al bot inyectándolos directamente en sus **Custom User Fields**.
 
-1.  **Por IDs Numéricos (Recomendado):** Los datos se inyectan directamente en los campos (CUFs) de Chatbot Builder que ustedes crearon.
-2.  **Por Parámetro "REF":** El token de sesión se envía en el enlace del bot (ej. `...&ref=TOKEN_AQUI`).
-
----
-
-### 2. Los "Ingredientes" (Campos Personalizados)
-Asegúrense de que en su panel de **Custom User Fields**, los IDs coincidan con estos (si no coinciden, avísennos):
-
-| Dato | ID en CBB | Descripción |
-| :--- | :--- | :--- |
-| **Token de Sesión** | `673882` | Es la "llave" para entrar a nuestra base de datos. |
-| **Email del Cliente** | `515388` | El correo de la cuenta del usuario. |
-| **Nombre del Cliente** | `620522` | El nombre que usaremos para saludar. |
+*   **Identificación Automática:** El script escribe el token en el campo `session_token`.
+*   **Variable de Uso:** Para llamar a la API, usen siempre la variable del campo donde se guarda el token (ej: `{{session_token}}`).
 
 ---
 
-### 3. Configuración del bloque "External Request" (API)
-Cuando el bot necesite traer la info del usuario (nombre, mascotas, etc.), debe llamar a nuestra API. La configuración en su bloque de petición externa debe ser:
+### 2. Configuración del bloque "External Request" (API)
+Configuren su bloque de petición externa exactamente así:
 
-*   **URL:** `https://app.pataamiga.mx/api/integrations/vet-bot/context?sessionToken={{ref}}`
+*   **URL:** `https://app.pataamiga.mx/api/integrations/vet-bot/context?sessionToken={{session_token}}`
 *   **Método:** `GET`
 *   **Headers:** 
     *   `x-vet-bot-key`: `pata-amiga-vet-bot-secret-2026`
-*   **Query Parameters (Parámetros):**
-    *   `sessionToken`: **Debe ser la variable `{{ref}}`** (esta variable contiene el token que enviamos desde la web).
+
+> [!CAUTION]
+> **REGLA CRÍTICA:** Asegúrense de que sus Custom Fields en el panel de Settings **NO tengan espacios al final**. El campo debe llamarse exactamente `session_token` y no `session_token `.
 
 ---
 
-### 4. Mapeo de Datos (Qué responde la API)
-Cuando el bot hace la petición a nuestra API, esta le responde con un objeto JSON. Aquí tienen el nombre exacto de los campos para que los mapeen en Chatbot Builder:
+### 3. Mapeo de Datos (JSONPath)
+Usen estas rutas exactas en la sección **Response Mapping** para guardar la info:
 
 #### **A. Datos del Usuario (`user`)**
-*   `user.firstName`: Nombre del cliente.
-*   `user.lastName`: Apellidos.
-*   `user.email`: Correo electrónico registrado.
-*   `user.membershipStatus`: Estatus de la membresía (ej: `active`, `pending`).
+*   `$.user.firstName` -> Nombre del cliente.
+*   `$.user.email` -> Correo electrónico.
 
 #### **B. Lista de Mascotas (`pets`)**
-Es una lista (array). Por cada mascota encontrarán:
-*   `pets[X].name`: Nombre de la mascota.
-*   `pets[X].type`: Especie (`Perro` o `Gato`).
-*   `pets[X].breed`: Raza.
-*   `pets[X].age`: Edad de la mascota (ej: "2 años").
-*   `pets[X].size`: Tamaño/Peso registrado (ej: "Mediano 10-25kg").
-*   `pets[X].status`: Estatus de protección (ej: `approved`, `waiting_period`).
-*   `pets[X].waitingPeriod.isActive`: `true` si la mascota está en periodo de espera (carencia).
-
-#### **C. Historial (`consultationHistory`)**
-*   `consultationHistory[X].date`: Fecha de la consulta.
-*   `consultationHistory[X].summary`: Resumen de lo que pasó.
-*   `consultationHistory[X].petName`: Nombre de la mascota atendida.
+Para la primera mascota registrada (índice 0):
+*   `$.pets[0].name` -> Nombre de la mascota.
+*   `$.pets[0].breed` -> Raza.
+*   `$.pets[0].age` -> Edad (ej: "2-años").
+*   `$.pets[0].size` -> Tamaño (ej: "mediana").
 
 ---
 
-### 5. Preguntas Frecuentes y Escenarios (Troubleshooting)
+### 4. Preguntas Frecuentes y Escenarios (Troubleshooting)
 
-#### **Escenario A: El bot me saluda como "null" o "Usuario"**
-*   **Causa:** El bot no está leyendo correctamente el campo `620522` o la respuesta de la API.
-*   **Solución:** Revisen que en su mensaje de bienvenida estén usando el campo `user.firstName` que devuelve nuestra API.
+#### **Escenario A: Los datos de la mascota no aparecen (salen las llaves `{{...}}`)**
+*   **Causa 1:** El nombre del Custom Field en CBB tiene un espacio al final.
+*   **Causa 2:** Pusieron espacios dentro de las llaves en el mensaje (ej: `{{ mascota_1_nombre }}`).
+*   **Solución:** Quiten todos los espacios. Debe ser `{{mascota_1_nombre}}`.
 
-#### **Escenario B: El bot da error al intentar traer las mascotas**
-*   **Causa:** El `sessionToken` que están mandando a nuestra API está vacío o es inválido.
-*   **Solución:** Asegúrense de que en la llamada a la API estén usando la variable **`{{ref}}`**. Chatbot Builder guarda automáticamente el token en esa variable cuando el usuario entra desde la web.
-
-#### **Escenario C: ¿Qué pasa si el usuario no tiene sesión iniciada?**
-*   **Respuesta:** Nuestra web detectará que no hay sesión y el bot cargará de forma "Genérica". Solo en este caso el bot **sí debe pedir el email** como lo hacía antes.
+#### **Escenario B: El bot da error "Invalid or expired session token"**
+*   **Causa:** Están probando con un token viejo o la variable `{{session_token}}` no se está llenando.
+*   **Solución:** Abran la web con su sesión iniciada y abran el chat. El script generará un token nuevo cada vez.
 
 ---
 
-### 6. Herramienta de Diagnóstico para la Agencia
-Ustedes pueden verificar qué datos está enviando la web en cualquier momento:
-1.  Entren a la web logueados como un usuario.
-2.  Abran la consola del navegador (`F12`).
-3.  Escriban: `vetBotDiagnostics()` y presionen Enter.
-4.  Si ven que dice `✅ Datos de identificación presentes`, entonces la web está enviando todo bien y el ajuste debe hacerse dentro del panel de CBB.
+### 5. Herramienta de Diagnóstico
+Pueden verificar el token actual desde la consola del navegador (`F12`) si el desarrollador habilitó la función:
+1. Escriban: `vetBotDiagnostics()` y den Enter.
+2. Copien el token que sale en "Ref" para probar manualmente en el bloque de API.
 
 ---
 *Dudas técnicas adicionales: Contactar al equipo de desarrollo de Pata Amiga.*
+

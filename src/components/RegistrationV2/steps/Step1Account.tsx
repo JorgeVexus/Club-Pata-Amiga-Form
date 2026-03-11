@@ -188,6 +188,31 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
         }
     };
 
+    const handleGoogleLogin = async () => {
+        setIsSubmitting(true);
+        try {
+            console.log('🔐 Iniciando registro con Google...');
+            if (!window.$memberstackDom) {
+                showToast('Error: Memberstack no cargado', 'error');
+                return;
+            }
+
+            await window.$memberstackDom.signupWithProvider({
+                provider: 'google',
+                options: {
+                    prompt: 'select_account'
+                }
+            });
+
+            // Nota: Al regresar de Google, la página se recargará y NewRegistrationFlow 
+            // detectará la sesión en el useEffect de carga inicial.
+        } catch (error: any) {
+            console.error('❌ Error en login con Google:', error);
+            showToast('Error al iniciar sesión con Google', 'error');
+            setIsSubmitting(false);
+        }
+    };
+
     const isLoggedIn = !!currentMember?.auth?.email;
 
     return (
@@ -230,6 +255,28 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                         >
                             {isLoggingOut ? 'Cerrando...' : 'Cerrar sesión'}
                         </button>
+                    </div>
+                </div>
+            )}
+
+            {!isLoggedIn && (
+                <div className={styles.socialLoginContainer}>
+                    <button
+                        type="button"
+                        className={styles.googleButton}
+                        onClick={handleGoogleLogin}
+                        disabled={isSubmitting}
+                    >
+                        <img
+                            src="https://www.svgrepo.com/show/475656/google-color.svg"
+                            alt="Google"
+                            className={styles.googleIcon}
+                        />
+                        Regístrate con Google
+                    </button>
+
+                    <div className={styles.divider}>
+                        <span>o regístrate con tu correo</span>
                     </div>
                 </div>
             )}

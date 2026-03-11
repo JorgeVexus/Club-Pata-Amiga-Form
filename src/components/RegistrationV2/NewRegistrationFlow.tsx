@@ -125,11 +125,27 @@ export default function NewRegistrationFlow() {
                                     city: userData.city,
                                     colony: userData.colony,
                                     address: userData.address,
-                                } : undefined,
+                                } : (currentMember.customFields?.['first-name'] ? {
+                                    // Datos de Google/Social extratídos de Memberstack
+                                    firstName: currentMember.customFields['first-name'],
+                                    paternalLastName: currentMember.customFields['last-name'] || '',
+                                    email: currentMember.auth?.email,
+                                } : undefined),
                             };
 
+                            // Si es un usuario nuevo (sin datos en Supabase) pero logueado con social
+                            // Asegurarnos de que tenga una entrada base en Supabase
+                            if (!userData && currentMember) {
+                                console.log('🆕 Usuario social nuevo, sincronizando con Supabase...');
+                                await registerUserInSupabase({
+                                    email: currentMember.auth?.email,
+                                    registration_step: 1,
+                                    membership_status: 'pending'
+                                }, msId);
+                            }
+
                             setRegistrationData(loadedData);
-                            console.log('✅ Datos cargados desde Supabase:', loadedData);
+                            console.log('✅ Datos cargados:', loadedData);
                         }
 
                         // Verificar estado de registro (Comparar Memberstack vs Supabase)
