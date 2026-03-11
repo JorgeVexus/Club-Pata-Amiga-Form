@@ -328,25 +328,6 @@
     margin-top: 0.25rem;
 }
 
-.docLinkIndicator {
-    width: 36px;
-    height: 36px;
-    background: white;
-    border: 1px solid #E2E8F0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    flex-shrink: 0;
-}
-
-.docItem:hover .docLinkIndicator {
-    border-color: #00BBB4;
-    background: #E6FFFA;
-    transform: scale(1.1);
-}
 
 .divider {
     height: 1px;

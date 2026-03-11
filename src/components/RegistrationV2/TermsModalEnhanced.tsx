@@ -144,9 +144,6 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                                 )}
                                             </div>
                                         </div>
-                                        <div className={styles.docLinkIndicator}>
-                                            ⬇️
-                                        </div>
                                     </a>
                                 ))}
                             </div>

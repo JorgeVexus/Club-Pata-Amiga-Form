@@ -16,11 +16,13 @@ const PLANS = [
         name: 'Mensual',
         price: 159,
         priceDisplay: '$159',
-        description: 'Perfecto para empezar',
+        description: 'Toda la protección mes a mes',
         features: [
-            'Cobertura veterinaria básica',
-            'Consultas telefónicas',
-            'Descuentos en farmacia'
+            'Vacunación anual (Hasta $300)',
+            'Apoyo por fallecimiento (Hasta $2,000)',
+            'Chat veterinario 24/7',
+            'Emergencias médicas (Hasta $3,000)',
+            'Comunidad Pata Amiga'
         ]
     },
     {
@@ -28,14 +30,14 @@ const PLANS = [
         name: 'Anual',
         price: 1699,
         priceDisplay: '$1,699',
-        description: 'Ahorra 2 meses',
+        description: 'Ahorra 209 pesos',
         popular: true,
         features: [
-            'Todo del plan mensual',
-            'Emergencias 24/7',
-            'Cirugías y procedimientos',
-            'Hospitalización',
-            'Reembolso de medicamentos'
+            'Vacunación anual (Hasta $300)',
+            'Apoyo por fallecimiento (Hasta $2,000)',
+            'Chat veterinario 24/7',
+            'Emergencias médicas (Hasta $3,000)',
+            'Comunidad Pata Amiga'
         ]
     }
 ];
