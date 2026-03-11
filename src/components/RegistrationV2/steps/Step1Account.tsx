@@ -295,6 +295,8 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                             Google
                         </button>
 
+                        {/* Facebook oculto temporalmente hasta completar configuración de FB Developers */}
+                        {/* 
                         <button
                             type="button"
                             className={styles.facebookButton}
@@ -308,6 +310,7 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                             />
                             Facebook
                         </button>
+                        */}
                     </div>
 
                     <div className={styles.divider}>
