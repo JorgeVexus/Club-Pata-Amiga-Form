@@ -156,13 +156,34 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
     };
 
+    const calculateAge = (birthDate: string) => {
+        if (!birthDate) return 0;
+        const today = new Date();
+        const birth = new Date(birthDate);
+        let age = today.getFullYear() - birth.getFullYear();
+        const monthDiff = today.getMonth() - birth.getMonth();
+        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+            age--;
+        }
+        return age;
+    };
+
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
 
         if (!formData.firstName.trim()) newErrors.firstName = 'Requerido';
         if (!formData.paternalLastName.trim()) newErrors.paternalLastName = 'Requerido';
         if (!formData.maternalLastName.trim()) newErrors.maternalLastName = 'Requerido';
-        if (!formData.birthDate) newErrors.birthDate = 'Requerido';
+
+        if (!formData.birthDate) {
+            newErrors.birthDate = 'Requerido';
+        } else {
+            const age = calculateAge(formData.birthDate);
+            if (age < 18) {
+                newErrors.birthDate = 'Debes ser mayor de 18 años';
+            }
+        }
+
         if (!formData.nationality) newErrors.nationality = 'Requerido';
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
         if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
@@ -232,7 +253,22 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         label="Fecha de nacimiento"
                         name="birthDate"
                         value={formData.birthDate}
-                        onChange={(value) => setFormData({ ...formData, birthDate: value })}
+                        onChange={(value) => {
+                            setFormData({ ...formData, birthDate: value });
+                            if (value) {
+                                const age = calculateAge(value);
+                                if (age < 18) {
+                                    setErrors(prev => ({ ...prev, birthDate: 'Debes ser mayor de 18 años' }));
+                                    showToast('Debes ser mayor de 18 años para registrarte', 'error');
+                                } else {
+                                    setErrors(prev => {
+                                        const newErrors = { ...prev };
+                                        delete newErrors.birthDate;
+                                        return newErrors;
+                                    });
+                                }
+                            }
+                        }}
                         error={errors.birthDate}
                         required
                     />
