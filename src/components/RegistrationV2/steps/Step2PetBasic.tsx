@@ -79,10 +79,6 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
         });
     };
 
-    const ageInYears = formData.petAgeUnit === 'years' 
-        ? formData.petAge 
-        : Math.floor(formData.petAge / 12);
-    const isSenior = ageInYears >= 10;
 
     return (
         <div className={styles.stepCard}>
@@ -117,26 +113,6 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                     error={errors.petAge}
                 />
 
-                {formData.petAge > 0 && (
-                    <div className={`${styles.infoBox} ${isSenior ? styles.warning : ''}`}>
-                        {isSenior ? (
-                            <>
-                                <span>⚠️</span>
-                                <p>
-                                    Tu mascota califica como senior, después necesitaremos conocer el estado de salud de tu peludo
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <span>💡</span>
-                                <p>
-                                    Las fotos las podrás subir después desde tu cuenta. 
-                                    Tendrás 15 días para hacerlo.
-                                </p>
-                            </>
-                        )}
-                    </div>
-                )}
 
                 <div className={styles.buttonRow}>
                     <button
