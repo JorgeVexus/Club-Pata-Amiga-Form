@@ -589,9 +589,12 @@ export default function NewRegistrationFlow() {
                 {/* Indicador de pasos (Oculto en el paso de éxito) */}
                 {currentStep <= 5 && (
                     <StepIndicator
-                        currentStep={currentStep}
-                        totalSteps={5}
-                        stepLabels={STEPS.map(s => s.label)}
+                        currentStep={currentStep <= 3 ? currentStep : currentStep - 3}
+                        totalSteps={currentStep <= 3 ? 3 : 2}
+                        stepLabels={currentStep <= 3
+                            ? ['Cuenta', 'Mascota', 'Plan']
+                            : ['Perfil', 'Mascota']
+                        }
                     />
                 )}
 
