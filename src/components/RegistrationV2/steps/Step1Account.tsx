@@ -213,6 +213,25 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
         }
     };
 
+    const handleFacebookLogin = async () => {
+        setIsSubmitting(true);
+        try {
+            console.log('🔐 Iniciando registro con Facebook...');
+            if (!window.$memberstackDom) {
+                showToast('Error: Memberstack no cargado', 'error');
+                return;
+            }
+
+            await window.$memberstackDom.signupWithProvider({
+                provider: 'facebook'
+            });
+        } catch (error: any) {
+            console.error('❌ Error en login con Facebook:', error);
+            showToast('Error al iniciar sesión con Facebook', 'error');
+            setIsSubmitting(false);
+        }
+    };
+
     const isLoggedIn = !!currentMember?.auth?.email;
 
     return (
@@ -261,19 +280,35 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
 
             {!isLoggedIn && (
                 <div className={styles.socialLoginContainer}>
-                    <button
-                        type="button"
-                        className={styles.googleButton}
-                        onClick={handleGoogleLogin}
-                        disabled={isSubmitting}
-                    >
-                        <img
-                            src="https://www.svgrepo.com/show/475656/google-color.svg"
-                            alt="Google"
-                            className={styles.googleIcon}
-                        />
-                        Regístrate con Google
-                    </button>
+                    <div className={styles.socialButtonsRow}>
+                        <button
+                            type="button"
+                            className={styles.googleButton}
+                            onClick={handleGoogleLogin}
+                            disabled={isSubmitting}
+                        >
+                            <img
+                                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                                alt="Google"
+                                className={styles.socialIcon}
+                            />
+                            Google
+                        </button>
+
+                        <button
+                            type="button"
+                            className={styles.facebookButton}
+                            onClick={handleFacebookLogin}
+                            disabled={isSubmitting}
+                        >
+                            <img
+                                src="https://www.svgrepo.com/show/448224/facebook.svg"
+                                alt="Facebook"
+                                className={styles.socialIcon}
+                            />
+                            Facebook
+                        </button>
+                    </div>
 
                     <div className={styles.divider}>
                         <span>o regístrate con tu correo</span>
