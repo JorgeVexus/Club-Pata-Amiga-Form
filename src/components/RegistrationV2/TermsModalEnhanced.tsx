@@ -34,9 +34,9 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
     const [documents, setDocuments] = useState<Document[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    
-    // Estado de aceptación (solo informativo, no editable)
-    const [acceptance] = useState<TermsAcceptance>({
+
+    // Estado de aceptación (Marketing es editable)
+    const [acceptance, setAcceptance] = useState<TermsAcceptance>({
         termsAndConditions: true,
         privacyPolicy: true,
         marketingConsent: true,
@@ -104,7 +104,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Documentos Legales</h3>
                         <p className={styles.sectionDescription}>
-                            Descarga y revisa los siguientes documentos cuando lo necesites.
+                            Toca o haz clic sobre cualquier documento para descargarlo y revisarlo.
                         </p>
 
                         {loading ? (
@@ -126,7 +126,15 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                         ) : (
                             <div className={styles.docsList}>
                                 {documents.map((doc) => (
-                                    <div key={doc.id} className={styles.docItem}>
+                                    <a
+                                        key={doc.id}
+                                        href={doc.file_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download={doc.file_name}
+                                        className={styles.docItem}
+                                        title={`Descargar ${doc.title}`}
+                                    >
                                         <div className={styles.docInfo}>
                                             <span className={styles.docIcon}>📄</span>
                                             <div>
@@ -136,16 +144,10 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                                 )}
                                             </div>
                                         </div>
-                                        <a
-                                            href={doc.file_url}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            download={doc.file_name}
-                                            className={styles.downloadBtn}
-                                        >
-                                            ⬇️ Descargar
-                                        </a>
-                                    </div>
+                                        <div className={styles.docLinkIndicator}>
+                                            ⬇️
+                                        </div>
+                                    </a>
                                 ))}
                             </div>
                         )}
@@ -157,7 +159,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                     {/* Sección de Consentimientos Aceptados */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Aceptaciones y Consentimientos</h3>
-                        
+
                         <div className={styles.acceptedList}>
                             {/* Términos y Condiciones */}
                             <div className={styles.acceptedItem}>
@@ -166,7 +168,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                     <strong>Términos y Condiciones</strong>
                                     <span className={styles.required}>*</span>
                                     <small>
-                                        He leído y acepto los términos y condiciones del servicio, 
+                                        He leído y acepto los términos y condiciones del servicio,
                                         incluyendo las políticas de membresía, pagos y cancelación.
                                     </small>
                                 </div>
@@ -179,8 +181,8 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                     <strong>Aviso de Privacidad</strong>
                                     <span className={styles.required}>*</span>
                                     <small>
-                                        He leído el aviso de privacidad y autorizo el tratamiento de 
-                                        mis datos personales conforme a la Ley Federal de Protección 
+                                        He leído el aviso de privacidad y autorizo el tratamiento de
+                                        mis datos personales conforme a la Ley Federal de Protección
                                         de Datos Personales en Posesión de los Particulares.
                                     </small>
                                 </div>
@@ -193,21 +195,31 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                     <strong>Contrato de Membresía</strong>
                                     <span className={styles.required}>*</span>
                                     <small>
-                                        Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando 
-                                        electrónicamente el contrato de membresía y autorizo los cargos 
+                                        Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando
+                                        electrónicamente el contrato de membresía y autorizo los cargos
                                         recurrentes a mi método de pago seleccionado.
                                     </small>
                                 </div>
                             </div>
 
                             {/* Marketing */}
-                            <div className={`${styles.acceptedItem} ${styles.optional}`}>
-                                <span className={styles.acceptedCheck}>✓</span>
+                            <div
+                                className={`${styles.acceptedItem} ${styles.optional} ${!acceptance.marketingConsent ? styles.deselected : ''} ${styles.clickable}`}
+                                onClick={() => {
+                                    setAcceptance(prev => ({
+                                        ...prev,
+                                        marketingConsent: !prev.marketingConsent
+                                    }));
+                                }}
+                            >
+                                <span className={styles.acceptedCheck}>
+                                    {acceptance.marketingConsent ? '✓' : '○'}
+                                </span>
                                 <div className={styles.acceptedText}>
                                     <strong>Comunicaciones y Promociones</strong>
                                     <span className={styles.optionalBadge}>(Opcional)</span>
                                     <small>
-                                        Acepto recibir comunicaciones, newsletters, promociones especiales 
+                                        Acepto recibir comunicaciones, newsletters, promociones especiales
                                         y novedades sobre productos y servicios.
                                     </small>
                                 </div>
@@ -217,7 +229,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                 </div>
 
                 <div className={styles.modalFooter}>
-                    <button 
+                    <button
                         className={styles.understoodBtn}
                         onClick={handleClose}
                     >

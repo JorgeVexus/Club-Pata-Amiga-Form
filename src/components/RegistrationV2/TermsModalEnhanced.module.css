@@ -15,8 +15,13 @@
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .modalContent {
@@ -36,6 +41,7 @@
         opacity: 0;
         transform: translateY(20px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -160,6 +166,31 @@
     background: #FFFAF0;
 }
 
+.clickable {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.clickable:hover {
+    transform: scale(1.01);
+    box-shadow: 0 4px 12px rgba(254, 143, 21, 0.1);
+}
+
+.deselected {
+    border-left-color: #A0AEC0 !important;
+    background: #EDF2F7 !important;
+    opacity: 0.7;
+}
+
+.deselected .acceptedCheck {
+    background: #A0AEC0 !important;
+}
+
+.deselected strong {
+    color: #718096 !important;
+}
+
 .acceptedCheck {
     width: 24px;
     height: 24px;
@@ -230,7 +261,9 @@
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .retryBtn {
@@ -254,10 +287,21 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
+    padding: 1.25rem;
     background: #F7FAFC;
-    border-radius: 12px;
+    border-radius: 16px;
     gap: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.docItem:hover {
+    background: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #00BBB4;
 }
 
 .docInfo {
@@ -284,22 +328,24 @@
     margin-top: 0.25rem;
 }
 
-.downloadBtn {
+.docLinkIndicator {
+    width: 36px;
+    height: 36px;
     background: white;
-    border: 2px solid #00BBB4;
-    color: #00BBB4;
-    padding: 0.5rem 1rem;
-    border-radius: 50px;
-    font-family: 'Fraiche', sans-serif;
-    font-size: 0.85rem;
-    text-decoration: none;
-    white-space: nowrap;
+    border: 1px solid #E2E8F0;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
     transition: all 0.2s ease;
+    flex-shrink: 0;
 }
 
-.downloadBtn:hover {
-    background: #00BBB4;
-    color: white;
+.docItem:hover .docLinkIndicator {
+    border-color: #00BBB4;
+    background: #E6FFFA;
+    transform: scale(1.1);
 }
 
 .divider {
@@ -359,33 +405,33 @@
         max-height: 95vh;
         border-radius: 20px;
     }
-    
+
     .modalHeader {
         padding: 1rem;
     }
-    
+
     .modalTitle {
         font-size: 1.25rem;
     }
-    
+
     .modalBody {
         padding: 1rem;
     }
-    
+
     .modalFooter {
         padding: 1rem;
     }
-    
+
     .understoodBtn {
         width: 100%;
     }
-    
+
     .docItem {
         flex-direction: column;
         gap: 0.75rem;
         align-items: flex-start;
     }
-    
+
     .acceptedBanner {
         flex-direction: column;
         text-align: center;
