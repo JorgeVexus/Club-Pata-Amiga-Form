@@ -169,6 +169,11 @@ export default function NewRegistrationFlow() {
                         // El paso real es el más avanzado entre los dos
                         let finalStep = Math.max(msStep, dbStep);
 
+                        // Si ya tiene sesión ativa (ya tiene cuenta), saltamos directo al paso 2
+                        if (finalStep <= 1) {
+                            finalStep = 2;
+                        }
+
                         // Regla de negocio: Si ya pagó, no puede estar antes del paso 4
                         if (paymentStatus === 'completed' && finalStep < 4) {
                             finalStep = 4;
