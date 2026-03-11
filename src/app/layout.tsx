@@ -47,6 +47,12 @@ export default function RootLayout({
                 {/* Google Tag Manager (noscript) - Después de la etiqueta body */}
                 <GoogleTagManagerNoScript gtmId="GTM-N3WV4GPT" />
 
+                {/* Google Places API */}
+                <Script
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX-vCWYQ2_Lh1g5QQbybLpW6g0ugJdux4&libraries=places&loading=async"
+                    strategy="afterInteractive"
+                />
+
                 <MetaPixel />
                 {children}
             </body>

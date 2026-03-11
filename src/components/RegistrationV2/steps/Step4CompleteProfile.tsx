@@ -89,6 +89,43 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
     };
 
+    const fetchFromGoogle = async (cp: string) => {
+        if (!window.google || !window.google.maps) return null;
+
+        const geocoder = new window.google.maps.Geocoder();
+        try {
+            const response = await geocoder.geocode({
+                address: cp,
+                componentRestrictions: { country: 'MX', postalCode: cp }
+            });
+
+            if (response.results && response.results.length > 0) {
+                const result = response.results[0];
+                let state = '';
+                let city = '';
+                let colony = '';
+
+                result.address_components.forEach((component: any) => {
+                    const types = component.types;
+                    if (types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
+                    }
+                    if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+                        city = component.long_name;
+                    }
+                    if (types.includes('sublocality') || types.includes('neighborhood')) {
+                        colony = component.long_name;
+                    }
+                });
+
+                return { state, city, colony };
+            }
+        } catch (error) {
+            console.error('Google Geocoding error:', error);
+        }
+        return null;
+    };
+
 
     const fetchColoniesFromSepomex = async (cp: string) => {
         if (!cp || cp.length !== 5) return null;
@@ -148,12 +185,16 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
         setIsLoadingCP(true);
         try {
-            const sepomexData = await fetchColoniesFromSepomex(cp);
-            if (sepomexData) {
+            const [googleData, sepomexData] = await Promise.all([
+                fetchFromGoogle(cp),
+                fetchColoniesFromSepomex(cp)
+            ]);
+
+            if (googleData || sepomexData) {
                 setFormData(prev => ({
                     ...prev,
-                    state: sepomexData.state || prev.state,
-                    city: sepomexData.municipality || prev.city,
+                    state: googleData?.state || sepomexData?.state || prev.state,
+                    city: googleData?.city || sepomexData?.municipality || prev.city,
                     postalCode: cp,
                 }));
                 showToast('Dirección encontrada', 'success');
