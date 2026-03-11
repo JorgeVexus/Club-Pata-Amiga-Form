@@ -148,61 +148,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         return null;
     };
 
-    // Inicializar Google Autocomplete para el campo de dirección
-    useEffect(() => {
-        const initGoogle = () => {
-            if (window.google && window.google.maps && window.google.maps.places) {
-                const input = document.getElementById('address-autocomplete') as HTMLInputElement;
-                if (!input) return;
-
-                const autocomplete = new window.google.maps.places.Autocomplete(input, {
-                    componentRestrictions: { country: 'MX' },
-                    fields: ['address_components', 'formatted_address'],
-                    types: ['address']
-                });
-
-                autocomplete.addListener('place_changed', () => {
-                    const place = autocomplete.getPlace();
-                    if (!place.address_components) return;
-
-                    let cp = '';
-                    let state = '';
-                    let city = '';
-                    let colony = '';
-                    let street = '';
-                    let number = '';
-
-                    place.address_components.forEach((component: any) => {
-                        const types = component.types;
-                        if (types.includes('postal_code')) cp = component.long_name;
-                        if (types.includes('administrative_area_level_1')) state = component.long_name;
-                        if (types.includes('locality')) city = component.long_name;
-                        if (types.includes('sublocality') || types.includes('neighborhood')) colony = component.long_name;
-                        if (types.includes('route')) street = component.long_name;
-                        if (types.includes('street_number')) number = component.long_name;
-                    });
-
-                    const fullAddress = `${street} ${number}`.trim();
-
-                    setFormData(prev => ({
-                        ...prev,
-                        postalCode: cp || prev.postalCode,
-                        state: state || prev.state,
-                        city: city || prev.city,
-                        colony: colony || prev.colony,
-                        address: fullAddress || place.formatted_address || prev.address
-                    }));
-
-                    if (cp) {
-                        fetchColoniesFromSepomex(cp);
-                    }
-                });
-            }
-        };
-
-        const timer = setTimeout(initGoogle, 1000);
-        return () => clearTimeout(timer);
-    }, [isLoaded]);
 
     // Cargar datos guardados al montar
     useEffect(() => {
@@ -235,19 +180,21 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     }, [data, isLoaded]);
 
 
-    const handlePostalCodeBlur = async () => {
-        if (formData.postalCode.length !== 5) return;
+    const handlePostalCodeQuery = async (cpValue?: string) => {
+        const cp = cpValue || formData.postalCode;
+        if (cp.length !== 5) return;
 
         setIsLoadingCP(true);
         try {
-            const googleData = await fetchFromGoogle(formData.postalCode);
-            const sepomexData = await fetchColoniesFromSepomex(formData.postalCode);
+            const googleData = await fetchFromGoogle(cp);
+            const sepomexData = await fetchColoniesFromSepomex(cp);
 
             if (googleData || sepomexData) {
                 setFormData(prev => ({
                     ...prev,
                     state: googleData?.state || sepomexData?.state || prev.state,
                     city: googleData?.city || sepomexData?.municipality || prev.city,
+                    postalCode: cp, // Asegurar que el estado este actualizado si viene de onChange
                 }));
                 showToast('Dirección encontrada', 'success');
             } else {
@@ -444,8 +391,14 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                             label="Código Postal"
                             name="postalCode"
                             value={formData.postalCode}
-                            onChange={(value) => setFormData({ ...formData, postalCode: value.replace(/\D/g, '').slice(0, 5) })}
-                            onBlur={handlePostalCodeBlur}
+                            onChange={(value) => {
+                                const cleaned = value.replace(/\D/g, '').slice(0, 5);
+                                setFormData({ ...formData, postalCode: cleaned });
+                                if (cleaned.length === 5) {
+                                    handlePostalCodeQuery(cleaned);
+                                }
+                            }}
+                            onBlur={() => handlePostalCodeQuery()}
                             error={errors.postalCode}
                             required
                             maxLength={5}
@@ -483,22 +436,8 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         isLoading={isLoadingCP}
                     />
 
-                    <div className={styles.fieldWrapper}>
-                        <label className={styles.label}>
-                            Calle y número <span className={styles.required}>*</span>
-                        </label>
-                        <input
-                            id="address-autocomplete"
-                            type="text"
-                            placeholder="Busca tu calle y número..."
-                            className={styles.input}
-                            autoComplete="off"
-                        />
-                        <p className={styles.helpText}>Comienza a escribir y selecciona tu dirección</p>
-                    </div>
-
                     <TextInput
-                        label="Dirección (Confirmada)"
+                        label="Calle y número (Int y Ext)"
                         name="address"
                         value={formData.address}
                         onChange={(value) => setFormData({ ...formData, address: value })}
