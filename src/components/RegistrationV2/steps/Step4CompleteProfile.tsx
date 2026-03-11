@@ -239,19 +239,25 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (formData.postalCode.length !== 5) return;
 
         setIsLoadingCP(true);
-        const googleData = await fetchFromGoogle(formData.postalCode);
-        const sepomexData = await fetchColoniesFromSepomex(formData.postalCode);
-        setIsLoadingCP(false);
+        try {
+            const googleData = await fetchFromGoogle(formData.postalCode);
+            const sepomexData = await fetchColoniesFromSepomex(formData.postalCode);
 
-        if (googleData || sepomexData) {
-            setFormData(prev => ({
-                ...prev,
-                state: googleData?.state || sepomexData?.state || prev.state,
-                city: googleData?.city || sepomexData?.municipality || prev.city,
-            }));
-            showToast('Dirección encontrada', 'success');
-        } else {
-            showToast('No se encontró información para este CP', 'warning');
+            if (googleData || sepomexData) {
+                setFormData(prev => ({
+                    ...prev,
+                    state: googleData?.state || sepomexData?.state || prev.state,
+                    city: googleData?.city || sepomexData?.municipality || prev.city,
+                }));
+                showToast('Dirección encontrada', 'success');
+            } else {
+                showToast('No se encontró información para este CP', 'warning');
+            }
+        } catch (error) {
+            console.error('Error consultando CP:', error);
+            showToast('Error al consultar dirección', 'error');
+        } finally {
+            setIsLoadingCP(false);
         }
     };
 

@@ -49,7 +49,7 @@ export default function RootLayout({
 
                 {/* Google Places API - Cargar después de que la página sea interactiva */}
                 <Script
-                    src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places&loading=async`}
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX-vCWYQ2_Lh1g5QQbybLpW6g0ugJdux4&libraries=places&loading=async"
                     strategy="afterInteractive"
                 />
                 <MetaPixel />
