@@ -464,3 +464,61 @@ export async function updateUserAmbassadorCode(memberstackId: string, ambassador
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Guarda los detalles de facturación de un usuario
+ */
+export async function saveBillingDetailsByMemberstackId(memberstackId: string, billingData: any) {
+    console.log('🔄 [Server Action] Guardando datos de facturación:', { memberstackId });
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        // 1. Obtener el ID interno del usuario
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id, email')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !userData) {
+            console.error('❌ [Server Action] Usuario no encontrado:', userError);
+            return { success: false, error: 'Usuario no encontrado' };
+        }
+
+        // 2. Preparar datos para billing_details
+        const dataToSave = {
+            user_id: userData.id,
+            rfc: billingData.rfc.toUpperCase(),
+            business_name: billingData.businessName,
+            fiscal_address: billingData.fiscalAddress || billingData.address,
+            tax_regime: billingData.taxRegime,
+            cfdi_use: billingData.cfdiUse,
+            email: billingData.email || userData.email,
+            updated_at: new Date().toISOString()
+        };
+
+        // Intentar upsert. Si hay error de FK con auth.users, lo reportaremos.
+        const { error } = await supabase
+            .from('billing_details')
+            .upsert(dataToSave, { onConflict: 'user_id' });
+
+        if (error) {
+            console.error('❌ [Server Action] Error guardando billing_details:', error);
+            return { success: false, error: error.message };
+        }
+
+        // 3. Marcar en users que ya tiene facturación
+        await supabase
+            .from('users')
+            .update({ invoice_completed: true })
+            .eq('memberstack_id', memberstackId);
+
+        console.log('✅ [Server Action] Datos de facturación guardados');
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado:', error);
+        return { success: false, error: error.message };
+    }
+}

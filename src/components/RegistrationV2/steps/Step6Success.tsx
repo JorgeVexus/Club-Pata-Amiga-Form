@@ -7,14 +7,22 @@
 
 import React from 'react';
 import styles from './steps.module.css';
+import BillingModal from './BillingModal';
+import { saveBillingDetailsByMemberstackId } from '@/app/actions/user.actions';
 
 interface Step6SuccessProps {
     petName: string;
+    member?: any;
+    userEmail?: string;
 }
 
-export default function Step6Success({ petName }: Step6SuccessProps) {
+export default function Step6Success({ petName, member, userEmail }: Step6SuccessProps) {
     const loginUrl = 'https://www.pataamiga.mx/user/inicio-de-sesion';
     const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+    const [showBillingModal, setShowBillingModal] = React.useState(false);
+    const [wantsBilling, setWantsBilling] = React.useState(false);
+    const [billingSaved, setBillingSaved] = React.useState(false);
+    const [isSavingBilling, setIsSavingBilling] = React.useState(false);
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -29,6 +37,30 @@ export default function Step6Success({ petName }: Step6SuccessProps) {
         } catch (error) {
             console.error('Error cerrando sesión:', error);
             window.location.reload();
+        }
+    };
+
+    const handleSaveBilling = async (details: any) => {
+        if (!member?.id) {
+            console.error('No member ID available');
+            return;
+        }
+
+        setIsSavingBilling(true);
+        try {
+            const result = await saveBillingDetailsByMemberstackId(member.id, details);
+            if (result.success) {
+                setBillingSaved(true);
+                setShowBillingModal(false);
+                setWantsBilling(true);
+            } else {
+                alert('No pudimos guardar tus datos: ' + result.error);
+            }
+        } catch (error) {
+            console.error('Error saving billing:', error);
+            alert('Error de conexión al guardar los datos.');
+        } finally {
+            setIsSavingBilling(false);
         }
     };
 
@@ -59,9 +91,41 @@ export default function Step6Success({ petName }: Step6SuccessProps) {
                 </p>
             </div>
 
-            <div className={styles.section} style={{ marginTop: '2rem' }}>
+            <div className={styles.section} style={{ marginTop: '2.5rem' }}>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
+                {/* Opción de Facturación */}
+                <div style={{
+                    marginBottom: '2rem',
+                    padding: '1.25rem',
+                    background: '#F7FAFC',
+                    borderRadius: '16px',
+                    border: '1px solid #E2E8F0',
+                    textAlign: 'left'
+                }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                        <input
+                            type="checkbox"
+                            checked={wantsBilling}
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    setShowBillingModal(true);
+                                } else {
+                                    setWantsBilling(false);
+                                }
+                            }}
+                            style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: '#00BBB4' }}
+                        />
+                        <span style={{ fontFamily: 'Outfit, sans-serif', fontWeight: '600', color: '#4A5568' }}>
+                            ¿Quieres facturar tu pago?
+                            {billingSaved && <span style={{ color: '#00BBB4', fontSize: '0.85rem', marginLeft: '8px' }}>(✓ Datos guardados)</span>}
+                        </span>
+                    </label>
+                    <p style={{ marginTop: '0.5rem', fontSize: '0.85rem', color: '#718096', marginLeft: '32px' }}>
+                        Si necesitas factura CFDI 4.0, ingresa tus datos ahora.
+                    </p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <a
                         href={loginUrl}
                         className={styles.primaryButton}
@@ -103,6 +167,17 @@ export default function Step6Success({ petName }: Step6SuccessProps) {
                     ¿Tienes dudas? Contáctanos por WhatsApp al +52 477 754 5334
                 </p>
             </div>
+
+            {/* Billing Modal Component */}
+            <BillingModal
+                isOpen={showBillingModal}
+                onClose={() => {
+                    setShowBillingModal(false);
+                    if (!billingSaved) setWantsBilling(false);
+                }}
+                onSave={handleSaveBilling}
+                initialEmail={userEmail}
+            />
 
             <style jsx>{`
                 @keyframes bounceIn {

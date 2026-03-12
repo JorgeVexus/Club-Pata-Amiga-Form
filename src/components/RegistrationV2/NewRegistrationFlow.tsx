@@ -698,6 +698,8 @@ export default function NewRegistrationFlow() {
                                 return (
                                     <Step6Success
                                         petName={registrationData.petBasic?.petName || ''}
+                                        member={member}
+                                        userEmail={registrationData.account?.email}
                                     />
                                 );
                             default:
