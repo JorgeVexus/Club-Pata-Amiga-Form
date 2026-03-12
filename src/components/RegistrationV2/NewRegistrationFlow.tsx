@@ -134,6 +134,7 @@ export default function NewRegistrationFlow() {
                                     city: userData.city,
                                     colony: userData.colony,
                                     address: userData.address,
+                                    ine_front_url: userData.ine_front_url,
                                 } : (currentMember.customFields?.['first-name'] ? {
                                     // Datos de Google/Social extratídos de Memberstack
                                     firstName: currentMember.customFields['first-name'],
@@ -247,6 +248,7 @@ export default function NewRegistrationFlow() {
                 userData.city = data.profile.city;
                 userData.colony = data.profile.colony;
                 userData.address = data.profile.address;
+                userData.ine_front_url = data.profile.ine_front_url;
             }
 
             await registerUserInSupabase(userData, memberId);
