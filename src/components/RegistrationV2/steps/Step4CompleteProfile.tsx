@@ -212,16 +212,17 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
         setIsLoadingCP(true);
         try {
-            const [googleData, sepomexData] = await Promise.all([
-                fetchFromGoogle(cp),
-                fetchColoniesFromSepomex(cp)
-            ]);
+            // const [googleData, sepomexData] = await Promise.all([
+            //     fetchFromGoogle(cp),
+            //     fetchColoniesFromSepomex(cp)
+            // ]);
+            const sepomexData = await fetchColoniesFromSepomex(cp);
 
-            if (googleData || sepomexData) {
+            if (sepomexData) {
                 setFormData(prev => ({
                     ...prev,
-                    state: googleData?.state || sepomexData?.state || prev.state,
-                    city: googleData?.city || sepomexData?.municipality || prev.city,
+                    state: sepomexData?.state || prev.state,
+                    city: sepomexData?.municipality || prev.city,
                     postalCode: cp,
                 }));
                 showToast('Dirección encontrada', 'success');

@@ -73,7 +73,11 @@ async function querySepomex(cp: string): Promise<SepomexResponse | null> {
     // 2. Fallback a Zippopotam (Muy estable pero datos simplificados)
     try {
         console.log(`🔄 Intentando fallback Zippopotam para CP: ${cp}`);
-        const zipResponse = await fetch(`https://api.zippopotam.us/mx/${cp}`);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+
+        const zipResponse = await fetch(`https://api.zippopotam.us/mx/${cp}`, { signal: controller.signal });
+        clearTimeout(timeoutId);
 
         if (zipResponse.ok) {
             const zipData = await zipResponse.json();
