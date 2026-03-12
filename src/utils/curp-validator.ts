@@ -209,3 +209,87 @@ export function extractCURPInfo(curp: string): {
         state: stateNames[stateCode] || stateCode,
     };
 }
+
+/**
+ * Valida si la CURP es consistente con los datos del usuario
+ * @param curp - CURP a validar
+ * @param userData - Datos del usuario (firstName, paternalLastName, maternalLastName, birthDate)
+ * @returns Objeto con resultado y mensaje si no coincide
+ */
+export function validateCurpMatchesData(
+    curp: string,
+    userData: {
+        firstName: string;
+        paternalLastName: string;
+        maternalLastName: string;
+        birthDate: string;
+    }
+): { isConsistent: boolean; message?: string } {
+    const cleanCURP = formatCURP(curp);
+    if (cleanCURP.length < 10) return { isConsistent: true }; // No validar hasta tener suficiente longitud
+
+    // 1. Validar Fecha de Nacimiento (YYYY-MM-DD)
+    if (userData.birthDate) {
+        const [year, month, day] = userData.birthDate.split('-');
+        const expectedDate = `${year.substring(2)}${month}${day}`;
+        const curpDate = cleanCURP.substring(4, 10);
+
+        if (expectedDate !== curpDate) {
+            return {
+                isConsistent: false,
+                message: `La fecha en la CURP (${curpDate}) no coincide con tu fecha de nacimiento (${expectedDate}).`
+            };
+        }
+    }
+
+    // 2. Validar Iniciales (Aproximación, ya que hay muchas reglas de excepción)
+    // Solo validamos la primera letra de cada apellido y nombre para evitar falsos negativos por reglas complejas
+    const normalize = (str: string) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+
+    const firstName = normalize(userData.firstName);
+    const paternal = normalize(userData.paternalLastName);
+    const maternal = normalize(userData.maternalLastName);
+
+    // Primera letra del apellido paterno
+    if (paternal && cleanCURP[0] !== paternal[0]) {
+        return {
+            isConsistent: false,
+            message: `La primera letra de tu CURP (${cleanCURP[0]}) debería ser la de tu apellido paterno (${paternal[0]}).`
+        };
+    }
+
+    // Primera letra del apellido materno (o X si no tiene)
+    const expectedMaternal = maternal ? maternal[0] : 'X';
+    if (cleanCURP[2] !== expectedMaternal) {
+        return {
+            isConsistent: false,
+            message: `La tercera letra de tu CURP (${cleanCURP[2]}) debería ser la de tu apellido materno (${expectedMaternal}).`
+        };
+    }
+
+    // Primera letra del nombre
+    // (Nota: Las reglas del CURP dicen que si es Maria o Jose y hay segundo nombre, se usa el segundo nombre)
+    const nameParts = firstName.split(' ');
+    let firstLetterName = nameParts[0][0];
+
+    if (nameParts.length > 1) {
+        const commonNames = ['MARIA', 'MA.', 'MA', 'JOSE', 'J.', 'J'];
+        if (commonNames.includes(nameParts[0])) {
+            firstLetterName = nameParts[1][0];
+        }
+    }
+
+    if (cleanCURP[3] !== firstLetterName) {
+        // En caso de discrepancia en el nombre, somos más flexibles porque las reglas de "María/José" varían
+        // Pero si no coincide con ninguna de las partes del nombre, mandamos aviso
+        const anyNameMatch = nameParts.some(part => part[0] === cleanCURP[3]);
+        if (!anyNameMatch) {
+            return {
+                isConsistent: false,
+                message: `La cuarta letra de tu CURP (${cleanCURP[3]}) no parece coincidir con tu nombre.`
+            };
+        }
+    }
+
+    return { isConsistent: true };
+}

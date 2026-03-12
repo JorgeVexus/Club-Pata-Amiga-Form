@@ -13,6 +13,7 @@ import PhoneInput from '@/components/FormFields/PhoneInput';
 import NationalitySelect from '../NationalitySelect';
 import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
 import { checkCurpAvailability } from '@/app/actions/user.actions';
+import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
 import styles from './steps.module.css';
 
 interface Step4CompleteProfileProps {
@@ -48,14 +49,32 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
     const verifyCurp = async (curp: string) => {
-        if (curp.length !== 18) {
-            setCurpAvailable(null);
+        // 1. Validar formato básico y dígito verificador
+        const formatValidation = validateCURP(curp);
+        if (!formatValidation.isValid) {
+            setErrors(prev => ({ ...prev, curp: formatValidation.error || 'CURP inválida' }));
+            setCurpAvailable(false);
             return;
         }
 
+        // 2. Validar consistencia con datos del formulario
+        const consistencyValidation = validateCurpMatchesData(curp, {
+            firstName: formData.firstName,
+            paternalLastName: formData.paternalLastName,
+            maternalLastName: formData.maternalLastName,
+            birthDate: formData.birthDate
+        });
+
+        if (!consistencyValidation.isConsistent) {
+            setErrors(prev => ({ ...prev, curp: consistencyValidation.message || 'La CURP no coincide con tus datos' }));
+            setCurpAvailable(false);
+            showToast(consistencyValidation.message || 'La CURP no coincide con tus datos', 'warning');
+            return;
+        }
+
+        // 3. Verificar disponibilidad en base de datos
         setIsCheckingCurp(true);
         try {
-            // El ID de memberstack actual para permitir que su propio CURP sea válido
             const currentMsId = member?.id || member?.memberId;
             const result = await checkCurpAvailability(curp, currentMsId);
 
@@ -342,7 +361,22 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                             label="CURP"
                             name="curp"
                             value={formData.curp}
-                            onChange={(value) => setFormData({ ...formData, curp: value.toUpperCase() })}
+                            onChange={(value) => {
+                                const sanitized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18);
+                                setFormData({ ...formData, curp: sanitized });
+                                if (sanitized.length === 18) {
+                                    verifyCurp(sanitized);
+                                } else {
+                                    setCurpAvailable(null);
+                                    if (errors.curp) {
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.curp;
+                                            return newErrors;
+                                        });
+                                    }
+                                }
+                            }}
                             onBlur={handleCurpBlur}
                             placeholder="ABCD123456HDFRNN09"
                             error={errors.curp}
