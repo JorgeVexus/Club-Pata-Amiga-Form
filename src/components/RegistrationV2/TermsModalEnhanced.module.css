@@ -346,6 +346,27 @@
     margin-top: 0.25rem;
 }
 
+.downloadIndicator {
+    width: 36px;
+    height: 36px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    color: #00BBB4;
+    transition: all 0.2s ease;
+    border: 1px solid #E2E8F0;
+}
+
+.docItem:hover .downloadIndicator {
+    background: #00BBB4;
+    color: white;
+    border-color: #00BBB4;
+    transform: scale(1.1);
+}
+
 
 .divider {
     height: 1px;

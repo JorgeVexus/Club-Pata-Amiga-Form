@@ -144,6 +144,9 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                                                 )}
                                             </div>
                                         </div>
+                                        <div className={styles.downloadIndicator}>
+                                            <span>📥</span>
+                                        </div>
                                     </a>
                                 ))}
                             </div>
