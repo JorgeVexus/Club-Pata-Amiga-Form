@@ -268,7 +268,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
 
         // Validación condicional por nacionalidad
-        if (formData.nationality === 'Mexicana') {
+        if (formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico') {
             if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
         } else if (formData.nationality) {
             // Para extranjeros pedimos pasaporte
@@ -299,7 +299,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             let passportUrl = formData.ine_front_url;
 
             // Subir pasaporte si hay un archivo nuevo
-            if (passportFile && formData.nationality !== 'Mexicana') {
+            if (passportFile && formData.nationality !== 'Mexicana' && formData.nationality !== 'México' && formData.nationality !== 'Mexico') {
                 const msId = member?.id || member?.memberId;
                 const uploadFormData = new FormData();
                 uploadFormData.append('file', passportFile);
@@ -407,7 +407,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         required
                     />
 
-                    {formData.nationality === 'Mexicana' ? (
+                    {formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico' ? (
                         <div className={styles.curpRow}>
                             <TextInput
                                 label="CURP"
