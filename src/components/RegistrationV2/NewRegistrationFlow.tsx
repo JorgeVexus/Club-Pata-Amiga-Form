@@ -17,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import Step1Account from './steps/Step1Account';
 import Step2PetBasic from './steps/Step2PetBasic';
 import Step3PlanSelection from './steps/Step3PlanSelection';
+import Step3_5PaymentSuccess from './steps/Step3_5PaymentSuccess';
 import Step4CompleteProfile from './steps/Step4CompleteProfile';
 import Step5CompletePet from './steps/Step5CompletePet';
 import Step6Success from './steps/Step6Success';
@@ -65,6 +66,7 @@ export default function NewRegistrationFlow() {
     const [member, setMember] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isPaymentSuccessTransition, setIsPaymentSuccessTransition] = useState(false);
 
     // Datos del registro
     const [registrationData, setRegistrationData] = useState<RegistrationData>({});
@@ -428,8 +430,7 @@ export default function NewRegistrationFlow() {
                 // Guardar en Supabase
                 await saveProgress(4, completedData);
 
-                setCurrentStep(4);
-                showToast('¡Pago exitoso! Completa tu perfil.', 'success');
+                setIsPaymentSuccessTransition(true);
             }
         } catch (error: any) {
             console.error('Error en checkout:', error);
@@ -458,8 +459,7 @@ export default function NewRegistrationFlow() {
                 if (updatedMember) setMember(updatedMember);
             }
 
-            setCurrentStep(4);
-            showToast('Modo Test: Pago omitido con éxito.', 'success');
+            setIsPaymentSuccessTransition(true);
         } catch (error: any) {
             console.error('Error skipping payment:', error);
             showToast('Error al omitir el pago', 'error');
@@ -604,8 +604,8 @@ export default function NewRegistrationFlow() {
             {currentStep <= 3 && <BenefitsBanner />}
 
             <div className={styles.content}>
-                {/* Indicador de pasos (Oculto en el paso de éxito) */}
-                {currentStep <= 5 && (
+                {/* Indicador de pasos (Oculto en el paso de éxito y transición) */}
+                {currentStep <= 5 && !isPaymentSuccessTransition && (
                     <StepIndicator
                         currentStep={currentStep <= 3 ? currentStep : currentStep - 3}
                         totalSteps={currentStep <= 3 ? 3 : 2}
@@ -661,6 +661,17 @@ export default function NewRegistrationFlow() {
                                     />
                                 );
                             case 4:
+                                if (isPaymentSuccessTransition) {
+                                    return (
+                                        <Step3_5PaymentSuccess
+                                            onNext={() => {
+                                                setIsPaymentSuccessTransition(false);
+                                                setCurrentStep(4);
+                                                showToast('¡Pago exitoso! Completa tu perfil.', 'success');
+                                            }}
+                                        />
+                                    );
+                                }
                                 return (
                                     <Step4CompleteProfile
                                         data={registrationData}
