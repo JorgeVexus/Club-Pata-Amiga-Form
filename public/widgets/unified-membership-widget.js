@@ -598,6 +598,31 @@
             opacity: 0.05;
             pointer-events: none;
         }
+
+        /* Upload Areas */
+        .pata-upload-area {
+            border: 2px dashed #E0E0E0;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #F8FBFF;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            min-height: 120px;
+        }
+        .pata-upload-area:hover { border-color: #00BBB4; background: #F0FEFE; }
+        .pata-upload-area.has-file { border-style: solid; border-color: #4CAF50; background: #F6FFF6; }
+        .pata-upload-icon { font-size: 32px; }
+        .pata-upload-text { font-size: 14px; font-weight: 600; color: #666; }
+        .pata-upload-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 18px; }
+        .pata-upload-filename { position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 20px; font-size: 11px; margin-top: auto; font-weight: 700; color: #4CAF50; }
     `;
 
 
@@ -614,6 +639,7 @@
             this.showUpdateModal = false;
             this.uploadFiles = { photo1: null, photo2: null };
             this.uploading = false;
+            this.missingPhotosFiles = { photo1: null, photo2: null };
 
             if (!this.container) return;
             this.init();
@@ -789,6 +815,17 @@
             // 1. El estatus es 'pending' Y (no hay mascotas o todas están en 'pending')
             const allPetsPending = this.pets.length === 0 || this.pets.every(p => p.status === 'pending');
             const isPending = this.membershipStatus === 'pending' && allPetsPending;
+
+            // 📸 NUEVO: Verificar si falta subir fotos (cuando está en revisión)
+            const petMissingPhotos = isPending && this.pets.find(p => !p.photo_url && !p.photo2_url);
+
+            if (petMissingPhotos) {
+                console.log('📸 Unified Widget: Pet missing photos. Rendering missing info view.');
+                this.container.innerHTML = this.renderMissingPhotosView(firstName, petMissingPhotos);
+                this.container.classList.add('show');
+                this.attachMissingPhotosEvents(petMissingPhotos);
+                return;
+            }
 
             if (isPending) {
                 console.log('⏳ Unified Widget: User status is pending. Rendering global pending view.');
@@ -1348,6 +1385,151 @@
                     </div>
                 </div>
             `;
+        }
+
+        renderMissingPhotosView(firstName, pet) {
+            return `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                    <p class="pata-welcome-subtitle">
+                        Estamos revisando tu perfil, pero necesitamos un último detalle.
+                    </p>
+                </div>
+
+                <div class="pata-unified-panel show" style="border: 2px solid #FE8F15;">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
+                    
+                    <div class="pata-pending-view">
+                        <h2 class="pata-title" style="margin-bottom: 8px;">tu registro está en revisión</h2>
+                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 25px;">
+                            Sin embargo, aún falta que nos envíes información sobre tu mascota <strong>${pet.name}</strong>. 
+                            Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
+                        </p>
+                        
+                        <p style="font-size: 14px; color: #666; margin-bottom: 30px;">
+                            Te hemos llegado un correo con la liga, pero puedes subirlas aquí mismo para agilizar el proceso.
+                        </p>
+
+                        <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div>
+                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block;">Foto de ${pet.name} 1:</label>
+                                <div class="pata-upload-area" id="pata-missing-upload-1">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-1" style="display:none;">
+                                    <div class="pata-upload-icon">📷</div>
+                                    <div class="pata-upload-text">Frente o cuerpo completo</div>
+                                </div>
+                            </div>
+                            <div>
+                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block;">Foto de ${pet.name} 2:</label>
+                                <div class="pata-upload-area" id="pata-missing-upload-2">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-2" style="display:none;">
+                                    <div class="pata-upload-icon">📷</div>
+                                    <div class="pata-upload-text">Perfil o distintiva (opcional)</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="text-align: center;">
+                            <button class="pata-btn" id="pata-btn-submit-missing" style="background: #00BBB4; color: white; padding: 18px 60px; font-size: 18px; width: 100%; max-width: 400px; font-weight: 900; border-radius: 50px;">
+                                Enviar información →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderUploadSuccess() {
+            return `
+                <div class="pata-unified-panel show" style="text-align: center; padding: 60px 40px; border: 2px solid #4CAF50;">
+                    <div style="font-size: 80px; margin-bottom: 20px;">✅</div>
+                    <h2 class="pata-title" style="color: #4CAF50; margin-bottom: 15px;">¡Gracias!</h2>
+                    <p style="font-size: 20px; font-weight: 600; color: #1A1A1A; margin-bottom: 10px;">
+                        Hemos recibido tus fotos correctamente.
+                    </p>
+                    <p style="font-size: 16px; color: #666;">
+                        Tu solicitud ahora está lista para ser revisada por nuestro equipo.<br>
+                        En unos segundos serás redirigido a tu estatus actualizado.
+                    </p>
+                </div>
+            `;
+        }
+
+        attachMissingPhotosEvents(pet) {
+            this.setupMissingPhotoUpload('pata-missing-upload-1', 'pata-missing-file-1', 'photo1');
+            this.setupMissingPhotoUpload('pata-missing-upload-2', 'pata-missing-file-2', 'photo2');
+
+            const submitBtn = document.getElementById('pata-btn-submit-missing');
+            if (submitBtn) {
+                submitBtn.onclick = async () => {
+                    if (!this.missingPhotosFiles.photo1 && !this.missingPhotosFiles.photo2) {
+                        return alert('Por favor sube al menos una foto de tu mascota.');
+                    }
+
+                    submitBtn.disabled = true;
+                    submitBtn.innerText = 'Subiendo información...';
+
+                    try {
+                        let photo1Url = null;
+                        let photo2Url = null;
+
+                        if (this.missingPhotosFiles.photo1) {
+                            photo1Url = await this.uploadPhoto(this.missingPhotosFiles.photo1);
+                        }
+                        if (this.missingPhotosFiles.photo2) {
+                            photo2Url = await this.uploadPhoto(this.missingPhotosFiles.photo2);
+                        }
+
+                        submitBtn.innerText = 'Actualizando mascota...';
+
+                        const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                userId: this.member.id,
+                                photo1Url,
+                                photo2Url,
+                                message: 'Fotos subidas post-registro'
+                            })
+                        });
+
+                        const updateData = await updateRes.json();
+                        if (updateData.success) {
+                            // Mostrar pantalla de éxito
+                            this.container.innerHTML = this.renderUploadSuccess();
+                            setTimeout(() => {
+                                location.reload();
+                            }, 3500);
+                        } else {
+                            throw new Error(updateData.error);
+                        }
+                    } catch (e) {
+                        console.error('Error uploading missing photos:', e);
+                        alert('Error: ' + e.message);
+                        submitBtn.disabled = false;
+                        submitBtn.innerText = 'Enviar información →';
+                    }
+                };
+            }
+        }
+
+        setupMissingPhotoUpload(areaId, fileId, key) {
+            const area = document.getElementById(areaId);
+            const input = document.getElementById(fileId);
+            if (area && input) {
+                area.onclick = () => input.click();
+                input.onchange = (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.missingPhotosFiles[key] = file;
+                        area.classList.add('has-file');
+                        area.innerHTML = `
+                            <img src="${URL.createObjectURL(file)}" class="pata-upload-preview">
+                            <div class="pata-upload-filename">✓ ${file.name.substring(0, 15)}...</div>
+                        `;
+                    }
+                };
+            }
         }
 
         attachEvents() {

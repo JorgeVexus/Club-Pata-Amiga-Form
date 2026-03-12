@@ -58,10 +58,10 @@ export async function POST(
         }
 
         // Verificar que está en un status que permite actualización
-        const allowedStatuses = ['action_required', 'rejected', 'appealed'];
+        const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending'];
         if (!allowedStatuses.includes(pet.status)) {
             return NextResponse.json({
-                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado o cuando tu mascota esté rechazada/apelada'
+                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado, cuando tu mascota esté rechazada/apelada o si falta información pendiente.'
             }, { status: 400, headers: corsHeaders });
         }
 

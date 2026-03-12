@@ -272,6 +272,7 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             // Fotos y Certificados
             primary_photo_url: pet.primaryPhotoUrl || pet.photo1Url,
             photo_url: pet.photo1Url || pet.primaryPhotoUrl, // Duplicamos por compatibilidad con dashboard legacy
+            photo2_url: pet.photo2Url,
             vet_certificate_url: pet.vetCertificateUrl,
 
             // Mestizos / Adoptados
