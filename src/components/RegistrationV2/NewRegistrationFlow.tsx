@@ -427,9 +427,9 @@ export default function NewRegistrationFlow() {
                 });
                 if (updatedMember) setMember(updatedMember);
 
-                // Guardar en Supabase
+                // Guardar progreso del pago en Supabase
                 await saveProgress(4, completedData);
-
+                setCurrentStep(4);
                 setIsPaymentSuccessTransition(true);
             }
         } catch (error: any) {
@@ -459,6 +459,7 @@ export default function NewRegistrationFlow() {
                 if (updatedMember) setMember(updatedMember);
             }
 
+            setCurrentStep(4);
             setIsPaymentSuccessTransition(true);
         } catch (error: any) {
             console.error('Error skipping payment:', error);
