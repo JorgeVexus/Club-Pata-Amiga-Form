@@ -60,15 +60,6 @@ export default function Step6Success({ petName }: Step6SuccessProps) {
             </div>
 
             <div className={styles.section} style={{ marginTop: '2rem' }}>
-                <div className={styles.alertBox} style={{ background: '#F0FFF4', borderColor: '#48BB78', textAlign: 'left' }}>
-                    <span style={{ fontSize: '1.5rem' }}>🛡️</span>
-                    <div>
-                        <strong style={{ color: '#2F855A' }}>Tu mascota está protegida</strong>
-                        <p style={{ color: '#38A169', fontSize: '0.9rem' }}>
-                            A partir de este momento, ya puedes consultar con el Vet-Bot para dudas menores mientras se completa la validación.
-                        </p>
-                    </div>
-                </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '2rem' }}>
                     <a
