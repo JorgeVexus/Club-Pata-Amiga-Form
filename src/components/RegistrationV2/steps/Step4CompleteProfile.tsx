@@ -38,8 +38,11 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         postalCode: '',
         state: '',
         city: '',
-        colony: ''
+        colony: '',
+        ine_front_url: ''
     });
+    const [passportFile, setPassportFile] = useState<File | null>(null);
+    const [passportPreview, setPassportPreview] = useState<string>('');
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isLoadingCP, setIsLoadingCP] = useState(false);
@@ -187,8 +190,13 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 state: profile.state || '',
                 city: profile.city || '',
                 colony: profile.colony || '',
+                ine_front_url: profile.ine_front_url || '',
             }));
             setIsLoaded(true);
+
+            if (profile.ine_front_url) {
+                setPassportPreview(profile.ine_front_url);
+            }
 
             // Si ya hay CURP cargada de 18 caracteres, verificarla
             if (profile.curp && profile.curp.length === 18) {
@@ -258,7 +266,17 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
         if (!formData.nationality) newErrors.nationality = 'Requerido';
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
-        if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
+
+        // Validación condicional por nacionalidad
+        if (formData.nationality === 'Mexicana') {
+            if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
+        } else if (formData.nationality) {
+            // Para extranjeros pedimos pasaporte
+            if (!passportFile && !formData.ine_front_url) {
+                newErrors.passport = 'Debes subir tu pasaporte';
+            }
+        }
+
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
         if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
@@ -276,8 +294,41 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
 
         setIsLoading(true);
-        await onNext(formData);
-        setIsLoading(false);
+
+        try {
+            let passportUrl = formData.ine_front_url;
+
+            // Subir pasaporte si hay un archivo nuevo
+            if (passportFile && formData.nationality !== 'Mexicana') {
+                const msId = member?.id || member?.memberId;
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', passportFile);
+                uploadFormData.append('userId', msId);
+
+                const response = await fetch('/api/upload/pet-photo', {
+                    method: 'POST',
+                    body: uploadFormData
+                });
+                const result = await response.json();
+                if (result.success) {
+                    passportUrl = result.url;
+                } else {
+                    throw new Error('Error al subir el pasaporte');
+                }
+            }
+
+            const dataToSubmit = {
+                ...formData,
+                ine_front_url: passportUrl
+            };
+
+            await onNext(dataToSubmit);
+        } catch (error: any) {
+            console.error('Error in Step 4 handleSubmit:', error);
+            showToast(error.message || 'Error al guardar los datos', 'error');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -356,41 +407,84 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                         required
                     />
 
-                    <div className={styles.curpRow}>
-                        <TextInput
-                            label="CURP"
-                            name="curp"
-                            value={formData.curp}
-                            onChange={(value) => {
-                                const sanitized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18);
-                                setFormData({ ...formData, curp: sanitized });
-                                if (sanitized.length === 18) {
-                                    verifyCurp(sanitized);
-                                } else {
-                                    setCurpAvailable(null);
-                                    if (errors.curp) {
-                                        setErrors(prev => {
-                                            const newErrors = { ...prev };
-                                            delete newErrors.curp;
-                                            return newErrors;
-                                        });
+                    {formData.nationality === 'Mexicana' ? (
+                        <div className={styles.curpRow}>
+                            <TextInput
+                                label="CURP"
+                                name="curp"
+                                value={formData.curp}
+                                onChange={(value) => {
+                                    const sanitized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18);
+                                    setFormData({ ...formData, curp: sanitized });
+                                    if (sanitized.length === 18) {
+                                        verifyCurp(sanitized);
+                                    } else {
+                                        setCurpAvailable(null);
+                                        if (errors.curp) {
+                                            setErrors(prev => {
+                                                const newErrors = { ...prev };
+                                                delete newErrors.curp;
+                                                return newErrors;
+                                            });
+                                        }
                                     }
-                                }
-                            }}
-                            onBlur={handleCurpBlur}
-                            placeholder="ABCD123456HDFRNN09"
-                            error={errors.curp}
-                            required
-                            maxLength={18}
-                            disabled={isCheckingCurp}
-                        />
-                        {isCheckingCurp && (
-                            <span className={styles.inputIndicator}>Verificando...</span>
-                        )}
-                        {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
-                            <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
-                        )}
-                    </div>
+                                }}
+                                onBlur={handleCurpBlur}
+                                placeholder="ABCD123456HDFRNN09"
+                                error={errors.curp}
+                                required
+                                maxLength={18}
+                                disabled={isCheckingCurp}
+                            />
+                            {isCheckingCurp && (
+                                <span className={styles.inputIndicator}>Verificando...</span>
+                            )}
+                            {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
+                                <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
+                            )}
+                        </div>
+                    ) : formData.nationality ? (
+                        <div className={styles.passportUploadSection}>
+                            <label className={styles.fieldLabel}>
+                                Pasaporte (Requerido para extranjeros) <span className={styles.required}>*</span>
+                            </label>
+                            <label className={styles.fileUploadLabel}>
+                                <input
+                                    type="file"
+                                    className={styles.fileInput}
+                                    accept="image/*,application/pdf"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setPassportFile(file);
+                                            if (file.type.startsWith('image/')) {
+                                                setPassportPreview(URL.createObjectURL(file));
+                                            } else {
+                                                setPassportPreview('');
+                                            }
+                                        }
+                                    }}
+                                />
+                                <div className={`${styles.fileUploadBox} ${errors.passport ? styles.errorBorder : ''}`}>
+                                    {passportPreview ? (
+                                        <div className={styles.previewContainer}>
+                                            <img src={passportPreview} alt="Passport Preview" className={styles.previewImage} />
+                                            <span className={styles.changeLabel}>Cambiar pasaporte</span>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <span className={styles.fileIcon}>📄</span>
+                                            <span className={styles.uploadText}>
+                                                {passportFile ? passportFile.name : 'Haz clic para subir tu pasaporte'}
+                                            </span>
+                                            <span className={styles.helpText}>JPG, PNG o PDF (Máx. 5MB)</span>
+                                        </>
+                                    )}
+                                </div>
+                            </label>
+                            {errors.passport && <span className={styles.errorText}>{errors.passport}</span>}
+                        </div>
+                    ) : null}
                 </div>
 
                 <div className={styles.section}>

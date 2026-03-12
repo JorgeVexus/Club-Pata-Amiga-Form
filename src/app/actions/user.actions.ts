@@ -140,6 +140,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             city: userData.city,
             colony: userData.colony,
             address: userData.address,
+            ine_front_url: userData.ine_front_url || userData.passportUrl,
             // Tracking
             registration_step: userData.registration_step,
             membership_status: userData.membership_status || 'pending',
