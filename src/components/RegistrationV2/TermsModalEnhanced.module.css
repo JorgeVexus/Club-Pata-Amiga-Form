@@ -161,6 +161,24 @@
     border-left: 4px solid #00BBB4;
 }
 
+.acceptedGroup {
+    background: #F7FAFC;
+    border-radius: 16px;
+    border-left: 4px solid #00BBB4;
+    overflow: hidden;
+}
+
+.acceptedGroup .acceptedItem {
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 1rem 1.25rem;
+}
+
+.acceptedGroup .acceptedItem:not(:last-child) {
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
 .acceptedItem.optional {
     border-left-color: #FE8F15;
     background: #FFFAF0;

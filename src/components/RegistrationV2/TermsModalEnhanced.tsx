@@ -158,44 +158,47 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                         <h3 className={styles.sectionTitle}>Aceptaciones y Consentimientos</h3>
 
                         <div className={styles.acceptedList}>
-                            {/* Términos y Condiciones */}
-                            <div className={styles.acceptedItem}>
-                                <span className={styles.acceptedCheck}>✓</span>
-                                <div className={styles.acceptedText}>
-                                    <strong>Términos y Condiciones</strong>
-                                    <span className={styles.required}>*</span>
-                                    <small>
-                                        He leído y acepto los términos y condiciones del servicio,
-                                        incluyendo las políticas de membresía, pagos y cancelación.
-                                    </small>
+                            {/* Grupo de Aceptaciones Obligatorias */}
+                            <div className={styles.acceptedGroup}>
+                                {/* Términos y Condiciones */}
+                                <div className={styles.acceptedItem}>
+                                    <span className={styles.acceptedCheck}>✓</span>
+                                    <div className={styles.acceptedText}>
+                                        <strong>Términos y Condiciones</strong>
+                                        <span className={styles.required}>*</span>
+                                        <small>
+                                            He leído y acepto los términos y condiciones del servicio,
+                                            incluyendo las políticas de membresía, pagos y cancelación.
+                                        </small>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Aviso de Privacidad */}
-                            <div className={styles.acceptedItem}>
-                                <span className={styles.acceptedCheck}>✓</span>
-                                <div className={styles.acceptedText}>
-                                    <strong>Aviso de Privacidad</strong>
-                                    <span className={styles.required}>*</span>
-                                    <small>
-                                        He leído el aviso de privacidad y autorizo el tratamiento de
-                                        mis datos personales conforme a la Ley Federal de Protección
-                                        de Datos Personales en Posesión de los Particulares.
-                                    </small>
+                                {/* Aviso de Privacidad */}
+                                <div className={styles.acceptedItem}>
+                                    <span className={styles.acceptedCheck}>✓</span>
+                                    <div className={styles.acceptedText}>
+                                        <strong>Aviso de Privacidad</strong>
+                                        <span className={styles.required}>*</span>
+                                        <small>
+                                            He leído el aviso de privacidad y autorizo el tratamiento de
+                                            mis datos personales conforme a la Ley Federal de Protección
+                                            de Datos Personales en Posesión de los Particulares.
+                                        </small>
+                                    </div>
                                 </div>
-                            </div>
 
-                            {/* Contrato de Membresía */}
-                            <div className={styles.acceptedItem}>
-                                <span className={styles.acceptedCheck}>✓</span>
-                                <div className={styles.acceptedText}>
-                                    <strong>Contrato de Membresía</strong>
-                                    <span className={styles.required}>*</span>
-                                    <small>
-                                        Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando
-                                        electrónicamente el contrato de membresía y autorizo los cargos
-                                        recurrentes a mi método de pago seleccionado.
-                                    </small>
+                                {/* Contrato de Membresía */}
+                                <div className={styles.acceptedItem}>
+                                    <span className={styles.acceptedCheck}>✓</span>
+                                    <div className={styles.acceptedText}>
+                                        <strong>Contrato de Membresía</strong>
+                                        <span className={styles.required}>*</span>
+                                        <small>
+                                            Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando
+                                            electrónicamente el contrato de membresía y autorizo los cargos
+                                            recurrentes a mi método de pago seleccionado.
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
 
