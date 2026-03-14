@@ -35,7 +35,6 @@ export default function AdminDashboard() {
     });
     const [pendingCounts, setPendingCounts] = useState({
         member: 0,
-        'member-pending-payment': 0,
         ambassador: 0,
         'wellness-center': 0,
         'solidarity-fund': 0,
@@ -284,23 +283,16 @@ export default function AdminDashboard() {
             if (data.success && data.members) {
                 // Función helper para determinar si un miembro ha pagado
                 const checkIsPaid = (m: any) => {
-                    const customStatus = m.customFields?.['payment-status'] === 'completed';
                     const hasActivePlan = m.planConnections?.some((p: any) =>
                         p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
                     );
-                    return customStatus || hasActivePlan;
+                    return hasActivePlan;
                 };
 
                 // Miembros 'normales': Solo los que ya completaron el pago o tienen plan activo
                 setPendingCounts(prev => ({
                     ...prev,
                     member: data.members.filter((m: any) => checkIsPaid(m)).length
-                }));
-
-                // Pendientes de pago: Los que no tienen el pago completado ni plan activo
-                setPendingCounts(prev => ({
-                    ...prev,
-                    'member-pending-payment': data.members.filter((m: any) => !checkIsPaid(m)).length
                 }));
             }
 
@@ -366,14 +358,13 @@ export default function AdminDashboard() {
                             <h1 className={styles.pageTitle}>
                                 {activeFilter === 'all' ? 'Gestión general' :
                                     activeFilter === 'member' ? 'Miembros' :
-                                        activeFilter === 'member-pending-payment' ? 'Pendientes de Pago' :
-                                            activeFilter === 'ambassador' ? 'Embajadores' :
-                                                activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
-                                                    activeFilter === 'admins' ? 'Administradores' :
-                                                        activeFilter === 'appeals' ? 'Apelaciones' :
-                                                            activeFilter === 'legal-docs' ? 'Documentos Legales' :
-                                                                activeFilter === 'settings' ? 'Configuración' :
-                                                                    'Fondo Solidario'}
+                                        activeFilter === 'ambassador' ? 'Embajadores' :
+                                            activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
+                                                activeFilter === 'admins' ? 'Administradores' :
+                                                    activeFilter === 'appeals' ? 'Apelaciones' :
+                                                        activeFilter === 'legal-docs' ? 'Documentos Legales' :
+                                                            activeFilter === 'settings' ? 'Configuración' :
+                                                                'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {

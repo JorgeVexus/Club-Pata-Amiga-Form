@@ -3,7 +3,7 @@
  */
 
 // Tipos de solicitudes
-export type RequestType = 'member' | 'member-pending-payment' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'communications' | 'appeals';
+export type RequestType = 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'communications' | 'appeals';
 
 // Estados de solicitud
 export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in-review';
@@ -105,7 +105,6 @@ export const BRAND_COLORS = {
 // Mapeo de colores por tipo de solicitud
 export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'member': BRAND_COLORS.green,
-    'member-pending-payment': BRAND_COLORS.orange,
     'ambassador': BRAND_COLORS.yellow,
     'wellness-center': BRAND_COLORS.orange,
     'solidarity-fund': BRAND_COLORS.pink,
@@ -125,7 +124,6 @@ export const REQUEST_STATUS_COLORS: Record<RequestStatus, string> = {
 // Labels en español
 export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'member': 'Miembro',
-    'member-pending-payment': 'Pendiente de Pago',
     'ambassador': 'Embajador',
     'wellness-center': 'Centro de Bienestar',
     'solidarity-fund': 'Fondo Solidario',

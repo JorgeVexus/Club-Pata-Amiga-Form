@@ -28,25 +28,31 @@ export async function GET(request: NextRequest) {
 
         // Calcular métricas reales - EXCLUDE admin/super_admin users
         const totalMembers = members.filter(m =>
-            m.customFields['approval-status'] === 'approved' &&
-            !adminMemberstackIds.has(m.id)
+            m.customFields?.['approval-status'] === 'approved' &&
+            !adminMemberstackIds.has(m.id) &&
+            m.planConnections?.some((p: any) =>
+                p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
+            )
         ).length;
 
-        // Métricas placeholder para features futuras
-        const totalAmbassadors = 0; // members.filter(m => m.customFields['roles']?.includes('ambassador')).length;
-        const activeWellnessCenters = 0; // members.filter(m => m.customFields['primary-role'] === 'wellness-center').length;
+        // Fetch ambassadors count from Supabase
+        const { count: totalAmbassadors } = await supabase
+            .from('ambassadors')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'approved');
+
+        const activeWellnessCenters = 0; // Placeholder
 
         // Simulación de Fondo Solidario (ej. $50 de cada membresía aprobada se va al fondo)
-        // Esto es solo un ejemplo, ajustar según lógica de negocio real
         const solidarityFund = totalMembers * 50;
 
         return NextResponse.json({
             success: true,
             metrics: {
                 totalMembers,
-                totalAmbassadors,
+                totalAmbassadors: totalAmbassadors || 0,
                 activeWellnessCenters,
-                totalRefunds: solidarityFund, // Reusando este campo para "Fondo acumulado" por ahora
+                totalRefunds: solidarityFund,
             }
         });
 

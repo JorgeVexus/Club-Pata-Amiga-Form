@@ -49,17 +49,6 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                 </button>
 
                 <button
-                    className={`${styles.menuItem} ${activeFilter === 'member-pending-payment' ? styles.active : ''}`}
-                    onClick={() => onFilterChange('member-pending-payment')}
-                >
-                    <span className={styles.menuIcon}>💳</span>
-                    <span className={styles.menuLabel}>Pendientes de Pago</span>
-                    {pendingCounts['member-pending-payment'] > 0 && (
-                        <span className={styles.menuBadge}>{pendingCounts['member-pending-payment']}</span>
-                    )}
-                </button>
-
-                <button
                     className={`${styles.menuItem} ${activeFilter === 'ambassador' ? styles.active : ''}`}
                     onClick={() => onFilterChange('ambassador')}
                 >
