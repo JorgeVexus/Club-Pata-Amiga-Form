@@ -495,10 +495,9 @@ export async function saveBillingDetailsByMemberstackId(memberstackId: string, b
             user_id: userData.id,
             rfc: billingData.rfc.toUpperCase(),
             business_name: billingData.businessName,
-            fiscal_address: billingData.fiscalAddress || billingData.address,
+            zip_code: billingData.zipCode,
             tax_regime: billingData.taxRegime,
             cfdi_use: billingData.cfdiUse,
-            email: billingData.email || userData.email,
             updated_at: new Date().toISOString()
         };
 

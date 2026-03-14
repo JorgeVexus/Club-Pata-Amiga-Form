@@ -6,10 +6,9 @@ import styles from './steps.module.css';
 interface BillingData {
     rfc: string;
     businessName: string;
-    fiscalAddress: string;
+    zipCode: string;
     taxRegime: string;
     cfdiUse: string;
-    email: string;
 }
 
 interface BillingModalProps {
@@ -23,10 +22,9 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
     const [details, setDetails] = useState<BillingData>({
         rfc: '',
         businessName: '',
-        fiscalAddress: '',
+        zipCode: '',
         taxRegime: '',
         cfdiUse: '',
-        email: initialEmail || '',
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -58,7 +56,6 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                         lineHeight: '1.5'
                     }}>
                         Ingresa tus datos fiscales para generar tus facturas correctamente.
-                        La constancia ya no es requerida, pero asegúrate de que los datos coincidan con ella.
                     </p>
 
                     <form onSubmit={handleSubmit} className={styles.billingForm}>
@@ -86,13 +83,14 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label>Código Postal y Dirección Fiscal *</label>
-                            <textarea
+                            <label>Código Postal (C.P.) *</label>
+                            <input
+                                type="text"
                                 required
-                                value={details.fiscalAddress}
-                                onChange={(e) => setDetails({ ...details, fiscalAddress: e.target.value })}
-                                placeholder="CP, Calle, Número, Colonia, Ciudad, Estado"
-                                rows={2}
+                                value={details.zipCode}
+                                onChange={(e) => setDetails({ ...details, zipCode: e.target.value.replace(/\D/g, '').slice(0, 5) })}
+                                placeholder="Ej. 12345"
+                                maxLength={5}
                             />
                         </div>
 
@@ -128,16 +126,7 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                             </select>
                         </div>
 
-                        <div className={styles.formGroup}>
-                            <label>Correo electrónico para facturas *</label>
-                            <input
-                                type="email"
-                                required
-                                value={details.email}
-                                onChange={(e) => setDetails({ ...details, email: e.target.value })}
-                                placeholder="ejemplo@correo.com"
-                            />
-                        </div>
+
 
                         <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
                             <button
