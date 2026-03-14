@@ -30,7 +30,9 @@ export async function POST(request: NextRequest) {
             state: body.state,
             postalCode: body.postalCode,
             country: body.country || 'MX',
-            dateOfBirth: body.dateOfBirth
+            dateOfBirth: body.dateOfBirth,
+            tags: body.tags,
+            customFields: body.customFields
         };
 
         const result = await upsertContact(contactData);

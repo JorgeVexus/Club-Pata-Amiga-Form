@@ -358,6 +358,12 @@ export default function NewRegistrationFlow() {
                 // Si es un error de notificación_preferences, es un bug de DB que no debería bloquear el flujo UI
             }
 
+            // Sincronizar con CRM Lynsales - Paso 1
+            const { syncCRMAction } = await import('@/app/actions/user.actions');
+            syncCRMAction(msId, 'step1', { email: data.email }).catch(err =>
+                console.error('⚠️ Error sincronizando con CRM (No crítico):', err)
+            );
+
             setRegistrationData(prev => ({ ...prev, account: data }));
             setCurrentStep(2);
             showToast('¡Cuenta creada!', 'success');
@@ -497,6 +503,15 @@ export default function NewRegistrationFlow() {
 
             if (msResult.data) {
                 setMember(msResult.data);
+            }
+
+            // Sincronizar con CRM Lynsales - Paso 4
+            const { syncCRMAction } = await import('@/app/actions/user.actions');
+            const memberId = member?.id || (member as any)?.memberId;
+            if (memberId) {
+                syncCRMAction(memberId, 'step4', profileData).catch(err =>
+                    console.error('⚠️ Error sincronizando con CRM (No crítico):', err)
+                );
             }
 
             setCurrentStep(5);

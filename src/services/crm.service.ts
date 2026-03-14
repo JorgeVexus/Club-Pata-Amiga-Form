@@ -31,6 +31,8 @@ export interface ContactData {
     postalCode?: string;
     country?: string;
     dateOfBirth?: string; // Formato YYYY-MM-DD
+    tags?: string[];
+    customFields?: Array<{ key: string; field_value: any }>;
 }
 
 export interface UpsertResponse {
@@ -68,7 +70,9 @@ export async function upsertContact(data: ContactData): Promise<UpsertResponse> 
             state: data.state,
             postalCode: data.postalCode,
             country: data.country || 'MX',
-            dateOfBirth: data.dateOfBirth
+            dateOfBirth: data.dateOfBirth,
+            tags: data.tags,
+            customFields: data.customFields
         };
 
         console.log('[CRM] Enviando upsert:', { email: data.email, name: payload.name });

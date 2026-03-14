@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { upsertContact, updateContact, updateContactAsActive, type ContactData } from '@/services/crm.service'
 
 // Inicializar cliente seguro para operaciones de administración
 const getServiceRoleClient = () => {
@@ -521,6 +522,70 @@ export async function saveBillingDetailsByMemberstackId(memberstackId: string, b
         return { success: true };
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error);
+        return { success: false, error: error.message };
+    }
+}
+/**
+ * Sincroniza un usuario con el CRM Lynsales según el paso del funnel
+ */
+export async function syncCRMAction(memberstackId: string, stage: 'step1' | 'step4', data: any) {
+    console.log(`🔄 [CRM Sync] Iniciando sincronización para ${stage}...`, { memberstackId });
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        // 1. Obtener datos del usuario de Supabase
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('id, email, crm_contact_id, first_name, last_name, phone')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !user) {
+            console.error('❌ [CRM Sync] Usuario no encontrado:', userError);
+            return { success: false, error: 'Usuario no encontrado' };
+        }
+
+        if (stage === 'step1') {
+            // POST con correo y etiqueta "funnel_registro_credenciales"
+            const contactData: ContactData = {
+                firstName: user.first_name || '',
+                lastName: user.last_name || '',
+                email: user.email,
+                tags: ['funnel_registro_credenciales']
+            };
+
+            const result = await upsertContact(contactData);
+            if (result.success && result.contactId) {
+                // Guardar el contactId en Supabase
+                await supabase
+                    .from('users')
+                    .update({ crm_contact_id: result.contactId })
+                    .eq('memberstack_id', memberstackId);
+
+                return { success: true, contactId: result.contactId };
+            }
+            return { success: false, error: result.error };
+        }
+
+        if (stage === 'step4' && user.crm_contact_id) {
+            // PUT actualizando datos con el ID y agrega etiqueta "funnel_datos_contratante"
+            const contactData: Partial<ContactData> = {
+                firstName: data.firstName || user.first_name,
+                lastName: data.last_name || data.paternalLastName || user.last_name,
+                phone: data.phone || user.phone,
+                tags: ['funnel_datos_contratante']
+            };
+
+            const result = await updateContact(user.crm_contact_id, contactData);
+            return { success: result.success, error: result.error };
+        }
+
+        return { success: false, error: 'Condiciones de sincronización no cumplidas' };
+
+    } catch (error: any) {
+        console.error('❌ [CRM Sync] Error inesperado:', error);
         return { success: false, error: error.message };
     }
 }
