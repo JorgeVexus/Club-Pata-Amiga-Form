@@ -58,6 +58,7 @@ interface RegistrationData {
     paymentCompleted?: boolean;
     profile?: any;
     petComplete?: any;
+    termsAcceptance?: any;
 }
 
 export default function NewRegistrationFlow() {
@@ -251,6 +252,12 @@ export default function NewRegistrationFlow() {
                 userData.ine_front_url = data.profile.ine_front_url;
             }
 
+            // Agregar datos de aceptación de términos
+            if (data.termsAcceptance) {
+                userData.termsAcceptedAt = data.termsAcceptance.timestamp || new Date().toISOString();
+                userData.termsVersion = '1.0';
+            }
+
             await registerUserInSupabase(userData, memberId);
             console.log('✅ Progreso guardado en Supabase (Source of Truth)', { step, memberId });
         } catch (error) {
@@ -393,8 +400,8 @@ export default function NewRegistrationFlow() {
     };
 
     // Paso 3: Seleccionar plan y proceder a pago
-    const handleStep3Complete = async (planId: string) => {
-        const newData = { ...registrationData, planId };
+    const handleStep3Complete = async (planId: string, termsAcceptance?: any) => {
+        const newData = { ...registrationData, planId, termsAcceptance };
         setRegistrationData(newData);
 
         // Guardar en Supabase - Siguiente paso es el 4
@@ -440,10 +447,10 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    const handleSkipPayment = async (planId: string) => {
+    const handleSkipPayment = async (planId: string, termsAcceptance?: any) => {
         setIsSaving(true);
         try {
-            const newData = { ...registrationData, planId, paymentCompleted: true };
+            const newData = { ...registrationData, planId, termsAcceptance, paymentCompleted: true };
             setRegistrationData(newData);
 
             // Guardar en Supabase

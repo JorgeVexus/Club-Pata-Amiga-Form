@@ -8,14 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './TermsModalEnhanced.module.css';
 
-interface Document {
-    id: string;
-    title: string;
-    description: string | null;
-    file_url: string;
-    file_name: string;
-    target_audience: 'members' | 'ambassadors' | 'both';
-}
+
 
 interface TermsAcceptance {
     termsAndConditions: boolean;
@@ -31,11 +24,8 @@ interface TermsModalEnhancedProps {
 }
 
 export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance }: TermsModalEnhancedProps) {
-    const [documents, setDocuments] = useState<Document[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    // Estado de aceptación (Marketing es editable)
+    const [isDocExpanded, setIsDocExpanded] = useState(false);
+    const [isConsentExpanded, setIsConsentExpanded] = useState(false);
     const [acceptance, setAcceptance] = useState<TermsAcceptance>({
         termsAndConditions: true,
         privacyPolicy: true,
@@ -46,8 +36,8 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
 
     useEffect(() => {
         if (isOpen) {
-            fetchDocuments();
             document.body.style.overflow = 'hidden';
+            setIsDocExpanded(false); // Reset expansion on open
         } else {
             document.body.style.overflow = 'unset';
         }
@@ -55,26 +45,6 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
             document.body.style.overflow = 'unset';
         };
     }, [isOpen]);
-
-    const fetchDocuments = async () => {
-        setLoading(true);
-        setError(null);
-        try {
-            const response = await fetch('/api/legal-documents?audience=members');
-            const data = await response.json();
-
-            if (data.success) {
-                setDocuments(data.documents || []);
-            } else {
-                setError('Error al cargar los documentos');
-            }
-        } catch (error) {
-            console.error('Error fetching legal documents:', error);
-            setError('Error de conexión al cargar documentos');
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const handleClose = () => {
         onClose(true, acceptance);
@@ -107,50 +77,36 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
                             Toca o haz clic sobre cualquier documento para descargarlo y revisarlo.
                         </p>
 
-                        {loading ? (
-                            <div className={styles.loadingState}>
-                                <div className={styles.spinner} />
-                                <p>Cargando documentos...</p>
-                            </div>
-                        ) : error ? (
-                            <div className={styles.errorState}>
-                                <p>⚠️ {error}</p>
-                                <button onClick={fetchDocuments} className={styles.retryBtn}>
-                                    Reintentar
-                                </button>
-                            </div>
-                        ) : documents.length === 0 ? (
-                            <div className={styles.noDocs}>
-                                <p>📄 No hay documentos disponibles.</p>
-                            </div>
-                        ) : (
-                            <div className={styles.docsList}>
-                                {documents.map((doc) => (
-                                    <a
-                                        key={doc.id}
-                                        href={doc.file_url}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        download={doc.file_name}
-                                        className={styles.docItem}
-                                        title={`Descargar ${doc.title}`}
-                                    >
-                                        <div className={styles.docInfo}>
-                                            <span className={styles.docIcon}>📄</span>
-                                            <div>
-                                                <div className={styles.docTitle}>{doc.title}</div>
-                                                {doc.description && (
-                                                    <div className={styles.docDesc}>{doc.description}</div>
-                                                )}
+                        <div className={styles.docsList}>
+                            <div className={`${styles.docAccordionItem} ${isDocExpanded ? styles.expanded : ''}`}>
+                                <div
+                                    className={styles.docAccordionHeader}
+                                    onClick={() => setIsDocExpanded(!isDocExpanded)}
+                                >
+                                    <div className={styles.docInfo}>
+                                        <span className={styles.docIcon}>📄</span>
+                                        <div>
+                                            <div className={styles.docTitle}>Términos del Servicio</div>
+                                            <div className={styles.docDesc}>
+                                                Incluye Aviso de privacidad, Términos y condiciones, Reglamentos y Políticas aplicables.
                                             </div>
                                         </div>
-                                        <div className={styles.downloadIndicator}>
-                                            <span>📥</span>
-                                        </div>
-                                    </a>
-                                ))}
+                                    </div>
+                                    <div className={styles.accordionChevron}>
+                                        {isDocExpanded ? '▲' : '▼'}
+                                    </div>
+                                </div>
+                                {isDocExpanded && (
+                                    <div className={styles.docAccordionContent}>
+                                        <iframe
+                                            src="/legal/terminos_completos_v1.pdf#toolbar=0"
+                                            className={styles.docIframe}
+                                            title="Términos Completos"
+                                        />
+                                    </div>
+                                )}
                             </div>
-                        )}
+                        </div>
                     </div>
 
                     {/* Separador */}
@@ -162,47 +118,67 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance 
 
                         <div className={styles.acceptedList}>
                             {/* Grupo de Aceptaciones Obligatorias */}
-                            <div className={styles.acceptedGroup}>
-                                {/* Términos y Condiciones */}
-                                <div className={styles.acceptedItem}>
-                                    <span className={styles.acceptedCheck}>✓</span>
-                                    <div className={styles.acceptedText}>
-                                        <strong>Términos y Condiciones</strong>
-                                        <span className={styles.required}>*</span>
-                                        <small>
-                                            He leído y acepto los términos y condiciones del servicio,
-                                            incluyendo las políticas de membresía, pagos y cancelación.
-                                        </small>
+                            <div className={`${styles.docAccordionItem} ${isConsentExpanded ? styles.expanded : ''}`}>
+                                <div
+                                    className={styles.docAccordionHeader}
+                                    onClick={() => setIsConsentExpanded(!isConsentExpanded)}
+                                >
+                                    <div className={styles.docInfo}>
+                                        <span className={styles.docIcon}>✅</span>
+                                        <div>
+                                            <div className={styles.docTitle}>Aceptaciones Obligatorias</div>
+                                            <div className={styles.docDesc}>
+                                                Términos, Privacidad y Contrato.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className={styles.accordionChevron}>
+                                        {isConsentExpanded ? '▲' : '▼'}
                                     </div>
                                 </div>
+                                {isConsentExpanded && (
+                                    <div className={styles.docAccordionContent}>
+                                        <div className={styles.simpleConsentList}>
+                                            {/* Términos y Condiciones */}
+                                            <div className={styles.simpleConsentItem}>
+                                                <span className={styles.simpleConsentCheck}>✓</span>
+                                                <div className={styles.simpleConsentText}>
+                                                    <strong>Términos y Condiciones</strong>
+                                                    <small>
+                                                        He leído y acepto los términos y condiciones del servicio,
+                                                        incluyendo las políticas de membresía, pagos y cancelación.
+                                                    </small>
+                                                </div>
+                                            </div>
 
-                                {/* Aviso de Privacidad */}
-                                <div className={styles.acceptedItem}>
-                                    <span className={styles.acceptedCheck}>✓</span>
-                                    <div className={styles.acceptedText}>
-                                        <strong>Aviso de Privacidad</strong>
-                                        <span className={styles.required}>*</span>
-                                        <small>
-                                            He leído el aviso de privacidad y autorizo el tratamiento de
-                                            mis datos personales conforme a la Ley Federal de Protección
-                                            de Datos Personales en Posesión de los Particulares.
-                                        </small>
-                                    </div>
-                                </div>
+                                            {/* Aviso de Privacidad */}
+                                            <div className={styles.simpleConsentItem}>
+                                                <span className={styles.simpleConsentCheck}>✓</span>
+                                                <div className={styles.simpleConsentText}>
+                                                    <strong>Aviso de Privacidad</strong>
+                                                    <small>
+                                                        He leído el aviso de privacidad y autorizo el tratamiento de
+                                                        mis datos personales conforme a la Ley Federal de Protección
+                                                        de Datos Personales en Posesión de los Particulares.
+                                                    </small>
+                                                </div>
+                                            </div>
 
-                                {/* Contrato de Membresía */}
-                                <div className={styles.acceptedItem}>
-                                    <span className={styles.acceptedCheck}>✓</span>
-                                    <div className={styles.acceptedText}>
-                                        <strong>Contrato de Membresía</strong>
-                                        <span className={styles.required}>*</span>
-                                        <small>
-                                            Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando
-                                            electrónicamente el contrato de membresía y autorizo los cargos
-                                            recurrentes a mi método de pago seleccionado.
-                                        </small>
+                                            {/* Contrato de Membresía */}
+                                            <div className={styles.simpleConsentItem}>
+                                                <span className={styles.simpleConsentCheck}>✓</span>
+                                                <div className={styles.simpleConsentText}>
+                                                    <strong>Contrato de Membresía</strong>
+                                                    <small>
+                                                        Acepto que al hacer clic en &quot;Continuar al pago&quot; estoy firmando
+                                                        electrónicamente el contrato de membresía y autorizo los cargos
+                                                        recurrentes a mi método de pago seleccionado.
+                                                    </small>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             {/* Marketing */}

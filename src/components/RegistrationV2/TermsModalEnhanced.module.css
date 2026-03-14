@@ -74,6 +74,9 @@
     cursor: pointer;
     color: #718096;
     transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modalClose:hover {
@@ -142,6 +145,46 @@
     font-size: 0.9rem;
     color: #718096;
     margin: 0 0 1rem 0;
+}
+
+/* Formularios de Consentimiento Simple en Accordion */
+.simpleConsentList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 0.5rem 0;
+}
+
+.simpleConsentItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.simpleConsentCheck {
+    color: #00BBB4;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 1.1;
+    margin-top: 2px;
+}
+
+.simpleConsentText {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-family: 'Outfit', sans-serif;
+}
+
+.simpleConsentText strong {
+    font-size: 0.95rem;
+    color: #2D3748;
+}
+
+.simpleConsentText small {
+    font-size: 0.85rem;
+    color: #4A5568;
+    line-height: 1.5;
 }
 
 /* Lista de términos aceptados */
@@ -346,27 +389,49 @@
     margin-top: 0.25rem;
 }
 
-.downloadIndicator {
-    width: 36px;
-    height: 36px;
+.docAccordionItem {
+    background: #F7FAFC;
+    border-radius: 16px;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+.docAccordionItem.expanded {
     background: white;
-    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-color: #00BBB4;
+}
+
+.docAccordionHeader {
     display: flex;
     align-items: center;
-    justify-content: center;
-    font-size: 1rem;
+    justify-content: space-between;
+    padding: 1.25rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.accordionChevron {
     color: #00BBB4;
-    transition: all 0.2s ease;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+
+.docAccordionContent {
+    padding: 0 1.25rem 1.25rem 1.25rem;
+    border-top: 1px solid #E2E8F0;
+    margin-top: -0.5rem;
+    padding-top: 1rem;
+}
+
+.docIframe {
+    width: 100%;
+    height: 60vh;
     border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    background: #f8fafc;
 }
-
-.docItem:hover .downloadIndicator {
-    background: #00BBB4;
-    color: white;
-    border-color: #00BBB4;
-    transform: scale(1.1);
-}
-
 
 .divider {
     height: 1px;

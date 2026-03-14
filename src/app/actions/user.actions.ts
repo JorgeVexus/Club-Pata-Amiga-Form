@@ -149,6 +149,9 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             pet_type: userData.pet_type,
             pet_age: userData.pet_age,
             pet_age_unit: userData.pet_age_unit,
+            // Legal
+            terms_accepted_at: userData.terms_accepted_at || userData.termsAcceptedAt,
+            terms_version: userData.terms_version || userData.termsVersion || '1.0',
         };
 
         const { data, error } = await supabase

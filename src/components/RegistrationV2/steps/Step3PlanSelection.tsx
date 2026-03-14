@@ -52,11 +52,11 @@ interface TermsAcceptance {
 interface Step3PlanSelectionProps {
     data: any;
     member: any;
-    onNext: (planId: string) => void;
+    onNext: (planId: string, termsAcceptance?: any) => void;
     onBack: () => void;
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
     skipPaymentEnabled?: boolean;
-    onSkipPayment?: (planId: string) => void;
+    onSkipPayment?: (planId: string, termsAcceptance?: any) => void;
 }
 
 export default function Step3PlanSelection({
@@ -105,12 +105,8 @@ export default function Step3PlanSelection({
         showToast('Términos aceptados. Puedes revisarlos haciendo clic en "Ver términos".', 'success');
     };
 
-    // Abrir modal solo para ver términos (con todo aceptado)
+    // Abrir modal solo para ver términos
     const handleViewTerms = () => {
-        if (!selectedPlan) {
-            showToast('Selecciona un plan primero', 'error');
-            return;
-        }
         setShowTermsModal(true);
     };
 
@@ -138,7 +134,7 @@ export default function Step3PlanSelection({
         }
 
         setIsProcessing(true);
-        await onNext(selectedPlan);
+        await onNext(selectedPlan, termsAccepted);
         setIsProcessing(false);
     };
 
@@ -293,7 +289,7 @@ export default function Step3PlanSelection({
                                 showToast('Selecciona un plan y acepta los términos primero', 'warning');
                                 return;
                             }
-                            onSkipPayment?.(selectedPlan);
+                            onSkipPayment?.(selectedPlan, termsAccepted);
                         }}
                         disabled={isProcessing}
                     >
