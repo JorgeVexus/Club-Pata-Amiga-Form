@@ -129,13 +129,18 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
                 result.address_components.forEach((component: any) => {
                     const types = component.types;
+                    // Estado
                     if (types.includes('administrative_area_level_1')) {
                         state = component.long_name;
                     }
-                    if (types.includes('locality') || types.includes('administrative_area_level_2')) {
+                    // Municipio / Alcaldía (Prioridad a level_2 en MX)
+                    if (types.includes('administrative_area_level_2')) {
+                        city = component.long_name;
+                    } else if (types.includes('locality') && !city) {
                         city = component.long_name;
                     }
-                    if (types.includes('sublocality') || types.includes('neighborhood')) {
+                    // Colonia
+                    if (types.includes('sublocality') || types.includes('neighborhood') || types.includes('sublocality_level_1')) {
                         colony = component.long_name;
                     }
                 });
@@ -212,17 +217,17 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
         setIsLoadingCP(true);
         try {
-            // const [googleData, sepomexData] = await Promise.all([
-            //     fetchFromGoogle(cp),
-            //     fetchColoniesFromSepomex(cp)
-            // ]);
-            const sepomexData = await fetchColoniesFromSepomex(cp);
+            const [googleData, sepomexData] = await Promise.all([
+                fetchFromGoogle(cp),
+                fetchColoniesFromSepomex(cp)
+            ]);
 
-            if (sepomexData) {
+            if (googleData || sepomexData) {
                 setFormData(prev => ({
                     ...prev,
-                    state: sepomexData?.state || prev.state,
-                    city: sepomexData?.municipality || prev.city,
+                    // Prioridad a Google para Estado y Ciudad/Municipio (más preciso)
+                    state: googleData?.state || sepomexData?.state || prev.state,
+                    city: googleData?.city || sepomexData?.municipality || prev.city,
                     postalCode: cp,
                 }));
                 showToast('Dirección encontrada', 'success');
