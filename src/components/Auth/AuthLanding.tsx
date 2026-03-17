@@ -62,8 +62,8 @@ export default function AuthLanding() {
                 // Si el usuario NO ha completado su perfil, redirigir a completar-perfil
                 // Esto pasa cuando se registra con Google por primera vez
                 if (!hasCompletedProfile) {
-                    console.log('📝 Usuario con sesión pero sin perfil completo, redirigiendo a completar-perfil');
-                    window.location.href = '/completar-perfil';
+                    console.log('📝 Usuario con sesión pero sin perfil completo, redirigiendo a /registro');
+                    window.location.href = '/registro';
                     return;
                 }
 
@@ -184,7 +184,7 @@ export default function AuthLanding() {
                 trackLead({ content_name: 'User Registration - Email', content_category: 'signup', email: email });
                 trackCompleteRegistration({ content_name: 'User Registration - Email', content_category: 'signup', email: email });
                 // Éxito, redirigir
-                router.push('/completar-perfil');
+                router.push('/registro');
             } else {
                 throw new Error('No se pudo crear la cuenta');
             }

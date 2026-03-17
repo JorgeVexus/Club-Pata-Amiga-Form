@@ -50,8 +50,8 @@ export default function AuthRedirector() {
                     console.log(`🔍 [AuthRedirector] Verificación de perfil: hasCompletedProfile=${hasCompletedProfile}`);
                     
                     if (!hasCompletedProfile) {
-                        console.log('📝 [AuthRedirector] Usuario sin perfil completo, redirigiendo a completar-perfil');
-                        window.location.href = 'https://app.pataamiga.mx/completar-perfil';
+                        console.log('📝 [AuthRedirector] Usuario sin perfil completo, redirigiendo a /registro');
+                        window.location.href = 'https://app.pataamiga.mx/registro';
                         return;
                     }
 
@@ -185,7 +185,7 @@ export default function AuthRedirector() {
                             Iniciar Sesión
                         </a>
                         <a 
-                            href="/usuarios/registro"
+                            href="/registro"
                             style={{
                                 padding: '15px 40px',
                                 backgroundColor: 'white',

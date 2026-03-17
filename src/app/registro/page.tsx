@@ -13,10 +13,10 @@ import NewRegistrationFlow from '@/components/RegistrationV2/NewRegistrationFlow
 import { Metadata } from 'next';
 
 export const metadata: Metadata = {
-    title: 'Registro - Protege a tu mascota',
-    description: 'Únete a la manada y protege a tu mascota con la mejor cobertura veterinaria.',
+    title: 'Registro de Membresía - Pata Amiga',
+    description: 'Únete a la red de protección veterinaria más grande de México. Registra a tu mascota y obtén beneficios exclusivos.',
 };
 
-export default function RegistroV2Page() {
+export default function RegistroPage() {
     return <NewRegistrationFlow />;
 }

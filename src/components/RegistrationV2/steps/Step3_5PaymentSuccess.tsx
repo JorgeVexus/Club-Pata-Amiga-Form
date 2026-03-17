@@ -11,20 +11,20 @@ export default function Step3_5PaymentSuccess({ onNext }: Step3_5PaymentSuccessP
     useEffect(() => {
         const timer = setTimeout(() => {
             onNext();
-        }, 2500); // 2.5 segundos para que se alcance a leer bien
+        }, 6000); // 6 segundos para que se alcance a leer el nuevo texto largo
 
         return () => clearTimeout(timer);
     }, [onNext]);
 
     return (
         <div className={styles.successTransitionContainer}>
-            <h2 className={styles.successTitle}>¡Todo bien!</h2>
-            <p className={styles.successSubtitle}>¡Yeah, tu pago se realizó correctamente!</p>
+            <h2 className={styles.successTitle}>¡Todo salió perfecto!</h2>
+            <p className={styles.successSubtitle}>Tu pago se realizó correctamente.</p>
 
             <div className={styles.brandLogoContainer}>
                 <div className={styles.petCircleIcon}>
                     <img
-                        src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6930687c8f64d3b129a9cece_PATA_AMIGA_LOGOTIPO_EDITABLE-02.webp"
+                        src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1773784834/logo_pata_amiga_negro_jalukg.webp"
                         alt="Pata Amiga Logo"
                     />
                 </div>
@@ -32,10 +32,10 @@ export default function Step3_5PaymentSuccess({ onNext }: Step3_5PaymentSuccessP
 
             <div className={styles.waitMessageContainer}>
                 <h3 className={styles.waitTitle}>
-                    <span>⚠️</span> ¡Espera! Tu mascota aún no está protegida
+                    ¡Estamos a un paso de cuidar a tu peludito!
                 </h3>
                 <p className={styles.waitDetail}>
-                    Ayúdanos a completar la información del siguiente formulario para terminar de proteger a tu peludito.
+                    Completa el siguiente formulario para registrar a tu peludo y empezar a darle el cuidado y la atención que merece. 🐶🐱💛
                 </p>
             </div>
         </div>

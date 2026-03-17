@@ -113,12 +113,13 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
     const fetchFromGoogle = async (cp: string) => {
         if (!window.google || !window.google.maps) return null;
-
         const geocoder = new window.google.maps.Geocoder();
         try {
             const response = await geocoder.geocode({
                 address: cp,
-                componentRestrictions: { country: 'MX', postalCode: cp }
+                componentRestrictions: { country: 'MX' },
+                language: 'es',
+                region: 'mx'
             });
 
             if (response.results && response.results.length > 0) {
@@ -127,56 +128,50 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 let city = '';
                 let colony = '';
 
+                // Primero identificamos el estado
                 result.address_components.forEach((component: any) => {
-                    const types = component.types;
-                    const name = component.long_name;
-                    
-                    // Estado
-                    if (types.includes('administrative_area_level_1')) {
-                        state = name;
-                    }
-                    
-                    // Municipio / Alcaldía
-                    // Priorizamos level_2 (Municipios/Alcaldías)
-                    if (types.includes('administrative_area_level_2')) {
-                        // En CDMX, level_2 suele ser la Alcaldía
-                        // Solo aceptamos si NO es "Ciudad de México" (que es redundante con el estado)
-                        if (name !== 'Ciudad de México' || !city) {
-                            city = name;
-                        }
-                    } else if (types.includes('locality') && (!city || city === 'Ciudad de México')) {
-                        city = name;
-                    } else if (types.includes('sublocality_level_1') && (!city || city === 'Ciudad de México')) {
-                        // En algunos casos de CDMX, la Alcaldía viene en sublocality_level_1
-                        city = name;
-                    }
-
-                    // Colonia
-                    if (types.includes('sublocality') || types.includes('neighborhood') || types.includes('sublocality_level_1')) {
-                        colony = name;
+                    if (component.types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
                     }
                 });
 
-                // Limpieza final: si el municipio es igual al estado y estamos en CDMX,
-                // intentamos buscar un componente más específico si quedó guardado.
-                const isGenericCity = 
-                    city.toLowerCase().includes('ciudad de méxico') || 
-                    city.toLowerCase().includes('mexico city') || 
-                    city.toLowerCase().includes('cdmx');
-                
-                const isCDMXState = 
-                    state.toLowerCase().includes('ciudad de méxico') || 
+                const isCDMXState =
+                    state.toLowerCase().includes('ciudad de méxico') ||
                     state.toLowerCase().includes('mexico city') ||
                     state.toLowerCase() === 'distrito federal';
 
+                if (isCDMXState) state = 'Ciudad de México';
+
+                // Luego buscamos el municipio con prioridades
+                // Prioridad 1: sublocality_level_1 (Alcaldías en CDMX)
+                // Prioridad 2: administrative_area_level_2 (Municipios en el resto de MX)
+                // Prioridad 3: locality
+
+                const components = result.address_components;
+                const sublocality1 = components.find((c: any) => c.types.includes('sublocality_level_1'))?.long_name;
+                const adminArea2 = components.find((c: any) => c.types.includes('administrative_area_level_2'))?.long_name;
+                const locality = components.find((c: any) => c.types.includes('locality'))?.long_name;
+
+                // Lógica de selección de Municipio/Alcaldía
                 if (isCDMXState) {
-                    state = 'Ciudad de México'; // Normalizar a español
-                    if (isGenericCity) {
-                        // Si es genérico, lo dejamos vacío para que el merging con SEPOMEX 
-                        // use el municipio específico (Alcaldía).
-                        city = '';
+                    // En CDMX, buscamos activamente algo que NO sea "Ciudad de México"
+                    city = sublocality1 || adminArea2 || locality || '';
+                    if (city.toLowerCase().includes('ciudad de méxico') ||
+                        city.toLowerCase().includes('mexico city') ||
+                        city.toLowerCase().includes('cdmx')) {
+                        city = sublocality1 || adminArea2 || ''; // Intentar algo más específico o dejar vacío para fallback
                     }
+                } else {
+                    // Resto de México
+                    city = adminArea2 || locality || sublocality1 || '';
                 }
+
+                // Colonia
+                colony = components.find((c: any) =>
+                    c.types.includes('neighborhood') ||
+                    c.types.includes('sublocality') ||
+                    c.types.includes('sublocality_level_2')
+                )?.long_name || '';
 
                 return { state, city, colony };
             }
@@ -257,17 +252,10 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
             if (googleData || sepomexData) {
                 setFormData(current => {
-                    // Prioridad a Google para Estado (más estandarizado)
+                    // Google es nuestra ÚNICA fuente de verdad para Estado y Municipio/Alcaldía
+                    // SEPOMEX solo se usa para la lista de colonias (dropdown)
                     const finalState = googleData?.state || sepomexData?.state || current.state;
-                    
-                    // Para Ciudad/Municipio (Alcaldía):
-                    // 1. Si Google nos dio algo específico (que no sea el estado Ciudad de México), lo usamos.
-                    // 2. Si Google nos dio "Ciudad de México" pero SEPOMEX tiene la Alcaldía específica, usamos SEPOMEX.
-                    let finalCity = googleData?.city;
-                    if (!finalCity || (finalCity === 'Ciudad de México' && sepomexData?.municipality)) {
-                        finalCity = sepomexData?.municipality;
-                    }
-                    if (!finalCity) finalCity = current.city;
+                    const finalCity = googleData?.city || current.city;
 
                     return {
                         ...current,

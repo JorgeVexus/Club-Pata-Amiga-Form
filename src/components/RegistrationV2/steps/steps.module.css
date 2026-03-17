@@ -1563,3 +1563,100 @@
     from { transform: translateY(30px); opacity: 0; }
     to { transform: translateY(0); opacity: 1; }
 }
+/* ============================================
+   TRANSICIÓN DE ÉXITO DE PAGO (Step 3.5)
+   ============================================ */
+
+.successTransitionContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem 2rem;
+    min-height: 400px;
+    animation: fadeIn 0.8s ease-out;
+}
+
+.successTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 2.5rem;
+    color: #00BBB4;
+    margin-bottom: 0.5rem;
+}
+
+.successSubtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.25rem;
+    color: #4A5568;
+    margin-bottom: 2.5rem;
+    font-weight: 500;
+}
+
+.brandLogoContainer {
+    margin-bottom: 2.5rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.petCircleIcon {
+    width: 180px;
+    height: 180px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 15px 35px rgba(0, 187, 180, 0.15);
+    padding: 20px;
+    border: 2px solid #E6FFFA;
+}
+
+.petCircleIcon img {
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+.waitMessageContainer {
+    max-width: 500px;
+    background: #E6FFFA;
+    padding: 2rem;
+    border-radius: 30px;
+    border: 1px solid #B2F5EA;
+}
+
+.waitTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.35rem;
+    color: #2D3748;
+    margin-bottom: 1rem;
+}
+
+.waitDetail {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: #4A5568;
+    line-height: 1.6;
+    margin: 0;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+    .successTitle {
+        font-size: 2rem;
+    }
+    
+    .petCircleIcon {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .waitMessageContainer {
+        padding: 1.5rem;
+    }
+}

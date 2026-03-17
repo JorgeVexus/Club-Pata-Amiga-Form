@@ -1,6 +1,6 @@
 <!-- ============================================ -->
-<!-- Vet-Bot Integration v3.5 - Numeric IDs Bridge -->
-<!-- app.pataamiga.mx | Chatbot Builder AI v6 -->
+<!-- Vet-Bot Integration v4.2.1 - PRODUCTION READY -->
+<!-- app.pataamiga.mx | Chatbot Builder AI v6     -->
 <!-- ============================================ -->
 
 <script src="https://app.chatgptbuilder.io/webchat/plugin.js?v=6"></script>
@@ -10,33 +10,21 @@
         'use strict';
 
         const API_URL = 'https://app.pataamiga.mx/api';
-        const log = (...args) => console.log('[VetBot]', ...args);
+        const log = (...args) => console.log('[VetBot-Prod]', ...args);
 
-        // Herramienta de Diagnóstico Global
+        // Herramienta de Diagnóstico
         window.vetBotDiagnostics = function () {
             log('Iniciando diagnóstico...');
             const iframe = document.querySelector('#ktt10-iframe');
-            if (!iframe) {
-                log('❌ Error: No se encontró el iframe del bot.');
-                return;
-            }
+            if (!iframe) return log('❌ Error: El bot no está cargado.');
             const src = iframe.getAttribute('data-src') || iframe.getAttribute('src');
-            log('URL del Iframe:', src);
-
             const urlParams = new URLSearchParams(src.split('?')[1]);
-            log('Parámetros detectados:');
-            log('- ID:', urlParams.get('id'));
+            log('URL Iframe:', src);
             log('- Ref:', urlParams.get('ref'));
             log('- SCF (Custom Fields):', urlParams.get('scf'));
-
-            if (urlParams.get('ref') || (urlParams.get('scf') && urlParams.get('scf').includes('673882'))) {
-                log('✅ Datos de identificación presentes en el URL.');
-            } else {
-                log('⚠️ Los datos de identificación podrían estar faltando.');
-            }
         };
 
-        async function generateSessionToken(memberstackId, email) {
+        async function generateToken(memberstackId, email) {
             try {
                 const response = await fetch(`${API_URL}/auth/session-token`, {
                     method: 'POST',
@@ -44,68 +32,49 @@
                     body: JSON.stringify({ memberstackId, email })
                 });
                 const data = await response.json();
-                return data.success ? data.sessionToken : null;
-            } catch (error) {
-                console.error('[VetBot] Token error:', error);
-                return null;
-            }
+                return data.sessionToken || data.session_token || data.token;
+            } catch (e) { return null; }
         }
 
-        async function initVetBot() {
+        async function initBot() {
             if (!window.$memberstackDom) return;
 
             try {
                 const member = await window.$memberstackDom.getCurrentMember();
-                if (!member || !member.data) {
-                    log('Usuario no logueado.');
-                    return;
-                }
+                if (!member || !member.data) return log('Sesión no iniciada.');
 
                 const userEmail = member.data.auth?.email;
-                const firstName = member.data.customFields?.['first-name'] || userEmail?.split('@')[0] || 'Usuario';
+                const firstName = member.data.customFields?.['first-name'] || userEmail?.split('@')[0] || 'Cliente';
 
-                log('Usuario detectado:', userEmail);
-                const sessionToken = await generateSessionToken(member.data.id, userEmail);
+                log('Obteniendo token de producción...');
+                const token = await generateToken(member.data.id, userEmail);
 
-                const executeSetup = () => {
-                    if (typeof ktt10 === 'undefined') {
-                        setTimeout(executeSetup, 500);
-                        return;
-                    }
+                const setup = () => {
+                    if (typeof ktt10 === 'undefined') { setTimeout(setup, 500); return; }
 
-                    log('Inicializando CBB v3.5 (Numeric IDs)...');
-
-                    // Mapeo usando los IDs numéricos exactos de CBB
-                    const fields = [
-                        { id: "673882", value: sessionToken || "" },    // session_token
-                        { id: "515388", value: userEmail || "" },       // Correo_Cliente
-                        { id: "620522", value: firstName || "" }        // NombreCliente
-                    ];
+                    log('Inicializando Bot Real de Agencia...');
 
                     ktt10.setup({
-                        id: "K4THS5LyA99jKDKYNgD3",
-                        accountId: "1146761",
+                        id: "K4THS5LyA99jKDKYNgD3", // ID REAL
+                        accountId: "1146761",      // ACCOUNT REAL
                         color: "#36D6B5",
-                        // Método 1: setCustomFields con IDs reales (Fundamental)
-                        setCustomFields: fields,
-                        // Método 2: REF como respaldo
-                        ref: sessionToken || "no-token",
-                        // Datos adicionales
+                        setCustomFields: [
+                            { id: "673882", value: token },      // session_token
+                            { id: "515388", value: userEmail },  // Correo_Cliente
+                            { id: "620522", value: firstName }  // NombreCliente
+                        ],
+                        // ACTIVADO: 'ref' dispara el flujo de saludo de la agencia
+                        ref: token || "welcome",
                         email: userEmail,
                         first_name: firstName
                     });
 
-                    log('✅ Bot inicializado v3.5. Usa "vetBotDiagnostics()" para verificar.');
+                    log('✅ Bot Real de Producción listo.');
                 };
-
-                executeSetup();
-
-            } catch (error) {
-                console.error('[VetBot] Error fatal:', error);
-            }
+                setup();
+            } catch (e) { console.error(e); }
         }
 
-        // Delay para asegurar carga de Memberstack
-        setTimeout(initVetBot, 800);
+        setTimeout(initBot, 1000);
     })();
 </script>

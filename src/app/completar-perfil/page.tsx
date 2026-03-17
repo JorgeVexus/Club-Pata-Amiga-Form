@@ -14,10 +14,9 @@ export default function CompleteProfilePage() {
     const [completedSteps, setCompletedSteps] = useState<number[]>([]);
 
     useEffect(() => {
-        // Cargar pasos completados desde localStorage
-        const completed = getCompletedSteps();
-        setCompletedSteps(completed);
-    }, []);
+        // Redirigir al nuevo flujo de registro integrado
+        router.replace('/registro');
+    }, [router]);
 
     const handleStepClick = (step: number) => {
         const progress = getRegistrationProgress();

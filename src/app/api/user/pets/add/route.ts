@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
             created_at: new Date().toISOString()
         };
 
-        // Intentar con campos extendidos del registro-v2
+        // Intentar con campos extendidos del flujo de registro integrado
         const extendedPetData = {
             ...basePetData,
             ...(petData.petType ? { pet_type: petData.petType === 'perro' ? 'dog' : 'cat' } : {}),
