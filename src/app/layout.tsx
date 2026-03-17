@@ -49,7 +49,7 @@ export default function RootLayout({
 
                 {/* Google Places API */}
                 <Script
-                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX-vCWYQ2_Lh1g5QQbybLpW6g0ugJdux4&libraries=places&loading=async"
+                    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDX-vCWYQ2_Lh1g5QQbybLpW6g0ugJdux4&libraries=places&language=es&loading=async"
                     strategy="afterInteractive"
                 />
 
