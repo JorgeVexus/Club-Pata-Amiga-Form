@@ -9,6 +9,7 @@ import React from 'react';
 import styles from './steps.module.css';
 import BillingModal from './BillingModal';
 import { saveBillingDetailsByMemberstackId } from '@/app/actions/user.actions';
+import { trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 
 interface Step6SuccessProps {
     petName: string;
@@ -23,6 +24,15 @@ export default function Step6Success({ petName, member, userEmail }: Step6Succes
     const [wantsBilling, setWantsBilling] = React.useState(false);
     const [billingSaved, setBillingSaved] = React.useState(false);
     const [isSavingBilling, setIsSavingBilling] = React.useState(false);
+
+    // Trackear finalización exitosa al montar
+    React.useEffect(() => {
+        trackCompleteRegistration({
+            content_name: 'Full Registration Complete',
+            content_category: 'registration',
+            pet_name: petName
+        });
+    }, [petName]);
 
     const handleLogout = async () => {
         setIsLoggingOut(true);

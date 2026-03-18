@@ -9,6 +9,7 @@
 import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/FormFields/TextInput';
 import { checkEmailAvailability } from '@/app/actions/user.actions';
+import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 import styles from './steps.module.css';
 
 interface Step1AccountProps {
@@ -207,6 +208,10 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                 }
             });
 
+            // Tracking Pixel
+            trackLead({ content_name: 'User Registration - Google', content_category: 'signup' });
+            trackCompleteRegistration({ content_name: 'User Registration - Google', content_category: 'signup' });
+
             // Si llegamos aquí y no redirigió, forzamos recarga paralimpiarUI y detectar sesión
             window.location.reload();
         } catch (error: any) {
@@ -229,6 +234,10 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
             await window.$memberstackDom.signupWithProvider({
                 provider: 'facebook'
             });
+
+            // Tracking Pixel
+            trackLead({ content_name: 'User Registration - Facebook', content_category: 'signup' });
+            trackCompleteRegistration({ content_name: 'User Registration - Facebook', content_category: 'signup' });
 
             window.location.reload();
         } catch (error: any) {

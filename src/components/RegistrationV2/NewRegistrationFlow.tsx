@@ -27,6 +27,7 @@ import Toast from '@/components/UI/Toast';
 
 // Servicios
 import { registerUserInSupabase, getUserDataByMemberstackId } from '@/app/actions/user.actions';
+import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
 
 // Tipos
 import type { RegistrationProgress } from '@/types/registration.types';
@@ -303,6 +304,10 @@ export default function NewRegistrationFlow() {
                 },
             });
 
+            // Tracking Pixel
+            trackLead({ content_name: 'User Registration - Email', content_category: 'signup', email: data.email });
+            trackCompleteRegistration({ content_name: 'User Registration - Email', content_category: 'signup', email: data.email });
+
             if (!result.data) {
                 throw new Error('Error creando cuenta');
             }
@@ -441,6 +446,16 @@ export default function NewRegistrationFlow() {
                     },
                 });
                 if (updatedMember) setMember(updatedMember);
+
+                // Tracking Pixel - Purchase
+                const plan = planId.includes('anual') ? 'Anual' : 'Mensual';
+                const price = plan === 'Anual' ? 1699 : 159;
+                trackEvent('Purchase', { 
+                    value: price, 
+                    currency: 'MXN',
+                    content_name: `Plan ${plan}`,
+                    content_category: 'subscription'
+                });
 
                 // Guardar progreso del pago en Supabase
                 await saveProgress(4, completedData);
