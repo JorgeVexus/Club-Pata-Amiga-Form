@@ -184,6 +184,17 @@ export default function NewRegistrationFlow() {
                             finalStep = 4;
                         }
 
+                        // NUEVA REGLA: Si NO ha pagado y está en paso 4 o 5 (y no es skip payment), lo regresamos al 3
+                        const isSkipPaymentEnv = window.location.hostname === 'localhost' || skipPaymentEnabled;
+                        if (paymentStatus !== 'completed' && finalStep >= 4 && !isSkipPaymentEnv) {
+                            console.warn('⚠️ Intento de acceso a pasos post-pago sin completar el pago');
+                            finalStep = 3;
+                            // Pequeño delay para asegurar que el componente Step3 se renderice antes del toast
+                            setTimeout(() => {
+                                showToast('Aún no has completado tu pago, inténtalo nuevamente 🐾', 'warning');
+                            }, 500);
+                        }
+
                         console.log(`📊 Progreso detectado: MS(${msStep}), DB(${dbStep}) -> Final(${finalStep})`);
                         setCurrentStep(finalStep);
                     }
@@ -410,23 +421,13 @@ export default function NewRegistrationFlow() {
         setCurrentStep(3);
     };
 
-    // Paso 3: Seleccionar plan y proceder a pago
+        // Paso 3: Seleccionar plan y proceder a pago
     const handleStep3Complete = async (planId: string, termsAcceptance?: any) => {
         const newData = { ...registrationData, planId, termsAcceptance };
         setRegistrationData(newData);
 
-        // Guardar en Supabase - Siguiente paso es el 4
-        await saveProgress(4, newData);
-
-        // Actualizar Memberstack
-        if (member && window.$memberstackDom) {
-            await window.$memberstackDom.updateMember({
-                customFields: {
-                    'registration-step': 4,
-                    'selected-plan-id': planId,
-                },
-            });
-        }
+        // Ya no guardamos el progreso al paso 4 aquí, 
+        // lo haremos SOLO si el pago es exitoso para evitar bypass
 
         // Iniciar checkout de Stripe
         try {
