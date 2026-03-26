@@ -448,6 +448,19 @@ export default function NewRegistrationFlow() {
                 });
                 if (updatedMember) setMember(updatedMember);
 
+                // Notificar a CRM de pago exitoso para remover carrito abandonado
+                try {
+                    const memberId = member?.id || member?.memberId;
+                    if (memberId) {
+                        const { notifyCheckoutCompletedToCRM } = await import('@/app/actions/user.actions');
+                        notifyCheckoutCompletedToCRM(memberId).catch(err => {
+                            console.error('⚠️ [CRM] Error al notificar pago exitoso:', err);
+                        });
+                    }
+                } catch (e) {
+                    console.warn('⚠️ No se pudo notificar éxito de pago al CRM', e);
+                }
+
                 // Tracking Pixel - Purchase
                 const plan = planId.includes('anual') ? 'Anual' : 'Mensual';
                 const price = plan === 'Anual' ? 1699 : 159;

@@ -589,3 +589,92 @@ export async function syncCRMAction(memberstackId: string, stage: 'step1' | 'ste
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Notifica al CRM que el usuario inició el proceso de pago pero no lo ha concluido.
+ * Agrega la etiqueta "carrito abandonado" y envía el enlace de recuperación.
+ */
+export async function notifyCheckoutAbandonedToCRM(memberstackId: string, recoveryLink: string) {
+    console.log('🔄 [CRM Sync] Marcando checkout como abandonado...', { memberstackId });
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('id, email, crm_contact_id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !user) {
+            console.error('❌ [CRM Sync] Usuario no encontrado:', userError);
+            return { success: false, error: 'Usuario no encontrado' };
+        }
+
+        // Usar upserContact si no hay crm_contact_id, o updateContact si lo hay
+        if (user.crm_contact_id) {
+            const result = await updateContact(user.crm_contact_id, {
+                tags: ['carrito abandonado'],
+                // NOTA: Para customFields necesitas asegurarte que la key del campo exista en Lynsales.
+                // Reemplazar 'contact.recovery_link' con el ID real de tu campo personalizado si es necesario.
+                customFields: [{ key: 'contact.recovery_link', field_value: recoveryLink }]
+            });
+            return { success: result.success, error: result.error };
+        } else {
+            // Upsert como respaldo si por alguna razón falla paso 1
+            const result = await upsertContact({
+                email: user.email,
+                firstName: '',
+                lastName: '',
+                tags: ['carrito abandonado'],
+                customFields: [{ key: 'contact.recovery_link', field_value: recoveryLink }]
+            });
+            
+            if (result.success && result.contactId) {
+                await supabase
+                    .from('users')
+                    .update({ crm_contact_id: result.contactId })
+                    .eq('memberstack_id', memberstackId);
+            }
+            return { success: result.success, error: result.error };
+        }
+    } catch (error: any) {
+        console.error('❌ [CRM Sync] Error notificando abandono:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Notifica al CRM que el pago fue exitoso y remueve idealmente la etiqueta (si el CRM lo soporta)
+ * o agrega una etiqueta de "compra exitosa" para que un workflow en Lynsales quite la de abandono.
+ */
+export async function notifyCheckoutCompletedToCRM(memberstackId: string) {
+    console.log('🔄 [CRM Sync] Marcando checkout como completado...', { memberstackId });
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('id, email, crm_contact_id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !user || !user.crm_contact_id) {
+            return { success: false, error: 'Usuario o CRM ID no encontrado' };
+        }
+
+        // Agregamos la etiqueta que indica el avance y un campo limpio
+        const result = await updateContact(user.crm_contact_id, {
+            tags: ['pago procesado'],
+            customFields: [{ key: 'contact.recovery_link', field_value: 'pagado' }]
+        });
+        
+        return { success: result.success, error: result.error };
+    } catch (error: any) {
+        console.error('❌ [CRM Sync] Error notificando pago completo:', error);
+        return { success: false, error: error.message };
+    }
+}

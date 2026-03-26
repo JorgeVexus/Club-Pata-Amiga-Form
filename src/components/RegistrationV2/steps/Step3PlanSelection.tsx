@@ -59,8 +59,13 @@ interface Step3PlanSelectionProps {
     onSkipPayment?: (planId: string, termsAcceptance?: any) => void;
 }
 
+// Add the import dynamically or using top-level if needed. Since this is a client component, 
+// we can just import the Server Action cleanly at the top if we wanted, but let's dynamically import
+// it inside the handler to avoid adding static dependencies if they aren't strictly needed immediately.
+
 export default function Step3PlanSelection({
     data,
+    member,
     onNext,
     onBack,
     showToast,
@@ -134,6 +139,24 @@ export default function Step3PlanSelection({
         }
 
         setIsProcessing(true);
+
+        try {
+            // Notificar CRM (Carrito Abandonado)
+            const memberId = data?.member?.id || member?.id || member?.memberId;
+            if (memberId) {
+                // Importamos dinámicamente el Server Action
+                const { notifyCheckoutAbandonedToCRM } = await import('@/app/actions/user.actions');
+                const recoveryUrl = `${window.location.origin}/seleccion-plan?recuperar=1`;
+                
+                // Disparamos sin await (fire-and-forget) o con await rápido para no bloquear
+                notifyCheckoutAbandonedToCRM(memberId, recoveryUrl).catch(err => {
+                    console.error('⚠️ [CRM] Error enviando etiqueta de carrito abandonado:', err);
+                });
+            }
+        } catch (e) {
+            console.warn('⚠️ No se pudo notificar carrito abandonado al CRM', e);
+        }
+
         await onNext(selectedPlan, termsAccepted);
         setIsProcessing(false);
     };
