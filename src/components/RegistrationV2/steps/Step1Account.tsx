@@ -10,6 +10,7 @@ import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/FormFields/TextInput';
 import { checkEmailAvailability } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
+import TermsModalEnhanced from '../TermsModalEnhanced';
 import styles from './steps.module.css';
 
 interface Step1AccountProps {
@@ -36,6 +37,26 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+    // Modal de términos
+    const [showTermsModal, setShowTermsModal] = useState(false);
+
+    const handleTermsClose = (accepted: boolean, acceptance: any) => {
+        setShowTermsModal(false);
+        // Si el usuario acepta desde el paso 1, guardamos su preferencia
+        // Esto pre-llenará el checkbox en el paso 3 (Selección de plan)
+        if (accepted && acceptance) {
+            localStorage.setItem('registration_terms_acceptance', JSON.stringify({
+                ...acceptance,
+                timestamp: new Date().toISOString()
+            }));
+        }
+    };
+
+    const handleViewTerms = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setShowTermsModal(true);
+    };
 
     // Cargar datos al montar
     useEffect(() => {
@@ -423,9 +444,13 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
 
                 <div className={styles.securityMessage}>
                     <p>
-                        🔒 <strong>Tus datos están protegidos.</strong> Al continuar, aceptas nuestros
-                        <a href="/terminos" target="_blank"> Términos y Condiciones</a> y
-                        <a href="/privacidad" target="_blank"> Aviso de Privacidad</a>.
+                        🔒 <strong>Tus datos están protegidos.</strong> Al continuar, aceptas nuestros{' '}
+                        <button type="button" onClick={handleViewTerms} className={styles.viewTermsLink}>
+                            Términos y Condiciones
+                        </button>{' '}y{' '}
+                        <button type="button" onClick={handleViewTerms} className={styles.viewTermsLink}>
+                            Aviso de Privacidad
+                        </button>.
                     </p>
                 </div>
 
@@ -445,6 +470,13 @@ export default function Step1Account({ data, member, onNext, showToast }: Step1A
                     </p>
                 )}
             </form>
+
+            {/* Modal de términos */}
+            <TermsModalEnhanced
+                isOpen={showTermsModal}
+                onClose={handleTermsClose}
+                documentsOnly={true}
+            />
         </div>
     );
 }
