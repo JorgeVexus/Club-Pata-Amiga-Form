@@ -444,6 +444,7 @@ export default function NewRegistrationFlow() {
                     customFields: {
                         'payment-status': 'completed',
                         'registration-step': 4,
+                        'approval-status': 'pending',
                     },
                 });
                 if (updatedMember) setMember(updatedMember);
@@ -497,7 +498,8 @@ export default function NewRegistrationFlow() {
                     customFields: {
                         'registration-step': 4,
                         'selected-plan-id': planId,
-                        'payment-status': 'completed'
+                        'payment-status': 'completed',
+                        'approval-status': 'pending'
                     },
                 });
                 if (updatedMember) setMember(updatedMember);
