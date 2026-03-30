@@ -71,7 +71,7 @@ class MemberstackAdminClient {
     /**
      * Lista todos los miembros con un status específico
      * 🆕 Ahora con caché de 60 segundos para mejorar rendimiento
-     * 🆕 Trae hasta 200 miembros y filtra por plan pagado
+     * 🆕 Trae TODOS los miembros con paginación y filtra por plan pagado
      */
     async listMembers(status?: 'pending' | 'approved' | 'rejected' | 'appealed', options?: { paidOnly?: boolean }): Promise<AdminApiResponse<MemberstackMember[]>> {
         try {
@@ -89,26 +89,47 @@ class MemberstackAdminClient {
 
             console.log(`📡 Fetching miembros desde Memberstack (${cacheKey})...`);
 
-            // Memberstack Admin API endpoint para listar miembros - traer hasta 200
-            const url = `${this.baseUrl}/members?limit=200`;
+            // Memberstack limita a 100 por página, necesitamos paginar
+            let allMembers: MemberstackMember[] = [];
+            let startingAfter: string | null = null;
+            let pageCount = 0;
+            const maxPages = 5; // Máximo 500 miembros para evitar loops infinitos
 
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: this.getHeaders(),
-            });
+            do {
+                // Construir URL con paginación
+                let url = `${this.baseUrl}/members?limit=100`;
+                if (startingAfter) {
+                    url += `&starting_after=${startingAfter}`;
+                }
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP ${response.status}: ${errorText}`);
-            }
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: this.getHeaders(),
+                });
 
-            const data = await response.json();
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`HTTP ${response.status}: ${errorText}`);
+                }
 
-            // Filtrar por status si se especifica
-            let members = data.data || [];
-            console.log(`📊 Total miembros de Memberstack: ${members.length}`);
+                const data = await response.json();
+                const members = data.data || [];
+                allMembers = allMembers.concat(members);
+                pageCount++;
+
+                // Verificar si hay más páginas
+                const hasMore = data.has_more || false;
+                const lastMember = members[members.length - 1];
+                startingAfter = hasMore && lastMember ? lastMember.id : null;
+
+                console.log(`📄 Página ${pageCount}: ${members.length} miembros (total acumulado: ${allMembers.length})`);
+
+            } while (startingAfter && pageCount < maxPages);
+
+            console.log(`📊 Total miembros de Memberstack: ${allMembers.length}`);
 
             // Filtrar por plan pagado si se solicita
+            let members = allMembers;
             if (options?.paidOnly) {
                 members = members.filter((m: MemberstackMember) => {
                     const hasActivePlan = m.planConnections?.some((p: any) =>

@@ -20,28 +20,48 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // Hacer petición directa a Memberstack sin procesamiento
-        const response = await fetch('https://admin.memberstack.com/members?limit=200', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-KEY': secretKey,
-            },
-        });
+        // Hacer peticiones con paginación hasta traer todos los miembros
+        let allMembers: any[] = [];
+        let startingAfter: string | null = null;
+        let pageCount = 0;
+        const maxPages = 5;
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            return NextResponse.json(
-                { error: `Memberstack API error: ${response.status}`, details: errorText },
-                { status: response.status }
-            );
-        }
+        do {
+            let url = 'https://admin.memberstack.com/members?limit=100';
+            if (startingAfter) {
+                url += `&starting_after=${startingAfter}`;
+            }
 
-        const rawData = await response.json();
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-API-KEY': secretKey,
+                },
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                return NextResponse.json(
+                    { error: `Memberstack API error: ${response.status}`, details: errorText },
+                    { status: response.status }
+                );
+            }
+
+            const rawData = await response.json();
+            const members = rawData.data || [];
+            allMembers = allMembers.concat(members);
+
+            const hasMore = rawData.has_more || false;
+            const lastMember = members[members.length - 1];
+            startingAfter = hasMore && lastMember ? lastMember.id : null;
+            pageCount++;
+
+        } while (startingAfter && pageCount < maxPages);
 
         // Analizar estructura de la respuesta
-        const members = rawData.data || [];
-        const pagination = rawData.pagination || null;
+        const members = allMembers;
+        const pagination = { pages: pageCount, totalFetched: members.length };
 
         // Buscar específicamente los emails mencionados
         const targetEmails = [
