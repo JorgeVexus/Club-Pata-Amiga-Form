@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { memberstackAdmin } from '@/services/memberstack-admin.service';
 
 /**
  * GET /api/admin/debug-members
@@ -7,82 +6,95 @@ import { memberstackAdmin } from '@/services/memberstack-admin.service';
  * Debug endpoint para ver qué miembros tiene Memberstack y por qué
  * el dashboard los está filtrando.
  *
- * Muestra:
- * - Todos los miembros con sus customFields
- * - Quién tiene approval-status
- * - Quién tiene planConnections activo
- * - Quién debería aparecer en el dashboard
+ * Muestra la respuesta RAW de Memberstack API incluyendo paginación.
  */
 export async function GET(request: NextRequest) {
     try {
-        console.log('🔍 Debug: Obteniendo todos los miembros...');
+        console.log('🔍 Debug: Obteniendo miembros de Memberstack...');
 
-        // Obtener todos los miembros (sin filtro de status)
-        const result = await memberstackAdmin.listMembers();
-
-        if (!result.success || !result.data) {
+        const secretKey = process.env.MEMBERSTACK_ADMIN_SECRET_KEY;
+        if (!secretKey) {
             return NextResponse.json(
-                { error: 'Error obteniendo miembros', details: result.error },
+                { error: 'MEMBERSTACK_ADMIN_SECRET_KEY no configurada' },
                 { status: 500 }
             );
         }
 
-        const members = result.data;
+        // Hacer petición directa a Memberstack sin procesamiento
+        const response = await fetch('https://admin.memberstack.com/members?limit=100', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': secretKey,
+            },
+        });
 
-        // Analizar cada miembro
+        if (!response.ok) {
+            const errorText = await response.text();
+            return NextResponse.json(
+                { error: `Memberstack API error: ${response.status}`, details: errorText },
+                { status: response.status }
+            );
+        }
+
+        const rawData = await response.json();
+
+        // Analizar estructura de la respuesta
+        const members = rawData.data || [];
+        const pagination = rawData.pagination || null;
+
+        // Buscar específicamente los emails mencionados
+        const targetEmails = [
+            'efrain.rabago@rabadoub.com.mx',
+            'globalcanecata@gmail.com',
+            'efrain.institucional@gmail.com'
+        ];
+
+        const foundMembers = members.filter((m: any) => {
+            const email = m.auth?.email?.toLowerCase();
+            return targetEmails.some(target => email?.includes(target.toLowerCase()));
+        });
+
+        const notFoundEmails = targetEmails.filter(target => {
+            return !members.some((m: any) =>
+                m.auth?.email?.toLowerCase()?.includes(target.toLowerCase())
+            );
+        });
+
+        // Análisis completo de todos los miembros
         const analysis = members.map((member: any) => {
             const customFields = member.customFields || {};
             const planConnections = member.planConnections || [];
-
-            const approvalStatus = customFields['approval-status'];
-            const paymentStatus = customFields['payment-status'];
-            const registrationStep = customFields['registration-step'];
-
-            // Verificar si tiene plan activo
-            const hasActivePlan = planConnections.some((p: any) =>
-                p.status?.toLowerCase() === 'active' ||
-                p.status?.toLowerCase() === 'trialing'
-            );
-
-            // Verificar si debería aparecer en dashboard
-            const shouldShowInDashboard =
-                approvalStatus === 'pending' &&
-                hasActivePlan;
 
             return {
                 id: member.id,
                 email: member.auth?.email || 'sin-email',
                 name: `${customFields['first-name'] || ''} ${customFields['paternal-last-name'] || ''}`.trim() || 'Sin nombre',
-                customFields: {
-                    'approval-status': approvalStatus || 'NO DEFINIDO',
-                    'payment-status': paymentStatus || 'NO DEFINIDO',
-                    'registration-step': registrationStep || 'NO DEFINIDO',
-                },
+                approvalStatus: customFields['approval-status'] || 'NO DEFINIDO',
+                paymentStatus: customFields['payment-status'] || 'NO DEFINIDO',
                 planConnections: planConnections.map((p: any) => ({
                     priceId: p.priceId,
                     status: p.status,
                 })),
-                hasActivePlan,
-                shouldShowInDashboard,
+                hasActivePlan: planConnections.some((p: any) =>
+                    p.status?.toLowerCase() === 'active' ||
+                    p.status?.toLowerCase() === 'trialing'
+                ),
             };
         });
 
-        // Separar por categorías
-        const wouldShowInDashboard = analysis.filter(m => m.shouldShowInDashboard);
-        const missingApprovalStatus = analysis.filter(m => !m.customFields['approval-status'] && m.hasActivePlan);
-        const missingActivePlan = analysis.filter(m => m.customFields['approval-status'] === 'pending' && !m.hasActivePlan);
-
         return NextResponse.json({
-            totalMembers: members.length,
             summary: {
-                wouldShowInDashboard: wouldShowInDashboard.length,
-                missingApprovalStatus: missingApprovalStatus.length,
-                missingActivePlan: missingActivePlan.length,
+                totalMembersInResponse: members.length,
+                hasPagination: !!pagination,
+                pagination: pagination,
+                targetMembersFound: foundMembers.length,
+                targetMembersNotFound: notFoundEmails,
             },
-            wouldShowInDashboard,
-            missingApprovalStatus,
-            missingActivePlan,
+            targetMembers: foundMembers,
+            notInResponse: notFoundEmails,
             allMembers: analysis,
+            rawResponse: rawData, // Respuesta completa para debugging
         });
 
     } catch (error: any) {
