@@ -114,7 +114,7 @@ export async function GET(request: NextRequest) {
             targetMembers: foundMembers,
             notInResponse: notFoundEmails,
             allMembers: analysis,
-            rawResponse: rawData, // Respuesta completa para debugging
+            // Nota: rawResponse omitido porque ahora usamos paginación
         });
 
     } catch (error: any) {
