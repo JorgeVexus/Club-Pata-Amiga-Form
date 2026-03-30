@@ -71,10 +71,11 @@ class MemberstackAdminClient {
     /**
      * Lista todos los miembros con un status específico
      * 🆕 Ahora con caché de 60 segundos para mejorar rendimiento
+     * 🆕 Trae hasta 200 miembros y filtra por plan pagado
      */
-    async listMembers(status?: 'pending' | 'approved' | 'rejected' | 'appealed'): Promise<AdminApiResponse<MemberstackMember[]>> {
+    async listMembers(status?: 'pending' | 'approved' | 'rejected' | 'appealed', options?: { paidOnly?: boolean }): Promise<AdminApiResponse<MemberstackMember[]>> {
         try {
-            const cacheKey = status || 'all';
+            const cacheKey = `${status || 'all'}_${options?.paidOnly ? 'paid' : 'all'}`;
             const cached = membersCache.get(cacheKey);
 
             // Verificar si hay caché válido
@@ -88,8 +89,8 @@ class MemberstackAdminClient {
 
             console.log(`📡 Fetching miembros desde Memberstack (${cacheKey})...`);
 
-            // Memberstack Admin API endpoint para listar miembros
-            const url = `${this.baseUrl}/members`;
+            // Memberstack Admin API endpoint para listar miembros - traer hasta 200
+            const url = `${this.baseUrl}/members?limit=200`;
 
             const response = await fetch(url, {
                 method: 'GET',
@@ -105,6 +106,20 @@ class MemberstackAdminClient {
 
             // Filtrar por status si se especifica
             let members = data.data || [];
+            console.log(`📊 Total miembros de Memberstack: ${members.length}`);
+
+            // Filtrar por plan pagado si se solicita
+            if (options?.paidOnly) {
+                members = members.filter((m: MemberstackMember) => {
+                    const hasActivePlan = m.planConnections?.some((p: any) =>
+                        p.status?.toLowerCase() === 'active' ||
+                        p.status?.toLowerCase() === 'trialing'
+                    );
+                    return hasActivePlan;
+                });
+                console.log(`💳 Filtrados por plan pagado: ${members.length} miembros`);
+            }
+
             if (status) {
                 members = members.filter((m: MemberstackMember) =>
                     m.customFields?.['approval-status'] === status
@@ -277,12 +292,12 @@ class MemberstackAdminClient {
 export const memberstackAdmin = new MemberstackAdminClient();
 
 // Funciones helper para usar en Server Actions
-export async function listPendingMembers() {
-    return await memberstackAdmin.listMembers('pending');
+export async function listPendingMembers(paidOnly: boolean = true) {
+    return await memberstackAdmin.listMembers('pending', { paidOnly });
 }
 
-export async function listAppealedMembers() {
-    return await memberstackAdmin.listMembers('appealed');
+export async function listAppealedMembers(paidOnly: boolean = true) {
+    return await memberstackAdmin.listMembers('appealed', { paidOnly });
 }
 
 export async function getMemberDetails(memberId: string) {

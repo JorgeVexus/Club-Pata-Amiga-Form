@@ -20,16 +20,19 @@ export async function GET(request: NextRequest) {
 
         let result;
 
+        // Por defecto, solo mostrar miembros con plan pagado en el dashboard
+        const paidOnly = searchParams.get('paidOnly') !== 'false'; // true por defecto
+
         if (status === 'pending') {
-            result = await listPendingMembers();
+            result = await listPendingMembers(paidOnly);
         } else if (status === 'appealed') {
-            result = await listAppealedMembers();
+            result = await listAppealedMembers(paidOnly);
         } else if (status === 'approved' || status === 'rejected') {
             // Use the generic listMembers method exposed via the singleton
-            result = await memberstackAdmin.listMembers(status);
+            result = await memberstackAdmin.listMembers(status, { paidOnly });
         } else if (!status || status === 'all') {
             // Return all members if no status or 'all'
-            result = await memberstackAdmin.listMembers();
+            result = await memberstackAdmin.listMembers(undefined, { paidOnly });
         } else {
             return NextResponse.json(
                 { error: 'Status inválido. Usa: pending, appealed, approved o rejected' },

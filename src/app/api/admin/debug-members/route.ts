@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
         }
 
         // Hacer petición directa a Memberstack sin procesamiento
-        const response = await fetch('https://admin.memberstack.com/members?limit=100', {
+        const response = await fetch('https://admin.memberstack.com/members?limit=200', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
