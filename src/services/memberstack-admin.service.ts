@@ -91,15 +91,15 @@ class MemberstackAdminClient {
 
             // Memberstack limita a 100 por página, necesitamos paginar
             let allMembers: MemberstackMember[] = [];
-            let startingAfter: string | null = null;
+            let currentCursor: string | number | null = null;
             let pageCount = 0;
-            const maxPages = 5; // Máximo 500 miembros para evitar loops infinitos
+            const maxPages = 20; // Máximo 2000 miembros para evitar loops infinitos
 
             do {
                 // Construir URL con paginación
                 let url = `${this.baseUrl}/members?limit=100`;
-                if (startingAfter) {
-                    url += `&starting_after=${startingAfter}`;
+                if (currentCursor) {
+                    url += `&after=${currentCursor}`;
                 }
 
                 const response = await fetch(url, {
@@ -117,14 +117,13 @@ class MemberstackAdminClient {
                 allMembers = allMembers.concat(members);
                 pageCount++;
 
-                // Verificar si hay más páginas
-                const hasMore = data.has_more || false;
-                const lastMember = members[members.length - 1];
-                startingAfter = hasMore && lastMember ? lastMember.id : null;
+                // Verificar si hay más páginas (según la API de Memberstack v2)
+                const hasMore = data.hasNextPage || false;
+                currentCursor = hasMore && data.endCursor ? data.endCursor : null;
 
                 console.log(`📄 Página ${pageCount}: ${members.length} miembros (total acumulado: ${allMembers.length})`);
 
-            } while (startingAfter && pageCount < maxPages);
+            } while (currentCursor && pageCount < maxPages);
 
             console.log(`📊 Total miembros de Memberstack: ${allMembers.length}`);
 
