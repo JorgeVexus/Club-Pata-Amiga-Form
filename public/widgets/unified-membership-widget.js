@@ -2063,9 +2063,11 @@
 
     // Auto init
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', () => new UnifiedWidget('pata-amiga-membership-widget'));
+        document.addEventListener('DOMContentLoaded', () => {
+            window.pataWidget = new UnifiedWidget('pata-amiga-membership-widget');
+        });
     } else {
-        new UnifiedWidget('pata-amiga-membership-widget');
+        window.pataWidget = new UnifiedWidget('pata-amiga-membership-widget');
     }
 
 })();
