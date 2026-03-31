@@ -665,7 +665,7 @@
 
                 console.log('📊 Unified Widget: Pets found:', this.pets.length);
 
-                if (this.pets.length > 0 || this.membershipStatus === 'pending') {
+                if (this.pets.length > 0 || ['pending', 'pending_payment', 'payment_processing'].includes(this.membershipStatus)) {
                     console.log('✨ Unified Widget: Rendering panel...');
                     this.container.classList.add('show');
                     this.render();
