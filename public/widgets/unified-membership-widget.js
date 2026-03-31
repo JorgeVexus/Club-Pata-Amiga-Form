@@ -849,6 +849,14 @@
             }
 
             if (!pet) {
+                // 🔴 NUEVO: Si ya pagó pero no tiene mascotas, mostrar vista de completar registro
+                if (isApproved) {
+                    console.log('🏁 Unified Widget: User has paid but no pets found. Rendering finish registration view.');
+                    this.container.innerHTML = this.renderCompleteRegistrationView(firstName);
+                    this.container.classList.add('show');
+                    return;
+                }
+
                 this.container.innerHTML = `<div class="pata-welcome-title" style="color:white; padding:40px;">Cargando mascotas...</div>`;
                 return;
             }
@@ -1032,6 +1040,42 @@
 
                         <p style="font-size: 14px; color: #666; text-align: center;">
                             Se verificará automáticamente en unos segundos...
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 🏁 NUEVO: Vista cuando ya pagó pero no ha terminado su registro (0 mascotas)
+        renderCompleteRegistrationView(firstName) {
+            return `
+                <div class="pata-external-greeting">
+                    <h1 class="pata-welcome-title">¡hola de nuevo, ${firstName}! 👋</h1>
+                    <p class="pata-welcome-subtitle">
+                        ¡Ya casi eres parte de la manada! 🎉 <br>
+                        Vimos que ya realizaste tu pago, pero aún falta completar la información de tu perfil y de tus peludos.
+                    </p>
+                </div>
+
+                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #E0F7F6 0%, #B8E8E6 100%); border: 2px solid #00BBB4;">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
+                    
+                    <div class="pata-pending-view">
+                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">🐶</div>
+                        <h2 class="pata-title" style="margin-bottom: 8px; color: #00695C; text-align: center;">Termina tu registro</h2>
+                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
+                            Para activar todos tus beneficios y el respaldo veterinario, <br>
+                            necesitamos conocer un poco más de ti y de tus amigos de cuatro patas.
+                        </p>
+
+                        <div style="text-align: center; margin-top: 30px;">
+                            <a href="https://app.pataamiga.mx/registro?reason=finish_onboarding" class="pata-btn" style="background: #00BBB4; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
+                                Completar mi registro →
+                            </a>
+                        </div>
+
+                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
+                            Este proceso te tomará menos de 2 minutos.
                         </p>
                     </div>
                 </div>
