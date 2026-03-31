@@ -479,7 +479,10 @@ export default function NewRegistrationFlow() {
             }
         } catch (error: any) {
             console.error('Error en checkout:', error);
-            showToast(error.message || 'Error al procesar el pago', 'error');
+            // Ignorar el "Network Error" que lanza Memberstack cuando la página se descarga para ir a Stripe
+            if (error.message !== 'Network Error') {
+                showToast(error.message || 'Error al procesar el pago', 'error');
+            }
         }
     };
 

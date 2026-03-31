@@ -96,9 +96,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         } catch (err: any) {
             console.error('❌ Error en checkout:', err);
 
-            // Si el usuario cerró el checkout (canceló), no mostrar error
-            if (err?.message?.includes('cancel') || err?.message?.includes('closed')) {
-                console.log('ℹ️ El usuario canceló el checkout.');
+            // Si el usuario cerró el checkout (canceló), o si ocurre Network Error por redirección, no mostrar error
+            if (err?.message?.includes('cancel') || err?.message?.includes('closed') || err?.message === 'Network Error') {
+                console.log('ℹ️ Checkout redirigiendo o omitiendo error esperado:', err?.message);
             } else {
                 setError('❌ Hubo un problema al procesar el pago. Inténtalo de nuevo.');
             }
