@@ -48,6 +48,13 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                 } else {
                     setMember(member);
 
+                    // Intentar cargar borrador local
+                    let localDraft: Partial<RegistrationFormData> = {};
+                    try {
+                        const saved = localStorage.getItem('user_registration_draft_v1');
+                        if (saved) localDraft = JSON.parse(saved);
+                    } catch (e) { console.warn('Error leyendo borrador local', e); }
+
                     // Cargar datos existentes desde Supabase
                     try {
                         console.log('📥 Cargando datos existentes desde Supabase...');
@@ -57,33 +64,35 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                             const userData = result.userData;
                             console.log('✅ Datos cargados de Supabase:', userData);
 
-                            // Pre-llenar formulario con datos existentes
+                            // Pre-llenar formulario con datos existentes (prioridad: Local -> Supabase -> Memberstack)
                             setFormData(prev => ({
                                 ...prev,
+                                ...localDraft,
                                 email: member.auth.email,
-                                firstName: userData.first_name || member.customFields?.['first-name'] || prev.firstName || '',
-                                paternalLastName: userData.last_name || member.customFields?.['paternal-last-name'] || prev.paternalLastName || '',
-                                maternalLastName: userData.mother_last_name || prev.maternalLastName || '',
-                                gender: userData.gender || prev.gender || undefined,
-                                birthDate: userData.birth_date || prev.birthDate || '',
-                                curp: userData.curp || prev.curp || '',
+                                firstName: localDraft.firstName || userData.first_name || member.customFields?.['first-name'] || prev.firstName || '',
+                                paternalLastName: localDraft.paternalLastName || userData.last_name || member.customFields?.['paternal-last-name'] || prev.paternalLastName || '',
+                                maternalLastName: localDraft.maternalLastName || userData.mother_last_name || prev.maternalLastName || '',
+                                gender: localDraft.gender || userData.gender || prev.gender || undefined,
+                                birthDate: localDraft.birthDate || userData.birth_date || prev.birthDate || '',
+                                curp: localDraft.curp || userData.curp || prev.curp || '',
                                 // Note: isForeigner no está en Supabase, se mantiene en Memberstack
-                                postalCode: userData.postal_code || prev.postalCode || '',
-                                state: userData.state || prev.state || '',
-                                city: userData.city || prev.city || '',
-                                colony: userData.colony || prev.colony || '',
-                                address: userData.address || prev.address || '',
-                                phone: userData.phone || prev.phone || '',
+                                postalCode: localDraft.postalCode || userData.postal_code || prev.postalCode || '',
+                                state: localDraft.state || userData.state || prev.state || '',
+                                city: localDraft.city || userData.city || prev.city || '',
+                                colony: localDraft.colony || userData.colony || prev.colony || '',
+                                address: localDraft.address || userData.address || prev.address || '',
+                                phone: localDraft.phone || userData.phone || prev.phone || '',
                             }));
 
                             showToast('Hemos recuperado tus datos guardados.', 'success');
                         } else {
-                            // No hay datos en Supabase, usar solo Memberstack
+                            // No hay datos en Supabase, usar solo Memberstack y draft
                             setFormData(prev => ({
                                 ...prev,
+                                ...localDraft,
                                 email: member.auth.email,
-                                firstName: member.customFields?.['first-name'] || prev.firstName || '',
-                                paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
+                                firstName: localDraft.firstName || member.customFields?.['first-name'] || prev.firstName || '',
+                                paternalLastName: localDraft.paternalLastName || member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
                             }));
                         }
                     } catch (error) {
@@ -91,9 +100,10 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                         // Fallback a datos de Memberstack
                         setFormData(prev => ({
                             ...prev,
+                            ...localDraft,
                             email: member.auth.email,
-                            firstName: member.customFields?.['first-name'] || prev.firstName || '',
-                            paternalLastName: member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
+                            firstName: localDraft.firstName || member.customFields?.['first-name'] || prev.firstName || '',
+                            paternalLastName: localDraft.paternalLastName || member.customFields?.['paternal-last-name'] || prev.paternalLastName || ''
                         }));
                     }
                 }
@@ -123,6 +133,15 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
         phone: '',
         password: '',
     });
+
+    // Guardar borrador local en cada cambio
+    React.useEffect(() => {
+        const { ineFiles, ineFrontFile, ineBackFile, proofOfAddressFile, ...draft } = formData;
+        // Solo guardar si hay algo de datos, por ejemplo si ya escribió al menos un nombre o si cargó de memberstack
+        if (draft.firstName || draft.paternalLastName) {
+            localStorage.setItem('user_registration_draft_v1', JSON.stringify(draft));
+        }
+    }, [formData]);
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -384,6 +403,7 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
 
             // 4. Éxito - Redirigir a registro de mascotas
             setSubmitSuccess(true);
+            localStorage.removeItem('user_registration_draft_v1');
 
             // Llamar callback si existe, sino redirigir a la ruta anterior
             if (onSuccess) {

@@ -725,16 +725,12 @@
                 if (roleData.success) {
                     console.log('📊 Unified Widget: Role check result:', roleData.role);
 
-                    // TEMPORAL: Bypass de pending_payment para pruebas
                     // Cuando actives cobros, descomenta el bloque original
                     if (roleData.role === 'pending_payment') {
-                        console.log('⚠️ Unified Widget: User has no active plan, pero permitiendo carga de mascotas (MODO PRUEBA)');
-                        // this.membershipStatus = 'pending_payment';
-                        // this.pets = [];
-                        // return; // No cargar mascotas, mostrar vista de pago
-
-                        // Cuando reactives cobros, descomenta lo de arriba y comenta lo de abajo:
-                        // NUEVA URL de pago: https://app.pataamiga.mx/usuarios/registro
+                        console.log('💳 Unified Widget: User has no active plan. Bloqueando panel y pidiendo pago.');
+                        this.membershipStatus = 'pending_payment';
+                        this.pets = [];
+                        return; // No cargar mascotas, mostrar vista de pago
                     }
 
                     if (roleData.role === 'payment_processing') {

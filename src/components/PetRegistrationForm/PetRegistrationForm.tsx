@@ -43,10 +43,21 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showPopup, setShowPopup] = useState<string | null>(null);
 
-    // Cargar mascotas existentes desde Supabase al montar
+    // Cargar mascotas existentes desde Supabase y/o localStorage al montar
     React.useEffect(() => {
         const loadExistingPets = async () => {
             try {
+                // 1. Intentar cargar borrador local para rápida visualización
+                const localDraft = localStorage.getItem('pet_registration_draft_v1');
+                if (localDraft) {
+                    try {
+                        const parsedDraft = JSON.parse(localDraft);
+                        if (Array.isArray(parsedDraft) && parsedDraft.length > 0) {
+                            setPets(parsedDraft);
+                        }
+                    } catch (e) { console.warn('Error leyendo borrador local', e); }
+                }
+
                 // Esperar a que Memberstack cargue
                 let attempts = 0;
                 while (!window.$memberstackDom && attempts < 20) {
@@ -115,6 +126,15 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
         loadExistingPets();
     }, []);
+
+    // Guardar borrador local cada vez que se actualizan las mascotas
+    React.useEffect(() => {
+        if (!isLoadingPets && pets.length > 0) {
+            // No podemos serializar objetos File, los omitimos
+            const draftPets = pets.map(({ photos, vetCertificate, ...rest }) => rest);
+            localStorage.setItem('pet_registration_draft_v1', JSON.stringify(draftPets));
+        }
+    }, [pets, isLoadingPets]);
 
     // Agregar otra mascota
     const handleAddPet = () => {
@@ -243,7 +263,8 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 newErrors[`pet-${petNum}-adopted`] = 'Indica si fue adoptado';
             }
 
-            if (!pet.photos || pet.photos.length < 2) {
+            const hasExistingPhotos = pet.photo1Url && pet.photo2Url;
+            if (!hasExistingPhotos && (!pet.photos || pet.photos.length < 2)) {
                 newErrors[`pet-${petNum}-photos`] = 'Debes subir 2 fotos';
             }
         });
@@ -382,6 +403,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
             }
 
             // 3. Éxito - Redirigir a selección de plan
+            localStorage.removeItem('pet_registration_draft_v1');
             alert('¡Mascotas registradas exitosamente! 🐾');
             console.log('✅ Registro de mascotas completado');
 

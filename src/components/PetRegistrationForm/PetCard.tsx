@@ -292,17 +292,30 @@ export default function PetCard({
                         </div>
                     )}
 
-                    <FileUpload
-                        label="Muéstranos a tu peludo* ❤️"
-                        name={`pet-${petNum}-photos`}
-                        accept=".jpg,.jpeg,.png"
-                        maxSize={5}
-                        maxFiles={2}
-                        instruction="Sube 2 fotos para conocerlo mejor. Pueden ser selfies juntos, de cuando juegan, duermen o simplemente están siendo ellos mismos"
-                        onChange={(files) => onUpdate({ ...petData, photos: files })}
-                        error={errors[`pet-${petNum}-photos`]}
-                        required
-                    />
+                    <div style={{ position: 'relative' }}>
+                        <FileUpload
+                            label="Muéstranos a tu peludo* ❤️"
+                            name={`pet-${petNum}-photos`}
+                            accept=".jpg,.jpeg,.png"
+                            maxSize={5}
+                            maxFiles={2}
+                            instruction={petData.photo1Url && petData.photo2Url ? "Ya tienes fotos guardadas. Sube nuevas si deseas reemplazarlas." : "Sube 2 fotos para conocerlo mejor. Pueden ser selfies juntos..."}
+                            onChange={(files) => onUpdate({ ...petData, photos: files })}
+                            error={errors[`pet-${petNum}-photos`]}
+                            required={!(petData.photo1Url && petData.photo2Url)}
+                        />
+                        {(petData.photo1Url || petData.photo2Url) && (
+                            <div style={{ marginTop: '12px', padding: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px' }}>
+                                <p style={{ margin: '0 0 10px 0', fontSize: '13px', fontWeight: '700', color: '#166534' }}>
+                                    ✅ Fotos subidas previamente:
+                                </p>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    {petData.photo1Url && <img src={petData.photo1Url} alt="Foto previa 1" style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />}
+                                    {petData.photo2Url && <img src={petData.photo2Url} alt="Foto previa 2" style={{ width: '60px', height: '60px', borderRadius: '8px', objectFit: 'cover', border: '2px solid white', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }} />}
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <TextInput
                         label="¿Tienes RUAC?"
