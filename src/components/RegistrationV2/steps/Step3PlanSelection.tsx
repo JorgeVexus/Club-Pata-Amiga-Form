@@ -57,6 +57,7 @@ interface Step3PlanSelectionProps {
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
     skipPaymentEnabled?: boolean;
     onSkipPayment?: (planId: string, termsAcceptance?: any) => void;
+    isRecovery?: boolean;
 }
 
 // Add the import dynamically or using top-level if needed. Since this is a client component, 
@@ -70,7 +71,8 @@ export default function Step3PlanSelection({
     onBack,
     showToast,
     skipPaymentEnabled = false,
-    onSkipPayment
+    onSkipPayment,
+    isRecovery = false
 }: Step3PlanSelectionProps) {
     const [selectedPlan, setSelectedPlan] = useState<string>('');
     const [showTermsModal, setShowTermsModal] = useState(false);
@@ -183,11 +185,23 @@ export default function Step3PlanSelection({
     return (
         <div className={styles.stepCard}>
             <div className={styles.header}>
-                <h2 className={styles.title}>Elige tu plan</h2>
+                <h2 className={styles.title}>
+                    {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu plan'}
+                </h2>
                 <p className={styles.subtitle}>
                     Protegiendo a <strong>{petName}</strong> ({petType})
                 </p>
             </div>
+
+            {isRecovery && (
+                <div className={styles.recoveryAlert}>
+                    <span style={{ fontSize: '1.5rem' }}>👋</span>
+                    <p className={styles.recoveryAlertText}>
+                        <strong>¡Hola de nuevo!</strong> Vimos que aún no has completado el pago de tu membresía. 
+                        Selecciona un plan para activar todos los beneficios de la manada.
+                    </p>
+                </div>
+            )}
 
             <div className={styles.plansContainer}>
                 {PLANS.map((plan) => (

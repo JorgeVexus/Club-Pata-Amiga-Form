@@ -990,7 +990,7 @@
                         </p>
 
                         <div style="text-align: center; margin-top: 30px;">
-                            <a href="https://app.pataamiga.mx/seleccion-plan?reason=complete_payment" class="pata-btn" style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
+                            <a href="https://app.pataamiga.mx/registro?reason=complete_payment" class="pata-btn" style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
                                 Seleccionar Plan
                             </a>
                         </div>

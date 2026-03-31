@@ -11,7 +11,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 // Componentes de pasos
 import Step1Account from './steps/Step1Account';
@@ -65,6 +65,8 @@ interface RegistrationData {
 export default function NewRegistrationFlow() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(1);
+    const searchParams = useSearchParams();
+    const isRecovery = searchParams.get('reason') === 'complete_payment';
     const [member, setMember] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -717,6 +719,7 @@ export default function NewRegistrationFlow() {
                                         showToast={showToast}
                                         skipPaymentEnabled={skipPaymentEnabled}
                                         onSkipPayment={handleSkipPayment}
+                                        isRecovery={isRecovery}
                                     />
                                 );
                             case 4:

@@ -1660,3 +1660,29 @@
         padding: 1.5rem;
     }
 }
+
+/* Recovery Alert */
+.recoveryAlert {
+    background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%);
+    border: 2px solid #FF9800;
+    border-radius: 16px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.recoveryAlertText {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    color: #E65100;
+    line-height: 1.5;
+    margin: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

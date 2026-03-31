@@ -16,11 +16,10 @@ export default function PlanSelectionContent() {
     const [isCompletingPayment, setIsCompletingPayment] = useState(false);
 
     useEffect(() => {
-        // Detectar si viene de login sin pagar
+        // Detectar si viene de login sin pagar y redirigir al nuevo flujo V2
         const reason = searchParams.get('reason');
         if (reason === 'complete_payment') {
-            setIsCompletingPayment(true);
-            // No verificar progreso de registro, ya tiene cuenta
+            router.push('/registro?reason=complete_payment');
             return;
         }
 
