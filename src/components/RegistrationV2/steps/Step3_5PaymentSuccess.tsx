@@ -11,7 +11,7 @@ export default function Step3_5PaymentSuccess({ onNext }: Step3_5PaymentSuccessP
     useEffect(() => {
         const timer = setTimeout(() => {
             onNext();
-        }, 6000); // 6 segundos para que se alcance a leer el nuevo texto largo
+        }, 1500); // Duración reducida a 1.5s a petición del usuario
 
         return () => clearTimeout(timer);
     }, [onNext]);

@@ -115,7 +115,12 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
         memberstackId,
         email: userData.email,
         curp: userData.curp,
-        step: userData.registration_step
+        step: userData.registration_step,
+        // DEBUG: Mostrar todos los campos del perfil que llegan
+        firstName: userData.firstName,
+        first_name: userData.first_name,
+        paternalLastName: userData.paternalLastName,
+        last_name: userData.last_name,
     });
 
     const supabase = getServiceRoleClient()
@@ -135,7 +140,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             mother_last_name: userData.mother_last_name || userData.maternalLastName,
             gender: userData.gender,
             birth_date: userData.birth_date || userData.birthDate,
-            curp: (userData.curp || userData.CURP)?.trim() || null,
+            curp: (userData.curp || userData.CURP)?.trim() || undefined, // Cambiado de null a undefined para que el filtro lo excluya
             phone: userData.phone,
             nationality: userData.nationality,
             nationality_code: userData.nationality_code || userData.nationalityCode,
@@ -150,29 +155,80 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             registration_step: userData.registration_step,
             membership_status: userData.membership_status || 'pending',
             // Mascotas (campos temporales en users si se usan para tracking rápido)
-            pet_name: userData.pet_name,
-            pet_type: userData.pet_type,
-            pet_age: userData.pet_age,
-            pet_age_unit: userData.pet_age_unit,
+            pet_name: userData.pet_name || userData.petName,
+            pet_type: userData.pet_type || userData.petType,
+            pet_age: userData.pet_age || userData.petAge,
+            pet_age_unit: userData.pet_age_unit || userData.petAgeUnit,
             // Legal
             terms_accepted_at: userData.terms_accepted_at || userData.termsAcceptedAt,
             terms_version: userData.terms_version || userData.termsVersion || '1.0',
         };
 
-        const { data, error } = await supabase
+        // Filtrar campos undefined y null para no sobreescribir datos existentes
+        // Solo enviamos campos que tienen un valor real
+        const cleanedData = Object.fromEntries(
+            Object.entries(dataToSave).filter(([key, v]) => {
+                // memberstack_id siempre se envía (es la clave de conflicto)
+                if (key === 'memberstack_id') return true;
+                // registration_step y membership_status siempre se envían
+                if (key === 'registration_step' || key === 'membership_status') return true;
+                // El resto solo se envía si tiene un valor real
+                return v !== undefined && v !== null && v !== '';
+            })
+        );
+
+        // 🔍 DEBUG EXHAUSTIVO
+        console.log('📝 [Server Action] UPSERT DEBUG:', {
+            rawFieldCount: Object.keys(dataToSave).length,
+            cleanedFieldCount: Object.keys(cleanedData).length,
+            cleanedFields: Object.keys(cleanedData),
+            first_name_raw: dataToSave.first_name,
+            first_name_cleaned: cleanedData.first_name,
+            last_name_raw: dataToSave.last_name,
+            curp_raw: dataToSave.curp,
+        });
+
+        let { data, error } = await supabase
             .from('users')
-            .upsert(dataToSave, {
+            .upsert(cleanedData, {
                 onConflict: 'memberstack_id',
                 ignoreDuplicates: false
             })
             .select()
+
+        // Si falla por CURP duplicado, reintentar sin CURP para no perder el resto de datos
+        if (error && error.code === '23505' && error.message?.includes('curp')) {
+            console.warn('⚠️ [Server Action] CURP duplicado detectado, reintentando sin CURP...');
+            const { curp, ...dataWithoutCurp } = cleanedData as any;
+            const retryResult = await supabase
+                .from('users')
+                .upsert(dataWithoutCurp, {
+                    onConflict: 'memberstack_id',
+                    ignoreDuplicates: false
+                })
+                .select();
+            
+            data = retryResult.data;
+            error = retryResult.error;
+            
+            if (!error) {
+                console.log('✅ [Server Action] Retry exitoso (sin CURP). Datos guardados.');
+            }
+        }
 
         if (error) {
             console.error('❌ [Server Action] Error de Supabase:', error)
             return { success: false, error: error.message }
         }
 
-        console.log('✅ [Server Action] Usuario registrado/actualizado en Supabase exitosamente');
+        // Verificar qué devolvió Supabase
+        console.log('✅ [Server Action] UPSERT exitoso. Datos guardados:', {
+            id: data?.[0]?.id,
+            first_name: data?.[0]?.first_name,
+            last_name: data?.[0]?.last_name,
+            curp: data?.[0]?.curp,
+            registration_step: data?.[0]?.registration_step,
+        });
         return { success: true }
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error)
@@ -300,15 +356,29 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             created_at: new Date().toISOString()
         }));
 
+        // 🔍 DEBUG: Ver exactamente qué se inserta en la tabla pets
+        console.log('🐾 [Server Action] Datos de mascota a insertar:', JSON.stringify(petsToInsert, null, 2));
+
         // 3. Insertar mascotas
-        const { error: insertError } = await supabase
+        const { data: insertedPets, error: insertError } = await supabase
             .from('pets')
-            .insert(petsToInsert);
+            .insert(petsToInsert)
+            .select();
 
         if (insertError) {
             console.error('❌ [Server Action] Error insertando mascotas:', insertError);
             return { success: false, error: insertError.message };
         }
+
+        console.log('✅ [Server Action] Mascota insertada:', {
+            id: insertedPets?.[0]?.id,
+            name: insertedPets?.[0]?.name,
+            pet_type: insertedPets?.[0]?.pet_type,
+            breed: insertedPets?.[0]?.breed,
+            gender: insertedPets?.[0]?.gender,
+            age_value: insertedPets?.[0]?.age_value,
+            coat_color: insertedPets?.[0]?.coat_color,
+        });
 
         return { success: true };
     } catch (error: any) {

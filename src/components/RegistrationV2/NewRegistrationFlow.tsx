@@ -117,12 +117,21 @@ export default function NewRegistrationFlow() {
                                 account: {
                                     email: currentMember.auth?.email || userData.email,
                                 },
-                                petBasic: userData.pet_name ? {
-                                    petType: userData.pet_type || 'perro',
-                                    petName: userData.pet_name,
-                                    petAge: userData.pet_age || 0,
-                                    petAgeUnit: userData.pet_age_unit || 'years',
-                                } : undefined,
+                                // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
+                                petBasic: (() => {
+                                    const dbPetName = userData.pet_name || userData.petName;
+                                    const msPetName = currentMember.customFields?.['pet-name'];
+                                    const petName = dbPetName || msPetName;
+                                    if (petName) {
+                                        return {
+                                            petType: (userData.pet_type || userData.petType || currentMember.customFields?.['pet-type'] || 'perro') as 'perro' | 'gato',
+                                            petName: petName,
+                                            petAge: Number(userData.pet_age || userData.petAge || currentMember.customFields?.['pet-age'] || 0),
+                                            petAgeUnit: (userData.pet_age_unit || userData.petAgeUnit || currentMember.customFields?.['pet-age-unit'] || 'years') as 'years' | 'months',
+                                        };
+                                    }
+                                    return undefined;
+                                })(),
                                 profile: userData.first_name ? {
                                     firstName: userData.first_name,
                                     paternalLastName: userData.last_name,
@@ -140,7 +149,6 @@ export default function NewRegistrationFlow() {
                                     address: userData.address,
                                     ine_front_url: userData.ine_front_url,
                                 } : (currentMember.customFields?.['first-name'] ? {
-                                    // Datos de Google/Social extratídos de Memberstack
                                     firstName: currentMember.customFields['first-name'],
                                     paternalLastName: currentMember.customFields['last-name'] || '',
                                     email: currentMember.auth?.email,
@@ -166,6 +174,17 @@ export default function NewRegistrationFlow() {
                             }, msId);
                         }
 
+                        // Si petBasic no se recuperó de DB/MS, intentar desde localStorage
+                        if (!loadedData.petBasic) {
+                            try {
+                                const backup = localStorage.getItem('petBasicBackup');
+                                if (backup) {
+                                    loadedData.petBasic = JSON.parse(backup);
+                                    console.log('💾 [loadSavedState] petBasic recuperado de localStorage:', loadedData.petBasic?.petName);
+                                }
+                            } catch (e) { /* localStorage no disponible */ }
+                        }
+
                         setRegistrationData(loadedData);
 
                         // Verificar estado de registro (Comparar Memberstack vs Supabase)
@@ -173,31 +192,57 @@ export default function NewRegistrationFlow() {
                         const dbStep = Number(userData?.registration_step || 1);
                         const paymentStatus = currentMember.customFields?.['payment-status'];
 
-                        // El paso real es el más avanzado entre los dos
+                        // El paso real es el más avanzado entre los dos (MS o DB)
                         let finalStep = Math.max(msStep, dbStep);
 
-                        // Si ya tiene sesión ativa (ya tiene cuenta), saltamos directo al paso 2
+                        // Si ya tiene sesión activa (ya tiene cuenta), saltamos directo al paso 2 mínimo
                         if (finalStep <= 1) {
                             finalStep = 2;
                         }
 
-                        // Regla de negocio: Si ya pagó, no puede estar antes del paso 4
-                        if (paymentStatus === 'completed' && finalStep < 4) {
+                        // ==========================================
+                        // 🔥 REFUERZO DE PAGO EXITOSO (Stripe Return)
+                        // ==========================================
+                        const isPaymentFromUrl = searchParams.get('payment') === 'success';
+                        
+                        if (isPaymentFromUrl) {
+                            console.log('💰 [Checkout Success] Pago detectado en URL. Forzando Paso 4...');
                             finalStep = 4;
+                            setIsPaymentSuccessTransition(true);
+                            
+                            // Sincronizar de inmediato para evitar que un refresh nos regrese atrás
+                            registerUserInSupabase({ 
+                                registration_step: 4, 
+                                membership_status: 'pending' 
+                            }, msId).catch((err: any) => console.error('Error sincronizando pago en DB:', err));
+                            
+                            if (window.$memberstackDom) {
+                                window.$memberstackDom.updateMember({
+                                    customFields: {
+                                        'payment-status': 'completed',
+                                        'registration-step': 4,
+                                        'approval-status': 'pending'
+                                    }
+                                }).catch((err: any) => console.error('Error sincronizando pago en MS:', err));
+                            }
+                        } else {
+                            // Regla de negocio normal: Si el servidor ya dice que pagó
+                            if (paymentStatus === 'completed' && finalStep < 4) {
+                                finalStep = 4;
+                            }
+
+                            // NUEVA REGLA: Si NO ha pagado y está en paso 4 o 5 (y no es skip payment), lo regresamos al 3
+                            const isSkipPaymentEnv = window.location.hostname === 'localhost' || skipPaymentEnabled;
+                            if (paymentStatus !== 'completed' && finalStep >= 4 && !isSkipPaymentEnv) {
+                                console.warn('⚠️ Intento de acceso a pasos post-pago sin completar el pago');
+                                finalStep = 3;
+                                setTimeout(() => {
+                                    showToast('Aún no has completado tu pago, inténtalo nuevamente 🐾', 'warning');
+                                }, 500);
+                            }
                         }
 
-                        // NUEVA REGLA: Si NO ha pagado y está en paso 4 o 5 (y no es skip payment), lo regresamos al 3
-                        const isSkipPaymentEnv = window.location.hostname === 'localhost' || skipPaymentEnabled;
-                        if (paymentStatus !== 'completed' && finalStep >= 4 && !isSkipPaymentEnv) {
-                            console.warn('⚠️ Intento de acceso a pasos post-pago sin completar el pago');
-                            finalStep = 3;
-                            // Pequeño delay para asegurar que el componente Step3 se renderice antes del toast
-                            setTimeout(() => {
-                                showToast('Aún no has completado tu pago, inténtalo nuevamente 🐾', 'warning');
-                            }, 500);
-                        }
-
-                        console.log(`📊 Progreso detectado: MS(${msStep}), DB(${dbStep}) -> Final(${finalStep})`);
+                        console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}) -> Paso Actual(${finalStep})`);
                         setCurrentStep(finalStep);
                     }
                 }
@@ -229,7 +274,10 @@ export default function NewRegistrationFlow() {
     // Guardar progreso en Supabase
     const saveProgress = useCallback(async (step: number, data: any) => {
         const memberId = member?.id || member?.memberId;
-        if (!memberId) return;
+        if (!memberId) {
+            console.warn(`⚠️ [saveProgress] member es null, no se puede guardar step ${step}. Datos NO guardados en Supabase.`);
+            return;
+        }
 
         setIsSaving(true);
         try {
@@ -271,6 +319,16 @@ export default function NewRegistrationFlow() {
                 userData.termsAcceptedAt = data.termsAcceptance.timestamp || new Date().toISOString();
                 userData.termsVersion = '1.0';
             }
+
+            console.log('📝 [saveProgress] Datos que se enviarán:', {
+                step,
+                hasProfile: !!data.profile,
+                hasPetBasic: !!data.petBasic,
+                profileFirstName: data.profile?.firstName,
+                profileCurp: data.profile?.curp,
+                petBasicName: data.petBasic?.petName,
+                userDataKeys: Object.keys(userData).filter(k => userData[k] !== undefined && userData[k] !== null)
+            });
 
             await registerUserInSupabase(userData, memberId);
             console.log('✅ Progreso guardado en Supabase (Source of Truth)', { step, memberId });
@@ -407,14 +465,24 @@ export default function NewRegistrationFlow() {
         const newData = { ...registrationData, petBasic: data };
         setRegistrationData(newData);
 
+        // Backup inmediato en localStorage (sobrevive redirect de Stripe)
+        try {
+            localStorage.setItem('petBasicBackup', JSON.stringify(data));
+            console.log('💾 [Step2] petBasic guardado en localStorage:', data.petName);
+        } catch (e) { /* localStorage no disponible */ }
+
         // Guardar en Supabase - Siguiente paso es el 3
         await saveProgress(3, newData);
 
-        // Actualizar Memberstack
+        // Actualizar Memberstack (incluir datos de mascota como backup para sobrevivir el redirect de Stripe)
         if (member && window.$memberstackDom) {
             const { data: updatedMember } = await window.$memberstackDom.updateMember({
                 customFields: {
                     'registration-step': 3,
+                    'pet-name': data.petName,
+                    'pet-type': data.petType,
+                    'pet-age': String(data.petAge),
+                    'pet-age-unit': data.petAgeUnit,
                 },
             });
             if (updatedMember) setMember(updatedMember);
@@ -616,13 +684,48 @@ export default function NewRegistrationFlow() {
             // Extraemos los archivos (Files) para no pasarlos al Server Action y evitar el límite de 1MB
             const { primaryPhoto, vetCertificate, ...restPetData } = petData;
 
+            // Debug: ver qué datos tenemos disponibles
+            console.log('🐾 [Step5] registrationData.petBasic:', JSON.stringify(registrationData.petBasic));
+            console.log('🐾 [Step5] restPetData keys:', Object.keys(restPetData));
+
+            // Recuperar petBasic desde localStorage como último recurso
+            let petBasicSource = registrationData.petBasic;
+            if (!petBasicSource?.petName) {
+                try {
+                    const backup = localStorage.getItem('petBasicBackup');
+                    if (backup) {
+                        petBasicSource = JSON.parse(backup);
+                        console.log('💾 [Step5] petBasic recuperado de localStorage:', petBasicSource?.petName);
+                    }
+                } catch (e) { /* localStorage no disponible */ }
+            }
+
+            // Resolver el nombre de la mascota desde todas las fuentes posibles
+            const petName = petBasicSource?.petName 
+                || petBasicSource?.name
+                || restPetData?.petName 
+                || restPetData?.name
+                || 'Mascota';
+
+            console.log('🐾 [Step5] Nombre de mascota resuelto:', petName);
+
             const completePet = {
-                ...registrationData.petBasic,
+                ...petBasicSource,
                 ...restPetData,
+                name: petName, // Forzar el campo 'name' explícitamente
+                petName: petName, // También petName por compatibilidad
+                petAge: petBasicSource?.petAge || restPetData?.petAge,
+                petAgeUnit: petBasicSource?.petAgeUnit || restPetData?.petAgeUnit || 'years',
+                petType: petBasicSource?.petType || restPetData?.petType || 'perro',
                 primaryPhotoUrl,
                 vetCertificateUrl,
                 isComplete: true
             };
+
+            // Validación de seguridad: no enviar si no hay nombre
+            if (!completePet.name || completePet.name === '') {
+                throw new Error('No se pudo recuperar el nombre de la mascota. Por favor regresa al paso anterior.');
+            }
 
             // 3. Guardar en Supabase (Source of Truth)
             const { registerPetsInSupabase } = await import('@/app/actions/user.actions');
@@ -641,6 +744,9 @@ export default function NewRegistrationFlow() {
 
             // 5. Actualizar progreso final en Supabase
             await saveProgress(6, { ...registrationData, petComplete: completePet });
+
+            // Limpiar backup de localStorage
+            try { localStorage.removeItem('petBasicBackup'); } catch (e) { /* */ }
 
             showToast('¡Registro completado!', 'success');
 

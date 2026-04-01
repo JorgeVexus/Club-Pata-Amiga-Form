@@ -146,7 +146,10 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
             <div className={styles.header}>
                 <span className={styles.stepBadge}>Paso 2 de 2 post-pago</span>
                 <h2 className={styles.title}>
-                    Completa los datos de {petBasic?.petName || 'tu mascota'}
+                    {petBasic?.petName 
+                        ? <>Completa los datos de {petType === 'gato' ? '🐱' : '🐶'} <em style={{ fontStyle: 'normal', color: 'var(--color-primary, #00BBB4)' }}>{petBasic.petName}</em></>
+                        : 'Completa los datos de tu mascota'
+                    }
                 </h2>
                 <p className={styles.subtitle}>
                     Estos datos nos ayudan a identificar a tu peludo amigo
