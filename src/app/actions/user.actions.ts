@@ -40,30 +40,34 @@ export async function checkCurpAvailability(curp: string, currentMemberId?: stri
         const normalizedCurp = curp.trim().toUpperCase();
 
         // Buscar si existe el CURP
-        const { data: existingUser, error } = await supabase
+        const { data: users, error } = await supabase
             .from('users')
-            .select('id, memberstack_id, curp')
-            .eq('curp', normalizedCurp)
-            .maybeSingle()
+            .select('id, memberstack_id')
+            .eq('curp', normalizedCurp);
 
         if (error) {
             console.error('Error al verificar CURP:', error)
-            return { available: true, error: error.message }
+            return { available: true, count: 0, error: error.message }
         }
 
-        // Si no existe, está disponible
-        if (!existingUser) {
-            return { available: true }
+        const count = users?.length || 0;
+
+        // Si no hay usuarios con ese CURP
+        if (count === 0) {
+            return { available: true, count: 0 }
         }
 
-        // Si existe pero pertenece al mismo usuario (mismo memberstack_id), está disponible
-        if (currentMemberId && existingUser.memberstack_id === currentMemberId) {
-            console.log('✅ CURP pertenece al usuario actual, permitiendo reutilización');
-            return { available: true, isOwnData: true }
-        }
+        // Si existe pero pertenece al mismo usuario (mismo memberstack_id), está "disponible" (su propio dato)
+        const isOwnData = currentMemberId && users.some(u => u.memberstack_id === currentMemberId);
 
-        // Si existe y no es del usuario actual, no está disponible
-        return { available: false }
+        // Retornamos disponibilidad y conteo total
+        // La lógica de "available" la mantenemos para compatibilidad, 
+        // pero ahora el frontend decidirá qué mostrar.
+        return { 
+            available: isOwnData || count === 0, 
+            count: count,
+            isOwnData: isOwnData
+        }
     } catch (error) {
         console.error('Error inesperado al verificar CURP:', error)
         return { available: true, error: 'unknown_error' }

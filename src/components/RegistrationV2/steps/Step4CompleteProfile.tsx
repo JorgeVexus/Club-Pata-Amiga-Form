@@ -48,6 +48,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [isLoadingCP, setIsLoadingCP] = useState(false);
     const [isCheckingCurp, setIsCheckingCurp] = useState(false);
     const [curpAvailable, setCurpAvailable] = useState<boolean | null>(null);
+    const [curpCount, setCurpCount] = useState<number>(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
@@ -87,6 +88,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             }
 
             setCurpAvailable(result.available);
+            setCurpCount(result.count || 0);
 
             // Incluso si no está disponible (ya existe), no bloqueamos el flujo
             // permitiendo que un usuario tenga múltiples cuentas con el mismo CURP
@@ -457,6 +459,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                                         verifyCurp(sanitized);
                                     } else {
                                         setCurpAvailable(null);
+                                        setCurpCount(0);
                                         if (errors.curp) {
                                             setErrors(prev => {
                                                 const newErrors = { ...prev };
@@ -478,6 +481,12 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                             )}
                             {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
                                 <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
+                            )}
+                            {!curpAvailable && curpCount > 0 && formData.curp.length === 18 && !isCheckingCurp && (
+                                <div className={styles.curpWarningMessage}>
+                                    ⚠️ CURP ya registrada en {curpCount === 1 ? 'otra cuenta' : `${curpCount} cuentas`}. 
+                                    Si es tuya, puedes continuar sin problemas.
+                                </div>
                             )}
                         </div>
                     ) : formData.nationality ? (
