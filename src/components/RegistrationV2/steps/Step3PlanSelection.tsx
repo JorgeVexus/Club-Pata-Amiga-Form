@@ -91,10 +91,6 @@ export default function Step3PlanSelection({
 
     // Aceptar todos los términos automáticamente (sin abrir modal)
     const handleAcceptAllTerms = () => {
-        if (!selectedPlan) {
-            showToast('Selecciona un plan primero', 'error');
-            return;
-        }
 
         const allAccepted: TermsAcceptance = {
             termsAndConditions: true,
