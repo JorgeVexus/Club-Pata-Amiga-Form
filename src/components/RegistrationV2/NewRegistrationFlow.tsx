@@ -438,7 +438,21 @@ export default function NewRegistrationFlow() {
             });
 
             if (result) {
-                // Pago exitoso
+                // 🔥 NUEVO: Verificación robusta de planes tras el checkout
+                // Esto previene falsos positivos si el modal se cierra sin pagar
+                const { data: memberPlans } = await window.$memberstackDom.getMemberPlans();
+                const hasActivePlan = memberPlans && memberPlans.some((p: any) => 
+                    (p.planId === planId || p.priceId === planId) && 
+                    (p.status === 'ACTIVE' || p.status === 'active')
+                );
+
+                if (!hasActivePlan) {
+                    console.warn('⚠️ [Checkout] El usuario cerró el checkout o no completó el pago.');
+                    setIsLoading(false);
+                    return; // Detenemos el flujo si no hay plan activo
+                }
+
+                // Pago realmente exitoso y verificado
                 const completedData = { ...newData, paymentCompleted: true };
                 setRegistrationData(completedData);
 
