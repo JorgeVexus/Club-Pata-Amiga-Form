@@ -1,4 +1,4 @@
-/* Estilos compartidos para los pasos del registro */
+﻿/* Estilos compartidos para los pasos del registro */
 
 .stepCard {
     background: white;
@@ -7,6 +7,20 @@
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
     max-width: 600px;
     margin: 0 auto;
+}
+
+/* Mensaje de advertencia para CURP duplicado */
+.curpWarningMessage {
+    background: #FFF5F5;
+    border: 1px solid #E53E3E;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #C53030;
+    margin-top: 0.75rem;
+    line-height: 1.4;
+    animation: slideDown 0.3s ease-out;
 }
 
 /* Social Login */
@@ -25,7 +39,7 @@
 
 @media (min-width: 480px) {
 
-    /* Si solo hay un botón, lo deja al 100%. Si hay dos, se activará en el futuro. */
+    /* Si solo hay un botÃ³n, lo deja al 100%. Si hay dos, se activarÃ¡ en el futuro. */
     .socialButtonsRow {
         flex-direction: row;
     }
@@ -216,7 +230,7 @@
     flex: 1;
 }
 
-/* Checkbox y términos */
+/* Checkbox y tÃ©rminos */
 .termsLabel,
 .checkboxLabel {
     display: flex;
@@ -248,7 +262,7 @@
 }
 
 /* ============================================
-   SECCIÓN ADOPCIÓN - DISEÑO MEJORADO
+   SECCIÃ“N ADOPCIÃ“N - DISEÃ‘O MEJORADO
    ============================================ */
 
 .adoptionSection {
@@ -360,7 +374,7 @@
 }
 
 .adoptionStoryLabel::before {
-    content: '💝';
+    content: 'ðŸ’';
     font-size: 1.1rem;
 }
 
@@ -797,9 +811,9 @@
     font-weight: 600;
 }
 
-/* Indicador visual de selección */
+/* Indicador visual de selecciÃ³n */
 .switchActive::before {
-    content: '✓';
+    content: 'âœ“';
     position: absolute;
     left: 12px;
     top: 50%;
@@ -815,7 +829,7 @@
     font-weight: bold;
 }
 
-/* Estado deshabilitado/deseleccionado más sutil */
+/* Estado deshabilitado/deseleccionado mÃ¡s sutil */
 .switchButton:not(.switchActive) {
     opacity: 0.85;
 }
@@ -916,7 +930,7 @@
 }
 
 /* ============================================
-   PLANES - SELECCIÓN DE PLAN
+   PLANES - SELECCIÃ“N DE PLAN
    ============================================ */
 
 .plansContainer {
@@ -1056,7 +1070,7 @@
     color: white;
 }
 
-/* Términos y condiciones */
+/* TÃ©rminos y condiciones */
 .termsSection {
     margin: 1.5rem 0;
     padding: 1rem;
@@ -1098,7 +1112,7 @@
 }
 
 /* ============================================
-   ALINEACIÓN DE CAMPOS EN FILA
+   ALINEACIÃ“N DE CAMPOS EN FILA
    ============================================ */
 
 /* Para campos en .row como DatePicker y NationalitySelect */
@@ -1109,12 +1123,12 @@
     align-items: start;
 }
 
-/* Resetear márgenes en campos dentro de row */
+/* Resetear mÃ¡rgenes en campos dentro de row */
 .row>div {
     margin-bottom: 0 !important;
 }
 
-/* Asegurar que ambos labels tengan la misma altura y alineación */
+/* Asegurar que ambos labels tengan la misma altura y alineaciÃ³n */
 .row label {
     display: flex;
     align-items: center;
@@ -1161,7 +1175,7 @@
 }
 
 /* ============================================
-   VALIDACIÓN DE CURP Y OTROS INPUTS
+   VALIDACIÃ“N DE CURP Y OTROS INPUTS
    ============================================ */
 
 .curpRow {
@@ -1256,7 +1270,7 @@
 }
 
 /* ============================================
-   TRANSICIÓN PAGO EXITOSO
+   TRANSICIÃ“N PAGO EXITOSO
    ============================================ */
 .successTransitionContainer {
     background: #00BBB4;
@@ -1564,7 +1578,7 @@
     to { transform: translateY(0); opacity: 1; }
 }
 /* ============================================
-   TRANSICIÓN DE ÉXITO DE PAGO (Step 3.5)
+   TRANSICIÃ“N DE Ã‰XITO DE PAGO (Step 3.5)
    ============================================ */
 
 .successTransitionContainer {
@@ -1687,18 +1701,17 @@
     to { opacity: 1; transform: translateY(0); }
 }
 
- / *   M e n s a j e   d e   a d v e r t e n c i a   p a r a   C U R P   d u p l i c a d o   * / 
- . c u r p W a r n i n g M e s s a g e   { 
-         b a c k g r o u n d :   # F F F 5 F 5 ; 
-         b o r d e r :   1 p x   s o l i d   # E 5 3 E 3 E ; 
-         b o r d e r - r a d i u s :   1 2 p x ; 
-         p a d d i n g :   0 . 7 5 r e m   1 r e m ; 
-         f o n t - f a m i l y :   ' O u t f i t ' ,   s a n s - s e r i f ; 
-         f o n t - s i z e :   0 . 8 5 r e m ; 
-         c o l o r :   # C 5 3 0 3 0 ; 
-         m a r g i n - t o p :   0 . 7 5 r e m ; 
-         l i n e - h e i g h t :   1 . 4 ; 
-         a n i m a t i o n :   s l i d e D o w n   0 . 3 s   e a s e - o u t ; 
- } 
-  
- 
+
+/* Mensaje de advertencia para CURP duplicado */
+.curpWarningMessage {
+    background: #FFF5F5;
+    border: 1px solid #E53E3E;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #C53030;
+    margin-top: 0.75rem;
+    line-height: 1.4;
+    animation: slideDown 0.3s ease-out;
+}
