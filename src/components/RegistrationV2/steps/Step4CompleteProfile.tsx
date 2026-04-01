@@ -88,16 +88,13 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
             setCurpAvailable(result.available);
 
-            if (!result.available) {
-                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado con otra cuenta' }));
-                showToast('El CURP ya está en uso', 'error');
-            } else {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors.curp;
-                    return newErrors;
-                });
-            }
+            // Incluso si no está disponible (ya existe), no bloqueamos el flujo
+            // permitiendo que un usuario tenga múltiples cuentas con el mismo CURP
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors.curp;
+                return newErrors;
+            });
         } catch (error) {
             console.error('Catch verifyCurp:', error);
         } finally {
