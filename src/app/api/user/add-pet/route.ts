@@ -137,7 +137,6 @@ export async function POST(request: NextRequest) {
             vet_certificate_url: vetCertificateUrl || null,
             is_senior: isSenior || false,
             vet_certificate_required: isSenior || false,
-            ruac: ruac || null,
             status: 'pending',
             basic_info_completed: true,
             complementary_info_completed: true,
