@@ -113,10 +113,9 @@ export async function POST(request: NextRequest) {
             isMixed || false
         );
 
-        const waitingPeriodEnd = new Date();
-        waitingPeriodEnd.setDate(waitingPeriodEnd.getDate() + waitingDays);
+        console.log(`🐾 [add-pet] Carencia calculada: ${waitingDays} días`);
 
-        // 5. Preparar datos de la mascota
+        // 5. Preparar datos de la mascota (solo columnas que existen en la tabla)
         const petData = {
             owner_id: userData.id,
             name: name.trim(),
@@ -129,19 +128,17 @@ export async function POST(request: NextRequest) {
             coat_color: coatColor || null,
             nose_color: noseColor || null,
             eye_color: eyeColor || null,
-            is_mixed_breed: isMixed || false,
-            is_adopted: isAdopted || false,
-            adoption_story: adoptionStory || null,
             primary_photo_url: primaryPhotoUrl || null,
             photo_url: primaryPhotoUrl || null,
             vet_certificate_url: vetCertificateUrl || null,
+            is_mixed_breed: isMixed || false,
+            is_adopted: isAdopted || false,
+            adoption_story: adoptionStory || null,
             is_senior: isSenior || false,
             vet_certificate_required: isSenior || false,
             status: 'pending',
             basic_info_completed: true,
             complementary_info_completed: true,
-            waiting_period_days: waitingDays,
-            waiting_period_end: waitingPeriodEnd.toISOString(),
             created_at: new Date().toISOString(),
         };
 
