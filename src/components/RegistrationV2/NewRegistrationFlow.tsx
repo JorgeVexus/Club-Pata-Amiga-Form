@@ -702,7 +702,7 @@ export default function NewRegistrationFlow() {
 
             // Resolver el nombre de la mascota desde todas las fuentes posibles
             const petName = petBasicSource?.petName 
-                || petBasicSource?.name
+                || (petBasicSource as any)?.name
                 || restPetData?.petName 
                 || restPetData?.name
                 || 'Mascota';
