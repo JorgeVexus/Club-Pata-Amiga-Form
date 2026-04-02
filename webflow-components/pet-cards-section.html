@@ -344,7 +344,12 @@
 
     // ── Size label ──
     sizeLabel(s) {
-      const map = { pequeño:'Tamaño pequeño', small:'Tamaño pequeño', mediano:'Tamaño mediano', medium:'Tamaño mediano', grande:'Tamaño grande', large:'Tamaño grande', gigante:'Tamaño gigante', giant:'Tamaño gigante' };
+      const map = { 
+        'pequeño': 'Tamaño pequeño', 'pequeña': 'Tamaño pequeño', 'small': 'Tamaño pequeño',
+        'mediano': 'Tamaño mediano', 'mediana': 'Tamaño mediano', 'medium': 'Tamaño mediano',
+        'grande': 'Tamaño grande', 'large': 'Tamaño grande',
+        'gigante': 'Tamaño gigante', 'giant': 'Tamaño gigante'
+      };
       return map[(s||'').toLowerCase()] || (s ? `Tamaño ${s}` : '');
     }
 
@@ -453,7 +458,7 @@
     // ══════════════════════════════════════
     openAddModal() {
       this.addStep = 1;
-      this.addFormData = { petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '' };
+      this.addFormData = { petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '' };
       this.uploadedPhotoUrl = null;
       this.uploadedVetUrl = null;
       this.renderAddStep();
@@ -621,6 +626,12 @@
             <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos la historia...">${d.adoptionStory}</textarea>
           </div>
 
+          <div class="pata-form-group">
+            <label class="pata-form-label">RUAC (opcional)</label>
+            <input class="pata-form-input" id="add-ruac" value="${d.ruac || ''}" placeholder="Ej: ABC123456789">
+            <p class="pata-add-subtext" style="font-size:11px; margin-top:4px;">Si tienes el RUAC, la carencia se reduce a 90 días.</p>
+          </div>
+
           ${isSenior ? `
           <div class="pata-alert-box">
             <span class="alert-icon">⚕️</span>
@@ -727,6 +738,7 @@
       if (el('add-breed')) d.breed = el('add-breed').value;
       if (el('add-size')) d.breedSize = el('add-size').value;
       if (el('add-story')) d.adoptionStory = el('add-story').value;
+      if (el('add-ruac')) d.ruac = el('add-ruac').value;
     }
 
     setupAutocomplete(inputId, listId, options, onSelect) {
@@ -795,7 +807,7 @@
           primaryPhotoUrl: this.uploadedPhotoUrl,
           isSenior: isSenior,
           vetCertificateUrl: this.uploadedVetUrl,
-          ruac: '',
+          ruac: d.ruac || '',
         };
 
         const res = await fetch(`${API_URL}/api/user/add-pet`, {
