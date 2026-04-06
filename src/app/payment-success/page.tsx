@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 
 export default function PaymentSuccessRedirect() {
     useEffect(() => {
-        // Redirect to login page with success parameter
-        window.location.href = '/user/inicio-de-sesion?payment=success';
+        // Redirigir de vuelta al flujo de registro con el parámetro de éxito
+        window.location.href = '/registro?payment=success';
     }, []);
 
     return (
@@ -28,7 +28,7 @@ export default function PaymentSuccessRedirect() {
                 <h1 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '0.5rem' }}>
                     ¡Pago exitoso!
                 </h1>
-                <p style={{ color: '#888' }}>Redirigiendo al inicio de sesión...</p>
+                <p style={{ color: '#888' }}>Redirigiendo para completar tu registro...</p>
             </div>
         </div>
     );

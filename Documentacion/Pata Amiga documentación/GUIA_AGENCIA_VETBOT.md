@@ -31,14 +31,22 @@ Usen estas rutas exactas en la sección **Response Mapping** para guardar la inf
 
 #### **A. Datos del Usuario (`user`)**
 *   `$.user.firstName` -> Nombre del cliente.
-*   `$.user.email` -> Correo electrónico.
+*   `$.user.lastName` -> Apellido del cliente.
+*   `$.user.email` -> Correo electrónico oficial.
+*   `$.user.membershipStatus` -> Estado de su membresía (ej: `active`, `pending`).
 
 #### **B. Lista de Mascotas (`pets`)**
 Para la primera mascota registrada (índice 0):
 *   `$.pets[0].name` -> Nombre de la mascota.
-*   `$.pets[0].breed` -> Raza.
+*   `$.pets[0].breed` -> Raza (ej: "Chihuahua", "Mestizo").
+*   `$.pets[0].type` -> Especie (ej: "Perro", "Gato").
 *   `$.pets[0].age` -> Edad (ej: "2-años").
 *   `$.pets[0].size` -> Tamaño (ej: "mediana").
+*   `$.pets[0].waitingPeriod.isActive` -> `true` si todavía está en periodo de carencia.
+
+#### **C. Historial Reciente (`consultationHistory`)**
+*   `$.consultationHistory[0].summary` -> Resumen de la última consulta.
+*   `$.consultationHistory[0].date` -> Fecha de la última consulta.
 
 ---
 
@@ -56,7 +64,7 @@ Para la primera mascota registrada (índice 0):
 ---
 
 ### 5. Herramienta de Diagnóstico
-Pueden verificar el token actual desde la consola del navegador (`F12`) si el desarrollador habilitó la función:
+Pueden verificar el token actual desde la consola del navegador (`F12`):
 1. Escriban: `vetBotDiagnostics()` y den Enter.
 2. Copien el token que sale en "Ref" para probar manualmente en el bloque de API.
 

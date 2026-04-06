@@ -52,16 +52,18 @@ export async function GET(request: NextRequest) {
             const members = rawData.data || [];
             allMembers = allMembers.concat(members);
 
-            const hasMore = rawData.has_more || false;
+            // Memberstack puede usar has_more o hasMore
+            const hasMore = rawData.has_more || rawData.hasMore || false;
+            console.log(`📄 Página ${pageCount}: ${members.length} miembros, hasMore: ${hasMore}`);
+
             const lastMember = members[members.length - 1];
             startingAfter = hasMore && lastMember ? lastMember.id : null;
             pageCount++;
 
         } while (startingAfter && pageCount < maxPages);
 
-        // Analizar estructura de la respuesta
-        const members = allMembers;
-        const pagination = { pages: pageCount, totalFetched: members.length };
+        // Guardar la primera respuesta raw para debug
+        let firstPageRaw: any = null;
 
         // Buscar específicamente los emails mencionados
         const targetEmails = [

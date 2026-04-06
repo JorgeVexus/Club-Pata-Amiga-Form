@@ -503,6 +503,7 @@ export default function NewRegistrationFlow() {
         try {
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: planId,
+                successUrl: window.location.origin + '/payment-success'
             });
 
             if (result) {

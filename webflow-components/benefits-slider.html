@@ -137,27 +137,138 @@
         box-shadow: 2px 4px 15px rgba(0, 0, 0, 0.15), -2px 4px 15px rgba(0, 0, 0, 0.15);
     }
 
-    /* Mobile adjustments */
+    /* Mobile adjustments for horizontal slider */
     @media (max-width: 768px) {
-        .stacked-slider-container {
-            height: 450px;
+
+        .stacked-slider-container,
+        .slider-pagination,
+        #prevBtn,
+        #nextBtn {
+            display: none !important;
         }
 
-        .stacked-card.is-prev-1 {
-            transform: scale(0.85) translateX(-55%);
+        #pata-benefits-widget {
+            padding: 40px 0 60px 0;
+            overflow: visible !important;
+            min-height: auto;
         }
 
-        .stacked-card.is-next-1 {
-            transform: scale(0.85) translateX(55%);
+        .pata-section-title {
+            margin-bottom: 30px;
         }
+    }
 
-        .stacked-card.is-prev-2 {
-            transform: scale(0.7) translateX(-95%);
-        }
+    /* ========== MOBILE STACKED LIST ========== */
+    .mobile-stacked-list {
+        display: none;
+        flex-direction: column;
+        padding: 0 15px 40px 15px;
+        position: relative;
+    }
 
-        .stacked-card.is-next-2 {
-            transform: scale(0.7) translateX(95%);
+    @media (max-width: 768px) {
+        .mobile-stacked-list {
+            display: flex;
         }
+    }
+
+    .mobile-card-wrapper {
+        position: relative;
+        width: 100%;
+        height: auto;
+        /* --- AJUSTES MANUALES PARA EL STACK --- */
+        max-height: 350px;
+        /* Cambia esto para darle más o menos altura a la tarjeta cerrada */
+        margin-top: -70px;
+        /* Cambia esto para que se encimen más o menos entre ellas */
+        /* -------------------------------------- */
+        border-radius: 45px;
+        overflow: hidden;
+        box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+        background: white;
+        transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        cursor: pointer;
+        z-index: 1;
+        will-change: max-height, margin;
+    }
+
+    .mobile-card-wrapper:first-child {
+        margin-top: 0;
+    }
+
+    /* Estado Expandido */
+    .mobile-card-wrapper.is-expanded {
+        max-height: 850px;
+        margin-top: 15px;
+        margin-bottom: 20px;
+        z-index: 100;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .mobile-card-wrapper .pata-card-content {
+        padding: 25px 25px 25px 25px;
+        display: flex;
+        flex-direction: column;
+        height: auto;
+    }
+
+    /* Ocultar contenido extra cuando esta colapsada */
+    .mobile-card-wrapper .pata-card-desc,
+    .mobile-card-wrapper .pata-card-image {
+        opacity: 0;
+        max-height: 0;
+        margin: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
+
+    .mobile-card-wrapper.is-expanded .pata-card-desc {
+        opacity: 1;
+        max-height: 250px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+    }
+
+    .mobile-card-wrapper.is-expanded .pata-card-image {
+        opacity: 1;
+        max-height: 300px;
+        position: relative;
+        height: 220px;
+    }
+
+    .mobile-card-wrapper .pata-card-icon {
+        width: 50px;
+        height: 38px;
+        margin-bottom: 12px;
+    }
+
+    .mobile-card-wrapper .pata-card-title {
+        font-size: 26px;
+        /* Ajuste para que quepa mejor en el stack */
+        line-height: 1.1;
+        margin-bottom: 40px;
+        /* Esto asegura que el texto de abajo no se asome en el stack */
+        transition: all 0.3s ease;
+    }
+
+    .mobile-card-wrapper.is-expanded .pata-card-title {
+        font-size: 32px;
+        margin-bottom: 5px;
+    }
+
+    .mobile-card-wrapper .pata-card-title {
+        font-size: 38px;
+    }
+
+    .mobile-card-wrapper .pata-card-desc {
+        font-size: 14px;
+        max-width: 280px;
+    }
+
+    .mobile-card-wrapper .pata-card-icon {
+        width: 64px;
+        height: 48px;
+        margin-bottom: 12px;
     }
 
     /* Contenido de la Card */
@@ -366,7 +477,7 @@
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124d8390154d6e6f9e9_icon-ribbon.png"
                         alt="Icono listón">
                 </div>
-                <div class="pata-card-title">Apoyo en momentos difíciles</div>
+                <div class="pata-card-title">apoyo en caso de fallecimiento</div>
                 <div class="pata-card-desc">Hasta $2,000 al año, te ayudamos a cubrir gastos cuando llega el momento de
                     decir adiós, con todo el amor que merecen.</div>
             </div>
@@ -376,14 +487,14 @@
             </div>
         </div>
 
-        <!-- Card 1: Vacunación anual (Naranja) -->
+        <!-- Card 1: Vacunación anual (Orange) -->
         <div class="stacked-card bg-orange" data-index="1">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124b1c5fbeffc5845f9_icon-syringe.png"
                         alt="Icono jeringa">
                 </div>
-                <div class="pata-card-title">Vacunación anual</div>
+                <div class="pata-card-title">vacunación anual</div>
                 <div class="pata-card-desc">Hasta $300 al año, porque cuidar también es prevenir. Te ayudamos a mantener
                     al día las vacunas de tu peludo.</div>
             </div>
@@ -393,16 +504,16 @@
             </div>
         </div>
 
-        <!-- Card 2: Emergencia médica (Rosa) - INICIAL ACTIVA -->
+        <!-- Card 2: Emergencia médica (Rosa) -->
         <div class="stacked-card bg-pink" data-index="2">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51239fb4154de69395b8_icon-ambulance.png"
                         alt="Icono ambulancia">
                 </div>
-                <div class="pata-card-title">Emergencia médica</div>
+                <div class="pata-card-title">emergencias médicas</div>
                 <div class="pata-card-desc">Hasta $3,000 al año, Porque los sustos no avisan y tu peludo no puede
-                    espera.</div>
+                    esperar.</div>
             </div>
             <div class="pata-card-image">
                 <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3972782a8e9dc93f43_pet-emergencia.webp"
@@ -417,7 +528,7 @@
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5123c2f3d6ca8c73261e_icon-chat.png"
                         alt="Icono chat">
                 </div>
-                <div class="pata-card-title">Chat veterinario</div>
+                <div class="pata-card-title">chat veterinario</div>
                 <div class="pata-card-desc">Siempre disponible, consejos y apoyo para cuidar mejor a tu lomito, siempre
                     con empatía y responsabilidad.</div>
             </div>
@@ -427,14 +538,14 @@
             </div>
         </div>
 
-        <!-- Card 4: Donaciones a refugios (Amarillo) -->
+        <!-- Card 4: Comunidad (Amarillo) -->
         <div class="stacked-card bg-yellow" data-index="4">
             <div class="pata-card-content">
                 <div class="pata-card-icon">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51232db47414a6dd8fdd_icon-heart.png"
                         alt="Icono corazón">
                 </div>
-                <div class="pata-card-title">Donaciones a refugios</div>
+                <div class="pata-card-title">comunidad</div>
                 <div class="pata-card-desc">Cada 1000 miembros, juntos destinamos parte del fondo para apoyar refugios y
                     rescates que salvan vidas.</div>
             </div>
@@ -457,6 +568,91 @@
 
     <!-- Paginación -->
     <div class="slider-pagination" id="sliderPagination"></div>
+
+    <!-- MOBILE STACKED LIST (Order: Emergencia, Vacunación, Apoyo, Chat, Comunidad) -->
+    <div class="mobile-stacked-list">
+        <!-- 1. Emergencia médica (Rosa) -->
+        <div class="mobile-card-wrapper bg-pink">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51239fb4154de69395b8_icon-ambulance.png"
+                        alt="Icono">
+                </div>
+                <div class="pata-card-title">emergencias médicas</div>
+                <div class="pata-card-desc">Hasta $3,000 al año, porque los sustos no avisan y tu peludo no puede
+                    esperar.</div>
+            </div>
+            <div class="pata-card-image">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3972782a8e9dc93f43_pet-emergencia.webp"
+                    alt="Mascota">
+            </div>
+        </div>
+
+        <!-- 2. Vacunación anual (Naranja) -->
+        <div class="mobile-card-wrapper bg-orange">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124b1c5fbeffc5845f9_icon-syringe.png"
+                        alt="Icono">
+                </div>
+                <div class="pata-card-title">vacunación anual</div>
+                <div class="pata-card-desc">Hasta $300 al año, porque cuidar también es prevenir.</div>
+            </div>
+            <div class="pata-card-image">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f373ed54e8f33736029_pet-vacunas.webp"
+                    alt="Mascota">
+            </div>
+        </div>
+
+        <!-- 3. Apoyo (Teal) -->
+        <div class="mobile-card-wrapper bg-teal">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124d8390154d6e6f9e9_icon-ribbon.png"
+                        alt="Icono">
+                </div>
+                <div class="pata-card-title">apoyo en caso de fallecimiento</div>
+                <div class="pata-card-desc">Hasta $2,000 al año, te ayudamos a cubrir gastos cuando llega el momento.
+                </div>
+            </div>
+            <div class="pata-card-image">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3a7c986e76c7d6ec54_pet-fallecimiento.webp"
+                    alt="Mascota">
+            </div>
+        </div>
+
+        <!-- 4. Chat (Lima) -->
+        <div class="mobile-card-wrapper bg-lime">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5123c2f3d6ca8c73261e_icon-chat.png"
+                        alt="Icono">
+                </div>
+                <div class="pata-card-title">chat veterinario</div>
+                <div class="pata-card-desc">Siempre disponible, consejos y apoyo para cuidar mejor a tu lomito.</div>
+            </div>
+            <div class="pata-card-image">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4fc278a9d558c9cbd86f_pet-chat.webp"
+                    alt="Mascota">
+            </div>
+        </div>
+
+        <!-- 5. Comunidad (Amarillo) -->
+        <div class="mobile-card-wrapper bg-yellow">
+            <div class="pata-card-content">
+                <div class="pata-card-icon">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51232db47414a6dd8fdd_icon-heart.png"
+                        alt="Icono">
+                </div>
+                <div class="pata-card-title">comunidad</div>
+                <div class="pata-card-desc">Juntos destinamos parte del fondo para apoyar refugios y rescates.</div>
+            </div>
+            <div class="pata-card-image">
+                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f38f2a0d2f49df1875c_pet-donaciones.webp"
+                    alt="Mascota">
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -550,5 +746,25 @@
 
         // Inicializar
         updateSlider();
+
+        // --- Lógica Mobile de Tap-to-Expand ---
+        const mobileCards = document.querySelectorAll('.mobile-card-wrapper');
+        mobileCards.forEach(card => {
+            card.addEventListener('click', function () {
+                const isExpanded = this.classList.contains('is-expanded');
+
+                // Cerrar todas las demás
+                mobileCards.forEach(c => c.classList.remove('is-expanded'));
+
+                // Si no estaba expandida, expandirla
+                if (!isExpanded) {
+                    this.classList.add('is-expanded');
+                    // Scroll suave para asegurar que la card sea visible
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 300);
+                }
+            });
+        });
     })();
 </script>

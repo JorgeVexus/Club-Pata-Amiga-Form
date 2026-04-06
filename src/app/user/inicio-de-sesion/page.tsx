@@ -1,6 +1,7 @@
 'use client';
 
-import { Suspense } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './login.module.css';
 
 function SuccessPageContent() {
@@ -73,6 +74,80 @@ function SuccessPageContent() {
 }
 
 export default function LoginPage() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const checkRedirect = async () => {
+            // Esperar a que Memberstack esté disponible
+            let attempts = 0;
+            while (!window.$memberstackDom && attempts < 10) {
+                await new Promise(resolve => setTimeout(resolve, 300));
+                attempts++;
+            }
+
+            if (!window.$memberstackDom) {
+                setIsLoading(false);
+                return;
+            }
+
+            try {
+                const { data: member } = await window.$memberstackDom.getCurrentMember();
+                
+                if (member) {
+                    const registrationStep = Number(member.customFields?.['registration-step'] || 1);
+                    const isPaymentSuccess = searchParams.get('payment') === 'success';
+
+                    console.log('🔍 [LoginRedirect] Miembro detectado:', { registrationStep, isPaymentSuccess });
+
+                    // Si acaba de pagar pero no ha completado el registro, mandarlo de vuelta al flujo
+                    if (isPaymentSuccess && registrationStep < 6) {
+                        console.log('🚀 Redirigiendo al flujo de registro para completar perfil...');
+                        router.push(`/registro?payment=success&${searchParams.toString()}`);
+                        return;
+                    }
+
+                    // Si llega aquí con payment=success y step es 6, es que ya terminó todo realmente
+                }
+            } catch (error) {
+                console.error('Error verificando redirección:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        checkRedirect();
+    }, [router, searchParams]);
+
+    if (isLoading) {
+        return (
+            <div style={{ 
+                backgroundColor: '#15beb2', 
+                minHeight: '100vh', 
+                display: 'flex', 
+                alignItems: 'center', 
+                justifyContent: 'center',
+                color: 'white',
+                fontFamily: 'Outfit, sans-serif'
+            }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ 
+                        width: '40px', 
+                        height: '40px', 
+                        border: '4px solid rgba(255,255,255,0.3)', 
+                        borderTopColor: 'white', 
+                        borderRadius: '50%', 
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 1rem'
+                    }} />
+                    <p>Verificando estatus de registro...</p>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <Suspense fallback={<div style={{ backgroundColor: '#15beb2', minHeight: '100vh' }} />}>
             <SuccessPageContent />
