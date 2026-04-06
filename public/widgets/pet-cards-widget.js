@@ -218,9 +218,11 @@
         .pata-type-btn.active { border-color: #15BEB2; background: #F0FEFE; box-shadow: 0 8px 20px rgba(21,190,178,0.1); }
         .pata-type-icon { font-size: 40px; display: block; margin-bottom: 10px; }
 
-        .pata-age-row { display: flex; gap: 12px; }
-        .pata-age-input { flex: 1; padding: 14px 20px; border: 2px solid #F0F0F0; border-radius: 50px; font-family: inherit; font-size: 15px; outline: none; }
-        .pata-age-select { width: 130px; padding: 14px 20px; border: 2px solid #F0F0F0; border-radius: 50px; font-family: inherit; font-size: 15px; outline: none; background: #fff; }
+        .pata-age-row { display: flex; flex-direction: column; gap: 10px; }
+        .pata-age-input { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 25px; font-size: 16px; box-sizing: border-box; }
+        .pata-age-select { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 20px; font-size: 16px; background: #fff; cursor: pointer; box-sizing: border-box; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'currentColor'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpolyline%20points%3D'6%209%2012%2015%2018%209'%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; }
+        
+        .pata-form-row { display: flex; flex-direction: column; gap: 15px; }
 
         .pata-breed-switch { display: flex; border: 2px solid #F0F0F0; border-radius: 50px; overflow: hidden; margin-bottom: 15px; }
         .pata-switch-btn {
