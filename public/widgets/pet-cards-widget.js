@@ -201,6 +201,69 @@
             padding: 8px 12px; background: #FFF8E1; border-left: 3px solid #FF9800;
             margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #666;
         }
+
+        /* 🆕 Multi-step Form Styles */
+        .pata-step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; justify-content: center; }
+        .pata-step-dot { width: 10px; height: 10px; border-radius: 50%; background: #E0E0E0; transition: all 0.3s ease; }
+        .pata-step-dot.active { background: #15BEB2; width: 30px; border-radius: 10px; }
+        .pata-step-label { font-size: 12px; font-weight: 700; color: #A0A0A0; margin-left: 5px; text-transform: uppercase; }
+
+        .pata-type-sel { display: flex; gap: 15px; margin-bottom: 20px; }
+        .pata-type-btn {
+            flex: 1; padding: 20px; border: 2px solid #F0F0F0; border-radius: 25px;
+            background: #FFF; cursor: pointer; text-align: center; transition: all 0.3s;
+            font-family: 'Outfit', sans-serif; font-weight: 800; font-size: 16px; color: #1A1A1A;
+        }
+        .pata-type-btn:hover { border-color: #15BEB2; transform: translateY(-2px); }
+        .pata-type-btn.active { border-color: #15BEB2; background: #F0FEFE; box-shadow: 0 8px 20px rgba(21,190,178,0.1); }
+        .pata-type-icon { font-size: 40px; display: block; margin-bottom: 10px; }
+
+        .pata-age-row { display: flex; gap: 12px; }
+        .pata-age-input { flex: 1; padding: 14px 20px; border: 2px solid #F0F0F0; border-radius: 50px; font-family: inherit; font-size: 15px; outline: none; }
+        .pata-age-select { width: 130px; padding: 14px 20px; border: 2px solid #F0F0F0; border-radius: 50px; font-family: inherit; font-size: 15px; outline: none; background: #fff; }
+
+        .pata-breed-switch { display: flex; border: 2px solid #F0F0F0; border-radius: 50px; overflow: hidden; margin-bottom: 15px; }
+        .pata-switch-btn {
+            flex: 1; padding: 12px; border: none; background: #FFF; cursor: pointer;
+            font-family: inherit; font-weight: 700; font-size: 14px; color: #A0A0A0; transition: all 0.3s;
+        }
+        .pata-switch-btn.active { background: #15BEB2; color: #FFF; }
+
+        .pata-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .pata-form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
+        .pata-form-label { font-size: 13px; font-weight: 700; color: #4A4A4A; }
+        .pata-form-input, .pata-form-select, .pata-form-textarea {
+            width: 100%; padding: 14px 20px; border: 2px solid #F0F0F0; border-radius: 50px;
+            font-family: inherit; font-size: 15px; outline: none; box-sizing: border-box; transition: border-color 0.3s;
+        }
+        .pata-form-textarea { border-radius: 20px; resize: none; height: 80px; }
+        .pata-form-input:focus, .pata-form-select:focus, .pata-form-textarea:focus { border-color: #15BEB2; }
+
+        .pata-upload-box {
+            border: 2px dashed #E0E0E0; border-radius: 25px; padding: 30px; text-align: center;
+            cursor: pointer; transition: all 0.3s; background: #FAFAFA; position: relative; overflow: hidden;
+        }
+        .pata-upload-box:hover { border-color: #15BEB2; background: #F0FEFE; }
+        .pata-upload-box.has-file { border-style: solid; border-color: #9FD406; background: #F6FFF6; }
+        .pata-upload-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 12px; margin-bottom: 10px; }
+        
+        .pata-alert-box {
+            background: #FFF9E6; border-left: 4px solid #FFA500; border-radius: 15px;
+            padding: 15px 20px; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-start;
+        }
+        .pata-alert-icon { font-size: 24px; }
+        .pata-alert-text { font-size: 13px; color: #666; line-height: 1.4; }
+        .pata-alert-text strong { display: block; color: #1A1A1A; margin-bottom: 4px; }
+
+        .pata-btn-row { display: flex; gap: 15px; margin-top: 25px; }
+        .pata-btn {
+            flex: 1; padding: 16px 20px; border: 2px solid #000; border-radius: 50px;
+            font-family: inherit; font-weight: 800; font-size: 16px; cursor: pointer; transition: all 0.3s;
+        }
+        .pata-btn-primary { background: #FE8F15; color: #FFF; }
+        .pata-btn-secondary { background: #00BBB4; color: #FFF; }
+        .pata-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .pata-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     `;
 
     class ManadaWidget {
@@ -428,235 +491,406 @@
         }
 
         showAddForm() {
-            console.log('🐾 Intentando abrir formulario para agregar mascota...');
-            // Estado para fotos
-            this.newPetPhotos = { photo1: null, photo2: null };
-
+            this.addStep = 1;
+            this.addFormData = { 
+                petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', 
+                breedType: 'raza', breed: '', isMixed: false, breedSize: '',
+                coatColor: '', noseColor: '', eyeColor: '', 
+                isAdopted: false, adoptionStory: '', ruac: '' 
+            };
+            this.uploadedPhotoUrl = null;
+            this.uploadedVetUrl = null;
+            
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
+            modal.id = 'pata-add-modal';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `
-                <div class="pata-modal-box" style="max-width:550px; max-height:90vh; overflow-y:auto;">
-                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.parentElement.parentElement.remove()">&times;</button>
-                    <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 20px 0;">Nuevo integrante 🐾</h2>
-                    
-                    <form id="pata-add-form" style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                        <!-- Información básica (= Step 2 registro-v2) -->
-                        <div style="grid-column: 1 / -1;"><label style="font-weight:700; font-size:14px; color:#333;">📋 Información básica</label></div>
-                        
-                        <input type="text" name="name" placeholder="Nombre de tu mascota *" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
-                        
-                        <select name="petType" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px;">
-                            <option value="">Tipo de mascota *</option>
-                            <option value="perro">🐕 Perro</option>
-                            <option value="gato">🐈 Gato</option>
-                        </select>
-                        
-                        <select name="gender" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px;">
-                            <option value="">Sexo *</option>
-                            <option value="macho">♂ Macho</option>
-                            <option value="hembra">♀ Hembra</option>
-                        </select>
-                        
-                        <select name="age" id="pata-age-select" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
-                            <option value="">Edad *</option>
-                            <option value="4-6-meses" data-numeric="0">4-6 meses</option>
-                            <option value="6-12-meses" data-numeric="0">6-12 meses</option>
-                            <option value="1-año" data-numeric="1">1 año</option>
-                            <option value="2-años" data-numeric="2">2 años</option>
-                            <option value="3-años" data-numeric="3">3 años</option>
-                            <option value="4-años" data-numeric="4">4 años</option>
-                            <option value="5-años" data-numeric="5">5 años</option>
-                            <option value="6-años" data-numeric="6">6 años</option>
-                            <option value="7-años" data-numeric="7">7 años</option>
-                            <option value="8-años" data-numeric="8">8 años</option>
-                            <option value="9-años" data-numeric="9">9 años</option>
-                            <option value="10-años" data-numeric="10">10 años</option>
-                            <option value="11-años" data-numeric="11">11 años</option>
-                            <option value="12-años" data-numeric="12">12 años</option>
-                            <option value="13-años" data-numeric="13">13 años</option>
-                            <option value="14-años" data-numeric="14">14 años</option>
-                            <option value="15+-años" data-numeric="15">15+ años</option>
-                        </select>
-
-                        <!-- Raza (= Step 5 registro-v2) -->
-                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:700; font-size:14px; color:#333;">🏷️ Información complementaria</label></div>
-
-                        <div style="grid-column: 1 / -1; display:flex; align-items:center; gap:10px;">
-                            <input type="checkbox" id="pata-is-mixed" name="isMixed" style="width:18px; height:18px;">
-                            <label for="pata-is-mixed" style="font-size:13px; color:#555;">Es mestizo/criollo</label>
-                        </div>
-                        
-                        <div class="pata-breed-wrapper">
-                            <input type="text" name="breed" id="pata-breed-input" placeholder="Escribe para buscar raza *" required autocomplete="off" style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; width:100%; box-sizing:border-box;">
-                            <div id="pata-breed-suggestions" class="pata-breed-suggestions"></div>
-                            <div id="pata-breed-warning" class="pata-breed-warning" style="display:none;"></div>
-                        </div>
-                        
-                        <select name="breedSize" id="pata-size-select" required style="padding:12px; border-radius:10px; border:1px solid #ddd; font-size:14px; grid-column: 1 / -1;">
-                            <option value="">Tamaño * (selecciona tipo primero)</option>
-                        </select>
-                        
-                        <!-- Certificado veterinario (para mascotas 10+ años - misma lógica registro-v2) -->
-                        <div id="pata-vet-cert-section" style="grid-column: 1 / -1; display:none; background:#FEF3C7; padding:15px; border-radius:10px; border:1px solid #FCD34D;">
-                            <p style="margin:0 0 10px 0; color:#92400E; font-weight:600;">⚕️ Certificado veterinario requerido</p>
-                            <p style="margin:0 0 10px 0; font-size:12px; color:#A16207;">Como tu mascota tiene 10 años o más, necesitarás subir un certificado veterinario dentro de los próximos 15 días.</p>
-                            <label style="font-weight:600; font-size:13px; color:#666; display:block; margin-bottom:5px;">📋 Certificado Veterinario (opcional ahora)</label>
-                            <input type="file" name="vetCertificate" id="pata-vet-cert" accept=".pdf,.jpg,.jpeg,.png" style="padding:10px; border:2px dashed #FCD34D; border-radius:8px; width:100%; box-sizing:border-box;">
-                        </div>
-
-                        <!-- Fotos -->
-                        <div style="grid-column: 1 / -1; margin-top:10px;"><label style="font-weight:700; font-size:14px; color:#333;">📸 Fotos de tu mascota</label></div>
-                        
-                        <div style="grid-column: 1 / -1; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                            <div id="pata-add-photo-area-1" style="border:2px dashed #ddd; border-radius:10px; padding:20px; text-align:center; cursor:pointer; background:#fafafa; transition:all 0.2s;">
-                                <input type="file" id="pata-add-photo-1" accept="image/*" style="display:none;">
-                                <div id="pata-add-preview-1">
-                                    <span style="font-size:32px;">📸</span>
-                                    <p style="margin:8px 0 0 0; font-size:12px; color:#888;">Foto 1 *</p>
-                                </div>
-                            </div>
-                            <div id="pata-add-photo-area-2" style="border:2px dashed #ddd; border-radius:10px; padding:20px; text-align:center; cursor:pointer; background:#fafafa; transition:all 0.2s;">
-                                <input type="file" id="pata-add-photo-2" accept="image/*" style="display:none;">
-                                <div id="pata-add-preview-2">
-                                    <span style="font-size:32px;">📸</span>
-                                    <p style="margin:8px 0 0 0; font-size:12px; color:#888;">Foto 2 (opcional)</p>
-                                </div>
-                            </div>
-                        </div>
-                        <p style="grid-column: 1 / -1; font-size:11px; color:#888; margin:0;">📅 Tienes 15 días para subir las fotos si no las tienes ahora.</p>
-
-                        <button type="submit" class="pata-btn pata-btn-primary" style="grid-column: 1 / -1; height:55px; font-size:16px; margin-top:10px;" id="pata-save-btn">🐾 Dar de alta</button>
-                    </form>
-                </div>
-            `;
+            modal.innerHTML = `<div class="pata-modal-box" id="pata-add-content" style="max-width:550px; max-height:90vh; overflow-y:auto;"></div>`;
             document.body.appendChild(modal);
+            
+            this.renderAddStep();
+        }
 
-            // Configurar carga de fotos
-            this.setupAddPetPhotoInput('pata-add-photo-area-1', 'pata-add-photo-1', 'pata-add-preview-1', 'photo1');
-            this.setupAddPetPhotoInput('pata-add-photo-area-2', 'pata-add-photo-2', 'pata-add-preview-2', 'photo2');
+        renderAddStep() {
+            const content = document.getElementById('pata-add-content');
+            if (!content) return;
+            
+            if (this.addStep === 1) this.renderStep1(content);
+            else this.renderStep2(content);
+        }
 
-            // Manejar checkbox de mestizo
-            const mixedCheckbox = document.getElementById('pata-is-mixed');
-            const breedInput = document.getElementById('pata-breed-input');
-            mixedCheckbox.onchange = () => {
-                if (mixedCheckbox.checked) {
-                    breedInput.value = 'Mestizo';
-                    breedInput.disabled = true;
-                } else {
-                    breedInput.value = '';
-                    breedInput.disabled = false;
-                }
+        renderStep1(container) {
+            const d = this.addFormData;
+            container.innerHTML = `
+                <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
+                <h2 style="text-align:center; font-weight:900; font-size:28px; margin:0 0 20px 0; color:#1A1A1A;">🐾 Nueva mascota</h2>
+                
+                <div class="pata-step-indicator">
+                    <div class="pata-step-dot active"></div>
+                    <div class="pata-step-dot"></div>
+                    <span class="pata-step-label">Paso 1 de 2</span>
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Tipo de mascota *</label>
+                    <div class="pata-type-sel">
+                        <button type="button" class="pata-type-btn ${d.petType==='perro'?'active':''}" data-type="perro"><span class="pata-type-icon">🐶</span>Perro</button>
+                        <button type="button" class="pata-type-btn ${d.petType==='gato'?'active':''}" data-type="gato"><span class="pata-type-icon">🐱</span>Gato</button>
+                    </div>
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label" id="name-label">${d.petType==='gato'?'¿Cómo se llama tu michi?':'¿Cómo se llama tu peludo?'} *</label>
+                    <input class="pata-form-input" id="add-name" value="${d.name}" placeholder="Ej: Luna, Max, Pelusa...">
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Edad *</label>
+                    <div class="pata-age-row">
+                        <input class="pata-age-input" id="add-age-val" type="number" min="1" value="${d.ageValue}" placeholder="Ej: 3">
+                        <select class="pata-age-select" id="add-age-unit">
+                            <option value="years" ${d.ageUnit==='years'?'selected':''}>Años</option>
+                            <option value="months" ${d.ageUnit==='months'?'selected':''}>Meses</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pata-btn-row">
+                    <button class="pata-btn pata-btn-primary" id="add-next">Continuar →</button>
+                </div>`;
+
+            // Events
+            container.querySelectorAll('.pata-type-btn').forEach(btn => {
+                btn.onclick = () => {
+                    d.petType = btn.dataset.type;
+                    container.querySelectorAll('.pata-type-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('name-label').innerText = d.petType === 'gato' ? '¿Cómo se llama tu michi? *' : '¿Cómo se llama tu peludo? *';
+                };
+            });
+
+            document.getElementById('add-next').onclick = () => {
+                const name = document.getElementById('add-name').value.trim();
+                const age = document.getElementById('add-age-val').value;
+                if (!d.petType) return alert('Selecciona si es perro o gato');
+                if (!name) return alert('El nombre es requerido');
+                if (!age || age <= 0) return alert('Ingresa una edad válida');
+                
+                d.name = name;
+                d.ageValue = age;
+                d.ageUnit = document.getElementById('add-age-unit').value;
+                this.addStep = 2;
+                this.renderAddStep();
+            };
+        }
+
+        renderStep2(container) {
+            const d = this.addFormData;
+            const isGato = d.petType === 'gato';
+            const ageNum = d.ageUnit === 'years' ? parseInt(d.ageValue) : Math.floor(parseInt(d.ageValue)/12);
+            const isSenior = ageNum >= 10;
+
+            container.innerHTML = `
+                <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
+                <h2 style="text-align:center; font-weight:900; font-size:28px; margin:0 0 20px 0; color:#1A1A1A;">Datos de ${d.name}</h2>
+                
+                <div class="pata-step-indicator">
+                    <div class="pata-step-dot"></div>
+                    <div class="pata-step-dot active"></div>
+                    <span class="pata-step-label">Paso 2 de 2</span>
+                </div>
+
+                <div class="pata-form-row">
+                    <div class="pata-form-group">
+                        <label class="pata-form-label">Sexo *</label>
+                        <select class="pata-form-select" id="add-gender">
+                            <option value="">Selecciona...</option>
+                            <option value="macho" ${d.gender==='macho'?'selected':''}>Macho</option>
+                            <option value="hembra" ${d.gender==='hembra'?'selected':''}>Hembra</option>
+                        </select>
+                    </div>
+                    <div class="pata-form-group">
+                        <label class="pata-form-label">Talla *</label>
+                        <select class="pata-form-select" id="add-size">
+                            <option value="">Selecciona...</option>
+                            <option value="pequeño" ${d.breedSize==='pequeño'?'selected':''}>Pequeño</option>
+                            <option value="mediano" ${d.breedSize==='mediano'?'selected':''}>Mediano</option>
+                            <option value="grande" ${d.breedSize==='grande'?'selected':''}>Grande</option>
+                            ${!isGato ? `<option value="gigante" ${d.breedSize==='gigante'?'selected':''}>Gigante</option>` : ''}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Origen</label>
+                    <div class="pata-breed-switch">
+                        <button type="button" class="pata-switch-btn ${d.breedType==='mestizo'?'active':''}" data-bt="mestizo">Mestizo / Criollo</button>
+                        <button type="button" class="pata-switch-btn ${d.breedType==='raza'?'active':''}" data-bt="raza">De Raza</button>
+                    </div>
+                </div>
+
+                <div class="pata-form-group" id="breed-group" style="display:${d.breedType==='raza'?'block':'none'}">
+                    <label class="pata-form-label">Raza *</label>
+                    <div class="pata-breed-wrapper">
+                        <input class="pata-form-input" id="pata-breed-input" value="${d.breed}" placeholder="Escribe para buscar..." autocomplete="off">
+                        <div id="pata-breed-suggestions" class="pata-breed-suggestions"></div>
+                        <div id="pata-breed-warning" class="pata-breed-warning" style="display:none;"></div>
+                    </div>
+                </div>
+
+                <div class="pata-form-row">
+                    <div class="pata-form-group">
+                        <label class="pata-form-label">Color de pelo *</label>
+                        <input class="pata-form-input" id="add-coat" value="${d.coatColor}" placeholder="Ej: Café, Negro...">
+                    </div>
+                    <div class="pata-form-group">
+                        <label class="pata-form-label">Color de ojos</label>
+                        <input class="pata-form-input" id="add-eyes" value="${d.eyeColor}" placeholder="Ej: Miel, Azules...">
+                    </div>
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Color de nariz</label>
+                    <input class="pata-form-input" id="add-nose" value="${d.noseColor}" placeholder="Ej: Negro, Rosado...">
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Foto principal</label>
+                    <div class="pata-upload-box" id="photo-box">
+                        <input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
+                        <div id="photo-preview-wrap">
+                            ${this.uploadedPhotoUrl ? `<img src="${this.uploadedPhotoUrl}" class="pata-upload-preview">` : '<span style="font-size:32px;">📷</span>'}
+                            <p style="margin:8px 0 0 0; font-size:12px; color:#888;">${this.uploadedPhotoUrl ? '✓ Foto lista' : 'Haz clic para subir foto'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pata-form-group">
+                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="const c=document.getElementById('add-adopted'); c.checked=!c.checked; c.dispatchEvent(new Event('change'))">
+                        <input type="checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="width:20px; height:20px; accent-color:#15BEB2;">
+                        <label style="font-size:14px; font-weight:700; color:#4A4A4A; cursor:pointer;">¿Es adoptada / rescatada?</label>
+                    </div>
+                </div>
+
+                <div class="pata-form-group" id="story-group" style="display:${d.isAdopted?'block':'none'}">
+                    <label class="pata-form-label">Historia de adopción</label>
+                    <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos brevemente su historia...">${d.adoptionStory}</textarea>
+                </div>
+
+                <div class="pata-form-group">
+                    <label class="pata-form-label">RUAC (Opcional)</label>
+                    <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Registro Único de Animales de Compañía">
+                    <p style="font-size:11px; color:#A0A0A0; margin-top:4px;">Si tienes el RUAC, la carencia se reduce de 180 a 90 días.</p>
+                </div>
+
+                ${isSenior ? `
+                <div class="pata-alert-box">
+                    <span class="pata-alert-icon">⚕️</span>
+                    <div class="pata-alert-text">
+                        <strong>Certificado veterinario requerido</strong>
+                        Como ${d.name} tiene ${ageNum} años, es necesario subir un certificado de salud para validar su membresía.
+                    </div>
+                </div>
+                <div class="pata-form-group">
+                    <div class="pata-upload-box" id="vet-box">
+                        <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
+                        <div id="vet-preview-wrap">
+                            ${this.uploadedVetUrl ? '<span style="font-size:32px;">✅</span>' : '<span style="font-size:32px;">📄</span>'}
+                            <p style="margin:8px 0 0 0; font-size:12px; color:#888;">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado (PDF/Imagen)'}</p>
+                        </div>
+                    </div>
+                </div>` : ''}
+
+                <div class="pata-btn-row">
+                    <button class="pata-btn pata-btn-secondary" id="add-back">← Atrás</button>
+                    <button class="pata-btn pata-btn-primary" id="pata-save-btn">Registrar mascota ✓</button>
+                </div>`;
+
+            // Setup Events
+            document.getElementById('add-back').onclick = () => { this.saveStep2Fields(); this.addStep = 1; this.renderAddStep(); };
+            
+            container.querySelectorAll('.pata-switch-btn').forEach(btn => {
+                btn.onclick = () => {
+                    d.breedType = btn.dataset.bt;
+                    container.querySelectorAll('.pata-switch-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById('breed-group').style.display = d.breedType === 'raza' ? 'block' : 'none';
+                    if (d.breedType === 'mestizo') { d.breed = 'Mestizo'; d.isMixed = true; }
+                    else { d.isMixed = false; }
+                };
+            });
+
+            document.getElementById('add-adopted').onchange = (e) => {
+                d.isAdopted = e.target.checked;
+                document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
 
-            // Configurar autocomplete de razas
-            this.setupBreedAutocomplete(modal);
+            this.setupBreedAutocomplete(container);
+            this.setupFileUploads();
 
-            // Configurar opciones de tamaño dinámicas según tipo de mascota
-            this.setupDynamicSizeOptions(modal);
-
-            // Configurar validación de edad senior (10+ años = certificado)
-            this.setupSeniorAgeCheck(modal);
-
-            const form = document.getElementById('pata-add-form');
-            form.onsubmit = async (e) => {
+            document.getElementById('pata-save-btn').onclick = (e) => {
                 e.preventDefault();
-                const btn = document.getElementById('pata-save-btn');
+                this.submitNewPet(isSenior);
+            };
+        }
 
-                // Validar que al menos haya una foto
-                if (!this.newPetPhotos.photo1) {
-                    alert('Por favor sube al menos una foto de tu mascota.');
-                    return;
-                }
+        saveStep2Fields() {
+            const d = this.addFormData;
+            d.gender = document.getElementById('add-gender').value;
+            d.breedSize = document.getElementById('add-size').value;
+            d.coatColor = document.getElementById('add-coat').value;
+            d.eyeColor = document.getElementById('add-eyes').value;
+            d.noseColor = document.getElementById('add-nose').value;
+            d.adoptionStory = document.getElementById('add-story') ? document.getElementById('add-story').value : '';
+            d.ruac = document.getElementById('add-ruac').value;
+            if (d.breedType === 'raza') d.breed = document.getElementById('pata-breed-input').value;
+        }
 
-                btn.innerText = 'Guardando...';
-                btn.disabled = true;
+        setupFileUploads() {
+            const photoInput = document.getElementById('add-photo');
+            const vetInput = document.getElementById('add-vet');
+            
+            if (photoInput) {
+                photoInput.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const wrap = document.getElementById('photo-preview-wrap');
+                    wrap.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:0 auto;"></div>';
+                    try {
+                        const url = await this.uploadNewPetPhoto(file);
+                        this.uploadedPhotoUrl = url;
+                        document.getElementById('photo-box').classList.add('has-file');
+                        wrap.innerHTML = `<img src="${url}" class="pata-upload-preview"><p style="margin:5px 0 0 0; font-size:10px; color:#38A169; font-weight:700;">✓ Foto lista</p>`;
+                    } catch(err) { alert('Error subiendo foto'); wrap.innerHTML = '<span style="font-size:32px;">❌</span><p style="margin:5px 0 0 0; font-size:11px; color:#E53E3E;">Error</p>'; }
+                };
+            }
 
+            if (vetInput) {
+                vetInput.onchange = async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const wrap = document.getElementById('vet-preview-wrap');
+                    wrap.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:0 auto;"></div>';
+                    try {
+                        const url = await this.uploadNewPetPhoto(file);
+                        this.uploadedVetUrl = url;
+                        document.getElementById('vet-box').classList.add('has-file');
+                        wrap.innerHTML = '<span style="font-size:32px;">✅</span><p style="margin:5px 0 0 0; font-size:11px; color:#38A169; font-weight:700;">✓ Certificado listo</p>';
+                    } catch(err) { alert('Error subiendo certificado'); wrap.innerHTML = '<span style="font-size:32px;">❌</span>'; }
+                };
+            }
+        }
+        async setupBreedAutocomplete(container) {
+            const input = document.getElementById('pata-breed-input');
+            const suggestions = document.getElementById('pata-breed-suggestions');
+            const warning = document.getElementById('pata-breed-warning');
+            if (!input || !suggestions) return;
+
+            this.breedsCache = this.breedsCache || { perro: [], gato: [] };
+            const type = this.addFormData.petType;
+
+            const load = async () => {
+                if (this.breedsCache[type].length) return;
                 try {
-                    // Subir foto 1
-                    btn.innerText = 'Subiendo foto 1...';
-                    const photo1Url = await this.uploadNewPetPhoto(this.newPetPhotos.photo1);
-
-                    // Subir foto 2 si existe
-                    let photo2Url = null;
-                    if (this.newPetPhotos.photo2) {
-                        btn.innerText = 'Subiendo foto 2...';
-                        photo2Url = await this.uploadNewPetPhoto(this.newPetPhotos.photo2);
-                    }
-
-                    btn.innerText = 'Registrando mascota...';
-
-                    // Enviar datos al API (campos alineados con registro-v2)
-                    const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            memberstackId: this.member.id,
-                            petData: {
-                                name: form.name.value,
-                                petType: form.petType.value,
-                                gender: form.gender.value,
-                                age: form.age.value,
-                                isMixed: form.isMixed.checked,
-                                breed: form.breed.value || 'Mestizo',
-                                breedSize: form.breedSize.value,
-                                photo1Url: photo1Url,
-                                photo2Url: photo2Url
-                            }
-                        })
-                    });
-
+                    const res = await fetch(`${CONFIG.apiUrl}/api/breeds?type=${type}`);
                     const data = await res.json();
+                    if (data.success) this.breedsCache[type] = data.breeds;
+                } catch(e) { console.error('Error loading breeds', e); }
+            };
 
-                    if (data.success) {
-                        alert('¡Mascota registrada exitosamente! 🐾 El equipo revisará tu solicitud pronto.');
-                        modal.remove();
-                        this.init();
+            input.onfocus = async () => {
+                await load();
+                show('');
+            };
+
+            input.oninput = (e) => show(e.target.value);
+
+            const show = (q) => {
+                const list = this.breedsCache[type] || [];
+                const filtered = q ? list.filter(b => b.name.toLowerCase().includes(q.toLowerCase())).slice(0,10) : list.slice(0,8);
+                suggestions.innerHTML = filtered.map(b => `<div class="pata-breed-suggestion" data-name="${b.name}" data-warning="${b.warning_message||''}">${b.name}</div>`).join('');
+                suggestions.classList.add('active');
+            };
+
+            suggestions.onclick = (e) => {
+                const item = e.target.closest('.pata-breed-suggestion');
+                if (item) {
+                    input.value = item.dataset.name;
+                    this.addFormData.breed = item.dataset.name;
+                    suggestions.classList.remove('active');
+                    if (item.dataset.warning) {
+                        warning.innerHTML = item.dataset.warning;
+                        warning.style.display = 'block';
                     } else {
-                        alert('Error: ' + (data.error || 'No se pudo registrar la mascota.'));
-                        btn.disabled = false;
-                        btn.innerText = '🐾 Dar de alta';
+                        warning.style.display = 'none';
                     }
-                } catch (err) {
-                    console.error('Error registrando mascota:', err);
-                    alert('Error al guardar. Intenta nuevamente.');
+                }
+            };
+
+            document.addEventListener('click', (e) => { if (!input.contains(e.target)) suggestions.classList.remove('active'); });
+        }
+
+        async submitNewPet(isSenior) {
+            const btn = document.getElementById('pata-save-btn');
+            this.saveStep2Fields();
+            const d = this.addFormData;
+
+            if (!d.gender) return alert('Selecciona el sexo');
+            if (!d.breedSize) return alert('Selecciona la talla');
+            if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
+            if (!d.coatColor) return alert('Ingresa el color de pelo');
+            if (!this.uploadedPhotoUrl) return alert('Sube la foto de tu mascota');
+            if (isSenior && !this.uploadedVetUrl) return alert('El certificado veterinario es obligatorio por la edad');
+
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+
+            try {
+                const payload = {
+                    memberstackId: this.member.id,
+                    petData: {
+                        name: d.name,
+                        petType: d.petType,
+                        gender: d.gender,
+                        age: `${d.ageValue} ${d.ageUnit === 'years' ? 'años' : 'meses'}`,
+                        isMixed: d.breedType === 'mestizo',
+                        breed: d.breed || 'Mestizo',
+                        breedSize: d.breedSize,
+                        coat_color: d.coatColor,
+                        nose_color: d.noseColor,
+                        eye_color: d.eyeColor,
+                        is_adopted: d.isAdopted,
+                        adoption_story: d.adoptionStory,
+                        ruac: d.ruac,
+                        photo1Url: this.uploadedPhotoUrl,
+                        vetCertificateUrl: this.uploadedVetUrl
+                    }
+                };
+
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('¡Mascota registrada! Revisaremos la información pronto.');
+                    document.getElementById('pata-add-modal').remove();
+                    this.init();
+                } else {
+                    alert('Error: ' + (data.error || 'No se pudo guardar'));
                     btn.disabled = false;
-                    btn.innerText = '🐾 Dar de alta';
+                    btn.innerText = 'Registrar mascota ✓';
                 }
-            };
+            } catch (err) {
+                console.error('Error:', err);
+                alert('Ocurrió un error al guardar');
+                btn.disabled = false;
+                btn.innerText = 'Registrar mascota ✓';
+            }
         }
 
-        // 🆕 Configurar input de foto para agregar mascota
-        setupAddPetPhotoInput(areaId, inputId, previewId, photoKey) {
-            const area = document.getElementById(areaId);
-            const input = document.getElementById(inputId);
-            const preview = document.getElementById(previewId);
-
-            if (!area || !input) return;
-
-            area.onclick = () => input.click();
-
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    this.newPetPhotos[photoKey] = file;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        if (preview) {
-                            preview.innerHTML = `
-                                <img src="${ev.target.result}" style="max-width:100%; max-height:70px; border-radius:6px; object-fit:cover;">
-                                <p style="margin:5px 0 0 0; font-size:10px; color:#4CAF50;">✓ ${file.name.substring(0, 12)}...</p>
-                            `;
-                        }
-                        area.style.borderColor = '#4CAF50';
-                        area.style.background = '#f0fff0';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-        }
-
-        // 🆕 Subir foto de nueva mascota
         async uploadNewPetPhoto(file) {
             const formData = new FormData();
             formData.append('file', file);
@@ -668,435 +902,45 @@
             });
 
             const data = await res.json();
-            if (data.success && data.url) {
-                return data.url;
-            } else {
-                throw new Error(data.error || 'Error subiendo foto');
-            }
-        }
-
-        // 🆕 Configurar autocomplete de razas
-        async setupBreedAutocomplete(modal) {
-            const breedInput = document.getElementById('pata-breed-input');
-            const suggestionsBox = document.getElementById('pata-breed-suggestions');
-            const warningBox = document.getElementById('pata-breed-warning');
-            const petTypeSelect = modal.querySelector('[name="petType"]');
-
-            if (!breedInput || !suggestionsBox) return;
-
-            // Cache de razas
-            this.breedsCache = { perro: [], gato: [] };
-            this.selectedBreedIndex = -1;
-
-            // Cargar razas iniciales
-            const loadBreeds = async (type) => {
-                if (!type) return;
-                if (this.breedsCache[type]?.length > 0) return;
-
-                try {
-                    console.log(`📡 Cargando razas para: ${type}...`);
-                    const res = await fetch(`${CONFIG.apiUrl}/api/breeds?type=${type}`);
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-
-                    const data = await res.json();
-                    if (data.success && data.breeds) {
-                        this.breedsCache[type] = data.breeds;
-                        console.log(`✅ ${data.breeds.length} razas de ${type} cargadas.`);
-                    }
-                } catch (err) {
-                    console.error('❌ Error cargando razas:', err);
-                }
-            };
-
-            // Evento al cambiar tipo de mascota
-            petTypeSelect.addEventListener('change', () => {
-                const type = petTypeSelect.value;
-                breedInput.value = ''; // Limpiar raza si cambia tipo
-                warningBox.style.display = 'none';
-                if (type) loadBreeds(type);
-            });
-
-            // Mostrar sugerencias filtradas
-            const showSuggestions = (query) => {
-                const petType = petTypeSelect.value;
-                if (!petType) {
-                    suggestionsBox.innerHTML = '<div class="pata-breed-suggestion" style="color:#888;">Primero selecciona tipo de mascota</div>';
-                    suggestionsBox.classList.add('active');
-                    return;
-                }
-
-                const breeds = this.breedsCache[petType] || [];
-                const filtered = query.length > 0
-                    ? breeds.filter(b => b.name.toLowerCase().includes(query.toLowerCase())).slice(0, 10)
-                    : breeds.slice(0, 8);
-
-                if (filtered.length === 0) {
-                    suggestionsBox.innerHTML = '<div class="pata-breed-suggestion" style="color:#888;">No se encontraron razas</div>';
-                } else {
-                    suggestionsBox.innerHTML = filtered.map((b, i) => `
-                        <div class="pata-breed-suggestion" data-name="${b.name}" data-warning="${b.warning_message || ''}" data-has-issues="${b.has_genetic_issues}">
-                            ${b.name}
-                            ${b.has_genetic_issues ? '<span style="color:#FF9800; font-size:11px; margin-left:5px;">⚠️</span>' : ''}
-                        </div>
-                    `).join('');
-                }
-
-                suggestionsBox.classList.add('active');
-                this.selectedBreedIndex = -1;
-            };
-
-            // Seleccionar raza
-            const selectBreed = (name, warning) => {
-                breedInput.value = name;
-                suggestionsBox.classList.remove('active');
-
-                if (warning && warning !== '') {
-                    warningBox.innerHTML = warning;
-                    warningBox.style.display = 'block';
-                } else {
-                    warningBox.style.display = 'none';
-                }
-            };
-
-            // Eventos
-            breedInput.addEventListener('focus', async () => {
-                const petType = petTypeSelect.value;
-                if (petType) {
-                    await loadBreeds(petType);
-                }
-                showSuggestions(breedInput.value);
-            });
-
-            breedInput.addEventListener('input', (e) => {
-                showSuggestions(e.target.value);
-            });
-
-            breedInput.addEventListener('blur', () => {
-                setTimeout(() => suggestionsBox.classList.remove('active'), 200);
-            });
-
-            // Navegación con teclado
-            breedInput.addEventListener('keydown', (e) => {
-                const items = suggestionsBox.querySelectorAll('.pata-breed-suggestion[data-name]');
-                if (items.length === 0) return;
-
-                if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    this.selectedBreedIndex = Math.min(this.selectedBreedIndex + 1, items.length - 1);
-                    items.forEach((item, i) => item.classList.toggle('selected', i === this.selectedBreedIndex));
-                } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    this.selectedBreedIndex = Math.max(this.selectedBreedIndex - 1, 0);
-                    items.forEach((item, i) => item.classList.toggle('selected', i === this.selectedBreedIndex));
-                } else if (e.key === 'Enter') {
-                    e.preventDefault();
-                    if (this.selectedBreedIndex >= 0 && items[this.selectedBreedIndex]) {
-                        const item = items[this.selectedBreedIndex];
-                        selectBreed(item.dataset.name, item.dataset.warning);
-                    }
-                }
-            });
-
-            // Click en sugerencia
-            suggestionsBox.addEventListener('click', (e) => {
-                const item = e.target.closest('.pata-breed-suggestion');
-                if (item && item.dataset.name) {
-                    selectBreed(item.dataset.name, item.dataset.warning);
-                }
-            });
-
-            // Cuando cambia el tipo de mascota, recargar razas
-            petTypeSelect.addEventListener('change', async (e) => {
-                const type = e.target.value;
-                if (type) {
-                    await loadBreeds(type);
-                    breedInput.value = '';
-                    warningBox.style.display = 'none';
-                    if (document.activeElement === breedInput) {
-                        showSuggestions('');
-                    }
-                }
-            });
-        }
-
-        // 🆕 Configurar opciones de tamaño dinámicas según tipo de mascota
-        setupDynamicSizeOptions(modal) {
-            const petTypeSelect = modal.querySelector('[name="petType"]');
-            const sizeSelect = document.getElementById('pata-size-select');
-
-            if (!petTypeSelect || !sizeSelect) return;
-
-            // Definir opciones de tamaño por tipo con edad senior
-            const DOG_SIZE_OPTIONS = [
-                { value: 'chica', label: 'Chica (hasta 10kg)', seniorAge: 8 },
-                { value: 'mediana', label: 'Mediana (11-25kg)', seniorAge: 7 },
-                { value: 'grande', label: 'Grande (26-45kg)', seniorAge: 6 },
-                { value: 'gigante', label: 'Gigante (46kg+)', seniorAge: 5 },
-            ];
-
-            const CAT_SIZE_OPTIONS = [
-                { value: 'chica', label: 'Chica (hasta 4.5kg)', seniorAge: 7 },
-                { value: 'mediana', label: 'Mediana (4.5-7kg)', seniorAge: 7 },
-                { value: 'grande', label: 'Grande (7kg+)', seniorAge: 7 },
-            ];
-
-            // Store en el widget para uso posterior
-            this.sizeOptions = { perro: DOG_SIZE_OPTIONS, gato: CAT_SIZE_OPTIONS };
-
-            // Actualizar opciones cuando cambia el tipo de mascota
-            petTypeSelect.addEventListener('change', () => {
-                const petType = petTypeSelect.value;
-                const options = this.sizeOptions[petType] || [];
-
-                sizeSelect.innerHTML = '<option value="">Tamaño *</option>' +
-                    options.map(opt => `<option value="${opt.value}" data-senior="${opt.seniorAge}">${opt.label}</option>`).join('');
-
-                // Limpiar selección y ocultar certificado
-                document.getElementById('pata-vet-cert-section').style.display = 'none';
-            });
-        }
-
-        // Configurar validación de edad senior (10+ años = certificado, misma lógica registro-v2)
-        setupSeniorAgeCheck(modal) {
-            const ageSelect = document.getElementById('pata-age-select');
-            const vetCertSection = document.getElementById('pata-vet-cert-section');
-
-            if (!ageSelect || !vetCertSection) return;
-
-            const checkSeniorAge = () => {
-                const ageOption = ageSelect.options[ageSelect.selectedIndex];
-                if (!ageOption || !ageOption.dataset.numeric) {
-                    vetCertSection.style.display = 'none';
-                    return;
-                }
-
-                const numericAge = parseInt(ageOption.dataset.numeric) || 0;
-
-                // Misma lógica que registro-v2: 10+ años = senior, sin importar talla
-                if (numericAge >= 10) {
-                    vetCertSection.style.display = 'block';
-                } else {
-                    vetCertSection.style.display = 'none';
-                }
-            };
-
-            // Solo escuchar cambios en edad
-            ageSelect.addEventListener('change', checkSeniorAge);
-        }
-
-        // 🆕 Configurar validación de código embajador
-        setupAmbassadorCodeValidation(modal) {
-            const codeInput = document.getElementById('pata-ambassador-code');
-            const messageEl = document.getElementById('pata-ambassador-message');
-
-            if (!codeInput || !messageEl) return;
-
-            let debounceTimer = null;
-
-            codeInput.addEventListener('input', () => {
-                clearTimeout(debounceTimer);
-                const code = codeInput.value.trim();
-
-                if (!code) {
-                    messageEl.textContent = 'Si un amigo embajador te compartió Club Pata Amiga, ingresa su código aquí';
-                    messageEl.style.color = '#888';
-                    return;
-                }
-
-                messageEl.textContent = 'Verificando código...';
-                messageEl.style.color = '#888';
-
-                debounceTimer = setTimeout(async () => {
-                    try {
-                        const res = await fetch(`${CONFIG.apiUrl}/api/referrals/validate-code?code=${encodeURIComponent(code)}`);
-                        const data = await res.json();
-
-                        if (data.valid) {
-                            messageEl.textContent = `✅ Código válido - Embajador: ${data.ambassadorName}`;
-                            messageEl.style.color = '#10b981';
-                        } else {
-                            messageEl.textContent = '❌ Código no válido';
-                            messageEl.style.color = '#ef4444';
-                        }
-                    } catch (err) {
-                        console.error('Error validando código:', err);
-                        messageEl.textContent = 'Error al verificar código';
-                        messageEl.style.color = '#ef4444';
-                    }
-                }, 500);
-            });
+            if (data.success && data.url) return data.url;
+            throw new Error(data.error || 'Error subiendo archivo');
         }
 
         showAppealForm(petId) {
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
-
-            // Estado para fotos de apelación
-            this.appealPhotos = { photo1: null, photo2: null };
-
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             modal.innerHTML = `
                 <div class="pata-modal-box">
-                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
                     <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 15px 0;">⚖️ Apelar para ${pet.name}</h2>
                     ${pet.admin_notes ? `<div style="background:#FFEBEE; padding:12px; border-radius:10px; margin-bottom:20px; border-left:4px solid #C62828;"><strong>Motivo del rechazo:</strong><br>${pet.admin_notes}</div>` : ''}
                     <form id="pata-appeal-form">
-                        <p style="margin-bottom:10px; color:#666;">Explica por qué crees que la decisión debería reconsiderarse.</p>
-                        <textarea id="pata-appeal-msg" required placeholder="Escribe tu mensaje de apelación aquí..." style="width:100%; height:100px; padding:15px; border-radius:10px; border:1px solid #ddd; resize:none; font-family:inherit; font-size:14px;"></textarea>
-                        
-                        <!-- Sección de carga de fotos -->
-                        <div style="margin-top:15px; padding:15px; background:#f8f9fa; border-radius:10px; border:1px dashed #ccc;">
-                            <p style="margin:0 0 10px 0; font-size:13px; font-weight:600; color:#333;">📷 ¿Tienes nuevas fotos? (opcional)</p>
-                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                                <div class="pata-appeal-photo-area" id="pata-appeal-area-1" style="border:2px dashed #ddd; border-radius:8px; padding:15px; text-align:center; cursor:pointer; background:#fff;">
-                                    <input type="file" id="pata-appeal-photo-1" accept="image/*" style="display:none;">
-                                    <div id="pata-appeal-preview-1"><span style="font-size:28px;">📸</span><p style="margin:5px 0 0 0; font-size:11px; color:#888;">Foto 1</p></div>
-                                </div>
-                                <div class="pata-appeal-photo-area" id="pata-appeal-area-2" style="border:2px dashed #ddd; border-radius:8px; padding:15px; text-align:center; cursor:pointer; background:#fff;">
-                                    <input type="file" id="pata-appeal-photo-2" accept="image/*" style="display:none;">
-                                    <div id="pata-appeal-preview-2"><span style="font-size:28px;">📸</span><p style="margin:5px 0 0 0; font-size:11px; color:#888;">Foto 2</p></div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <p style="font-size:12px; color:#999; margin:15px 0 10px 0;">Intentos de apelación: ${pet.appeal_count || 0}/2</p>
-                        <button type="submit" class="pata-btn pata-btn-primary" style="width:100%; height:55px; font-size:16px; background:#7B1FA2; color:#fff;" id="pata-appeal-btn">Enviar Apelación</button>
+                        <p style="margin-bottom:10px; color:#666;">Explica por qué reconsiderar la decisión.</p>
+                        <textarea id="pata-appeal-msg" required placeholder="Escribe tu mensaje..." style="width:100%; height:100px; padding:15px; border-radius:10px; border:1px solid #ddd; resize:none; font-family:inherit; font-size:14px;"></textarea>
+                        <button type="submit" class="pata-btn pata-btn-primary" style="width:100%; height:55px; font-size:16px; background:#7B1FA2; margin-top:15px;" id="pata-appeal-btn">Enviar Apelación</button>
                     </form>
-                </div>
-            `;
+                </div>`;
             document.body.appendChild(modal);
 
-            // Configurar inputs de fotos
-            this.setupAppealPhotoInput('pata-appeal-area-1', 'pata-appeal-photo-1', 'pata-appeal-preview-1', 'photo1');
-            this.setupAppealPhotoInput('pata-appeal-area-2', 'pata-appeal-photo-2', 'pata-appeal-preview-2', 'photo2');
-
-            const form = document.getElementById('pata-appeal-form');
-            form.onsubmit = async (e) => {
+            document.getElementById('pata-appeal-form').onsubmit = async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('pata-appeal-btn');
                 const msg = document.getElementById('pata-appeal-msg').value.trim();
-
-                if (!msg) {
-                    alert('Por favor escribe un mensaje de apelación.');
-                    return;
-                }
-
-                btn.innerText = 'Enviando...';
-                btn.disabled = true;
-
+                btn.disabled = true; btn.innerText = 'Enviando...';
                 try {
-                    // 1. Subir fotos si las hay
-                    let photo1Url = null;
-                    let photo2Url = null;
-
-                    if (this.appealPhotos?.photo1) {
-                        btn.innerText = 'Subiendo foto 1...';
-                        photo1Url = await this.uploadAppealPhoto(this.appealPhotos.photo1);
-                    }
-                    if (this.appealPhotos?.photo2) {
-                        btn.innerText = 'Subiendo foto 2...';
-                        photo2Url = await this.uploadAppealPhoto(this.appealPhotos.photo2);
-                    }
-
-                    btn.innerText = 'Enviando apelación...';
-
-                    // 2. Enviar apelación
                     const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            memberId: this.member.id,
-                            petId: petId,
-                            appealMessage: msg
-                        })
+                        body: JSON.stringify({ memberId: this.member.id, petId, appealMessage: msg })
                     });
-
                     const data = await res.json();
-
-                    if (!data.success) {
-                        alert('Error: ' + (data.error || 'No se pudo enviar la apelación.'));
-                        btn.disabled = false;
-                        btn.innerText = 'Enviar Apelación';
-                        return;
-                    }
-
-                    // 3. Si hay fotos nuevas, actualizar la mascota
-                    if (photo1Url || photo2Url) {
-                        btn.innerText = 'Actualizando fotos...';
-                        await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                userId: this.member.id,
-                                photo1Url: photo1Url,
-                                photo2Url: photo2Url,
-                                message: `Apelación con nuevas fotos`
-                            })
-                        });
-                    }
-
-                    alert(data.message || '¡Apelación enviada! El equipo la revisará pronto.');
-                    modal.remove();
-                    this.init(); // Recargar para mostrar nuevo estado
-
-                } catch (err) {
-                    console.error('Error en apelación:', err);
-                    alert('Error de conexión. Intenta de nuevo.');
-                    btn.disabled = false;
-                    btn.innerText = 'Enviar Apelación';
-                }
+                    if (data.success) { alert('¡Apelación enviada!'); modal.remove(); this.init(); }
+                    else { alert('Error: ' + data.error); btn.disabled = false; btn.innerText = 'Enviar Apelación'; }
+                } catch (err) { alert('Error de conexión'); btn.disabled = false; }
             };
-        }
-
-        // 🆕 Configurar input de foto para apelación
-        setupAppealPhotoInput(areaId, inputId, previewId, photoKey) {
-            const area = document.getElementById(areaId);
-            const input = document.getElementById(inputId);
-            const preview = document.getElementById(previewId);
-
-            if (!area || !input) return;
-
-            area.onclick = () => input.click();
-
-            input.onchange = (e) => {
-                const file = e.target.files[0];
-                if (file) {
-                    this.appealPhotos[photoKey] = file;
-                    const reader = new FileReader();
-                    reader.onload = (ev) => {
-                        if (preview) {
-                            preview.innerHTML = `
-                                <img src="${ev.target.result}" style="max-width:100%; max-height:60px; border-radius:4px; object-fit:cover;">
-                                <p style="margin:5px 0 0 0; font-size:10px; color:#4CAF50;">✓ Listo</p>
-                            `;
-                        }
-                        area.style.borderColor = '#4CAF50';
-                        area.style.background = '#f0fff0';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            };
-        }
-
-        // 🆕 Subir foto a Supabase Storage
-        async uploadAppealPhoto(file) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('userId', this.member.id);
-
-            const res = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await res.json();
-            if (data.success && data.url) {
-                return data.url;
-            } else {
-                throw new Error(data.error || 'Error subiendo foto');
-            }
         }
     }
 
