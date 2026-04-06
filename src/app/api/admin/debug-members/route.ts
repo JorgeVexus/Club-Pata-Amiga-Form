@@ -72,19 +72,19 @@ export async function GET(request: NextRequest) {
             'efrain.institucional@gmail.com'
         ];
 
-        const foundMembers = members.filter((m: any) => {
+        const foundMembers = allMembers.filter((m: any) => {
             const email = m.auth?.email?.toLowerCase();
             return targetEmails.some(target => email?.includes(target.toLowerCase()));
         });
 
         const notFoundEmails = targetEmails.filter(target => {
-            return !members.some((m: any) =>
+            return !allMembers.some((m: any) =>
                 m.auth?.email?.toLowerCase()?.includes(target.toLowerCase())
             );
         });
 
         // Análisis completo de todos los miembros
-        const analysis = members.map((member: any) => {
+        const analysis = allMembers.map((member: any) => {
             const customFields = member.customFields || {};
             const planConnections = member.planConnections || [];
 
@@ -107,9 +107,8 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json({
             summary: {
-                totalMembersInResponse: members.length,
-                hasPagination: !!pagination,
-                pagination: pagination,
+                totalMembersInResponse: allMembers.length,
+                pageCount: pageCount,
                 targetMembersFound: foundMembers.length,
                 targetMembersNotFound: notFoundEmails,
             },

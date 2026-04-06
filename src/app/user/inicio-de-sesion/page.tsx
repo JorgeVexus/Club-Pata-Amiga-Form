@@ -73,7 +73,7 @@ function SuccessPageContent() {
     );
 }
 
-export default function LoginPage() {
+function LoginContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const [isLoading, setIsLoading] = useState(true);
@@ -148,9 +148,13 @@ export default function LoginPage() {
         );
     }
 
+    return <SuccessPageContent />;
+}
+
+export default function LoginPage() {
     return (
         <Suspense fallback={<div style={{ backgroundColor: '#15beb2', minHeight: '100vh' }} />}>
-            <SuccessPageContent />
+            <LoginContent />
         </Suspense>
     );
 }
