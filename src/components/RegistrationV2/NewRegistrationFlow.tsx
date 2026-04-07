@@ -543,10 +543,11 @@ export default function NewRegistrationFlow() {
             if (result) {
                 // 🔥 NUEVO: Verificación robusta de planes tras el checkout
                 // Esto previene falsos positivos si el modal se cierra sin pagar
-                const { data: memberPlans } = await window.$memberstackDom.getMemberPlans();
-                const hasActivePlan = memberPlans && memberPlans.some((p: any) => 
+                const { data: memberData } = await window.$memberstackDom.getCurrentMember();
+                const planConnections = memberData?.planConnections || [];
+                const hasActivePlan = planConnections.some((p: any) => 
                     (p.planId === planId || p.priceId === planId) && 
-                    (p.status === 'ACTIVE' || p.status === 'active')
+                    (p.status?.toUpperCase() === 'ACTIVE' || p.status?.toLowerCase() === 'trialing')
                 );
 
                 if (!hasActivePlan) {
