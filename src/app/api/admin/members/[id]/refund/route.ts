@@ -17,16 +17,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         // Verify the member exists and is rejected
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('memberstack_id, status, stripe_customer_id, first_name, last_name')
-            .eq('id', memberId)
+            .select('memberstack_id, approval_status, stripe_customer_id, first_name, last_name')
+            .eq('memberstack_id', memberId)
             .single();
 
         if (userError || !user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 });
+            return NextResponse.json({ error: 'Usuario no encontrado en Supabase' }, { status: 404 });
         }
 
-        if (user.status !== 'rejected') {
-            return NextResponse.json({ error: 'Only rejected members can be refunded' }, { status: 400 });
+        if (user.approval_status !== 'rejected') {
+            return NextResponse.json({ error: 'Solo los miembros rechazados pueden ser reembolsados' }, { status: 400 });
         }
 
         // Find the customer's payments in Stripe
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
             const { data: memberData } = await supabaseAdmin
                 .from('users')
                 .select('email')
-                .eq('id', memberId)
+                .eq('memberstack_id', memberId)
                 .single();
 
             if (memberData?.email) {
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
                 refund_date: new Date().toISOString(),
                 refund_stripe_id: refund.id,
             })
-            .eq('id', memberId);
+            .eq('memberstack_id', memberId);
 
         return NextResponse.json({
             success: true,
