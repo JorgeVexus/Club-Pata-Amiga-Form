@@ -254,6 +254,20 @@ Before "Done"    → Empirical proof captured
 
 ---
 
+## Regla Global: Estándar de Diseño UI/UX Pro Max
+
+**STRICT RULE**: Siempre que se realice un ajuste visual, creación de componentes o modificación de interfaces, el agente **DEBE** aplicar los principios del sistema **UI/UX Pro Max**.
+
+1. **Estética**: Priorizar looks premium, uso de degradados suaves, bordes redondeados consistentes y tipografía moderna (Outfit/Fraiche).
+2. **Interacción**: Implementar micro-animaciones (150-300ms), estados de `hover`, `focus` y transiciones que den vida a la interfaz.
+3. **Calidad**:
+   - **Accesibilidad**: Contraste adecuado, etiquetas ARIA y navegación por teclado.
+   - **Interactividad**: Áreas de clic mínimas de 44x44px.
+   - **Assets**: Preferir SVGs limpios sobre emojis o imágenes pesadas para iconos funcionales.
+4. **Referencia**: Consultar siempre `UI_UX_USAGE.md` y las habilidades en `.agent/skills/ui-ux-pro-max` para mantener la coherencia del diseño en todo el proyecto.
+
+---
+
 ## Regla Global: Registro de Avances (Changelog)
 
 **STRICT RULE**: Todo agente debe registrar sus cambios, ajustes o adiciones en un archivo de bitácora dentro del proyecto actual.
