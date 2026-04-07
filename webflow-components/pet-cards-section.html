@@ -175,8 +175,8 @@
 .pata-checkbox-row input { width: 20px; height: 20px; accent-color: #15BEB2; cursor: pointer; }
 .pata-checkbox-row label { font-size: 14px; font-weight: 600; cursor: pointer; }
 
-/* Form Row */
-.pata-form-row { display: flex; gap: 14px; }
+/* Form Row - Forzado a vertical por solicitud de UX para facilidad en móvil */
+.pata-form-row { display: flex; flex-direction: column; gap: 0; }
 .pata-form-row > .pata-form-group { flex: 1; }
 
 /* Step Indicator */
@@ -458,7 +458,7 @@
     // ══════════════════════════════════════
     openAddModal() {
       this.addStep = 1;
-      this.addFormData = { petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '' };
+      this.addFormData = { petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '' };
       this.uploadedPhotoUrl = null;
       this.uploadedVetUrl = null;
       this.renderAddStep();
@@ -494,6 +494,11 @@
             <div class="pata-form-error" id="err-name"></div>
           </div>
           <div class="pata-form-group">
+            <label class="pata-form-label">Apellido de la mascota <span class="req">*</span></label>
+            <input class="pata-form-input" id="add-lastname" value="${d.lastName || ''}" placeholder="Apellido (ej: de la Familia)">
+            <div class="pata-form-error" id="err-lastname"></div>
+          </div>
+          <div class="pata-form-group">
             <label class="pata-form-label">Edad <span class="req">*</span></label>
             <div class="pata-age-row">
               <input class="pata-form-input" id="add-age" type="number" min="1" value="${d.ageValue}" placeholder="Ej: 3">
@@ -519,12 +524,14 @@
       });
       document.getElementById('add-next').onclick = () => {
         d.name = document.getElementById('add-name').value.trim();
+        d.lastName = document.getElementById('add-lastname').value.trim();
         d.ageValue = document.getElementById('add-age').value;
         d.ageUnit = document.getElementById('add-age-unit').value;
         // Validate
         let valid = true;
         if (!d.petType) { document.getElementById('err-type').textContent = 'Selecciona el tipo'; valid = false; }
         if (!d.name) { document.getElementById('err-name').textContent = 'El nombre es requerido'; valid = false; }
+        if (!d.lastName && d.petType === 'perro') { document.getElementById('err-lastname').textContent = 'El apellido es requerido para canes'; valid = false; }
         if (!d.ageValue || d.ageValue <= 0) { document.getElementById('err-age').textContent = 'Ingresa la edad'; valid = false; }
         if (valid) { this.addStep = 2; this.renderAddStep(); }
       };
@@ -536,7 +543,15 @@
       const breeds = isGato ? CAT_BREEDS : DOG_BREEDS;
       const colors = isGato ? CAT_COLORS : DOG_COLORS;
       const ageNum = d.ageUnit === 'years' ? parseInt(d.ageValue) : Math.floor(parseInt(d.ageValue)/12);
-      const isSenior = ageNum >= 10;
+      
+      // Nueva lógica granular de Senior según tipo y talla
+      let isSenior = false;
+      if (isGato) {
+        isSenior = ageNum >= 10;
+      } else {
+        const isLarge = d.breedSize === 'grande' || d.breedSize === 'gigante';
+        isSenior = isLarge ? ageNum >= 6 : ageNum >= 7;
+      }
 
       this.modalContent.innerHTML = `
         <div class="pata-modal-head">
@@ -570,7 +585,7 @@
           </div>
 
           <div class="pata-form-group">
-            <label class="pata-form-label">Tamaño</label>
+            <label class="pata-form-label">Tamaño <span class="req">*</span></label>
             <select class="pata-form-select" id="add-size">
               <option value="">Selecciona...</option>
               <option value="pequeño" ${d.breedSize==='pequeño'?'selected':''}>Pequeño</option>
@@ -622,8 +637,13 @@
             </div>
           </div>
           <div class="pata-form-group" id="adoption-story-group" style="display:${d.isAdopted?'block':'none'}">
-            <label class="pata-form-label">Historia de adopción</label>
-            <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos la historia...">${d.adoptionStory}</textarea>
+            <div class="pata-alert-box" style="background:#E8FAF9; border-left-color:#15BEB2; margin-bottom:12px;">
+              <span class="alert-icon">📖</span>
+              <div class="alert-text"><strong>Historia de adopción</strong>Cuéntanos cómo llegó este peludo a tu vida. Esta información nos ayuda a validar el periodo de carencia reducido.</div>
+            </div>
+            <label class="pata-form-label">Cuéntanos su historia</label>
+            <textarea class="pata-form-textarea" id="add-story" placeholder="Ej: Lo encontramos en un parque, fue rescatado de un refugio...">${d.adoptionStory || ''}</textarea>
+            <p style="font-size:11px; color:#777; margin-top:6px; font-style:italic;">Al compartir esta historia, confirmas que los datos son verídicos para fines de validación de membresía.</p>
           </div>
 
           <div class="pata-form-group">
@@ -678,6 +698,15 @@
         d.isAdopted = e.target.checked;
         document.getElementById('adoption-story-group').style.display = d.isAdopted ? 'block' : 'none';
       };
+
+      // Listener para re-evaluar estado Senior dinámicamente si cambia el tamaño
+      const sizeEl = document.getElementById('add-size');
+      if (sizeEl) {
+        sizeEl.onchange = () => {
+          d.breedSize = sizeEl.value;
+          this.renderStep2(); // Re-renderizar para mostrar/ocultar sección de certificado
+        };
+      }
 
       // Photo upload
       const photoInput = document.getElementById('add-photo');
@@ -791,26 +820,29 @@
       try {
         const payload = {
           memberstackId: this.member.id,
-          name: d.name,
-          petType: d.petType,
-          ageValue: parseInt(d.ageValue),
-          ageUnit: d.ageUnit,
-          gender: d.gender,
-          breed: d.isMixed ? 'Mestizo' : d.breed,
-          breedSize: d.breedSize,
-          isMixed: d.isMixed,
-          coatColor: d.coatColor,
-          noseColor: d.noseColor,
-          eyeColor: d.eyeColor,
-          isAdopted: d.isAdopted,
-          adoptionStory: d.adoptionStory,
-          primaryPhotoUrl: this.uploadedPhotoUrl,
-          isSenior: isSenior,
-          vetCertificateUrl: this.uploadedVetUrl,
-          ruac: d.ruac || '',
+          petData: {
+            name: d.name,
+            lastName: d.lastName,
+            petType: d.petType,
+            ageValue: parseInt(d.ageValue),
+            ageUnit: d.ageUnit,
+            gender: d.gender,
+            breed: d.isMixed ? 'Mestizo' : d.breed,
+            breedSize: d.breedSize,
+            isMixed: d.isMixed,
+            coatColor: d.coatColor,
+            noseColor: d.noseColor,
+            eyeColor: d.eyeColor,
+            isAdopted: d.isAdopted,
+            adoptionStory: d.adoptionStory,
+            photo1Url: this.uploadedPhotoUrl,
+            isSenior: isSenior,
+            vetCertificateUrl: this.uploadedVetUrl,
+            ruac: d.ruac || '',
+          }
         };
 
-        const res = await fetch(`${API_URL}/api/user/add-pet`, {
+        const res = await fetch(`${API_URL}/api/user/pets/add`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)

@@ -222,16 +222,10 @@
         .pata-age-input { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 25px; font-size: 16px; box-sizing: border-box; }
         .pata-age-select { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 20px; font-size: 16px; background: #fff; cursor: pointer; box-sizing: border-box; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'currentColor'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpolyline%20points%3D'6%209%2012%2015%2018%209'%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; }
         
-        .pata-form-row { display: flex; flex-direction: column; gap: 15px; }
-
+        /* 🚨 UI/UX PRO MAX: FORCED VERTICAL LAYOUT FOR MOBILE OPTIMIZATION */
+        .pata-form-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
+        
         .pata-breed-switch { display: flex; border: 2px solid #F0F0F0; border-radius: 50px; overflow: hidden; margin-bottom: 15px; }
-        .pata-switch-btn {
-            flex: 1; padding: 12px; border: none; background: #FFF; cursor: pointer;
-            font-family: inherit; font-weight: 700; font-size: 14px; color: #A0A0A0; transition: all 0.3s;
-        }
-        .pata-switch-btn.active { background: #15BEB2; color: #FFF; }
-
-        .pata-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
         .pata-form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .pata-form-label { font-size: 13px; font-weight: 700; color: #4A4A4A; }
         .pata-form-input, .pata-form-select, .pata-form-textarea {
@@ -495,7 +489,7 @@
         showAddForm() {
             this.addStep = 1;
             this.addFormData = { 
-                petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', 
+                petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', 
                 breedType: 'raza', breed: '', isMixed: false, breedSize: '',
                 coatColor: '', noseColor: '', eyeColor: '', 
                 isAdopted: false, adoptionStory: '', ruac: '' 
@@ -541,9 +535,15 @@
                     </div>
                 </div>
 
-                <div class="pata-form-group">
-                    <label class="pata-form-label" id="name-label">${d.petType==='gato'?'¿Cómo se llama tu michi?':'¿Cómo se llama tu peludo?'} *</label>
-                    <input class="pata-form-input" id="add-name" value="${d.name}" placeholder="Ej: Luna, Max, Pelusa...">
+                <div class="pata-form-row">
+                    <div class="pata-form-group">
+                        <label class="pata-form-label" id="name-label">${d.petType==='gato'?'¿Cómo se llama tu michi?':'¿Cómo se llama tu peludo?'} *</label>
+                        <input class="pata-form-input" id="add-name" value="${d.name}" placeholder="Ej: Luna, Max, Pelusa...">
+                    </div>
+                    <div class="pata-form-group" id="last-name-group" style="display:${d.petType==='gato'?'none':'block'}">
+                        <label class="pata-form-label">Apellido (del dueño) *</label>
+                        <input class="pata-form-input" id="add-last-name" value="${d.lastName}" placeholder="Ej: García Pérez">
+                    </div>
                 </div>
 
                 <div class="pata-form-group">
@@ -579,8 +579,12 @@
                 if (!age || age <= 0) return alert('Ingresa una edad válida');
                 
                 d.name = name;
+                d.lastName = document.getElementById('add-last-name').value.trim();
                 d.ageValue = age;
                 d.ageUnit = document.getElementById('add-age-unit').value;
+
+                if (d.petType === 'perro' && !d.lastName) return alert('El apellido es requerido para perros');
+
                 this.addStep = 2;
                 this.renderAddStep();
             };
@@ -590,7 +594,15 @@
             const d = this.addFormData;
             const isGato = d.petType === 'gato';
             const ageNum = d.ageUnit === 'years' ? parseInt(d.ageValue) : Math.floor(parseInt(d.ageValue)/12);
-            const isSenior = ageNum >= 10;
+            
+            // Nueva lógica granular de Senior según tipo y talla
+            let isSenior = false;
+            if (isGato) {
+                isSenior = ageNum >= 10;
+            } else {
+                const isLarge = d.breedSize === 'grande' || d.breedSize === 'gigante';
+                isSenior = isLarge ? ageNum >= 6 : ageNum >= 7;
+            }
 
             container.innerHTML = `
                 <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
@@ -676,6 +688,9 @@
 
                 <div class="pata-form-group" id="story-group" style="display:${d.isAdopted?'block':'none'}">
                     <label class="pata-form-label">Historia de adopción</label>
+                    <div style="background:#FFF9E6; border-left:3px solid #FFA500; padding:10px; border-radius:8px; font-size:11px; color:#666; margin-bottom:10px;">
+                        ⚠️ <strong>AVISO:</strong> El texto que escribas podrá ser publicado en nuestras redes sociales o sitio web para inspirar a más personas a adoptar.
+                    </div>
                     <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos brevemente su historia...">${d.adoptionStory}</textarea>
                 </div>
 
@@ -726,6 +741,15 @@
                 d.isAdopted = e.target.checked;
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
+
+            // Listener dinámico para Senior
+            const sizeEl = document.getElementById('add-size');
+            if (sizeEl) {
+                sizeEl.onchange = () => {
+                    d.breedSize = sizeEl.value;
+                    this.renderStep2();
+                };
+            }
 
             this.setupBreedAutocomplete(container);
             this.setupFileUploads();
@@ -852,20 +876,23 @@
                     memberstackId: this.member.id,
                     petData: {
                         name: d.name,
+                        lastName: d.lastName,
                         petType: d.petType,
+                        ageValue: parseInt(d.ageValue),
+                        ageUnit: d.ageUnit,
                         gender: d.gender,
-                        age: `${d.ageValue} ${d.ageUnit === 'years' ? 'años' : 'meses'}`,
-                        isMixed: d.breedType === 'mestizo',
-                        breed: d.breed || 'Mestizo',
+                        breed: d.isMixed ? 'Mestizo' : d.breed,
                         breedSize: d.breedSize,
-                        coat_color: d.coatColor,
-                        nose_color: d.noseColor,
-                        eye_color: d.eyeColor,
-                        is_adopted: d.isAdopted,
-                        adoption_story: d.adoptionStory,
-                        ruac: d.ruac,
+                        isMixed: d.isMixed,
+                        coatColor: d.coatColor,
+                        noseColor: d.noseColor,
+                        eyeColor: d.eyeColor,
+                        isAdopted: d.isAdopted,
+                        adoptionStory: d.adoptionStory,
                         photo1Url: this.uploadedPhotoUrl,
-                        vetCertificateUrl: this.uploadedVetUrl
+                        isSenior: isSenior,
+                        vetCertificateUrl: this.uploadedVetUrl,
+                        ruac: d.ruac || '',
                     }
                 };
 

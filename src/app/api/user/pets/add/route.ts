@@ -157,6 +157,7 @@ export async function POST(request: NextRequest) {
         const basePetData: Record<string, any> = {
             owner_id: user!.id,
             name: petData.name,
+            last_name: petData.lastName || null,
             breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
             breed_size: petData.breedSize,
             photo_url: petData.photo1Url,
@@ -171,6 +172,11 @@ export async function POST(request: NextRequest) {
             ...(petData.petType ? { pet_type: petData.petType === 'perro' ? 'dog' : 'cat' } : {}),
             ...(petData.gender ? { gender: petData.gender } : {}),
             ...(petData.isMixed !== undefined ? { is_mixed_breed: petData.isMixed } : {}),
+            ...(petData.isAdopted !== undefined ? { is_adopted: petData.isAdopted } : {}),
+            ...(petData.adoptionStory ? { adoption_story: petData.adoptionStory } : {}),
+            ...(petData.ruac ? { ruac: petData.ruac } : {}),
+            ...(petData.isSenior !== undefined ? { is_senior: petData.isSenior } : {}),
+            ...(petData.vetCertificateUrl ? { vet_certificate_url: petData.vetCertificateUrl } : {}),
         };
 
         let insertError;
