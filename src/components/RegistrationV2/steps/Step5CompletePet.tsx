@@ -46,6 +46,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         eyeColor: '',
         isAdopted: false,
         adoptionStory: '',
+        ruac: '',
         primaryPhoto: null as File | null,
         vetCertificate: null as File | null
     });
@@ -69,6 +70,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                 eyeColor: pet.eyeColor || '',
                 isAdopted: pet.isAdopted || false,
                 adoptionStory: pet.adoptionStory || '',
+                ruac: pet.ruac || '',
             }));
 
             setBreedType(isMixed ? 'mestizo' : 'raza');
@@ -121,6 +123,14 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         if (!formData.gender) newErrors.gender = 'Selecciona el sexo';
         if (breedType === 'raza' && !formData.breed) newErrors.breed = 'Selecciona la raza';
         if (!formData.coatColor) newErrors.coatColor = 'Selecciona el color';
+
+        // Validar RUAC solo si se proporcionó
+        if (formData.ruac && formData.ruac.trim() !== '') {
+            const ruacRegex = /^[A-Z0-9]{10}$/;
+            if (!ruacRegex.test(formData.ruac)) {
+                newErrors.ruac = 'El RUAC debe tener exactamente 10 caracteres alfanuméricos (letras y números)';
+            }
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -183,6 +193,13 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                 className={`${styles.switchButton} ${breedType === 'mestizo' ? styles.switchActive : ''}`}
                                 onClick={() => handleBreedTypeChange('mestizo')}
                             >
+                                {breedType === 'mestizo' && (
+                                    <span className={styles.switchIcon}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                )}
                                 Mestizo
                             </button>
                             <button
@@ -190,6 +207,13 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                 className={`${styles.switchButton} ${breedType === 'raza' ? styles.switchActive : ''}`}
                                 onClick={() => handleBreedTypeChange('raza')}
                             >
+                                {breedType === 'raza' && (
+                                    <span className={styles.switchIcon}>
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                        </svg>
+                                    </span>
+                                )}
                                 Raza
                             </button>
                         </div>
@@ -216,6 +240,51 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                             required
                         />
                     )}
+
+                    {/* Sección RUAC - Beneficio Premium */}
+                    <div className={styles.ruacSection}>
+                        <div className={styles.ruacBadge}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            ¡Beneficio exclusivo!
+                        </div>
+                        <label className={styles.label} style={{ color: '#234E52' }}>
+                            RUAC (Opcional)
+                        </label>
+                        <div className={styles.ruacInputWrapper}>
+                            <input
+                                type="text"
+                                className={`${styles.ruacInput} ${errors.ruac ? styles.inputError : ''}`}
+                                placeholder="Ej: A1B2C3D4E5"
+                                value={formData.ruac}
+                                onChange={(e) => {
+                                    const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                                    setFormData({ ...formData, ruac: val });
+                                    if (errors.ruac) setErrors(prev => ({ ...prev, ruac: '' }));
+                                }}
+                                maxLength={10}
+                            />
+                            {formData.ruac.length === 10 && !errors.ruac && (
+                                <span className={styles.ruacStatus} style={{ animation: 'bounceIn 0.5s cubic-bezier(0.36, 0, 0.66, -0.56)' }}>✨</span>
+                            )}
+                        </div>
+                        {errors.ruac && <p className={styles.errorMessage}>{errors.ruac}</p>}
+                        <p className={styles.helpText} style={{ textAlign: 'left', color: '#4A7C7F', marginTop: '0.75rem' }}>
+                            <strong>🎁 Ventaja:</strong> Al ingresar el RUAC, el período de carencia de {petBasic?.petName || 'tu mascota'} se reduce a solo <strong>3 meses (90 días)</strong>.
+                        </p>
+                        <a 
+                            href="https://ruac.cdmx.gob.mx/" 
+                            target="_blank" 
+                            rel="noopener noreferrer" 
+                            className={styles.ruacHelpLink}
+                        >
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                            </svg>
+                            ¿Qué es el RUAC y cómo obtenerlo?
+                        </a>
+                    </div>
                 </div>
 
                 <div className={styles.section}>

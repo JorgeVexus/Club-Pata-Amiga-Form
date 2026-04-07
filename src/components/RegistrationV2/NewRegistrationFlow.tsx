@@ -750,7 +750,7 @@ export default function NewRegistrationFlow() {
             const calculation = calculateWaitingPeriod(
                 true, // isOriginal
                 !!restPetData.isAdopted,
-                !!petBasicSource?.ruac,
+                !!restPetData.ruac,
                 !!restPetData.isMixedBreed, // Mapeamos isMixedBreed a isMixed
                 !!registrationData.referralCode
             );

@@ -351,6 +351,9 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             is_senior: pet.is_senior || false,
             vet_certificate_required: pet.vet_certificate_required || false,
 
+            // RUAC
+            ruac: pet.ruac || null,
+
             // Tracking
             status: pet.status || 'pending',
             basic_info_completed: true,

@@ -781,6 +781,10 @@
 
 .switchButton {
     flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
     padding: 0.875rem 1.5rem;
     border: 2px solid transparent;
     border-radius: 12px;
@@ -790,7 +794,7 @@
     font-size: 1rem;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.25s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
@@ -798,38 +802,39 @@
 .switchButton:hover:not(.switchActive) {
     background: #EDF2F7;
     color: #4A5568;
-    border-color: #CBD5E0;
+    transform: translateY(-1px);
 }
 
 .switchActive {
     background: linear-gradient(135deg, #00BBB4 0%, #00A099 100%);
-    color: white;
-    border-color: #008B86;
-    box-shadow:
-        0 4px 12px rgba(0, 187, 180, 0.35),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    color: white !important;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: 
+        0 8px 20px rgba(0, 187, 180, 0.25),
+        inset 0 1px 1px rgba(255, 255, 255, 0.3);
     font-weight: 600;
+    transform: translateY(-1px);
 }
 
-/* Indicador visual de selecciÃ³n */
-.switchActive::before {
-    content: 'âœ“';
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 20px;
-    height: 20px;
-    background: rgba(255, 255, 255, 0.25);
-    border-radius: 50%;
+/* Indicador visual de selección (SVG en el componente) */
+.switchIcon {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
+    width: 22px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* Estado deshabilitado/deseleccionado mÃ¡s sutil */
+@keyframes popIn {
+    0% { opacity: 0; transform: scale(0.5); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Estado deshabilitado/deseleccionado más sutil */
 .switchButton:not(.switchActive) {
     opacity: 0.85;
 }
@@ -1812,4 +1817,117 @@
     margin-top: 0.75rem;
     line-height: 1.4;
     animation: slideDown 0.3s ease-out;
+}
+
+/* RUAC Section */
+.ruacSection {
+    background: linear-gradient(135deg, rgba(125, 216, 213, 0.08) 0%, rgba(254, 143, 21, 0.08) 100%);
+    border: 2px solid rgba(125, 216, 213, 0.3);
+    border-radius: 20px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.ruacBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #FE8F15;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 10px rgba(254, 143, 21, 0.3);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+.ruacInputWrapper {
+    position: relative;
+}
+
+.ruacInput {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    padding-right: 3rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    background: white;
+    border: 2px solid #E2E8F0;
+    border-radius: 16px;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.ruacInput:focus {
+    outline: none;
+    border-color: #FE8F15;
+    box-shadow: 0 0 0 4px rgba(254, 143, 21, 0.15);
+}
+
+.ruacInput::placeholder {
+    text-transform: none;
+    letter-spacing: normal;
+    color: #A0AEC0;
+}
+
+.ruacHelpLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.75rem;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #00BBB4;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.ruacHelpLink:hover {
+    text-decoration: underline;
+}
+
+.ruacStatus {
+    position: absolute;
+    right: 1.25rem;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.25rem;
+    pointer-events: none;
+}
+
+@keyframes bounceIn {
+    0% { transform: translateY(-50%) scale(0.3); opacity: 0; }
+    50% { transform: translateY(-50%) scale(1.1); opacity: 1; }
+    70% { transform: translateY(-50%) scale(0.9); }
+    100% { transform: translateY(-50%) scale(1); }
+}
+
+.inputError {
+    border-color: #E53E3E !important;
+    background-color: #FFF5F5 !important;
+}
+
+.errorMessage {
+    color: #E53E3E;
+    font-size: 0.8rem;
+    margin-top: 0.4rem;
+    font-family: 'Outfit', sans-serif;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
 }
