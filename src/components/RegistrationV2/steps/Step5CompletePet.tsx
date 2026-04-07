@@ -241,6 +241,46 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                         />
                     )}
 
+                    {/* Sección de Adopción (Solo para mestizos) */}
+                    {breedType === 'mestizo' && (
+                        <div className={`${styles.adoptionSection} ${styles.fadeIn}`}>
+                            <div className={styles.adoptionHeader}>
+                                <div className={styles.adoptionIcon}>🏠</div>
+                                <div>
+                                    <h4 className={styles.adoptionTitle}>¿Tu mascota es adoptada?</h4>
+                                    <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
+                                </div>
+                            </div>
+
+                            <div className={styles.adoptionCheckboxWrapper}>
+                                <label className={styles.adoptionCheckbox}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={formData.isAdopted}
+                                        onChange={(e) => setFormData({ ...formData, isAdopted: e.target.checked })}
+                                    />
+                                    <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
+                                </label>
+                            </div>
+
+                            {formData.isAdopted && (
+                                <div className={styles.adoptionStoryWrapper}>
+                                    <label className={styles.adoptionStoryLabel}>Cuéntanos su historia</label>
+                                    <textarea 
+                                        className={styles.adoptionTextarea}
+                                        placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
+                                        value={formData.adoptionStory}
+                                        onChange={(e) => setFormData({ ...formData, adoptionStory: e.target.value })}
+                                        maxLength={500}
+                                    />
+                                    <div className={styles.adoptionCharCount}>
+                                        <strong>{formData.adoptionStory.length}</strong> / 500 caracteres
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
                     {/* Sección RUAC - Beneficio Premium */}
                     <div className={styles.ruacSection}>
                         <div className={styles.ruacBadge}>

@@ -254,5 +254,21 @@ Before "Done"    → Empirical proof captured
 
 ---
 
+## Regla Global: Registro de Avances (Changelog)
+
+**STRICT RULE**: Todo agente debe registrar sus cambios, ajustes o adiciones en un archivo de bitácora dentro del proyecto actual.
+
+1. **Ubicación**: Carpeta `changelogs/` en la raíz del proyecto.
+2. **Carpeta**: Si la carpeta no existe, el agente **DEBE** crearla inmediatamente.
+3. **Archivo**: El nombre del archivo debe ser la fecha actual: `YYYY-MM-DD.md`.
+4. **Contenido**: Resumen narrativo y técnico de lo realizado en la sesión, incluyendo:
+   - Cambios realizados (Base de datos, UI, Lógica).
+   - Cómo probar los cambios.
+   - Estado final de la tarea.
+
+**Propósito**: Mantener un historial consolidado cuando múltiples agentes trabajan de forma asíncrona en el mismo repositorio.
+
+---
+
 *GSD Methodology — Model-Agnostic Edition*
 *Reference implementation for multi-LLM environments*
