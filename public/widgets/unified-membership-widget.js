@@ -18,23 +18,50 @@
     const STYLES = `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
 
+        :root {
+            --pata-glass-bg: rgba(255, 255, 255, 0.85);
+            --pata-glass-border: rgba(255, 255, 255, 0.3);
+            --pata-shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.1);
+            --pata-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         .pata-unified-panel {
-            background-color: #FFFFFF;
-            border-radius: 30px;
+            background: var(--pata-glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--pata-glass-border);
+            border-radius: 35px;
             padding: 40px;
             max-width: 920px;
             margin: 0 auto 20px auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: var(--pata-shadow-premium);
             font-family: 'Outfit', sans-serif;
             color: #1A1A1A;
             display: none;
             position: relative;
             overflow: hidden;
+            transition: all 0.4s var(--pata-spring);
         }
 
-        .pata-unified-panel.show { display: block; animation: pataFadeIn 0.5s ease-out; }
+        .pata-unified-panel.show { 
+            display: block; 
+            animation: pataBounceIn 0.8s var(--pata-spring) forwards;
+        }
 
-        @keyframes pataFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pataBounceIn {
+            0% { opacity: 0; transform: scale(0.9) translateY(40px); }
+            70% { transform: scale(1.02) translateY(-5px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        @keyframes pataSlideInFromRight {
+            from { opacity: 0; transform: translateX(30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pata-slide-animate {
+            animation: pataSlideInFromRight 0.5s var(--pata-spring) forwards;
+        }
 
         /* Yellow Theme Support */
         .pata-theme-yellow .pata-external-greeting { color: #FFFFFF; }
@@ -72,46 +99,45 @@
             opacity: 0.9;
         }
 
+        /* Mobile Responsive Tabs */
         .pata-pet-tabs { 
             display: flex; 
-            gap: 8px; 
-            margin-bottom: 20px; 
-            flex-wrap: wrap;
-            background: #F0F2F5;
-            padding: 8px;
-            border-radius: 60px;
-            width: fit-content;
+            gap: 12px; 
+            margin-bottom: 25px; 
+            overflow-x: auto;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE/Edge */
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
         }
-
-        .pata-tab-label {
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 12px;
-            color: #1A1A1A;
-            display: block;
-        }
+        .pata-pet-tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
         .pata-tab-btn {
-            background: transparent;
-            border: 1px solid #E0E0E0;
+            background: #F0F2F5;
+            border: 2px solid transparent;
             border-radius: 50px;
-            padding: 10px 24px;
+            padding: 12px 28px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s var(--pata-spring);
             font-weight: 900;
             display: flex;
             align-items: center;
             gap: 10px;
-            color: #A0A0A0;
+            color: #666;
             font-size: 16px;
+            white-space: nowrap;
+            flex-shrink: 0;
+            min-height: 48px; /* Touch target */
         }
 
-        .pata-tab-btn:hover { background: rgba(0, 0, 0, 0.05); }
+        .pata-tab-btn:hover { transform: translateY(-2px); background: #E8EAED; }
         .pata-tab-btn.active { 
             background: #00BBB4; 
             color: #FFFFFF; 
-            border-color: #00BBB4;
-            box-shadow: 0 4px 15px rgba(0, 187, 180, 0.2);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 8px 20px rgba(0, 187, 180, 0.3);
+            transform: scale(1.05);
         }
 
         /* Approved View Layout */
@@ -122,8 +148,15 @@
             align-items: flex-start;
         }
 
-        @media (max-width: 850px) {
+        @media (max-width: 900px) {
             .pata-approved-grid { grid-template-columns: 1fr; }
+            .pata-welcome-title { font-size: 70px; }
+        }
+
+        @media (max-width: 600px) {
+            .pata-welcome-title { font-size: 50px; }
+            .pata-unified-panel { padding: 25px; border-radius: 25px; }
+            .pata-approved-grid { gap: 20px; }
         }
 
         .pata-carencia-title {
@@ -167,19 +200,20 @@
         }
 
         .pata-bar-v2 {
-            height: 24px;
-            background: #FFFFFF;
+            height: 28px;
+            background: #F0F2F5;
             border-radius: 50px;
             border: 2px solid #1A1A1A;
-            padding: 3px;
+            padding: 4px;
             position: relative;
         }
 
         .pata-fill-v2 {
             height: 100%;
-            background: #00BBB4;
+            background: linear-gradient(90deg, #00BBB4 0%, #00D2C9 100%);
             border-radius: 50px;
-            transition: width 1s ease;
+            transition: width 1.5s var(--pata-spring);
+            box-shadow: 0 2px 10px rgba(0, 187, 180, 0.2);
         }
 
         .pata-bar-labels {
@@ -194,23 +228,25 @@
         .pata-pet-profile {
             display: flex;
             gap: 15px;
+            animation: pataSlideInFromRight 0.5s ease-out;
         }
 
         .pata-pet-photo-box {
-            width: 160px;
-            height: 160px;
+            width: 140px;
+            height: 140px;
             background: #00BBB4;
             border-radius: 24px;
             overflow: hidden;
             display: flex;
             align-items: flex-end;
             justify-content: center;
+            box-shadow: 0 10px 20px rgba(0, 187, 180, 0.2);
         }
 
         .pata-pet-photo-box img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
 
         .pata-pet-info-box {
@@ -222,10 +258,11 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
+            box-shadow: 0 10px 25px rgba(0, 187, 180, 0.2);
         }
 
         .pata-pet-info-box h3 {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: 900;
             margin: 0 0 10px 0;
         }
@@ -248,6 +285,7 @@
         .pata-pet-info-box li::before {
             content: "•";
             font-size: 18px;
+            color: rgba(255,255,255,0.6);
         }
 
         /* Modal Styles */
@@ -257,12 +295,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 10000;
-            backdrop-filter: blur(5px);
         }
 
         .pata-modal-overlay.show { display: flex; }
@@ -270,343 +309,110 @@
         .pata-modal {
             background: #FFFFFF;
             width: 90%;
-            max-width: 500px;
-            border-radius: 30px;
+            max-width: 550px;
+            border-radius: 40px;
             overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-            animation: pataModalSlideUp 0.3s ease-out;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.25);
+            animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
         }
 
-        @keyframes pataModalSlideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pataModalSlideUp { 
+            from { transform: translateY(40px) scale(0.95); opacity: 0; } 
+            to { transform: translateY(0) scale(1); opacity: 1; } 
+        }
 
         .pata-modal-header {
-            padding: 25px;
+            padding: 30px;
             background: #F8FBFF;
-            border-bottom: 1px solid #E0E0E0;
+            border-bottom: 1px solid #F0F2F5;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
 
-        .pata-modal-title { font-size: 20px; font-weight: 900; color: #1A1A1A; margin: 0; }
-        .pata-modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #A0A0A0; line-height: 1; }
+        .pata-modal-title { font-size: 22px; font-weight: 900; color: #1A1A1A; margin: 0; }
+        .pata-modal-close { background: #E8EAED; border: none; font-size: 24px; cursor: pointer; color: #666; width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .pata-modal-close:hover { background: #DDD; color: #1A1A1A; transform: rotate(90deg); }
 
-        .pata-modal-body { padding: 30px; }
+        .pata-modal-body { padding: 35px; max-height: 70vh; overflow-y: auto; }
         .pata-modal-pet-details { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .pata-detail-item { margin-bottom: 15px; }
-        .pata-detail-label { font-size: 13px; font-weight: 700; color: #A0A0A0; text-transform: uppercase; margin-bottom: 5px; }
-        .pata-detail-value { font-size: 16px; font-weight: 900; color: #1A1A1A; }
+        .pata-detail-label { font-size: 13px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
+        .pata-detail-value { font-size: 17px; font-weight: 900; color: #1A1A1A; }
 
         .pata-modal-footer {
-            padding: 20px 30px;
-            border-top: 1px solid #E0E0E0;
+            padding: 25px 35px;
+            background: #F8FBFF;
+            border-top: 1px solid #F0F2F5;
             display: flex;
             justify-content: flex-end;
-            gap: 10px;
+            gap: 15px;
         }
 
         .pata-btn-ver-detalles {
             background: #FFBD12;
             color: #1A1A1A !important;
-            border: none;
+            border: 2px solid #000;
             border-radius: 50px;
-            padding: 8px 15px;
-            font-size: 14px;
+            padding: 10px 20px;
+            font-size: 15px;
             font-weight: 900;
             cursor: pointer;
-            display: inline-block;
-            text-align: center;
+            transition: all 0.2s;
         }
+        .pata-btn-ver-detalles:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 189, 18, 0.3); }
 
         /* Orange Banner Alert */
         .pata-orange-alert {
             background: #FFBD12;
-            border-radius: 15px;
-            padding: 15px 25px;
+            border-radius: 25px;
+            padding: 20px 30px;
             display: flex;
             gap: 20px;
             align-items: center;
             margin-top: 30px;
             color: #1A1A1A;
+            border: 2px solid #000;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
         }
 
-        .pata-orange-alert-icon { font-size: 32px; }
-        .pata-orange-alert-text { font-size: 14px; font-weight: 700; line-height: 1.4; }
-        .pata-orange-alert-text strong { font-size: 15px; }
+        .pata-orange-alert-icon { font-size: 36px; }
+        .pata-orange-alert-text { font-size: 15px; font-weight: 700; line-height: 1.4; }
+        .pata-orange-alert-text strong { display: block; margin-bottom: 4px; font-size: 17px; }
 
-        /* Contenido del Panel */
-        .pata-panel-container { position: relative; }
-
-        @media (max-width: 768px) { 
-            .pata-pet-tabs { width: 100%; justify-content: center; }
-            .pata-welcome-title { font-size: 60px; }
-        }
-
-        .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
-        .pata-subtitle { font-size: 18px; font-weight: 600; margin: 0 0 20px 0; color: #444; }
-
-        /* Estado Activo - Circular Progress */
-        .pata-active-container {
-            display: grid;
-            grid-template-columns: 200px 1fr;
-            gap: 40px;
-            align-items: center;
-        }
-
-        @media (max-width: 768px) {
-            .pata-active-container { grid-template-columns: 1fr; justify-items: center; }
-        }
-
-        .pata-circular-progress {
-            width: 180px;
-            height: 180px;
-            position: relative;
-        }
-
-        .pata-circular-svg {
-            transform: rotate(-90deg);
-            width: 100%;
-            height: 100%;
-        }
-
-        .pata-circular-bg {
-            fill: none;
-            stroke: #F0F2F5;
-            stroke-width: 12;
-        }
-
-        .pata-circular-fill {
-            fill: none;
-            stroke: #9FD406;
-            stroke-width: 12;
-            stroke-linecap: round;
-            transition: stroke-dasharray 1s ease;
-        }
-
-        .pata-circular-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-        }
-
-        .pata-days-num { font-size: 48px; font-weight: 900; line-height: 1; color: #1A1A1A; }
-        .pata-days-label { font-size: 14px; font-weight: 600; color: #888; text-transform: uppercase; }
-
-        .pata-info-card {
-            background: #F8FBFF;
-            border-left: 6px solid #00BBB4;
-            padding: 24px;
-            border-radius: 20px;
-        }
-
-        .pata-info-title { font-size: 20px; font-weight: 700; color: #00BBB4; margin-bottom: 8px; }
-        .pata-info-text { font-size: 15px; color: #555; line-height: 1.5; margin: 0; }
-
-        /* Horizontal Progress Bar */
-        .pata-horizontal-progress-container {
-            margin: 30px 0;
-        }
-
-        .pata-progress-labels-top {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 600;
-            color: #1A1A1A;
-            margin-bottom: 12px;
-        }
-
-        .pata-progress-bar-horizontal {
-            height: 22px;
-            background: #FFFFFF;
-            border-radius: 50px;
-            overflow: hidden;
-            border: 1px solid #E0E0E0;
-            padding: 3px;
-        }
-
-        .pata-progress-fill-horizontal {
-            height: 100%;
-            background: #00BBB4;
-            border-radius: 50px;
-            transition: width 1s ease;
-        }
-
-        /* Checklist */
-        .pata-checklist {
-            margin-top: 30px;
-        }
-
-        .pata-checklist-title {
-            font-size: 18px;
-            font-weight: 900;
-            color: #1A1A1A;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .pata-checklist-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            font-size: 16px;
-            color: #1A1A1A;
-        }
-
-        .pata-checklist-icon {
-            color: #9FD406;
-            font-size: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .pata-disclaimer {
-            font-size: 12px;
-            color: #666;
-            margin-top: 30px;
-            text-align: left;
-        }
-
-        /* Rejected View Layout */
-        .pata-rejected-wrapper {
-            position: relative;
-            max-width: 920px;
-            margin: 0 auto;
-        }
-
-        .pata-rejected-white-card {
-            background: #FFFFFF;
-            border-radius: 60px;
-            padding: 60px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 40px;
-            z-index: 1;
-            min-height: 380px;
-            align-items: center;
-        }
-
-        .pata-rejected-dog-popout {
-            position: absolute;
-            right: -80px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 520px;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        @media (max-width: 850px) {
-            .pata-rejected-white-card { 
-                grid-template-columns: 1fr; 
-                padding: 40px; 
-                border-radius: 40px;
-                text-align: center;
-            }
-            .pata-rejected-dog-popout { 
-                position: relative; 
-                width: 100%; 
-                right: 0; 
-                top: 0; 
-                transform: none;
-                margin-top: 20px;
-            }
-        }
-
-        .pata-rejected-title-hero {
-            font-size: 32px;
-            font-weight: 900;
-            color: #1A1A1A;
-            margin: 0 0 15px 0;
-            line-height: 1.1;
-        }
-
-        .pata-rejected-text-hero {
-            font-size: 16px;
-            color: #555;
-            line-height: 1.5;
-            margin-bottom: 30px;
-        }
-
-        .pata-rejected-reason-box {
-            padding-top: 25px;
-            border-top: 1px solid #F0F0F0;
-        }
-
-        .pata-reason-label {
-            font-size: 14px;
-            font-weight: 700;
-            color: #1A1A1A;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .pata-reason-text {
-            font-size: 15px;
-            color: #444;
-            line-height: 1.5;
-        }
-
-        .pata-theme-orange .pata-btn-success {
-            background: #00BBB4; /* Teal for the button */
-        }
-
-        /* Botones */
+        /* Buttons */
         .pata-btn {
             background: #1A1A1A;
             color: #fff;
-            padding: 16px 36px;
+            padding: 18px 40px;
             border-radius: 60px;
-            border: none;
-            font-weight: 700;
+            border: 2px solid #000;
+            font-weight: 900;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 16px;
+            transition: all 0.3s var(--pata-spring);
+            font-size: 17px;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
+            gap: 12px;
             text-decoration: none !important;
+            min-height: 52px;
         }
-        .pata-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-        .pata-btn-white { background: #fff; color: #1A1A1A; }
-        .pata-btn-brand { background: #00BBB4; color: #FFFFFF; }
-        .pata-btn-red { background: #D32F2F; }
-        .pata-btn-outline { background: transparent; border: 2px solid #1A1A1A; color: #1A1A1A; }
-
-        .pata-btn-conocer {
-            background: #00BBB4;
-            color: #000000 !important;
-            padding: 18px 48px;
-            font-weight: 900;
-            text-transform: none;
-        }
-
-        /* Decoration */
-        .pata-decoration-paws {
-            position: absolute;
-            bottom: -20px;
-            right: -20px;
-            width: 150px;
-            opacity: 0.05;
-            pointer-events: none;
-        }
+        .pata-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+        .pata-btn:active { transform: translateY(0); }
+        
+        .pata-btn-success { background: #00BBB4; color: #fff; border-color: #008E88; }
+        .pata-btn-outline { background: transparent; border: 2px solid #DDD; color: #666; }
+        .pata-btn-outline:hover { background: #F8FBFF; border-color: #1A1A1A; color: #1A1A1A; }
 
         /* Upload Areas */
         .pata-upload-area {
-            border: 2px dashed #E0E0E0;
-            border-radius: 20px;
-            padding: 20px;
+            border: 2px dashed #DDD;
+            border-radius: 25px;
+            padding: 25px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s var(--pata-spring);
             background: #F8FBFF;
             display: flex;
             flex-direction: column;
@@ -615,14 +421,32 @@
             gap: 10px;
             position: relative;
             overflow: hidden;
-            min-height: 120px;
+            min-height: 140px;
         }
-        .pata-upload-area:hover { border-color: #00BBB4; background: #F0FEFE; }
+        .pata-upload-area:hover { border-color: #00BBB4; background: #F0FEFE; transform: scale(1.02); }
         .pata-upload-area.has-file { border-style: solid; border-color: #4CAF50; background: #F6FFF6; }
-        .pata-upload-icon { font-size: 32px; }
-        .pata-upload-text { font-size: 14px; font-weight: 600; color: #666; }
-        .pata-upload-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; border-radius: 18px; }
-        .pata-upload-filename { position: relative; z-index: 2; background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 20px; font-size: 11px; margin-top: auto; font-weight: 700; color: #4CAF50; }
+        .pata-upload-icon { font-size: 36px; transition: transform 0.3s; }
+        .pata-upload-area:hover .pata-upload-icon { transform: translateY(-5px); }
+        .pata-upload-text { font-size: 15px; font-weight: 700; color: #666; }
+        .pata-upload-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; transition: transform 0.5s; opacity: 0.9; }
+        .pata-upload-area:hover .pata-upload-preview { transform: scale(1.1); opacity: 1; }
+        .pata-upload-filename { position: relative; z-index: 2; background: #4CAF50; color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
+
+        /* Senior Badge */
+        .pata-senior-badge {
+            background: #7B1FA2;
+            color: #FFF;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+
+        .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
     `;
 
 
@@ -1218,7 +1042,7 @@
                                 <img src="${petImage}" alt="${pet.name}">
                             </div>
                             <div class="pata-pet-info-box">
-                                <h3>${pet.name}</h3>
+                                <h3>${pet.name}${pet.age_value >= 10 ? '<span class="pata-senior-badge">Senior</span>' : ''}</h3>
                                 <ul>
                                     <li>${pet.age || '1 año'}</li>
                                     <li>${pet.type || 'Lomito'}</li>
@@ -1336,6 +1160,7 @@
         // 🆕 Renderizar el modal de actualización
         renderUpdateModal(pet) {
             const adminMsg = pet.last_admin_response || 'Por favor actualiza la información solicitada.';
+            const isSenior = pet.age_value >= 10;
 
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
@@ -1350,27 +1175,40 @@
                                 <p class="pata-admin-request-msg">${adminMsg}</p>
                             </div>
 
-                            <div>
-                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1:</label>
-                                <div class="pata-upload-area" id="pata-upload-area-1">
-                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1">
-                                    <div class="pata-upload-icon">📷</div>
-                                    <div class="pata-upload-text">Haz clic para seleccionar foto</div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div>
+                                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1:</label>
+                                    <div class="pata-upload-area" id="pata-upload-area-1">
+                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;">
+                                        <div class="pata-upload-icon">📷</div>
+                                        <div class="pata-upload-text">Seleccionar foto</div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 2 (opcional):</label>
+                                    <div class="pata-upload-area" id="pata-upload-area-2">
+                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-2" style="display:none;">
+                                        <div class="pata-upload-icon">📷</div>
+                                        <div class="pata-upload-text">Seleccionar foto</div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div style="margin-top: 15px;">
-                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 2 (opcional):</label>
-                                <div class="pata-upload-area" id="pata-upload-area-2">
-                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-2">
-                                    <div class="pata-upload-icon">📷</div>
-                                    <div class="pata-upload-text">Haz clic para seleccionar foto</div>
+                            ${isSenior ? `
+                                <div style="margin-top: 20px;">
+                                    <label style="font-weight: 700; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico (Requerido Senior):</label>
+                                    <div class="pata-upload-area" id="pata-upload-area-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
+                                        <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
+                                        <div class="pata-upload-icon">📄</div>
+                                        <div class="pata-upload-text" style="color: #7B1FA2;">Sube el certificado de salud actual</div>
+                                    </div>
                                 </div>
-                            </div>
+                            ` : ''}
 
                             <div style="margin-top: 15px;">
                                 <label style="font-weight: 600; margin-bottom: 10px; display: block;">Mensaje (opcional):</label>
-                                <textarea id="pata-update-message" class="pata-textarea" placeholder="Añade un comentario sobre tu actualización..."></textarea>
+                                <textarea id="pata-update-message" class="pata-textarea" placeholder="Añade un comentario sobre tu actualización..." style="width: 100%; min-height: 80px; padding: 12px; border-radius: 12px; border: 1px solid #DDD; font-family: inherit;"></textarea>
                             </div>
 
                         </div>
@@ -1398,7 +1236,10 @@
                         </div>
                         <div class="pata-modal-body">
                             <div style="text-align:center; margin-bottom: 25px;">
-                                <img src="${petImage}" style="width:120px; height:120px; border-radius:60px; object-fit:cover; border:3px solid #00BBB4;">
+                                <div style="position: relative; display: inline-block;">
+                                    <img src="${petImage}" style="width:120px; height:120px; border-radius:60px; object-fit:cover; border:3px solid #00BBB4;">
+                                    ${pet.age_value >= 10 ? '<span class="pata-senior-badge" style="position: absolute; bottom: 0; right: 0;">Senior</span>' : ''}
+                                </div>
                             </div>
                             <div class="pata-modal-pet-details">
                                 <div class="pata-detail-item">
@@ -1413,6 +1254,16 @@
                                     <div class="pata-detail-label">Peso</div>
                                     <div class="pata-detail-value">${pet.weight || 'Desconocido'}</div>
                                 </div>
+                                ${pet.age_value >= 10 ? `
+                                <div class="pata-detail-item" style="grid-column: span 2; border-top: 1px dashed #EEE; padding-top: 15px; margin-top: 10px;">
+                                    <div class="pata-detail-label" style="color: #7B1FA2;">Salud Senior</div>
+                                    <div class="pata-detail-value">
+                                        ${pet.vet_certificate_url ? 
+                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #7B1FA2; font-weight: bold; text-decoration: underline;">📄 Ver Certificado de Salud</a>` : 
+                                            '<span style="color: #E53E3E;">⚠️ Certificado Pendiente</span>'}
+                                    </div>
+                                </div>
+                                ` : ''}
                                 <div class="pata-detail-item">
                                     <div class="pata-detail-label">Carencia</div>
                                     <div class="pata-detail-value">${carencia.percentage}% (${carencia.daysRemaining} días restantes)</div>
@@ -1428,6 +1279,8 @@
         }
 
         renderMissingPhotosView(firstName, pet) {
+            const isSenior = pet.age_value >= 10;
+
             return `
                 <div class="pata-external-greeting">
                     <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
@@ -1443,13 +1296,10 @@
                         <h2 class="pata-title" style="margin-bottom: 8px;">tu registro está en revisión</h2>
                         <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 25px;">
                             Sin embargo, aún falta que nos envíes información sobre tu mascota <strong>${pet.name}</strong>. 
+                            ${isSenior ? '<br><span style="color: #7B1FA2; font-weight: 900;">⚠️ Al ser una mascota Senior (10+ años), requerimos su certificado de salud.</span>' : ''}
                             Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
                         </p>
                         
-                        <p style="font-size: 14px; color: #666; margin-bottom: 30px;">
-                            Te hemos llegado un correo con la liga, pero puedes subirlas aquí mismo para agilizar el proceso.
-                        </p>
-
                         <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
                             <div>
                                 <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block;">Foto de ${pet.name} 1:</label>
@@ -1467,6 +1317,16 @@
                                     <div class="pata-upload-text">Perfil o distintiva (opcional)</div>
                                 </div>
                             </div>
+                            ${isSenior ? `
+                                <div>
+                                    <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico:</label>
+                                    <div class="pata-upload-area" id="pata-missing-upload-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
+                                        <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-missing-file-cert" style="display:none;">
+                                        <div class="pata-upload-icon">📄</div>
+                                        <div class="pata-upload-text" style="color: #7B1FA2;">Sube el certificado aquí</div>
+                                    </div>
+                                </div>
+                            ` : ''}
                         </div>
 
                         <div style="text-align: center;">
@@ -1498,12 +1358,17 @@
         attachMissingPhotosEvents(pet) {
             this.setupMissingPhotoUpload('pata-missing-upload-1', 'pata-missing-file-1', 'photo1');
             this.setupMissingPhotoUpload('pata-missing-upload-2', 'pata-missing-file-2', 'photo2');
+            this.setupMissingPhotoUpload('pata-missing-upload-cert', 'pata-missing-file-cert', 'cert');
 
             const submitBtn = document.getElementById('pata-btn-submit-missing');
             if (submitBtn) {
                 submitBtn.onclick = async () => {
+                    const isSenior = pet.age_value >= 10;
                     if (!this.missingPhotosFiles.photo1 && !this.missingPhotosFiles.photo2) {
                         return alert('Por favor sube al menos una foto de tu mascota.');
+                    }
+                    if (isSenior && !this.missingPhotosFiles.cert) {
+                        return alert('Por favor sube el certificado veterinario (requerido para mascotas Senior).');
                     }
 
                     submitBtn.disabled = true;
@@ -1512,12 +1377,16 @@
                     try {
                         let photo1Url = null;
                         let photo2Url = null;
+                        let vetCertificateUrl = null;
 
                         if (this.missingPhotosFiles.photo1) {
                             photo1Url = await this.uploadPhoto(this.missingPhotosFiles.photo1);
                         }
                         if (this.missingPhotosFiles.photo2) {
                             photo2Url = await this.uploadPhoto(this.missingPhotosFiles.photo2);
+                        }
+                        if (this.missingPhotosFiles.cert) {
+                            vetCertificateUrl = await this.uploadPhoto(this.missingPhotosFiles.cert);
                         }
 
                         submitBtn.innerText = 'Actualizando mascota...';
@@ -1529,7 +1398,8 @@
                                 userId: this.member.id,
                                 photo1Url,
                                 photo2Url,
-                                message: 'Fotos subidas post-registro'
+                                vetCertificateUrl,
+                                message: 'Fotos subidas post-registro' + (isSenior ? ' (incluye certificado senior)' : '')
                             })
                         });
 
@@ -1791,6 +1661,7 @@
             };
             setupUpload('pata-upload-area-1', 'pata-file-1', 'photo1');
             setupUpload('pata-upload-area-2', 'pata-file-2', 'photo2');
+            setupUpload('pata-upload-area-cert', 'pata-file-cert', 'cert');
 
             // Submit update
             const submitBtn = document.getElementById('pata-btn-submit-update');
@@ -1808,6 +1679,7 @@
                         const pet = this.pets[this.currentIndex];
                         let photo1Url = null;
                         let photo2Url = null;
+                        let vetCertificateUrl = null;
 
                         // Subir foto 1
                         if (this.uploadFiles.photo1) {
@@ -1849,6 +1721,27 @@
                             }
                         }
 
+                        // Subir certificado (si aplica)
+                        if (this.uploadFiles.cert) {
+                            submitBtn.innerText = 'Subiendo certificado...';
+                            const formData = new FormData();
+                            formData.append('file', this.uploadFiles.cert);
+                            formData.append('userId', this.member.id);
+                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, { // Usamos el mismo para PDF/Img
+                                method: 'POST',
+                                body: formData
+                            });
+                            const data = await res.json();
+                            if (data.success) vetCertificateUrl = data.url;
+                            else {
+                                alert('Error al subir certificado: ' + (data.error || 'Error desconocido'));
+                                submitBtn.disabled = false;
+                                submitBtn.innerText = 'Enviar Actualización';
+                                this.uploading = false;
+                                return;
+                            }
+                        }
+
                         submitBtn.innerText = 'Guardando...';
 
                         // Actualizar mascota
@@ -1860,6 +1753,7 @@
                                 userId: this.member.id,
                                 photo1Url,
                                 photo2Url,
+                                vetCertificateUrl,
                                 message
                             })
                         });
