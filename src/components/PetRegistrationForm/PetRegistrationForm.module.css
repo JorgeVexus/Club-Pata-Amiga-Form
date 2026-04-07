@@ -170,16 +170,24 @@
     display: block;
 }
 
-.input {
-    width: 100%;
-    padding: 1.25rem 1.5rem;
-    font-size: 1rem;
-    background: #DCEE95;
-    border: none;
-    border-radius: 50px;
-    transition: all 0.3s ease;
-    color: #000;
+.input:focus {
+    outline: none;
+    border-color: #ffffff;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
+
+.inputValid {
+    border: 2px solid #22C55E !important;
+    background-color: #F0FFF4 !important;
+    color: #166534 !important;
+}
+
+.inputInvalid {
+    border: 2px solid #EF4444 !important;
+    background-color: #FFF5F5 !important;
+    color: #991B1B !important;
+}
+
 
 .helpText {
     margin-top: 1rem;

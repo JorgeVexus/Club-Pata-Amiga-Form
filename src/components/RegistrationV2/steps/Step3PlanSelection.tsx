@@ -132,25 +132,43 @@ export default function Step3PlanSelection({
         }
     };
 
-    const handleValidateCode = async () => {
-        if (!referralCode.trim()) return;
+    // Validación automática con debounce (estilo CURP)
+    useEffect(() => {
+        // Efecto para auto-validación de código de referido
+        const handler = setTimeout(() => {
+            if (referralCode.trim().length >= 3) {
+                validateCode(referralCode.trim());
+            } else if (referralCode.trim().length > 0 && referralCode.trim().length < 3) {
+                // No validamos aún, pero limpiamos estados si estaba validado
+                setIsCodeValidated(false);
+                setReferralError('El código debe tener al menos 3 caracteres');
+            } else {
+                setReferralError('');
+                setAmbassadorName('');
+                setIsCodeValidated(false);
+            }
+        }, 600); // 600ms de calma antes de validar
 
+        return () => clearTimeout(handler);
+    }, [referralCode]);
+
+    const validateCode = async (code: string) => {
         setIsValidating(true);
         setReferralError('');
         setAmbassadorName('');
         setIsCodeValidated(false);
 
         try {
-            const response = await fetch(`/api/referrals/validate-code?code=${referralCode.toUpperCase()}`);
+            const response = await fetch(`/api/referrals/validate-code?code=${code.toUpperCase()}`);
             const result = await response.json();
 
-            if (result.success) {
-                setAmbassadorName(result.ambassadorName);
+            if (result.success && result.valid) {
+                setAmbassadorName(result.ambassador_name);
                 setIsCodeValidated(true);
-                showToast(`¡Código válido! Beneficio de embajador aplicado.`, 'success');
+                // No mostramos toast para no interrumpir el flujo, el feedback visual es suficiente
             } else {
-                setReferralError(result.error || 'Código no válido');
-                showToast(result.error || 'Código no válido', 'error');
+                setReferralError(result.message || 'Ese código no es válido/no existe');
+                setIsCodeValidated(false);
             }
         } catch (error) {
             console.error('Error validating code:', error);
@@ -286,46 +304,33 @@ export default function Step3PlanSelection({
                 <div className={styles.referralInputWrapper}>
                     <input
                         type="text"
-                        className={styles.referralInput}
+                        className={`${styles.referralInput} ${isCodeValidated ? styles.inputValid :
+                            referralError ? styles.inputInvalid : ''
+                            }`}
                         placeholder="INGRESA TU CÓDIGO"
                         value={referralCode}
                         onChange={(e) => {
-                            setReferralCode(e.target.value.toUpperCase());
+                            const val = e.target.value.toUpperCase();
+                            setReferralCode(val);
                             if (referralError) setReferralError('');
                             if (isCodeValidated) setIsCodeValidated(false);
                         }}
-                        disabled={isValidating || isCodeValidated || isProcessing}
+                        disabled={isProcessing}
                     />
-                    {!isCodeValidated ? (
-                        <button
-                            type="button"
-                            className={styles.referralButton}
-                            onClick={handleValidateCode}
-                            disabled={!referralCode.trim() || isValidating || isProcessing}
-                        >
-                            {isValidating ? '...' : 'Validar'}
-                        </button>
-                    ) : (
-                        <button
-                            type="button"
-                            className={styles.referralButton}
-                            style={{ background: '#2F855A', borderColor: '#000' }}
-                            onClick={() => {
-                                setIsCodeValidated(false);
-                                setAmbassadorName('');
-                            }}
-                        >
-                            Cambiar
-                        </button>
+                    {isValidating && (
+                        <div className={styles.referralLoading}>
+                            <div className={styles.spinnerSmall}></div>
+                        </div>
                     )}
                 </div>
 
                 {isCodeValidated && (
                     <div className={styles.referralSuccess}>
-                        <span>✅</span>
+                        <span>✨</span>
                         <span>
                             ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>! 
-                            Tu beneficio de 90 días de carencia ha sido aplicado.
+                            <br />
+                            <small>Tu beneficio de 90 días de carencia ha sido aplicado.</small>
                         </span>
                     </div>
                 )}

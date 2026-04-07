@@ -86,7 +86,8 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 if (userResult.success && userResult.userData?.ambassador_code) {
                     setAmbassadorCode(userResult.userData.ambassador_code);
                     // Validar el código para mostrar el nombre del embajador
-                    validateAmbassadorCode(userResult.userData.ambassador_code);
+                    // Usamos el código que viene de Supabase (que suele ser el referral_code guardado)
+                    setTimeout(() => validateAmbassadorCode(userResult.userData.ambassador_code), 500);
                 }
 
                 if (result.success && result.pets && result.pets.length > 0) {
@@ -136,6 +137,19 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
         }
     }, [pets, isLoadingPets]);
 
+    // Validación automática de código de embajador (estilo CURP)
+    React.useEffect(() => {
+        const handler = setTimeout(() => {
+            if (ambassadorCode && ambassadorCode.trim().length >= 3) {
+                validateAmbassadorCode(ambassadorCode);
+            } else if (!ambassadorCode.trim()) {
+                setAmbassadorValidation({ isValidating: false, isValid: null, ambassadorName: '', message: '' });
+            }
+        }, 600);
+
+        return () => clearTimeout(handler);
+    }, [ambassadorCode]);
+
     // Agregar otra mascota
     const handleAddPet = () => {
         if (pets.length < 3) {
@@ -176,7 +190,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
         try {
             const response = await fetch(
-                `https://app.pataamiga.mx/api/referrals/validate-code?code=${encodeURIComponent(code.trim())}`
+                `/api/referrals/validate-code?code=${encodeURIComponent(code.trim())}`
             );
             const data = await response.json();
 
@@ -185,14 +199,14 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                     isValidating: false,
                     isValid: true,
                     ambassadorName: data.ambassador_name || '',
-                    message: `✅ Código válido - Referido por: ${data.ambassador_name}`
+                    message: `✅ ¡Bienvenido a la manada de ${data.ambassador_name}! ✨`
                 });
             } else {
                 setAmbassadorValidation({
                     isValidating: false,
                     isValid: false,
                     ambassadorName: '',
-                    message: data.message || '❌ Código no válido'
+                    message: data.message || '❌ Ese código no es válido/no existe'
                 });
             }
         } catch (error) {
@@ -206,17 +220,9 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
         }
     };
 
-    // Handler del input con debounce
+    // Handler del input
     const handleAmbassadorCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const code = e.target.value;
-        setAmbassadorCode(code);
-
-        // Debounce la validación
-        const timeoutId = setTimeout(() => {
-            validateAmbassadorCode(code);
-        }, 500);
-
-        return () => clearTimeout(timeoutId);
+        setAmbassadorCode(e.target.value.toUpperCase());
     };
 
     // Validar formulario
