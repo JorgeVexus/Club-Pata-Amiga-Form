@@ -113,6 +113,17 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                     error={errors.petAge}
                 />
 
+                {/* Senior Warning */}
+                {((formData.petAgeUnit === 'years' && formData.petAge >= 10) || 
+                  (formData.petAgeUnit === 'months' && formData.petAge >= 120)) && (
+                    <div className={styles.infoBox + ' ' + styles.warning}>
+                        <span className={styles.infoIcon}>⚠️</span>
+                        <p>
+                            Al ser una mascota senior (10+ años), se solicitará un certificado médico veterinario en los siguientes pasos.
+                        </p>
+                    </div>
+                )}
+
 
                 <div className={styles.buttonRow}>
                     <button

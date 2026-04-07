@@ -52,7 +52,7 @@ interface TermsAcceptance {
 interface Step3PlanSelectionProps {
     data: any;
     member: any;
-    onNext: (planId: string, termsAcceptance?: any) => void;
+    onNext: (planId: string, termsAcceptance: any, referralCode?: string) => void;
     onBack: () => void;
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
     skipPaymentEnabled?: boolean;
@@ -80,6 +80,13 @@ export default function Step3PlanSelection({
 
     // Estados de aceptación (guardados cuando se cierra el modal)
     const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
+
+    // Estados de código de referido
+    const [referralCode, setReferralCode] = useState('');
+    const [isValidating, setIsValidating] = useState(false);
+    const [referralError, setReferralError] = useState('');
+    const [ambassadorName, setAmbassadorName] = useState('');
+    const [isCodeValidated, setIsCodeValidated] = useState(false);
 
     // Mostrar resumen de mascota
     const petName = data?.petBasic?.petName || 'tu mascota';
@@ -125,6 +132,34 @@ export default function Step3PlanSelection({
         }
     };
 
+    const handleValidateCode = async () => {
+        if (!referralCode.trim()) return;
+
+        setIsValidating(true);
+        setReferralError('');
+        setAmbassadorName('');
+        setIsCodeValidated(false);
+
+        try {
+            const response = await fetch(`/api/referrals/validate-code?code=${referralCode.toUpperCase()}`);
+            const result = await response.json();
+
+            if (result.success) {
+                setAmbassadorName(result.ambassadorName);
+                setIsCodeValidated(true);
+                showToast(`¡Código válido! Beneficio de embajador aplicado.`, 'success');
+            } else {
+                setReferralError(result.error || 'Código no válido');
+                showToast(result.error || 'Código no válido', 'error');
+            }
+        } catch (error) {
+            console.error('Error validating code:', error);
+            setReferralError('Error al validar el código');
+        } finally {
+            setIsValidating(false);
+        }
+    };
+
     const handleContinue = async () => {
         if (!selectedPlan) {
             showToast('Selecciona un plan', 'error');
@@ -155,7 +190,7 @@ export default function Step3PlanSelection({
             console.warn('⚠️ No se pudo notificar carrito abandonado al CRM', e);
         }
 
-        await onNext(selectedPlan, termsAccepted);
+        await onNext(selectedPlan, termsAccepted, isCodeValidated ? referralCode.toUpperCase() : undefined);
         setIsProcessing(false);
     };
 
@@ -241,6 +276,62 @@ export default function Step3PlanSelection({
                         </button>
                     </div>
                 ))}
+            </div>
+
+            {/* Sección de Código de Referido / Embajador */}
+            <div className={styles.referralSection}>
+                <label className={styles.referralLabel}>
+                    🎟️ ¿Tienes un código de Embajador?
+                </label>
+                <div className={styles.referralInputWrapper}>
+                    <input
+                        type="text"
+                        className={styles.referralInput}
+                        placeholder="INGRESA TU CÓDIGO"
+                        value={referralCode}
+                        onChange={(e) => {
+                            setReferralCode(e.target.value.toUpperCase());
+                            if (referralError) setReferralError('');
+                            if (isCodeValidated) setIsCodeValidated(false);
+                        }}
+                        disabled={isValidating || isCodeValidated || isProcessing}
+                    />
+                    {!isCodeValidated ? (
+                        <button
+                            type="button"
+                            className={styles.referralButton}
+                            onClick={handleValidateCode}
+                            disabled={!referralCode.trim() || isValidating || isProcessing}
+                        >
+                            {isValidating ? '...' : 'Validar'}
+                        </button>
+                    ) : (
+                        <button
+                            type="button"
+                            className={styles.referralButton}
+                            style={{ background: '#2F855A', borderColor: '#000' }}
+                            onClick={() => {
+                                setIsCodeValidated(false);
+                                setAmbassadorName('');
+                            }}
+                        >
+                            Cambiar
+                        </button>
+                    )}
+                </div>
+
+                {isCodeValidated && (
+                    <div className={styles.referralSuccess}>
+                        <span>✅</span>
+                        <span>
+                            ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>! 
+                            Tu beneficio de 90 días de carencia ha sido aplicado.
+                        </span>
+                    </div>
+                )}
+                {referralError && (
+                    <span className={styles.referralError}>❌ {referralError}</span>
+                )}
             </div>
 
             {/* Checkbox único de términos */}

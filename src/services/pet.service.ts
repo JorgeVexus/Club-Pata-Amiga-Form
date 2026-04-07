@@ -21,7 +21,8 @@ export function calculateWaitingPeriod(
     isOriginal: boolean,
     isAdopted: boolean,
     hasRUAC: boolean,
-    isMixed: boolean = false
+    isMixed: boolean = false,
+    hasReferralCode: boolean = false
 ): WaitingPeriodCalculation {
     // Mascotas de reemplazo siempre tienen 6 meses (180 días)
     if (!isOriginal) {
@@ -36,13 +37,14 @@ export function calculateWaitingPeriod(
         };
     }
 
-    // BENEFICIO MÁXIMO: Adoptada o RUAC -> 90 días (3 meses aprox)
-    if (isAdopted || hasRUAC) {
+    // BENEFICIO MÁXIMO: Adoptada, RUAC o Código de Embajador -> 90 días (3 meses aprox)
+    if (isAdopted || hasRUAC || hasReferralCode) {
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 90);
 
-        let reductionReason: 'adopted' | 'ruac' | 'both' = 'adopted';
-        if (isAdopted && hasRUAC) reductionReason = 'both';
+        let reductionReason: 'adopted' | 'ruac' | 'both' | 'referral' = 'adopted';
+        if (hasReferralCode) reductionReason = 'referral';
+        else if (isAdopted && hasRUAC) reductionReason = 'both';
         else if (hasRUAC) reductionReason = 'ruac';
 
         return {
@@ -254,11 +256,24 @@ export function formatWaitingPeriodMessage(
     calculation: WaitingPeriodCalculation
 ): string {
     if (calculation.hasReduction) {
-        const reason = calculation.reductionReason === 'both'
-            ? 'fue adoptada y tiene RUAC'
-            : calculation.reductionReason === 'adopted'
-                ? 'fue adoptada'
-                : 'tiene RUAC';
+        let reason = '';
+        
+        switch (calculation.reductionReason) {
+            case 'both':
+                reason = 'fue adoptada y tiene RUAC';
+                break;
+            case 'adopted':
+                reason = 'fue adoptada';
+                break;
+            case 'ruac':
+                reason = 'tiene RUAC';
+                break;
+            case 'referral':
+                reason = 'usó un código de Embajador';
+                break;
+            default:
+                reason = 'cumple con criterios de reducción';
+        }
 
         return `✅ Como tu mascota ${reason}, su período de carencia se reduce a ${calculation.months} meses.`;
     }

@@ -162,6 +162,8 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             // Legal
             terms_accepted_at: userData.terms_accepted_at || userData.termsAcceptedAt,
             terms_version: userData.terms_version || userData.termsVersion || '1.0',
+            // Referidos
+            ambassador_code: userData.referralCode || userData.ambassadorCode || userData.ambassador_code,
         };
 
         // Filtrar campos undefined y null para no sobreescribir datos existentes

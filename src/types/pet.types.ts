@@ -70,7 +70,7 @@ export interface WaitingPeriodCalculation {
     months: number;
     endDate: string;
     hasReduction: boolean;
-    reductionReason?: 'adopted' | 'ruac' | 'both';
+    reductionReason?: 'adopted' | 'ruac' | 'both' | 'referral';
 }
 
 // Props para componentes

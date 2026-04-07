@@ -1,4 +1,4 @@
-﻿/* Estilos compartidos para los pasos del registro */
+/* Estilos compartidos para los pasos del registro */
 
 .stepCard {
     background: white;
@@ -1109,6 +1109,87 @@
     font-size: 0.85rem;
     color: #718096;
     margin-top: 1rem;
+}
+
+/* Referidos */
+.referralSection {
+    margin: 1.5rem 0;
+    padding: 1.25rem;
+    background: #F0FFF4;
+    border: 2px solid #C6F6D5;
+    border-radius: 16px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.referralLabel {
+    display: block;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #22543D;
+    margin-bottom: 0.5rem;
+}
+
+.referralInputWrapper {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.referralInput {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #C6F6D5;
+    border-radius: 50px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.referralInput:focus {
+    outline: none;
+    border-color: #48BB78;
+    box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.2);
+}
+
+.referralButton {
+    background: #48BB78;
+    color: white;
+    border: 2px solid #000000;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-family: 'Fraiche', sans-serif;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.referralButton:hover:not(:disabled) {
+    background: #38A169;
+    transform: translateY(-1px);
+}
+
+.referralButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.referralSuccess {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    color: #2F855A;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.referralError {
+    display: block;
+    margin-top: 0.5rem;
+    color: #C53030;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
 }
 
 /* ============================================

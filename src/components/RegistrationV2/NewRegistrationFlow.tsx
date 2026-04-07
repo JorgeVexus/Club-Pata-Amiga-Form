@@ -28,6 +28,7 @@ import Toast from '@/components/UI/Toast';
 // Servicios
 import { registerUserInSupabase, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
+import { calculateWaitingPeriod } from '@/services/pet.service';
 
 // Tipos
 import type { RegistrationProgress } from '@/types/registration.types';
@@ -54,12 +55,18 @@ interface RegistrationData {
         petName: string;
         petAge: number;
         petAgeUnit: 'years' | 'months';
+        isAdopted?: boolean;
+        isMixed?: boolean;
+        ruac?: string;
+        waitingPeriodDays?: number;
+        waitingPeriodEnd?: string;
     };
     planId?: string;
     paymentCompleted?: boolean;
     profile?: any;
     petComplete?: any;
     termsAcceptance?: any;
+    referralCode?: string;
 }
 
 export default function NewRegistrationFlow() {
@@ -492,8 +499,35 @@ export default function NewRegistrationFlow() {
     };
 
         // Paso 3: Seleccionar plan y proceder a pago
-    const handleStep3Complete = async (planId: string, termsAcceptance?: any) => {
-        const newData = { ...registrationData, planId, termsAcceptance };
+    const handleStep3Complete = async (planId: string, termsAcceptance?: any, referralCode?: string) => {
+        let updatedPetBasic = registrationData.petBasic;
+
+        // Si hay código de referido, recalcular carencia de la mascota
+        if (referralCode && registrationData.petBasic) {
+            const calculation = calculateWaitingPeriod(
+                true, // isOriginal
+                !!registrationData.petBasic.isAdopted,
+                !!registrationData.petBasic.ruac,
+                !!registrationData.petBasic.isMixed,
+                true // hasReferralCode
+            );
+
+            updatedPetBasic = {
+                ...registrationData.petBasic,
+                waitingPeriodDays: calculation.days,
+                waitingPeriodEnd: calculation.endDate
+            };
+
+            console.log('🎁 Beneficio de Embajador aplicado:', referralCode, calculation.days, 'días de carencia');
+        }
+
+        const newData = { 
+            ...registrationData, 
+            planId, 
+            termsAcceptance, 
+            referralCode,
+            petBasic: updatedPetBasic
+        };
         setRegistrationData(newData);
 
         // Ya no guardamos el progreso al paso 4 aquí, 
@@ -530,6 +564,7 @@ export default function NewRegistrationFlow() {
                         'payment-status': 'completed',
                         'registration-step': 4,
                         'approval-status': 'pending',
+                        'ambassador-code': referralCode || '',
                     },
                 });
                 if (updatedMember) setMember(updatedMember);
@@ -710,6 +745,15 @@ export default function NewRegistrationFlow() {
 
             console.log('🐾 [Step5] Nombre de mascota resuelto:', petName);
 
+            // 3. Recalcular carencia final con todos los datos disponibles
+            const calculation = calculateWaitingPeriod(
+                true, // isOriginal
+                !!restPetData.isAdopted,
+                !!petBasicSource?.ruac,
+                !!restPetData.isMixedBreed, // Mapeamos isMixedBreed a isMixed
+                !!registrationData.referralCode
+            );
+
             const completePet = {
                 ...petBasicSource,
                 ...restPetData,
@@ -720,6 +764,8 @@ export default function NewRegistrationFlow() {
                 petType: petBasicSource?.petType || restPetData?.petType || 'perro',
                 primaryPhotoUrl,
                 vetCertificateUrl,
+                waitingPeriodDays: calculation.days,
+                waitingPeriodEnd: calculation.endDate,
                 isComplete: true
             };
 
