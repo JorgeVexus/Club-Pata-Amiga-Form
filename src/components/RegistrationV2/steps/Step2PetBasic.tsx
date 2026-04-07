@@ -140,6 +140,13 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                         Continuar →
                     </button>
                 </div>
+
+                <div className={styles.infoNote}>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                    </svg>
+                    <span>Desde tu perfil podrás registrar a tus otras dos mascotas</span>
+                </div>
             </form>
         </div>
     );
