@@ -265,7 +265,12 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                             {formData.isAdopted && (
                                 <div className={styles.adoptionStoryWrapper}>
-                                    <label className={styles.adoptionStoryLabel}>Cuéntanos su historia</label>
+                                    <label className={styles.adoptionStoryLabel}>
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary, #00BBB4)' }}>
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                        </svg>
+                                        Cuéntanos su historia
+                                    </label>
                                     <textarea 
                                         className={styles.adoptionTextarea}
                                         placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."

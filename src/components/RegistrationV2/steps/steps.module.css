@@ -343,12 +343,17 @@
 }
 
 .adoptionStoryWrapper {
-    background: rgba(255, 255, 255, 0.9);
-    border-radius: 16px;
-    padding: 1.25rem;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid rgba(125, 216, 213, 0.4);
+    border-radius: 20px;
+    padding: 1.5rem;
     margin-top: 1rem;
-    animation: slideDown 0.3s ease-out;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.05),
+        0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
 
 @keyframes slideDown {
     from {
@@ -365,37 +370,46 @@
 .adoptionStoryLabel {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.65rem;
     font-family: 'Fraiche', sans-serif;
-    font-size: 1rem;
-    font-weight: 500;
-    color: #2D3748;
-    margin-bottom: 0.75rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1a365d;
+    margin-bottom: 1rem;
 }
 
-.adoptionStoryLabel::before {
-    content: 'ðŸ’';
-    font-size: 1.1rem;
-}
+
 
 .adoptionTextarea {
     width: 100%;
-    padding: 1rem 1.25rem;
+    padding: 1.1rem 1.4rem;
     font-family: 'Outfit', sans-serif;
     font-size: 1rem;
-    background: white;
-    border: 2px solid #E2E8F0;
-    border-radius: 16px;
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 18px;
     resize: vertical;
-    min-height: 120px;
-    transition: all 0.2s ease;
+    min-height: 140px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #2d3748;
+    line-height: 1.6;
+}
+
+.adoptionTextarea:hover {
+    border-color: #cbd5e0;
+    background: #ffffff;
 }
 
 .adoptionTextarea:focus {
     outline: none;
-    border-color: #7DD8D5;
-    box-shadow: 0 0 0 4px rgba(125, 216, 213, 0.2);
+    background: #ffffff;
+    border-color: #7dd8d5;
+    box-shadow: 
+        0 0 0 4px rgba(125, 216, 213, 0.15),
+        0 4px 12px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
 }
+
 
 .adoptionTextarea::placeholder {
     color: #A0AEC0;
