@@ -111,9 +111,8 @@ export default function RequestsTable({
 
             if (requestType === 'all' || requestType === 'member' || requestType === 'all-members') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
-                const targetStatus = statusParam;
                 promises.push(
-                    fetch(`/api/admin/members?status=${targetStatus}`)
+                    fetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}`)
                         .then(res => res.json())
                         .then(data => ({ type: 'member', data }))
                 );
