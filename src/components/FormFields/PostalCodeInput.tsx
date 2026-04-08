@@ -7,6 +7,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import styles from './PostalCodeInput.module.css';
+import { getCDMXAlcaldia, isCDMXState } from '@/utils/postalCodeUtils';
 
 // Declaración de tipos para Google Places
 declare global {
@@ -84,6 +85,8 @@ export default function PostalCodeInput({
                         let extractedColony = '';
                         let extractedStreet = '';
                         let extractedNumber = '';
+                        let extractedSublocality = '';
+                        let extractedAdminArea2 = '';
 
                         place.address_components.forEach((component: any) => {
                             const types = component.types;
@@ -97,7 +100,13 @@ export default function PostalCodeInput({
                             if (types.includes('locality')) {
                                 extractedCity = component.long_name;
                             }
-                            if (types.includes('sublocality_level_1') || types.includes('sublocality')) {
+                            if (types.includes('sublocality_level_1')) {
+                                extractedSublocality = component.long_name;
+                            }
+                            if (types.includes('administrative_area_level_2')) {
+                                extractedAdminArea2 = component.long_name;
+                            }
+                            if (types.includes('sublocality') || types.includes('sublocality_level_2')) {
                                 extractedColony = component.long_name;
                             }
                             if (types.includes('route')) {
@@ -107,6 +116,28 @@ export default function PostalCodeInput({
                                 extractedNumber = component.long_name;
                             }
                         });
+
+                        // Ajuste específico para CDMX y Municipios de México
+                        // 0. Revisar mapeo local (Máxima prioridad para CDMX)
+                        const localAlcaldia = getCDMXAlcaldia(extractedPostalCode);
+                        const isCDMX = localAlcaldia || isCDMXState(extractedState);
+
+                        // Si es CDMX, la Alcaldía suele estar en sublocality_level_1 o administrative_area_level_2
+                        // Si locality es igual al estado ("Ciudad de México"), buscamos algo más específico
+                        if (localAlcaldia) {
+                            extractedCity = localAlcaldia;
+                        } else if (isCDMX) {
+                            if (extractedCity.toLowerCase().includes('ciudad de méxico') || 
+                                extractedCity.toLowerCase().includes('mexico city') ||
+                                !extractedCity) {
+                                extractedCity = extractedSublocality || extractedAdminArea2 || extractedCity;
+                            }
+                        } else {
+                            // En otros estados, administrative_area_level_2 suele ser el municipio
+                            if (!extractedCity || extractedCity === extractedState) {
+                                extractedCity = extractedAdminArea2 || extractedCity;
+                            }
+                        }
 
                         // Actualizar los campos
                         if (extractedPostalCode) onPostalCodeChange(extractedPostalCode);

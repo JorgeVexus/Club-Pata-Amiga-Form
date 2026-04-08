@@ -180,15 +180,15 @@ export async function GET(
         
         console.log('📮 CP received:', cp);
 
-        // Validar CP
-        if (!cp || !/^\d{5}$/.test(cp)) {
-            return NextResponse.json(
-                { 
-                    success: false, 
-                    error: 'Código postal inválido. Debe tener 5 dígitos.' 
-                },
-                { status: 400 }
-            );
+        // 0. Revisar si es CDMX vía hardcoded mapping (Máxima prioridad y rapidez)
+        const { getCDMXAlcaldia } = await import('@/utils/postalCodeUtils');
+        const cdmxAlcaldia = getCDMXAlcaldia(cp);
+
+        if (cdmxAlcaldia) {
+            console.log('🏙️ CDMX Alcaldía mapped locally:', cdmxAlcaldia);
+            // Si es CDMX, retornamos de inmediato con el mapeo robusto
+            // Podemos seguir con el flujo normal si queremos obtener colonias,
+            // pero si la API externa falla, al menos el municipio/estado ya está asegurado.
         }
 
         // 1. Intentar obtener del cache
@@ -199,7 +199,7 @@ export async function GET(
                 data: {
                     cp: cached.response.cp,
                     state: cached.response.estado,
-                    municipality: cached.response.municipio,
+                    municipality: cdmxAlcaldia || cached.response.municipio, // Sobrescribir si es CDMX
                     city: cached.response.ciudad,
                     colonies: cached.response.asentamiento
                 },
@@ -212,6 +212,22 @@ export async function GET(
         const sepomexData = await querySepomex(cp);
 
         if (!sepomexData || sepomexData.error) {
+            // Si falló la API pero es CDMX, podemos dar una respuesta parcial exitosa
+            if (cdmxAlcaldia) {
+                return NextResponse.json({
+                    success: true,
+                    data: {
+                        cp: cp,
+                        state: 'Ciudad de México',
+                        municipality: cdmxAlcaldia,
+                        city: cdmxAlcaldia,
+                        colonies: [] // No tenemos las colonias pero salvamos el municipio
+                    },
+                    isPartial: true,
+                    note: 'Datos de municipio recuperados vía mapeo local'
+                });
+            }
+
             return NextResponse.json(
                 { 
                     success: false, 
@@ -229,7 +245,7 @@ export async function GET(
             data: {
                 cp: sepomexData.response.cp,
                 state: sepomexData.response.estado,
-                municipality: sepomexData.response.municipio,
+                municipality: cdmxAlcaldia || sepomexData.response.municipio, // Sobrescribir si es CDMX
                 city: sepomexData.response.ciudad,
                 colonies: sepomexData.response.asentamiento
             },

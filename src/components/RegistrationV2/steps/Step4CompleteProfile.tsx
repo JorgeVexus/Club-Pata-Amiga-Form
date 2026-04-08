@@ -15,6 +15,7 @@ import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
 import { checkCurpAvailability } from '@/app/actions/user.actions';
 import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
 import styles from './steps.module.css';
+import { getCDMXAlcaldia } from '@/utils/postalCodeUtils';
 
 interface Step4CompleteProfileProps {
     data: any;
@@ -251,10 +252,26 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
             if (googleData || sepomexData) {
                 setFormData(current => {
-                    // Google es nuestra ÚNICA fuente de verdad para Estado y Municipio/Alcaldía
-                    // SEPOMEX solo se usa para la lista de colonias (dropdown)
+                    // Google y SEPOMEX se combinan para obtener la mejor información
                     const finalState = googleData?.state || sepomexData?.state || current.state;
-                    const finalCity = googleData?.city || current.city;
+                    
+                    // 0. Revisar mapeo local (Máxima prioridad para CDMX)
+                    const localAlcaldia = getCDMXAlcaldia(cp);
+                    
+                    // Si es CDMX y Google nos da algo genérico, priorizamos SEPOMEX para la Alcaldía
+                    const isCDMX = localAlcaldia || 
+                                  finalState.toLowerCase().includes('ciudad de méxico') || 
+                                  finalState.toLowerCase().includes('mexico city');
+                    
+                    let finalCity = localAlcaldia || googleData?.city;
+                    
+                    // Si localAlcaldia no lo atrapó, o Google dio algo genérico, usar SEPOMEX
+                    if (!finalCity || (isCDMX && !localAlcaldia && (
+                        finalCity.toLowerCase().includes('ciudad de méxico') || 
+                        finalCity.toLowerCase().includes('mexico city')
+                    ))) {
+                        finalCity = sepomexData?.municipality || finalCity || current.city;
+                    }
 
                     return {
                         ...current,
