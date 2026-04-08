@@ -21,7 +21,7 @@ import SettingsPanel from './SettingsPanel';
 import { Ambassador } from '@/types/ambassador.types';
 
 export default function AdminDashboard() {
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null); // Para apelaciones por mascota
@@ -33,13 +33,14 @@ export default function AdminDashboard() {
         totalMembers: 0,
         totalAmbassadors: 0,
     });
-    const [pendingCounts, setPendingCounts] = useState({
+    const [pendingCounts, setPendingCounts] = useState<Record<RequestType, number>>({
         member: 0,
         ambassador: 0,
         'wellness-center': 0,
         'solidarity-fund': 0,
         'communications': 0,
         'appeals': 0,
+        'all-members': 0,
     });
 
     // Admin Identity & Activity State
@@ -210,7 +211,7 @@ export default function AdminDashboard() {
     // Seguridad: Redirigir si intenta entrar a filtros de superadmin no siendo uno
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
-            if (activeFilter === 'appeals' || activeFilter === 'admins' || activeFilter === 'settings') {
+            if (activeFilter === 'appeals' || activeFilter === 'admins' || activeFilter === 'settings' || activeFilter === 'all-members') {
                 setActiveFilter('all');
             }
         }
@@ -362,9 +363,10 @@ export default function AdminDashboard() {
                                             activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
                                                 activeFilter === 'admins' ? 'Administradores' :
                                                     activeFilter === 'appeals' ? 'Apelaciones' :
-                                                        activeFilter === 'legal-docs' ? 'Documentos Legales' :
+                                                    activeFilter === 'legal-docs' ? 'Documentos Legales' :
                                                             activeFilter === 'settings' ? 'Configuración' :
-                                                                'Fondo Solidario'}
+                                                                activeFilter === 'all-members' ? 'Pruebas / Todos los usuarios' :
+                                                                    'Fondo Solidario'}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {
@@ -496,6 +498,38 @@ export default function AdminDashboard() {
                                     } else {
                                         fetchMemberDetails(id, setMemberToReject);
                                     }
+                                }}
+                                onDelete={async (id: string) => {
+                                    if (!confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente al usuario de Memberstack y Supabase, incluyendo sus mascotas y archivos. No se puede deshacer.')) return;
+                                    
+                                    try {
+                                        const res = await fetch(`/api/admin/members/${id}/delete`, { method: 'DELETE' });
+                                        if (res.ok) {
+                                            alert('Usuario eliminado correctamente');
+                                            window.location.reload();
+                                        } else {
+                                            const data = await res.json();
+                                            alert(`Error al eliminar: ${data.error || 'Error desconocido'}`);
+                                        }
+                                    } catch (e) { alert('Error de conexión'); }
+                                }}
+                                onBulkDelete={async (ids: string[]) => {
+                                    if (!confirm(`¿Eliminar permanentemente a los ${ids.length} usuarios seleccionados? Esta acción no se puede deshacer.`)) return;
+                                    
+                                    try {
+                                        const res = await fetch('/api/admin/members/bulk-delete', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ ids })
+                                        });
+                                        const data = await res.json();
+                                        if (data.success) {
+                                            alert(`Proceso completado. Éxitos: ${data.successCount}, Errores: ${data.failedCount}`);
+                                            window.location.reload();
+                                        } else {
+                                            alert(`Error: ${data.error || 'Error desconocido'}`);
+                                        }
+                                    } catch (e) { alert('Error de conexión'); }
                                 }}
                             />
 

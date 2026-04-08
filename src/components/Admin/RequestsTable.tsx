@@ -32,15 +32,27 @@ interface AppealedPet {
 
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
-    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals';
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals' | 'all-members';
     onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal', extraId?: string) => void;
     onViewRejectionReason?: (id: string) => void;
     onApprove: (id: string, type?: 'member' | 'ambassador') => void;
     onReject: (id: string, type?: 'member' | 'ambassador') => void;
+    onDelete?: (id: string) => void;
+    onBulkDelete?: (ids: string[]) => void;
     isSuperAdmin?: boolean;
 }
 
-export default function RequestsTable({ filter, requestType = 'all', onViewDetails, onViewRejectionReason, onApprove, onReject, isSuperAdmin = false }: RequestsTableProps) {
+export default function RequestsTable({ 
+    filter, 
+    requestType = 'all', 
+    onViewDetails, 
+    onViewRejectionReason, 
+    onApprove, 
+    onReject, 
+    onDelete,
+    onBulkDelete,
+    isSuperAdmin = false 
+}: RequestsTableProps) {
 
     const [requests, setRequests] = useState<MemberRequest[]>([]);
     const [appealedPets, setAppealedPets] = useState<AppealedPet[]>([]);
@@ -50,6 +62,9 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
     const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+    
+    // Checkbox selection
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         loadRequests();
@@ -90,11 +105,11 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
             let statusParam = 'pending';
             if (sortFilter === 'approved') statusParam = 'approved';
             if (sortFilter === 'rejected') statusParam = 'rejected';
-            if (sortFilter === 'all') statusParam = 'all';
+            if (sortFilter === 'all' || requestType === 'all-members') statusParam = 'all';
 
             const promises = [];
 
-            if (requestType === 'all' || requestType === 'member') {
+            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
                 const targetStatus = statusParam;
                 promises.push(
@@ -174,9 +189,11 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                 const isPaid = hasActivePlan;
 
                 if (requestType === 'member' || requestType === 'all') {
-                    // Solo mostrar miembros que YA PAGARON (tienen plan activo)
+                    // Solo mostrar miembros que YA PAGARON (tienen plan activo) en vistas normales
                     if (!isPaid) return;
                 }
+                
+                // En 'all-members', mostramos todos sin excepcion (pero requestType mantendrá el nombre)
 
                 // Deduplicate Shell Users
                 if (email && ambassadorEmails.has(email) && isNameless) {
@@ -325,7 +342,18 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
     return (
         <div className={styles.requestsSection}>
             <div className={styles.requestsHeader}>
-                <h2 className={styles.requestsTitle}>Solicitudes</h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <h2 className={styles.requestsTitle}>Solicitudes</h2>
+                    {selectedIds.size > 0 && (
+                        <button 
+                            className={styles.rejectButton} 
+                            style={{ margin: 0, padding: '8px 16px', borderRadius: '50px' }}
+                            onClick={() => onBulkDelete?.(Array.from(selectedIds))}
+                        >
+                            🗑️ Eliminar Seleccionados ({selectedIds.size})
+                        </button>
+                    )}
+                </div>
 
                 <div className={styles.requestsControls}>
                     <div className={styles.searchBox}>
@@ -463,6 +491,21 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                 <table className={styles.table}>
                     <thead className={styles.tableHeader}>
                         <tr>
+                            {requestType === 'all-members' && (
+                                <th style={{ width: '40px' }}>
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedIds.size === filteredRequests.length && filteredRequests.length > 0}
+                                        onChange={(e) => {
+                                            if (e.target.checked) {
+                                                setSelectedIds(new Set(filteredRequests.map(r => r.id)));
+                                            } else {
+                                                setSelectedIds(new Set());
+                                            }
+                                        }}
+                                    />
+                                </th>
+                            )}
                             <th>Usuario / Rol</th>
                             <th>Fecha de Solicitud</th>
                             <th>Info Extra</th>
@@ -473,6 +516,20 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                     <tbody className={styles.tableBody}>
                         {filteredRequests.map((request) => (
                             <tr key={request.id}>
+                                {requestType === 'all-members' && (
+                                    <td data-label="Seleccionar">
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedIds.has(request.id)}
+                                            onChange={(e) => {
+                                                const newSelected = new Set(selectedIds);
+                                                if (e.target.checked) newSelected.add(request.id);
+                                                else newSelected.delete(request.id);
+                                                setSelectedIds(newSelected);
+                                            }}
+                                        />
+                                    </td>
+                                )}
                                 <td data-label="Usuario">
                                     <div className={styles.memberInfo}>
                                         <div className={styles.memberAvatar} style={{
@@ -512,6 +569,17 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                         >
                                             Ver Detalles
                                         </button>
+                                        
+                                        {requestType === 'all-members' && (
+                                            <button
+                                                className={styles.rejectButton}
+                                                style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
+                                                onClick={() => onDelete?.(request.id)}
+                                            >
+                                                Eliminar
+                                            </button>
+                                        )}
+
                                         {request.status === 'rejected' && (
                                             <button
                                                 className={styles.rejectButton}
@@ -521,7 +589,7 @@ export default function RequestsTable({ filter, requestType = 'all', onViewDetai
                                                 Motivo
                                             </button>
                                         )}
-                                        {request.status === 'pending' && (
+                                        {request.status === 'pending' && requestType !== 'all-members' && (
                                             <>
                                                 <button
                                                     className={styles.approveButton}

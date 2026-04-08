@@ -306,6 +306,33 @@ class MemberstackAdminClient {
 
         return await this.updateMemberFields(memberId, customFields);
     }
+
+    /**
+     * Elimina un miembro definitivamente
+     */
+    async deleteMember(memberId: string): Promise<AdminApiResponse> {
+        try {
+            const url = `${this.baseUrl}/members/${memberId}`;
+
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: this.getHeaders(),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            // Invalidate cache
+            this.invalidateCache();
+
+            return { success: true };
+        } catch (error: any) {
+            console.error('Error eliminando miembro:', error);
+            return { success: false, error: error.message };
+        }
+    }
 }
 
 // Exportar instancia singleton
@@ -338,4 +365,8 @@ export async function rejectMemberApplication(
 
 export async function submitAppeal(memberId: string, appealMessage: string) {
     return await memberstackAdmin.appealRejection(memberId, appealMessage);
+}
+
+export async function deleteMemberAccount(memberId: string) {
+    return await memberstackAdmin.deleteMember(memberId);
 }
