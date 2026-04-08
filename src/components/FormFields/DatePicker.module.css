@@ -22,6 +22,9 @@
 
 .inputWrapper {
     position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
 }
 
 .input {
@@ -31,97 +34,136 @@
     background: rgba(255, 255, 255, var(--opacity-60));
     border: 2px solid #E2E8F0;
     border-radius: var(--radius-input);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     color: var(--color-text-dark);
     font-family: var(--font-family);
+    position: relative;
+    z-index: 1;
 }
 
 .input::placeholder {
-    color: rgba(0, 0, 0, 0.4);
+    color: rgba(0, 0, 0, 0.3);
     font-style: italic;
 }
 
 .input:hover {
     background: rgba(255, 255, 255, 0.7);
+    border-color: #CBD5E0;
 }
 
 .input:focus {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.95);
     border-color: var(--color-primary);
-    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.2);
+    box-shadow: 0 0 0 4px rgba(125, 216, 213, 0.15);
     outline: none;
 }
 
 .inputError {
-    border-color: var(--color-error);
-    background: rgba(255, 255, 255, 0.9);
+    border-color: var(--color-error) !important;
+    background: rgba(255, 50, 50, 0.02) !important;
 }
 
-/* Input de fecha oculto - abarca todo el ancho para mejor anclaje del popover */
-.dateInput {
+/* Contenedor del disparador del calendario */
+.calendarTriggerContainer {
     position: absolute;
-    left: 0;
+    right: 0;
     top: 0;
+    bottom: 0;
+    width: 100%; /* EXPANSIÓN TOTAL PARA MEJOR ANCLAJE */
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    pointer-events: none; /* Dejar pasar clics al input de texto por defecto */
+    z-index: 5;
+}
+
+/* Input nativo transparente - AHORA ABARCA TODO EL ANCHO PARA ANCLAJE SEGURO */
+.nativeDateInput {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     opacity: 0;
-    pointer-events: none;
-    z-index: -1;
-    /* Mantener detrás para no interferir con el input de texto */
+    cursor: pointer;
+    z-index: 10;
+    /* IMPORTANTE: Este input es el que realmente recibe el click en el area del icono */
+    /* Lo limitamos a la derecha en desktop para permitir escribir en la izquierda */
+    clip-path: inset(0 0 0 70%); 
+    -webkit-appearance: none;
+    appearance: none;
+    pointer-events: auto;
 }
 
-/* Botón del calendario */
-.calendarButton {
+/* En móvil, el área de click del calendario ocupa todo el campo para mayor facilidad */
+@media (max-width: 768px) {
+    .nativeDateInput {
+        clip-path: none; /* Todo el campo abre el calendario en móvil */
+    }
+}
+
+.nativeDateInput::-webkit-calendar-picker-indicator {
     position: absolute;
-    right: 1.5rem;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--color-primary);
+    inset: 0;
+    width: 100%;
+    height: 100%;
     cursor: pointer;
+}
+
+/* Wrapper del icono para efectos visuales */
+.calendarIconWrapper {
+    position: relative;
+    margin-right: 0.75rem;
+    color: var(--color-primary);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    width: 2.5rem;
+    height: 2.5rem;
     border-radius: 50%;
     transition: all 0.2s ease;
+    background: transparent;
+    pointer-events: none; /* El click lo recibe el input nativo que está encima */
 }
 
-.calendarButton:hover {
+/* Efectos visuales al pasar sobre el área activa */
+.nativeDateInput:hover + .calendarIconWrapper {
     background: rgba(125, 216, 213, 0.1);
     color: #008f8a;
-    transform: translateY(-50%) scale(1.02);
+    transform: scale(1.1);
 }
 
-.calendarButton:active {
-    transform: translateY(-50%) scale(0.98);
-    /* Sutil reducción de tamaño al clickear sin moverse del centro */
+.nativeDateInput:active + .calendarIconWrapper {
+    transform: scale(0.95);
+    background: rgba(125, 216, 213, 0.2);
 }
 
-.calendarButton svg {
-    display: block;
+.calendarIcon {
+    transition: transform 0.3s ease;
 }
 
-/* Animación de entrada */
+/* Estilos de error/ayuda */
+.helpText {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-top: 0.4rem;
+    padding-left: 1rem;
+}
+
+.errorText {
+    font-size: 0.85rem;
+    color: var(--color-error);
+    margin-top: 0.4rem;
+    padding-left: 1rem;
+    font-weight: 500;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(-5px);
+        transform: translateY(5px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
-}
-
-/* Estilos para el calendario nativo cuando se abre */
-.input::-webkit-calendar-picker-indicator {
-    display: none;
-}
-
-/* Mejoras para navegadores que soportan :has() */
-.inputWrapper:has(.input:focus) .calendarButton {
-    color: var(--color-primary);
 }
