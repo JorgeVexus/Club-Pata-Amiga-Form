@@ -63,22 +63,38 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
         const paymentIntents = await stripe.paymentIntents.list({
             customer: stripeCustomerId,
             limit: 5,
+            expand: ['data.latest_charge'],
         });
 
+        // Find the most recent successful payment with a positive amount
         const successfulPayment = paymentIntents.data.find(
-            (pi) => pi.status === 'succeeded'
+            (pi) => pi.status === 'succeeded' && pi.amount_received > 0
         );
 
         if (!successfulPayment) {
+            // Check if there are any payment intents at all to provide a better message
+            if (paymentIntents.data.length === 0) {
+                return NextResponse.json({
+                    error: 'No se encontraron registros de pago en Stripe para este cliente. Es posible que haya usado un cupón del 100% o que el registro haya sido gratuito.',
+                }, { status: 404 });
+            }
+
             return NextResponse.json({
-                error: 'No se encontró un pago exitoso para este cliente.',
+                error: 'No se encontró un pago exitoso (mayor a $0) para este cliente. Si usó un cupón del 100%, no hay monto disponible para reembolsar.',
             }, { status: 404 });
         }
 
-        // Check if already refunded
-        if (successfulPayment.amount_received === 0) {
+        // Check if already refunded using the charge information
+        const latestCharge = successfulPayment.latest_charge as Stripe.Charge;
+        if (latestCharge && latestCharge.refunded) {
             return NextResponse.json({
-                error: 'Este pago ya fue reembolsado.',
+                error: 'Este pago ya ha sido totalmente reembolsado en Stripe.',
+            }, { status: 400 });
+        }
+
+        if (latestCharge && latestCharge.amount_refunded > 0 && latestCharge.amount_refunded === latestCharge.amount) {
+            return NextResponse.json({
+                error: 'Este pago ya fue reembolsado anteriormente.',
             }, { status: 400 });
         }
 
