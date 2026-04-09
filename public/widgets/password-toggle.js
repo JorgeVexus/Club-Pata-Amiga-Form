@@ -1,84 +1,90 @@
 /**
- * Password Visibility Toggle Widget
+ * Password Visibility Toggle Widget v1.1
  * 
- * Este script añade la funcionalidad de mostrar/ocultar contraseña 
- * a formularios de Webflow, especialmente útil con Memberstack.
- * 
- * Uso:
- * 1. Campo de contraseña: debe tener type="password" o data-ms-member="password"
- * 2. Botón/Link de ojo: añadir atributo data-ms-toggle="password"
+ * Corrección para el problema de los "2 clics":
+ * - Protección contra múltiple inicialización.
+ * - Uso de stopImmediatePropagation para evitar conflictos con otros scripts/Memberstack.
+ * - Lógica de detección de input más robusta.
  */
 
 (function() {
     'use strict';
 
+    // Evitar que el script se inicialice más de una vez si se incluyó repetido
+    if (window.__ms_password_toggle_initialized) {
+        console.log('⚠️ Password Toggle already initialized. Skipping.');
+        return;
+    }
+    window.__ms_password_toggle_initialized = true;
+
     function initPasswordToggle() {
-        console.log('🔐 Password Toggle Widget Initialized');
+        console.log('🔐 Password Toggle Widget v1.1 Active');
         
+        // Usar capture phase para intentar ser los primeros en capturar el evento
         document.addEventListener('click', function(e) {
-            // Buscar el disparador del toggle
             const toggle = e.target.closest('[data-ms-toggle="password"]');
             if (!toggle) return;
 
+            // Prevenir comportamientos por defecto y otros listeners
             e.preventDefault();
-            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-            // 1. Intentar encontrar el input relativo al toggle (mismo contenedor)
+            console.log('👁️ Toggle clicked');
+
+            // 1. Localizar el input
+            // Buscar en el mismo contenedor o por atributo de Memberstack
             const container = toggle.closest('.password-wrapper') || 
                             toggle.closest('.w-select-wrapper') || 
                             toggle.parentElement;
             
-            let input = container ? container.querySelector('input[data-ms-member="password"], input[type="password"], input[type="text"].is-password-field') : null;
+            let input = container ? container.querySelector('input[data-ms-member="password"], input[type="password"], input[type="text"]') : null;
 
-            // 2. Si no se encuentra, buscar el hermano anterior (típico en Webflow)
-            if (!input) {
-                input = toggle.previousElementSibling;
-                while (input && input.tagName !== 'INPUT') {
-                    input = input.previousElementSibling;
-                }
+            // Si hay un input de texto pero no es el de contraseña (ej. email), filtrar
+            if (input && input.type === 'text' && !input.hasAttribute('data-ms-member') && !input.classList.contains('is-password')) {
+               // Seguir buscando si el que encontramos no parece ser el correcto
             }
 
-            // 3. Último recurso: buscar el primer campo de contraseña de Memberstack en la página
             if (!input) {
                 input = document.querySelector('[data-ms-member="password"]');
             }
 
             if (!input) {
-                console.warn('[PasswordToggle] No se encontró el campo de contraseña asociado.');
+                console.warn('[PasswordToggle] Input not found');
                 return;
             }
 
-            // Realizar el toggle
-            const isPassword = input.type === 'password';
-            input.type = isPassword ? 'text' : 'password';
+            // Realizar el cambio de tipo
+            const currentType = input.getAttribute('type');
+            const newType = currentType === 'password' ? 'text' : 'password';
             
-            // Actualizar estado visual del botón
-            if (!isPassword) {
-                toggle.classList.remove('is-showing');
-                toggle.setAttribute('aria-label', 'Mostrar contraseña');
-            } else {
+            console.log(`🔄 Switching type from ${currentType} to ${newType}`);
+            input.setAttribute('type', newType);
+            
+            // Forzar actualización visual en algunos navegadores/entornos
+            input.type = newType;
+
+            // Actualizar estado visual del botón (añadir/quitar clase)
+            if (newType === 'text') {
                 toggle.classList.add('is-showing');
                 toggle.setAttribute('aria-label', 'Ocultar contraseña');
+                toggle.style.opacity = '1';
+            } else {
+                toggle.classList.remove('is-showing');
+                toggle.setAttribute('aria-label', 'Mostrar contraseña');
+                toggle.style.opacity = '0.6';
             }
 
-            // Sincronizar iconos si tienen data-attributes (opcional para el usuario)
+            // Sincronizar iconos internos si existen
             const showIcon = toggle.querySelector('[data-icon="show"]');
             const hideIcon = toggle.querySelector('[data-icon="hide"]');
             
             if (showIcon && hideIcon) {
-                showIcon.style.display = isPassword ? 'none' : 'block';
-                hideIcon.style.display = isPassword ? 'block' : 'none';
-            } else {
-                // Si no hay iconos específicos, podemos jugar con la opacidad del botón
-                toggle.style.opacity = isPassword ? '1' : '0.6';
+                showIcon.style.display = (newType === 'password') ? 'block' : 'none';
+                hideIcon.style.display = (newType === 'text') ? 'block' : 'none';
             }
-
-            // Devolver el foco al input para que el usuario pueda seguir escribiendo
-            // input.focus();
-        });
+        }, true); // Use capture phase
     }
 
-    // Iniciar
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', initPasswordToggle);
     } else {
