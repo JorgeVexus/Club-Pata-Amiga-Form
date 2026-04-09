@@ -197,9 +197,9 @@
         .pata-breed-suggestion:hover { background: #f5f5f5; }
         .pata-breed-suggestion:last-child { border-bottom: none; }
         .pata-breed-suggestion.selected { background: #E8F5E9; }
-        .pata-breed-warning {
-            padding: 8px 12px; background: #FFF8E1; border-left: 3px solid #FF9800;
-            margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #66        /* 🆕 Multi-step Form Styles */
+            margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #666;
+        }
+        /* 🆕 Multi-step Form Styles */
         .pata-step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; justify-content: center; }
         .pata-step-dot { width: 10px; height: 10px; border-radius: 50%; background: #E0E0E0; transition: all 0.3s ease; }
         .pata-step-dot.active { background: #15BEB2; width: 30px; border-radius: 10px; }
@@ -344,7 +344,6 @@
         .pata-referral-msg.loading { color: #718096; font-style: italic; }
         .pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
         .pata-form-input.invalid { border-color: #E53E3E; background: #FFF5F5; }
-    ` background: #FFF5F5; }
     `;
 
     class ManadaWidget {
