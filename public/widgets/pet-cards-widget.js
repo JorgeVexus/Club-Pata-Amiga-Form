@@ -490,7 +490,6 @@
 
             // Breed info
             const breedDisplay = pet.is_mixed_breed ? '🔀 Mestizo' : (pet.breed || 'No especificada');
-            const sizeDisplay = pet.breed_size || 'No especificado';
 
             // Status badge
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
@@ -501,7 +500,6 @@
                 { icon: '🎂', label: 'Edad', value: ageDisplay },
                 { icon: '⚧', label: 'Sexo', value: genderDisplay },
                 { icon: '🏷️', label: 'Raza', value: breedDisplay },
-                { icon: '📏', label: 'Talla', value: sizeDisplay },
             ];
 
             // Optional color fields
@@ -543,7 +541,7 @@
                         </div>
 
                         <h2 style="font-size:32px; margin:10px 0 0 0; font-weight:900; line-height:1.1;">${pet.name}</h2>
-                        <p style="color:#888; font-size:15px; margin:5px 0 20px 0; font-weight:600;">${breedDisplay} • ${sizeDisplay}</p>
+                        <p style="color:#888; font-size:15px; margin:5px 0 20px 0; font-weight:600;">${breedDisplay}</p>
 
                         <div style="background:#F9FAFB; border-radius:16px; padding:5px 20px;">
                             ${detailsHtml}
@@ -573,8 +571,8 @@
         showAddForm() {
             this.addStep = 1;
             this.addFormData = { 
-                petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', 
-                breedType: 'raza', breed: '', isMixed: false, breedSize: '',
+                petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', 
+                breedType: 'raza', breed: '', isMixed: false,
                 coatColor: '', noseColor: '', eyeColor: '', 
                 isAdopted: false, adoptionStory: '', ruac: '',
                 referralCode: '', referralName: '', isReferralValid: false
@@ -671,14 +669,8 @@
             const isGato = d.petType === 'gato';
             const ageNum = d.ageUnit === 'years' ? parseInt(d.ageValue) : Math.floor(parseInt(d.ageValue)/12);
             
-            // Nueva lógica granular de Senior según tipo y talla
-            let isSenior = false;
-            if (isGato) {
-                isSenior = ageNum >= 10;
-            } else {
-                const isLarge = d.breedSize === 'grande' || d.breedSize === 'gigante';
-                isSenior = isLarge ? ageNum >= 6 : ageNum >= 7;
-            }
+            // Lógica Senior simplificada
+            const isSenior = ageNum >= 10;
 
             container.innerHTML = `
                 <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
@@ -725,16 +717,6 @@
                     </div>
                 </div>
 
-                <div class="pata-form-group">
-                    <label class="pata-form-label">Talla *</label>
-                    <select class="pata-form-select" id="add-size">
-                        <option value="">Selecciona...</option>
-                        <option value="pequeño" ${d.breedSize==='pequeño'?'selected':''}>Pequeño</option>
-                        <option value="mediano" ${d.breedSize==='mediano'?'selected':''}>Mediano</option>
-                        <option value="grande" ${d.breedSize==='grande'?'selected':''}>Grande</option>
-                        ${!isGato ? `<option value="gigante" ${d.breedSize==='gigante'?'selected':''}>Gigante</option>` : ''}
-                    </select>
-                </div>
 
                 <div class="pata-form-row">
                     <div class="pata-form-group">
@@ -866,13 +848,6 @@
                 document.getElementById('ruac-status').style.display = val.length === 10 ? 'block' : 'none';
             };
 
-            // Listener dinámico para Senior
-            if (sizeEl) {
-                sizeEl.onchange = () => {
-                    d.breedSize = sizeEl.value;
-                    this.renderStep2(container);
-                };
-            }
 
             this.setupBreedAutocomplete(container);
             this.setupFileUploads();
@@ -887,7 +862,6 @@
         saveStep2Fields() {
             const d = this.addFormData;
             d.gender = document.getElementById('add-gender').value;
-            d.breedSize = document.getElementById('add-size').value;
             d.coatColor = document.getElementById('add-coat').value;
             d.eyeColor = document.getElementById('add-eyes').value;
             d.noseColor = document.getElementById('add-nose').value;
