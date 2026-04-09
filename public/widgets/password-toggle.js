@@ -22,12 +22,16 @@
         
         // Usar capture phase para intentar ser los primeros en capturar el evento
         document.addEventListener('click', function(e) {
+            // EXCEPCIÓN: Si estamos dentro de un modal de Memberstack, dejar que Memberstack maneje su lógica
+            if (e.target.closest('.ms-modal') || e.target.closest('#msOverlay') || e.target.closest('[class*="svelte-"]')) {
+                return;
+            }
+
             const toggle = e.target.closest('[data-ms-toggle="password"]');
             if (!toggle) return;
 
-            // Prevenir comportamientos por defecto y otros listeners
+            // Prevenir comportamientos por defecto (pero NO detener propagación para no romper otros scripts legítimos)
             e.preventDefault();
-            e.stopImmediatePropagation();
 
             console.log('👁️ Toggle clicked');
 

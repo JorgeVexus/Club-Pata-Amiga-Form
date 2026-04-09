@@ -8,15 +8,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         memberstack = window.MemberStack.onReady;
     }
 
-    // Initialize form handlers
-    initializeForm();
-    initializePostalCodeLookup();
-    initializeFileUploads();
+    // Initialize form handlers safely
+    if (document.getElementById('registrationForm')) {
+        initializeForm();
+    }
+    
+    if (document.getElementById('postalCode')) {
+        initializePostalCodeLookup();
+    }
+    
+    if (document.getElementById('ineUploadArea')) {
+        initializeFileUploads();
+    }
 });
 
 // Form Initialization
 function initializeForm() {
     const form = document.getElementById('registrationForm');
+    if (!form) return;
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -30,12 +39,14 @@ function initializeForm() {
 
     // Cancel button
     const cancelBtn = document.querySelector('.btn-cancel');
-    cancelBtn.addEventListener('click', () => {
-        if (confirm('¿Estás seguro de que deseas cancelar el registro?')) {
-            form.reset();
-            clearFileUploads();
-        }
-    });
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', () => {
+            if (confirm('¿Estás seguro de que deseas cancelar el registro?')) {
+                form.reset();
+                clearFileUploads();
+            }
+        });
+    }
 }
 
 // Postal Code Lookup (API de Códigos Postales de México)
