@@ -9,5 +9,5 @@ export const resend = process.env.RESEND_API_KEY
     : null;
 
 // Email desde el cual se enviarán las comunicaciones
-export const DEFAULT_FROM_EMAIL = 'notificaciones@pataamiga.mx'; // O un dominio verificado en Resend
+export const DEFAULT_FROM_EMAIL = 'notificaciones@app.pataamiga.mx'; // Usando subdominio para evitar conflictos con Memberstack
 export const DEFAULT_FROM_NAME = 'Club Pata Amiga';

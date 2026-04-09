@@ -120,7 +120,7 @@ Crear archivo `.env.local` (copiar de `.env.example`):
 
 ```env
 # Memberstack
-NEXT_PUBLIC_MEMBERSTACK_APP_ID=app_cmiqkcuzv00670ssogle4ah3n
+NEXT_PUBLIC_MEMBERSTACK_APP_ID=app_cmlcth68h00560ss15nat33ju
 MEMBERSTACK_ADMIN_SECRET_KEY=sk_sb_your_secret
 
 # Supabase
