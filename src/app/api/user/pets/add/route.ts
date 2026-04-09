@@ -120,12 +120,56 @@ export async function POST(request: NextRequest) {
         const prefix = `pet-${nextSlot}`;
         console.log(`📍 [PET_ADD] Usando slot disponible: ${nextSlot}`);
 
-        // 4. Calcular período de carencia
+        // 4. Validar código de embajador si existe
+        let hasValidReferral = false;
+        const referralCode = body.referralCode || body.ambassadorCode;
+
+        if (referralCode && referralCode.trim()) {
+            console.log(`🔍 [PET_ADD] Validando código de embajador: ${referralCode}`);
+            const { data: ambassador, error: ambError } = await supabaseAdmin
+                .from('ambassadors')
+                .select('id, name, referral_code')
+                .eq('referral_code', referralCode.trim().toUpperCase())
+                .eq('status', 'active')
+                .maybeSingle();
+
+            if (ambassador) {
+                console.log(`✅ [PET_ADD] Código válido. Embajador: ${ambassador.name}`);
+                hasValidReferral = true;
+                
+                // Guardar el código en el usuario si aún no tiene uno
+                await supabaseAdmin
+                    .from('users')
+                    .update({ ambassador_code: ambassador.referral_code })
+                    .eq('id', user!.id)
+                    .is('ambassador_code', null);
+
+                // Registrar el referido en la tabla referrals para seguimiento
+                try {
+                    await supabaseAdmin.from('referrals').insert({
+                        ambassador_id: ambassador.id,
+                        referred_user_id: user!.id,
+                        referred_user_name: `${firstName} ${lastName}`.trim(),
+                        referred_user_email: msEmail,
+                        membership_plan: 'active_member', // Asumimos activo si está usando el widget
+                        status: 'completed',
+                        created_at: new Date().toISOString()
+                    });
+                } catch (refErr) {
+                    console.warn('⚠️ [PET_ADD] Error registrando referido:', refErr);
+                }
+            } else {
+                console.warn(`❌ [PET_ADD] Código de embajador no válido o inactivo: ${referralCode}`);
+            }
+        }
+
+        // 5. Calcular período de carencia
         const carencia = calculateWaitingPeriod(
             true,
             petData.isAdopted || false,
             !!petData.ruac,
-            petData.isMixed || false
+            petData.isMixed || false,
+            hasValidReferral // Pasar el resultado de la validación
         );
 
         // 5. Preparar campos para Memberstack
@@ -157,9 +201,7 @@ export async function POST(request: NextRequest) {
         const basePetData: Record<string, any> = {
             owner_id: user!.id,
             name: petData.name,
-            last_name: petData.lastName || null,
             breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
-            breed_size: petData.breedSize,
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
             status: 'pending',

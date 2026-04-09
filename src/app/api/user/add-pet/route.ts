@@ -121,7 +121,6 @@ export async function POST(request: NextRequest) {
             name: name.trim(),
             pet_type: petType === 'perro' ? 'dog' : 'cat',
             breed: breed || (isMixed ? 'Mestizo' : ''),
-            breed_size: breedSize || null,
             gender: gender || null,
             age_value: ageValue || null,
             age_unit: ageUnit || 'years',
