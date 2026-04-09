@@ -1025,7 +1025,6 @@
             const d = this.addFormData;
 
             if (!d.gender) return alert('Selecciona el sexo');
-            if (!d.breedSize) return alert('Selecciona la talla');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
             if (!this.uploadedPhotoUrl) return alert('Sube la foto de tu mascota');
@@ -1039,13 +1038,11 @@
                     memberstackId: this.member.id,
                     petData: {
                         name: d.name,
-                        lastName: d.lastName,
                         petType: d.petType,
                         ageValue: parseInt(d.ageValue),
                         ageUnit: d.ageUnit,
                         gender: d.gender,
                         breed: d.isMixed ? 'Mestizo' : d.breed,
-                        breedSize: d.breedSize,
                         isMixed: d.isMixed,
                         coatColor: d.coatColor,
                         noseColor: d.noseColor,
