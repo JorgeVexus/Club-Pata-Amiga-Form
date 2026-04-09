@@ -199,10 +199,7 @@
         .pata-breed-suggestion.selected { background: #E8F5E9; }
         .pata-breed-warning {
             padding: 8px 12px; background: #FFF8E1; border-left: 3px solid #FF9800;
-            margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #666;
-        }
-
-        /* 🆕 Multi-step Form Styles */
+            margin-top: 8px; border-radius: 0 8px 8px 0; font-size: 11px; color: #66        /* 🆕 Multi-step Form Styles */
         .pata-step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 25px; justify-content: center; }
         .pata-step-dot { width: 10px; height: 10px; border-radius: 50%; background: #E0E0E0; transition: all 0.3s ease; }
         .pata-step-dot.active { background: #15BEB2; width: 30px; border-radius: 10px; }
@@ -225,7 +222,6 @@
         /* 🚨 UI/UX PRO MAX: FORCED VERTICAL LAYOUT FOR MOBILE OPTIMIZATION */
         .pata-form-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
         
-        .pata-breed-switch { display: flex; border: 2px solid #F0F0F0; border-radius: 50px; overflow: hidden; margin-bottom: 15px; }
         .pata-form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; }
         .pata-form-label { font-size: 13px; font-weight: 700; color: #4A4A4A; }
         .pata-form-input, .pata-form-select, .pata-form-textarea {
@@ -235,21 +231,98 @@
         .pata-form-textarea { border-radius: 20px; resize: none; height: 80px; }
         .pata-form-input:focus, .pata-form-select:focus, .pata-form-textarea:focus { border-color: #15BEB2; }
 
-        .pata-upload-box {
-            border: 2px dashed #E0E0E0; border-radius: 25px; padding: 30px; text-align: center;
-            cursor: pointer; transition: all 0.3s; background: #FAFAFA; position: relative; overflow: hidden;
+        /* Breed/Type Switch Premium */
+        .pata-breed-type-switch {
+            display: flex; background: #fff; border: 2px solid #F0F0F0;
+            border-radius: 16px; padding: 6px; gap: 6px; margin-bottom: 15px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
         }
-        .pata-upload-box:hover { border-color: #15BEB2; background: #F0FEFE; }
+        .pata-switch-btn {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            gap: 8px; padding: 12px; border: none; border-radius: 12px;
+            background: transparent; color: #718096; font-family: inherit;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .pata-switch-btn.active { background: #15BEB2; color: #fff; box-shadow: 0 4px 12px rgba(21,190,178,0.2); }
+        .pata-switch-icon { display: flex; align-items: center; justify-content: center; }
+
+        /* Adoption Section Premium */
+        .pata-adoption-section {
+            background: linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%);
+            border: 2px solid #7DD8D5; border-radius: 20px; padding: 20px; margin: 10px 0 20px 0;
+            animation: pataFadeIn 0.3s ease-out;
+        }
+        .pata-adoption-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .pata-adoption-icon {
+            font-size: 24px; width: 44px; height: 44px; background: #fff;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 187, 180, 0.1);
+        }
+        .pata-adoption-title { font-weight: 800; font-size: 15px; color: #234E52; margin: 0; }
+        .pata-adoption-subtitle { font-size: 12px; color: #4A7C7F; margin: 2px 0 0 0; }
+        .pata-adoption-checkbox-wrapper {
+            background: rgba(255, 255, 255, 0.6); border-radius: 12px; padding: 12px 15px;
+            display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .pata-adoption-checkbox-wrapper:hover { background: rgba(255, 255, 255, 0.8); }
+        .pata-adoption-checkbox { width: 22px; height: 22px; accent-color: #15BEB2; cursor: pointer; }
+        .pata-adoption-checkbox-text { font-size: 14px; font-weight: 700; color: #2D3748; }
+        
+        .pata-adoption-story-wrapper {
+            background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 15px;
+            margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); animation: pataSlideDown 0.3s ease-out;
+        }
+        .pata-adoption-story-label {
+            display: flex; align-items: center; gap: 8px; font-weight: 800;
+            font-size: 14px; color: #1a365d; margin-bottom: 10px;
+        }
+        .pata-adoption-textarea {
+            width: 100%; padding: 12px; border: 1.5px solid #E2E8F0; border-radius: 14px;
+            font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px;
+            box-sizing: border-box; transition: all 0.2s;
+        }
+        .pata-adoption-textarea:focus { border-color: #7DD8D5; outline: none; background: #fff; }
+
+        /* RUAC Section Premium */
+        .pata-ruac-section {
+            background: #F0F9F9; border-radius: 20px; padding: 20px;
+            margin-bottom: 20px; border: 1.5px solid rgba(125, 216, 213, 0.3);
+        }
+        .pata-ruac-badge {
+            display: inline-flex; align-items: center; gap: 5px; background: #E6FFFA;
+            color: #008B8B; padding: 4px 10px; border-radius: 10px; font-size: 10px;
+            font-weight: 800; text-transform: uppercase; margin-bottom: 10px;
+        }
+        .pata-ruac-input-wrapper { position: relative; }
+        .pata-ruac-status {
+            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+            font-size: 18px; pointer-events: none;
+        }
+        .pata-ruac-help-link {
+            display: inline-flex; align-items: center; gap: 5px; color: #00BBB4;
+            font-size: 11px; font-weight: 700; text-decoration: underline; margin-top: 10px; cursor: pointer;
+        }
+
+        .pata-upload-box {
+            border: 2px dashed #CBD5E0; border-radius: 25px; padding: 30px; text-align: center;
+            cursor: pointer; transition: all 0.3s; background: #FAFAFA; position: relative; overflow: hidden;
+            display: flex; flex-direction: column; align-items: center; gap: 10px;
+        }
+        .pata-upload-box:hover { border-color: #7DD8D5; background: rgba(125, 216, 213, 0.05); }
         .pata-upload-box.has-file { border-style: solid; border-color: #9FD406; background: #F6FFF6; }
-        .pata-upload-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 12px; margin-bottom: 10px; }
+        .pata-upload-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 12px; }
+        .pata-upload-icon { font-size: 32px; }
+        .pata-upload-text { font-size: 13px; font-weight: 700; color: #4A5568; margin: 0; }
+        .pata-upload-subtext { font-size: 11px; color: #718096; margin: 0; }
         
         .pata-alert-box {
-            background: #FFF9E6; border-left: 4px solid #FFA500; border-radius: 15px;
-            padding: 15px 20px; margin-bottom: 20px; display: flex; gap: 15px; align-items: flex-start;
+            background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+            border: 2px solid #F59E0B; border-radius: 16px;
+            padding: 15px; margin-bottom: 20px; display: flex; gap: 12px; align-items: flex-start;
         }
-        .pata-alert-icon { font-size: 24px; }
-        .pata-alert-text { font-size: 13px; color: #666; line-height: 1.4; }
-        .pata-alert-text strong { display: block; color: #1A1A1A; margin-bottom: 4px; }
+        .pata-alert-icon { font-size: 22px; flex-shrink: 0; }
+        .pata-alert-text { font-size: 13px; color: #92400E; line-height: 1.4; }
+        .pata-alert-text strong { display: block; color: #92400E; margin-bottom: 4px; font-size: 14px; font-weight: 800; }
 
         .pata-btn-row { display: flex; gap: 15px; margin-top: 25px; }
         .pata-btn {
@@ -260,6 +333,18 @@
         .pata-btn-secondary { background: #00BBB4; color: #FFF; }
         .pata-btn:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
         .pata-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        @keyframes pataFadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes pataSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Referral Validation Colors */
+        .pata-referral-msg { font-size: 11px; margin-top: 5px; font-weight: 600; min-height: 14px; }
+        .pata-referral-msg.success { color: #38A169; }
+        .pata-referral-msg.error { color: #E53E3E; }
+        .pata-referral-msg.loading { color: #718096; font-style: italic; }
+        .pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
+        .pata-form-input.invalid { border-color: #E53E3E; background: #FFF5F5; }
+    ` background: #FFF5F5; }
     `;
 
     class ManadaWidget {
@@ -492,7 +577,8 @@
                 petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', 
                 breedType: 'raza', breed: '', isMixed: false, breedSize: '',
                 coatColor: '', noseColor: '', eyeColor: '', 
-                isAdopted: false, adoptionStory: '', ruac: '' 
+                isAdopted: false, adoptionStory: '', ruac: '',
+                referralCode: '', referralName: '', isReferralValid: false
             };
             this.uploadedPhotoUrl = null;
             this.uploadedVetUrl = null;
@@ -623,24 +709,21 @@
                             <option value="hembra" ${d.gender==='hembra'?'selected':''}>Hembra</option>
                         </select>
                     </div>
-                    <div class="pata-form-group">
-                        <label class="pata-form-label">Talla *</label>
-                        <select class="pata-form-select" id="add-size">
-                            <option value="">Selecciona...</option>
-                            <option value="pequeño" ${d.breedSize==='pequeño'?'selected':''}>Pequeño</option>
-                            <option value="mediano" ${d.breedSize==='mediano'?'selected':''}>Mediano</option>
-                            <option value="grande" ${d.breedSize==='grande'?'selected':''}>Grande</option>
-                            ${!isGato ? `<option value="gigante" ${d.breedSize==='gigante'?'selected':''}>Gigante</option>` : ''}
-                        </select>
-                    </div>
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label">Origen</label>
-                    <div class="pata-breed-switch">
-                        <button type="button" class="pata-switch-btn ${d.breedType==='mestizo'?'active':''}" data-bt="mestizo">Mestizo / Criollo</button>
-                        <button type="button" class="pata-switch-btn ${d.breedType==='raza'?'active':''}" data-bt="raza">De Raza</button>
+                    <label class="pata-form-label">Tipo *</label>
+                    <div class="pata-breed-type-switch">
+                        <button type="button" class="pata-switch-btn ${d.breedType==='mestizo'?'active':''}" data-bt="mestizo">
+                            ${d.breedType==='mestizo' ? '<span class="pata-switch-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : ''}
+                            Mestizo
+                        </button>
+                        <button type="button" class="pata-switch-btn ${d.breedType==='raza'?'active':''}" data-bt="raza">
+                            ${d.breedType==='raza' ? '<span class="pata-switch-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : ''}
+                            Raza
+                        </button>
                     </div>
+                    <p style="font-size:11px; color:#A0A0A0; margin-top:-5px;">Selecciona si es mestizo o de raza definida</p>
                 </div>
 
                 <div class="pata-form-group" id="breed-group" style="display:${d.breedType==='raza'?'block':'none'}">
@@ -652,52 +735,94 @@
                     </div>
                 </div>
 
+                <div class="pata-form-group">
+                    <label class="pata-form-label">Talla *</label>
+                    <select class="pata-form-select" id="add-size">
+                        <option value="">Selecciona...</option>
+                        <option value="pequeño" ${d.breedSize==='pequeño'?'selected':''}>Pequeño</option>
+                        <option value="mediano" ${d.breedSize==='mediano'?'selected':''}>Mediano</option>
+                        <option value="grande" ${d.breedSize==='grande'?'selected':''}>Grande</option>
+                        ${!isGato ? `<option value="gigante" ${d.breedSize==='gigante'?'selected':''}>Gigante</option>` : ''}
+                    </select>
+                </div>
+
                 <div class="pata-form-row">
                     <div class="pata-form-group">
                         <label class="pata-form-label">Color de pelo *</label>
                         <input class="pata-form-input" id="add-coat" value="${d.coatColor}" placeholder="Ej: Café, Negro...">
                     </div>
                     <div class="pata-form-group">
-                        <label class="pata-form-label">Color de ojos</label>
-                        <input class="pata-form-input" id="add-eyes" value="${d.eyeColor}" placeholder="Ej: Miel, Azules...">
+                        <label class="pata-form-label">Color de nariz</label>
+                        <input class="pata-form-input" id="add-nose" value="${d.noseColor}" placeholder="Ej: Negro, Rosado...">
                     </div>
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label">Color de nariz</label>
-                    <input class="pata-form-input" id="add-nose" value="${d.noseColor}" placeholder="Ej: Negro, Rosado...">
+                    <label class="pata-form-label">Color de ojos</label>
+                    <input class="pata-form-input" id="add-eyes" value="${d.eyeColor}" placeholder="Ej: Miel, Azules...">
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label">Foto principal</label>
+                    <label class="pata-form-label">Fotografía</label>
                     <div class="pata-upload-box" id="photo-box">
                         <input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
-                        <div id="photo-preview-wrap">
-                            ${this.uploadedPhotoUrl ? `<img src="${this.uploadedPhotoUrl}" class="pata-upload-preview">` : '<span style="font-size:32px;">📷</span>'}
-                            <p style="margin:8px 0 0 0; font-size:12px; color:#888;">${this.uploadedPhotoUrl ? '✓ Foto lista' : 'Haz clic para subir foto'}</p>
+                        ${this.uploadedPhotoUrl ? `<img src="${this.uploadedPhotoUrl}" class="pata-upload-preview">` : '<span class="pata-upload-icon">📷</span>'}
+                        <p class="pata-upload-text">${this.uploadedPhotoUrl ? '✓ Foto lista' : 'Haz clic para subir foto'}</p>
+                        <p class="pata-upload-subtext">JPG/PNG, máx 5MB</p>
+                    </div>
+                </div>
+
+                <div class="pata-adoption-section">
+                    <div class="pata-adoption-header">
+                        <div class="pata-adoption-icon">🏠</div>
+                        <div>
+                            <h4 class="pata-adoption-title">¿Tu mascota es adoptada?</h4>
+                            <p class="pata-adoption-subtitle">Nos encantaría conocer su origen</p>
                         </div>
                     </div>
-                </div>
 
-                <div class="pata-form-group">
-                    <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="const c=document.getElementById('add-adopted'); c.checked=!c.checked; c.dispatchEvent(new Event('change'))">
-                        <input type="checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="width:20px; height:20px; accent-color:#15BEB2;">
-                        <label style="font-size:14px; font-weight:700; color:#4A4A4A; cursor:pointer;">¿Es adoptada / rescatada?</label>
+                    <div class="pata-adoption-checkbox-wrapper" id="adoption-toggle">
+                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''}>
+                        <span class="pata-adoption-checkbox-text">¡Sí, es rescatada / adoptada!</span>
+                    </div>
+
+                    <div class="pata-adoption-story-wrapper" id="story-group" style="display:${d.isAdopted?'block':'none'}">
+                        <label class="pata-adoption-story-label">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00BBB4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+                            Cuéntanos su historia
+                        </label>
+                        <textarea class="pata-adoption-textarea" id="add-story" placeholder="Ej: La encontramos en un refugio hace 2 años...">${d.adoptionStory}</textarea>
+                        <p style="font-size:10px; color:#718096; margin-top:8px; line-height:1.3;">⚠️ <strong>AVISO:</strong> Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.</p>
                     </div>
                 </div>
 
-                <div class="pata-form-group" id="story-group" style="display:${d.isAdopted?'block':'none'}">
-                    <label class="pata-form-label">Historia de adopción</label>
-                    <div style="background:#FFF9E6; border-left:3px solid #FFA500; padding:10px; border-radius:8px; font-size:11px; color:#666; margin-bottom:10px;">
-                        ⚠️ <strong>AVISO:</strong> El texto que escribas podrá ser publicado en nuestras redes sociales o sitio web para inspirar a más personas a adoptar.
+                <div class="pata-ruac-section">
+                    <div class="pata-ruac-badge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        ¡Beneficio exclusivo!
                     </div>
-                    <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos brevemente su historia...">${d.adoptionStory}</textarea>
+                    <label class="pata-form-label" style="color:#234E52;">RUAC (Opcional)</label>
+                    <div class="pata-ruac-input-wrapper">
+                        <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Ej: A1B2C3D4E5" maxlength="10" style="text-transform: uppercase;">
+                        <span id="ruac-status" class="pata-ruac-status" style="display:${d.ruac.length===10?'block':'none'}">✨</span>
+                    </div>
+                    <p style="font-size:11px; color:#4A7C7F; margin-top:10px;"><strong>🎁 Ventaja:</strong> Con el RUAC, el periodo de carencia se reduce a <strong>90 días</strong>.</p>
+                    <a href="https://ruac.cdmx.gob.mx/" target="_blank" class="pata-ruac-help-link">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                        ¿Qué es el RUAC y cómo obtenerlo?
+                    </a>
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label">RUAC (Opcional)</label>
-                    <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Registro Único de Animales de Compañía">
-                    <p style="font-size:11px; color:#A0A0A0; margin-top:4px;">Si tienes el RUAC, la carencia se reduce de 180 a 90 días.</p>
+                    <label class="pata-form-label">Código de Embajador (Opcional)</label>
+                    <input class="pata-form-input ${d.referralCode ? (d.isReferralValid ? 'valid' : 'invalid') : ''}" 
+                           id="add-referral-code" 
+                           value="${d.referralCode}" 
+                           placeholder="Ej: MARCOS24" 
+                           style="text-transform: uppercase;">
+                    <div id="referral-msg" class="pata-referral-msg ${d.isReferralValid ? 'success' : 'error'}">
+                        ${d.referralName ? `✓ Embajador: ${d.referralName}` : ''}
+                    </div>
                 </div>
 
                 ${isSenior ? `
@@ -712,8 +837,9 @@
                     <div class="pata-upload-box" id="vet-box">
                         <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
                         <div id="vet-preview-wrap">
-                            ${this.uploadedVetUrl ? '<span style="font-size:32px;">✅</span>' : '<span style="font-size:32px;">📄</span>'}
-                            <p style="margin:8px 0 0 0; font-size:12px; color:#888;">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado (PDF/Imagen)'}</p>
+                            ${this.uploadedVetUrl ? '<span class="pata-upload-icon">✅</span>' : '<span class="pata-upload-icon">📄</span>'}
+                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado'}</p>
+                            <p class="pata-upload-subtext">PDF/Imagen, máx 5MB</p>
                         </div>
                     </div>
                 </div>` : ''}
@@ -729,17 +855,25 @@
             container.querySelectorAll('.pata-switch-btn').forEach(btn => {
                 btn.onclick = () => {
                     d.breedType = btn.dataset.bt;
-                    container.querySelectorAll('.pata-switch-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById('breed-group').style.display = d.breedType === 'raza' ? 'block' : 'none';
-                    if (d.breedType === 'mestizo') { d.breed = 'Mestizo'; d.isMixed = true; }
-                    else { d.isMixed = false; }
+                    d.isMixed = (d.breedType === 'mestizo');
+                    if (d.isMixed) d.breed = 'Mestizo';
+                    this.saveStep2Fields();
+                    this.renderStep2();
                 };
             });
 
-            document.getElementById('add-adopted').onchange = (e) => {
-                d.isAdopted = e.target.checked;
+            document.getElementById('adoption-toggle').onclick = () => {
+                const cb = document.getElementById('add-adopted');
+                cb.checked = !cb.checked;
+                d.isAdopted = cb.checked;
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
+            };
+
+            // RUAC dynamic status
+            document.getElementById('add-ruac').oninput = (e) => {
+                const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                e.target.value = val;
+                document.getElementById('ruac-status').style.display = val.length === 10 ? 'block' : 'none';
             };
 
             // Listener dinámico para Senior
@@ -753,6 +887,7 @@
 
             this.setupBreedAutocomplete(container);
             this.setupFileUploads();
+            this.setupReferralValidation();
 
             document.getElementById('pata-save-btn').onclick = (e) => {
                 e.preventDefault();
@@ -769,7 +904,58 @@
             d.noseColor = document.getElementById('add-nose').value;
             d.adoptionStory = document.getElementById('add-story') ? document.getElementById('add-story').value : '';
             d.ruac = document.getElementById('add-ruac').value;
+            d.referralCode = document.getElementById('add-referral-code').value.toUpperCase();
             if (d.breedType === 'raza') d.breed = document.getElementById('pata-breed-input').value;
+        }
+
+        setupReferralValidation() {
+            const input = document.getElementById('add-referral-code');
+            const msg = document.getElementById('referral-msg');
+            if (!input || !msg) return;
+
+            let debounceTimer;
+            input.addEventListener('input', (e) => {
+                const code = e.target.value.toUpperCase();
+                this.addFormData.referralCode = code;
+                clearTimeout(debounceTimer);
+
+                if (!code) {
+                    msg.innerHTML = '';
+                    input.classList.remove('valid', 'invalid');
+                    this.addFormData.isReferralValid = false;
+                    this.addFormData.referralName = '';
+                    return;
+                }
+
+                msg.innerHTML = 'Validando...';
+                msg.className = 'pata-referral-msg loading';
+                
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`${CONFIG.apiUrl}/api/referrals/validate-code?code=${code}`);
+                        const data = await res.json();
+                        
+                        if (data.success && data.valid) {
+                            msg.innerHTML = `✓ Embajador: ${data.ambassador.name}`;
+                            msg.className = 'pata-referral-msg success';
+                            input.classList.add('valid');
+                            input.classList.remove('invalid');
+                            this.addFormData.isReferralValid = true;
+                            this.addFormData.referralName = data.ambassador.name;
+                        } else {
+                            msg.innerHTML = '❌ Código no válido';
+                            msg.className = 'pata-referral-msg error';
+                            input.classList.add('invalid');
+                            input.classList.remove('valid');
+                            this.addFormData.isReferralValid = false;
+                            this.addFormData.referralName = '';
+                        }
+                    } catch (err) {
+                        msg.innerHTML = '⚠️ Error al validar';
+                        msg.className = 'pata-referral-msg error';
+                    }
+                }, 600);
+            });
         }
 
         setupFileUploads() {
@@ -780,14 +966,20 @@
                 photoInput.onchange = async (e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    const wrap = document.getElementById('photo-preview-wrap');
-                    wrap.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:0 auto;"></div>';
+                    const box = document.getElementById('photo-box');
+                    const originalContent = box.innerHTML;
+                    box.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:20px auto;"></div>';
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.uploadedPhotoUrl = url;
-                        document.getElementById('photo-box').classList.add('has-file');
-                        wrap.innerHTML = `<img src="${url}" class="pata-upload-preview"><p style="margin:5px 0 0 0; font-size:10px; color:#38A169; font-weight:700;">✓ Foto lista</p>`;
-                    } catch(err) { alert('Error subiendo foto'); wrap.innerHTML = '<span style="font-size:32px;">❌</span><p style="margin:5px 0 0 0; font-size:11px; color:#E53E3E;">Error</p>'; }
+                        box.classList.add('has-file');
+                        box.innerHTML = `<input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><img src="${url}" class="pata-upload-preview" /><p class="pata-upload-text">✓ Foto lista</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
+                        this.setupFileUploads(); // Re-attach listener
+                    } catch(err) { 
+                        alert('Error subiendo foto'); 
+                        box.innerHTML = originalContent;
+                        this.setupFileUploads();
+                    }
                 };
             }
 
@@ -795,14 +987,20 @@
                 vetInput.onchange = async (e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    const wrap = document.getElementById('vet-preview-wrap');
-                    wrap.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:0 auto;"></div>';
+                    const box = document.getElementById('vet-box');
+                    const originalContent = box.innerHTML;
+                    box.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:20px auto;"></div>';
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.uploadedVetUrl = url;
-                        document.getElementById('vet-box').classList.add('has-file');
-                        wrap.innerHTML = '<span style="font-size:32px;">✅</span><p style="margin:5px 0 0 0; font-size:11px; color:#38A169; font-weight:700;">✓ Certificado listo</p>';
-                    } catch(err) { alert('Error subiendo certificado'); wrap.innerHTML = '<span style="font-size:32px;">❌</span>'; }
+                        box.classList.add('has-file');
+                        box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Certificado listo</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
+                        this.setupFileUploads(); // Re-attach listener
+                    } catch(err) { 
+                        alert('Error subiendo certificado'); 
+                        box.innerHTML = originalContent;
+                        this.setupFileUploads();
+                    }
                 };
             }
         }
@@ -893,6 +1091,7 @@
                         isSenior: isSenior,
                         vetCertificateUrl: this.uploadedVetUrl,
                         ruac: d.ruac || '',
+                        referralCode: d.isReferralValid ? d.referralCode : ''
                     }
                 };
 
