@@ -620,15 +620,9 @@
                     </div>
                 </div>
 
-                <div class="pata-form-row">
-                    <div class="pata-form-group">
-                        <label class="pata-form-label" id="name-label">${d.petType==='gato'?'¿Cómo se llama tu michi?':'¿Cómo se llama tu peludo?'} *</label>
-                        <input class="pata-form-input" id="add-name" value="${d.name}" placeholder="Ej: Luna, Max, Pelusa...">
-                    </div>
-                    <div class="pata-form-group" id="last-name-group" style="display:${d.petType==='gato'?'none':'block'}">
-                        <label class="pata-form-label">Apellido (del dueño) *</label>
-                        <input class="pata-form-input" id="add-last-name" value="${d.lastName}" placeholder="Ej: García Pérez">
-                    </div>
+                <div class="pata-form-group">
+                    <label class="pata-form-label" id="name-label">${d.petType==='gato'?'¿Cómo se llama tu michi?':'¿Cómo se llama tu peludo?'} *</label>
+                    <input class="pata-form-input" id="add-name" value="${d.name}" placeholder="Ej: Luna, Max, Pelusa...">
                 </div>
 
                 <div class="pata-form-group">
@@ -664,11 +658,8 @@
                 if (!age || age <= 0) return alert('Ingresa una edad válida');
                 
                 d.name = name;
-                d.lastName = document.getElementById('add-last-name').value.trim();
                 d.ageValue = age;
                 d.ageUnit = document.getElementById('add-age-unit').value;
-
-                if (d.petType === 'perro' && !d.lastName) return alert('El apellido es requerido para perros');
 
                 this.addStep = 2;
                 this.renderAddStep();
@@ -771,7 +762,7 @@
                     </div>
                 </div>
 
-                <div class="pata-adoption-section">
+                <div class="pata-adoption-section" style="display:${d.breedType==='mestizo'?'block':'none'}">
                     <div class="pata-adoption-header">
                         <div class="pata-adoption-icon">🏠</div>
                         <div>
@@ -857,7 +848,7 @@
                     d.isMixed = (d.breedType === 'mestizo');
                     if (d.isMixed) d.breed = 'Mestizo';
                     this.saveStep2Fields();
-                    this.renderStep2();
+                    this.renderStep2(container);
                 };
             });
 
@@ -876,11 +867,10 @@
             };
 
             // Listener dinámico para Senior
-            const sizeEl = document.getElementById('add-size');
             if (sizeEl) {
                 sizeEl.onchange = () => {
                     d.breedSize = sizeEl.value;
-                    this.renderStep2();
+                    this.renderStep2(container);
                 };
             }
 
