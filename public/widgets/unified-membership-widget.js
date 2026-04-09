@@ -1677,12 +1677,24 @@
 
                     try {
                         const pet = this.pets[this.currentIndex];
+                        console.log('📤 [WidgetUpdate] Iniciando envío:', {
+                            petId: pet?.id,
+                            petName: pet?.name,
+                            userId: this.member.id,
+                            files: {
+                                photo1: !!this.uploadFiles.photo1,
+                                photo2: !!this.uploadFiles.photo2,
+                                cert: !!this.uploadFiles.cert
+                            }
+                        });
+
                         let photo1Url = null;
                         let photo2Url = null;
                         let vetCertificateUrl = null;
 
                         // Subir foto 1
                         if (this.uploadFiles.photo1) {
+                            console.log('📸 Subiendo Foto 1...');
                             const formData = new FormData();
                             formData.append('file', this.uploadFiles.photo1);
                             formData.append('userId', this.member.id);
@@ -1691,18 +1703,17 @@
                                 body: formData
                             });
                             const data = await res.json();
-                            if (data.success) photo1Url = data.url;
-                            else {
-                                alert('Error al subir foto 1: ' + (data.error || 'Error desconocido'));
-                                submitBtn.disabled = false;
-                                submitBtn.innerText = 'Enviar Actualización';
-                                this.uploading = false;
-                                return;
+                            if (data.success) {
+                                photo1Url = data.url;
+                                console.log('✅ Foto 1 subida:', photo1Url);
+                            } else {
+                                throw new Error('Error al subir foto 1: ' + (data.error || 'Error desconocido'));
                             }
                         }
 
                         // Subir foto 2
                         if (this.uploadFiles.photo2) {
+                            console.log('📸 Subiendo Foto 2...');
                             const formData = new FormData();
                             formData.append('file', this.uploadFiles.photo2);
                             formData.append('userId', this.member.id);
@@ -1711,41 +1722,46 @@
                                 body: formData
                             });
                             const data = await res.json();
-                            if (data.success) photo2Url = data.url;
-                            else {
-                                alert('Error al subir foto 2: ' + (data.error || 'Error desconocido'));
-                                submitBtn.disabled = false;
-                                submitBtn.innerText = 'Enviar Actualización';
-                                this.uploading = false;
-                                return;
+                            if (data.success) {
+                                photo2Url = data.url;
+                                console.log('✅ Foto 2 subida:', photo2Url);
+                            } else {
+                                throw new Error('Error al subir foto 2: ' + (data.error || 'Error desconocido'));
                             }
                         }
 
                         // Subir certificado (si aplica)
                         if (this.uploadFiles.cert) {
+                            console.log('📜 Subiendo Certificado...');
                             submitBtn.innerText = 'Subiendo certificado...';
                             const formData = new FormData();
                             formData.append('file', this.uploadFiles.cert);
                             formData.append('userId', this.member.id);
-                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, { // Usamos el mismo para PDF/Img
+                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
                                 method: 'POST',
                                 body: formData
                             });
                             const data = await res.json();
-                            if (data.success) vetCertificateUrl = data.url;
-                            else {
-                                alert('Error al subir certificado: ' + (data.error || 'Error desconocido'));
-                                submitBtn.disabled = false;
-                                submitBtn.innerText = 'Enviar Actualización';
-                                this.uploading = false;
-                                return;
+                            if (data.success) {
+                                vetCertificateUrl = data.url;
+                                console.log('✅ Certificado subido:', vetCertificateUrl);
+                            } else {
+                                throw new Error('Error al subir certificado: ' + (data.error || 'Error desconocido'));
                             }
                         }
 
                         submitBtn.innerText = 'Guardando...';
+                        const message = document.getElementById('pata-update-message')?.value || '';
+                        
+                        console.log('📡 Llamando a la API de actualización...', {
+                            userId: this.member.id,
+                            photo1Url,
+                            photo2Url,
+                            vetCertificateUrl,
+                            messageLength: message.length
+                        });
 
                         // Actualizar mascota
-                        const message = document.getElementById('pata-update-message')?.value || '';
                         const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
@@ -1758,24 +1774,23 @@
                             })
                         });
 
-
-
                         const updateData = await updateRes.json();
+                        console.log('📥 Respuesta API:', updateData);
+
                         if (updateData.success) {
                             alert('✅ ' + updateData.message);
                             location.reload();
                         } else {
-                            alert('Error: ' + updateData.error);
-                            submitBtn.disabled = false;
-                            submitBtn.innerText = 'Enviar Actualización';
+                            throw new Error(updateData.error || 'Error desconocido en servidor');
                         }
                     } catch (e) {
-                        console.error('Error en update:', e);
-                        alert('Error al enviar la actualización.');
+                        console.error('❌ Error en proceso de actualización:', e);
+                        alert('Error: ' + e.message);
                         submitBtn.disabled = false;
                         submitBtn.innerText = 'Enviar Actualización';
                     }
                     this.uploading = false;
+
                 };
             }
         }

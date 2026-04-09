@@ -32,28 +32,44 @@ export async function POST(
     try {
         const { petId } = await params;
         const body = await request.json();
-        const { userId, photo1Url, photo2Url, message } = body;
+        const { userId, photo1Url, photo2Url, vetCertificateUrl, message } = body;
 
-        console.log(`📝 Usuario ${userId} actualizando mascota ${petId}...`);
-        console.log('📦 Body recibido:', JSON.stringify(body, null, 2));
+        console.log(`📝 [PetUpdate] Inicio: Usuario=${userId}, Pet=${petId}`);
+        console.log('📦 Body:', JSON.stringify(body, null, 2));
 
         if (!userId) {
             return NextResponse.json({ error: 'userId es obligatorio' }, { status: 400, headers: corsHeaders });
         }
 
-        // 1. Verificar que la mascota pertenece al usuario y está en action_required
+        // 1. Obtener datos de la mascota (sin join complejo inicialmente)
+        console.log('🔍 Buscando mascota...');
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('*, owner:users!owner_id(id, memberstack_id, first_name, last_name)')
+            .select('*')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
-            return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+            console.error('❌ Error buscando mascota:', petError);
+            return NextResponse.json({ error: 'Mascota no encontrada o error de base de datos' }, { status: 404, headers: corsHeaders });
+        }
+
+        // 2. Obtener datos del dueño por separado para mayor seguridad
+        console.log('🔍 Buscando dueño...');
+        const { data: owner, error: ownerError } = await supabaseAdmin
+            .from('users')
+            .select('id, memberstack_id, first_name, last_name')
+            .eq('id', pet.owner_id)
+            .single();
+
+        if (ownerError || !owner) {
+            console.error('❌ Error buscando dueño:', ownerError);
+            return NextResponse.json({ error: 'Dueño de mascota no encontrado' }, { status: 404, headers: corsHeaders });
         }
 
         // Verificar propiedad
-        if (pet.owner?.memberstack_id !== userId) {
+        if (owner.memberstack_id !== userId) {
+            console.warn(`🚫 Intento de edición no autorizado: ${userId} != ${owner.memberstack_id}`);
             return NextResponse.json({ error: 'No tienes permiso para editar esta mascota' }, { status: 403, headers: corsHeaders });
         }
 
@@ -61,95 +77,111 @@ export async function POST(
         const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending'];
         if (!allowedStatuses.includes(pet.status)) {
             return NextResponse.json({
-                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado, cuando tu mascota esté rechazada/apelada o si falta información pendiente.'
+                error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado o cuando tu mascota esté bajo revisión.'
             }, { status: 400, headers: corsHeaders });
         }
 
-        // 2. Preparar los campos a actualizar
-        // Ahora soportamos photo_url y photo2_url
+        // 3. Preparar los campos a actualizar
         const updateData: Record<string, any> = {};
 
-        // Determinar el nuevo status según el status actual
-        // Si viene de rejected o action_required, va a 'pending' para re-revisión
-        // Si viene de appealed, SE MANTIENE 'appealed' (no reseteamos a pending porque ya está en cola de apelación)
-        if (pet.status === 'action_required') {
-            updateData.status = 'pending';
-        } else if (pet.status === 'rejected') {
-            // Si estaba rechazado y sube nuevas fotos, vuelve a pending
+        // Determinar el nuevo status
+        if (pet.status === 'action_required' || pet.status === 'rejected') {
             updateData.status = 'pending';
         }
-        // NOTA: Si status es 'appealed', no lo cambiamos. Se asume que las fotos son parte de la apelación.
 
-        // Actualizar foto 1 si viene con valor válido
-        if (photo1Url && typeof photo1Url === 'string' && photo1Url.trim() !== '') {
+        // Actualizar URLs
+        if (isValidUrl(photo1Url)) {
             updateData.photo_url = photo1Url;
-            console.log('📷 Actualizando foto 1:', photo1Url);
+            console.log('📷 URL Foto 1:', photo1Url);
         }
-
-        // Actualizar foto 2 si viene con valor válido
-        if (photo2Url && typeof photo2Url === 'string' && photo2Url.trim() !== '') {
+        if (isValidUrl(photo2Url)) {
             updateData.photo2_url = photo2Url;
-            console.log('📷 Actualizando foto 2:', photo2Url);
+            console.log('📷 URL Foto 2:', photo2Url);
+        }
+        if (isValidUrl(vetCertificateUrl)) {
+            updateData.vet_certificate_url = vetCertificateUrl;
+            updateData.vet_certificate_uploaded = true;
+            console.log('📜 URL Certificado:', vetCertificateUrl);
         }
 
-        console.log('📋 Campos a actualizar:', JSON.stringify(updateData, null, 2));
+        if (Object.keys(updateData).length === 0 && !message) {
+            return NextResponse.json({ error: 'No hay cambios para guardar' }, { status: 400, headers: corsHeaders });
+        }
 
+        console.log('📋 Actualizando mascota en DB...', JSON.stringify(updateData));
 
-
-        // 3. Actualizar la mascota
+        // 4. Ejecutar actualización
         const { error: updateError } = await supabaseAdmin
             .from('pets')
             .update(updateData)
             .eq('id', petId);
 
         if (updateError) {
-            console.error('Error actualizando mascota:', updateError);
-            return NextResponse.json({ error: 'Error al actualizar' }, { status: 500, headers: corsHeaders });
+            console.error('❌ Error actualizando mascota:', updateError);
+            return NextResponse.json({ error: `Error DB (Update): ${updateError.message}` }, { status: 500, headers: corsHeaders });
         }
 
-        // 4. Registrar en appeal_logs
-        const logMessage = message || 'El usuario actualizó la información de su mascota';
-        await supabaseAdmin
+        // 5. Registrar en logs
+        console.log('✍️ Insertando en appeal_logs...');
+        const { error: logError } = await supabaseAdmin
             .from('appeal_logs')
             .insert({
                 user_id: userId,
                 pet_id: petId,
                 type: 'user_update',
-                message: logMessage,
+                message: message || 'El usuario actualizó la información de su mascota',
                 metadata: {
-                    photo1_updated: !!(photo1Url && photo1Url.trim()),
-                    photo2_updated: !!(photo2Url && photo2Url.trim())
+                    photo1_updated: isValidUrl(photo1Url),
+                    photo2_updated: isValidUrl(photo2Url),
+                    vet_certificate_updated: isValidUrl(vetCertificateUrl)
                 },
                 created_at: new Date().toISOString()
             });
 
-        // 5. 🆕 Crear notificación para los admins con nombre del usuario
-        const ownerName = `${pet.owner?.first_name || ''} ${pet.owner?.last_name || ''}`.trim() || 'Usuario';
-        const ownerId = pet.owner?.id;
+        if (logError) {
+            console.error('⚠️ Error insertando log (no crítico):', logError);
+        }
 
-        await supabaseAdmin
+        // 6. Crear notificación para admins
+        console.log('🔔 Creando notificación admin...');
+        const ownerName = `${owner.first_name || ''} ${owner.last_name || ''}`.trim() || 'Usuario';
+        
+        const { error: notificationError } = await supabaseAdmin
             .from('notifications')
             .insert({
-                user_id: 'admin', // Notificación para admins
+                user_id: 'admin',
                 type: 'account',
                 title: `📎 ${ownerName} actualizó información`,
-                message: `${ownerName} actualizó las fotos de ${pet.name}. Revísala en Pendientes.`,
+                message: `${ownerName} actualizó las fotos de ${pet.name}.`,
                 icon: '📎',
-                link: `/admin/dashboard?member=${userId}`, // FIXED: Link corregido hacia /admin/dashboard
+                link: `/admin/dashboard?member=${userId}`,
                 is_read: false,
-                metadata: { petId, petName: pet.name, userId, ownerId, ownerName },
+                metadata: { petId, petName: pet.name, userId, ownerId: owner.id, ownerName },
                 created_at: new Date().toISOString()
             });
 
-        console.log(`✅ Mascota ${petId} actualizada por usuario ${userId} y admin notificado`);
+        if (notificationError) {
+            console.error('⚠️ Error notificando al admin (no crítico):', notificationError);
+        }
+
+        console.log(`✅ Mascota ${petId} procesada correctamente.`);
 
         return NextResponse.json({
             success: true,
-            message: 'Información actualizada correctamente. El equipo revisará tus cambios pronto.'
+            message: 'Información actualizada correctamente.'
         }, { headers: corsHeaders });
 
     } catch (error: any) {
-        console.error('Error en pet update API:', error);
-        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
+        console.error('💥 Error CRÍTICO en pet update API:', error);
+        return NextResponse.json({ 
+            error: 'Error interno del servidor',
+            details: error.message 
+        }, { status: 500, headers: corsHeaders });
     }
 }
+
+// Helper para validar URLs
+function isValidUrl(url: any): boolean {
+    return !!(url && typeof url === 'string' && url.trim() !== '');
+}
+
