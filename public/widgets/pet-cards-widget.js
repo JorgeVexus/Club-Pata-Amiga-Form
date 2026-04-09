@@ -899,14 +899,15 @@
                         const data = await res.json();
                         
                         if (data.success && data.valid) {
-                            msg.innerHTML = `✓ Embajador: ${data.ambassador.name}`;
+                            const ambassadorName = data.ambassador_name || 'Embajador';
+                            msg.innerHTML = `✓ Embajador: ${ambassadorName}`;
                             msg.className = 'pata-referral-msg success';
                             input.classList.add('valid');
                             input.classList.remove('invalid');
                             this.addFormData.isReferralValid = true;
-                            this.addFormData.referralName = data.ambassador.name;
+                            this.addFormData.referralName = ambassadorName;
                         } else {
-                            msg.innerHTML = '❌ Código no válido';
+                            msg.innerHTML = data.message || '❌ Código no válido';
                             msg.className = 'pata-referral-msg error';
                             input.classList.add('invalid');
                             input.classList.remove('valid');
@@ -914,6 +915,7 @@
                             this.addFormData.referralName = '';
                         }
                     } catch (err) {
+                        console.error('Referral validation catch:', err);
                         msg.innerHTML = '⚠️ Error al validar';
                         msg.className = 'pata-referral-msg error';
                     }
