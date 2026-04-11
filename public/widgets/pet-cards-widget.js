@@ -552,7 +552,16 @@
                                 <p style="margin:0 0 5px 0; font-weight:700; color:#276749; font-size:14px;">📜 Historia de adopción</p>
                                 <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.adoption_story}</p>
                             </div>
-                        ` : ''}
+                        ` : (pet.is_mixed_breed ? `
+                            <div style="margin-top:20px; padding:20px; border-radius:16px; background:linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); border:1px solid #e0e0e0; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
+                                <h4 style="margin:0 0 10px 0; font-weight:800; font-size:15px; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
+                                    <span style="font-size:18px;">📖</span> Añadir historia de adopción
+                                </h4>
+                                <p style="margin:0 0 12px 0; font-size:13px; color:#666; line-height:1.4;">Compártenos cómo llegó a tu vida. Las mejores historias podrían ser presentadas en nuestra comunidad.</p>
+                                <textarea id="pata-add-story-${pet.id}" placeholder="Escribe aquí su historia..." style="width:100%; box-sizing:border-box; padding:12px; border:2px solid #ddd; border-radius:12px; min-height:80px; font-family:inherit; font-size:14px; margin-bottom:12px; resize:vertical; transition:border-color 0.2s;" onfocus="this.style.borderColor='#7DD8D5'; this.style.outline='none';" onblur="this.style.borderColor='#ddd';"></textarea>
+                                <button onclick="window.ManadaWidget.saveAdoptionStory('${pet.id}')" id="pata-btn-story-${pet.id}" style="background:#00BBB4; color:#fff; border:none; padding:10px 20px; border-radius:50px; font-weight:700; font-size:14px; cursor:pointer; width:100%; transition:transform 0.1s, opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Guardar historia</button>
+                            </div>
+                        ` : '')}
 
                         ${pet.admin_notes ? `
                             <div style="margin-top:15px; background:#FFFDE7; border-left:4px solid #FFC107; padding:15px 20px; border-radius:0 12px 12px 0;">
@@ -566,6 +575,52 @@
                 </div>
             `;
             document.body.appendChild(modal);
+        }
+
+        async saveAdoptionStory(petId) {
+            const textarea = document.getElementById(`pata-add-story-${petId}`);
+            const btn = document.getElementById(`pata-btn-story-${petId}`);
+            if (!textarea || !btn) return;
+
+            const content = textarea.value.trim();
+            if (!content) {
+                alert('Por favor escribe la historia antes de guardar.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.member.id,
+                        adoptionStory: content
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('¡Historia guardada exitosamente!');
+                    // Cerrar el modal actual
+                    const modal = btn.closest('.pata-modal-overlay');
+                    if (modal) modal.remove();
+                    // Recargar los datos para refrescar la UI
+                    this.init();
+                } else {
+                    alert('Error al guardar: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ocurrió un error inesperado al guardar la historia.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Guardar historia';
+                btn.style.opacity = '1';
+            }
         }
 
         showAddForm() {

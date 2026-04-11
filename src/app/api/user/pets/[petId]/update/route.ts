@@ -32,7 +32,7 @@ export async function POST(
     try {
         const { petId } = await params;
         const body = await request.json();
-        const { userId, photo1Url, photo2Url, vetCertificateUrl, message } = body;
+        const { userId, photo1Url, photo2Url, vetCertificateUrl, message, adoptionStory } = body;
 
         console.log(`📝 [PetUpdate] Inicio: Usuario=${userId}, Pet=${petId}`);
         console.log('📦 Body:', JSON.stringify(body, null, 2));
@@ -75,7 +75,9 @@ export async function POST(
 
         // Verificar que está en un status que permite actualización
         const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending'];
-        if (!allowedStatuses.includes(pet.status)) {
+        const isOnlyAdoptionStory = adoptionStory && !photo1Url && !photo2Url && !vetCertificateUrl;
+        
+        if (!allowedStatuses.includes(pet.status) && !isOnlyAdoptionStory) {
             return NextResponse.json({
                 error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado o cuando tu mascota esté bajo revisión.'
             }, { status: 400, headers: corsHeaders });
@@ -85,7 +87,7 @@ export async function POST(
         const updateData: Record<string, any> = {};
 
         // Determinar el nuevo status
-        if (pet.status === 'action_required' || pet.status === 'rejected') {
+        if ((pet.status === 'action_required' || pet.status === 'rejected') && !isOnlyAdoptionStory) {
             updateData.status = 'pending';
         }
 
@@ -102,6 +104,16 @@ export async function POST(
             updateData.vet_certificate_url = vetCertificateUrl;
             updateData.vet_certificate_uploaded = true;
             console.log('📜 URL Certificado:', vetCertificateUrl);
+        }
+        
+        // Actualizar Historia de Adopción
+        if (adoptionStory && typeof adoptionStory === 'string') {
+            updateData.adoption_story = adoptionStory;
+            console.log('📖 Historia de Adopción:', adoptionStory);
+            
+            // También deberíamos sincronizarlo con el perfil del usuario si fuera posible, 
+            // pero ya que es algo directo en la tabla pets, por ahora con la tabla pets es suficiente, 
+            // o lo guardamos en users si sabemos el slot. Como no es trivial aquí, dejemos solo en pets.
         }
 
         if (Object.keys(updateData).length === 0 && !message) {
