@@ -126,9 +126,9 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
         // Validar RUAC solo si se proporcionó
         if (formData.ruac && formData.ruac.trim() !== '') {
-            const ruacRegex = /^[A-Z0-9]{10}$/;
+            const ruacRegex = /^[A-Z0-9]{11}$/;
             if (!ruacRegex.test(formData.ruac)) {
-                newErrors.ruac = 'El RUAC debe tener exactamente 10 caracteres alfanuméricos (letras y números)';
+                newErrors.ruac = 'El RUAC debe tener exactamente 11 caracteres alfanuméricos (letras y números)';
             }
         }
 
@@ -301,16 +301,16 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                             <input
                                 type="text"
                                 className={`${styles.ruacInput} ${errors.ruac ? styles.inputError : ''}`}
-                                placeholder="Ej: A1B2C3D4E5"
+                                placeholder="Ej: A1B2C3D4E5F"
                                 value={formData.ruac}
                                 onChange={(e) => {
                                     const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                                     setFormData({ ...formData, ruac: val });
                                     if (errors.ruac) setErrors(prev => ({ ...prev, ruac: '' }));
                                 }}
-                                maxLength={10}
+                                maxLength={11}
                             />
-                            {formData.ruac.length === 10 && !errors.ruac && (
+                            {formData.ruac.length === 11 && !errors.ruac && (
                                 <span className={styles.ruacStatus} style={{ animation: 'bounceIn 0.5s cubic-bezier(0.36, 0, 0.66, -0.56)' }}>✨</span>
                             )}
                         </div>
