@@ -97,9 +97,10 @@
 /* En móvil, el área de click del calendario ocupa todo el campo para mayor facilidad */
 @media (max-width: 768px) {
     .nativeDateInput {
-        clip-path: none; /* Todo el campo abre el calendario en móvil */
+        clip-path: inset(0 0 0 70%); /* Permitir pulsar el texto a la izquierda, icono a la derecha */
     }
 }
+
 
 .nativeDateInput::-webkit-calendar-picker-indicator {
     position: absolute;

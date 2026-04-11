@@ -57,6 +57,15 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
 
         if (!formData.petAge || formData.petAge <= 0) {
             newErrors.petAge = 'Ingresa la edad';
+        } else {
+            // Edad mínima: 4 meses
+            const totalMonths = formData.petAgeUnit === 'years' 
+                ? formData.petAge * 12 
+                : formData.petAge;
+            
+            if (totalMonths < 4) {
+                newErrors.petAge = 'La edad mínima debe ser de 4 meses';
+            }
         }
 
         setErrors(newErrors);
@@ -112,6 +121,18 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                     onChange={(value, unit) => setFormData({ ...formData, petAge: value, petAgeUnit: unit })}
                     error={errors.petAge}
                 />
+
+                {/* Puppy/Too Young Warning */}
+                {formData.petAge > 0 && (
+                    formData.petAgeUnit === 'months' ? formData.petAge < 4 : false
+                ) && (
+                    <div className={styles.infoBox + ' ' + styles.error}>
+                        <span className={styles.infoIcon}>❌</span>
+                        <p>
+                            La edad mínima de tu peludo debe ser superior a 4 meses para poder registrarse.
+                        </p>
+                    </div>
+                )}
 
                 {/* Senior Warning */}
                 {((formData.petAgeUnit === 'years' && formData.petAge >= 10) || 
