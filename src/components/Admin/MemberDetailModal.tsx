@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './MemberDetailModal.module.css';
-import { getPetsByUserId, getBillingDetailsByUserId } from '@/app/actions/user.actions';
+import { getPetsByUserId, getBillingDetailsByMemberstackId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 
 interface Pet {
     id: string;
@@ -65,18 +65,35 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [refundDone, setRefundDone] = useState(false);
     const [billingDetails, setBillingDetails] = useState<any>(null);
     const [loadingBilling, setLoadingBilling] = useState(false);
+    const [supabaseUser, setSupabaseUser] = useState<any>(null);
+    const [loadingSupabase, setLoadingSupabase] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
+            loadSupabaseUserData();
             loadBillingDetails();
         }
     }, [isOpen, member]);
 
+    async function loadSupabaseUserData() {
+        setLoadingSupabase(true);
+        try {
+            const result = await getUserDataByMemberstackId(member.id);
+            if (result.success) {
+                setSupabaseUser(result.userData);
+            }
+        } catch (error) {
+            console.error('Error loading supabase user data:', error);
+        } finally {
+            setLoadingSupabase(false);
+        }
+    }
+
     async function loadBillingDetails() {
         setLoadingBilling(true);
         try {
-            const result = await getBillingDetailsByUserId(member.id);
+            const result = await getBillingDetailsByMemberstackId(member.id);
             if (result.success) {
                 setBillingDetails(result.billingDetails);
             }
@@ -274,19 +291,45 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                         <div className={styles.grid}>
                             <div className={styles.field}>
                                 <span className={styles.label}>Nombre Completo</span>
-                                <span className={styles.value}>{fields['first-name']} {fields['last-name']}</span>
+                                <span className={styles.value}>
+                                    {fields['first-name']} {fields['paternal-last-name']} {fields['maternal-last-name']}
+                                </span>
                             </div>
                             <div className={styles.field}>
-                                <span className={styles.label}>Email</span>
-                                <span className={styles.value}>{member.auth?.email}</span>
+                                <span className={styles.label}>Género</span>
+                                <span className={styles.value}>{fields['gender'] || '-'}</span>
                             </div>
                             <div className={styles.field}>
-                                <span className={styles.label}>Teléfono</span>
-                                <span className={styles.value}>{fields['phone'] || 'No registrado'}</span>
+                                <span className={styles.label}>Fecha de Nacimiento</span>
+                                <span className={styles.value}>{fields['birth-date'] || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>CURP</span>
-                                <span className={styles.value}>{fields['curp'] || 'No registrado'}</span>
+                                <span className={styles.value}>{fields['curp'] || '-'}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Nacionalidad</span>
+                                <span className={styles.value}>
+                                    {supabaseUser?.nationality ? `${supabaseUser.nationality} (${supabaseUser.nationality_code || ''})` : (fields['nationality'] || '-')}
+                                </span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Correo Electrónico</span>
+                                <span className={styles.value}>{member.email}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Teléfono</span>
+                                <span className={styles.value}>{fields['phone'] || '-'}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Fecha de Registro</span>
+                                <span className={styles.value}>
+                                    {fields['registration-date'] ? new Date(fields['registration-date']).toLocaleDateString('es-MX', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }) : '-'}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -376,66 +419,6 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                         ) : null}
                     </div>
 
-                    {/* Documents */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Documentos Personales</h3>
-                        <div className={styles.grid}>
-                            {fields['ine-front-url'] && (
-                                <div className={styles.documentCard}>
-                                    <span className={styles.documentIcon}>🆔</span>
-                                    <div className={styles.documentInfo}>
-                                        <div className={styles.documentName}>INE (Frente)</div>
-                                    </div>
-                                    <div className={styles.docActions}>
-                                        <a href={fields['ine-front-url']} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
-                                        <a
-                                            href="#"
-                                            onClick={(e) => handleDownload(e, fields['ine-front-url'], 'ine-frente')}
-                                            className={styles.viewDocButton}
-                                        >
-                                            Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                            {fields['ine-back-url'] && (
-                                <div className={styles.documentCard}>
-                                    <span className={styles.documentIcon}>🆔</span>
-                                    <div className={styles.documentInfo}>
-                                        <div className={styles.documentName}>INE (Reverso)</div>
-                                    </div>
-                                    <div className={styles.docActions}>
-                                        <a href={fields['ine-back-url']} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
-                                        <a
-                                            href="#"
-                                            onClick={(e) => handleDownload(e, fields['ine-back-url'], 'ine-reverso')}
-                                            className={styles.viewDocButton}
-                                        >
-                                            Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                            {fields['proof-of-address-url'] && (
-                                <div className={styles.documentCard}>
-                                    <span className={styles.documentIcon}>📄</span>
-                                    <div className={styles.documentInfo}>
-                                        <div className={styles.documentName}>Comprobante de Domicilio</div>
-                                    </div>
-                                    <div className={styles.docActions}>
-                                        <a href={fields['proof-of-address-url']} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
-                                        <a
-                                            href="#"
-                                            onClick={(e) => handleDownload(e, fields['proof-of-address-url'], 'comprobante-domicilio')}
-                                            className={styles.viewDocButton}
-                                        >
-                                            Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
 
                     {/* Pets */}
                     <div className={styles.section}>

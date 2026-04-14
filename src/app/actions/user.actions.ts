@@ -469,17 +469,29 @@ export async function getPetsByUserId(memberstackId: string) {
 }
 
 /**
- * Obtiene los detalles de facturación de un usuario
+ * Obtiene los detalles de facturación de un usuario por su Memberstack ID
  */
-export async function getBillingDetailsByUserId(userId: string) {
+export async function getBillingDetailsByMemberstackId(memberstackId: string) {
     const supabase = getServiceRoleClient();
     if (!supabase) return { success: false, error: 'Configuración fallida' };
 
     try {
+        // 1. Obtener el ID interno del usuario
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberstackId)
+            .maybeSingle();
+
+        if (userError || !userData) {
+            return { success: false, error: 'Usuario no encontrado en la base de datos interna' };
+        }
+
+        // 2. Buscar detalles de facturación
         const { data, error } = await supabase
             .from('billing_details')
             .select('*')
-            .eq('user_id', userId)
+            .eq('user_id', userData.id)
             .maybeSingle();
 
         if (error) {
