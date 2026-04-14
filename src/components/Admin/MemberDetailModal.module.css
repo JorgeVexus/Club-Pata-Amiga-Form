@@ -229,6 +229,88 @@
     margin-top: 0.25rem;
 }
 
+.petBadges {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.petBadge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.adopted {
+    background: #E3F2FD;
+    color: #1976D2;
+}
+
+.mixed {
+    background: #F3E5F5;
+    color: #7B1FA2;
+}
+
+.senior {
+    background: #FFF3E0;
+    color: #E65100;
+}
+
+.detailsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin: 16px 0;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+.detailRow {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.detailLabel {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.detailValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.adoptionStory {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+}
+
+.adoptionStory strong {
+    display: block;
+    font-size: 0.8rem;
+    color: #475569;
+    margin-bottom: 4px;
+}
+
+.adoptionStory p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #1e293b;
+    line-height: 1.4;
+}
+
 .petPhotosSection {
     margin-top: var(--spacing-sm);
     padding-top: var(--spacing-sm);

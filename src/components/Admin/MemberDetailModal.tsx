@@ -10,13 +10,23 @@ interface Pet {
     breed: string;
     breed_size: string;
     gender?: string;
-    age?: string;
-    type?: string;
+    age_value?: string | number;
+    age_unit?: string;
+    pet_type?: string;
     status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
     admin_notes?: string;
     photo_url?: string;
     photo2_url?: string;
     vet_certificate_url?: string;
+    coat_color?: string;
+    nose_color?: string;
+    eye_color?: string;
+    is_mixed_breed?: boolean;
+    is_adopted?: boolean;
+    adoption_story?: string;
+    is_senior?: boolean;
+    ruac?: string;
+    created_at: string;
 }
 
 interface AppealLog {
@@ -439,16 +449,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 {(selectedPetId ? pets.filter(p => p.id === selectedPetId) : pets).map((pet) => (
                                     <div key={pet.id} className={styles.petCardFull}>
                                         <div className={styles.petHeader}>
-                                            <div className={styles.petAvatar}>🐶</div>
+                                            <div className={styles.petAvatar}>
+                                                {pet.pet_type === 'cat' ? '🐱' : '🐶'}
+                                            </div>
                                             <div className={styles.petInfo}>
                                                 <h4>{pet.name}</h4>
                                                 <div className={styles.petBreed}>
-                                                    {pet.breed} • {pet.breed_size}
-                                                    {pet.gender && (
-                                                        <span className={styles.petGender}>
-                                                            {' '}| {pet.gender === 'macho' ? '♂️ Macho' : '♀️ Hembra'}
-                                                        </span>
-                                                    )}
+                                                    {pet.is_mixed_breed ? 'Mestizo' : pet.breed} • {pet.breed_size}
                                                 </div>
                                             </div>
                                             <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
@@ -458,6 +465,65 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                             pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
                                             </div>
                                         </div>
+
+                                        {/* Pet Badges */}
+                                        <div className={styles.petBadges}>
+                                            {pet.is_adopted && <span className={`${styles.petBadge} ${styles.adopted}`}>🏠 Adoptado</span>}
+                                            {pet.is_mixed_breed && <span className={`${styles.petBadge} ${styles.mixed}`}>🔀 Mestizo</span>}
+                                            {pet.is_senior && <span className={`${styles.petBadge} ${styles.senior}`}>👴 Senior</span>}
+                                        </div>
+
+                                        {/* Pet Details Grid */}
+                                        <div className={styles.detailsGrid}>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>🎂 Edad</span>
+                                                <span className={styles.detailValue}>
+                                                    {pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : 'No especificada'}
+                                                </span>
+                                            </div>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>⚧ Sexo</span>
+                                                <span className={styles.detailValue}>
+                                                    {pet.gender === 'macho' ? '♂ Macho' : pet.gender === 'hembra' ? '♀ Hembra' : 'No especificado'}
+                                                </span>
+                                            </div>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>🎨 Color pelo</span>
+                                                <span className={styles.detailValue}>{pet.coat_color || '---'}</span>
+                                            </div>
+                                            {pet.nose_color && (
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.detailLabel}>👃 Nariz</span>
+                                                    <span className={styles.detailValue}>{pet.nose_color}</span>
+                                                </div>
+                                            )}
+                                            {pet.eye_color && (
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.detailLabel}>👁️ Ojos</span>
+                                                    <span className={styles.detailValue}>{pet.eye_color}</span>
+                                                </div>
+                                            )}
+                                            {pet.ruac && (
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.detailLabel}>🆔 RUAC</span>
+                                                    <span className={styles.detailValue}>{pet.ruac}</span>
+                                                </div>
+                                            )}
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>📅 Registro</span>
+                                                <span className={styles.detailValue}>
+                                                    {new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        {/* Adoption Story */}
+                                        {pet.adoption_story && (
+                                            <div className={styles.adoptionStory}>
+                                                <strong>📜 Historia de adopción:</strong>
+                                                <p>{pet.adoption_story}</p>
+                                            </div>
+                                        )}
 
                                         {/* Mensaje de Apelación - Solo mostrar si la mascota está apelada */}
                                         {pet.status === 'appealed' && (pet as any).appeal_message && (
