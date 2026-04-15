@@ -77,6 +77,7 @@ export default function Step3PlanSelection({
     const [selectedPlan, setSelectedPlan] = useState<string>('');
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [showValidationHint, setShowValidationHint] = useState(false); // 🔥 Efecto de vibración
 
     // Estados de aceptación (guardados cuando se cierra el modal)
     const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
@@ -179,13 +180,23 @@ export default function Step3PlanSelection({
     };
 
     const handleContinue = async () => {
+        console.log('🔘 Clic en Continuar. Plan:', selectedPlan, 'Términos:', !!termsAccepted);
+
         if (!selectedPlan) {
-            showToast('Selecciona un plan', 'error');
+            console.warn('❌ Intento de pago sin plan seleccionado');
+            showToast('⚠️ ¡No te quedes sin plan! Elige mensualidad o anualidad para continuar.', 'error');
+            
+            // Activar efecto visual de advertencia
+            setShowValidationHint(true);
+            setTimeout(() => setShowValidationHint(false), 800);
             return;
         }
 
         if (!termsAccepted) {
-            showToast('Debes aceptar los términos para continuar', 'error');
+            console.warn('❌ Intento de pago sin aceptar términos');
+            showToast('⚠️ Debes aceptar los términos y condiciones para continuar.', 'error');
+            setShowValidationHint(true);
+            setTimeout(() => setShowValidationHint(false), 800);
             return;
         }
 
@@ -252,7 +263,7 @@ export default function Step3PlanSelection({
                 </div>
             )}
 
-            <div className={styles.plansContainer}>
+            <div className={`${styles.plansContainer} ${showValidationHint && !selectedPlan ? styles.shake : ''}`}>
                 {PLANS.map((plan) => (
                     <div
                         key={plan.id}
@@ -387,7 +398,7 @@ export default function Step3PlanSelection({
                     type="button"
                     className={styles.primaryButton}
                     onClick={handleContinue}
-                    disabled={!selectedPlan || !termsAccepted || isProcessing}
+                    disabled={isProcessing}
                 >
                     {isProcessing ? 'Procesando...' : 'Continuar al pago →'}
                 </button>
