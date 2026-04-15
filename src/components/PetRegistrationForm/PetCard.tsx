@@ -57,51 +57,39 @@ export default function PetCard({
         { value: '15+-años', label: '15+ años', numericAge: 15 },
     ];
 
-    // Opciones de tamaño según tipo de mascota con edad senior
+    // Opciones de tamaño según tipo de mascota
     const dogSizeOptions = [
-        { value: 'chica', label: 'Chica (hasta 10kg)', seniorAge: 8 },
-        { value: 'mediana', label: 'Mediana (11-25kg)', seniorAge: 7 },
-        { value: 'grande', label: 'Grande (26-45kg)', seniorAge: 6 },
-        { value: 'gigante', label: 'Gigante (46kg+)', seniorAge: 5 },
+        { value: 'chica', label: 'Chica (hasta 10kg)' },
+        { value: 'mediana', label: 'Mediana (11-25kg)' },
+        { value: 'grande', label: 'Grande (26-45kg)' },
+        { value: 'gigante', label: 'Gigante (46kg+)' },
     ];
 
     const catSizeOptions = [
-        { value: 'chica', label: 'Chica (hasta 4.5kg)', seniorAge: 7 },
-        { value: 'mediana', label: 'Mediana (4.5-7kg)', seniorAge: 7 },
-        { value: 'grande', label: 'Grande (7kg+)', seniorAge: 7 },
+        { value: 'chica', label: 'Chica (hasta 4.5kg)' },
+        { value: 'mediana', label: 'Mediana (4.5-7kg)' },
+        { value: 'grande', label: 'Grande (7kg+)' },
     ];
 
     // Seleccionar opciones según tipo de mascota
     const sizeOptions = petData.petType === 'gato' ? catSizeOptions : dogSizeOptions;
 
-    // Obtener edad senior según tamaño seleccionado
-    const getSeniorAge = (): number | null => {
-        if (!petData.breedSize || !petData.petType) return null;
-        const options = petData.petType === 'gato' ? catSizeOptions : dogSizeOptions;
-        const selected = options.find(opt => opt.value === petData.breedSize);
-        return selected?.seniorAge || null;
-    };
-
-    // Validar edad cuando cambia la edad o el tamaño
+    // Validar edad senior (Unificado a 10 años para todos)
     useEffect(() => {
-        const seniorAge = getSeniorAge();
-        if (petData.age && seniorAge !== null) {
-            const selectedAge = ageOptions.find(opt => opt.value === petData.age);
-            if (selectedAge && selectedAge.numericAge >= seniorAge) {
-                setShowVetCertificate(true);
-                onUpdate({ ...petData, exceedsMaxAge: true });
-            } else {
-                setShowVetCertificate(false);
-                onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
-            }
-        } else {
-            // Si no hay edad o tamaño, limpiamos banderas
+        const ageNum = ageOptions.find(opt => opt.value === petData.age)?.numericAge || 0;
+        const seniorThreshold = 10;
+        const isSenior = ageNum >= seniorThreshold;
+
+        if (isSenior && !petData.exceedsMaxAge) {
+            setShowVetCertificate(true);
+            onUpdate({ ...petData, exceedsMaxAge: true });
+        } else if (!isSenior && petData.exceedsMaxAge) {
             setShowVetCertificate(false);
-            if (petData.exceedsMaxAge) {
-                onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
-            }
+            onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
         }
-    }, [petData.age, petData.breedSize, petData.petType]);
+    }, [petData.age]);
+
+
 
     // Manejar cambio de raza
     const handleBreedChange = (
@@ -158,6 +146,17 @@ export default function PetCard({
                         placeholder="Pérez (opcional)"
                     />
 
+                    <TextInput
+                        label="RUAC (Opcional)"
+                        name={`pet-${petNum}-ruac`}
+                        value={petData.ruac || ''}
+                        onChange={(value) => onUpdate({ ...petData, ruac: value.toUpperCase() })}
+                        placeholder="A1B2C3D4E5X"
+                        maxLength={11}
+                        helpText="🎁 ¡Gana 90 días de carencia! Si no lo tienes, puedes agregarlo después en tu dashboard. (Debe ser de 11 caracteres)"
+                        error={errors[`pet-${petNum}-ruac`]}
+                    />
+
                     <RadioGroup
                         label="¿Cuál es su sexo?"
                         name={`pet-${petNum}-gender`}
@@ -192,7 +191,20 @@ export default function PetCard({
                             { value: 'false', label: 'Raza' },
                         ]}
                         value={petData.isMixed?.toString() || ''}
-                        onChange={(value) => onUpdate({ ...petData, isMixed: value === 'true' })}
+                        onChange={(value) => {
+                            const isMixed = value === 'true';
+                            // Si se cambia de Mestizo a Raza, limpiar datos de adopción
+                            if (!isMixed) {
+                                onUpdate({ 
+                                    ...petData, 
+                                    isMixed: false,
+                                    isAdopted: false,
+                                    adoptionStory: ''
+                                });
+                            } else {
+                                onUpdate({ ...petData, isMixed: true });
+                            }
+                        }}
                         helpText="El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
                         error={errors[`pet-${petNum}-mixed`]}
                         required
@@ -299,10 +311,10 @@ export default function PetCard({
                             accept=".jpg,.jpeg,.png"
                             maxSize={5}
                             maxFiles={2}
-                            instruction={petData.photo1Url && petData.photo2Url ? "Ya tienes fotos guardadas. Sube nuevas si deseas reemplazarlas." : "Sube 2 fotos para conocerlo mejor. Pueden ser selfies juntos..."}
+                            instruction={petData.photo1Url && petData.photo2Url ? "Ya tienes fotos guardadas. Sube nuevas si deseas reemplazarlas." : "Es obligatorio subir una foto de Selfie contigo y tu mascota. Tienes hasta 15 días posteriores para subirla si no la tienes a la mano."}
                             onChange={(files) => onUpdate({ ...petData, photos: files })}
                             error={errors[`pet-${petNum}-photos`]}
-                            required={!(petData.photo1Url && petData.photo2Url)}
+                            required={!(petData.photo1Url && petData.photo1Url)}
                         />
                         {(petData.photo1Url || petData.photo2Url) && (
                             <div style={{ marginTop: '12px', padding: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px' }}>
@@ -317,14 +329,6 @@ export default function PetCard({
                         )}
                     </div>
 
-                    <TextInput
-                        label="¿Tienes RUAC?"
-                        name={`pet-${petNum}-ruac`}
-                        value={petData.ruac || ''}
-                        onChange={(value) => onUpdate({ ...petData, ruac: value })}
-                        placeholder="Ingrésalo aquí (opcional)"
-                        helpText="RUAC = Registro Único de Animales de Compañía. Si lo tienes, tu período de carencia se reduce."
-                    />
                 </div>
             </div>
         </div>

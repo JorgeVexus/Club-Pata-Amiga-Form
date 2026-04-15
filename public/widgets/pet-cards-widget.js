@@ -485,8 +485,9 @@
             // Format gender
             const genderDisplay = pet.gender === 'macho' ? '♂ Macho' : pet.gender === 'hembra' ? '♀ Hembra' : 'No especificado';
 
-            // Pet type
-            const petTypeDisplay = pet.pet_type === 'cat' ? '🐱 Gato' : '🐶 Perro';
+            // Pet type with icon
+            const typeLower = (pet.type || pet.pet_type || '').toLowerCase();
+            const petTypeDisplay = typeLower === 'gato' || typeLower === 'cat' ? '🐱 Gato' : '🐶 Perro';
 
             // Breed info
             const breedDisplay = pet.is_mixed_breed ? '🔀 Mestizo' : (pet.breed || 'No especificada');
@@ -510,6 +511,10 @@
 
             detailRows.push({ icon: '📅', label: 'Fecha de alta', value: new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
 
+            if (pet.waiting_period_end) {
+                detailRows.push({ icon: '⏳', label: 'Fin de carencia', value: new Date(pet.waiting_period_end).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
+            }
+
             const detailsHtml = detailRows.map(r => `
                 <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
                     <span style="color:#888; font-weight:600; font-size:14px;">${r.icon} ${r.label}</span>
@@ -521,7 +526,11 @@
             let badgesHtml = '';
             if (pet.is_adopted) badgesHtml += `<span style="background:#E8F5E9; color:#2E7D32; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🏠 Adoptado</span>`;
             if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🔀 Mestizo</span>`;
-            if (pet.is_senior) badgesHtml += `<span style="background:#FCE4EC; color:#C62828; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">👴 Senior</span>`;
+            // Senior logic: Unificado a 10 años para todos
+            const ageNum = parseInt(pet.age_value) || 0;
+            const isSenior = (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
+
+            if (isSenior) badgesHtml += `<span style="background:#FCE4EC; color:#C62828; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">👴 Senior</span>`;
 
             // Appeal button for rejected pets
             const appealBtnHtml = pet.status === 'rejected' ? `
@@ -567,6 +576,14 @@
                             <div style="margin-top:15px; background:#FFFDE7; border-left:4px solid #FFC107; padding:15px 20px; border-radius:0 12px 12px 0;">
                                 <p style="margin:0 0 5px 0; font-weight:700; color:#5D4037; font-size:14px;">📝 Nota del equipo</p>
                                 <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.admin_notes}</p>
+                            </div>
+                        ` : ''}
+
+                        ${pet.status === 'pending' || pet.status === 'action_required' ? `
+                            <div style="margin-top:20px; padding:15px; background:#FFF9C4; border-radius:12px; border:1px solid #FBC02D;">
+                                <p style="margin:0; font-size:13px; color:#616161; line-height:1.4;">
+                                    ⚠️ <strong>Recuerda:</strong> Si te falta alguna foto o el certificado de salud (senior), tienes un periodo de gracia de <strong>15 días</strong> naturales para subirlos desde tu dashboard antes de recibir un rechazo.
+                                </p>
                             </div>
                         ` : ''}
 
@@ -724,7 +741,7 @@
             const isGato = d.petType === 'gato';
             const ageNum = d.ageUnit === 'years' ? parseInt(d.ageValue) : Math.floor(parseInt(d.ageValue)/12);
             
-            // Lógica Senior simplificada
+            // Lógica Senior: Unificado a 10 años
             const isSenior = ageNum >= 10;
 
             container.innerHTML = `
@@ -794,8 +811,8 @@
                     <div class="pata-upload-box" id="photo-box">
                         <input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
                         ${this.uploadedPhotoUrl ? `<img src="${this.uploadedPhotoUrl}" class="pata-upload-preview">` : '<span class="pata-upload-icon">📷</span>'}
-                        <p class="pata-upload-text">${this.uploadedPhotoUrl ? '✓ Foto lista' : 'Haz clic para subir foto'}</p>
-                        <p class="pata-upload-subtext">JPG/PNG, máx 5MB</p>
+                        <p class="pata-upload-text">${this.uploadedPhotoUrl ? '✓ Foto principal lista' : 'Subir selfie con tu mascota'}</p>
+                        <p class="pata-upload-subtext">Es obligatorio subir una selfie contigo y tu mascota. Tienes 15 días tras el registro para completarlo.</p>
                     </div>
                 </div>
 
@@ -830,8 +847,8 @@
                     </div>
                     <label class="pata-form-label" style="color:#234E52;">RUAC (Opcional)</label>
                     <div class="pata-ruac-input-wrapper">
-                        <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Ej: A1B2C3D4E5" maxlength="10" style="text-transform: uppercase;">
-                        <span id="ruac-status" class="pata-ruac-status" style="display:${d.ruac.length===10?'block':'none'}">✨</span>
+                        <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Ej: A1B2C3D4E5X" maxlength="11" style="text-transform: uppercase;">
+                        <span id="ruac-status" class="pata-ruac-status" style="display:${d.ruac.length===11?'block':'none'}">✨</span>
                     </div>
                     <p style="font-size:11px; color:#4A7C7F; margin-top:10px;"><strong>🎁 Ventaja:</strong> Con el RUAC, el periodo de carencia se reduce a <strong>90 días</strong>.</p>
                     <a href="https://ruac.cdmx.gob.mx/" target="_blank" class="pata-ruac-help-link">
@@ -883,7 +900,13 @@
                 btn.onclick = () => {
                     d.breedType = btn.dataset.bt;
                     d.isMixed = (d.breedType === 'mestizo');
-                    if (d.isMixed) d.breed = 'Mestizo';
+                    if (d.isMixed) {
+                        d.breed = 'Mestizo';
+                    } else {
+                        // Si se cambia a Raza, limpiar datos de adopción
+                        d.isAdopted = false;
+                        d.adoptionStory = '';
+                    }
                     this.saveStep2Fields();
                     this.renderStep2(container);
                 };
@@ -900,7 +923,7 @@
             document.getElementById('add-ruac').oninput = (e) => {
                 const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
                 e.target.value = val;
-                document.getElementById('ruac-status').style.display = val.length === 10 ? 'block' : 'none';
+                document.getElementById('ruac-status').style.display = val.length === 11 ? 'block' : 'none';
             };
 
 
@@ -1082,8 +1105,12 @@
             if (!d.gender) return alert('Selecciona el sexo');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
-            if (!this.uploadedPhotoUrl) return alert('Sube la foto de tu mascota');
-            if (isSenior && !this.uploadedVetUrl) return alert('El certificado veterinario es obligatorio por la edad');
+            if (d.ruac && d.ruac.length !== 11) return alert('El RUAC debe tener exactamente 11 caracteres (ej. ABCD1234567)');
+            // Las fotos y certificados ahora son opcionales con aviso de 15 días
+            // Pero si es Senior recomendamos subirlo de una vez
+            if (isSenior && !this.uploadedVetUrl) {
+                if(!confirm('Como tu mascota es mayor (Senior), se recomienda subir el certificado ahora. ¿Deseas continuar y subirlo después (tienes 15 días)?')) return;
+            }
 
             btn.disabled = true;
             btn.innerText = 'Guardando...';

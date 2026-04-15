@@ -670,7 +670,7 @@
         }
 
         render() {
-            let container = document.getElementById('realtime-bell');
+            let container = document.getElementById('realtime-bell') || document.getElementById('pata-amiga-notifications');
             if (!container) {
                 container = document.createElement('div');
                 container.id = 'realtime-bell';

@@ -25,7 +25,7 @@
  * 
  * 3. En el navbar de Webflow, agrega un Embed element donde quieras la campanita:
  * 
- * <div id="pata-amiga-notifications"></div>
+ * <div id="realtime-bell"></div>
  * 
  * 4. El widget se inicializará automáticamente cuando el usuario esté logueado
  *    en Memberstack y tomará su ID de ahí.
@@ -364,9 +364,17 @@
 
     // Clase principal del widget
     class NotificationWidget {
-        constructor(containerId, userId) {
-            this.container = document.getElementById(containerId);
+        constructor(containerId = 'pata-amiga-notifications', userId) {
+            console.log('🔔 [NOTIFICATIONS] Inicializando widget...');
+            this.container = document.getElementById(containerId) || document.getElementById('pata-amiga-notifications') || document.getElementById('realtime-bell');
             this.userId = userId;
+            
+            if (!this.container) {
+                console.warn(`⚠️ [NOTIFICATIONS] No se encontró el contenedor con ID "${containerId}" o "pata-amiga-notifications". El widget no se cargará.`);
+                return;
+            }
+
+            console.log('🔔 [NOTIFICATIONS] Contenedor encontrado. Esperando a Memberstack...');
             this.notifications = [];
             this.unreadCount = 0;
             this.isOpen = false;
