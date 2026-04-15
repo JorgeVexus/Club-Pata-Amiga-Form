@@ -1,4 +1,0 @@
-changelogs/2026-04-11.md
-src/components/RegistrationV2/steps/Step5CompletePet.tsx
-src/components/RegistrationV2/steps/Step6Success.tsx
-webflow-components/pet-cards-section.html
