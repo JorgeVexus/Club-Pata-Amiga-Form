@@ -21,8 +21,8 @@ export async function OPTIONS() {
 }
 
 export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.url);
     try {
-        const { searchParams } = new URL(request.url);
         const petType = searchParams.get('petType');
         const category = searchParams.get('category') || 'coat'; // 'coat', 'nose', 'eye'
 
@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
         }, { headers: corsHeaders });
 
     } catch (error: any) {
-        console.error(`Error obteniendo colores (${searchParams.get('category')}):`, error);
+        console.error(`Error obteniendo colores (${searchParams.get('category') || 'unknown'}):`, error);
         return NextResponse.json(
             { 
                 success: false, 
