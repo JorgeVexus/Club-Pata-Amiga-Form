@@ -643,15 +643,24 @@
                         ${(function() {
                             const isMissingSelfie = !photo2;
                             const isMissingVet = isSenior && !pet.vet_certificate_url;
-                            const canUpdate = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval'].includes(pet.status);
+                            const canUpdate = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval', 'approved'].includes(pet.status);
                             
-                            if (canUpdate && (isMissingSelfie || isMissingVet)) {
+                            if (canUpdate) {
                                 return `
                                     <div style="margin-top:20px; padding:20px; border-radius:24px; background:#F0FDFA; border:2px dashed #99F6E4; animation:pataSlideDown 0.4s ease-out;">
                                         <h4 style="margin:0 0 15px 0; font-weight:800; font-size:16px; color:#134E4A; display:flex; align-items:center; gap:8px;">
-                                            <span style="font-size:20px;">📋</span> Completar documentación
+                                            <span style="font-size:20px;">📋</span> Actualizar documentos
                                         </h4>
                                         
+                                        <div class="pata-form-group" style="margin-bottom:20px;">
+                                            <label class="pata-form-label" style="color:#134E4A;">🆔 Clave RUAC (Opcional)</label>
+                                            <div style="display:flex; gap:8px;">
+                                                <input type="text" id="modal-ruac-input" value="${pet.ruac || ''}" placeholder="ABC12345678" maxlength="11" style="flex:1; padding:12px 15px; border:2px solid #99F6E4; border-radius:12px; font-family:inherit; font-size:14px; text-transform:uppercase;">
+                                                <button onclick="window.ManadaWidget.handleModalRuacUpdate('${pet.id}', 'modal-ruac-input')" style="background:#00BBB4; color:#fff; border:none; padding:10px 18px; border-radius:12px; font-weight:700; cursor:pointer; font-size:13px; transition:all 0.2s;" onmouseover="this.style.background='#009B95'" onmouseout="this.style.background='#00BBB4'">Actualizar</button>
+                                            </div>
+                                            <p style="font-size:11px; color:#4A7C7F; margin:8px 0 0 0;">Ayuda a que el periodo de carencia baje a 90 días.</p>
+                                        </div>
+
                                         ${isMissingSelfie ? `
                                             <div class="pata-form-group" style="margin-bottom:15px;">
                                                 <label class="pata-form-label" style="color:#134E4A;">🤳 Selfie con tu mascota *</label>
@@ -659,7 +668,7 @@
                                                     <input type="file" accept="image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo2', this.files[0], 'modal-photo2-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
                                                     <span class="pata-upload-icon">📷</span>
                                                     <p class="pata-upload-text">Subir selfie requerida</p>
-                                                    <p class="pata-upload-subtext">Foto donde aparezcan ambos</p>
+                                                    <p class="pata-upload-subtext">Foto donde aparezcan ambos. Tienes 15 días.</p>
                                                 </div>
                                             </div>
                                         ` : ''}
@@ -671,7 +680,7 @@
                                                     <input type="file" accept=".pdf,image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
                                                     <span class="pata-upload-icon">📄</span>
                                                     <p class="pata-upload-text">Subir certificado médico</p>
-                                                    <p class="pata-upload-subtext">Necesario por su edad (${ageNum} años)</p>
+                                                    <p class="pata-upload-subtext">Necesario por su edad (${ageNum} años). Tienes 15 días.</p>
                                                 </div>
                                             </div>
                                         ` : ''}
@@ -679,7 +688,7 @@
                                 `;
                             }
                             return '';
-                        })()}
+                        })()}}
 
                         ${appealBtnHtml}
                     </div>
@@ -872,11 +881,11 @@
                     `;
                 } else if (isSenior) {
                     infoDiv.innerHTML = `
-                        <div class="pata-info-box senior">
-                            <span class="pata-info-icon">⚠️</span>
+                        <div class="pata-info-box">
+                            <span class="pata-info-icon">💡</span>
                             <p class="pata-info-text">
                                 Tu mascota califica como <strong>senior</strong>. 
-                                Necesitarás subir un <strong>certificado veterinario</strong> en el siguiente paso.
+                                Podrás subir su certificado veterinario en el siguiente paso o después (tienes 15 días).
                             </p>
                         </div>
                     `;
@@ -1058,23 +1067,18 @@
                 </div>
 
                 ${isSenior ? `
-                <div class="pata-alert-box">
-                    <span class="pata-alert-icon">⚕️</span>
-                    <div class="pata-alert-text">
-                        <strong>Certificado veterinario requerido</strong>
-                        Como ${d.name} tiene ${ageNum} años, es necesario subir un certificado de salud para validar su membresía.
-                    </div>
-                </div>
                 <div class="pata-form-group">
+                    <label class="pata-form-label">Certificado veterinario</label>
                     <div class="pata-upload-box" id="vet-box">
                         <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
                         <div id="vet-preview-wrap">
                             ${this.uploadedVetUrl ? '<span class="pata-upload-icon">✅</span>' : '<span class="pata-upload-icon">📄</span>'}
-                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado'}</p>
-                            <p class="pata-upload-subtext">PDF/Imagen, máx 5MB</p>
+                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado médico'}</p>
+                            <p class="pata-upload-subtext">Requerido por edad (${d.ageValue} ${d.ageUnit==='years'?'años':'meses'}). <strong>Tienes 15 días tras el registro.</strong></p>
                         </div>
                     </div>
                 </div>` : ''}
+
 
                 <div class="pata-btn-row">
                     <button class="pata-btn pata-btn-secondary" id="add-back">← Atrás</button>
@@ -1363,11 +1367,8 @@
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
             if (d.ruac && d.ruac.length !== 11) return alert('El RUAC debe tener exactamente 11 caracteres (ej. ABCD1234567)');
-            // Las fotos y certificados ahora son opcionales con aviso de 15 días
-            // Pero si es Senior recomendamos subirlo de una vez
-            if (isSenior && !this.uploadedVetUrl) {
-                if(!confirm('Como tu mascota es mayor (Senior), se recomienda subir el certificado ahora. ¿Deseas continuar y subirlo después (tienes 15 días)?')) return;
-            }
+            // Las fotos y certificados ahora son opcionales con aviso de 15 días para completar
+
 
             btn.disabled = true;
             btn.innerText = 'Guardando...';
@@ -1522,6 +1523,47 @@
                 alert('No se pudo subir: ' + err.message);
                 container.innerHTML = originalContent;
                 container.style.pointerEvents = 'auto';
+            }
+        }
+
+        async handleModalRuacUpdate(petId, inputId) {
+            const input = document.getElementById(inputId);
+            const val = input.value.trim().toUpperCase();
+            if (!val) return alert('Ingresa una clave RUAC válida');
+            if (val.length !== 11) return alert('El RUAC debe tener 11 caracteres');
+
+            const btn = input.nextElementSibling;
+            const originalText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = '...';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: this.member.id, ruac: val })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    btn.style.background = '#38A169';
+                    btn.innerText = '✓';
+                    setTimeout(() => {
+                        this.init().then(() => {
+                            const modal = input.closest('.pata-modal-overlay');
+                            if (modal) {
+                                modal.remove();
+                                this.showDetails(petId);
+                            }
+                        });
+                    }, 1000);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (err) {
+                alert('Error al actualizar RUAC: ' + err.message);
+                btn.disabled = false;
+                btn.innerText = originalText;
             }
         }
     }
