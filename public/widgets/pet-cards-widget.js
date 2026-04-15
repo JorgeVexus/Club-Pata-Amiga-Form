@@ -215,9 +215,32 @@
         .pata-type-btn.active { border-color: #15BEB2; background: #F0FEFE; box-shadow: 0 8px 20px rgba(21,190,178,0.1); }
         .pata-type-icon { font-size: 40px; display: block; margin-bottom: 10px; }
 
-        .pata-age-row { display: flex; flex-direction: column; gap: 10px; }
-        .pata-age-input { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 25px; font-size: 16px; box-sizing: border-box; }
-        .pata-age-select { width: 100% !important; height: 55px; border-radius: 50px; border: 1px solid rgba(0,0,0,0.1); padding: 0 20px; font-size: 16px; background: #fff; cursor: pointer; box-sizing: border-box; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D'http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg'%20viewBox%3D'0%200%2024%2024'%20fill%3D'none'%20stroke%3D'currentColor'%20stroke-width%3D'2'%20stroke-linecap%3D'round'%20stroke-linejoin%3D'round'%3E%3Cpolyline%20points%3D'6%209%2012%2015%2018%209'%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px center; background-size: 16px; }
+        .pata-age-row { display: flex; gap: 10px; align-items: flex-start; }
+        .pata-age-input-group { flex: 1; }
+        .pata-age-input { width: 100% !important; height: 55px; border-radius: 50px; border: 2px solid #F0F0F0; padding: 0 25px; font-size: 16px; box-sizing: border-box; outline: none; transition: border-color 0.3s; }
+        .pata-age-input:focus { border-color: #15BEB2; }
+        
+        .pata-unit-toggle {
+            display: flex; gap: 2px; background: #F7F7F7; padding: 4px; border-radius: 50px; 
+            border: 2px solid #F0F0F0; height: 55px; box-sizing: border-box;
+        }
+        .pata-unit-btn {
+            padding: 0 20px; border: none; border-radius: 50px; background: transparent;
+            color: #718096; font-family: inherit; font-size: 14px; font-weight: 700;
+            cursor: pointer; transition: all 0.2s; white-space: nowrap; height: 100%;
+        }
+        .pata-unit-btn.active { background: #15BEB2; color: #fff; box-shadow: 0 2px 8px rgba(21,190,178,0.2); }
+
+        .pata-info-box {
+            background: #F0FEFE; border: 1.5px solid #7DD8D5; border-radius: 20px;
+            padding: 15px 20px; margin-top: 15px; display: flex; gap: 12px;
+            align-items: center; animation: pataSlideDown 0.3s ease-out;
+        }
+        .pata-info-box.senior { background: #FFF9E6; border-color: #FBD38D; }
+        .pata-info-icon { font-size: 20px; }
+        .pata-info-text { font-size: 13px; color: #2D3748; line-height: 1.4; margin: 0; }
+        .pata-info-text strong { color: #234E52; }
+        .pata-info-box.senior .pata-info-text strong { color: #744210; }
         
         /* 🚨 UI/UX PRO MAX: FORCED VERTICAL LAYOUT FOR MOBILE OPTIMIZATION */
         .pata-form-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
@@ -698,12 +721,15 @@
                 <div class="pata-form-group">
                     <label class="pata-form-label">Edad *</label>
                     <div class="pata-age-row">
-                        <input class="pata-age-input" id="add-age-val" type="number" min="1" value="${d.ageValue}" placeholder="Ej: 3">
-                        <select class="pata-age-select" id="add-age-unit">
-                            <option value="years" ${d.ageUnit==='years'?'selected':''}>Años</option>
-                            <option value="months" ${d.ageUnit==='months'?'selected':''}>Meses</option>
-                        </select>
+                        <div class="pata-age-input-group">
+                            <input class="pata-age-input" id="add-age-val" type="number" min="0" value="${d.ageValue}" placeholder="Ej: 3">
+                        </div>
+                        <div class="pata-unit-toggle">
+                            <button type="button" class="pata-unit-btn ${d.ageUnit==='years'?'active':''}" data-unit="years">Años</button>
+                            <button type="button" class="pata-unit-btn ${d.ageUnit==='months'?'active':''}" data-unit="months">Meses</button>
+                        </div>
                     </div>
+                    <div id="pata-age-info" style="margin-top: 10px;"></div>
                 </div>
 
                 <div class="pata-btn-row">
@@ -720,16 +746,78 @@
                 };
             });
 
+            // Age Unit Toggle Events
+            container.querySelectorAll('.pata-unit-btn').forEach(btn => {
+                btn.onclick = () => {
+                    const newUnit = btn.dataset.unit;
+                    if (d.ageUnit === newUnit) return;
+                    
+                    // Convert value logic (optional but nice)
+                    let currentVal = parseInt(document.getElementById('add-age-val').value) || 0;
+                    if (d.ageUnit === 'years' && newUnit === 'months') {
+                        currentVal = currentVal * 12;
+                    } else if (d.ageUnit === 'months' && newUnit === 'years') {
+                        currentVal = Math.floor(currentVal / 12);
+                    }
+                    
+                    d.ageUnit = newUnit;
+                    document.getElementById('add-age-val').value = currentVal;
+                    
+                    container.querySelectorAll('.pata-unit-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateAgeFeedback();
+                };
+            });
+
+            const updateAgeFeedback = () => {
+                const ageVal = parseInt(document.getElementById('add-age-val').value) || 0;
+                const infoDiv = document.getElementById('pata-age-info');
+                if (!infoDiv) return;
+
+                if (ageVal <= 0) {
+                    infoDiv.innerHTML = '';
+                    return;
+                }
+
+                const ageInYears = d.ageUnit === 'years' ? ageVal : Math.floor(ageVal / 12);
+                const isSenior = ageInYears >= 10;
+
+                if (isSenior) {
+                    infoDiv.innerHTML = `
+                        <div class="pata-info-box senior">
+                            <span class="pata-info-icon">⚠️</span>
+                            <p class="pata-info-text">
+                                Tu mascota califica como <strong>senior</strong>. 
+                                Necesitarás subir un <strong>certificado veterinario</strong> en el siguiente paso.
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    infoDiv.innerHTML = `
+                        <div class="pata-info-box">
+                            <span class="pata-info-icon">💡</span>
+                            <p class="pata-info-text">
+                                ¡Perfecto! La foto de tu mascota la podrás subir en el siguiente paso. 
+                                <strong>Tienes 15 días para hacerlo.</strong>
+                            </p>
+                        </div>
+                    `;
+                }
+            };
+
+            document.getElementById('add-age-val').oninput = updateAgeFeedback;
+            updateAgeFeedback(); // Initial call
+
             document.getElementById('add-next').onclick = () => {
                 const name = document.getElementById('add-name').value.trim();
                 const age = document.getElementById('add-age-val').value;
                 if (!d.petType) return alert('Selecciona si es perro o gato');
                 if (!name) return alert('El nombre es requerido');
-                if (!age || age <= 0) return alert('Ingresa una edad válida');
+                if (!age || age < 0) return alert('Ingresa una edad válida');
                 
                 d.name = name;
                 d.ageValue = age;
-                d.ageUnit = document.getElementById('add-age-unit').value;
+                // d.ageUnit already updated by toggle clicks
 
                 this.addStep = 2;
                 this.renderAddStep();
