@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({
                 success: true,
                 valid: false,
-                message: '❌ Código no válido'
+                message: 'Código no válido'
             }, { headers: corsHeaders() });
         }
 
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({
                 success: true,
                 valid: false,
-                message: '❌ Código no válido'
+                message: 'Código no válido'
             }, { headers: corsHeaders() });
         }
 

@@ -202,11 +202,12 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                     message: `✅ ¡Bienvenido a la manada de ${data.ambassador_name}! ✨`
                 });
             } else {
+                const errorMsg = data.message || 'Ese código no es válido/no existe';
                 setAmbassadorValidation({
                     isValidating: false,
                     isValid: false,
                     ambassadorName: '',
-                    message: data.message || '❌ Ese código no es válido/no existe'
+                    message: `❌ ${errorMsg}`
                 });
             }
         } catch (error) {
