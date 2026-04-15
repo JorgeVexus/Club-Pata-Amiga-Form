@@ -1148,13 +1148,17 @@
 
 .infoNote {
     margin-bottom: 0.5rem;
-    background: #f8fafc;
-    padding: 0.5rem 1rem;
+    background: #E6FFFA; /* Color turquesa muy claro para destacar */
+    padding: 0.6rem 1.25rem;
     border-radius: 50px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid #7DD8D5;
     width: fit-content;
     margin-left: auto;
     margin-right: auto;
+    color: #2D3748; /* Texto oscuro para legibilidad */
+    opacity: 1;
+    font-size: 0.85rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .infoNote svg {
