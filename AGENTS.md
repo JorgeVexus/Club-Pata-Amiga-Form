@@ -2,9 +2,29 @@
 
 > Este archivo contiene información esencial para agentes de IA que trabajen en este proyecto. El proyecto está documentado principalmente en español.
 
+## Reglas de Operación y Git
+
+7. AUTHORIZATION REQUIRED (STRICT):
+   - NEVER execute `git commit` or `git push` without explicit authorization from the USER for the specific changes made.
+   - ALWAYS ask if you should proceed with the commit after showing a summary of the work and providing the opportunity for local review.
+
+8. MANDATORY CHANGELOG UPDATE (STRICT):
+   - ALWAYS update or create the daily changelog file in `changelogs/YYYY-MM-DD.md` immediately after every `git push`.
+   - The changelog MUST include details of the changes made, including commit descriptions and functional impacts.
+
 ## Visión General del Proyecto
 
 **Pet Membership Form** es un sistema completo de registro de membresías para mascotas que integra múltiples tecnologías para gestionar usuarios, mascotas, pagos y un dashboard administrativo.
+- **Authentication**: Memberstack handles auth; Supabase has RLS disabled (auth handled at app level)
+
+### Git Commit & Changelog Rules
+
+- NEVER chain git commands using `&&`
+- ALWAYS execute git commands as separate steps
+- Format: `git commit -m "<type>: <short description>"`
+- Allowed types: feat, fix, refactor, style, chore, docs
+- NEVER execute `git commit` or `git push` without explicit user authorization
+- **MANDATORY**: ALWAYS update or create the daily changelog in `changelogs/YYYY-MM-DD.md` after every `git push`, detailing all changes and their impact.
 
 ### Propósito Principal
 - Registro de usuarios con datos personales y documentos (INE, comprobante de domicilio)
