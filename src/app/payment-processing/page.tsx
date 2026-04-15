@@ -72,8 +72,8 @@ export default function PaymentProcessingPage() {
                     </p>
                     <div className={styles.helpSection}>
                         <p>¿Tienes problemas con tu pago?</p>
-                        <a href="mailto:hola@pataamiga.mx" className={styles.contactLink}>
-                            Contáctanos en hola@pataamiga.mx
+                        <a href="mailto:miembros@pataamiga.mx" className={styles.contactLink}>
+                            Contáctanos en miembros@pataamiga.mx
                         </a>
                     </div>
                 </div>

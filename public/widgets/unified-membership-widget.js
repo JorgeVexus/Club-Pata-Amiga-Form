@@ -934,7 +934,7 @@
                         </div>
 
                         <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
-                            ¿Tienes problemas? Escríbenos a <a href="mailto:hola@pataamiga.mx" style="color: #00BBB4;">hola@pataamiga.mx</a>
+                            ¿Tienes problemas? Escríbenos a <a href="mailto:miembros@pataamiga.mx" style="color: #00BBB4;">miembros@pataamiga.mx</a>
                         </p>
                     </div>
                 </div>
@@ -1165,7 +1165,7 @@
                     <div class="pata-orange-alert-icon">🔔</div>
                     <div class="pata-orange-alert-text">
                         <strong>¿Adoptaste a alguno de tus compañeros o tienes RUAC?</strong><br>
-                        Puedes acelerar tu acceso al fondo. <a href="https://wa.me/525639535068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Contáctanos aquí</a> para validar tus documentos.
+                        Puedes acelerar tu acceso al fondo. <a href="https://wa.me/525637545068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Contáctanos aquí</a> para validar tus documentos.
                     </div>
                 </div>
             `;

@@ -189,7 +189,7 @@ export default function Step6Success({ petName, member, userEmail }: Step6Succes
                     </svg>
                     <p style={{ margin: 0, fontSize: '0.9rem', color: '#2F855A', fontFamily: 'Outfit, sans-serif' }}>
                         ¿Tienes dudas? <a 
-                            href={`https://wa.me/525639535068?text=${encodeURIComponent('¡Hola! Tengo una duda sobre mi registro en Pata Amiga.')}`}
+                            href={`https://wa.me/525637545068?text=${encodeURIComponent('¡Hola! Tengo una duda sobre mi registro en Pata Amiga.')}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             style={{ 
@@ -203,7 +203,7 @@ export default function Step6Success({ petName, member, userEmail }: Step6Succes
                             onMouseOver={(e) => e.currentTarget.style.color = '#128C7E'}
                             onMouseOut={(e) => e.currentTarget.style.color = '#25D366'}
                         >
-                            WhatsApp: 56 3953 5068
+                            WhatsApp: 56 3754 5068
                         </a>
                     </p>
                 </div>
