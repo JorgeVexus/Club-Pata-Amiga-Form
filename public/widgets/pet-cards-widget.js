@@ -388,6 +388,7 @@
 
         @keyframes pataFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pataSlideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pataSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         /* Referral Validation Colors */
         .pata-referral-msg { font-size: 11px; margin-top: 5px; font-weight: 600; min-height: 14px; }
@@ -631,13 +632,54 @@
                             </div>
                         ` : ''}
 
-                        ${pet.status === 'pending' || pet.status === 'action_required' ? `
+                        ${pet.status === 'pending' || pet.status === 'action_required' || pet.status === 'pending_approval' || pet.status === 'waiting_approval' ? `
                             <div style="margin-top:20px; padding:15px; background:#FFF9C4; border-radius:12px; border:1px solid #FBC02D;">
                                 <p style="margin:0; font-size:13px; color:#616161; line-height:1.4;">
-                                    ⚠️ <strong>Recuerda:</strong> Si te falta alguna foto o el certificado de salud (senior), tienes un periodo de gracia de <strong>15 días</strong> naturales para subirlos desde tu dashboard antes de recibir un rechazo.
+                                    ⚠️ <strong>Recuerda:</strong> Si te falta alguna foto o el certificado de salud (senior), tienes un periodo de gracia de <strong>15 días</strong> naturales para subirlos desde aquí o tu dashboard antes de recibir un rechazo.
                                 </p>
                             </div>
                         ` : ''}
+
+                        ${(function() {
+                            const isMissingSelfie = !photo2;
+                            const isMissingVet = isSenior && !pet.vet_certificate_url;
+                            const canUpdate = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval'].includes(pet.status);
+                            
+                            if (canUpdate && (isMissingSelfie || isMissingVet)) {
+                                return `
+                                    <div style="margin-top:20px; padding:20px; border-radius:24px; background:#F0FDFA; border:2px dashed #99F6E4; animation:pataSlideDown 0.4s ease-out;">
+                                        <h4 style="margin:0 0 15px 0; font-weight:800; font-size:16px; color:#134E4A; display:flex; align-items:center; gap:8px;">
+                                            <span style="font-size:20px;">📋</span> Completar documentación
+                                        </h4>
+                                        
+                                        ${isMissingSelfie ? `
+                                            <div class="pata-form-group" style="margin-bottom:15px;">
+                                                <label class="pata-form-label" style="color:#134E4A;">🤳 Selfie con tu mascota *</label>
+                                                <div class="pata-upload-box" id="modal-photo2-box" style="padding:20px; background:#fff; position:relative;">
+                                                    <input type="file" accept="image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo2', this.files[0], 'modal-photo2-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
+                                                    <span class="pata-upload-icon">📷</span>
+                                                    <p class="pata-upload-text">Subir selfie requerida</p>
+                                                    <p class="pata-upload-subtext">Foto donde aparezcan ambos</p>
+                                                </div>
+                                            </div>
+                                        ` : ''}
+
+                                        ${isMissingVet ? `
+                                            <div class="pata-form-group" style="margin-bottom:0;">
+                                                <label class="pata-form-label" style="color:#134E4A;">⚕️ Certificado de salud (Senior) *</label>
+                                                <div class="pata-upload-box" id="modal-vet-box" style="padding:20px; background:#fff; position:relative;">
+                                                    <input type="file" accept=".pdf,image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
+                                                    <span class="pata-upload-icon">📄</span>
+                                                    <p class="pata-upload-text">Subir certificado médico</p>
+                                                    <p class="pata-upload-subtext">Necesario por su edad (${ageNum} años)</p>
+                                                </div>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                `;
+                            }
+                            return '';
+                        })()}
 
                         ${appealBtnHtml}
                     </div>
@@ -1428,6 +1470,59 @@
                     else { alert('Error: ' + data.error); btn.disabled = false; btn.innerText = 'Enviar Apelación'; }
                 } catch (err) { alert('Error de conexión'); btn.disabled = false; }
             };
+        }
+
+        async handleModalFileUpload(petId, type, file, elementId) {
+            if (!file) return;
+            const container = document.getElementById(elementId);
+            const originalContent = container.innerHTML;
+            
+            // Show loading
+            container.innerHTML = `
+                <div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:10px auto;"></div>
+                <p style="font-size:12px; color:#666; font-weight:600;">Subiendo...</p>
+            `;
+            container.style.pointerEvents = 'none';
+
+            try {
+                // 1. Upload to storage
+                const url = await this.uploadNewPetPhoto(file);
+                
+                // 2. Prepare payload
+                const updateData = { userId: this.member.id };
+                if (type === 'photo2') updateData.photo2Url = url;
+                if (type === 'vet') updateData.vetCertificateUrl = url;
+
+                // 3. Update in database
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    container.innerHTML = `<span style="font-size:30px;">✅</span><p style="font-size:13px; font-weight:700; color:#2E7D32; margin:0;">¡Listo!</p>`;
+                    setTimeout(() => {
+                        // Refresh both the main grid and the modal
+                        this.init().then(() => {
+                            // Re-open/refresh details if the modal is still there
+                            const modal = container.closest('.pata-modal-overlay');
+                            if (modal) {
+                                modal.remove();
+                                this.showDetails(petId);
+                            }
+                        });
+                    }, 1500);
+                } else {
+                    throw new Error(data.error || 'Error actualizando registro');
+                }
+            } catch (err) {
+                console.error('Modal upload error:', err);
+                alert('No se pudo subir: ' + err.message);
+                container.innerHTML = originalContent;
+                container.style.pointerEvents = 'auto';
+            }
         }
     }
 

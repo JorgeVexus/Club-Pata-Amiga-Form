@@ -74,7 +74,7 @@ export async function POST(
         }
 
         // Verificar que está en un status que permite actualización
-        const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending'];
+        const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval'];
         const isOnlyAdoptionStory = adoptionStory && !photo1Url && !photo2Url && !vetCertificateUrl;
         
         if (!allowedStatuses.includes(pet.status) && !isOnlyAdoptionStory) {

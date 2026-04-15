@@ -311,7 +311,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     <button
                         className={styles.nextButton}
                         onClick={handleNext}
-                        disabled={!selectedPlanId || !termsAccepted || !marketingConsent || !clickwrapAccepted || isProcessing}
+                        disabled={isProcessing}
                     >
                         {isProcessing ? 'Procesando...' : 'Siguiente'}
                         <div className={styles.nextIcon}>

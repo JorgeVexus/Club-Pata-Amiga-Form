@@ -32,7 +32,7 @@
             border: 1px solid var(--pata-glass-border);
             border-radius: 35px;
             padding: 40px;
-            max-width: 920px;
+            width: 100%;
             margin: 0 auto 20px auto;
             box-shadow: var(--pata-shadow-premium);
             font-family: 'Outfit', sans-serif;
@@ -75,7 +75,7 @@
 
         /* External Greeting */
         .pata-external-greeting {
-            max-width: 920px;
+            width: 100%;
             margin: 40px auto 20px auto;
             font-family: 'Outfit', sans-serif;
             color: #FFFFFF;
@@ -389,7 +389,6 @@
             border: 2px solid #000;
             font-weight: 900;
             cursor: pointer;
-            transition: all 0.3s var(--pata-spring);
             font-size: 17px;
             display: inline-flex;
             align-items: center;
@@ -397,6 +396,55 @@
             gap: 12px;
             text-decoration: none !important;
             min-height: 52px;
+        }
+        .pata-orange-alert-text a:hover {
+            text-decoration: none !important;
+            opacity: 0.8;
+        }
+
+        /* Documentation Warning Banner (15 days logic) */
+        .pata-documentation-warning {
+            background: #FFF3CD;
+            border: 1px solid #FFE69C;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .pata-warning-icon {
+            font-size: 24px;
+        }
+
+        .pata-warning-content {
+            color: #856404;
+            flex: 1;
+        }
+
+        .pata-warning-content strong {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 5px;
+            font-weight: 800;
+        }
+
+        .pata-warning-content p {
+            margin: 2px 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .pata-warning-deadline {
+            margin-top: 8px !important;
+            font-weight: 600;
+        }
+
+        .pata-warning-deadline strong {
+            display: inline;
+            color: #D32F2F;
         }
         .pata-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
         .pata-btn:active { transform: translateY(0); }
@@ -593,12 +641,12 @@
             const start = new Date(pet.created_at);
 
             // Lógica de carencia refinada:
-            // 1. Adoptado o RUAC -> 90 días
+            // 1. Adoptado o RUAC (11 dígitos validado en frontend) -> 90 días
             // 2. Mestizo -> 120 días
             // 3. Estándar -> 180 días
 
             let totalDays = 180;
-            if (pet.is_adopted || pet.ruac) {
+            if (pet.is_adopted || (pet.ruac && pet.ruac.length >= 11)) {
                 totalDays = 90;
             } else if (pet.is_mixed) {
                 totalDays = 120;
@@ -610,6 +658,64 @@
             const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
             return { daysRemaining, percentage, totalDays };
+        }
+
+        isSenior(pet) {
+            const age = parseInt(pet.age_value) || 0;
+            const type = (pet.type || pet.pet_type || '').toLowerCase();
+            if (type === 'perro' && age >= 7) return true;
+            if (type === 'gato' && age >= 9) return true;
+            return false;
+        }
+
+        checkMissingDocs(pet) {
+            if (!pet) return [];
+            const missing = [];
+            if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto principal");
+            if (!pet.photo2_url) missing.push("Selfie con tu mascota");
+            if (this.isSenior(pet) && !pet.medical_certificate_url) missing.push("Certificado médico (Senior)");
+            return missing;
+        }
+
+        getDeadlineInfo() {
+            if (!this.member?.userMeta?.registrationDate && !this.member?.createdAt) return null;
+            const regDateStr = this.member.customFields?.['registration-date'] || this.member.createdAt;
+            const regDate = new Date(regDateStr);
+            if (isNaN(regDate.getTime())) return null;
+
+            const deadline = new Date(regDate.getTime() + (15 * 24 * 60 * 60 * 1000));
+            const now = new Date();
+            const diff = deadline - now;
+            const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
+            
+            return { 
+                deadline: deadline.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' }), 
+                daysLeft, 
+                isExpired: daysLeft < 0 
+            };
+        }
+
+        renderWarningBanner(pet) {
+            const missing = this.checkMissingDocs(pet);
+            if (missing.length === 0) return '';
+
+            const deadlineInfo = this.getDeadlineInfo();
+            if (!deadlineInfo) return '';
+
+            return `
+                <div class="pata-documentation-warning">
+                    <div class="pata-warning-icon">⚠️</div>
+                    <div class="pata-warning-content">
+                        <strong>Documentación pendiente para ${pet.name}</strong>
+                        <p>Falta: ${missing.join(', ')}</p>
+                        <p class="pata-warning-deadline">
+                            ${deadlineInfo.isExpired 
+                                ? '⚠️ Tu plazo de 15 días ha expirado. Sube estos documentos pronto para evitar problemas con tu cobertura.' 
+                                : `Tienes hasta el <strong>${deadlineInfo.deadline}</strong> (${deadlineInfo.daysLeft} días) para completar tu registro.`}
+                        </p>
+                    </div>
+                </div>
+            `;
         }
 
         render() {
@@ -1012,6 +1118,7 @@
             else if (carencia.percentage > 25) encouragement = "¡Vas por excelente camino!";
 
             return `
+                ${this.renderWarningBanner(pet)}
                 <div class="pata-approved-grid">
                     <div class="pata-approved-main">
                         <h2 class="pata-carencia-title">tu periodo de carencia</h2>
@@ -1031,7 +1138,7 @@
                             </div>
                             <div class="pata-bar-labels">
                                 <span>Día 1</span>
-                                <span>Día 180</span>
+                                <span>Día ${carencia.totalDays}</span>
                             </div>
                         </div>
                     </div>
