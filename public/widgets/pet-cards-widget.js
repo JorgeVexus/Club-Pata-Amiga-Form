@@ -180,7 +180,33 @@
             .pata-manada-title { font-size: 60px; text-align: center; }
         }
 
-        /* Breed Autocomplete */
+        /* Autocomplete Suggestions */
+        .pata-autocomplete-wrapper { position: relative; }
+        .pata-autocomplete-suggestions {
+            position: absolute;
+            top: 100%; left: 0; right: 0;
+            background: #fff;
+            border: 1px solid #E2E8F0;
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        .pata-autocomplete-suggestions.active { display: block; }
+        .pata-autocomplete-suggestion {
+            padding: 10px 15px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #4A5568;
+            border-bottom: 1px solid #EDF2F7;
+            transition: all 0.2s;
+        }
+        .pata-autocomplete-suggestion:hover { background: #F7FAFC; color: #00BBB4; }
+        .pata-autocomplete-suggestion:last-child { border-bottom: none; border-radius: 0 0 15px 15px; }
+
         .pata-breed-wrapper { position: relative; grid-column: 1 / -1; }
         .pata-breed-suggestions {
             position: absolute; top: 100%; left: 0; right: 0;
@@ -677,6 +703,14 @@
             };
             this.uploadedPhotoUrl = null;
             this.uploadedVetUrl = null;
+
+            // Inicializar caches una sola vez por sesión de "Añadir mascota"
+            this.breedsCache = { perro: [], gato: [] };
+            this.colorsCache = {
+                coat: { perro: [], gato: [] },
+                nose: { perro: [], gato: [] },
+                eye: { perro: [], gato: [] }
+            };
             
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
@@ -896,17 +930,26 @@
                 <div class="pata-form-row">
                     <div class="pata-form-group">
                         <label class="pata-form-label">Color de pelo *</label>
-                        <input class="pata-form-input" id="add-coat" value="${d.coatColor}" placeholder="Ej: Café, Negro...">
+                        <div class="pata-autocomplete-wrapper">
+                            <input class="pata-form-input" id="add-coat" value="${d.coatColor}" placeholder="Ej: Café, Negro..." autocomplete="off">
+                            <div id="pata-coat-suggestions" class="pata-autocomplete-suggestions"></div>
+                        </div>
                     </div>
                     <div class="pata-form-group">
                         <label class="pata-form-label">Color de nariz</label>
-                        <input class="pata-form-input" id="add-nose" value="${d.noseColor}" placeholder="Ej: Negro, Rosado...">
+                        <div class="pata-autocomplete-wrapper">
+                            <input class="pata-form-input" id="add-nose" value="${d.noseColor}" placeholder="Ej: Negro, Rosado..." autocomplete="off">
+                            <div id="pata-nose-suggestions" class="pata-autocomplete-suggestions"></div>
+                        </div>
                     </div>
                 </div>
 
                 <div class="pata-form-group">
                     <label class="pata-form-label">Color de ojos</label>
-                    <input class="pata-form-input" id="add-eyes" value="${d.eyeColor}" placeholder="Ej: Miel, Azules...">
+                    <div class="pata-autocomplete-wrapper">
+                        <input class="pata-form-input" id="add-eyes" value="${d.eyeColor}" placeholder="Ej: Miel, Azules..." autocomplete="off">
+                        <div id="pata-eye-suggestions" class="pata-autocomplete-suggestions"></div>
+                    </div>
                 </div>
 
                 <div class="pata-form-group">
@@ -1003,13 +1046,16 @@
                 btn.onclick = () => {
                     d.breedType = btn.dataset.bt;
                     d.isMixed = (d.breedType === 'mestizo');
-                    if (d.isMixed) {
-                        d.breed = 'Mestizo';
-                    } else {
-                        // Si se cambia a Raza, limpiar datos de adopción
+                    
+                    if (d.breedType === 'raza') {
+                        // Si se cambia a Raza, limpiar datos de adopción (que solo aplican a mestizos)
                         d.isAdopted = false;
                         d.adoptionStory = '';
+                        d.breed = ''; // Reset breed name to pick a new one
+                    } else {
+                        d.breed = 'Mestizo';
                     }
+                    
                     this.saveStep2Fields();
                     this.renderStep2(container);
                 };
@@ -1031,6 +1077,9 @@
 
 
             this.setupBreedAutocomplete(container);
+            this.setupColorAutocomplete('add-coat', 'pata-coat-suggestions', 'coat');
+            this.setupColorAutocomplete('add-nose', 'pata-nose-suggestions', 'nose');
+            this.setupColorAutocomplete('add-eyes', 'pata-eye-suggestions', 'eye');
             this.setupFileUploads();
             this.setupReferralValidation();
 
@@ -1156,7 +1205,6 @@
             const warning = document.getElementById('pata-breed-warning');
             if (!input || !suggestions) return;
 
-            this.breedsCache = this.breedsCache || { perro: [], gato: [] };
             const type = this.addFormData.petType;
 
             const load = async () => {
@@ -1198,6 +1246,70 @@
             };
 
             document.addEventListener('click', (e) => { if (!input.contains(e.target)) suggestions.classList.remove('active'); });
+        }
+
+        async setupColorAutocomplete(inputId, suggestionsId, category) {
+            const input = document.getElementById(inputId);
+            const suggestions = document.getElementById(suggestionsId);
+            if (!input || !suggestions) return;
+
+            const type = this.addFormData.petType;
+            const apiType = type === 'perro' ? 'perro' : 'gato'; // El API espera perro/gato y lo mapea internamente a dog/cat
+
+            const load = async () => {
+                if (this.colorsCache[category][type].length) return;
+                try {
+                    const res = await fetch(`${CONFIG.apiUrl}/api/catalogs/coat-colors?petType=${apiType}&category=${category}`);
+                    const data = await res.json();
+                    if (data.success) {
+                        this.colorsCache[category][type] = data.data;
+                    }
+                } catch(e) { console.error(`Error loading ${category} colors`, e); }
+            };
+
+            const show = (q) => {
+                const list = this.colorsCache[category][type] || [];
+                const filtered = q 
+                    ? list.filter(c => c.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10) 
+                    : list.slice(0, 8);
+                
+                if (filtered.length === 0 && !q) {
+                    suggestions.classList.remove('active');
+                    return;
+                }
+
+                suggestions.innerHTML = filtered.map(c => `
+                    <div class="pata-autocomplete-suggestion" data-name="${c.name}">
+                        ${c.name}
+                    </div>
+                `).join('');
+                suggestions.classList.add('active');
+            };
+
+            input.onfocus = async () => {
+                await load();
+                show(input.value);
+            };
+
+            input.oninput = (e) => show(e.target.value);
+
+            suggestions.onclick = (e) => {
+                const item = e.target.closest('.pata-autocomplete-suggestion');
+                if (item) {
+                    input.value = item.dataset.name;
+                    // Update appropriate field in addFormData
+                    if (category === 'coat') this.addFormData.coatColor = item.dataset.name;
+                    if (category === 'nose') this.addFormData.noseColor = item.dataset.name;
+                    if (category === 'eye') this.addFormData.eyeColor = item.dataset.name;
+                    suggestions.classList.remove('active');
+                }
+            };
+
+            document.addEventListener('click', (e) => { 
+                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
+                    suggestions.classList.remove('active'); 
+                }
+            });
         }
 
         async submitNewPet(isSenior) {

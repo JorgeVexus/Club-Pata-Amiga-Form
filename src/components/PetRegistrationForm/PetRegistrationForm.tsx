@@ -269,10 +269,19 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 newErrors[`pet-${petNum}-adopted`] = 'Indica si fue adoptado';
             }
 
+            // RUAC: 11 caracteres (opcional)
+            if (pet.ruac && pet.ruac.length !== 11) {
+                newErrors[`pet-${petNum}-ruac`] = 'El RUAC debe tener exactamente 11 caracteres';
+            }
+
+            // Fotos: ya son opcionales, pero si hay una, debe haber dos? 
+            // El usuario dijo "Las fotos deben ser opcionales", así que quitamos el error
+            /*
             const hasExistingPhotos = pet.photo1Url && pet.photo2Url;
             if (!hasExistingPhotos && (!pet.photos || pet.photos.length < 2)) {
                 newErrors[`pet-${petNum}-photos`] = 'Debes subir 2 fotos';
             }
+            */
         });
 
         setErrors(newErrors);

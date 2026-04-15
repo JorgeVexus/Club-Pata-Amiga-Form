@@ -241,6 +241,14 @@
   .pata-detail-grid { grid-template-columns: 1fr; }
   .pata-btn-row { flex-direction: column; }
 }
+
+/* Referral Validation Colors */
+.pata-referral-msg { font-size: 11px; margin-top: 5px; font-weight: 600; min-height: 14px; }
+.pata-referral-msg.success { color: #38A169; }
+.pata-referral-msg.error { color: #E53E3E; }
+.pata-referral-msg.loading { color: #718096; font-style: italic; }
+.pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
+.pata-form-input.invalid { border-color: #E53E3E; background: #FFF5F5; }
 </style>
 
 <div id="pata-pets-container" class="pata-pets-section">
@@ -458,7 +466,12 @@
     // ══════════════════════════════════════
     openAddModal() {
       this.addStep = 1;
-      this.addFormData = { petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '' };
+      this.addFormData = { 
+        petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', 
+        breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', photo1Url: '',
+        eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '',
+        referralCode: '', referralName: '', isReferralValid: false
+      };
       this.uploadedPhotoUrl = null;
       this.uploadedVetUrl = null;
       this.renderAddStep();
@@ -637,19 +650,31 @@
             </div>
           </div>
           <div class="pata-form-group" id="adoption-story-group" style="display:${d.isAdopted?'block':'none'}">
-            <div class="pata-alert-box" style="background:#E8FAF9; border-left-color:#15BEB2; margin-bottom:12px;">
-              <span class="alert-icon">📖</span>
-              <div class="alert-text"><strong>Historia de adopción</strong>Cuéntanos cómo llegó este peludo a tu vida. Esta información nos ayuda a validar el periodo de carencia reducido.</div>
+            <div class="pata-alert-box" style="background:#FFF9E6; border-left:3px solid #FFA500; margin-bottom:12px;">
+              <span class="alert-icon">⚠️</span>
+              <div class="alert-text"><strong>AVISO:</strong> El texto que escribas podrá ser publicado en nuestras redes sociales o sitio web para inspirar a más personas a adoptar.</div>
             </div>
-            <label class="pata-form-label">Cuéntanos su historia</label>
-            <textarea class="pata-form-textarea" id="add-story" placeholder="Ej: Lo encontramos en un parque, fue rescatado de un refugio...">${d.adoptionStory || ''}</textarea>
-            <p style="font-size:11px; color:#777; margin-top:6px; font-style:italic;">Al compartir esta historia, confirmas que los datos son verídicos para fines de validación de membresía.</p>
+            <label class="pata-form-label">Historia de adopción</label>
+            <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos brevemente su historia...">${d.adoptionStory || ''}</textarea>
           </div>
 
           <div class="pata-form-group">
             <label class="pata-form-label">RUAC (opcional)</label>
             <input class="pata-form-input" id="add-ruac" value="${d.ruac || ''}" placeholder="Ej: ABC123456789">
             <p class="pata-add-subtext" style="font-size:11px; margin-top:4px;">Si tienes el RUAC, la carencia se reduce a 90 días.</p>
+          </div>
+
+          <div class="pata-form-group">
+            <label class="pata-form-label">Código de Embajador (Opcional)</label>
+            <input class="pata-form-input ${d.referralCode ? (d.isReferralValid ? 'valid' : 'invalid') : ''}" 
+                   id="add-referral-code" 
+                   value="${d.referralCode || ''}" 
+                   placeholder="Ej: MARCOS24" 
+                   style="text-transform: uppercase;">
+            <div id="referral-msg" class="pata-referral-msg ${d.isReferralValid ? 'success' : 'error'}">
+                ${d.referralName ? `✓ Embajador: ${d.referralName}` : ''}
+            </div>
+            <p style="font-size:11px; color:#A0A0A0; margin-top:4px;">Si un embajador te recomendó, ingresa su código para reducir tu carencia a 90 días.</p>
           </div>
 
           ${isSenior ? `
@@ -753,6 +778,8 @@
         };
       }
 
+      this.setupReferralValidation();
+
       // Submit
       document.getElementById('add-submit').onclick = () => this.submitNewPet(isSenior);
     }
@@ -768,6 +795,57 @@
       if (el('add-size')) d.breedSize = el('add-size').value;
       if (el('add-story')) d.adoptionStory = el('add-story').value;
       if (el('add-ruac')) d.ruac = el('add-ruac').value;
+      if (el('add-referral-code')) d.referralCode = el('add-referral-code').value.toUpperCase();
+    }
+
+    setupReferralValidation() {
+      const input = document.getElementById('add-referral-code');
+      const msg = document.getElementById('referral-msg');
+      if (!input || !msg) return;
+
+      let debounceTimer;
+      input.addEventListener('input', (e) => {
+        const code = e.target.value.toUpperCase();
+        this.addFormData.referralCode = code;
+        clearTimeout(debounceTimer);
+
+        if (!code) {
+          msg.innerHTML = '';
+          input.classList.remove('valid', 'invalid');
+          this.addFormData.isReferralValid = false;
+          this.addFormData.referralName = '';
+          return;
+        }
+
+        msg.innerHTML = 'Validando...';
+        msg.className = 'pata-referral-msg loading';
+        
+        debounceTimer = setTimeout(async () => {
+          try {
+            const res = await fetch(`${API_URL}/api/referrals/validate-code?code=${code}`);
+            const data = await res.json();
+            
+            if (data.success && data.valid) {
+              msg.innerHTML = `✓ Embajador: ${data.ambassador.name}`;
+              msg.className = 'pata-referral-msg success';
+              input.classList.add('valid');
+              input.classList.remove('invalid');
+              this.addFormData.isReferralValid = true;
+              this.addFormData.referralName = data.ambassador.name;
+            } else {
+              msg.innerHTML = '❌ Código no válido';
+              msg.className = 'pata-referral-msg error';
+              input.classList.add('invalid');
+              input.classList.remove('valid');
+              this.addFormData.isReferralValid = false;
+              this.addFormData.referralName = '';
+            }
+          } catch (err) {
+            msg.innerHTML = '⚠️ Error al validar';
+            msg.className = 'pata-referral-msg error';
+          }
+        }, 600);
+      });
     }
 
     setupAutocomplete(inputId, listId, options, onSelect) {
@@ -839,6 +917,7 @@
             isSenior: isSenior,
             vetCertificateUrl: this.uploadedVetUrl,
             ruac: d.ruac || '',
+            referralCode: d.isReferralValid ? d.referralCode : ''
           }
         };
 
