@@ -237,10 +237,13 @@
             align-items: center; animation: pataSlideDown 0.3s ease-out;
         }
         .pata-info-box.senior { background: #FFF9E6; border-color: #FBD38D; }
+        .pata-info-box.error { background: #FFF5F5; border-color: #FEB2B2; }
         .pata-info-icon { font-size: 20px; }
         .pata-info-text { font-size: 13px; color: #2D3748; line-height: 1.4; margin: 0; }
         .pata-info-text strong { color: #234E52; }
         .pata-info-box.senior .pata-info-text strong { color: #744210; }
+        .pata-info-box.error .pata-info-text { color: #C53030; }
+        .pata-info-box.error .pata-info-text strong { color: #9B2C2C; }
         
         /* 🚨 UI/UX PRO MAX: FORCED VERTICAL LAYOUT FOR MOBILE OPTIMIZATION */
         .pata-form-row { display: flex; flex-direction: column; gap: 15px; margin-bottom: 15px; }
@@ -779,10 +782,19 @@
                     return;
                 }
 
-                const ageInYears = d.ageUnit === 'years' ? ageVal : Math.floor(ageVal / 12);
-                const isSenior = ageInYears >= 10;
+                const totalMonths = d.ageUnit === 'years' ? ageVal * 12 : ageVal;
+                const isSenior = totalMonths >= 120; // 10 years
 
-                if (isSenior) {
+                if (totalMonths < 4) {
+                    infoDiv.innerHTML = `
+                        <div class="pata-info-box error">
+                            <span class="pata-info-icon">❌</span>
+                            <p class="pata-info-text">
+                                La edad mínima de tu peludo debe ser superior a <strong>4 meses</strong> para poder registrarse.
+                            </p>
+                        </div>
+                    `;
+                } else if (isSenior) {
                     infoDiv.innerHTML = `
                         <div class="pata-info-box senior">
                             <span class="pata-info-icon">⚠️</span>
@@ -814,6 +826,9 @@
                 if (!d.petType) return alert('Selecciona si es perro o gato');
                 if (!name) return alert('El nombre es requerido');
                 if (!age || age < 0) return alert('Ingresa una edad válida');
+                
+                const totalMonths = d.ageUnit === 'years' ? parseInt(age) * 12 : parseInt(age);
+                if (totalMonths < 4) return alert('La edad mínima de tu peludo debe ser superior a 4 meses para poder registrarse.');
                 
                 d.name = name;
                 d.ageValue = age;
