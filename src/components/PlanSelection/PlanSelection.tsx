@@ -85,7 +85,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             // Lanzar el checkout de Stripe a través de Memberstack
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: selectedPlanId,
-                successUrl: window.location.origin + '/payment-success'
+                successUrl: window.location.origin + '/payment-success',
+                allow_promotion_codes: false,
+                allowPromotionCodes: false
             });
 
             console.log('✅ Checkout completado:', result);

@@ -537,7 +537,9 @@ export default function NewRegistrationFlow() {
         try {
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: planId,
-                successUrl: window.location.origin + '/payment-success'
+                successUrl: window.location.origin + '/payment-success',
+                allow_promotion_codes: false,
+                allowPromotionCodes: false
             });
 
             if (result) {
