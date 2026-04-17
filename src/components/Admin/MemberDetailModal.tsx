@@ -577,13 +577,14 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                                             />
                                                                             <div className={styles.miniLabel}>#{photo.id}</div>
                                                                         </div>
-                                                                    ))}
+                                                                    ))
                                                                 </div>
                                                             )}
                                                         </div>
                                                     );
                                                 })()}
                                             </div>
+                                        </div>
 
                                         {/* Admin Actions per Pet */}
                                         <div className={styles.petAdminActions}>
@@ -680,7 +681,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                                         </div>
                                                                         <p className={styles.historyMessage}>{log.message}</p>
                                                                     </div>
-                                                                ))}
+                                                                ))
                                                             </div>
                                                         )}
                                                     </div>
@@ -688,7 +689,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             )}
                                         </div>
                                     </div>
-                                ))}
+                                ))
                             </div>
                         )}
                     </div>
