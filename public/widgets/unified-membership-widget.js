@@ -1148,7 +1148,7 @@
                                 <img src="${petImage}" alt="${pet.name}">
                             </div>
                             <div class="pata-pet-info-box">
-                                <h3>${pet.name}${pet.age_value >= 10 ? '<span class="pata-senior-badge">Senior</span>' : ''}</h3>
+                                <h3>${pet.name}${this.isSenior(pet) ? '<span class="pata-senior-badge">Senior</span>' : ''}</h3>
                                 <ul>
                                     <li>${pet.age || '1 año'}</li>
                                     <li>${pet.type || 'Lomito'}</li>
@@ -1378,16 +1378,16 @@
                                 <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 20px; right: 20px;">&times;</button>
                                 
                                 <h2 style="font-size: 50px; font-weight: 900; line-height: 0.9; margin: 0 0 10px 0; letter-spacing: -1px;">${pet.name}</h2>
-                                <p style="font-size: 18px; font-weight: 700; color: #666; margin-bottom: 30px;">${pet.breed || 'Mestizo'} ${pet.age_value >= 10 ? '<span class="pata-senior-badge" style="margin-left:5px;">Senior</span>' : ''}</p>
+                                <p style="font-size: 18px; font-weight: 700; color: #666; margin-bottom: 30px;">${pet.breed || pet.pet_breed || 'Mestizo'} ${this.isSenior(pet) ? '<span class="pata-senior-badge" style="margin-left:5px;">Senior</span>' : ''}</p>
 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 2px solid #F0F0F0; padding-top: 25px;">
                                     <div class="pata-detail-item">
                                         <div class="pata-detail-label">Especie</div>
-                                        <div class="pata-detail-value">${pet.type}</div>
+                                        <div class="pata-detail-value">${pet.type || pet.pet_type || 'Lomito'}</div>
                                     </div>
                                     <div class="pata-detail-item">
                                         <div class="pata-detail-label">Edad</div>
-                                        <div class="pata-detail-value">${pet.age}</div>
+                                        <div class="pata-detail-value">${pet.age || (pet.age_value ? `${pet.age_value} años` : '1 año')}</div>
                                     </div>
                                     <div class="pata-detail-item">
                                         <div class="pata-detail-label">Peso</div>
@@ -1586,10 +1586,10 @@
                 };
             });
 
-            // Ver detalles
-            const detailsBtn = this.container.querySelector('.pata-btn-ver-detalles');
-            if (detailsBtn) {
-                detailsBtn.onclick = () => {
+            // Delegación de eventos para el contenedor
+            this.container.onclick = (e) => {
+                const detailsBtn = e.target.closest('.pata-btn-ver-detalles');
+                if (detailsBtn) {
                     const pet = this.pets[this.currentIndex];
                     if (!pet) return;
                     
@@ -1600,9 +1600,8 @@
                     document.body.appendChild(modalDiv);
 
                     // Close events
-                    const close = () => {
-                        modalDiv.remove();
-                    };
+                    const close = () => modalDiv.remove();
+
                     const closeBtn1 = document.getElementById('pata-close-details');
                     const closeBtn2 = document.getElementById('pata-close-details-btn');
                     if (closeBtn1) closeBtn1.onclick = close;
@@ -1610,12 +1609,12 @@
                     
                     const modalOverlay = document.getElementById('pata-pet-details-modal');
                     if (modalOverlay) {
-                        modalOverlay.onclick = (e) => {
-                            if (e.target.id === 'pata-pet-details-modal') close();
+                        modalOverlay.onclick = (ev) => {
+                            if (ev.target.id === 'pata-pet-details-modal') close();
                         };
                     }
-                };
-            }
+                }
+            };
 
             // Reveal appeal form
             const revealBtn = document.getElementById('pata-btn-reveal-appeal');
