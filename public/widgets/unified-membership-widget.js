@@ -12,7 +12,14 @@
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         brandColor: '#00BBB4',
         progressColor: '#9fd406',
-        countdownBg: '#C8E600'
+        countdownBg: '#C8E600',
+        statusColors: {
+            approved: { bg: '#E8F5E9', text: '#2E7D32', label: 'APROBADA', icon: '✅' },
+            pending: { bg: '#FFF3E0', text: '#EF6C00', label: 'PENDIENTE', icon: '⏳' },
+            rejected: { bg: '#FFEBEE', text: '#C62828', label: 'RECHAZADA', icon: '❌' },
+            action_required: { bg: '#E3F2FD', text: '#1565C0', label: 'ACCION REQUERIDA', icon: '⚠️' },
+            appealed: { bg: '#F3E5F5', text: '#7B1FA2', label: 'APELADA', icon: '⚖️' }
+        }
     };
 
     const STYLES = `
@@ -1399,7 +1406,7 @@
                                     </div>
                                 </div>
 
-                                ${pet.age_value >= 10 ? `
+                                ${this.isSenior(pet) ? `
                                     <div style="margin-top: 20px; padding: 15px; background: #F3E5F5; border-radius: 15px; border: 2px solid #7B1FA2;">
                                         <div class="pata-detail-label" style="color: #7B1FA2;">Salud Senior</div>
                                         ${pet.vet_certificate_url ? 
