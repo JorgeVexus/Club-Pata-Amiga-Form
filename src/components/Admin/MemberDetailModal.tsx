@@ -17,6 +17,9 @@ interface Pet {
     admin_notes?: string;
     photo_url?: string;
     photo2_url?: string;
+    photo3_url?: string;
+    photo4_url?: string;
+    photo5_url?: string;
     vet_certificate_url?: string;
     coat_color?: string;
     nose_color?: string;
@@ -526,24 +529,23 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 </p>
                                             </div>
                                         )}
-                                        {/* Pet Photo Section */}
+
+                                        {/* Pet Photo Section - Premium Editorial Layout */}
                                         <div className={styles.petPhotosSection}>
-                                            <div className={styles.petPhotosGrid}>
-                                                {/* Unified Photo Rendering Logic: Show Supabase photo OR Memberstack fallback per slot */}
+                                            <div className={styles.premiumGallery}>
                                                 {(() => {
                                                     const pIdx = pets.indexOf(pet) + 1;
-                                                    const msUrl1 = fields[`pet-${pIdx}-photo-1-url`];
-                                                    const msUrl2 = fields[`pet-${pIdx}-photo-2-url`];
+                                                    
+                                                    // Collect all available photos from Supabase or Memberstack fallback
+                                                    const photos = [
+                                                        { url: pet.photo_url || fields[`pet-${pIdx}-photo-1-url`], id: 1 },
+                                                        { url: pet.photo2_url || fields[`pet-${pIdx}-photo-2-url`], id: 2 },
+                                                        { url: pet.photo3_url || fields[`pet-${pIdx}-photo-3-url`], id: 3 },
+                                                        { url: pet.photo4_url || fields[`pet-${pIdx}-photo-4-url`], id: 4 },
+                                                        { url: pet.photo5_url || fields[`pet-${pIdx}-photo-5-url`], id: 5 }
+                                                    ].filter(p => p.url && p.url.startsWith('http'));
 
-                                                    // Array of photos: [Photo 1, Photo 2]
-                                                    // Each item: { url: string, source: 'Supabase' | 'Memberstack', index: number }
-                                                    // Update: Use dedicated photo2_url field
-                                                    const photosToShow = [
-                                                        { url: pet.photo_url || msUrl1, source: pet.photo_url ? 'Supabase' : 'Memberstack', id: 1 },
-                                                        { url: pet.photo2_url || msUrl2, source: pet.photo2_url ? 'Supabase' : 'Memberstack', id: 2 }
-                                                    ].filter(p => p.url); // Only show if URL exists
-
-                                                    if (photosToShow.length === 0) {
+                                                    if (photos.length === 0) {
                                                         return (
                                                             <div className={styles.noPhotoPlaceholder}>
                                                                 <span>📷 Sin fotos detectadas</span>
@@ -552,26 +554,36 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         );
                                                     }
 
-                                                    return photosToShow.map((photo, idx) => (
-                                                        <div key={idx} className={styles.petPhotoContainer}>
-                                                            <img
-                                                                src={photo.url}
-                                                                alt={`${pet.name} - Foto ${photo.id}`}
-                                                                className={styles.petThumb}
-                                                                onError={(e) => {
-                                                                    (e.target as HTMLImageElement).src = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-                                                                    (e.target as HTMLImageElement).style.opacity = '0.5';
-                                                                }}
-                                                            />
-                                                            <div className={styles.photoActions}>
-                                                                <a href={photo.url} target="_blank" rel="noopener noreferrer">Ver #{photo.id}</a>
-                                                                <a href="#" onClick={(e) => handleDownload(e, photo.url!, `${pet.name}-foto-${photo.id}`)}>Bajar</a>
+                                                    return (
+                                                        <div className={styles.editorialGrid}>
+                                                            <div className={styles.mainPhotoWrapper}>
+                                                                <img 
+                                                                    src={photos[0].url} 
+                                                                    alt="Principal" 
+                                                                    className={styles.mainPhoto}
+                                                                    onClick={() => window.open(photos[0].url, '_blank')}
+                                                                />
+                                                                <div className={styles.photoLabel}>FOTO PRINCIPAL</div>
                                                             </div>
+                                                            {photos.length > 1 && (
+                                                                <div className={styles.sidePhotos}>
+                                                                    {photos.slice(1).map((photo, idx) => (
+                                                                        <div key={idx} className={styles.sidePhotoWrapper}>
+                                                                            <img 
+                                                                                src={photo.url} 
+                                                                                alt={`Foto ${photo.id}`} 
+                                                                                className={styles.sidePhoto}
+                                                                                onClick={() => window.open(photo.url, '_blank')}
+                                                                            />
+                                                                            <div className={styles.miniLabel}>#{photo.id}</div>
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    ));
+                                                    );
                                                 })()}
                                             </div>
-                                        </div>
 
                                         {/* Admin Actions per Pet */}
                                         <div className={styles.petAdminActions}>

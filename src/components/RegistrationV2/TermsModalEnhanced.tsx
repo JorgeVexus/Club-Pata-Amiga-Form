@@ -10,6 +10,8 @@ import styles from './TermsModalEnhanced.module.css';
 
 
 
+import { LEGAL_CONTENT } from '@/data/legal-terms';
+
 interface TermsAcceptance {
     termsAndConditions: boolean;
     privacyPolicy: boolean;
@@ -23,6 +25,22 @@ interface TermsModalEnhancedProps {
     initialAcceptance?: TermsAcceptance;
     documentsOnly?: boolean;
 }
+
+const renderLegalText = (text: string) => {
+    if (!text) return null;
+    return text.split('\n').map((line, index) => {
+        const trimmedLine = line.trim();
+        if (trimmedLine.startsWith('## ') || trimmedLine.startsWith('### ')) {
+            return (
+                <h4 key={index} className={styles.textHeader}>
+                    {trimmedLine.replace(/^###?\s/, '')}
+                </h4>
+            );
+        }
+        if (trimmedLine === '') return <br key={index} />;
+        return <p key={index} className={styles.textLine}>{line}</p>;
+    });
+};
 
 export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance, documentsOnly = false }: TermsModalEnhancedProps) {
     const [isDocExpanded, setIsDocExpanded] = useState(false);
@@ -77,7 +95,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance,
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Documentos Legales</h3>
                         <p className={styles.sectionDescription}>
-                            Toca o haz clic sobre cualquier documento para descargarlo y revisarlo.
+                            Puedes leer los términos directamente aquí o descargar el PDF oficial.
                         </p>
 
                         <div className={styles.docsList}>
@@ -89,9 +107,9 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance,
                                     <div className={styles.docInfo}>
                                         <span className={styles.docIcon}>📄</span>
                                         <div>
-                                            <div className={styles.docTitle}>Términos del Servicio</div>
+                                            <div className={styles.docTitle}>Términos del Servicio (Lectura Directa)</div>
                                             <div className={styles.docDesc}>
-                                                Incluye Aviso de privacidad, Términos y condiciones, Reglamentos y Políticas aplicables.
+                                                Incluye Aviso de privacidad, Términos, Reglamentos y Políticas.
                                             </div>
                                         </div>
                                     </div>
@@ -101,11 +119,23 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance,
                                 </div>
                                 {isDocExpanded && (
                                     <div className={styles.docAccordionContent}>
-                                        <iframe
-                                            src="/legal/terminos_completos_v1.pdf#toolbar=0"
-                                            className={styles.docIframe}
-                                            title="Términos Completos"
-                                        />
+                                        <div className={styles.textViewerContainer}>
+                                            <div className={styles.textContent}>
+                                                {renderLegalText(LEGAL_CONTENT.fullDocument)}
+                                            </div>
+                                        </div>
+
+                                        <div className={styles.downloadSection}>
+                                            <a
+                                                href="/legal/terminos_completos_v1.pdf"
+                                                download
+                                                className={styles.downloadBtn}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                <span>📥 Descargar PDF Oficial</span>
+                                            </a>
+                                        </div>
                                     </div>
                                 )}
                             </div>

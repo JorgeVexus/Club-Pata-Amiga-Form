@@ -1,0 +1,158 @@
+<!-- Pata Amiga: Benefits Marquee (Webflow Embed Version) -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;800&display=swap" rel="stylesheet">
+
+<style>
+    .cp-benefits-marquee-wrapper {
+        width: 100%;
+        background: #ffffff;
+        padding: 1rem 0;
+        overflow: hidden;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #E2E8F0;
+        user-select: none;
+    }
+
+    .cp-marquee-track {
+        display: flex;
+        align-items: center;
+        animation: cp-marquee-animation 35s linear infinite;
+        will-change: transform;
+    }
+
+    .cp-benefits-marquee-wrapper:hover .cp-marquee-track {
+        animation-play-state: paused;
+    }
+
+    .cp-benefit-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        font-family: 'Outfit', sans-serif;
+        flex-shrink: 0;
+        padding: 0 3.5rem;
+    }
+
+    .cp-benefit-icon {
+        width: 44px;
+        height: 44px;
+        object-fit: contain;
+        margin-bottom: 0.25rem;
+    }
+
+    .cp-text-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.15rem;
+        text-align: center;
+    }
+
+    .cp-benefit-title {
+        color: #000000;
+        font-size: 1rem;
+        font-weight: 800;
+        letter-spacing: -0.2px;
+    }
+
+    .cp-benefit-subtitle {
+        color: #4A5568;
+        font-size: 0.85rem;
+        font-weight: 400;
+    }
+
+    @keyframes cp-marquee-animation {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 768px) {
+        .cp-benefits-marquee-wrapper { padding: 0.75rem 0; }
+        .cp-marquee-track { animation-duration: 25s; }
+        .cp-benefit-item { padding: 0 2rem; gap: 0.35rem; }
+        .cp-benefit-icon { width: 38px; height: 38px; }
+        .cp-benefit-title { font-size: 0.9rem; }
+        .cp-benefit-subtitle { font-size: 0.75rem; }
+    }
+</style>
+
+<div class="cp-benefits-marquee-wrapper">
+    <div class="cp-marquee-track">
+        <!-- Bloque 1 -->
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">emergencias médicas</span>
+                <span class="cp-benefit-subtitle">Hasta $3,000 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/Icon-vacuna_ybuall.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">vacunación anual</span>
+                <span class="cp-benefit-subtitle">Hasta $300 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">apoyo en caso de fallecimiento</span>
+                <span class="cp-benefit-subtitle">Hasta $2,000 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-chat_mqbwg0.png" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">chat veterinario</span>
+                <span class="cp-benefit-subtitle">Disponibilidad 24/7</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-comunidad_cvbgpt.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">comunidad</span>
+                <span class="cp-benefit-subtitle">Una manada que te acompaña</span>
+            </div>
+        </div>
+
+        <!-- Bloque 2 (Duplicado para loop infinito) -->
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">emergencias médicas</span>
+                <span class="cp-benefit-subtitle">Hasta $3,000 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/Icon-vacuna_ybuall.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">vacunación anual</span>
+                <span class="cp-benefit-subtitle">Hasta $300 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">apoyo en caso de fallecimiento</span>
+                <span class="cp-benefit-subtitle">Hasta $2,000 MXN</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-chat_mqbwg0.png" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">chat veterinario</span>
+                <span class="cp-benefit-subtitle">Disponibilidad 24/7</span>
+            </div>
+        </div>
+        <div class="cp-benefit-item">
+            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-comunidad_cvbgpt.svg" class="cp-benefit-icon" alt="">
+            <div class="cp-text-container">
+                <span class="cp-benefit-title">comunidad</span>
+                <span class="cp-benefit-subtitle">Una manada que te acompaña</span>
+            </div>
+        </div>
+    </div>
+</div>

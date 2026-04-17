@@ -32,7 +32,7 @@ export async function POST(
     try {
         const { petId } = await params;
         const body = await request.json();
-        const { userId, photo1Url, photo2Url, vetCertificateUrl, message, adoptionStory } = body;
+        const { userId, photo1Url, photo2Url, photo3Url, photo4Url, photo5Url, vetCertificateUrl, message, adoptionStory } = body;
 
         console.log(`📝 [PetUpdate] Inicio: Usuario=${userId}, Pet=${petId}`);
         console.log('📦 Body:', JSON.stringify(body, null, 2));
@@ -100,6 +100,18 @@ export async function POST(
             updateData.photo2_url = photo2Url;
             console.log('📷 URL Foto 2:', photo2Url);
         }
+        if (isValidUrl(photo3Url)) {
+            updateData.photo3_url = photo3Url;
+            console.log('📷 URL Foto 3:', photo3Url);
+        }
+        if (isValidUrl(photo4Url)) {
+            updateData.photo4_url = photo4Url;
+            console.log('📷 URL Foto 4:', photo4Url);
+        }
+        if (isValidUrl(photo5Url)) {
+            updateData.photo5_url = photo5Url;
+            console.log('📷 URL Foto 5:', photo5Url);
+        }
         if (isValidUrl(vetCertificateUrl)) {
             updateData.vet_certificate_url = vetCertificateUrl;
             updateData.vet_certificate_uploaded = true;
@@ -145,6 +157,9 @@ export async function POST(
                 metadata: {
                     photo1_updated: isValidUrl(photo1Url),
                     photo2_updated: isValidUrl(photo2Url),
+                    photo3_updated: isValidUrl(photo3Url),
+                    photo4_updated: isValidUrl(photo4Url),
+                    photo5_updated: isValidUrl(photo5Url),
                     vet_certificate_updated: isValidUrl(vetCertificateUrl)
                 },
                 created_at: new Date().toISOString()

@@ -506,20 +506,26 @@
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
             const idx = this.pets.indexOf(pet) + 1;
+        showDetails(id) {
+            const p = this.pets.find(p => p.id === id);
+            if (!p) return;
 
-            // Get all available photos
-            const photo1 = pet.primary_photo_url || pet.photo_url || this.msFields[`pet-${idx}-photo-1-url`];
-            const photo2 = pet.photo2_url || this.msFields[`pet-${idx}-photo-2-url`];
-            const photos = [photo1, photo2].filter(p => p);
-            const mainPhoto = photos[0] || CONFIG.placeholderDog;
+            // Collect up to 5 photos
+            const photos = [
+                p.photo_url || p.primary_photo_url,
+                p.photo2_url,
+                p.photo3_url,
+                p.photo4_url,
+                p.photo5_url
+            ].filter(url => url && url.startsWith('http'));
+
+            if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
+
+            const carencia = this.calculateCarencia(p);
+            const status = this.getStatusConfig(p.status || 'pending');
 
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
-            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-
-            // Photo gallery HTML
-            let photoHtml = '';
-            if (photos.length > 1) {
                 photoHtml = `
                     <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;">
                         ${photos.map(url => `
@@ -1004,12 +1010,19 @@
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label">Fotografía</label>
-                    <div class="pata-upload-box" id="photo-box">
-                        <input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
-                        ${this.uploadedPhotoUrl ? `<img src="${this.uploadedPhotoUrl}" class="pata-upload-preview">` : '<span class="pata-upload-icon">📷</span>'}
-                        <p class="pata-upload-text">${this.uploadedPhotoUrl ? '✓ Foto principal lista' : 'Subir selfie con tu mascota'}</p>
-                        <p class="pata-upload-subtext">Es obligatorio subir una selfie contigo y tu mascota. Tienes 15 días tras el registro para completarlo.</p>
+                    <label class="pata-form-label" style="font-weight: 900; font-size: 18px; margin-bottom: 5px;">Álbum de fotos</label>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 20px;">Sube hasta 5 fotos para su perfil. Una buena foto ayuda a identificarlo mejor en caso de emergencia.</p>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                        ${[1,2,3,4,5].map(num => `
+                            <div class="pata-upload-box small" id="photo-box-${num}" style="position: relative; overflow: hidden; height: 110px; border-radius: 20px;">
+                                <input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;">
+                                <div class="pata-upload-content" style="text-align: center; padding: 10px;">
+                                    <span class="pata-upload-icon" style="font-size: 20px; display: block; margin-bottom: 4px;">📷</span>
+                                    <span style="font-size: 10px; font-weight: 800; text-transform: uppercase;">${num === 1 ? 'Principal *' : 'Foto ' + num}</span>
+                                </div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
 
@@ -1200,30 +1213,38 @@
         }
 
         setupFileUploads() {
-            const photoInput = document.getElementById('add-photo');
-            const vetInput = document.getElementById('add-vet');
-            
-            if (photoInput) {
-                photoInput.onchange = async (e) => {
+            // Multiple Pet Photos
+            document.querySelectorAll('.pata-photo-input').forEach(input => {
+                input.onchange = async (e) => {
                     const file = e.target.files[0];
                     if (!file) return;
-                    const box = document.getElementById('photo-box');
+                    const num = input.dataset.num;
+                    const box = document.getElementById(`photo-box-${num}`);
                     const originalContent = box.innerHTML;
-                    box.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:20px auto;"></div>';
+                    
+                    box.innerHTML = '<div style="width:24px; height:24px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; position: absolute; top: 50%; left: 50%; margin: -12px 0 0 -12px;"></div>';
+                    
                     try {
                         const url = await this.uploadNewPetPhoto(file);
-                        this.uploadedPhotoUrl = url;
+                        this.addFormData.photos = this.addFormData.photos || {};
+                        this.addFormData.photos[`photo${num}`] = url;
+                        
                         box.classList.add('has-file');
-                        box.innerHTML = `<input type="file" accept="image/*" id="add-photo" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><img src="${url}" class="pata-upload-preview" /><p class="pata-upload-text">✓ Foto lista</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
-                        this.setupFileUploads(); // Re-attach listener
+                        box.innerHTML = `
+                            <input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;">
+                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
+                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>
+                        `;
+                        this.setupFileUploads(); // Re-attach listeners for other inputs
                     } catch(err) { 
                         alert('Error subiendo foto'); 
                         box.innerHTML = originalContent;
                         this.setupFileUploads();
                     }
                 };
-            }
+            });
 
+            const vetInput = document.getElementById('add-vet');
             if (vetInput) {
                 vetInput.onchange = async (e) => {
                     const file = e.target.files[0];
@@ -1236,7 +1257,7 @@
                         this.uploadedVetUrl = url;
                         box.classList.add('has-file');
                         box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Certificado listo</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
-                        this.setupFileUploads(); // Re-attach listener
+                        this.setupFileUploads();
                     } catch(err) { 
                         alert('Error subiendo certificado'); 
                         box.innerHTML = originalContent;
@@ -1389,7 +1410,11 @@
                         eyeColor: d.eyeColor,
                         isAdopted: d.isAdopted,
                         adoptionStory: d.adoptionStory,
-                        photo1Url: this.uploadedPhotoUrl,
+                        photo1Url: d.photos?.photo1 || null,
+                        photo2Url: d.photos?.photo2 || null,
+                        photo3Url: d.photos?.photo3 || null,
+                        photo4Url: d.photos?.photo4 || null,
+                        photo5Url: d.photos?.photo5 || null,
                         isSenior: isSenior,
                         vetCertificateUrl: this.uploadedVetUrl,
                         ruac: d.ruac || '',

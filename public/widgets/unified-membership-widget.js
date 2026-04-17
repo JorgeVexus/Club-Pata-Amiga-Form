@@ -509,9 +509,9 @@
             this.showAppealForm = false;
             // 🆕 Estados para modal de actualización
             this.showUpdateModal = false;
-            this.uploadFiles = { photo1: null, photo2: null };
+            this.uploadFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null };
             this.uploading = false;
-            this.missingPhotosFiles = { photo1: null, photo2: null };
+            this.missingPhotosFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null };
 
             if (!this.container) return;
             this.init();
@@ -1271,58 +1271,53 @@
 
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
-                    <div class="pata-modal">
-                        <div class="pata-modal-header">
-                            <h3 class="pata-modal-title">📎 Actualizar información de ${pet.name}</h3>
+                    <div class="pata-modal" style="max-width: 700px;">
+                        <div class="pata-modal-header" style="background: #fff; border-bottom: 2px solid #000;">
+                            <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px;">📸 Actualizar Álbum de ${pet.name}</h3>
                             <button class="pata-modal-close" id="pata-modal-close">&times;</button>
                         </div>
-                        <div class="pata-modal-body">
-                            <div class="pata-admin-request">
-                                <div class="pata-admin-request-label">📩 El equipo te pidió:</div>
-                                <p class="pata-admin-request-msg">${adminMsg}</p>
+                        <div class="pata-modal-body" style="padding: 30px;">
+                            <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
+                                <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
+                                <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                                <div>
-                                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 1:</label>
-                                    <div class="pata-upload-area" id="pata-upload-area-1">
-                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;">
-                                        <div class="pata-upload-icon">📷</div>
-                                        <div class="pata-upload-text">Seleccionar foto</div>
+                            <p style="font-weight: 800; font-size: 16px; margin-bottom: 20px;">Sube hasta 5 fotos para su álbum:</p>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                                ${[1, 2, 3, 4, 5].map(num => `
+                                    <div class="pata-form-group">
+                                        <label style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block; color: #666; text-transform: uppercase;">Foto ${num} ${num === 1 ? '*' : '(Opcional)'}</label>
+                                        <div class="pata-upload-area" id="pata-upload-area-${num}" style="min-height: 120px; border-radius: 20px;">
+                                            <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-${num}" style="display:none;">
+                                            <div class="pata-upload-icon" style="font-size: 24px;">📷</div>
+                                            <div class="pata-upload-text" style="font-size: 12px;">${num === 1 ? 'Foto Principal' : 'Añadir'}</div>
+                                        </div>
                                     </div>
-                                </div>
-
-                                <div>
-                                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Foto 2 (opcional):</label>
-                                    <div class="pata-upload-area" id="pata-upload-area-2">
-                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-2" style="display:none;">
-                                        <div class="pata-upload-icon">📷</div>
-                                        <div class="pata-upload-text">Seleccionar foto</div>
-                                    </div>
-                                </div>
+                                `).join('')}
                             </div>
 
                             ${isSenior ? `
-                                <div style="margin-top: 20px;">
-                                    <label style="font-weight: 700; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico (Requerido Senior):</label>
-                                    <div class="pata-upload-area" id="pata-upload-area-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
+                                <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
+                                    <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico (Requerido Senior):</label>
+                                    <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
                                         <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
                                         <div class="pata-upload-icon">📄</div>
-                                        <div class="pata-upload-text" style="color: #7B1FA2;">Sube el certificado de salud actual</div>
+                                        <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
                                     </div>
                                 </div>
                             ` : ''}
 
-                            <div style="margin-top: 15px;">
-                                <label style="font-weight: 600; margin-bottom: 10px; display: block;">Mensaje (opcional):</label>
-                                <textarea id="pata-update-message" class="pata-textarea" placeholder="Añade un comentario sobre tu actualización..." style="width: 100%; min-height: 80px; padding: 12px; border-radius: 12px; border: 1px solid #DDD; font-family: inherit;"></textarea>
+                            <div style="margin-top: 25px;">
+                                <label style="font-weight: 800; margin-bottom: 10px; display: block;">Mensaje adicional:</label>
+                                <textarea id="pata-update-message" class="pata-textarea" placeholder="¿Quieres decirnos algo más?" style="width: 100%; min-height: 100px; padding: 15px; border-radius: 20px; border: 2px solid #F0F0F0; font-family: inherit; font-size: 15px;"></textarea>
                             </div>
 
                         </div>
-                        <div class="pata-modal-footer">
-                            <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update">Cancelar</button>
-                            <button class="pata-btn pata-btn-success" id="pata-btn-submit-update" ${this.uploading ? 'disabled' : ''}>
-                                ${this.uploading ? 'Enviando...' : 'Enviar Actualización'}
+                        <div class="pata-modal-footer" style="background: #fff; border-top: 2px solid #000; padding: 25px 30px;">
+                            <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update" style="border-radius: 50px; padding: 14px 30px;">Cancelar</button>
+                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${this.uploading ? 'disabled' : ''}>
+                                ${this.uploading ? 'Enviando...' : 'Guardar Cambios →'}
                             </button>
                         </div>
                     </div>
@@ -1332,53 +1327,92 @@
 
         renderPetDetailsModal(pet) {
             const carencia = this.calculateCarencia(pet);
-            const petImage = pet.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+            const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
+            
+            // Collect all photos for gallery (support up to 5)
+            const photos = [
+                pet.photo_url || pet.primary_photo_url,
+                pet.photo2_url,
+                pet.photo3_url,
+                pet.photo4_url,
+                pet.photo5_url
+            ].filter(p => p && p.startsWith('http'));
+
+            if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
 
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal">
-                    <div class="pata-modal">
-                        <div class="pata-modal-header">
-                            <h3 class="pata-modal-title">Detalles de ${pet.name}</h3>
-                            <button class="pata-modal-close" id="pata-close-details">&times;</button>
-                        </div>
-                        <div class="pata-modal-body">
-                            <div style="text-align:center; margin-bottom: 25px;">
-                                <div style="position: relative; display: inline-block;">
-                                    <img src="${petImage}" style="width:120px; height:120px; border-radius:60px; object-fit:cover; border:3px solid #00BBB4;">
-                                    ${pet.age_value >= 10 ? '<span class="pata-senior-badge" style="position: absolute; bottom: 0; right: 0;">Senior</span>' : ''}
-                                </div>
-                            </div>
-                            <div class="pata-modal-pet-details">
-                                <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Raza</div>
-                                    <div class="pata-detail-value">${pet.breed}</div>
-                                </div>
-                                <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Edad</div>
-                                    <div class="pata-detail-value">${pet.age}</div>
-                                </div>
-                                <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Peso</div>
-                                    <div class="pata-detail-value">${pet.weight || 'Desconocido'}</div>
-                                </div>
-                                ${pet.age_value >= 10 ? `
-                                <div class="pata-detail-item" style="grid-column: span 2; border-top: 1px dashed #EEE; padding-top: 15px; margin-top: 10px;">
-                                    <div class="pata-detail-label" style="color: #7B1FA2;">Salud Senior</div>
-                                    <div class="pata-detail-value">
-                                        ${pet.vet_certificate_url ? 
-                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #7B1FA2; font-weight: bold; text-decoration: underline;">📄 Ver Certificado de Salud</a>` : 
-                                            '<span style="color: #E53E3E;">⚠️ Certificado Pendiente</span>'}
+                    <div class="pata-modal" style="max-width: 800px; border-radius: 40px; border: 3px solid #000;">
+                        <div class="pata-modal-body" style="padding: 0; display: grid; grid-template-columns: 1fr 1fr;">
+                            
+                            <!-- Left: Gallery Section -->
+                            <div style="background: #00BBB4; padding: 25px; display: flex; flex-direction: column; gap: 15px; border-right: 3px solid #000;">
+                                <div style="width: 100%; height: 350px; background: #fff; border-radius: 25px; border: 3px solid #000; overflow: hidden; position: relative;">
+                                    <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div style="position: absolute; top: 15px; left: 15px; background: ${status.bg}; color: ${status.text}; border: 2px solid #000; padding: 6px 16px; border-radius: 50px; font-weight: 900; font-size: 11px;">
+                                        ${status.label}
                                     </div>
                                 </div>
-                                ` : ''}
-                                <div class="pata-detail-item">
-                                    <div class="pata-detail-label">Carencia</div>
-                                    <div class="pata-detail-value">${carencia.percentage}% (${carencia.daysRemaining} días restantes)</div>
+                                
+                                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
+                                    ${photos.map((url, i) => `
+                                        <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 60px; height: 60px; border-radius: 12px; border: 2px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff;">
+                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <div style="background: #fff; border: 3px solid #000; border-radius: 20px; padding: 15px; margin-top: auto;">
+                                    <div style="font-size: 13px; font-weight: 800; color: #00BBB4; text-transform: uppercase; margin-bottom: 5px;">Periodo de Carencia</div>
+                                    <div style="height: 12px; background: #EEE; border-radius: 10px; border: 2px solid #000; overflow: hidden;">
+                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406;"></div>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-top: 8px;">
+                                        <span>Faltan: ${carencia.daysRemaining} días</span>
+                                        <span>Día ${carencia.totalDays}</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="pata-modal-footer">
-                            <button class="pata-btn pata-btn-outline" id="pata-close-details-btn">Cerrar</button>
+
+                            <!-- Right: Info Section -->
+                            <div style="padding: 40px; position: relative;">
+                                <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 20px; right: 20px;">&times;</button>
+                                
+                                <h2 style="font-size: 50px; font-weight: 900; line-height: 0.9; margin: 0 0 10px 0; letter-spacing: -1px;">${pet.name}</h2>
+                                <p style="font-size: 18px; font-weight: 700; color: #666; margin-bottom: 30px;">${pet.breed || 'Mestizo'} ${pet.age_value >= 10 ? '<span class="pata-senior-badge" style="margin-left:5px;">Senior</span>' : ''}</p>
+
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 2px solid #F0F0F0; padding-top: 25px;">
+                                    <div class="pata-detail-item">
+                                        <div class="pata-detail-label">Especie</div>
+                                        <div class="pata-detail-value">${pet.type}</div>
+                                    </div>
+                                    <div class="pata-detail-item">
+                                        <div class="pata-detail-label">Edad</div>
+                                        <div class="pata-detail-value">${pet.age}</div>
+                                    </div>
+                                    <div class="pata-detail-item">
+                                        <div class="pata-detail-label">Peso</div>
+                                        <div class="pata-detail-value">${pet.weight || '--'} kg</div>
+                                    </div>
+                                    <div class="pata-detail-item">
+                                        <div class="pata-detail-label">Sexo</div>
+                                        <div class="pata-detail-value">${pet.gender || 'Macho'}</div>
+                                    </div>
+                                </div>
+
+                                ${pet.age_value >= 10 ? `
+                                    <div style="margin-top: 20px; padding: 15px; background: #F3E5F5; border-radius: 15px; border: 2px solid #7B1FA2;">
+                                        <div class="pata-detail-label" style="color: #7B1FA2;">Salud Senior</div>
+                                        ${pet.vet_certificate_url ? 
+                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #7B1FA2; font-weight: 900; text-decoration: underline; font-size: 14px;">📄 Ver Certificado de Salud</a>` : 
+                                            '<span style="color: #E63946; font-weight: 800; font-size: 13px;">⚠️ Certificado Pendiente</span>'}
+                                    </div>
+                                ` : ''}
+
+                                <div style="margin-top: 40px;">
+                                    <button class="pata-btn" id="pata-close-details-btn" style="width: 100%; background: #000; color: #fff; border-radius: 50px;">Cerrar Detalles</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1407,23 +1441,17 @@
                             Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
                         </p>
                         
-                        <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                            <div>
-                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block;">Foto de ${pet.name} 1:</label>
-                                <div class="pata-upload-area" id="pata-missing-upload-1">
-                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-1" style="display:none;">
-                                    <div class="pata-upload-icon">📷</div>
-                                    <div class="pata-upload-text">Frente o cuerpo completo</div>
+                        <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
+                            ${[1, 2, 3, 4, 5].map(num => `
+                                <div>
+                                    <label style="font-weight: 700; font-size: 13px; margin-bottom: 8px; display: block;">Foto ${num} ${num === 1 ? '*' : '(Opcional)'}:</label>
+                                    <div class="pata-upload-area" id="pata-missing-upload-${num}">
+                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-${num}" style="display:none;">
+                                        <div class="pata-upload-icon">📷</div>
+                                        <div class="pata-upload-text">${num === 1 ? 'Foto Principal' : 'Añadir'}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block;">Foto de ${pet.name} 2:</label>
-                                <div class="pata-upload-area" id="pata-missing-upload-2">
-                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-2" style="display:none;">
-                                    <div class="pata-upload-icon">📷</div>
-                                    <div class="pata-upload-text">Perfil o distintiva (opcional)</div>
-                                </div>
-                            </div>
+                            `).join('')}
                             ${isSenior ? `
                                 <div>
                                     <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico:</label>
@@ -1463,8 +1491,9 @@
         }
 
         attachMissingPhotosEvents(pet) {
-            this.setupMissingPhotoUpload('pata-missing-upload-1', 'pata-missing-file-1', 'photo1');
-            this.setupMissingPhotoUpload('pata-missing-upload-2', 'pata-missing-file-2', 'photo2');
+            [1, 2, 3, 4, 5].forEach(num => {
+                this.setupMissingPhotoUpload(`pata-missing-upload-${num}`, `pata-missing-file-${num}`, `photo${num}`);
+            });
             this.setupMissingPhotoUpload('pata-missing-upload-cert', 'pata-missing-file-cert', 'cert');
 
             const submitBtn = document.getElementById('pata-btn-submit-missing');
@@ -1482,16 +1511,15 @@
                     submitBtn.innerText = 'Subiendo información...';
 
                     try {
-                        let photo1Url = null;
-                        let photo2Url = null;
+                        let photoUrls = [null, null, null, null, null];
                         let vetCertificateUrl = null;
 
-                        if (this.missingPhotosFiles.photo1) {
-                            photo1Url = await this.uploadPhoto(this.missingPhotosFiles.photo1);
+                        for (let i = 1; i <= 5; i++) {
+                            if (this.missingPhotosFiles[`photo${i}`]) {
+                                photoUrls[i-1] = await this.uploadPhoto(this.missingPhotosFiles[`photo${i}`]);
+                            }
                         }
-                        if (this.missingPhotosFiles.photo2) {
-                            photo2Url = await this.uploadPhoto(this.missingPhotosFiles.photo2);
-                        }
+                        
                         if (this.missingPhotosFiles.cert) {
                             vetCertificateUrl = await this.uploadPhoto(this.missingPhotosFiles.cert);
                         }
@@ -1503,8 +1531,11 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 userId: this.member.id,
-                                photo1Url,
-                                photo2Url,
+                                photo1Url: photoUrls[0],
+                                photo2Url: photoUrls[1],
+                                photo3Url: photoUrls[2],
+                                photo4Url: photoUrls[3],
+                                photo5Url: photoUrls[4],
                                 vetCertificateUrl,
                                 message: 'Fotos subidas post-registro' + (isSenior ? ' (incluye certificado senior)' : '')
                             })
@@ -1747,7 +1778,7 @@
                 };
             }
 
-            // Upload areas
+            // Upload areas (Dynamic for 5 photos)
             const setupUpload = (areaId, fileId, key) => {
                 const area = document.getElementById(areaId);
                 const input = document.getElementById(fileId);
@@ -1760,14 +1791,16 @@
                             area.classList.add('has-file');
                             area.innerHTML = `
                                 <img src="${URL.createObjectURL(file)}" class="pata-upload-preview">
-                                <div class="pata-upload-filename">✓ ${file.name}</div>
+                                <div class="pata-upload-filename">✓ Foto ${key.replace('photo', '')}</div>
                             `;
                         }
                     };
                 }
             };
-            setupUpload('pata-upload-area-1', 'pata-file-1', 'photo1');
-            setupUpload('pata-upload-area-2', 'pata-file-2', 'photo2');
+            
+            [1, 2, 3, 4, 5].forEach(num => {
+                setupUpload(`pata-upload-area-${num}`, `pata-file-${num}`, `photo${num}`);
+            });
             setupUpload('pata-upload-area-cert', 'pata-file-cert', 'cert');
 
             // Submit update
