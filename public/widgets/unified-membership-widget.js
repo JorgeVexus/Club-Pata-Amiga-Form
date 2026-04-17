@@ -671,8 +671,7 @@
         checkMissingDocs(pet) {
             if (!pet) return [];
             const missing = [];
-            if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto principal");
-            if (!pet.photo2_url) missing.push("Selfie con tu mascota");
+            if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto de tu mascota");
             if (this.isSenior(pet) && !pet.medical_certificate_url) missing.push("Certificado médico (Senior)");
             return missing;
         }
@@ -1500,9 +1499,6 @@
             if (submitBtn) {
                 submitBtn.onclick = async () => {
                     const isSenior = pet.age_value >= 10;
-                    if (!this.missingPhotosFiles.photo1 && !this.missingPhotosFiles.photo2) {
-                        return alert('Por favor sube al menos una foto de tu mascota.');
-                    }
                     if (isSenior && !this.missingPhotosFiles.cert) {
                         return alert('Por favor sube el certificado veterinario (requerido para mascotas Senior).');
                     }
@@ -1590,10 +1586,13 @@
                 };
             });
 
-            const detailsBtn = document.getElementById('pata-btn-pet-details');
+            // Ver detalles
+            const detailsBtn = this.container.querySelector('.pata-btn-ver-detalles');
             if (detailsBtn) {
                 detailsBtn.onclick = () => {
                     const pet = this.pets[this.currentIndex];
+                    if (!pet) return;
+                    
                     const modalHtml = this.renderPetDetailsModal(pet);
                     const modalDiv = document.createElement('div');
                     modalDiv.id = 'pata-details-modal-wrapper';
@@ -1604,11 +1603,17 @@
                     const close = () => {
                         modalDiv.remove();
                     };
-                    document.getElementById('pata-close-details').onclick = close;
-                    document.getElementById('pata-close-details-btn').onclick = close;
-                    document.getElementById('pata-pet-details-modal').onclick = (e) => {
-                        if (e.target.id === 'pata-pet-details-modal') close();
-                    };
+                    const closeBtn1 = document.getElementById('pata-close-details');
+                    const closeBtn2 = document.getElementById('pata-close-details-btn');
+                    if (closeBtn1) closeBtn1.onclick = close;
+                    if (closeBtn2) closeBtn2.onclick = close;
+                    
+                    const modalOverlay = document.getElementById('pata-pet-details-modal');
+                    if (modalOverlay) {
+                        modalOverlay.onclick = (e) => {
+                            if (e.target.id === 'pata-pet-details-modal') close();
+                        };
+                    }
                 };
             }
 

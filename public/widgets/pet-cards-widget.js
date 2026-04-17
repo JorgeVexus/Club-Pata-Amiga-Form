@@ -498,42 +498,40 @@
                     <div class="pata-add-icon-circle">+</div>
                     <h3 class="pata-add-text-title">Agregar otro peludo</h3>
                     <p class="pata-add-text-subtitle">Periodo de carencia de 6 meses</p>
-                </div>
             `;
         }
 
         showDetails(petId) {
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
-            const idx = this.pets.indexOf(pet) + 1;
-        showDetails(id) {
-            const p = this.pets.find(p => p.id === id);
-            if (!p) return;
+            const index = this.pets.indexOf(pet) + 1;
 
             // Collect up to 5 photos
             const photos = [
-                p.photo_url || p.primary_photo_url,
-                p.photo2_url,
-                p.photo3_url,
-                p.photo4_url,
-                p.photo5_url
+                pet.photo_url || pet.primary_photo_url,
+                pet.photo2_url,
+                pet.photo3_url,
+                pet.photo4_url,
+                pet.photo5_url
             ].filter(url => url && url.startsWith('http'));
 
-            if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
+            if (photos.length === 0) photos.push(CONFIG.placeholderDog);
 
-            const carencia = this.calculateCarencia(p);
-            const status = this.getStatusConfig(p.status || 'pending');
+            const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
+            
+            let photoHtml = '';
+            if (photos.length > 1) {
                 photoHtml = `
-                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px;">
+                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px; scrollbar-width: none;">
                         ${photos.map(url => `
                             <img src="${url}" style="width:140px; height:200px; object-fit:cover; border-radius:16px; flex-shrink:0; border:2px solid #f0f0f0;" onerror="this.src='${CONFIG.placeholderDog}';">
                         `).join('')}
                     </div>`;
             } else {
-                photoHtml = `<img src="${mainPhoto}" style="width:100%; height:280px; object-fit:cover; border-radius:20px; display:block;" onerror="this.src='${CONFIG.placeholderDog}';">`;
+                photoHtml = `<img src="${photos[0]}" style="width:100%; height:280px; object-fit:cover; border-radius:20px; display:block;" onerror="this.src='${CONFIG.placeholderDog}';">`;
             }
 
             // Format age
@@ -551,9 +549,6 @@
             // Breed info
             const breedDisplay = pet.is_mixed_breed ? '🔀 Mestizo' : (pet.breed || 'No especificada');
 
-            // Status badge
-            const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
-
             // Build detail rows
             const detailRows = [
                 { icon: '🐾', label: 'Tipo', value: petTypeDisplay },
@@ -562,17 +557,10 @@
                 { icon: '🏷️', label: 'Raza', value: breedDisplay },
             ];
 
-            // Optional color fields
             if (pet.coat_color) detailRows.push({ icon: '🎨', label: 'Color de pelo', value: pet.coat_color });
-            if (pet.nose_color) detailRows.push({ icon: '👃', label: 'Color de nariz', value: pet.nose_color });
-            if (pet.eye_color) detailRows.push({ icon: '👁️', label: 'Color de ojos', value: pet.eye_color });
             if (pet.ruac) detailRows.push({ icon: '🆔', label: 'RUAC', value: pet.ruac });
 
             detailRows.push({ icon: '📅', label: 'Fecha de alta', value: new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
-
-            if (pet.waiting_period_end) {
-                detailRows.push({ icon: '⏳', label: 'Fin de carencia', value: new Date(pet.waiting_period_end).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
-            }
 
             const detailsHtml = detailRows.map(r => `
                 <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
@@ -585,16 +573,10 @@
             let badgesHtml = '';
             if (pet.is_adopted) badgesHtml += `<span style="background:#E8F5E9; color:#2E7D32; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🏠 Adoptado</span>`;
             if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🔀 Mestizo</span>`;
-            // Senior logic: Unificado a 10 años para todos
+            
             const ageNum = parseInt(pet.age_value) || 0;
             const isSenior = (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
-
             if (isSenior) badgesHtml += `<span style="background:#FCE4EC; color:#C62828; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">👴 Senior</span>`;
-
-            // Appeal button for rejected pets
-            const appealBtnHtml = pet.status === 'rejected' ? `
-                <button onclick="window.ManadaWidget.showAppealForm('${pet.id}'); this.closest('.pata-modal-overlay').remove();" style="width:100%; margin-top:15px; padding:14px; background:#7B1FA2; color:#fff; border:none; border-radius:50px; font-weight:700; font-size:15px; cursor:pointer;">⚖️ Apelar decisión</button>
-            ` : '';
 
             modal.innerHTML = `
                 <div class="pata-modal-box" style="max-width:580px; max-height:90vh; overflow-y:auto;">
@@ -620,16 +602,7 @@
                                 <p style="margin:0 0 5px 0; font-weight:700; color:#276749; font-size:14px;">📜 Historia de adopción</p>
                                 <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.adoption_story}</p>
                             </div>
-                        ` : (pet.is_mixed_breed ? `
-                            <div style="margin-top:20px; padding:20px; border-radius:16px; background:linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); border:1px solid #e0e0e0; box-shadow:0 4px 15px rgba(0,0,0,0.03);">
-                                <h4 style="margin:0 0 10px 0; font-weight:800; font-size:15px; color:#1a1a1a; display:flex; align-items:center; gap:6px;">
-                                    <span style="font-size:18px;">📖</span> Añadir historia de adopción
-                                </h4>
-                                <p style="margin:0 0 12px 0; font-size:13px; color:#666; line-height:1.4;">Compártenos cómo llegó a tu vida. Las mejores historias podrían ser presentadas en nuestra comunidad.</p>
-                                <textarea id="pata-add-story-${pet.id}" placeholder="Escribe aquí su historia..." style="width:100%; box-sizing:border-box; padding:12px; border:2px solid #ddd; border-radius:12px; min-height:80px; font-family:inherit; font-size:14px; margin-bottom:12px; resize:vertical; transition:border-color 0.2s;" onfocus="this.style.borderColor='#7DD8D5'; this.style.outline='none';" onblur="this.style.borderColor='#ddd';"></textarea>
-                                <button onclick="window.ManadaWidget.saveAdoptionStory('${pet.id}')" id="pata-btn-story-${pet.id}" style="background:#00BBB4; color:#fff; border:none; padding:10px 20px; border-radius:50px; font-weight:700; font-size:14px; cursor:pointer; width:100%; transition:transform 0.1s, opacity 0.2s;" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">Guardar historia</button>
-                            </div>
-                        ` : '')}
+                        ` : ''}
 
                         ${pet.admin_notes ? `
                             <div style="margin-top:15px; background:#FFFDE7; border-left:4px solid #FFC107; padding:15px 20px; border-radius:0 12px 12px 0;">
@@ -637,66 +610,6 @@
                                 <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.admin_notes}</p>
                             </div>
                         ` : ''}
-
-                        ${pet.status === 'pending' || pet.status === 'action_required' || pet.status === 'pending_approval' || pet.status === 'waiting_approval' ? `
-                            <div style="margin-top:20px; padding:15px; background:#FFF9C4; border-radius:12px; border:1px solid #FBC02D;">
-                                <p style="margin:0; font-size:13px; color:#616161; line-height:1.4;">
-                                    ⚠️ <strong>Recuerda:</strong> Si te falta alguna foto o el certificado de salud (senior), tienes un periodo de gracia de <strong>15 días</strong> naturales para subirlos desde aquí o tu dashboard antes de recibir un rechazo.
-                                </p>
-                            </div>
-                        ` : ''}
-
-                        ${(function() {
-                            const isMissingSelfie = !photo2;
-                            const isMissingVet = isSenior && !pet.vet_certificate_url;
-                            const canUpdate = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval', 'approved'].includes(pet.status);
-                            
-                            if (canUpdate) {
-                                return `
-                                    <div style="margin-top:20px; padding:20px; border-radius:24px; background:#F0FDFA; border:2px dashed #99F6E4; animation:pataSlideDown 0.4s ease-out;">
-                                        <h4 style="margin:0 0 15px 0; font-weight:800; font-size:16px; color:#134E4A; display:flex; align-items:center; gap:8px;">
-                                            <span style="font-size:20px;">📋</span> Actualizar documentos
-                                        </h4>
-                                        
-                                        <div class="pata-form-group" style="margin-bottom:20px;">
-                                            <label class="pata-form-label" style="color:#134E4A;">🆔 Clave RUAC (Opcional)</label>
-                                            <div style="display:flex; gap:8px;">
-                                                <input type="text" id="modal-ruac-input" value="${pet.ruac || ''}" placeholder="ABC12345678" maxlength="11" style="flex:1; padding:12px 15px; border:2px solid #99F6E4; border-radius:12px; font-family:inherit; font-size:14px; text-transform:uppercase;">
-                                                <button onclick="window.ManadaWidget.handleModalRuacUpdate('${pet.id}', 'modal-ruac-input')" style="background:#00BBB4; color:#fff; border:none; padding:10px 18px; border-radius:12px; font-weight:700; cursor:pointer; font-size:13px; transition:all 0.2s;" onmouseover="this.style.background='#009B95'" onmouseout="this.style.background='#00BBB4'">Actualizar</button>
-                                            </div>
-                                            <p style="font-size:11px; color:#4A7C7F; margin:8px 0 0 0;">Ayuda a que el periodo de carencia baje a 90 días.</p>
-                                        </div>
-
-                                        ${isMissingSelfie ? `
-                                            <div class="pata-form-group" style="margin-bottom:15px;">
-                                                <label class="pata-form-label" style="color:#134E4A;">🤳 Selfie con tu mascota *</label>
-                                                <div class="pata-upload-box" id="modal-photo2-box" style="padding:20px; background:#fff; position:relative;">
-                                                    <input type="file" accept="image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo2', this.files[0], 'modal-photo2-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
-                                                    <span class="pata-upload-icon">📷</span>
-                                                    <p class="pata-upload-text">Subir selfie requerida</p>
-                                                    <p class="pata-upload-subtext">Foto donde aparezcan ambos. Tienes 15 días.</p>
-                                                </div>
-                                            </div>
-                                        ` : ''}
-
-                                        ${isMissingVet ? `
-                                            <div class="pata-form-group" style="margin-bottom:0;">
-                                                <label class="pata-form-label" style="color:#134E4A;">⚕️ Certificado de salud (Senior) *</label>
-                                                <div class="pata-upload-box" id="modal-vet-box" style="padding:20px; background:#fff; position:relative;">
-                                                    <input type="file" accept=".pdf,image/*" onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-box')" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;">
-                                                    <span class="pata-upload-icon">📄</span>
-                                                    <p class="pata-upload-text">Subir certificado médico</p>
-                                                    <p class="pata-upload-subtext">Necesario por su edad (${ageNum} años). Tienes 15 días.</p>
-                                                </div>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                `;
-                            }
-                            return '';
-                        })()}}
-
-                        ${appealBtnHtml}
                     </div>
                 </div>
             `;
