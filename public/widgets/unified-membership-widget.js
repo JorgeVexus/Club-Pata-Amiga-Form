@@ -1335,7 +1335,6 @@
             const carencia = this.calculateCarencia(pet);
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
             
-            // Collect all photos for gallery (support up to 5)
             const photos = [
                 pet.photo_url || pet.primary_photo_url,
                 pet.photo2_url,
@@ -1346,77 +1345,102 @@
 
             if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
 
+            const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', { 
+                day: 'numeric', month: 'long', year: 'numeric' 
+            }) : 'No disponible';
+
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal">
-                    <div class="pata-modal" style="max-width: 800px; border-radius: 40px; border: 3px solid #000;">
-                        <div class="pata-modal-body" style="padding: 0; display: grid; grid-template-columns: 1fr 1fr;">
+                    <div class="pata-modal" style="max-width: 900px; border-radius: 40px; border: 3px solid #000; overflow: hidden;">
+                        <div class="pata-modal-body" style="padding: 0; display: grid; grid-template-columns: 420px 1fr;">
                             
-                            <!-- Left: Gallery Section -->
-                            <div style="background: #00BBB4; padding: 25px; display: flex; flex-direction: column; gap: 15px; border-right: 3px solid #000;">
-                                <div style="width: 100%; height: 350px; background: #fff; border-radius: 25px; border: 3px solid #000; overflow: hidden; position: relative;">
+                            <!-- Left: Profile & Carencia -->
+                            <div style="background: #00BBB4; padding: 30px; display: flex; flex-direction: column; gap: 20px; border-right: 3px solid #000;">
+                                <div style="width: 100%; height: 400px; background: #fff; border-radius: 30px; border: 3px solid #000; overflow: hidden; position: relative; box-shadow: 0 10px 0 rgba(0,0,0,0.1);">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover;">
-                                    <div style="position: absolute; top: 15px; left: 15px; background: ${status.bg}; color: ${status.text}; border: 2px solid #000; padding: 6px 16px; border-radius: 50px; font-weight: 900; font-size: 11px;">
-                                        ${status.label}
+                                    <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 2px solid #000; padding: 8px 20px; border-radius: 50px; font-weight: 900; font-size: 11px; text-transform: uppercase;">
+                                        ${status.icon} ${status.label}
                                     </div>
                                 </div>
                                 
-                                <div style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none;">
+                                <div style="display: flex; gap: 12px; overflow-x: auto; padding: 5px; scrollbar-width: none;">
                                     ${photos.map((url, i) => `
-                                        <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 60px; height: 60px; border-radius: 12px; border: 2px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff;">
+                                        <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 65px; height: 65px; border-radius: 15px; border: 3px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: transform 0.2s;">
                                             <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
                                         </div>
                                     `).join('')}
                                 </div>
 
-                                <div style="background: #fff; border: 3px solid #000; border-radius: 20px; padding: 15px; margin-top: auto;">
-                                    <div style="font-size: 13px; font-weight: 800; color: #00BBB4; text-transform: uppercase; margin-bottom: 5px;">Periodo de Carencia</div>
-                                    <div style="height: 12px; background: #EEE; border-radius: 10px; border: 2px solid #000; overflow: hidden;">
-                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406;"></div>
+                                <div style="background: #fff; border: 3px solid #000; border-radius: 25px; padding: 20px; margin-top: auto; box-shadow: 0 8px 0 rgba(0,0,0,0.05);">
+                                    <div style="font-size: 14px; font-weight: 900; color: #00BBB4; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 0.5px;">Periodo de Carencia</div>
+                                    <div style="height: 16px; background: #F0F0F0; border-radius: 10px; border: 2px solid #000; overflow: hidden;">
+                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: 2px solid #000;"></div>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; margin-top: 8px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 800; margin-top: 10px; color: #333;">
                                         <span>Faltan: ${carencia.daysRemaining} días</span>
                                         <span>Día ${carencia.totalDays}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right: Info Section -->
-                            <div style="padding: 40px; position: relative;">
-                                <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 20px; right: 20px;">&times;</button>
+                            <!-- Right: Info Panel -->
+                            <div style="padding: 45px; background: #fff; position: relative; overflow-y: auto; max-height: 750px;">
+                                <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 25px; right: 25px; background: #F0F0F0; border: 2px solid #000; width: 36px; height: 36px; border-radius: 50%; font-size: 20px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center;">&times;</button>
                                 
-                                <h2 style="font-size: 50px; font-weight: 900; line-height: 0.9; margin: 0 0 10px 0; letter-spacing: -1px;">${pet.name}</h2>
-                                <p style="font-size: 18px; font-weight: 700; color: #666; margin-bottom: 30px;">${pet.breed || pet.pet_breed || 'Mestizo'} ${this.isSenior(pet) ? '<span class="pata-senior-badge" style="margin-left:5px;">Senior</span>' : ''}</p>
+                                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                                    <div style="background: ${status.bg}; color: ${status.text}; border: 2px solid #000; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 800;">
+                                        ${status.icon} ${status.label}
+                                    </div>
+                                    ${pet.is_adopted ? `
+                                        <div style="background: #E8F5E9; color: #2E7D32; border: 2px solid #000; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 800;">
+                                            🏠 Adoptado
+                                        </div>
+                                    ` : ''}
+                                    ${pet.is_mixed || pet.is_mixed_breed || (pet.breed && pet.breed.toLowerCase().includes('mestizo')) ? `
+                                        <div style="background: #FFF3E0; color: #EF6C00; border: 2px solid #000; padding: 4px 12px; border-radius: 50px; font-size: 11px; font-weight: 800;">
+                                            🔀 Mestizo
+                                        </div>
+                                    ` : ''}
+                                </div>
 
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 2px solid #F0F0F0; padding-top: 25px;">
-                                    <div class="pata-detail-item">
-                                        <div class="pata-detail-label">Especie</div>
-                                        <div class="pata-detail-value">${pet.type || pet.pet_type || 'Lomito'}</div>
-                                    </div>
-                                    <div class="pata-detail-item">
-                                        <div class="pata-detail-label">Edad</div>
-                                        <div class="pata-detail-value">${pet.age || (pet.age_value ? `${pet.age_value} años` : '1 año')}</div>
-                                    </div>
-                                    <div class="pata-detail-item">
-                                        <div class="pata-detail-label">Peso</div>
-                                        <div class="pata-detail-value">${pet.weight || '--'} kg</div>
-                                    </div>
-                                    <div class="pata-detail-item">
-                                        <div class="pata-detail-label">Sexo</div>
-                                        <div class="pata-detail-value">${pet.gender || 'Macho'}</div>
-                                    </div>
+                                <h2 style="font-size: 64px; font-weight: 900; line-height: 0.9; margin: 0 0 5px 0; letter-spacing: -2px; color: #000;">${pet.name}</h2>
+                                <p style="font-size: 18px; font-weight: 700; color: #00BBB4; margin-bottom: 35px; display: flex; align-items: center; gap: 8px;">
+                                    <span>🔀</span> ${pet.breed || pet.pet_breed || 'Mestizo'}
+                                </p>
+
+                                <div class="pata-details-list" style="border-top: 1px solid #EEE;">
+                                    ${[
+                                        { icon: '🐾', label: 'Tipo', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro' },
+                                        { icon: '🎂', label: 'Edad', value: pet.age || (pet.age_value ? `${pet.age_value} ${pet.age_unit || 'años'}` : '1 año') },
+                                        { icon: '⚕️', label: 'Sexo', value: pet.gender || 'Hembra' },
+                                        { icon: '🏷️', label: 'Raza', value: pet.breed || pet.pet_breed || 'Mestizo' },
+                                        { icon: '🎨', label: 'Color de pelo', value: pet.color || pet.pet_color || pet.coat_color || 'No especificado' },
+                                        { icon: '🆔', label: 'RUAC', value: pet.ruac || 'No registrado' },
+                                        { icon: '📅', label: 'Fecha de alta', value: registrationDate }
+                                    ].map(item => `
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 16px 0; border-bottom: 1px solid #EEE;">
+                                            <div style="display: flex; align-items: center; gap: 12px; color: #666; font-weight: 700; font-size: 15px;">
+                                                <span style="font-size: 18px;">${item.icon}</span>
+                                                <span>${item.label}</span>
+                                            </div>
+                                            <div style="font-weight: 900; color: #000; font-size: 15px;">${item.value}</div>
+                                        </div>
+                                    `).join('')}
                                 </div>
 
                                 ${this.isSenior(pet) ? `
-                                    <div style="margin-top: 20px; padding: 15px; background: #F3E5F5; border-radius: 15px; border: 2px solid #7B1FA2;">
-                                        <div class="pata-detail-label" style="color: #7B1FA2;">Salud Senior</div>
+                                    <div style="margin-top: 30px; padding: 20px; background: #F3E5F5; border-radius: 20px; border: 3px solid #7B1FA2; box-shadow: 0 5px 0 rgba(123, 31, 162, 0.1);">
+                                        <div style="font-size: 12px; font-weight: 900; color: #7B1FA2; text-transform: uppercase; margin-bottom: 8px;">Perfil Senior</div>
                                         ${pet.vet_certificate_url ? 
-                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #7B1FA2; font-weight: 900; text-decoration: underline; font-size: 14px;">📄 Ver Certificado de Salud</a>` : 
-                                            '<span style="color: #E63946; font-weight: 800; font-size: 13px;">⚠️ Certificado Pendiente</span>'}
+                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #7B1FA2; font-weight: 900; text-decoration: underline; font-size: 15px; display: flex; align-items: center; gap: 8px;">📄 Ver Certificado de Salud</a>` : 
+                                            '<span style="color: #E63946; font-weight: 900; font-size: 14px; display: flex; align-items: center; gap: 8px;">⚠️ Certificado Médico Pendiente</span>'}
                                     </div>
                                 ` : ''}
 
-                                <div style="margin-top: 40px;">
-                                    <button class="pata-btn" id="pata-close-details-btn" style="width: 100%; background: #000; color: #fff; border-radius: 50px;">Cerrar Detalles</button>
+                                <div style="margin-top: 40px; text-align: center;">
+                                    <button id="pata-close-details-btn" style="background: #000; color: #fff; border: none; padding: 18px 60px; border-radius: 50px; font-weight: 900; font-size: 18px; cursor: pointer; width: 100%; box-shadow: 0 10px 20px rgba(0,0,0,0.1); transition: transform 0.2s;">
+                                        Cerrar Detalles
+                                    </button>
                                 </div>
                             </div>
                         </div>
