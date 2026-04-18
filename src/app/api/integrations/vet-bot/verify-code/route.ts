@@ -140,7 +140,17 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         // 6. Obtener mascotas
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, breed, breed_size, age, status')
+            .select(`
+                id, 
+                name, 
+                pet_type, 
+                breed, 
+                breed_size, 
+                age, 
+                age_value, 
+                age_unit, 
+                status
+            `)
             .eq('owner_id', user.id)
             .order('created_at', { ascending: true });
 
@@ -168,14 +178,23 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 phone: user.phone,
                 membershipStatus: user.membership_status
             },
-            pets: (pets || []).map(pet => ({
-                id: pet.id,
-                name: pet.name,
-                type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro',
-                breed: pet.breed || 'Mestizo',
-                size: pet.breed_size,
-                age: pet.age
-            })),
+            pets: (pets || []).map(pet => {
+                // Construir edad legible si la columna 'age' está vacía
+                let displayAge = pet.age;
+                if (!displayAge && pet.age_value) {
+                    const unit = pet.age_unit === 'months' ? (pet.age_value === 1 ? 'mes' : 'meses') : (pet.age_value === 1 ? 'año' : 'años');
+                    displayAge = `${pet.age_value} ${unit}`;
+                }
+
+                return {
+                    id: pet.id,
+                    name: pet.name,
+                    type: pet.pet_type === 'dog' ? 'Perro' : (pet.pet_type === 'cat' ? 'Gato' : 'Mascota'),
+                    breed: pet.breed || 'Mestizo',
+                    size: pet.breed_size,
+                    age: displayAge || 'No especificada'
+                };
+            }),
             consultationHistory: (consultations || []).map(cons => ({
                 id: cons.id,
                 date: cons.created_at,
