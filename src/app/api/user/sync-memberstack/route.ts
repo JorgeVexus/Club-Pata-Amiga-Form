@@ -14,19 +14,6 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-// Headers CORS
-function corsHeaders() {
-    return {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    };
-}
-
-export async function OPTIONS() {
-    return NextResponse.json({}, { headers: corsHeaders() });
-}
-
 export async function POST(request: NextRequest) {
     try {
         const { memberstackId, email, firstName, lastName, phone } = await request.json();
@@ -37,7 +24,7 @@ export async function POST(request: NextRequest) {
         if (!memberstackId || !email) {
             return NextResponse.json(
                 { success: false, error: 'memberstackId y email son requeridos' },
-                { status: 400, headers: corsHeaders() }
+                { status: 400 }
             );
         }
 
@@ -54,7 +41,7 @@ export async function POST(request: NextRequest) {
                 success: true,
                 message: 'Usuario ya existe',
                 user: existingUser
-            }, { headers: corsHeaders() });
+            });
         }
 
         // Crear usuario en Supabase
@@ -78,7 +65,7 @@ export async function POST(request: NextRequest) {
             console.error('❌ [SYNC] Error creando usuario:', error);
             return NextResponse.json(
                 { success: false, error: 'Error creando usuario', details: error.message },
-                { status: 500, headers: corsHeaders() }
+                { status: 500 }
             );
         }
 
@@ -92,13 +79,13 @@ export async function POST(request: NextRequest) {
                 email: newUser.email,
                 firstName: newUser.first_name
             }
-        }, { headers: corsHeaders() });
+        });
 
     } catch (error: any) {
         console.error('❌ [SYNC] Error:', error);
         return NextResponse.json(
             { success: false, error: 'Error interno', details: error.message },
-            { status: 500, headers: corsHeaders() }
+            { status: 500 }
         );
     }
 }
