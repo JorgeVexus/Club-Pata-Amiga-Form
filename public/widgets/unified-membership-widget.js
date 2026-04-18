@@ -1452,97 +1452,99 @@
             // Distinctive Editorial Layout
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal">
-                    <div class="pata-modal" style="max-width: 960px; border-radius: 40px; border: 4px solid #000; overflow: hidden; background: #fff;">
-                        <div class="pata-modal-body pata-no-scrollbar" style="padding: 0; display: grid; grid-template-columns: 440px 1fr;">
-                            
-                            <!-- Left Section: Visual Identity -->
-                            <div style="background: #00BBB4; padding: 40px; display: flex; flex-direction: column; gap: 25px; border-right: 4px solid #000; position: sticky; top: 0;">
-                                <div style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: 4px solid #000; overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); transform: rotate(-1deg);">
-                                    <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
-                                    <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
-                                        ${status.icon} ${status.label}
-                                    </div>
-                                </div>
+                    <div class="pata-editorial-container">
+                        <div class="pata-modal-body pata-no-scrollbar" style="padding: 0;">
+                            <div class="pata-editorial-body" style="display: contents;">
                                 
-                                <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
-                                    ${photos.map((url, i) => `
-                                        <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: 3px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
-                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <!-- Left Section: Visual Identity -->
+                                <div class="pata-editorial-left">
+                                    <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: 4px solid #000; overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); transform: rotate(-1deg);">
+                                        <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
+                                        <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+                                            ${status.icon} ${status.label}
                                         </div>
-                                    `).join('')}
-                                </div>
-
-                                <div style="background: #FFF; border: 4px solid #000; border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
-                                    <div style="font-size: 14px; font-weight: 950; color: #00BBB4; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
-                                    <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: 3px solid #000; overflow: hidden; position: relative;">
-                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: 3px solid #000;"></div>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
-                                        <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
-                                        <span style="color: #00BBB4;">Faltan ${carencia.daysRemaining} días</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Right Section: Fact Sheet -->
-                            <div style="padding: 50px; background: #fff; position: relative;">
-                                <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
-                                
-                                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                                    <div style="background: #E8F5E9; color: #2E7D32; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                         ACTIVO
-                                    </div>
-                                    ${pet.is_senior || this.isSenior(pet) ? `
-                                        <div style="background: #F3E5F5; color: #7B1FA2; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
-                                            👑 SENIOR
-                                        </div>
-                                    ` : ''}
-                                    ${pet.is_adopted ? `
-                                        <div style="background: #E0F7FA; color: #006064; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                            🏠 ADOPTADO
-                                        </div>
-                                    ` : ''}
-                                </div>
-
-                                <h2 style="font-size: 72px; font-weight: 950; line-height: 0.85; margin: 0 0 10px 0; letter-spacing: -3px; color: #000; text-transform: lowercase;">${pet.name}</h2>
-                                <p style="font-size: 22px; font-weight: 800; color: #00BBB4; margin-bottom: 45px; display: flex; align-items: center; gap: 10px; border-bottom: 4px solid #000; padding-bottom: 15px; width: fit-content;">
-                                    ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
-                                </p>
-
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
-                                    ${[
-                    { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
-                    { label: 'Edad', value: pet.age || (pet.age_value ? `${pet.age_value} ${pet.age_unit || 'años'}` : '1 año'), icon: '🎂' },
-                    { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                    { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
-                    { label: 'RUAC', value: pet.ruac || 'En Trámite', icon: '🆔' },
-                    { label: 'Ingreso', value: registrationDate, icon: '📅' }
-                ].map(item => `
-                                        <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">
-                                            <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
-                                            <div style="font-size: 18px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
-                                                <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
+                                    
+                                    <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
+                                        ${photos.map((url, i) => `
+                                            <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: 3px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
+                                                <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
                                             </div>
-                                        </div>
-                                    `).join('')}
-                                </div>
-
-                                ${this.isSenior(pet) ? `
-                                    <div style="background: #FFF9C4; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                        <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
-                                        ${pet.vet_certificate_url ?
-                        `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
-                                                <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
-                                                Ver Certificado Médico →
-                                            </a>` :
-                        '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Certificado Pendiente de Carga</div>'}
+                                        `).join('')}
                                     </div>
-                                ` : ''}
-
-                                <div style="margin-top: 50px;">
-                                    <button id="pata-close-details-btn" style="background: #FFBD12; color: #000; border: 4px solid #000; padding: 20px 40px; border-radius: 60px; font-weight: 950; font-size: 20px; cursor: pointer; width: 100%; box-shadow: 8px 8px 0 rgba(0,0,0,0.1); transition: all 0.2s;">
-                                        Cerrar Expediente
-                                    </button>
+    
+                                    <div style="background: #FFF; border: 4px solid #000; border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
+                                        <div style="font-size: 14px; font-weight: 950; color: #00BBB4; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
+                                        <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: 3px solid #000; overflow: hidden; position: relative;">
+                                            <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: 3px solid #000;"></div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
+                                            <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
+                                            <span style="color: #00BBB4;">Faltan ${carencia.daysRemaining} días</span>
+                                        </div>
+                                    </div>
+                                </div>
+    
+                                <!-- Right Section: Fact Sheet -->
+                                <div class="pata-editorial-right">
+                                    <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
+                                    
+                                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                                        <div style="background: #E8F5E9; color: #2E7D32; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                             ACTIVO
+                                        </div>
+                                        ${pet.is_senior || this.isSenior(pet) ? `
+                                            <div style="background: #F3E5F5; color: #7B1FA2; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
+                                                👑 SENIOR
+                                            </div>
+                                        ` : ''}
+                                        ${pet.is_adopted ? `
+                                            <div style="background: #E0F7FA; color: #006064; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                                🏠 ADOPTADO
+                                            </div>
+                                        ` : ''}
+                                    </div>
+    
+                                    <h2 class="pata-editorial-name">${pet.name}</h2>
+                                    <p style="font-size: 22px; font-weight: 800; color: #00BBB4; margin-bottom: 45px; display: flex; align-items: center; gap: 10px; border-bottom: 4px solid #000; padding-bottom: 15px; width: fit-content;">
+                                        ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
+                                    </p>
+    
+                                    <div class="pata-editorial-info-grid">
+                                        ${[
+                                            { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
+                                            { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
+                                            { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
+                                            { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
+                                            { label: 'RUAC', value: pet.ruac || 'En Trámite', icon: '🆔' },
+                                            { label: 'Ingreso', value: registrationDate, icon: '📅' }
+                                        ].map(item => `
+                                            <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">
+                                                <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
+                                                <div style="font-size: 18px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
+                                                    <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+    
+                                    ${this.isSenior(pet) ? `
+                                        <div style="background: #FFF9C4; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                            <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
+                                            ${pet.vet_certificate_url ? 
+                                                `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                                                    <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
+                                                    Ver Certificado Médico →
+                                                </a>` : 
+                                                '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Certificado Pendiente de Carga</div>'}
+                                        </div>
+                                    ` : ''}
+    
+                                    <div style="margin-top: 50px;">
+                                        <button id="pata-close-details-btn" style="background: #FFBD12; color: #000; border: 4px solid #000; padding: 20px 40px; border-radius: 60px; font-weight: 950; font-size: 20px; cursor: pointer; width: 100%; box-shadow: 8px 8px 0 rgba(0,0,0,0.1); transition: all 0.2s;">
+                                            Cerrar Expediente
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
