@@ -242,9 +242,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             .select(`
                 id,
                 name,
+                pet_type,
                 breed,
                 breed_size,
                 age,
+                age_value,
+                age_unit,
                 status,
                 waiting_period_start,
                 waiting_period_end
@@ -299,13 +302,20 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             const waitingEnd = pet.waiting_period_end ? new Date(pet.waiting_period_end) : null;
             const isWaitingActive = waitingEnd ? now < waitingEnd : false;
 
+            // Construir edad legible si la columna 'age' está vacía
+            let displayAge = pet.age;
+            if (!displayAge && pet.age_value) {
+                const unit = pet.age_unit === 'months' ? (pet.age_value === 1 ? 'mes' : 'meses') : (pet.age_value === 1 ? 'año' : 'años');
+                displayAge = `${pet.age_value} ${unit}`;
+            }
+
             return {
                 id: pet.id,
                 name: pet.name,
-                type: pet.breed?.toLowerCase().includes('gato') ? 'Gato' : 'Perro',
+                type: pet.pet_type === 'dog' ? 'Perro' : (pet.pet_type === 'cat' ? 'Gato' : 'Mascota'),
                 breed: pet.breed || 'Mestizo',
                 size: pet.breed_size,
-                age: pet.age,
+                age: displayAge || 'No especificada',
                 status: pet.status,
                 waitingPeriod: {
                     start: pet.waiting_period_start,

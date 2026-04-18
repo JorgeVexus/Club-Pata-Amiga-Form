@@ -330,6 +330,11 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             gender: pet.gender || null,
             age_value: pet.age || pet.petAge,
             age_unit: pet.ageUnit || pet.petAgeUnit || 'years',
+            age: `${pet.age || pet.petAge} ${
+                (pet.ageUnit || pet.petAgeUnit || 'years') === 'years' 
+                ? (Number(pet.age || pet.petAge) === 1 ? 'año' : 'años') 
+                : (Number(pet.age || pet.petAge) === 1 ? 'mes' : 'meses')
+            }`,
 
             // Colores (Catálogos)
             coat_color: pet.coatColor,

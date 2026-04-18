@@ -94,27 +94,39 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                     console.log('✅ Mascotas cargadas:', result.pets);
 
                     // Mapear datos de Supabase al formato del formulario
-                    const mappedPets: Partial<PetFormData>[] = result.pets.map((pet: any) => ({
-                        name: pet.name || '',
-                        petType: pet.breed?.toLowerCase().includes('gato') ? 'gato' : 'perro',
-                        gender: pet.gender || '',
-                        isMixed: pet.breed === 'Mestizo',
-                        breed: pet.breed || '',
-                        breedSize: pet.breed_size || '',
-                        age: pet.age || '',
-                        // No podemos recuperar los archivos File, solo las URLs
-                        photo1Url: pet.photo_url || '',
-                        photo2Url: pet.photo2_url || '',
-                        vetCertificateUrl: pet.vet_certificate_url || '',
-                        // Período de carencia
-                        waitingPeriodEnd: pet.waiting_period_end || '',
-                        waitingPeriodDays: pet.waiting_period_end 
-                            ? Math.ceil((new Date(pet.waiting_period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                            : 0,
-                        isOriginal: true,
-                        isActive: pet.status !== 'inactive',
-                        registrationDate: pet.created_at || new Date().toISOString(),
-                    }));
+                    const mappedPets: Partial<PetFormData>[] = result.pets.map((pet: any) => {
+                        // Reconstruir la clave de edad para el Select de PetCard
+                        let ageKey = pet.age || '';
+                        if (!ageKey && pet.age_value) {
+                            if (pet.age_unit === 'months') {
+                                ageKey = pet.age_value <= 6 ? '4-6-meses' : '6-12-meses';
+                            } else {
+                                ageKey = pet.age_value >= 15 ? '15+-años' : `${pet.age_value}-${pet.age_value === 1 ? 'año' : 'años'}`;
+                            }
+                        }
+
+                        return {
+                            name: pet.name || '',
+                            petType: pet.pet_type === 'cat' ? 'gato' : 'perro',
+                            gender: pet.gender || '',
+                            isMixed: pet.breed === 'Mestizo',
+                            breed: pet.breed || '',
+                            breedSize: pet.breed_size || '',
+                            age: ageKey,
+                            // No podemos recuperar los archivos File, solo las URLs
+                            photo1Url: pet.photo_url || '',
+                            photo2Url: pet.photo2_url || '',
+                            vetCertificateUrl: pet.vet_certificate_url || '',
+                            // Período de carencia
+                            waitingPeriodEnd: pet.waiting_period_end || '',
+                            waitingPeriodDays: pet.waiting_period_end 
+                                ? Math.ceil((new Date(pet.waiting_period_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+                                : 0,
+                            isOriginal: true,
+                            isActive: pet.status !== 'inactive',
+                            registrationDate: pet.created_at || new Date().toISOString(),
+                        };
+                    });
 
                     setPets(mappedPets);
                 }
