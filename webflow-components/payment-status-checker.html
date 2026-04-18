@@ -89,10 +89,33 @@
                 }
 
                 logger.log('✅ Tiene plan activo, mostrando contenido normal');
-                // El contenido normal se muestra (no hacemos nada)
+                showDashboardContent();
 
             } catch (error) {
                 logger.error('Error verificando pago:', error);
+                // Fail-safe: mostrar contenido de todos modos para no bloquear
+                showDashboardContent();
+            }
+        }
+
+        // ============================================
+        // MOSTRAR CONTENIDO
+        // ============================================
+        function showDashboardContent() {
+            // Ocultar loader
+            const loader = document.querySelector('.loading-screen, [data-loader]');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 300);
+            }
+
+            // Mostrar contenido del dashboard
+            const content = document.querySelector('.dashboard-content, [data-dashboard]');
+            if (content) {
+                content.style.opacity = '1';
+                content.style.pointerEvents = 'auto';
             }
         }
 
