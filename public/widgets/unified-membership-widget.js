@@ -473,15 +473,22 @@
 
         /* Responsive Editorial Modal */
         .pata-editorial-container {
-            display: grid;
-            grid-template-columns: 440px 1fr;
             max-width: 960px;
-            width: 100%;
+            width: 90%;
+            max-height: 90vh;
             border-radius: 40px;
             border: 4px solid #000;
             overflow: hidden;
             background: #fff;
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
+            position: relative;
+        }
+
+        .pata-editorial-body {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            height: 100%;
+            overflow-y: auto;
         }
 
         .pata-editorial-left {
@@ -491,14 +498,15 @@
             flex-direction: column;
             gap: 25px;
             border-right: 4px solid #000;
-            position: sticky;
-            top: 0;
+            height: 100%;
         }
 
         .pata-editorial-right {
             padding: 50px;
             background: #fff;
             position: relative;
+            height: 100%;
+            overflow-y: auto;
         }
 
         .pata-editorial-name {
@@ -520,20 +528,26 @@
 
         @media (max-width: 850px) {
             .pata-editorial-container {
-                grid-template-columns: 1fr;
-                max-width: 100%;
+                max-width: 95%;
                 border-width: 3px;
+                max-height: 85vh;
+            }
+
+            .pata-editorial-body {
+                grid-template-columns: 1fr;
+                display: block;
             }
 
             .pata-editorial-left {
                 border-right: none;
                 border-bottom: 4px solid #000;
-                position: relative;
                 padding: 30px 20px;
+                height: auto;
             }
 
             .pata-editorial-right {
                 padding: 40px 25px;
+                height: auto;
             }
 
             .pata-editorial-name {
@@ -550,8 +564,7 @@
                 height: 320px !important;
             }
         }
-            display: inline;
-            color: #D32F2F;
+
         }
         .pata-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
         .pata-btn:active { transform: translateY(0); }
@@ -1453,11 +1466,10 @@
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal">
                     <div class="pata-editorial-container">
-                        <div class="pata-modal-body pata-no-scrollbar" style="padding: 0;">
-                            <div class="pata-editorial-body" style="display: contents;">
-                                
-                                <!-- Left Section: Visual Identity -->
-                                <div class="pata-editorial-left">
+                        <div class="pata-editorial-body pata-no-scrollbar">
+                            
+                            <!-- Left Section: Visual Identity -->
+                            <div class="pata-editorial-left">
                                     <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: 4px solid #000; overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); transform: rotate(-1deg);">
                                         <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
                                         <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
