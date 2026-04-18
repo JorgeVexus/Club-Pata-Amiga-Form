@@ -1,0 +1,37 @@
+<!-- 
+  🐾 Club Pata Amiga — Configuración Global de Entorno
+  Instrucciones: Pegar este script en el <head> de los Project Settings de Webflow.
+  Permite alternar entre Producción y Staging (Vercel) dinámicamente.
+-->
+<script>
+  (function() {
+    // 1. Detección de entorno
+    const params = new URLSearchParams(window.location.search);
+    const useStaging = params.get('env') === 'staging' || window.location.hostname.includes('staging');
+    
+    // 2. Definición de URLs
+    const PROD_URL = 'https://app.pataamiga.mx';
+    const STAGING_URL = 'https://club-pata-amiga-form-git-staging-jorge-vexus-projects.vercel.app';
+    
+    // 3. Objeto de Configuración Global
+    window.PATA_AMIGA_CONFIG = {
+      baseUrl: useStaging ? STAGING_URL : PROD_URL,
+      // Nota: Algunos componentes esperan la URL con /api y otros no. Estandarizamos aquí.
+      apiUrl: useStaging ? STAGING_URL : PROD_URL,
+      env: useStaging ? 'staging' : 'production',
+      isStaging: useStaging,
+      dashboards: {
+        member: 'https://www.pataamiga.mx/pets/pet-waiting-period',
+        ambassador: 'https://www.pataamiga.mx/embajadores/dashboard',
+        admin: (useStaging ? STAGING_URL : PROD_URL) + '/admin/dashboard'
+      }
+    };
+    
+    // 4. Logging para depuración en el navegador
+    console.group('%c 🐾 Pata Amiga — Environment Config ', 'background: #00BBB4; color: #fff; padding: 2px 5px; border-radius: 4px;');
+    console.log('Entorno:', window.PATA_AMIGA_CONFIG.env.toUpperCase());
+    console.log('Base URL:', window.PATA_AMIGA_CONFIG.baseUrl);
+    console.log('Modo Staging:', useStaging ? 'ACTIVADO ✅' : 'DESACTIVADO (Usa ?env=staging para activar)');
+    console.groupEnd();
+  })();
+</script>

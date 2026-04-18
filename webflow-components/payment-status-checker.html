@@ -11,10 +11,12 @@
         // ============================================
         // CONFIGURACIÓN
         // ============================================
+        const GLOBAL_CONFIG = window.PATA_AMIGA_CONFIG || {};
+
         const CONFIG = {
-            apiUrl: 'https://app.pataamiga.mx/api',
-            paymentUrl: 'https://app.pataamiga.mx/usuarios/registro', // URL actualizada al nuevo flujo
-            processingUrl: 'https://app.pataamiga.mx/payment-processing',
+            apiUrl: (GLOBAL_CONFIG.apiUrl || 'https://app.pataamiga.mx') + '/api',
+            paymentUrl: (GLOBAL_CONFIG.baseUrl || 'https://app.pataamiga.mx') + '/usuarios/registro',
+            processingUrl: (GLOBAL_CONFIG.baseUrl || 'https://app.pataamiga.mx') + '/payment-processing',
             debug: true
         };
 

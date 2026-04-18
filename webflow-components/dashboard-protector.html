@@ -11,9 +11,11 @@
         // ============================================
         // CONFIGURACIÓN
         // ============================================
+        const GLOBAL_CONFIG = window.PATA_AMIGA_CONFIG || {};
+
         const CONFIG = {
             loginUrl: 'https://www.pataamiga.mx/user/inicio-de-sesion',
-            apiUrl: 'https://app.pataamiga.mx/api',
+            apiUrl: (GLOBAL_CONFIG.apiUrl || 'https://app.pataamiga.mx') + '/api',
             debug: true
         };
 

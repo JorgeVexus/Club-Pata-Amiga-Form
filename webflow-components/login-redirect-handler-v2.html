@@ -10,9 +10,11 @@
     // ============================================
     // CONFIGURACIÓN
     // ============================================
+    const GLOBAL_CONFIG = window.PATA_AMIGA_CONFIG || {};
+
     const CONFIG = {
-        apiUrl: 'https://app.pataamiga.mx/api',
-        dashboards: {
+        apiUrl: (GLOBAL_CONFIG.apiUrl || 'https://app.pataamiga.mx') + '/api',
+        dashboards: GLOBAL_CONFIG.dashboards || {
             member: 'https://www.pataamiga.mx/pets/pet-waiting-period',
             ambassador: 'https://www.pataamiga.mx/embajadores/dashboard',
             admin: 'https://app.pataamiga.mx/admin/dashboard'
