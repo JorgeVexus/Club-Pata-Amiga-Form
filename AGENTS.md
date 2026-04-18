@@ -12,6 +12,10 @@
    - ALWAYS update or create the daily changelog file in `changelogs/YYYY-MM-DD.md` immediately after every `git push`.
    - The changelog MUST include details of the changes made, including commit descriptions and functional impacts.
 
+9. **CHANGELOG-ONLY COMMITS (STRICT)**:
+   - If a commit contains ONLY updates to the changelog, DO NOT execute `git push` immediately.
+   - Wait until the next functional commit (feat, fix, refactor, etc.) to push all pending changes together.
+
 ## Visión General del Proyecto
 
 **Pet Membership Form** es un sistema completo de registro de membresías para mascotas que integra múltiples tecnologías para gestionar usuarios, mascotas, pagos y un dashboard administrativo.
@@ -25,6 +29,7 @@
 - Allowed types: feat, fix, refactor, style, chore, docs
 - NEVER execute `git commit` or `git push` without explicit user authorization
 - **MANDATORY**: ALWAYS update or create the daily changelog in `changelogs/YYYY-MM-DD.md` after every `git push`, detailing all changes and their impact.
+- **NO PUSH FOR CHANGELOG-ONLY**: If a commit only has changelog modifications, ignore the push until the next functional change.
 
 ### Propósito Principal
 - Registro de usuarios con datos personales y documentos (INE, comprobante de domicilio)
