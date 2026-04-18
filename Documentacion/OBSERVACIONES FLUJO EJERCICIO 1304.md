@@ -4,7 +4,7 @@ OBSERVACIONES FLUJO EJERCICIO 13/04/2026
     
 * Para subir fotos de la mascota, solo permite una al principio y en el dashboard no permite agregar más fotos de la mascota, recordar que se pide obligatoriamente una selfie con la mascota  
     
-* ¿No se puede modificar el RUAC posteriormente?  
+
     
 * Tipografía poco visible de “podrás registrar otras dos mascotas” debajo del botón “continuar” que te lleva al pago  
     
@@ -26,7 +26,7 @@ OBSERVACIONES FLUJO EJERCICIO 13/04/2026
 
 Mascotas dos y tres.
 
-* El RUAC está a 10 dígitos y no 11 como en la primera mascota.
+
 
 Posterior en aceptar mascota o propietario
 
@@ -61,7 +61,7 @@ Posterior en aceptar mascota o propietario
     
 * Los datos de las mascotas no están completos y otros están erróneos.
 
-* Si se mete con RUAC se tiene que cambiar de 180 a 90dias.
+
 
 FALTANTES EN OBSERVACIONES YA ENVIADAS
 

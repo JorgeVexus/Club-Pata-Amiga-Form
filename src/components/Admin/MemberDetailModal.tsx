@@ -28,7 +28,7 @@ interface Pet {
     is_adopted?: boolean;
     adoption_story?: string;
     is_senior?: boolean;
-    ruac?: string;
+
     created_at: string;
 }
 
@@ -489,12 +489,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     <span className={styles.detailValue}>{pet.eye_color}</span>
                                                 </div>
                                             )}
-                                            {pet.ruac && (
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.detailLabel}>🆔 RUAC</span>
-                                                    <span className={styles.detailValue}>{pet.ruac}</span>
-                                                </div>
-                                            )}
+
                                             <div className={styles.detailRow}>
                                                 <span className={styles.detailLabel}>📅 Registro</span>
                                                 <span className={styles.detailValue}>

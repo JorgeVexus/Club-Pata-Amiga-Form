@@ -167,9 +167,8 @@ export async function POST(request: NextRequest) {
         const carencia = calculateWaitingPeriod(
             true,
             petData.isAdopted || false,
-            !!petData.ruac,
             petData.isMixed || false,
-            hasValidReferral // Pasar el resultado de la validación
+            hasValidReferral
         );
 
         // 5. Preparar campos para Memberstack
@@ -224,7 +223,7 @@ export async function POST(request: NextRequest) {
             ...(petData.isMixed !== undefined ? { is_mixed_breed: petData.isMixed } : {}),
             ...(petData.isAdopted !== undefined ? { is_adopted: petData.isAdopted } : {}),
             ...(petData.adoptionStory ? { adoption_story: petData.adoptionStory } : {}),
-            ...(petData.ruac ? { ruac: petData.ruac } : {}),
+
             ...(petData.isSenior !== undefined ? { is_senior: petData.isSenior } : {}),
             ...(petData.vetCertificateUrl ? { vet_certificate_url: petData.vetCertificateUrl } : {}),
             ...(petData.photo3Url ? { photo3_url: petData.photo3Url } : {}),

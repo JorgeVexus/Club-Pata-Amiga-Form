@@ -24,7 +24,6 @@ export interface PetFormData {
 
     // Documentos
     photos?: File[];
-    ruac: string;
 
     // URLs de archivos (cuando ya están subidos)
     photo1Url?: string;
@@ -70,7 +69,7 @@ export interface WaitingPeriodCalculation {
     months: number;
     endDate: string;
     hasReduction: boolean;
-    reductionReason?: 'adopted' | 'ruac' | 'both' | 'referral';
+    reductionReason?: 'adopted' | 'referral';
 }
 
 // Props para componentes

@@ -984,14 +984,7 @@ Para efectos operativos, y salvo que la Plataforma muestre expresamente una regl
 vigente, se aplicarán las siguientes carencias:
 a) Registro normal: 6 (seis) meses contados a partir de la activación exitosa de
 la Membresía y el registro validado de la mascota;
-b) Registro  con  RUAC  (Registro  Único  de Animales de  Compañía): 4  (cuatro)
-meses contados a partir de la activación exitosa de la Membresía y el registro
-
-
-
-validado de la mascota, siempre que el RUAC sea proporcionado y, en su
-caso, verificable conforme a los criterios operativos publicados;
-c) Registro mediante Código de Embajador: 3 (tres) meses contados a partir
+b) Registro mediante Código de Embajador: 3 (tres) meses contados a partir
 de la activación exitosa de la Membresía y el registro validado de la mascota,
 siempre que el Código se encuentre vigente y sea aceptado por los controles
 de integridad/antifraude de la Plataforma.
@@ -3031,7 +3024,7 @@ prorrateo o ajustes de monto sin que ello genere derecho exigible.
 aplicable a partir de la activación de la Membresía del Titular, durante el cual no
 será posible solicitar y/o recibir Apoyos con cargo al Fondo, aun cuando el Titular
 tenga Membresía vigente. La duración de la Carencia podrá variar por plan,
-campaña, programa, segmento (incluyendo, en su caso, RUAC o registro por
+campaña, programa, segmento (incluyendo, en su caso, registro por
 Código de Embajador) y/o por tipo de Apoyo, siempre que se indique de manera
 expresa en la Plataforma al momento de la contratación, activación o renovación
 y/o se publique como regla vigente aplicable.
@@ -4176,7 +4169,6 @@ dígitos y datos de conciliación.
 E. Datos de mascotas (hasta 3 por cuenta)
 - Nombre, edad, sexo, raza, tamaño/peso, tipo de mascota
 - Fotos de la mascota y selfie con mascota
-- RUAC (si existe)
 - Certificado médico veterinario (si rebasa edad senior o cuando aplique)
 - Historia de adopción/rescate (solo si el usuario decide compartirla)
 - Código de embajador (si aplica)
@@ -5989,14 +5981,7 @@ Para efectos operativos, y salvo que la Plataforma muestre expresamente una regl
 vigente, se aplicarán las siguientes carencias:
 a) Registro normal: 6 (seis) meses contados a partir de la activación exitosa de
 la Membresía y el registro validado de la mascota;
-b) Registro  con  RUAC  (Registro  Único  de Animales de  Compañía): 4  (cuatro)
-meses contados a partir de la activación exitosa de la Membresía y el registro
-
-
-
-validado de la mascota, siempre que el RUAC sea proporcionado y, en su
-caso, verificable conforme a los criterios operativos publicados;
-c) Registro mediante Código de Embajador: 3 (tres) meses contados a partir
+b) Registro mediante Código de Embajador: 3 (tres) meses contados a partir
 de la activación exitosa de la Membresía y el registro validado de la mascota,
 siempre que el Código se encuentre vigente y sea aceptado por los controles
 de integridad/antifraude de la Plataforma.
@@ -8036,7 +8021,7 @@ prorrateo o ajustes de monto sin que ello genere derecho exigible.
 aplicable a partir de la activación de la Membresía del Titular, durante el cual no
 será posible solicitar y/o recibir Apoyos con cargo al Fondo, aun cuando el Titular
 tenga Membresía vigente. La duración de la Carencia podrá variar por plan,
-campaña, programa, segmento (incluyendo, en su caso, RUAC o registro por
+campaña, programa, segmento (incluyendo, en su caso, registro por
 Código de Embajador) y/o por tipo de Apoyo, siempre que se indique de manera
 expresa en la Plataforma al momento de la contratación, activación o renovación
 y/o se publique como regla vigente aplicable.
@@ -9181,7 +9166,6 @@ dígitos y datos de conciliación.
 E. Datos de mascotas (hasta 3 por cuenta)
 - Nombre, edad, sexo, raza, tamaño/peso, tipo de mascota
 - Fotos de la mascota y selfie con mascota
-- RUAC (si existe)
 - Certificado médico veterinario (si rebasa edad senior o cuando aplique)
 - Historia de adopción/rescate (solo si el usuario decide compartirla)
 - Código de embajador (si aplica)

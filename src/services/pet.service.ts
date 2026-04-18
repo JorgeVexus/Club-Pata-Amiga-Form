@@ -13,14 +13,12 @@ import type {
  * Calcula el período de carencia para una mascota
  * @param isOriginal - ¿Es una de las primeras 3 mascotas?
  * @param isAdopted - ¿Fue adoptada o rescatada?
- * @param hasRUAC - ¿Tiene código RUAC?
  * @param isMixed - ¿Es mestiza/criolla?
  * @returns Información del período de carencia
  */
 export function calculateWaitingPeriod(
     isOriginal: boolean,
     isAdopted: boolean,
-    hasRUAC: boolean,
     isMixed: boolean = false,
     hasReferralCode: boolean = false
 ): WaitingPeriodCalculation {
@@ -37,15 +35,11 @@ export function calculateWaitingPeriod(
         };
     }
 
-    // BENEFICIO MÁXIMO: Adoptada, RUAC o Código de Embajador -> 90 días (3 meses aprox)
-    if (isAdopted || hasRUAC || hasReferralCode) {
+    if (isAdopted || hasReferralCode) {
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 90);
 
-        let reductionReason: 'adopted' | 'ruac' | 'both' | 'referral' = 'adopted';
-        if (hasReferralCode) reductionReason = 'referral';
-        else if (isAdopted && hasRUAC) reductionReason = 'both';
-        else if (hasRUAC) reductionReason = 'ruac';
+        const reductionReason = hasReferralCode ? 'referral' : 'adopted';
 
         return {
             days: 90,
@@ -53,20 +47,6 @@ export function calculateWaitingPeriod(
             endDate: endDate.toISOString(),
             hasReduction: true,
             reductionReason,
-        };
-    }
-
-    // BENEFICIO MEDIO: Mestiza -> 120 días (4 meses aprox)
-    if (isMixed) {
-        const endDate = new Date();
-        endDate.setDate(endDate.getDate() + 120);
-
-        return {
-            days: 120,
-            months: 4,
-            endDate: endDate.toISOString(),
-            hasReduction: true,
-            reductionReason: 'adopted', // Reusamos campo o extendemos tipo si es necesario
         };
     }
 
@@ -133,7 +113,6 @@ export async function savePetsToMemberstack(
             customFields[`${prefix}-exceeds-max-age`] = (pet.exceedsMaxAge ?? false).toString();
             customFields[`${prefix}-is-adopted`] = (pet.isAdopted ?? false).toString();
             customFields[`${prefix}-adoption-story`] = pet.adoptionStory || '';
-            customFields[`${prefix}-ruac`] = pet.ruac || '';
             customFields[`${prefix}-is-original`] = (pet.isOriginal ?? true).toString();
             customFields[`${prefix}-waiting-period-days`] = (pet.waitingPeriodDays ?? 180).toString();
             customFields[`${prefix}-waiting-period-end`] = pet.waitingPeriodEnd || '';
@@ -259,14 +238,8 @@ export function formatWaitingPeriodMessage(
         let reason = '';
         
         switch (calculation.reductionReason) {
-            case 'both':
-                reason = 'fue adoptada y tiene RUAC';
-                break;
             case 'adopted':
                 reason = 'fue adoptada';
-                break;
-            case 'ruac':
-                reason = 'tiene RUAC';
                 break;
             case 'referral':
                 reason = 'usó un código de Embajador';

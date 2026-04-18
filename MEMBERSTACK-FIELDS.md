@@ -207,10 +207,10 @@ Después de crear los campos:
 - **Campos de metadata**: 2
 
 **Campos adicionales para dashboard de mascotas**: 57
-- 19 campos por mascota × 3 mascotas
+- 18 campos por mascota × 3 mascotas
 - 1 campo de total de mascotas
 
-**Gran total**: 77 campos custom en Memberstack
+**Gran total**: 74 campos custom en Memberstack
 
 ---
 
@@ -245,7 +245,6 @@ Para cada mascota (reemplaza `X` con 1, 2, o 3):
 #### Adopción y Documentos
 
 - **`pet-X-is-adopted`** (Text): Si fue adoptada (`true` o `false`)
-- **`pet-X-ruac`** (Text): Código RUAC (si aplica)
 
 #### URLs de Archivos
 
@@ -256,7 +255,7 @@ Para cada mascota (reemplaza `X` con 1, 2, o 3):
 #### Período de Carencia
 
 - **`pet-X-is-original`** (Text): Si es mascota original (`true`) o reemplazo (`false`)
-- **`pet-X-waiting-period-days`** (Text): Días de período de carencia (120, 180)
+- **`pet-X-waiting-period-days`** (Text): Días de período de carencia (90, 180)
 - **`pet-X-waiting-period-end`** (Text): Fecha de fin del período (ISO 8601)
 - **`pet-X-registration-date`** (Text): Fecha de registro (ISO 8601)
 
@@ -279,12 +278,11 @@ pet-1-breed-size: "grande"
 pet-1-age: "3"
 pet-1-exceeds-max-age: "false"
 pet-1-is-adopted: "true"
-pet-1-ruac: "RUAC123456"
 pet-1-photo-1-url: "https://supabase.co/storage/..."
 pet-1-photo-2-url: "https://supabase.co/storage/..."
 pet-1-vet-certificate-url: ""
 pet-1-is-original: "true"
-pet-1-waiting-period-days: "120"
+pet-1-waiting-period-days: "90"
 pet-1-waiting-period-end: "2024-04-15T00:00:00.000Z"
 pet-1-registration-date: "2024-01-15T00:00:00.000Z"
 pet-1-is-active: "true"
@@ -303,10 +301,10 @@ pet-1-replaced-date: ""
 
 ## 📊 Resumen de Campos
 
-**Total de campos**: 77
+**Total de campos**: 74
 
 - **Campos de usuario**: 20
-- **Campos de mascotas**: 57 (19 campos × 3 mascotas)
+- **Campos de mascotas**: 54 (18 campos × 3 mascotas)
 - **Campo de total**: 1
 
 ---

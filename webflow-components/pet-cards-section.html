@@ -335,7 +335,7 @@
       const now = new Date();
       const start = new Date(pet.created_at);
       let totalDays = 180;
-      if (pet.is_adopted || pet.ruac) totalDays = 90;
+      if (pet.is_adopted) totalDays = 90;
       else if (pet.is_mixed_breed) totalDays = 120;
       const passed = Math.floor((now - start) / 86400000);
       const remaining = Math.max(0, totalDays - passed);
@@ -469,7 +469,7 @@
       this.addFormData = { 
         petType: '', name: '', lastName: '', ageValue: '', ageUnit: 'years', gender: '', 
         breedType: 'raza', breed: '', isMixed: false, coatColor: '', noseColor: '', photo1Url: '',
-        eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '', ruac: '',
+        eyeColor: '', isAdopted: false, adoptionStory: '', breedSize: '',
         referralCode: '', referralName: '', isReferralValid: false
       };
       this.uploadedPhotoUrl = null;
@@ -658,11 +658,6 @@
             <textarea class="pata-form-textarea" id="add-story" placeholder="Cuéntanos brevemente su historia...">${d.adoptionStory || ''}</textarea>
           </div>
 
-          <div class="pata-form-group">
-            <label class="pata-form-label">RUAC (opcional)</label>
-            <input class="pata-form-input" id="add-ruac" value="${d.ruac || ''}" placeholder="Ej: ABC123456789">
-            <p class="pata-add-subtext" style="font-size:11px; margin-top:4px;">Si tienes el RUAC, la carencia se reduce a 90 días.</p>
-          </div>
 
           <div class="pata-form-group">
             <label class="pata-form-label">Código de Embajador (Opcional)</label>
@@ -794,7 +789,6 @@
       if (el('add-breed')) d.breed = el('add-breed').value;
       if (el('add-size')) d.breedSize = el('add-size').value;
       if (el('add-story')) d.adoptionStory = el('add-story').value;
-      if (el('add-ruac')) d.ruac = el('add-ruac').value;
       if (el('add-referral-code')) d.referralCode = el('add-referral-code').value.toUpperCase();
     }
 
@@ -916,7 +910,6 @@
             photo1Url: this.uploadedPhotoUrl,
             isSenior: isSenior,
             vetCertificateUrl: this.uploadedVetUrl,
-            ruac: d.ruac || '',
             referralCode: d.isReferralValid ? d.referralCode : ''
           }
         };

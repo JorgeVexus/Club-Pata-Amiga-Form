@@ -28,12 +28,12 @@ export async function OPTIONS() {
 
 /**
  * Calcula el período de carencia con reducción:
- * - Adoptada o RUAC → 90 días
+ * - Adoptada → 90 días
  * - Mestiza → 120 días
  * - Estándar → 180 días
  */
-function calculateWaitingPeriodDays(isAdopted: boolean, hasRuac: boolean, isMixed: boolean): number {
-    if (isAdopted || hasRuac) return 90;
+function calculateWaitingPeriodDays(isAdopted: boolean, isMixed: boolean): number {
+    if (isAdopted) return 90;
     if (isMixed) return 120;
     return 180;
 }
@@ -57,7 +57,6 @@ export async function POST(request: NextRequest) {
             isAdopted,
             adoptionStory,
             primaryPhotoUrl,
-            ruac,
             isSenior,
             vetCertificateUrl,
         } = body;
@@ -109,7 +108,6 @@ export async function POST(request: NextRequest) {
         // 4. Calcular período de carencia con reducciones
         const waitingDays = calculateWaitingPeriodDays(
             isAdopted || false,
-            !!(ruac && ruac.trim()),
             isMixed || false
         );
 

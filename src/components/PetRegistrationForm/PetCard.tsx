@@ -146,16 +146,6 @@ export default function PetCard({
                         placeholder="Pérez (opcional)"
                     />
 
-                    <TextInput
-                        label="RUAC (Opcional)"
-                        name={`pet-${petNum}-ruac`}
-                        value={petData.ruac || ''}
-                        onChange={(value) => onUpdate({ ...petData, ruac: value.toUpperCase() })}
-                        placeholder="A1B2C3D4E5X"
-                        maxLength={11}
-                        helpText="🎁 ¡Gana 90 días de carencia! Si no lo tienes, puedes agregarlo después en tu dashboard. (Debe ser de 11 caracteres)"
-                        error={errors[`pet-${petNum}-ruac`]}
-                    />
 
                     <RadioGroup
                         label="¿Cuál es su sexo?"

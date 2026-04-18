@@ -761,12 +761,12 @@
             const start = new Date(pet.created_at);
 
             // Lógica de carencia refinada:
-            // 1. Adoptado o RUAC (11 dígitos validado en frontend) -> 90 días
+            // 1. Adoptado (validado en frontend) -> 90 días
             // 2. Mestizo -> 120 días
             // 3. Estándar -> 180 días
 
             let totalDays = 180;
-            if (pet.is_adopted || (pet.ruac && pet.ruac.length >= 11)) {
+            if (pet.is_adopted) {
                 totalDays = 90;
             } else if (pet.is_mixed) {
                 totalDays = 120;
@@ -1283,7 +1283,7 @@
                 <div class="pata-orange-alert">
                     <div class="pata-orange-alert-icon">🔔</div>
                     <div class="pata-orange-alert-text">
-                        <strong>¿Adoptaste a alguno de tus compañeros o tienes RUAC?</strong><br>
+                        <strong>¿Adoptaste a alguno de tus compañeros?</strong><br>
                         Puedes acelerar tu acceso al fondo. <a href="https://wa.me/525637545068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Contáctanos aquí</a> para validar tus documentos.
                     </div>
                 </div>
@@ -1528,7 +1528,6 @@
                                             { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
                                             { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
                                             { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
-                                            { label: 'RUAC', value: pet.ruac || 'En Trámite', icon: '🆔' },
                                             { label: 'Ingreso', value: registrationDate, icon: '📅' }
                                         ].map(item => `
                                             <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">

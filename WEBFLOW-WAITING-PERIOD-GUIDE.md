@@ -37,7 +37,6 @@ El panel utiliza los siguientes custom fields de Memberstack:
 - `pet-X-registration-date` - Fecha de registro (formato ISO)
 - `pet-X-is-active` - Si la mascota está activa ("true" o "false")
 - `pet-X-is-adopted` - Si fue adoptada ("true" o "false")
-- `pet-X-ruac` - Código RUAC (opcional)
 
 **General:**
 - `total-pets` - Número total de mascotas registradas
@@ -148,7 +147,7 @@ El panel utiliza los siguientes custom fields de Memberstack:
         </div>
     </div>
 
-    <!-- Información adicional / RUAC -->
+    <!-- Información adicional -->
     <div class="additional-info">
         <div class="info-icon">
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -158,7 +157,7 @@ El panel utiliza los siguientes custom fields de Memberstack:
         </div>
         <div class="info-text">
             <p data-pet-info="additional-message">
-                ¿Adoptaste a alguno de tus compañeros o tienes RUAC? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.
+                ¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.
             </p>
         </div>
     </div>

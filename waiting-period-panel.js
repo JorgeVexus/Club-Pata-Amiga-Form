@@ -152,7 +152,6 @@ function extractPetData(customFields, prefix, index) {
     let registrationDate = customFields[`${prefix}-registration-date`];
     const isActive = customFields[`${prefix}-is-active`] !== 'false';
     const isAdopted = customFields[`${prefix}-is-adopted`] === 'true';
-    const hasRUAC = (customFields[`${prefix}-ruac`] || '').trim() !== '';
 
     // Si no hay nombre, no es una mascota válida
     if (!name) {
@@ -186,9 +185,8 @@ function extractPetData(customFields, prefix, index) {
         waitingPeriodEnd,
         registrationDate,
         isActive,
-        isAdopted,
-        hasRUAC
-    };
+        isAdopted
+      };
 }
 
 /**
@@ -306,10 +304,10 @@ function updateMotivationalMessage(percentage) {
 function updateAdditionalMessage(pet) {
     let message = '';
 
-    if (pet.isAdopted || pet.hasRUAC) {
-        message = '¡Genial! Tu mascota tiene un período de carencia reducido de 4 meses por ser adoptada o tener RUAC.';
+    if (pet.isAdopted) {
+        message = '¡Genial! Tu mascota tiene un período de carencia reducido de 90 días por ser adoptada.';
     } else {
-        message = '¿Adoptaste a alguno de tus compañeros o tienes RUAC? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.';
+        message = '¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.';
     }
 
     updateElement('[data-pet-info="additional-message"]', message);

@@ -335,25 +335,7 @@
         }
         .pata-adoption-textarea:focus { border-color: #7DD8D5; outline: none; background: #fff; }
 
-        /* RUAC Section Premium */
-        .pata-ruac-section {
-            background: #F0F9F9; border-radius: 20px; padding: 20px;
-            margin-bottom: 20px; border: 1.5px solid rgba(125, 216, 213, 0.3);
-        }
-        .pata-ruac-badge {
-            display: inline-flex; align-items: center; gap: 5px; background: #E6FFFA;
-            color: #008B8B; padding: 4px 10px; border-radius: 10px; font-size: 10px;
-            font-weight: 800; text-transform: uppercase; margin-bottom: 10px;
-        }
-        .pata-ruac-input-wrapper { position: relative; }
-        .pata-ruac-status {
-            position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
-            font-size: 18px; pointer-events: none;
-        }
-        .pata-ruac-help-link {
-            display: inline-flex; align-items: center; gap: 5px; color: #00BBB4;
-            font-size: 11px; font-weight: 700; text-decoration: underline; margin-top: 10px; cursor: pointer;
-        }
+
 
         .pata-upload-box {
             border: 2px dashed #CBD5E0; border-radius: 25px; padding: 30px; text-align: center;
@@ -558,7 +540,7 @@
             ];
 
             if (pet.coat_color) detailRows.push({ icon: '🎨', label: 'Color de pelo', value: pet.coat_color });
-            if (pet.ruac) detailRows.push({ icon: '🆔', label: 'RUAC', value: pet.ruac });
+
 
             detailRows.push({ icon: '📅', label: 'Fecha de alta', value: new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
 
@@ -668,7 +650,7 @@
                 petType: '', name: '', ageValue: '', ageUnit: 'years', gender: '', 
                 breedType: 'raza', breed: '', isMixed: false,
                 coatColor: '', noseColor: '', eyeColor: '', 
-                isAdopted: false, adoptionStory: '', ruac: '',
+                isAdopted: false, adoptionStory: '',
                 referralCode: '', referralName: '', isReferralValid: false
             };
             this.uploadedPhotoUrl = null;
@@ -963,22 +945,7 @@
                     </div>
                 </div>
 
-                <div class="pata-ruac-section">
-                    <div class="pata-ruac-badge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
-                        ¡Beneficio exclusivo!
-                    </div>
-                    <label class="pata-form-label" style="color:#234E52;">RUAC (Opcional)</label>
-                    <div class="pata-ruac-input-wrapper">
-                        <input class="pata-form-input" id="add-ruac" value="${d.ruac}" placeholder="Ej: A1B2C3D4E5X" maxlength="11" style="text-transform: uppercase;">
-                        <span id="ruac-status" class="pata-ruac-status" style="display:${d.ruac.length===11?'block':'none'}">✨</span>
-                    </div>
-                    <p style="font-size:11px; color:#4A7C7F; margin-top:10px;"><strong>🎁 Ventaja:</strong> Con el RUAC, el periodo de carencia se reduce a <strong>90 días</strong>.</p>
-                    <a href="https://ruac.cdmx.gob.mx/" target="_blank" class="pata-ruac-help-link">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                        ¿Qué es el RUAC y cómo obtenerlo?
-                    </a>
-                </div>
+
 
                 <div class="pata-form-group">
                     <label class="pata-form-label">Código de Embajador (Opcional)</label>
@@ -1040,12 +1007,7 @@
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
 
-            // RUAC dynamic status
-            document.getElementById('add-ruac').oninput = (e) => {
-                const val = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-                e.target.value = val;
-                document.getElementById('ruac-status').style.display = val.length === 11 ? 'block' : 'none';
-            };
+
 
 
             this.setupBreedAutocomplete(container);
@@ -1068,7 +1030,7 @@
             d.eyeColor = document.getElementById('add-eyes').value;
             d.noseColor = document.getElementById('add-nose').value;
             d.adoptionStory = document.getElementById('add-story') ? document.getElementById('add-story').value : '';
-            d.ruac = document.getElementById('add-ruac').value;
+
             d.referralCode = document.getElementById('add-referral-code').value.toUpperCase();
             if (d.breedType === 'raza') d.breed = document.getElementById('pata-breed-input').value;
         }
@@ -1300,7 +1262,7 @@
             if (!d.gender) return alert('Selecciona el sexo');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
-            if (d.ruac && d.ruac.length !== 11) return alert('El RUAC debe tener exactamente 11 caracteres (ej. ABCD1234567)');
+
             // Las fotos y certificados ahora son opcionales con aviso de 15 días para completar
 
 
@@ -1330,7 +1292,7 @@
                         photo5Url: d.photos?.photo5 || null,
                         isSenior: isSenior,
                         vetCertificateUrl: this.uploadedVetUrl,
-                        ruac: d.ruac || '',
+
                         referralCode: d.isReferralValid ? d.referralCode : ''
                     }
                 };
@@ -1464,46 +1426,7 @@
             }
         }
 
-        async handleModalRuacUpdate(petId, inputId) {
-            const input = document.getElementById(inputId);
-            const val = input.value.trim().toUpperCase();
-            if (!val) return alert('Ingresa una clave RUAC válida');
-            if (val.length !== 11) return alert('El RUAC debe tener 11 caracteres');
 
-            const btn = input.nextElementSibling;
-            const originalText = btn.innerText;
-            btn.disabled = true;
-            btn.innerText = '...';
-
-            try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: this.member.id, ruac: val })
-                });
-
-                const data = await res.json();
-                if (data.success) {
-                    btn.style.background = '#38A169';
-                    btn.innerText = '✓';
-                    setTimeout(() => {
-                        this.init().then(() => {
-                            const modal = input.closest('.pata-modal-overlay');
-                            if (modal) {
-                                modal.remove();
-                                this.showDetails(petId);
-                            }
-                        });
-                    }, 1000);
-                } else {
-                    throw new Error(data.error);
-                }
-            } catch (err) {
-                alert('Error al actualizar RUAC: ' + err.message);
-                btn.disabled = false;
-                btn.innerText = originalText;
-            }
-        }
     }
 
     // Exponer al global con espera de DOM

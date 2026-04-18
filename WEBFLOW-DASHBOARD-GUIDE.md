@@ -224,8 +224,7 @@ Para cada mascota (pet-1, pet-2, pet-3):
   │   │   └── 📝 Text: "X días restantes"
   │   │
   │   └── 🔲 Div Block (pet-badges)
-  │       ├── 🏷️ Badge: "💚 Adoptada"
-  │       └── 🏷️ Badge: "🏥 RUAC"
+  │       └── 🏷️ Badge: "💚 Adoptada"
   │
   └── 🔲 Div Block (pet-card-actions)
       ├── 🔘 Button: "Ver detalles"
@@ -279,9 +278,6 @@ Para cada mascota (pet-1, pet-2, pet-3):
    - Dentro, agrega **Div Block** → Class: `badge badge-adopted`
      - Atributo: `data-ms-member="pet-1-is-adopted"`
      - Texto: "💚 Adoptada"
-   - Agrega **Div Block** → Class: `badge badge-ruac`
-     - Atributo: `data-ms-member="pet-1-ruac"`
-     - Texto: "🏥 RUAC"
 
 7. **Agregar botones de acción**:
    - Agrega **Div Block** → Class: `pet-card-actions`
@@ -473,7 +469,6 @@ document.addEventListener('DOMContentLoaded', function() {
       
       const customFields = member.data.customFields || {};
       const isAdopted = customFields['pet-' + petId + '-is-adopted'];
-      const ruac = customFields['pet-' + petId + '-ruac'];
       
       // Mostrar/ocultar badge de adoptada
       const adoptedBadge = document.querySelector('[data-pet-id="' + petId + '"] .badge-adopted');
@@ -481,14 +476,6 @@ document.addEventListener('DOMContentLoaded', function() {
         adoptedBadge.style.display = isAdopted === 'true' ? 'inline-block' : 'none';
       }
       
-      // Mostrar/ocultar badge de RUAC
-      const ruacBadge = document.querySelector('[data-pet-id="' + petId + '"] .badge-ruac');
-      if (ruacBadge) {
-        ruacBadge.style.display = ruac ? 'inline-block' : 'none';
-        if (ruac) {
-          ruacBadge.textContent = '🏥 RUAC: ' + ruac;
-        }
-      }
     });
   }
   
@@ -622,7 +609,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updateWaitingPeriod(2);
     updateWaitingPeriod(3);
     
-    // Actualizar badges
     updatePetBadges(1);
     updatePetBadges(2);
     updatePetBadges(3);
@@ -836,10 +822,6 @@ Agrega este código en **Page Settings → Custom Code → Head Code**:
   color: #155724;
 }
 
-.badge-ruac {
-  background: #cce5ff;
-  color: #004085;
-}
 
 /* Pet Card Actions */
 .pet-card-actions {
@@ -1023,7 +1005,7 @@ Para cada mascota (pet-1, pet-2, pet-3):
 - `pet-X-is-mixed`
 - `pet-X-exceeds-max-age`
 - `pet-X-is-adopted`
-- `pet-X-ruac`
+- `pet-X-is-adopted`
 - `pet-X-is-original`
 - `pet-X-waiting-period-days`
 - `pet-X-waiting-period-end`

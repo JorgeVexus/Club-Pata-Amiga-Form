@@ -26,7 +26,7 @@ GIRBAZ cuenta con RFC GIR231013B55 y Registro Patronal IMSS Z31-66323-108, y
 señala como domicilio social y fiscal: Calle Gustavo Díaz Ordaz, Número Exterior 18,
 Número Interior 1, Colonia San Juan, Municipio de Tultitlán, Estado de México, C.P.
 ## 54900.
-- Correo de notificaciones de GIRBAZ: girbaz31@gmail.com  • Sitio web / URL de la
+- Correo de notificaciones de GIRBAZ: girbaz31@gmail.com • Sitio web / URL de la
 Plataforma: https://www.pataamiga.mx/
 
 
@@ -114,7 +114,7 @@ políticas.
 - “Servicios”: Las funcionalidades y prestaciones digitales disponibles en la
 Plataforma conforme a la Membresía vigente (por ejemplo: gestión de Cuenta,
 registro, solicitudes, soporte y demás que se indiquen en Plataforma).
-- “Sitio  Web”:  La  dirección  web  oficial  de  la  Plataforma:
+- “Sitio Web”: La dirección web oficial de la Plataforma:
 https://www.pataamiga.mx/.
 - “Suspensión”: Medida temporal de restricción de acceso a la Cuenta o
 Servicios por motivos de seguridad, validación, impago, investigación o
@@ -146,7 +146,7 @@ estos Términos; en tanto no se informe, subsistirá dicho domicilio para efecto
 notificación.
 e) Correo y medios de notificación. Que para efectos de comunicaciones y
 notificaciones derivadas de estos Términos, GIRBAZ señala como correo electrónico:
-girbaz31@gmail.com.  Asimismo, serán válidas las notificaciones enviadas por
+girbaz31@gmail.com. Asimismo, serán válidas las notificaciones enviadas por
 GIRBAZ a través de la Plataforma, incluyendo avisos dentro de la Cuenta del Titular,
 notificaciones in-app, mensajes en el panel, o cualquier mecanismo equivalente
 habilitado.
@@ -200,7 +200,7 @@ respecto de la prestación de Servicios digitales.
 a la Plataforma y por los Servicios digitales que se describen en estos Términos y en la
 información mostrada al momento de contratar o renovar.
 
-5) Servicios de la Plataforma incluidos en la Membresía  5.1 Servicios y
+5) Servicios de la Plataforma incluidos en la Membresía 5.1 Servicios y
 funcionalidades
 Con una Membresía vigente, el Titular podrá acceder a las funcionalidades
 disponibles en la Plataforma, que pueden incluir, de manera enunciativa:
@@ -289,7 +289,7 @@ Plataforma al momento de contratar o renovar la Membresía (incluyendo el
 recibo/confirmación digital), pudiendo identificarse como:
 - 70% / $ (importe equivalente al 70% del precio total de la Membresía) a favor de
 GIRBAZ; y
--  30% / $ (importe equivalente al 30% del precio total de la Membresía) como
+- 30% / $ (importe equivalente al 30% del precio total de la Membresía) como
 Aportación al Fondo Solidario a favor de CLUB PATA AMIGA, A.C.
 Sin perjuicio de que estos porcentajes/montos puedan actualizarse conforme a la
 cláusula de modificaciones/actualizaciones y siempre que se muestren de forma
@@ -316,13 +316,13 @@ Componente Solidario, el Titular reconoce que CLUB PATA AMIGA, A.C. podrá emiti
 
 el comprobante/recibo correspondiente por dicha aportación, conforme a sus
 políticas y a la información fiscal que, en su caso, recabe para tal efecto.
-6.4.3  Responsabilidad  por  facturación.  El  Titular  reconoce  que:
+6.4.3 Responsabilidad por facturación. El Titular reconoce que:
 a) cualquier aclaración sobre CFDI de GIRBAZ se gestiona con GIRBAZ; y
 b) cualquier comprobante o recibo relativo a la aportación al Fondo, si se expide,
 corresponde a CLUB PATA AMIGA, A.C., sin que ello la convierta en parte de estos
 ## Términos.
 
-7) Mandato/encargo de canalización  7.1 Autorización expresa de canalización
+7) Mandato/encargo de canalización 7.1 Autorización expresa de canalización
 Si al contratar o renovar el Plan el Titular acepta la casilla correspondiente, el Titular
 mandata y autoriza expresamente a GIRBAZ para que:
 a) reciba el pago total de la Membresía a través del Proveedor de Pagos; y
@@ -510,7 +510,7 @@ ello la convierta en parte de estos Términos.
 El Titular podrá ejercer sus derechos de Acceso, Rectificación, Cancelación u
 Oposición (ARCO) y, en su caso, revocar su consentimiento (cuando proceda)
 mediante solicitud enviada al contacto de privacidad señalado por GIRBAZ:
-girbaz31@gmail.com,  siguiendo el procedimiento que se informe en el Aviso de
+girbaz31@gmail.com, siguiendo el procedimiento que se informe en el Aviso de
 Privacidad y/o en la Plataforma.
 12.6 Medidas de seguridad y conservación
 GIRBAZ implementará medidas de seguridad administrativas, técnicas y físicas
@@ -776,16 +776,16 @@ aplicadora del Fondo Solidario.
 El presente Reglamento del Fondo Solidario “Club Pata Amiga” (el “Reglamento”) tiene por
 objeto establecer, de manera clara y verificable, las reglas operativas, criterios, límites y el
 procedimiento aplicables a las Solicitudes de Apoyo que, en su caso, se tramiten con cargo
-al Fondo  Solidario, así como las bases mínimas de validación, resolución y entrega de
+al Fondo Solidario, así como las bases mínimas de validación, resolución y entrega de
 apoyos, conforme a lo previsto en el Convenio de Adhesión aceptado por el Titular.
 1.2 Ámbito de aplicación
 El presente Reglamento es aplicable a todas las personas que, en su carácter de Titular de
 una cuenta en la Plataforma Pata Amiga, se hayan adherido como Asociados Adherentes y
-cuenten con Membresía  vigente y Cuenta  activa, y pretendan registrar mascotas y/o
+cuenten con Membresía vigente y Cuenta activa, y pretendan registrar mascotas y/o
 presentar Solicitudes de Apoyo con cargo al Fondo Solidario.
 1.3 Carácter público y aceptación
 1.3.1 Carácter público. El Reglamento se mantiene publicado y disponible en la Plataforma
-Pata  Amiga, a efecto de que el Titular pueda consultarlo  y  verificar  con  precisión sus
+Pata Amiga, a efecto de que el Titular pueda consultarlo y verificar con precisión sus
 condiciones vigentes antes de realizar o continuar el uso del programa.
 1.3.2 Aceptación. El Titular reconoce y acepta que la adhesión al programa implica la
 aceptación del presente Reglamento:
@@ -801,24 +801,24 @@ asociativo administrado por CLUB PATA AMIGA, A.C., y que NO constituye:
 - una indemnización garantizada;
 - un esquema de ahorro, inversión, rendimientos o captación; ni
 - una prestación exigible por el solo pago de la Membresía.
-1.4.2 El pago de la Membresía y/o cualquier aportación al Fondo NO  genera derecho de
+1.4.2 El pago de la Membresía y/o cualquier aportación al Fondo NO genera derecho de
 crédito, derecho adquirido, reembolso, ni acción para exigir apoyos automáticos. Todo
 
 
 
-Apoyo  es eventual,  y su  procedencia  se  encuentra  sujeta  a  las  reglas  del  presente
+Apoyo es eventual, y su procedencia se encuentra sujeta a las reglas del presente
 Reglamento, a la Validación y a la suficiencia del Fondo.
-El  Titular  reconoce  y  acepta que  el  pago de  la  Membresía  se  integra  por:  (i)  una
+El Titular reconoce y acepta que el pago de la Membresía se integra por: (i) una
 contraprestación equivalente al setenta por ciento (70%) por el uso, acceso y operación de
-la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales  asociados;  y  (ii)  una
-Aportación  al  Fondo  Solidario equivalente al treinta  por  ciento  (30%), destinada a la
+la Plataforma “Pata Amiga” y los servicios/beneficios digitales asociados; y (ii) una
+Aportación al Fondo Solidario equivalente al treinta por ciento (30%), destinada a la
 administración y eventual entrega de apoyos por parte de CLUB PATA AMIGA, A.C., sin que
 ello genere derecho automático, exigible o garantizado a recibir Apoyo alguno, el cual en
-todo caso será discrecional, sujeto a validación, carencias, límites, reglas  vigentes y
+todo caso será discrecional, sujeto a validación, carencias, límites, reglas vigentes y
 suficiencia del Fondo, conforme a este Reglamento.
 1.5 Definiciones operativas
 Para efectos del presente Reglamento, los términos utilizados con mayúscula inicial tendrán
-el significado que se les asigna en el Convenio  de  Adhesión aceptado por el Titular,
+el significado que se les asigna en el Convenio de Adhesión aceptado por el Titular,
 incluyendo, de manera enunciativa mas no limitativa: Fondo Solidario, Apoyo, Solicitud o
 Solicitud de Apoyo, Validación, Titular, Asociado Adherente, Mascota registrada, Carencia,
 Límites y Suficiencia.
@@ -831,7 +831,7 @@ operación del programa.
 perjuicio de lo previsto en el Convenio de Adhesión:
 - “LA ASOCIACIÓN” es CLUB PATA AMIGA, A.C., en su carácter de administradora y
 aplicadora del Fondo Solidario; y
-- “LA  EMPRESA” es GIRBAZ,  S.A.  DE  C.V.,  en  su  carácter  de operadora  de  la
+- “LA EMPRESA” es GIRBAZ, S.A. DE C.V., en su carácter de operadora de la
 Plataforma “Pata Amiga”, responsable de la operación técnica de la Plataforma y de
 la gestión del cobro de Membresías, así como de la canalización a LA ASOCIACIÓN
 de la porción destinada al Fondo Solidario conforme al mandato otorgado por el
@@ -844,33 +844,33 @@ El Fondo Solidario se integra exclusivamente por:
 
 a) La Aportación al Fondo Solidario, equivalente al treinta por ciento (30%) del precio total
 de la Membresía (cuota mensual o anual) pagada por el Titular a través de la Plataforma
-“Pata Amiga”, en  los  términos  y  montos  exactos  que  se  muestren  en  la  Plataforma  al
+“Pata Amiga”, en los términos y montos exactos que se muestren en la Plataforma al
 momento del pago y aceptación;
 b) Aportaciones voluntarias adicionales, únicamente en caso de que se habiliten en la
-Plataforma  y  se  encuentren  expresamente  identificadas  como  “aportación
+Plataforma y se encuentren expresamente identificadas como “aportación
 voluntaria al Fondo”, sin que por ello se genere derecho automático a Apoyo ni se
 modifique la naturaleza del Fondo; y
 c) Cualquier otro ingreso que, en su caso, reciba LA ASOCIACIÓN para el Fondo y que
 sea compatible con su naturaleza y con este Reglamento, sin convertirlo en seguro,
 captación, ahorro o inversión, ni generar derecho de crédito o exigibilidad.
 2.3 Canalización operativa
-2.3.1  Regla  general. La Aportación al Fondo Solidario se canalizará directamente a CLUB
+2.3.1 Regla general. La Aportación al Fondo Solidario se canalizará directamente a CLUB
 PATA AMIGA, A.C. mediante la pasarela de pagos habilitada en la Plataforma “Pata Amiga”,
 a través de los mecanismos de separación/división (split) que, en su caso, se encuentren
 disponibles, de forma que el porcentaje destinado al Fondo se deposite en la cuenta
 bancaria de LA ASOCIACIÓN.
-2.3.2  Mecanismo  excepcional  (mandato/encargo  supletorio). Solo en caso de que, por
+2.3.2 Mecanismo excepcional (mandato/encargo supletorio). Solo en caso de que, por
 motivos técnicos, operativos, de mantenimiento, contingencia o limitaciones de la pasarela
 de pagos, no sea posible realizar la canalización directa referida en el párrafo anterior, el
-Titular autoriza que GIRBAZ,  S.A.  de  C.V. reciba el pago y transfiera a LA ASOCIACIÓN la
+Titular autoriza que GIRBAZ, S.A. de C.V. reciba el pago y transfiera a LA ASOCIACIÓN la
 porción correspondiente a la Aportación al Fondo Solidario, actuando como canalizador sin
 apropiación y sin alterar la naturaleza de la aportación, conforme a los plazos y procesos
 internos de conciliación y registro que se definan para tal efecto.
 
 2.3 Exclusión expresa del componente de Membresía (70%)
 El setenta por ciento (70%) restante del precio total de la Membresía no integra el Fondo
-Solidario, ya que corresponde exclusivamente a la contraprestación por el uso,  acceso,
-operación  y  disfrute  de  la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales
+Solidario, ya que corresponde exclusivamente a la contraprestación por el uso, acceso,
+operación y disfrute de la Plataforma “Pata Amiga” y los servicios/beneficios digitales
 asociados, prestados por GIRBAZ, S.A. de C.V., en términos de sus Términos y Condiciones.
 2.4 Principio de suficiencia
 2.4.1 El Fondo Solidario opera bajo el principio de suficiencia, por lo que su capacidad para
@@ -878,32 +878,32 @@ otorgar apoyos depende de su disponibilidad real y de las necesidades que se pre
 
 
 
-2.4.2 El Titular reconoce que puede existir insuficiencia  temporal del Fondo Solidario, lo
+2.4.2 El Titular reconoce que puede existir insuficiencia temporal del Fondo Solidario, lo
 cual podrá derivar en rechazo de Solicitudes, listas de espera, priorización, prorrateo o
 ajustes de montos, según lo previsto en este Reglamento.
 2.5 No reembolsabilidad
 2.5.1 Las cantidades destinadas al Fondo Solidario, incluyendo la porción de la Membresía
 y, en su caso, aportaciones voluntarias adicionales, son no reembolsables, en virtud de la
 naturaleza solidaria y asociativa del Fondo.
-2.5.2 Lo anterior no limita el derecho del Titular a solicitar a LA  EMPRESA la revisión de
+2.5.2 Lo anterior no limita el derecho del Titular a solicitar a LA EMPRESA la revisión de
 cargos duplicados o cobros manifiestamente improcedentes atribuibles al procesamiento
 del pago, conforme a las políticas de operación de LA EMPRESA y del proveedor del medio
 de pago correspondiente.
 2.5.3 La revisión, aclaración o devolución que, en su caso, proceda por cargos duplicados,
-cargos  improcedentes, contracargos o incidencias atribuibles a la pasarela  de  pagos, al
+cargos improcedentes, contracargos o incidencias atribuibles a la pasarela de pagos, al
 banco emisor o al procesamiento de la Membresía, corresponde exclusivamente a GIRBAZ,
 S.A. de C.V., como operadora de la Plataforma y responsable del cobro del Plan, y deberá
 tramitarse conforme a sus Términos y Condiciones; en ningún caso dicha revisión implica
-reembolso  de  la Aportación   al   Fondo   Solidario,  la  cual  conserva  su  carácter no
+reembolso de la Aportación al Fondo Solidario, la cual conserva su carácter no
 reembolsable.
 2.6 Finalidad exclusiva
 2.6.1 El Fondo Solidario se destinará exclusivamente a la atención de Solicitudes de Apoyo
 y, en su caso, a la entrega de apoyos conforme a este Reglamento. Asimismo, podrá
 destinarse a los procesos estrictamente necesarios para su operación, control, validación y
-prevención  de  fraude dentro del ámbito del Fondo, sin que ello implique gastos de
+prevención de fraude dentro del ámbito del Fondo, sin que ello implique gastos de
 operación de la Plataforma, los cuales corresponden a LA EMPRESA.
 En congruencia con lo anterior, el setenta por ciento (70%) del precio total de la Membresía
-corresponde exclusivamente a  la  contraprestación  por  el uso,  acceso,  operación  y
+corresponde exclusivamente a la contraprestación por el uso, acceso, operación y
 mantenimiento de la Plataforma “Pata Amiga” y los servicios/beneficios digitales asociados,
 prestados por GIRBAZ, S.A. de C.V., y no forma parte del Fondo Solidario ni puede destinarse
 a los fines del mismo.
@@ -915,7 +915,7 @@ a los fines del mismo.
 
 
 2.7 Facultades de administración y roles operativos
-2.7.1 Facultades  de  LA  ASOCIACIÓN. Corresponde a CLUB  PATA  AMIGA,  A.C., como
+2.7.1 Facultades de LA ASOCIACIÓN. Corresponde a CLUB PATA AMIGA, A.C., como
 administradora del Fondo Solidario:
 - definir y mantener las reglas del Fondo previstas en este Reglamento;
 - revisar, evaluar y resolver las Solicitudes de Apoyo;
@@ -926,7 +926,7 @@ entrega, conforme a reglas, límites y suficiencia; y
 2.7.2 Facultades de LA EMPRESA (GIRBAZ, S.A. DE C.V.). Corresponde a LA EMPRESA, como
 operadora de la Plataforma:
 - operar, administrar y dar soporte a la Plataforma “Pata Amiga”;
-- gestionar  el  cobro  de  Membresías  y  la  relación  operativa  con
+- gestionar el cobro de Membresías y la relación operativa con
 procesadores/pasarelas de pago;
 - canalizar a LA ASOCIACIÓN la porción indicada como Aportación al Fondo Solidario
 conforme al mandato del Titular y al esquema operativo vigente; y
@@ -945,8 +945,8 @@ sociedad operadora de la Plataforma, sin necesidad de formalidad adicional, bast
 publicación del aviso de sustitución dentro de la Plataforma y/o la notificación electrónica
 correspondiente.
 La sustitución operará únicamente respecto de las obligaciones vinculadas a la operación
-de  la  Plataforma,  cobro  de  Membresías  y  canalización  de  la  Aportación  al  Fondo,
-manteniéndose intactas las facultades y responsabilidades de CLUB  PATA  AMIGA,  A.C.
+de la Plataforma, cobro de Membresías y canalización de la Aportación al Fondo,
+manteniéndose intactas las facultades y responsabilidades de CLUB PATA AMIGA, A.C.
 como administradora del Fondo Solidario.
 
 
@@ -957,7 +957,7 @@ como administradora del Fondo Solidario.
 - Cuenta válida y única. El Titular deberá contar con CURP válida y mantener una (1)
 sola Cuenta por CURP, con correo electrónico y celular únicos, pudiendo aplicarse
 validación cruzada para prevenir cuentas duplicadas.
-- Membresía  vigente  y  Cuenta  activa. La elegibilidad exige que la Membresía se
+- Membresía vigente y Cuenta activa. La elegibilidad exige que la Membresía se
 encuentre activa y la Cuenta operativa (sin suspensión/bloqueo/cancelación por
 incumplimientos o medidas antifraude). (Se aterriza en capítulo antifraude, pero
 aquí se deja el requisito general).
@@ -968,38 +968,38 @@ uso por tipo de apoyo y periodos de espera/reingreso, conforme a este Reglamento
 carencia de 6 (seis) meses contados desde la activación de la Membresía (afiliación
 continua).
 - Reingreso. En caso de reingreso (reactivación posterior a baja/cancelación), se
-requerirá 6  (seis)  meses  de  espera para recuperar derechos conforme a reglas
+requerirá 6 (seis) meses de espera para recuperar derechos conforme a reglas
 vigentes.
 - Regla de “reinicio” por uso (por tipo de apoyo). Si el Titular utiliza el Fondo en un
 tipo de apoyo, la carencia se reinicia por 12 (doce) meses para ese tipo de apoyo,
 en los términos operativos publicados.
-- Carencias  diferenciadas. Sin perjuicio de la Carencia  general prevista en este
-Reglamento, LA  ASOCIACIÓN podrá aplicar carencias  diferenciadas atendiendo a
+- Carencias diferenciadas. Sin perjuicio de la Carencia general prevista en este
+Reglamento, LA ASOCIACIÓN podrá aplicar carencias diferenciadas atendiendo a
 características del registro del Titular, de la mascota, del programa o del canal de
 afiliación, siempre que dichas carencias: (i) sean publicadas de forma expresa en la
-Plataforma “Pata Amiga”; y (ii) se indiquen al Titular al  momento  del  pago,  alta,
+Plataforma “Pata Amiga”; y (ii) se indiquen al Titular al momento del pago, alta,
 renovación o actualización correspondiente.
 Para efectos operativos, y salvo que la Plataforma muestre expresamente una regla distinta
 vigente, se aplicarán las siguientes carencias:
 a) Registro normal: 6 (seis) meses contados a partir de la activación exitosa de
 la Membresía y el registro validado de la mascota;
-b) Registro  con  RUAC  (Registro  Único  de Animales de  Compañía): 4  (cuatro)
+b) Registro con (Registro Único de Animales de Compañía): 4 (cuatro)
 meses contados a partir de la activación exitosa de la Membresía y el registro
 
 
 
-validado de la mascota, siempre que el RUAC sea proporcionado y, en su
+validado de la mascota, siempre que el sea proporcionado y, en su
 caso, verificable conforme a los criterios operativos publicados;
 c) Registro mediante Código de Embajador: 3 (tres) meses contados a partir
 de la activación exitosa de la Membresía y el registro validado de la mascota,
 siempre que el Código se encuentre vigente y sea aceptado por los controles
 de integridad/antifraude de la Plataforma.
 Las carencias diferenciadas no generan derecho automático a Apoyo y en todo caso se
-sujetan a la validación, límites, exclusiones, suficiencia  del  Fondo y reglas  vigentes al
+sujetan a la validación, límites, exclusiones, suficiencia del Fondo y reglas vigentes al
 momento de presentar la Solicitud.
 3.3 Registro de mascotas (máximo 3)
 - Límite máximo. El Titular podrá registrar hasta 3 (tres) mascotas por Cuenta/CURP.
-- Datos  y  evidencia  mínima  obligatoria. Para registrar cada mascota se requerirá,
+- Datos y evidencia mínima obligatoria. Para registrar cada mascota se requerirá,
 como mínimo: o 2 fotos (rostro y cuerpo), o descripción física, y o video corto de la
 mascota viva con el Titular (evidencia de existencia y vinculación).
 - Cambio de mascota registrada. Solo se permitirá cambiar una mascota registrada
@@ -1007,15 +1007,15 @@ cada 12 (doce) meses por Cuenta/CURP (para desincentivar fraude y sobre-registro
 3.4 Tipos de mascota permitidos y exclusiones
 - Tipos permitidos: El proyecto se plantea para perros y gatos.
 - Exclusiones/restricciones generales (para dejar claro): Quedan fuera del alcance del
-Fondo (y por tanto no elegibles para registro con fines de apoyo) otras  especies
+Fondo (y por tanto no elegibles para registro con fines de apoyo) otras especies
 distintas de perros y gatos, salvo que una actualización publicada en la Plataforma
 habilite expresamente otros supuestos.
 3.5 Criterios diferenciados por raza
-- Criterios    diferenciados    sin    exclusión    expresa. Podrán  aplicarse  criterios
-diferenciados  por  predisposición  genética  a  enfermedades sin   excluir   razas
+- Criterios diferenciados sin exclusión expresa. Podrán aplicarse criterios
+diferenciados por predisposición genética a enfermedades sin excluir razas
 explícitamente, para equilibrar equidad y sostenibilidad del Fondo.
-- Reglas  especiales  (alto  riesgo). Para las razas listadas en la política interna, se
-contemplan reglas como: carencia  extendida  6  meses para emergencias médicas,
+- Reglas especiales (alto riesgo). Para las razas listadas en la política interna, se
+contemplan reglas como: carencia extendida 6 meses para emergencias médicas,
 tope de emergencia $2,000 MXN, y un evento cada 24 meses por mascota (cuando
 aplique y esté publicado).
 
@@ -1025,34 +1025,34 @@ aplique y esté publicado).
 ## CAPÍTULO 4. EVENTOS, CONCEPTOS ELEGIBLES Y EXCLUSIONES DEL FONDO
 4.1 Conceptos elegibles
 4.1.1 El Fondo Solidario podrá destinar apoyos únicamente a los conceptos habilitados y
-descritos  en  la  Plataforma  y  en  el  presente  Reglamento.  Actualmente,  el  programa
+descritos en la Plataforma y en el presente Reglamento. Actualmente, el programa
 contempla como conceptos elegibles, sujetos a Validación y suficiencia del Fondo:
-- Emergencia     médica     veterinaria;  2.
+- Emergencia médica veterinaria; 2.
 Fallecimiento de mascota registrada;
 - Vacunación anual.
 4.1.2 Sin perjuicio de lo anterior, la ASOCIACIÓN podrá habilitar en el futuro otros conceptos
-compatibles  con  su  objeto  (p.  ej.,  atención  preventiva,  esterilización  o  eventos  de
-enfermedad  grave), únicamente mediante actualización  publicada  en  la  Plataforma
+compatibles con su objeto (p. ej., atención preventiva, esterilización o eventos de
+enfermedad grave), únicamente mediante actualización publicada en la Plataforma
 conforme al Convenio y este Reglamento.
 
 4.2 Exclusiones (eventos no cubiertos / conceptos no aceptados)
 4.2.1 Regla general
 No serán elegibles para Apoyo con cargo al Fondo, y podrán ser rechazadas o canceladas,
 las Solicitudes que se ubiquen en cualquiera de los supuestos de exclusión previstos en este
-Reglamento, en el Convenio de Adhesión, en el Reglamento de Integridad  y/o en las reglas
+Reglamento, en el Convenio de Adhesión, en el Reglamento de Integridad y/o en las reglas
 operativas publicadas en la Plataforma.
 Las exclusiones previstas en este numeral son enunciativas y no limitativas, por lo que LA
 ASOCIACIÓN podrá determinar la improcedencia cuando el evento, gasto o conducta sea
 incompatible con la naturaleza del Fondo, la suficiencia, la integridad del Proyecto y/o el
 presente Reglamento.
 
-4.2.2   Preexistencias,   carencia   y   continuidad Quedan
+4.2.2 Preexistencias, carencia y continuidad Quedan
 excluidos:
 a) eventos, padecimientos, lesiones, condiciones o tratamientos preexistentes a la
 activación de la Membresía o al registro validado de la mascota, según corresponda;
 b) eventos, padecimientos, lesiones, condiciones o tratamientos ocurridos durante el
 periodo de Carencia, cualquiera que sea su modalidad aplicable;
-c) eventos  derivados  de  la  falta  de  continuidad  del  Titular  (por  ejemplo,
+c) eventos derivados de la falta de continuidad del Titular (por ejemplo,
 suspensión/cancelación de Membresía o Cuenta), cuando el estatus del Titular no
 
 
@@ -1061,22 +1061,22 @@ cumpla con la elegibilidad al momento de presentar la Solicitud o durante la
 validación.
 
 4.2.3 Condiciones genéticas y/o hereditarias
-Quedan  excluidos  los  eventos,  padecimientos,  diagnósticos,  complicaciones  y/o
-tratamientos  asociados  a enfermedades  genéticas  y/o  hereditarias de  la  mascota,
+Quedan excluidos los eventos, padecimientos, diagnósticos, complicaciones y/o
+tratamientos asociados a enfermedades genéticas y/o hereditarias de la mascota,
 conforme a los criterios y listados operativos que se publiquen y actualicen en la Plataforma
 y/o por LA ASOCIACIÓN como parte de este Reglamento, como ANEXO 1, incluyendo
 aquellos supuestos en que exista una relación razonable entre el diagnóstico y una
 predisposición genética o hereditaria.
 
-4.2.4  Negligencia,  maltrato,  dolo  o  conductas  de  riesgo Quedan
+4.2.4 Negligencia, maltrato, dolo o conductas de riesgo Quedan
 excluidos eventos o gastos cuando:
 a) exista negligencia, maltrato, abandono, crueldad, omisiones graves de cuidado, o
 incumplimiento deliberado de recomendaciones veterinarias razonables;
-b) el  evento derive  de conducta  dolosa  o  intencional del  Titular  o  de  terceros
+b) el evento derive de conducta dolosa o intencional del Titular o de terceros
 relacionados;
 c) se detecte que el evento fue provocado o simulado, o exista manipulación de
 evidencia.
-4.2.5  Eventos  no  vinculados  a  atención  veterinaria  elegible Quedan
+4.2.5 Eventos no vinculados a atención veterinaria elegible Quedan
 excluidos:
 a) gastos que no tengan naturaleza veterinaria o que no guarden relación directa con
 una mascota registrada;
@@ -1095,7 +1095,7 @@ b) gastos accesorios sin relación directa con la atención (por ejemplo, artíc
 médicos), salvo que la Plataforma y/o las reglas vigentes establezcan expresamente
 lo contrario.
 
-4.2.7  Falta  de  evidencia,  documentación  insuficiente  o  no  verificable Quedan
+4.2.7 Falta de evidencia, documentación insuficiente o no verificable Quedan
 excluidas las Solicitudes cuando:
 a) la evidencia sea insuficiente, incompleta, no verificable, inconsistente o apócrifa;
 b) no se atiendan requerimientos de información adicional dentro del plazo aplicable;
@@ -1103,11 +1103,11 @@ o
 c) no sea posible corroborar razonablemente el evento con los medios y facultades de
 validación.
 
-4.2.8  Incumplimiento  de  requisitos  de  registro  o  elegibilidad  de  mascota Quedan
+4.2.8 Incumplimiento de requisitos de registro o elegibilidad de mascota Quedan
 excluidas las Solicitudes cuando:
 a) la mascota no haya sido registrada o validada conforme a este Reglamento;
-b) el  Titular  exceda  el  límite  de  mascotas  permitido  o
-se  detecte duplicidad/suplantación;
+b) el Titular exceda el límite de mascotas permitido o
+se detecte duplicidad/suplantación;
 c) la mascota rebase la edad máxima/etapa senior aplicable y el Titular no presente el
 certificado médico veterinario de salud cuando sea requerido conforme a las reglas
 operativas vigentes publicadas en la Plataforma.
@@ -1128,27 +1128,27 @@ del Fondo, conforme al principio de suficiencia y a las reglas vigentes.
 
 4.4. Requisitos generales para cualquier evento
 Para que una Solicitud pueda ser evaluada, deberá cumplir, como mínimo, con lo siguiente:
-- Relación  con  mascota  registrada en la Cuenta del Titular y dentro del límite
+- Relación con mascota registrada en la Cuenta del Titular y dentro del límite
 permitido;
-- Evidencia  validable presentada por  la  Plataforma  (p.  ej.,  evidencia  visual  y/o
+- Evidencia validable presentada por la Plataforma (p. ej., evidencia visual y/o
 documentación), conforme al flujo de solicitud aplicable;
 - Cumplimiento de carencia, límites de uso y reglas vigentes al momento de presentar
 la Solicitud;
 - Para apoyos que impliquen reintegro o validación clínica, se podrá requerir factura y
-evidencia y/o formato  firmado  por  veterinario, según la modalidad aplicable
+evidencia y/o formato firmado por veterinario, según la modalidad aplicable
 publicada en la Plataforma.
 ## CAPÍTULO 5. LÍMITES, TOPES Y REGLAS DE MONTO
 5.1 Montos máximos por tipo de Apoyo (tope por evento/tipo)
 Los montos máximos por tipo de Apoyo, siempre sujetos a Validación y a Suficiencia del
 Fondo, son los siguientes:
-- Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
+- Emergencia médica: hasta $3,000.00 (tres mil pesos 00/100 M.N.) como bolsa
 anual global.
 - Fallecimiento: hasta $2,000.00 (dos mil pesos 00/100 M.N.).
 - Vacuna anual: hasta $300.00 (trescientos pesos 00/100 M.N.).
 5.2 Límite máximo por año y frecuencia de uso
 5.2.1 Emergencia médica (bolsa anual global por Titular)
 a) La bolsa anual máxima para Apoyos por Emergencia médica será de $3,000.00 MXN
-por  año  natural,  por  Titular, en  conjunto para todas sus mascotas registradas
+por año natural, por Titular, en conjunto para todas sus mascotas registradas
 ## (máximo 3).
 b) Dicha bolsa podrá aplicarse en una o varias Solicitudes durante el año natural, hasta
 agotar el monto, pudiendo distribuirse entre las mascotas registradas del Titular.
@@ -1195,7 +1195,7 @@ mínimo:
 
 
 
-- Opción  A – Reintegro  (desde  el  mes  6): aplicable a socios que ya resolvieron la
+- Opción A – Reintegro (desde el mes 6): aplicable a socios que ya resolvieron la
 emergencia y solicitan reembolso, sujeto a requisitos y validación.
 - Opción B – Adelanto Solidario (tras 24 meses): disponible para socios con 24 meses
 continuos y sin bloqueos, sujeto a requisitos y validación.
@@ -1206,14 +1206,14 @@ historial y reglas vigentes.
 - mínimo 6 meses de afiliación continua;
 - factura y evidencia (foto/video); y
 - formato firmado por veterinario (según el formato publicado en Plataforma).
-6.4.2 Datos  del  proveedor  veterinario  (aplica  a  Solicitudes  que  involucren  servicios
+6.4.2 Datos del proveedor veterinario (aplica a Solicitudes que involucren servicios
 veterinarios): la Solicitud deberá indicar:
 - nombre completo y RFC del veterinario;
 - nombre y dirección de la clínica; y
 - firma o validación escrita del profesional.
 6.5 Acuse y estatus de la Solicitud
-6.5.1 La Plataforma emitirá un acuse  electrónico de recepción de la Solicitud y podrá
-mostrar  su  estatus,  de  manera  enunciativa: “recibida”, “en   validación”, “requiere
+6.5.1 La Plataforma emitirá un acuse electrónico de recepción de la Solicitud y podrá
+mostrar su estatus, de manera enunciativa: “recibida”, “en validación”, “requiere
 información” o “resuelta”.
 6.6 Plazos operativos
 6.6.1 Los tiempos de revisión son orientativos y pueden variar por suficiencia del Fondo,
@@ -1240,7 +1240,7 @@ proporcionada;
 auditoría).
 7.3 Auditoría y muestreo
 7.3.1 Sin necesidad de aviso previo, se podrán revisar en auditoría, de manera aleatoria,
-hasta  5  (cinco)  casos  mensuales, además de los casos que detonen alertas por patrones
+hasta 5 (cinco) casos mensuales, además de los casos que detonen alertas por patrones
 irregulares.
 7.3.2 Si tres (3) o más apoyos provienen del mismo proveedor en un periodo de 6 meses,
 se podrá iniciar auditoría del proveedor, y el Comité podrá vetar proveedores sospechosos.
@@ -1248,7 +1248,7 @@ se podrá iniciar auditoría del proveedor, y el Comité podrá vetar proveedore
 7.4.1 En caso de fallecimientos repetidos, si se presentan dos fallecimientos consecutivos
 por usuario sin otro beneficio intermedio, el Titular podrá ingresar a lista de vigilancia y su
 Cuenta podrá ser bloqueada por 24 meses o hasta nueva evaluación.
-7.4.2 La Plataforma podrá operar listas  de  control para usuarios/proveedores: lista  gris
+7.4.2 La Plataforma podrá operar listas de control para usuarios/proveedores: lista gris
 (patrones irregulares) y lista negra (fraude comprobado, exclusión definitiva).
 7.5 Consecuencia de no atender requerimientos
 7.5.1 Si el Titular no atiende requerimientos de información o no entrega evidencias dentro
@@ -1257,7 +1257,7 @@ del flujo/plazos que muestre la Plataforma, la Solicitud podrá:
 - cancelarse/rechazarse por falta de elementos verificables.
 7.6. Cierre de validación y resolución
 7.7 Concluida la Validación, la Solicitud se resolverá como: procedente, improcedente o
-procedente  condicionada (p. ej., sujeta a entrega posterior de factura/formato cuando
+procedente condicionada (p. ej., sujeta a entrega posterior de factura/formato cuando
 aplique).
 
 
@@ -1268,28 +1268,28 @@ activar auditorías preventivas.
 ## CAPÍTULO 8. RESOLUCIÓN Y FORMA DE ENTREGA DEL APOYO
 8.1 Autoridad para resolver
 La determinación sobre la procedencia o improcedencia de cada Solicitud de Apoyo
-corresponde a LA ASOCIACIÓN, a través del Comité del Fondo (3 personas) , quien revisa
-conforme a reglas claras y tiene la última palabra .
+corresponde a LA ASOCIACIÓN, a través del Comité del Fondo (3 personas), quien revisa
+conforme a reglas claras y tiene la última palabra.
 8.2 Criterios de resolución (regla general)
 Para resolver, el Comité verificará, como mínimo:
 - Antigüedad / carencia aplicable (p. ej., emergencia y fallecimiento: mínimo 6 meses
-desde la afiliación) .
+desde la afiliación).
 - Límites por usuario y por tipo de apoyo y regla de “1 apoyo por tipo cada 12 meses”
-## .
-- Documentación y evidencia (foto/video; factura/nota; constancias; etc.) .
-- Suficiencia real del Fondo (cláusula de suficiencia presupuestaria y disponibilidad) .
-- Conducta  y  controles  antifraude (historial limpio, sin fraude, agresiones o pagos
-vencidos) .
+##.
+- Documentación y evidencia (foto/video; factura/nota; constancias; etc.).
+- Suficiencia real del Fondo (cláusula de suficiencia presupuestaria y disponibilidad).
+- Conducta y controles antifraude (historial limpio, sin fraude, agresiones o pagos
+vencidos).
 8.3 Tipos de Apoyo y montos máximos (tope)
 Sin perjuicio de otros beneficios que se publiquen en la Plataforma, el Fondo contempla
 como base los siguientes tipos de Apoyo, sujetos a Validación y Suficiencia:
-a) Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
+a) Emergencia médica: hasta $3,000.00 (tres mil pesos 00/100 M.N.) como bolsa
 anual por Cuenta/Titular. Esta bolsa podrá utilizarse en una o varias Solicitudes y
 en favor de cualquiera de las mascotas registradas en la Cuenta (hasta 3), pudiendo
 dividirse durante el año natural; en ningún caso podrá excederse el tope anual total
 indicado.
 b) Fallecimiento: hasta $2,000.00 (dos mil pesos 00/100 M.N.), una (1) sola vez por
-Cuenta/Titular  por  año  natural, para una mascota registrada. Este Apoyo no es
+Cuenta/Titular por año natural, para una mascota registrada. Este Apoyo no es
 fraccionable.
 c) Vacunación anual: hasta $300.00 (trescientos pesos 00/100 M.N.), una (1) sola vez
 por Cuenta/Titular por año natural, para una mascota registrada. Este Apoyo no es
@@ -1298,41 +1298,41 @@ por Cuenta/Titular por año natural, para una mascota registrada. Este Apoyo no 
 
 fraccionable y podrá operar conforme a la mecánica publicada en la Plataforma
 (incluyendo, en su caso, apoyo automático a partir de la antigüedad que se indique).
-Para evitar confusión, los  Apoyos  se  entienden  como  límites  por  Cuenta/Titular y son
+Para evitar confusión, los Apoyos se entienden como límites por Cuenta/Titular y son
 compartidos entre las mascotas registradas (hasta 3), en los términos de este Reglamento;
 en particular, la bolsa de Emergencia médica ($3,000) no es por mascota, sino por Cuenta
 y por año natural.
-8.4  Modalidades  operativas  de  entrega  (según  el  tipo  de  Apoyo) A.
+8.4 Modalidades operativas de entrega (según el tipo de Apoyo) A.
 Emergencia médica (Reintegro, desde el mes 6):
-- Aplica para socios que ya cubrieron la emergencia y solicitan reembolso .
-- Tiempo de revisión: 48 a 72 horas .
-- Entrega: transferencia directa al socio si es aprobado .
+- Aplica para socios que ya cubrieron la emergencia y solicitan reembolso.
+- Tiempo de revisión: 48 a 72 horas.
+- Entrega: transferencia directa al socio si es aprobado.
 B. Fallecimiento: entrega mediante transferencia (se solicitan CLABE e institución
-bancaria) .
-C. Vacunación  anual: mecanismo operativo conforme se habilite y muestre en la
+bancaria).
+C. Vacunación anual: mecanismo operativo conforme se habilite y muestre en la
 Plataforma (p. ej., “apoyo automático” a los 12 meses).
 
 8.5 Condiciones previas para liberar el pago
-Para  liberar  cualquier  Apoyo,  deberá  existir  evidencia  y  datos  mínimos  verificables,
+Para liberar cualquier Apoyo, deberá existir evidencia y datos mínimos verificables,
 incluyendo (según aplique):
 - Emergencia: factura de clínica, diagnóstico/constancia veterinaria, RFC, y datos
-bancarios (CLABE e institución) .
+bancarios (CLABE e institución).
 - Fallecimiento: declaración simple, evidencia clínica (carta/recibo) y datos bancarios
-(CLABE  e  institución).  Asimismo,  toda  Solicitud  deberá  identificar  proveedor
-veterinario (nombre y RFC del veterinario; clínica) .
+(CLABE e institución). Asimismo, toda Solicitud deberá identificar proveedor
+veterinario (nombre y RFC del veterinario; clínica).
 8.6 Plazo orientativo de resolución
 Como regla operativa, el Comité resolverá en un plazo orientativo de 2 días hábiles (sin que
 ello constituya garantía de tiempo).
 8.7 Efectos del Apoyo sobre carencias futuras (reinicio)
 Una vez utilizado un tipo de apoyo del Fondo, se reinicia la carencia por 12 meses para ese
-tipo de apoyo .
+tipo de apoyo.
 
 
 
 8.8 Comité del Fondo: integración, quórum y facultades
 - Integración. La resolución de Solicitudes de Apoyo con cargo al Fondo Solidario será
-realizada por el Comité  del  Fondo, órgano interno de CLUB  PATA  AMIGA,  A.C.,
-integrado por tres  (3)  personas, designadas conforme a las reglas internas de LA
+realizada por el Comité del Fondo, órgano interno de CLUB PATA AMIGA, A.C.,
+integrado por tres (3) personas, designadas conforme a las reglas internas de LA
 ## ASOCIACIÓN.
 - Sesiones y medios. El Comité del Fondo podrá sesionar de manera presencial o a
 distancia, mediante medios electrónicos, videollamada o cualquier otro medio
@@ -1344,31 +1344,31 @@ a) Existirá quórum con la asistencia (presencial o remota) de al menos dos
 b) Las determinaciones se adoptarán por mayoría de votos de los integrantes
 presentes.
 c) En caso de empate (solo posible cuando sesionen los tres integrantes y
-existan  votos  divididos),  prevalecerá  el  criterio  que  determine  LA
+existan votos divididos), prevalecerá el criterio que determine LA
 ASOCIACIÓN conforme a sus reglas internas; en todo caso, podrá diferirse la
 decisión para recabar información adicional.
 - Facultades mínimas. Para el cumplimiento de este Reglamento, el Comité del Fondo
 tendrá, como mínimo, las siguientes facultades:
-a) Requerir  información  y  evidencia  adicional al  Titular/Usuario,  cuando
+a) Requerir información y evidencia adicional al Titular/Usuario, cuando
 resulte necesario para la Validación;
-b) Solicitar  apoyo  técnico  u  operativo a GIRBAZ,  S.A.  de  C.V. respecto del
+b) Solicitar apoyo técnico u operativo a GIRBAZ, S.A. de C.V. respecto del
 historial de Cuenta, trazabilidad de Solicitudes, evidencias y/o registros de
-operación  (logs)  disponibles  en  la  Plataforma,  siempre  conforme  a  la
+operación (logs) disponibles en la Plataforma, siempre conforme a la
 normativa aplicable de protección de datos y a los instrumentos vigentes;
 c) Determinar la procedencia o improcedencia de las Solicitudes y, en su caso,
 fijar condiciones razonables de entrega conforme a este Reglamento y a la
 suficiencia del Fondo;
-d) Ordenar  la  pausa,  suspensión  o  cancelación del trámite de una Solicitud
+d) Ordenar la pausa, suspensión o cancelación del trámite de una Solicitud
 cuando existan inconsistencias relevantes, falta de evidencia o indicios de
 fraude/abuso; y
 
 
 
-e) Vetar  o  rechazar Solicitudes cuando se actualicen supuestos de exclusión,
+e) Vetar o rechazar Solicitudes cuando se actualicen supuestos de exclusión,
 incumplimiento, fraude/abuso o violación al Reglamento de Integridad.
 - Trazabilidad. Las determinaciones del Comité del Fondo deberán documentarse en
 un registro interno (bitácora) que permita identificar, al menos: fecha, integrantes
-participantes,  estatus  de  la  Solicitud,  determinación  adoptada  y  fundamento
+participantes, estatus de la Solicitud, determinación adoptada y fundamento
 operativo aplicable.
 - Sin garantía. La existencia del Comité del Fondo y sus procesos no implican garantía
 de otorgamiento de Apoyo, el cual se mantiene sujeto a validación, reglas vigentes,
@@ -1378,51 +1378,51 @@ límites y suficiencia del Fondo, conforme a este Reglamento.
 9.1 Supuestos de improcedencia o rechazo
 La Solicitud podrá declararse improcedente cuando ocurra cualquiera de los siguientes
 supuestos (según aplique):
-- No  se  cumple  antigüedad/carencia  mínima  (p.  ej.,  6  meses  para
-emergencia/fallecimiento) .
+- No se cumple antigüedad/carencia mínima (p. ej., 6 meses para
+emergencia/fallecimiento).
 - Se excede el límite por tipo de apoyo (1 por tipo cada 12 meses) o los montos
-máximos .
+máximos.
 - Evidencia/documentación insuficiente o no verificable (incluida evidencia fotográfica
-+ video cuando sea exigible) .
++ video cuando sea exigible).
 - Incumplimiento de requisitos de proveedor veterinario (identificación y validación
-escrita) .
-- Historial o indicios de fraude, agresiones o pagos vencidos .
+escrita).
+- Historial o indicios de fraude, agresiones o pagos vencidos.
 - Activación de listas de control por antifraude (lista gris/negra; exclusión definitiva en
-fraude comprobado) .
+fraude comprobado).
 9.2 Lista de vigilancia por fallecimientos repetidos y consecuencias
 Si se detectan 2 fallecimientos consecutivos por usuario sin otro beneficio intermedio, el
 Titular podrá ingresar a lista de vigilancia y quedar bloqueado por 24 meses o hasta nueva
-evaluación . El Comité podrá analizar el caso y, en su caso, retirar al usuario de la lista
-conforme a su revisión .
+evaluación. El Comité podrá analizar el caso y, en su caso, retirar al usuario de la lista
+conforme a su revisión.
 
 
 
 9.3 Lista de espera por insuficiencia del Fondo
 Aun cuando la Solicitud cumpla requisitos, el Apoyo solo procede si hay recursos suficientes;
-si el Fondo está agotado, se genera lista de espera .
-Los criterios  de  atención  y  liberación de casos en lista de espera deberán publicarse de
+si el Fondo está agotado, se genera lista de espera.
+Los criterios de atención y liberación de casos en lista de espera deberán publicarse de
 manera clara en la Plataforma (Reglamento público y verificable), y se entienden aceptados
 por el Titular al adherirse.
 9.4 Prorrateo o ajuste de montos
-En caso de insuficiencia parcial, solo  si  así  se  habilita  y  se  publica  expresamente  en  la
+En caso de insuficiencia parcial, solo si así se habilita y se publica expresamente en la
 Plataforma, LA ASOCIACIÓN podrá aplicar una regla de ajuste/prorrateo para distribuir
 recursos disponibles, manteniendo siempre: (i) topes máximos por apoyo, (ii) límites por
 usuario, y (iii) controles antifraude. Si no existe regla publicada, la insuficiencia operará vía
-lista de espera .
+lista de espera.
 
 
 
 ## CAPÍTULO 10. APORTACIONES VOLUNTARIAS ADICIONALES
 10.1 Carácter voluntario
 10.1.1 Las aportaciones voluntarias adicionales (en su caso) son contribuciones opcionales
-que el Titular podrá realizar únicamente  cuando  la  Plataforma  las  habilite y muestre de
+que el Titular podrá realizar únicamente cuando la Plataforma las habilite y muestre de
 forma clara su monto y destino.
 10.2. No reembolsables
-10.2.1 Toda aportación voluntaria adicional tendrá el carácter de no  recuperable, en
+10.2.1 Toda aportación voluntaria adicional tendrá el carácter de no recuperable, en
 congruencia con la naturaleza solidaria del programa y con la obligación estatutaria de cubrir
 cuotas y aportaciones no recuperables en esta categoría.
 10.3. No generan derecho automático
-10.3.1  Las  aportaciones  voluntarias  adicionales no  generan por  sí  mismas  derecho
+10.3.1 Las aportaciones voluntarias adicionales no generan por sí mismas derecho
 adquirido, garantía, ni exigibilidad de apoyos; únicamente incrementan el Fondo y, por ende,
 pueden fortalecer su suficiencia, pero cualquier Apoyo seguirá sujeto a reglas, Validación y
 disponibilidad.
@@ -1430,7 +1430,7 @@ disponibilidad.
 
 
 10.4 Registro y confirmación
-10.4.1 La Plataforma podrá emitir un comprobante  digital de la aportación voluntaria
+10.4.1 La Plataforma podrá emitir un comprobante digital de la aportación voluntaria
 adicional (acuse/recibo electrónico) para fines de trazabilidad interna. 10.4.2 La aportación
 quedará registrada en el historial de la Cuenta del Titular conforme a los registros operativos
 de la Plataforma.
@@ -1440,7 +1440,7 @@ de la Plataforma.
 11.1.1 Existe un Reglamento Antifraude publicado en la Plataforma, que establece políticas
 de prevención y detección de fraude en la operación del Fondo, incluyendo medidas contra
 fraudes sistemáticos y colusión con proveedores.
-11.1.2 El Titular reconoce que, al aceptar el Convenio (click “ACEPTO”), queda  adherido
+11.1.2 El Titular reconoce que, al aceptar el Convenio (click “ACEPTO”), queda adherido
 también a dicho Reglamento Antifraude y a sus actualizaciones publicadas.
 11.2. Conductas prohibidas relevantes al Fondo
 Sin perjuicio de lo previsto en el Reglamento Antifraude, se consideran conductas prohibidas
@@ -1465,7 +1465,7 @@ cuando corresponda, incluyendo por incumplimiento o fraude.
 
 
 11.4 Resguardo de evidencias
-11.4.1  La  ASOCIACIÓN  y/o  LA  EMPRESA  podrán conservar  evidencias (documentos,
+11.4.1 La ASOCIACIÓN y/o LA EMPRESA podrán conservar evidencias (documentos,
 imágenes, videos, registros de operación y trazabilidad) relacionadas con la Solicitud, para
 fines de validación, auditoría y defensa legal.
 11.5 Cooperación con autoridades / acciones legales
@@ -1500,8 +1500,8 @@ mexicanas aplicables y requerimientos válidos.
 ## CURSO
 13.1 Reglas escalonadas
 13.1.1 Baja voluntaria sin adeudos (Titular al corriente).
-- Si el Titular solicita baja/cancelación sin  adeudos y con Membresía vigente al
-momento de ingresar la Solicitud, la  Solicitud  ingresada  antes  de  la  baja podrá
+- Si el Titular solicita baja/cancelación sin adeudos y con Membresía vigente al
+momento de ingresar la Solicitud, la Solicitud ingresada antes de la baja podrá
 continuar su evaluación de manera condicionada a: (i) no existir indicios de fraude,
 (ii) completar validaciones pendientes, y (iii) suficiencia del Fondo.
 - En todo caso, no habrá devolución de cuotas pasadas y el acceso a beneficios se rige
@@ -1519,7 +1519,7 @@ verificables.
 En caso de fraude grave o comprobado, la Solicitud se tendrá por improcedente o
 cancelada de inmediato, sin perjuicio de: (i) inclusión en lista negra, (ii)
 bloqueo/cancelación, y (iii) resguardo de evidencias y acciones legales.
-## 13.2  Reactivación.
+## 13.2 Reactivación.
 - Si el Titular reactiva su Membresía (cuando la Plataforma lo permita) y no existe
 restricción por fraude, el Comité podrá:
 a. reanudar la Solicitud pausada (si aún es viable por tiempo, evidencia y reglas
@@ -1531,20 +1531,20 @@ vigentes.
 
 13.3 Efecto general de cancelación sobre beneficios pendientes
 13.3.1 Como regla general, en caso de cancelación, no existe devolución de cuotas pasadas
-ni  acceso  a  beneficios  pendientes, salvo lo previsto expresamente en este Capítulo para
+ni acceso a beneficios pendientes, salvo lo previsto expresamente en este Capítulo para
 Solicitudes ingresadas antes de la baja y sujetas a validación y suficiencia.
 
 ## CAPÍTULO 14. ACTUALIZACIONES DEL REGLAMENTO Y VIGENCIA
 14.1 Actualización del Reglamento
 14.1.1 El presente Reglamento podrá ser actualizado por LA ASOCIACIÓN, y/o en lo
-conducente por LA EMPRESA respecto de aspectos operativos de Plataforma, de  manera
-anual y/o cuando  resulte  necesario para asegurar la sostenibilidad del Fondo, fortalecer
+conducente por LA EMPRESA respecto de aspectos operativos de Plataforma, de manera
+anual y/o cuando resulte necesario para asegurar la sostenibilidad del Fondo, fortalecer
 controles antifraude, ajustar procesos, o reflejar cambios operativos del Proyecto, siempre
 respetando la naturaleza del Fondo y el Convenio de Adhesión.
 14.2 Notificación de actualizaciones
-14.2.1  Toda  actualización  será  comunicada  al  Titular  por  cualquiera  de  los  medios
+14.2.1 Toda actualización será comunicada al Titular por cualquiera de los medios
 siguientes:
-- publicación  y  aviso  dentro  de  la  Plataforma (incluyendo notificación en la cuenta,
+- publicación y aviso dentro de la Plataforma (incluyendo notificación en la cuenta,
 banner o aviso al iniciar sesión); y/o
 - correo electrónico enviado al correo registrado por el Titular en su Cuenta.
 14.3 Aceptación por continuidad/renovación
@@ -1558,8 +1558,8 @@ habrá reembolsos de cuotas ya pagadas o devengadas.
 14.4 Vigencia y versión aplicable
 14.4.1 El Reglamento entra en vigor en la fecha indicada en su portada y permanecerá
 vigente hasta que sea sustituido por una versión posterior publicada en la Plataforma.
-14.4.2 Versión  aplicable  a  la  Solicitud. Salvo disposición expresa distinta en el Convenio,
-para la evaluación de cada Solicitud se aplicará la versión  del  Reglamento  vigente  al
+14.4.2 Versión aplicable a la Solicitud. Salvo disposición expresa distinta en el Convenio,
+para la evaluación de cada Solicitud se aplicará la versión del Reglamento vigente al
 momento de presentar la Solicitud en la Plataforma.
 
 
@@ -1575,14 +1575,14 @@ Correo del Fondo (LA ASOCIACIÓN): fondo@pataamiga.com
 15.2.1 El Titular reconoce que cualquier aclaración relacionada con:
 - cobros, cargos, contracargos o devoluciones del procesador de pago;
 - renovación/cancelación de Membresía; y/o
-- funcionamiento técnico de la Plataforma,  deberá dirigirse exclusivamente  a  LA
+- funcionamiento técnico de la Plataforma, deberá dirigirse exclusivamente a LA
 EMPRESA (operadora de la Plataforma)
 al correo: Correo de Aclaraciones (LA EMPRESA): girbaz31@gmail.com
 
 ## CAPÍTULO 16. DISPOSICIONES FINALES
 16.1 Interpretación, prevalencia y documentos aplicables
 16.1.1 Este Reglamento se interpreta de manera sistemática con el Convenio de Adhesión
-del Asociado Adherente y con los Términos  y  Condiciones de la Plataforma. En caso de
+del Asociado Adherente y con los Términos y Condiciones de la Plataforma. En caso de
 contradicción entre documentos:
 a) para materias de Fondo Solidario, Solicitudes, carencia, validación, límites, exclusiones
 y suficiencia, prevalecerá el Convenio de Adhesión y este
@@ -1590,26 +1590,26 @@ Reglamento; y
 b) para materias de uso de Plataforma, Membresía, cobros, cargos recurrentes, soporte,
 cancelación de servicios digitales y operación de la Plataforma, prevalecerán los Términos
 y Condiciones de GIRBAZ, S.A. de C.V.16.2 Separabilidad
-16.2.1  Si  cualquier  disposición  del  presente  Reglamento  fuera  declarada  inválida  o
-inaplicable  por  autoridad  competente,  dicha  disposición  se  tendrá  por  no  puesta
+16.2.1 Si cualquier disposición del presente Reglamento fuera declarada inválida o
+inaplicable por autoridad competente, dicha disposición se tendrá por no puesta
 únicamente en la medida de su invalidez, subsistiendo las demás con plena validez.
 
 
 
 16.3 Ley aplicable y jurisdicción
 16.3.1 Para todo lo no previsto en este Reglamento, serán aplicables las leyes vigentes de
-los  Estados  Unidos  Mexicanos.  Para  la  interpretación,  cumplimiento  y  ejecución  del
+los Estados Unidos Mexicanos. Para la interpretación, cumplimiento y ejecución del
 presente Reglamento, las partes se someten a la competencia de las autoridades y
-tribunales  del Estado  de  México,  renunciando  a  cualquier  otro  fuero  que  pudiera
+tribunales del Estado de México, renunciando a cualquier otro fuero que pudiera
 corresponderles por razón de su domicilio presente o futuro.
 16.4 Entrada en vigor
-16.4.1 El presente Reglamento entrará en vigor en la fecha señalada en su Portada  e
+16.4.1 El presente Reglamento entrará en vigor en la fecha señalada en su Portada e
 identificación (15 de febrero de 2026) y será aplicable a partir de su publicación en la
 Plataforma “Pata Amiga”.
 16.5 Publicidad, consulta y aceptación.
 El presente Reglamento es de carácter público y se encuentra disponible para su consulta
-permanente  en  la  Plataforma  “Pata  Amiga”  (URL:  https://www.pataamiga.mx/).  Su
-aceptación  y  adhesión  se  perfecciona  mediante:  (i)  la  aceptación  electrónica  (click
+permanente en la Plataforma “Pata Amiga” (URL: https://www.pataamiga.mx/). Su
+aceptación y adhesión se perfecciona mediante: (i) la aceptación electrónica (click
 “ACEPTO”) del Convenio de Adhesión correspondiente; y/o (ii) la continuidad en el uso de la
 Plataforma y/o la renovación de la Membresía, en términos de los instrumentos vigentes.
 16.6 Actualizaciones, versión aplicable y aceptación por continuidad.
@@ -1887,7 +1887,7 @@ interno con facultades para:
 - emitir determinaciones operativas en materia de integridad
 dentro del ámbito de GIRBAZ.
 - CLUB PATA AMIGA, A.C. designará, cuando corresponda, una figura
-responsable  para coordinar las medidas de integridad en el ámbito del Fondo,
+responsable para coordinar las medidas de integridad en el ámbito del Fondo,
 incluyendo verificación y auditoría, y para canalizar medidas internas
 conforme a sus instrumentos.
 - Gancho LFPIORPI: En caso de que se actualicen supuestos legales
@@ -1952,8 +1952,8 @@ e) manipulación de evidencia (documentos, fotos, videos,
 comprobantes), alteración de archivos, metadatos o fechas;
 f) duplicidad de Solicitudes por el mismo hecho, fraccionamiento de
 eventos o presentación repetida para obtener beneficios indebidos;
-g) alteración  o  simulación  de  fechas,  documentos,
-comprobantes  o diagnósticos;
+g) alteración o simulación de fechas, documentos,
+comprobantes o diagnósticos;
 h) utilización de terceros para simular eventos, evidencias o servicios, o
 para encubrir irregularidades;
 i) intento de eludir controles de seguridad, verificación, confidencialidad
@@ -2049,7 +2049,7 @@ o fraude grave.
 procedente / improcedente / condicionada / sanción aplicable.
 - Canal del recurso interno / aclaración: el Titular podrá solicitar una
 revisión interna adicional en un plazo de 5 días contado desde la notificación
-de la determinación, a través de transparencia@pataamiga.mx;  dicha
+de la determinación, a través de transparencia@pataamiga.mx; dicha
 revisión no suspende necesariamente los efectos de la medida, salvo
 determinación expresa.
 
@@ -2237,7 +2237,7 @@ pago o dádiva para “agilizar”, “asegurar” o “destrabar” un trámite
 - En caso de extorsión (solicitud de dinero o beneficios a cambio de
 permitir, autorizar o no afectar al Proyecto), deberá:
 a) reportarse de inmediato al Responsable de Cumplimiento de
-GIRBAZ  y/o al responsable designado por la A.C.;
+GIRBAZ y/o al responsable designado por la A.C.;
 b) resguardarse evidencia disponible (mensajes, llamadas, correos,
 datos); y
 c) valorar la denuncia o reporte ante autoridad competente,
@@ -2381,8 +2381,8 @@ b) Prevención y detección de fraude, abuso, suplantación y manipulación
 de evidencia;
 c) Validación de información y evidencias presentadas por el Titular,
 incluyendo validación reforzada cuando existan alertas;
-d) Atención  y  aclaraciones  relacionadas  con
-incidentes  de  integridad
+d) Atención y aclaraciones relacionadas con
+incidentes de integridad
 (incluyendo incidencias de pago cuando aplique);
 e) Auditoría interna y trazabilidad de decisiones (Comité y responsables
 designados);
@@ -2469,7 +2469,7 @@ Artículo 30. Contacto para soporte, aclaraciones y quejas (GIRBAZ)
 - Para soporte operativo de Plataforma, aclaraciones de cargos, Membresía/Plan,
 retenciones/preautorizaciones (si existieran), cancelaciones y quejas relacionadas
 con el uso de la Plataforma, el Titular podrá contactar a GIRBAZ en:
--  Correo: girbaz31@gmail.com
+- Correo: girbaz31@gmail.com
 - Domicilio físico para reclamaciones: Calle Gustavo Díaz Ordaz, Número
 Exterior 18, Número Interior 1, Colonia San Juan, Municipio de Tultitlán, Estado
 de México, C.P. 54900.
@@ -2483,7 +2483,7 @@ Artículo 31. Contacto para integridad y asuntos del Fondo (CLUB PATA AMIGA,
 Solicitudes, validación, conductas indebidas, conflicto de interés, y cualquier asunto
 de integridad en la administración del Fondo), el Titular, aliados o proveedores podrán
 contactar a CLUB PATA AMIGA, A.C. en:
--  Correo: legal@pataamiga.mx
+- Correo: legal@pataamiga.mx
 - Domicilio para notificaciones: Calle Gustavo Díaz Ordaz, Número Exterior 18,
 Número Interior 1, Colonia San Juan, Municipio de Tultitlán, Estado de México,
 ## C.P. 54900.
@@ -2887,9 +2887,9 @@ Categoría: Estrictamente necesarias.
 5) Consentimiento y panel de configuración
 Al entrar a https://www.pataamiga.mx/ se mostrará un banner/centro de preferencias
 para que puedas:
--  Aceptar todas •  Rechazar las opcionales •  Configurar por
+- Aceptar todas • Rechazar las opcionales • Configurar por
 categorías (Analítica / Marketing)
--  Mantener solo necesarias
+- Mantener solo necesarias
 Podrás cambiar tu elección en cualquier momento desde el enlace:
 “Configurar cookies” en el pie de página o en el Centro de Preferencias del sitio.
 
@@ -2909,8 +2909,8 @@ políticas.
 
 
 En particular:
-- Stripe  puede  tratar  información  técnica  para  seguridad
-antifraude  y procesamiento de pago.
+- Stripe puede tratar información técnica para seguridad
+antifraude y procesamiento de pago.
 - Memberstack puede tratar información técnica para autenticación y
 sesión.
 - GTM/píxeles tratan información para medición/marketing únicamente
@@ -2923,7 +2923,7 @@ aplicable desde su fecha de publicación.
 
 ## 9) Contacto
 Para dudas o solicitudes relacionadas con cookies y privacidad:
--  GIRBAZ (Plataforma): girbaz31@gmail.com •  CLUB PATA AMIGA, A.C.
+- GIRBAZ (Plataforma): girbaz31@gmail.com • CLUB PATA AMIGA, A.C.
 (temas del Fondo/Asociación): legal@pataamiga.mx
 
 
@@ -3030,7 +3030,7 @@ prorrateo o ajustes de monto sin que ello genere derecho exigible.
 aplicable a partir de la activación de la Membresía del Titular, durante el cual no
 será posible solicitar y/o recibir Apoyos con cargo al Fondo, aun cuando el Titular
 tenga Membresía vigente. La duración de la Carencia podrá variar por plan,
-campaña, programa, segmento (incluyendo, en su caso, RUAC o registro por
+campaña, programa, segmento (incluyendo, en su caso, o registro por
 Código de Embajador) y/o por tipo de Apoyo, siempre que se indique de manera
 expresa en la Plataforma al momento de la contratación, activación o renovación
 y/o se publique como regla vigente aplicable.
@@ -3059,7 +3059,7 @@ domicilio fiscal el ubicado en: Código Postal 54944; Calle Juárez, Número
 Exterior 3, Número Interior “Sin número”, Colonia San Francisco Chilpan,
 Localidad Buenavista, Municipio o Demarcación Territorial Tultitlán,
 Estado de México; entre Calle Calvario y Cerrada de los Tanques.
-d) Medio para notificaciones.  Para efectos de notificaciones derivadas
+d) Medio para notificaciones. Para efectos de notificaciones derivadas
 del presente Convenio, LA ASOCIACIÓN señala como medio de
 notificación electrónico el siguiente correo: fondo@pataamiga.mx (el
 “Correo de Notificaciones de LA ASOCIACIÓN”).
@@ -3526,9 +3526,9 @@ Los Apoyos que, en su caso, pudieran autorizarse con cargo al Fondo Solidario
 estarán sujetos a límites máximos, conforme al Reglamento del Fondo, a la
 suficiencia del Fondo y a lo mostrado en la Plataforma, incluyendo de manera
 enunciativa:
-a) Montos máximos por tipo de apoyo (tope por uso al año) §  Emergencia
+a) Montos máximos por tipo de apoyo (tope por uso al año) § Emergencia
 médica veterinaria: hasta $3,000.00 M.N.
-§  Fallecimiento de mascota registrada: hasta $2,000.00 M.N.  §
+§ Fallecimiento de mascota registrada: hasta $2,000.00 M.N. §
 Vacunación anual: hasta $300.00 M.N.
 b) Frecuencia y tope anual (regla de uso)
 ▪ Emergencia médica veterinaria: el monto de $3,000.00
@@ -3797,8 +3797,8 @@ b) proveedores/aliados (por ejemplo, clínicas, veterinarias o
 prestadores de servicios) únicamente cuando sea necesario para validar o
 ejecutar un apoyo autorizado (p. ej., pago directo o verificación de
 servicios);
-c) proveedores  de  verificación/seguridad  para  controles
-antifraude;  y
+c) proveedores de verificación/seguridad para controles
+antifraude; y
 d) autoridades competentes, cuando exista requerimiento fundado o sea
 legalmente procedente.
 
@@ -3811,7 +3811,7 @@ obligaciones de confidencialidad.
 EL TITULAR podrá ejercer sus derechos de Acceso, Rectificación, Cancelación u
 Oposición (ARCO), así como revocar su consentimiento cuando sea aplicable,
 mediante solicitud enviada al siguiente correo:
-- Para  asuntos  de  Plataforma  y  Membresía  (LA
+- Para asuntos de Plataforma y Membresía (LA
 EMPRESA): girbaz@pataamiga.mx
 - Para asuntos del Fondo Solidario (LA ASOCIACIÓN):
 legal@pataamiga.mx
@@ -3826,8 +3826,8 @@ tramitar Solicitudes, y podrá dar lugar a la baja conforme a este Convenio.
 13.6 Medidas de seguridad y conservación de información
 LA EMPRESA y LA ASOCIACIÓN implementarán medidas razonables de seguridad
 administrativas, técnicas y físicas para proteger los datos personales contra
-daño, pérdida,  alteración,  destrucción,  uso,  acceso  o
-tratamiento  no  autorizado, considerando la naturaleza de los datos y
+daño, pérdida, alteración, destrucción, uso, acceso o
+tratamiento no autorizado, considerando la naturaleza de los datos y
 los riesgos del tratamiento.
 Los datos se conservarán únicamente por el tiempo necesario para cumplir las
 finalidades previstas y para atender obligaciones legales, aclaraciones,
@@ -3974,7 +3974,7 @@ evidencias sean suficientes y verificables.
 
 
 
-b) Suspensión  preventiva  por  validación,  aclaración  o  controles
+b) Suspensión preventiva por validación, aclaración o controles
 (KYC/antifraude)
 Cuando la Cuenta del TITULAR sea suspendida de manera preventiva por motivos
 de validación, aclaración de pago, verificación de identidad, controles antifraude
@@ -4137,13 +4137,13 @@ Domicilio: Calle Gustavo Díaz Ordaz, Número Exterior 18, Número Interior 1, C
 Juan, Municipio de Tultitlán, Estado de México, C.P. 54900.
 
 b) CLUB PATA AMIGA, A.C. (“CLUB PATA AMIGA”)
-Responsable del tratamiento de datos personales relacionados con la administración  del
-Fondo   Solidario,  resolución  de  solicitudes  de  apoyo,  validación  y  determinaciones
+Responsable del tratamiento de datos personales relacionados con la administración del
+Fondo Solidario, resolución de solicitudes de apoyo, validación y determinaciones
 asociativas conforme a sus instrumentos aplicables.
 Correo de privacidad: legal@pataamiga.mx Domicilio: Calle Juárez No. 3, Interior sin
 número, Col. San Francisco Chilpan, Localidad Buenavista, C.P. 54944, Tultitlán, Estado de
 ## México
-Importante: GIRBAZ  y  CLUB  PATA  AMIGA  pueden  actuar  como responsables
+Importante: GIRBAZ y CLUB PATA AMIGA pueden actuar como responsables
 independientes según la finalidad del tratamiento. Cuando exista intercambio de datos
 entre ambos, se hará bajo las finalidades previstas en este Aviso y conforme a los
 instrumentos del Proyecto.
@@ -4166,7 +4166,7 @@ C. Datos de cuenta y uso de Plataforma (tecnológicos)
 
 - IP, dispositivo, navegador, cookies/identificadores, logs de seguridad
 D. Datos de pago (Membresía)
-- Tipo de tarjeta (débito/crédito), nombre del titular, datos  necesarios  para
+- Tipo de tarjeta (débito/crédito), nombre del titular, datos necesarios para
 procesar el cobro
 - Nota: Por seguridad, los datos completos de tarjeta suelen ser procesados
 por el proveedor de pago (p. ej., Stripe) y no se almacenan íntegramente en nuestros
@@ -4175,7 +4175,7 @@ dígitos y datos de conciliación.
 E. Datos de mascotas (hasta 3 por cuenta)
 - Nombre, edad, sexo, raza, tamaño/peso, tipo de mascota
 - Fotos de la mascota y selfie con mascota
-- RUAC (si existe)
+- (si existe)
 - Certificado médico veterinario (si rebasa edad senior o cuando aplique)
 - Historia de adopción/rescate (solo si el usuario decide compartirla)
 - Código de embajador (si aplica)
@@ -4189,23 +4189,23 @@ G. Datos de Red Veterinaria
 - Redes sociales, fotos del establecimiento, promociones/descuentos
 H. Datos para aclaraciones, devoluciones o contracargos (si aplica)
 - Folio/ID de transacción, evidencias de cargo (estado de cuenta), datos de contacto y
-seguimiento,  y  en  su  caso  datos  mínimos  bancarios  para  conciliación/reverso
+seguimiento, y en su caso datos mínimos bancarios para conciliación/reverso
 (cuando proceda y sea estrictamente necesario).
 
 
 
 
 3) Datos personales sensibles
-En general, no  solicitamos datos  sensibles del titular (como datos de salud humana). Sin
+En general, no solicitamos datos sensibles del titular (como datos de salud humana). Sin
 embargo, imágenes (INE/selfies) pueden considerarse de mayor riesgo por su naturaleza.
-Los certificados veterinarios se refieren a salud  de  la  mascota, no a salud humana, pero
+Los certificados veterinarios se refieren a salud de la mascota, no a salud humana, pero
 igualmente se tratan con medidas reforzadas de seguridad y acceso limitado.
 
 4) Finalidades del tratamiento
 Finalidades primarias (necesarias para la relación jurídica y operación):
 - Crear y administrar la Cuenta del Titular/usuario.
 - Operar la Plataforma, sus funcionalidades, beneficios y módulos.
-- Procesar  cobros  de  Membresía,  confirmaciones,  conciliación  y
+- Procesar cobros de Membresía, confirmaciones, conciliación y
 comprobantes.
 - Gestionar verificación de identidad y elegibilidad (incluyendo validación
 documental).
@@ -4213,18 +4213,18 @@ documental).
 estatus.
 - Prevención de fraude, abuso, suplantación y seguridad de la Plataforma.
 - Atención al cliente, soporte, aclaraciones, quejas y seguimiento.
-- Cumplimiento  de  obligaciones  legales  y  requerimientos  de  autoridad
+- Cumplimiento de obligaciones legales y requerimientos de autoridad
 competente.
 
 
 
 Finalidades secundarias (no necesarias):
-- Enviar  comunicaciones  informativas,  mejoras  del  servicio,  campañas  y
+- Enviar comunicaciones informativas, mejoras del servicio, campañas y
 novedades.
 - Analítica interna para mejorar experiencia, seguridad y operación.
 Oposición a secundarias: Puedes oponerte a las finalidades secundarias enviando un correo
 a:
--  GIRBAZ: girbaz31@gmail.com •  CLUB PATA AMIGA: legal@pataamiga.mx
+- GIRBAZ: girbaz31@gmail.com • CLUB PATA AMIGA: legal@pataamiga.mx
 
 
 
@@ -4232,11 +4232,11 @@ a:
 5) Transferencias de datos personales
 Podremos transferir datos, sin requerir tu consentimiento adicional cuando sea necesario
 para la relación y/o esté permitido por ley, a:
-- Procesadores/pasarelas  de  pago  (p.  ej.,  Stripe)  para
+- Procesadores/pasarelas de pago (p. ej., Stripe) para
 cobros, preautorizaciones, conciliación y prevención de fraude.
 - Proveedores tecnológicos (hosting, correo, mensajería, analítica, seguridad)
 como encargados.
-- Aliados/red   veterinaria únicamente  para  confirmar  servicios,  validar
+- Aliados/red veterinaria únicamente para confirmar servicios, validar
 comprobantes o gestionar atención vinculada a una Solicitud (cuando proceda).
 - Autoridades competentes, por requerimiento fundado y motivado o para
 cumplimiento legal.
@@ -4259,29 +4259,29 @@ operar correctamente.
 
 
 7) Medios para ejercer Derechos ARCO y revocar consentimiento
-Tienes derecho a Acceder,  Rectificar,  Cancelar  u  Oponerte (ARCO) al tratamiento de tus
+Tienes derecho a Acceder, Rectificar, Cancelar u Oponerte (ARCO) al tratamiento de tus
 datos, así como a revocar tu consentimiento cuando proceda.
 Canales ARCO:
 - Para datos de Plataforma/cuenta/cobros (GIRBAZ): girbaz31@gmail.com
-- Para  datos  vinculados  al  Fondo/solicitudes  (CLUB  PATA
+- Para datos vinculados al Fondo/solicitudes (CLUB PATA
 AMIGA): legal@pataamiga.mx
 La solicitud ARCO debe incluir:
 a) Nombre y medio para responder (correo).
 b) Identificación del titular (y, en su caso, representación).
 c) Descripción clara del derecho a ejercer y datos involucrados.
 d) Documentos que sustenten corrección (si aplica).
-Plazos  y  atención: Se atenderá conforme a los plazos y reglas aplicables de la LFPDPPP
+Plazos y atención: Se atenderá conforme a los plazos y reglas aplicables de la LFPDPPP
 vigente.
 
 8) Limitación del uso o divulgación
 Puedes solicitar la limitación de uso/divulgación de tus datos mediante correo a los canales
-señalados.  También  podrás  gestionar  preferencias  dentro  de  tu  Cuenta  cuando  la
+señalados. También podrás gestionar preferencias dentro de tu Cuenta cuando la
 Plataforma lo habilite.
 
 9) Conservación y medidas de seguridad
 Conservaremos tus datos solo el tiempo necesario para cumplir finalidades, obligaciones
 legales, atención de controversias y auditoría/seguridad.
-Implementamos  medidas  administrativas,  técnicas  y  físicas  para  proteger  los  datos
+Implementamos medidas administrativas, técnicas y físicas para proteger los datos
 (controles de acceso, cifrado/seguridad de comunicaciones cuando aplique, bitácoras y
 monitoreo).
 
@@ -4297,7 +4297,7 @@ la cuenta y eliminar datos conforme a la ley aplicable.
 Este Aviso puede actualizarse por cambios legales, operativos o del modelo. Publicaremos
 la versión vigente en la Plataforma: https://www.pataamiga.mx/
 
-12) Contacto •  GIRBAZ (Privacidad): girbaz31@gmail.com •  CLUB PATA
+12) Contacto • GIRBAZ (Privacidad): girbaz31@gmail.com • CLUB PATA
 AMIGA (Privacidad): legal@pataamiga.mx
 
 
@@ -4383,7 +4383,7 @@ Pinscher Alemán Glaucoma, Cataratas, Neuropatía hereditaria, Colapso traqueal,
 Estenosis subaórtica, Ictiosis.
 Pastor Belga Malinois Enfermedad de Von Willebrand, Displasia de cadera, Dermatitis
 atópica, Neuropatía hereditaria, Hipotiroidismo, Alergias.
-Boston Terrier  Estenosis subaórtica, Alergias, Dermatitis, Atrofia de retina, Síndrome
+Boston Terrier Estenosis subaórtica, Alergias, Dermatitis, Atrofia de retina, Síndrome
 braquicefálico, Hidrocefalia, Cataratas.
 Bernes de las
 montañas (Boyero de

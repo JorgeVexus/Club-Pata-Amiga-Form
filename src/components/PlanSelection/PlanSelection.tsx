@@ -184,7 +184,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             {/* Footer Info */}
             <div className={styles.footerInfo}>
                 <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo solidario.</p>
-                <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado, tiene RUAC o llegas con código referido).</p>
+                <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado o llegas con código referido).</p>
                 <p>Tu membresía se renovará automáticamente. Cancela cuando quieras</p>
             </div>
 

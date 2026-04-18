@@ -57,7 +57,6 @@ interface RegistrationData {
         petAgeUnit: 'years' | 'months';
         isAdopted?: boolean;
         isMixed?: boolean;
-        ruac?: string;
         waitingPeriodDays?: number;
         waitingPeriodEnd?: string;
     };
@@ -507,7 +506,6 @@ export default function NewRegistrationFlow() {
             const calculation = calculateWaitingPeriod(
                 true, // isOriginal
                 !!registrationData.petBasic.isAdopted,
-                !!registrationData.petBasic.ruac,
                 !!registrationData.petBasic.isMixed,
                 true // hasReferralCode
             );
@@ -752,7 +750,6 @@ export default function NewRegistrationFlow() {
             const calculation = calculateWaitingPeriod(
                 true, // isOriginal
                 !!restPetData.isAdopted,
-                !!restPetData.ruac,
                 !!restPetData.isMixedBreed, // Mapeamos isMixedBreed a isMixed
                 !!registrationData.referralCode
             );
