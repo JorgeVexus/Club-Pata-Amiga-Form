@@ -921,7 +921,7 @@
                     </div>
                 </div>
 
-                <div class="pata-adoption-section" style="display:${d.breedType==='mestizo'?'block':'none'}">
+                <div class="pata-adoption-section">
                     <div class="pata-adoption-header">
                         <div class="pata-adoption-icon">🏠</div>
                         <div>
@@ -987,9 +987,6 @@
                     d.isMixed = (d.breedType === 'mestizo');
                     
                     if (d.breedType === 'raza') {
-                        // Si se cambia a Raza, limpiar datos de adopción (que solo aplican a mestizos)
-                        d.isAdopted = false;
-                        d.adoptionStory = '';
                         d.breed = ''; // Reset breed name to pick a new one
                     } else {
                         d.breed = 'Mestizo';

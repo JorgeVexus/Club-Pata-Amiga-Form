@@ -174,7 +174,7 @@ export default function PetCard({
                     />
 
                     <RadioGroup
-                        label="¿Tu peludo tiene más años?"
+                        label="¿De qué raza es tu peludo?"
                         name={`pet-${petNum}-mixed`}
                         options={[
                             { value: 'true', label: 'Mestizo/Doméstico' },
@@ -183,17 +183,7 @@ export default function PetCard({
                         value={petData.isMixed?.toString() || ''}
                         onChange={(value) => {
                             const isMixed = value === 'true';
-                            // Si se cambia de Mestizo a Raza, limpiar datos de adopción
-                            if (!isMixed) {
-                                onUpdate({ 
-                                    ...petData, 
-                                    isMixed: false,
-                                    isAdopted: false,
-                                    adoptionStory: ''
-                                });
-                            } else {
-                                onUpdate({ ...petData, isMixed: true });
-                            }
+                            onUpdate({ ...petData, isMixed });
                         }}
                         helpText="El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
                         error={errors[`pet-${petNum}-mixed`]}

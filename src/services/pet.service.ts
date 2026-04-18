@@ -35,22 +35,40 @@ export function calculateWaitingPeriod(
         };
     }
 
-    if (isAdopted || hasReferralCode) {
+    // 1. Prioridad: Código de Embajador (Referral) - Siempre 90 días
+    if (hasReferralCode) {
         const endDate = new Date();
         endDate.setDate(endDate.getDate() + 90);
-
-        const reductionReason = hasReferralCode ? 'referral' : 'adopted';
 
         return {
             days: 90,
             months: 3,
             endDate: endDate.toISOString(),
             hasReduction: true,
-            reductionReason,
+            reductionReason: 'referral',
         };
     }
 
-    // Caso estándar: 180 días (6 meses)
+    // 2. Si es adoptada, el tiempo depende de si es mestiza o de raza
+    if (isAdopted) {
+        const endDate = new Date();
+        // Mestizo + Adoptado = 4 meses (120 días)
+        // Raza + Adoptado = 5 meses (150 días)
+        const days = isMixed ? 120 : 150;
+        const months = isMixed ? 4 : 5;
+        
+        endDate.setDate(endDate.getDate() + days);
+
+        return {
+            days,
+            months,
+            endDate: endDate.toISOString(),
+            hasReduction: true,
+            reductionReason: 'adopted',
+        };
+    }
+
+    // 3. Caso estándar: 180 días (6 meses)
     const endDate = new Date();
     endDate.setDate(endDate.getDate() + 180);
 

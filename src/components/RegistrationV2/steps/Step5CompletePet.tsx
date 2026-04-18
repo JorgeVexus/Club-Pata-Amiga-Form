@@ -232,50 +232,48 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                         />
                     )}
 
-                    {/* Sección de Adopción (Solo para mestizos) */}
-                    {breedType === 'mestizo' && (
-                        <div className={`${styles.adoptionSection} ${styles.fadeIn}`}>
-                            <div className={styles.adoptionHeader}>
-                                <div className={styles.adoptionIcon}>🏠</div>
-                                <div>
-                                    <h4 className={styles.adoptionTitle}>¿Tu mascota es adoptada?</h4>
-                                    <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
-                                </div>
+                    {/* Sección de Adopción */}
+                    <div className={`${styles.adoptionSection} ${styles.fadeIn}`}>
+                        <div className={styles.adoptionHeader}>
+                            <div className={styles.adoptionIcon}>🏠</div>
+                            <div>
+                                <h4 className={styles.adoptionTitle}>¿Tu mascota es adoptada?</h4>
+                                <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
                             </div>
-
-                            <div className={styles.adoptionCheckboxWrapper}>
-                                <label className={styles.adoptionCheckbox}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={formData.isAdopted}
-                                        onChange={(e) => setFormData({ ...formData, isAdopted: e.target.checked })}
-                                    />
-                                    <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
-                                </label>
-                            </div>
-
-                            {formData.isAdopted && (
-                                <div className={styles.adoptionStoryWrapper}>
-                                    <label className={styles.adoptionStoryLabel}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary, #00BBB4)' }}>
-                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                        </svg>
-                                        Cuéntanos su historia
-                                    </label>
-                                    <textarea 
-                                        className={styles.adoptionTextarea}
-                                        placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
-                                        value={formData.adoptionStory}
-                                        onChange={(e) => setFormData({ ...formData, adoptionStory: e.target.value })}
-                                        maxLength={500}
-                                    />
-                                    <div className={styles.adoptionCharCount}>
-                                        <strong>{formData.adoptionStory.length}</strong> / 500 caracteres
-                                    </div>
-                                </div>
-                            )}
                         </div>
-                    )}
+
+                        <div className={styles.adoptionCheckboxWrapper}>
+                            <label className={styles.adoptionCheckbox}>
+                                <input 
+                                    type="checkbox" 
+                                    checked={formData.isAdopted}
+                                    onChange={(e) => setFormData({ ...formData, isAdopted: e.target.checked })}
+                                />
+                                <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
+                            </label>
+                        </div>
+
+                        {formData.isAdopted && (
+                            <div className={styles.adoptionStoryWrapper}>
+                                <label className={styles.adoptionStoryLabel}>
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--color-primary, #00BBB4)' }}>
+                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                    </svg>
+                                    Cuéntanos su historia
+                                </label>
+                                <textarea 
+                                    className={styles.adoptionTextarea}
+                                    placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
+                                    value={formData.adoptionStory}
+                                    onChange={(e) => setFormData({ ...formData, adoptionStory: e.target.value })}
+                                    maxLength={500}
+                                />
+                                <div className={styles.adoptionCharCount}>
+                                    <strong>{formData.adoptionStory.length}</strong> / 500 caracteres
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                 </div>
 

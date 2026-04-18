@@ -761,16 +761,20 @@
             const start = new Date(pet.created_at);
 
             // Lógica de carencia refinada:
-            // 1. Adoptado (validado en frontend) -> 90 días
-            // 2. Mestizo -> 120 días
-            // 3. Estándar -> 180 días
-
+            // 1. Mestizo + Adoptado -> 120 días
+            // 2. Raza + Adoptado -> 150 días
+            // 3. Estándar (No adoptado) -> 180 días
+            
             let totalDays = 180;
-            if (pet.is_adopted) {
-                totalDays = 90;
-            } else if (pet.is_mixed) {
-                totalDays = 120;
+            
+            // Si el objeto ya trae el campo calculado del backend, usarlo
+            if (pet.waiting_period_days) {
+                totalDays = parseInt(pet.waiting_period_days);
+            } else if (pet.is_adopted) {
+                const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+                totalDays = isMixed ? 120 : 150;
             }
+
 
             const diffTime = Math.abs(now - start);
             const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
