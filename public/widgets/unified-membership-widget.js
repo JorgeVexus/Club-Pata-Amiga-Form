@@ -468,6 +468,88 @@
         }
 
         .pata-warning-deadline strong {
+            color: #856404;
+        }
+
+        /* Responsive Editorial Modal */
+        .pata-editorial-container {
+            display: grid;
+            grid-template-columns: 440px 1fr;
+            max-width: 960px;
+            width: 100%;
+            border-radius: 40px;
+            border: 4px solid #000;
+            overflow: hidden;
+            background: #fff;
+            animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
+        }
+
+        .pata-editorial-left {
+            background: #00BBB4;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border-right: 4px solid #000;
+            position: sticky;
+            top: 0;
+        }
+
+        .pata-editorial-right {
+            padding: 50px;
+            background: #fff;
+            position: relative;
+        }
+
+        .pata-editorial-name {
+            font-size: 72px;
+            font-weight: 950;
+            line-height: 0.85;
+            margin: 0 0 10px 0;
+            letter-spacing: -3px;
+            color: #000;
+            text-transform: lowercase;
+        }
+
+        .pata-editorial-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        @media (max-width: 850px) {
+            .pata-editorial-container {
+                grid-template-columns: 1fr;
+                max-width: 100%;
+                border-width: 3px;
+            }
+
+            .pata-editorial-left {
+                border-right: none;
+                border-bottom: 4px solid #000;
+                position: relative;
+                padding: 30px 20px;
+            }
+
+            .pata-editorial-right {
+                padding: 40px 25px;
+            }
+
+            .pata-editorial-name {
+                font-size: 48px;
+                letter-spacing: -2px;
+            }
+
+            .pata-editorial-info-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .pata-editorial-main-img-box {
+                height: 320px !important;
+            }
+        }
             display: inline;
             color: #D32F2F;
         }
@@ -711,11 +793,11 @@
             const now = new Date();
             const diff = deadline - now;
             const daysLeft = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            
-            return { 
-                deadline: deadline.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' }), 
-                daysLeft, 
-                isExpired: daysLeft < 0 
+
+            return {
+                deadline: deadline.toLocaleDateString('es-MX', { day: 'numeric', month: 'long' }),
+                daysLeft,
+                isExpired: daysLeft < 0
             };
         }
 
@@ -733,9 +815,9 @@
                         <strong>Documentación pendiente para ${pet.name}</strong>
                         <p>Falta: ${missing.join(', ')}</p>
                         <p class="pata-warning-deadline">
-                            ${deadlineInfo.isExpired 
-                                ? '⚠️ Tu plazo de 15 días ha expirado. Sube estos documentos pronto para evitar problemas con tu cobertura.' 
-                                : `Tienes hasta el <strong>${deadlineInfo.deadline}</strong> (${deadlineInfo.daysLeft} días) para completar tu registro.`}
+                            ${deadlineInfo.isExpired
+                    ? '⚠️ Tu plazo de 15 días ha expirado. Sube estos documentos pronto para evitar problemas con tu cobertura.'
+                    : `Tienes hasta el <strong>${deadlineInfo.deadline}</strong> (${deadlineInfo.daysLeft} días) para completar tu registro.`}
                         </p>
                     </div>
                 </div>
@@ -1352,7 +1434,7 @@
         renderPetDetailsModal(pet) {
             const carencia = this.calculateCarencia(pet);
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
-            
+
             const photos = [
                 pet.photo_url || pet.primary_photo_url,
                 pet.photo2_url,
@@ -1363,8 +1445,8 @@
 
             if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
 
-            const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', { 
-                day: 'numeric', month: 'long', year: 'numeric' 
+            const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', {
+                day: 'numeric', month: 'long', year: 'numeric'
             }) : 'No disponible';
 
             // Distinctive Editorial Layout
@@ -1429,13 +1511,13 @@
 
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
                                     ${[
-                                        { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
-                                        { label: 'Edad', value: pet.age || (pet.age_value ? `${pet.age_value} ${pet.age_unit || 'años'}` : '1 año'), icon: '🎂' },
-                                        { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                                        { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
-                                        { label: 'RUAC', value: pet.ruac || 'En Trámite', icon: '🆔' },
-                                        { label: 'Ingreso', value: registrationDate, icon: '📅' }
-                                    ].map(item => `
+                    { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
+                    { label: 'Edad', value: pet.age || (pet.age_value ? `${pet.age_value} ${pet.age_unit || 'años'}` : '1 año'), icon: '🎂' },
+                    { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
+                    { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
+                    { label: 'RUAC', value: pet.ruac || 'En Trámite', icon: '🆔' },
+                    { label: 'Ingreso', value: registrationDate, icon: '📅' }
+                ].map(item => `
                                         <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">
                                             <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
                                             <div style="font-size: 18px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
@@ -1448,12 +1530,12 @@
                                 ${this.isSenior(pet) ? `
                                     <div style="background: #FFF9C4; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
                                         <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
-                                        ${pet.vet_certificate_url ? 
-                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                                        ${pet.vet_certificate_url ?
+                        `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
                                                 <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
                                                 Ver Certificado Médico →
-                                            </a>` : 
-                                            '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Certificado Pendiente de Carga</div>'}
+                                            </a>` :
+                        '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Certificado Pendiente de Carga</div>'}
                                     </div>
                                 ` : ''}
 
@@ -1563,10 +1645,10 @@
 
                         for (let i = 1; i <= 5; i++) {
                             if (this.missingPhotosFiles[`photo${i}`]) {
-                                photoUrls[i-1] = await this.uploadPhoto(this.missingPhotosFiles[`photo${i}`]);
+                                photoUrls[i - 1] = await this.uploadPhoto(this.missingPhotosFiles[`photo${i}`]);
                             }
                         }
-                        
+
                         if (this.missingPhotosFiles.cert) {
                             vetCertificateUrl = await this.uploadPhoto(this.missingPhotosFiles.cert);
                         }
@@ -1643,7 +1725,7 @@
                 if (detailsBtn) {
                     const pet = this.pets[this.currentIndex];
                     if (!pet) return;
-                    
+
                     const modalHtml = this.renderPetDetailsModal(pet);
                     const modalDiv = document.createElement('div');
                     modalDiv.id = 'pata-details-modal-wrapper';
@@ -1657,7 +1739,7 @@
                     const closeBtn2 = document.getElementById('pata-close-details-btn');
                     if (closeBtn1) closeBtn1.onclick = close;
                     if (closeBtn2) closeBtn2.onclick = close;
-                    
+
                     const modalOverlay = document.getElementById('pata-pet-details-modal');
                     if (modalOverlay) {
                         modalOverlay.onclick = (ev) => {
@@ -1852,7 +1934,7 @@
                     };
                 }
             };
-            
+
             [1, 2, 3, 4, 5].forEach(num => {
                 setupUpload(`pata-upload-area-${num}`, `pata-file-${num}`, `photo${num}`);
             });
@@ -1947,7 +2029,7 @@
 
                         submitBtn.innerText = 'Guardando...';
                         const message = document.getElementById('pata-update-message')?.value || '';
-                        
+
                         console.log('📡 Llamando a la API de actualización...', {
                             userId: this.member.id,
                             photo1Url,
