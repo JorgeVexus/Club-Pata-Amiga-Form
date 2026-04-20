@@ -5,7 +5,12 @@ import { useEffect } from 'react';
 export default function PaymentSuccessRedirect() {
     useEffect(() => {
         // Redirigir de vuelta al flujo de registro con el parámetro de éxito
-        window.location.href = '/registro?payment=success';
+        // Añadimos un pequeño delay de 1.5s para que el usuario pueda ver el mensaje de éxito
+        const timer = setTimeout(() => {
+            window.location.href = '/registro?payment=success';
+        }, 1500);
+
+        return () => clearTimeout(timer);
     }, []);
 
     return (
