@@ -261,14 +261,9 @@ export default function PetCard({
                     {/* Campo condicional: Certificado veterinario */}
                     {showVetCertificate && (
                         <div className={styles.vetCertificateSection}>
-                            <div className={styles.ageWarning}>
                                 <p className={styles.warningText}>
-                                    ⚠️ Tu peludo ya es senior para su talla, pero no te preocupes, aún lo puedes incluir en la manada.
+                                    Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙
                                 </p>
-                                <p className={styles.warningSubtext}>
-                                    Solo necesitamos que subas un documento de tu veterinario certificando que está saludable.
-                                </p>
-                            </div>
 
                             <FileUpload
                                 label="📋 Certificado Veterinario"

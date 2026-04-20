@@ -119,7 +119,7 @@ export default function Step2PetBasicDemo({ data, onNext, onBack, showToast }: S
                             <>
                                 <span>⚠️</span>
                                 <p>
-                                    Tu mascota califica como senior, después necesitaremos conocer el estado de salud de tu peludo
+                                    Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙
                                 </p>
                             </>
                         ) : (

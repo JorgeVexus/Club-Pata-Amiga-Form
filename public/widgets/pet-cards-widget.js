@@ -785,8 +785,7 @@
                         <div class="pata-info-box">
                             <span class="pata-info-icon">💡</span>
                             <p class="pata-info-text">
-                                Tu mascota califica como <strong>senior</strong>. 
-                                Podrás subir su certificado veterinario en el siguiente paso o después (tienes 15 días).
+                                Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙
                             </p>
                         </div>
                     `;
@@ -961,13 +960,13 @@
 
                 ${isSenior ? `
                 <div class="pata-form-group">
-                    <label class="pata-form-label">Certificado veterinario</label>
+                    <label class="pata-form-label">Sobre su salud (Senior 10+ años)</label>
                     <div class="pata-upload-box" id="vet-box">
                         <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;">
                         <div id="vet-preview-wrap">
                             ${this.uploadedVetUrl ? '<span class="pata-upload-icon">✅</span>' : '<span class="pata-upload-icon">📄</span>'}
-                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Certificado listo' : 'Subir certificado médico'}</p>
-                            <p class="pata-upload-subtext">Requerido por edad (${d.ageValue} ${d.ageUnit==='years'?'años':'meses'}). <strong>Tienes 15 días tras el registro.</strong></p>
+                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Información lista' : 'Subir información de salud'}</p>
+                            <p class="pata-upload-subtext">Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙</p>
                         </div>
                     </div>
                 </div>` : ''}
@@ -1128,7 +1127,7 @@
                         const url = await this.uploadNewPetPhoto(file);
                         this.uploadedVetUrl = url;
                         box.classList.add('has-file');
-                        box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Certificado listo</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
+                        box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Información lista</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
                         this.setupFileUploads();
                     } catch(err) { 
                         alert('Error subiendo certificado'); 

@@ -435,13 +435,9 @@ export default function Step5CompletePetDemo({ data, onNext, showToast }: Step5C
                     <div className={styles.alertBox}>
                         <span className={styles.alertIcon}>⚕️</span>
                         <div>
-                            <strong>Certificado veterinario requerido</strong>
+                            <strong>Sobre su salud (Senior 10+ años)</strong>
                             <p>
-                                Como {petBasic?.petName} tiene {petBasic?.petAgeUnit === 'years'
-                                    ? petBasic?.petAge
-                                    : Math.floor(petBasic?.petAge / 12)} años,
-                                necesitarás subir un certificado veterinario dentro de los
-                                próximos 15 días.
+                                Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙
                             </p>
 
                             <label className={styles.fileUploadLabel}>

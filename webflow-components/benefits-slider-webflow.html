@@ -1,0 +1,565 @@
+<!-- ============================================= -->
+<!-- PREMIUM BENEFITS SLIDER - Club Pata Amiga     -->
+<!-- ============================================= -->
+
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --pata-teal: #15BEB2;
+        --pata-orange: #FF8400;
+        --pata-pink: #FF0063;
+        --pata-lime: #9FD406;
+        --pata-yellow: #FFBD00;
+        --pata-accent: #FF0055;
+        --pata-black: #1A1A1A;
+        --spring-easing: cubic-bezier(0.16, 1, 0.3, 1);
+        --diffusion-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.12), 0 18px 36px -18px rgba(0, 0, 0, 0.16);
+    }
+
+    #pata-benefits-widget {
+        font-family: 'Outfit', sans-serif;
+        width: 100%;
+        overflow: hidden;
+        padding: 60px 0 100px 0;
+        background: transparent;
+        position: relative;
+        -webkit-font-smoothing: antialiased;
+    }
+
+    .pata-section-title {
+        text-align: left;
+        font-size: 42px;
+        line-height: 0.95;
+        font-weight: 400;
+        font-family: 'Fraiche', sans-serif;
+        color: var(--pata-accent);
+        margin-bottom: 40px;
+        padding-left: 24px;
+        max-width: 90%;
+        letter-spacing: -0.02em;
+    }
+
+    @media (min-width: 768px) {
+        .pata-section-title {
+            font-size: 64px;
+            padding-left: 8%;
+            max-width: 800px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .pata-section-title {
+            font-size: 84px;
+            max-width: 1100px;
+        }
+    }
+
+    /* ========== DESKTOP SLIDER ========== */
+    .stacked-slider-container {
+        position: relative;
+        width: 100%;
+        height: 620px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        perspective: 2000px;
+        margin-top: 20px;
+    }
+
+    .stacked-card {
+        position: absolute;
+        width: 320px;
+        height: 480px;
+        border-radius: 2.5rem;
+        overflow: hidden;
+        background: #fff;
+        user-select: none;
+        cursor: pointer;
+        will-change: transform, opacity;
+        
+        transition: 
+            transform 0.8s var(--spring-easing),
+            opacity 0.6s var(--spring-easing),
+            box-shadow 0.6s var(--spring-easing);
+
+        opacity: 0;
+        transform: scale(0.6) translateZ(-400px) rotateY(0deg);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    @media (min-width: 768px) {
+        .stacked-card {
+            width: 420px;
+            height: 560px;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        .stacked-card {
+            width: 460px;
+            height: 620px;
+        }
+    }
+
+    .stacked-card.is-active {
+        opacity: 1;
+        transform: scale(1) translateZ(0) rotateY(0deg);
+        z-index: 50;
+        pointer-events: auto;
+        box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.25);
+    }
+
+    .stacked-card.is-prev-1 {
+        opacity: 0.9;
+        transform: scale(0.85) translateX(-70%) translateZ(-200px) rotateY(20deg);
+        z-index: 40;
+        pointer-events: auto;
+    }
+
+    .stacked-card.is-next-1 {
+        opacity: 0.9;
+        transform: scale(0.85) translateX(70%) translateZ(-200px) rotateY(-20deg);
+        z-index: 40;
+        pointer-events: auto;
+    }
+
+    .stacked-card.is-prev-2 {
+        opacity: 0.4;
+        transform: scale(0.7) translateX(-120%) translateZ(-400px) rotateY(35deg);
+        z-index: 30;
+    }
+
+    .stacked-card.is-next-2 {
+        opacity: 0.4;
+        transform: scale(0.7) translateX(120%) translateZ(-400px) rotateY(-35deg);
+        z-index: 30;
+    }
+
+    @media (max-width: 768px) {
+        .stacked-slider-container, 
+        .slider-pagination,
+        .slider-nav-btn {
+            display: none !important;
+        }
+    }
+
+    /* ========== MOBILE INTERACTION (Bento 2.0 Style) ========== */
+    .mobile-stacked-list {
+        display: none;
+        flex-direction: column;
+        padding: 0 20px 60px 20px;
+        gap: 12px;
+    }
+
+    @media (max-width: 768px) {
+        .mobile-stacked-list {
+            display: flex;
+        }
+    }
+
+    .mobile-card-wrapper {
+        position: relative;
+        width: 100%;
+        background: white;
+        border-radius: 2rem;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.6s var(--spring-easing);
+        border: 1px solid rgba(0,0,0,0.03);
+        display: grid;
+        grid-template-rows: auto 0fr; /* Trick for smooth height expansion */
+        box-shadow: 0 4px 20px -5px rgba(0,0,0,0.05);
+    }
+
+    .mobile-card-wrapper.is-expanded {
+        grid-template-rows: auto 1fr;
+        box-shadow: 0 30px 60px -20px rgba(0,0,0,0.12);
+        margin: 8px 0;
+        transform: scale(1.01);
+        z-index: 10;
+    }
+
+    .mobile-card-header {
+        padding: 20px 24px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .mobile-card-icon-mini {
+        width: 44px;
+        height: 44px;
+        flex-shrink: 0;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px;
+        background: rgba(255,255,255,0.25);
+    }
+
+    .mobile-card-title-mini {
+        font-family: 'Fraiche', sans-serif;
+        font-size: 22px;
+        line-height: 1;
+        color: white;
+        letter-spacing: -0.01em;
+    }
+
+    .mobile-card-body {
+        overflow: hidden;
+        transition: visibility 0.6s;
+        visibility: hidden;
+    }
+
+    .mobile-card-wrapper.is-expanded .mobile-card-body {
+        visibility: visible;
+    }
+
+    .mobile-card-content-inner {
+        padding: 0 24px 24px 24px;
+        color: white;
+    }
+
+    .mobile-card-desc {
+        font-size: 14px;
+        line-height: 1.6;
+        opacity: 0.9;
+        margin-bottom: 20px;
+        max-width: 95%;
+        font-weight: 400;
+    }
+
+    .mobile-card-image-wrap {
+        width: 100%;
+        height: 200px;
+        border-radius: 1.5rem;
+        overflow: hidden;
+        background: rgba(0,0,0,0.05);
+        position: relative;
+    }
+
+    .mobile-card-image-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    /* ========== COMMON CARD INTERIORS ========== */
+    .pata-card-content {
+        height: 100%;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        color: white;
+        position: relative;
+        z-index: 2;
+    }
+
+    .pata-card-icon {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 32px;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+    }
+
+    .pata-card-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .pata-card-title {
+        font-family: 'Fraiche', sans-serif;
+        font-size: 44px;
+        font-weight: 400;
+        line-height: 0.95;
+        margin-bottom: 16px;
+        letter-spacing: -0.01em;
+    }
+
+    @media (min-width: 768px) { .pata-card-title { font-size: 52px; } }
+    @media (min-width: 1200px) { .pata-card-title { font-size: 64px; } }
+
+    .pata-card-desc {
+        font-size: 15px;
+        line-height: 1.6;
+        opacity: 0.9;
+        max-width: 320px;
+        font-weight: 400;
+    }
+
+    .pata-card-image-bg {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        height: 42%;
+        z-index: 1;
+        display: flex;
+        align-items: flex-end;
+        justify-content: flex-end;
+        overflow: hidden;
+    }
+
+    .pata-card-image-bg img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        transform: translateY(20px);
+        transition: transform 0.8s var(--spring-easing);
+    }
+
+    .stacked-card:hover .pata-card-image-bg img {
+        transform: translateY(0) scale(1.03);
+    }
+
+    /* Colors */
+    .bg-teal { background: var(--pata-teal); }
+    .bg-orange { background: var(--pata-orange); }
+    .bg-pink { background: var(--pata-pink); }
+    .bg-lime { background: var(--pata-lime); }
+    .bg-yellow { background: var(--pata-yellow); }
+
+    /* Nav Buttons */
+    .slider-nav-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 64px;
+        height: 64px;
+        background: white;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 100;
+        transition: all 0.4s var(--spring-easing);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        color: var(--pata-black);
+    }
+
+    .slider-nav-btn:hover {
+        transform: translateY(-50%) scale(1.1);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        color: var(--pata-accent);
+    }
+
+    .slider-nav-btn:active {
+        transform: translateY(-50%) scale(0.95);
+    }
+
+    .slider-nav-prev { left: 4%; }
+    .slider-nav-next { right: 4%; }
+
+    @media (min-width: 1440px) {
+        .slider-nav-prev { left: calc(50% - 700px); }
+        .slider-nav-next { right: calc(50% - 700px); }
+    }
+
+    /* Pagination Dots */
+    .slider-pagination {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 50px;
+    }
+
+    .slider-dot {
+        width: 10px;
+        height: 4px;
+        border-radius: 2px;
+        background: #E2E8F0;
+        border: none;
+        cursor: pointer;
+        transition: all 0.5s var(--spring-easing);
+    }
+
+    .slider-dot.active {
+        width: 40px;
+        background: var(--pata-accent);
+    }
+</style>
+
+<div id="pata-benefits-widget">
+    <h2 class="pata-section-title">lo que nuestra manada ofrece</h2>
+
+    <div class="stacked-slider-container" id="stackedSlider">
+        <!-- Desktop cards are rendered here -->
+    </div>
+
+    <!-- Paginación -->
+    <div class="slider-pagination" id="sliderPagination"></div>
+
+    <!-- Flechas de Navegación -->
+    <button class="slider-nav-btn slider-nav-prev" id="prevBtn" aria-label="Anterior">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+    <button class="slider-nav-btn slider-nav-next" id="nextBtn" aria-label="Siguiente">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+    </button>
+
+    <!-- MOBILE STACKED LIST -->
+    <div class="mobile-stacked-list" id="mobileList">
+        <!-- Mobile cards are rendered here -->
+    </div>
+</div>
+
+<script>
+    (function () {
+        const benefitsData = [
+            {
+                title: "emergencias médicas",
+                desc: "Hasta $3,000 al año. Porque los sustos no avisan y tu peludo no puede esperar a que pase el tiempo.",
+                icon: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51239fb4154de69395b8_icon-ambulance.png",
+                image: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3972782a8e9dc93f43_pet-emergencia.webp",
+                colorClass: "bg-pink"
+            },
+            {
+                title: "vacunación anual",
+                desc: "Hasta $300 al año, porque cuidar también es prevenir. Te ayudamos a mantener al día sus vacunas importantes.",
+                icon: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124b1c5fbeffc5845f9_icon-syringe.png",
+                image: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f373ed54e8f33736029_pet-vacunas.webp",
+                colorClass: "bg-orange"
+            },
+            {
+                title: "apoyo por fallecimiento",
+                desc: "Hasta $2,000 al año para cubrir gastos cuando llega el momento de decir adiós, con el respeto que merecen.",
+                icon: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5124d8390154d6e6f9e9_icon-ribbon.png",
+                image: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f3a7c986e76c7d6ec54_pet-fallecimiento.webp",
+                colorClass: "bg-teal"
+            },
+            {
+                title: "chat veterinario",
+                desc: "Siempre disponible. Consejos y apoyo para cuidar mejor a tu lomito con empatía y rapidez profesional.",
+                icon: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e5123c2f3d6ca8c73261e_icon-chat.png",
+                image: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4fc278a9d558c9cbd86f_pet-chat.webp",
+                colorClass: "bg-lime"
+            },
+            {
+                title: "comunidad activa",
+                desc: "Juntos destinamos parte del fondo para apoyar refugios y rescates que salvan vidas todos los días.",
+                icon: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e51232db47414a6dd8fdd_icon-heart.png",
+                image: "https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698e4f38f2a0d2f49df1875c_pet-donaciones.webp",
+                colorClass: "bg-yellow"
+            }
+        ];
+
+        const desktopContainer = document.getElementById('stackedSlider');
+        const mobileContainer = document.getElementById('mobileList');
+        const pagination = document.getElementById('sliderPagination');
+        
+        let activeIndex = 0;
+        const totalCards = benefitsData.length;
+
+        // Render Desktop Cards
+        benefitsData.forEach((data, i) => {
+            const card = document.createElement('div');
+            card.className = `stacked-card ${data.colorClass}`;
+            card.innerHTML = `
+                <div class="pata-card-content">
+                    <div class="pata-card-icon"><img src="${data.icon}" alt="Icon" loading="eager"></div>
+                    <div class="pata-card-title">${data.title}</div>
+                    <p class="pata-card-desc">${data.desc}</p>
+                </div>
+                <div class="pata-card-image-bg"><img src="${data.image}" alt="Pet" loading="eager"></div>
+            `;
+            card.addEventListener('click', () => { if(activeIndex !== i) goToSlide(i); });
+            desktopContainer.appendChild(card);
+
+            // Pagination dots
+            const dot = document.createElement('button');
+            dot.className = 'slider-dot';
+            dot.setAttribute('aria-label', `Ir a slide ${i + 1}`);
+            dot.addEventListener('click', () => goToSlide(i));
+            pagination.appendChild(dot);
+        });
+
+        // Render Mobile Cards (Modern Accordion)
+        benefitsData.forEach((data, i) => {
+            const wrap = document.createElement('div');
+            wrap.className = `mobile-card-wrapper ${data.colorClass}`;
+            if(i === 0) wrap.classList.add('is-expanded');
+            
+            wrap.innerHTML = `
+                <div class="mobile-card-header">
+                    <div class="mobile-card-icon-mini"><img src="${data.icon}" width="28" alt="Icon"></div>
+                    <div class="mobile-card-title-mini">${data.title}</div>
+                </div>
+                <div class="mobile-card-body">
+                    <div class="mobile-card-content-inner">
+                        <p class="mobile-card-desc">${data.desc}</p>
+                        <div class="mobile-card-image-wrap">
+                            <img src="${data.image}" alt="Pet" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            wrap.addEventListener('click', function() {
+                const wasExpanded = this.classList.contains('is-expanded');
+                document.querySelectorAll('.mobile-card-wrapper').forEach(c => c.classList.remove('is-expanded'));
+                if(!wasExpanded) {
+                    this.classList.add('is-expanded');
+                    // Stagger scroll to allow expansion first
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 400);
+                }
+            });
+            mobileContainer.appendChild(wrap);
+        });
+
+        const cards = desktopContainer.querySelectorAll('.stacked-card');
+        const dots = pagination.querySelectorAll('.slider-dot');
+
+        function getCircularIndex(index) {
+            return ((index % totalCards) + totalCards) % totalCards;
+        }
+
+        function updateSlider() {
+            cards.forEach(c => c.classList.remove('is-active', 'is-prev-1', 'is-prev-2', 'is-next-1', 'is-next-2'));
+            
+            const active = getCircularIndex(activeIndex);
+            const prev1 = getCircularIndex(activeIndex - 1);
+            const prev2 = getCircularIndex(activeIndex - 2);
+            const next1 = getCircularIndex(activeIndex + 1);
+            const next2 = getCircularIndex(activeIndex + 2);
+
+            cards[active].classList.add('is-active');
+            cards[prev1].classList.add('is-prev-1');
+            cards[prev2].classList.add('is-prev-2');
+            cards[next1].classList.add('is-next-1');
+            cards[next2].classList.add('is-next-2');
+
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === active));
+        }
+
+        function goToSlide(i) { activeIndex = i; updateSlider(); }
+        function nextSlide() { activeIndex = getCircularIndex(activeIndex + 1); updateSlider(); }
+        function prevSlide() { activeIndex = getCircularIndex(activeIndex - 1); updateSlider(); }
+
+        document.getElementById('nextBtn').addEventListener('click', nextSlide);
+        document.getElementById('prevBtn').addEventListener('click', prevSlide);
+
+        // Swipe Support
+        let startX = 0;
+        desktopContainer.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, {passive: true});
+        desktopContainer.addEventListener('touchend', e => {
+            const diff = startX - e.changedTouches[0].clientX;
+            if(Math.abs(diff) > 50) diff > 0 ? nextSlide() : prevSlide();
+        }, {passive: true});
+
+        // Initialize
+        updateSlider();
+    })();
+</script>

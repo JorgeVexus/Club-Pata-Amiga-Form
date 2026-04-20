@@ -164,9 +164,7 @@ export default function Paso2Mascota() {
                                     <>
                                         <span className={styles.infoIcon}>⚠️</span>
                                         <p>
-                                            Tu mascota califica como <strong>senior</strong>.
-                                            Después del pago necesitarás subir un certificado veterinario
-                                            dentro de tu cuenta.
+                                            Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙
                                         </p>
                                     </>
                                 ) : (

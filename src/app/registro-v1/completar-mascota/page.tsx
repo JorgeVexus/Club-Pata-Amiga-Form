@@ -314,11 +314,9 @@ export default function CompletarMascota() {
                             <div className={styles.alertBox}>
                                 <span className={styles.alertIcon}>⚕️</span>
                                 <div>
-                                    <strong>Certificado veterinario requerido</strong>
+                                    <strong>Información sobre mascota senior</strong>
                                     <p>
-                                        Como {petData.petName} tiene {petMeta?.ageInYears} años,
-                                        necesitarás subir un certificado veterinario dentro de los
-                                        próximos 15 días para activar la cobertura completa.
+                                        Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙
                                     </p>
                                 </div>
                             </div>

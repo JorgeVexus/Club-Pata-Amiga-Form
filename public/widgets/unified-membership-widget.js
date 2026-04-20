@@ -786,17 +786,15 @@
 
         isSenior(pet) {
             const age = parseInt(pet.age_value) || 0;
-            const type = (pet.type || pet.pet_type || '').toLowerCase();
-            if (type === 'perro' && age >= 7) return true;
-            if (type === 'gato' && age >= 9) return true;
-            return false;
+            const totalMonths = pet.age_unit === 'months' ? age : age * 12;
+            return totalMonths >= 120; // 10+ years
         }
 
         checkMissingDocs(pet) {
             if (!pet) return [];
             const missing = [];
             if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto de tu mascota");
-            if (this.isSenior(pet) && !pet.medical_certificate_url) missing.push("Certificado médico (Senior)");
+            if (this.isSenior(pet) && !pet.medical_certificate_url) missing.push("Información de salud (Senior 10+ años)");
             return missing;
         }
 
@@ -1422,7 +1420,7 @@
 
                             ${isSenior ? `
                                 <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
-                                    <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico (Requerido Senior):</label>
+                                    <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                                     <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
                                         <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
                                         <div class="pata-upload-icon">📄</div>
@@ -1551,7 +1549,7 @@
                                                     <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
                                                     Ver Certificado Médico →
                                                 </a>` : 
-                                                '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Certificado Pendiente de Carga</div>'}
+                                                '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
                                         </div>
                                     ` : ''}
     
@@ -1586,7 +1584,7 @@
                         <h2 class="pata-title" style="margin-bottom: 8px;">tu registro está en revisión</h2>
                         <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 25px;">
                             Sin embargo, aún falta que nos envíes información sobre tu mascota <strong>${pet.name}</strong>. 
-                            ${isSenior ? '<br><span style="color: #7B1FA2; font-weight: 900;">⚠️ Al ser una mascota Senior (10+ años), requerimos su certificado de salud.</span>' : ''}
+                            ${isSenior ? '<br><span style="color: #7B1FA2; font-weight: 900;">Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙</span>' : ''}
                             Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
                         </p>
                         
@@ -1603,7 +1601,7 @@
                             `).join('')}
                             ${isSenior ? `
                                 <div>
-                                    <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Certificado Médico:</label>
+                                    <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                                     <div class="pata-upload-area" id="pata-missing-upload-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
                                         <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-missing-file-cert" style="display:none;">
                                         <div class="pata-upload-icon">📄</div>
@@ -1650,7 +1648,7 @@
                 submitBtn.onclick = async () => {
                     const isSenior = pet.age_value >= 10;
                     if (isSenior && !this.missingPhotosFiles.cert) {
-                        return alert('Por favor sube el certificado veterinario (requerido para mascotas Senior).');
+                        return alert('Por favor sube la información de salud (requerido para mascotas senior 10+ años).');
                     }
 
                     submitBtn.disabled = true;

@@ -140,7 +140,7 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                     <div className={styles.infoBox + ' ' + styles.warning}>
                         <span className={styles.infoIcon}>⚠️</span>
                         <p>
-                            Al ser una mascota senior (10+ años), se solicitará un certificado médico veterinario en los siguientes pasos.
+                            Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙
                         </p>
                     </div>
                 )}
