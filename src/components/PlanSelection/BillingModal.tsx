@@ -29,14 +29,73 @@ export default function BillingModal({ isOpen, onClose, onSave }: BillingModalPr
         email: '',
         taxCertificate: null,
     });
+    const [rfcError, setRfcError] = useState('');
+    const [rfcType, setRfcType] = useState<'physical' | 'moral' | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     if (!isOpen) return null;
 
+    const validateRFC = (rfc: string) => {
+        const cleanRFC = rfc.trim().toUpperCase();
+        if (!cleanRFC) {
+            setRfcError('');
+            setRfcType(null);
+            return;
+        }
+
+        const FISICA_REGEX = /^[A-Z&]{4}[0-9]{6}[A-Z0-9]{3}$/;
+        const MORAL_REGEX = /^[A-Z&]{3}[0-9]{6}[A-Z0-9]{3}$/;
+
+        if (cleanRFC.length === 12) {
+            if (MORAL_REGEX.test(cleanRFC)) {
+                setRfcType('moral');
+                setRfcError('');
+            } else {
+                setRfcType(null);
+                setRfcError('Formato de RFC Persona Moral inválido');
+            }
+        } else if (cleanRFC.length === 13) {
+            if (FISICA_REGEX.test(cleanRFC)) {
+                setRfcType('physical');
+                setRfcError('');
+            } else {
+                setRfcType(null);
+                setRfcError('Formato de RFC Persona Física inválido');
+            }
+        } else {
+            setRfcType(null);
+            if (cleanRFC.length > 0) {
+                setRfcError('El RFC debe tener 12 o 13 caracteres');
+            } else {
+                setRfcError('');
+            }
+        }
+    };
+
+    const handleRFCChange = (val: string) => {
+        const upperVal = val.toUpperCase();
+        setDetails({ ...details, rfc: upperVal, taxRegime: '' });
+        validateRFC(upperVal);
+    };
+
+    const allRegimes = [
+        { id: '601', name: 'General de Ley Personas Morales', type: 'moral' },
+        { id: '603', name: 'Personas Morales con Fines no Lucrativos', type: 'moral' },
+        { id: '605', name: 'Sueldos y Salarios e Ingresos Asimilados a Salarios', type: 'physical' },
+        { id: '606', name: 'Arrendamiento', type: 'physical' },
+        { id: '612', name: 'Personas Físicas con Actividades Empresariales y Profesionales', type: 'physical' },
+        { id: '626', name: 'Régimen Simplificado de Confianza (RESICO)', type: 'physical' },
+    ];
+
+    const filteredRegimes = rfcType 
+        ? allRegimes.filter(r => r.type === rfcType)
+        : allRegimes;
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        if (rfcError || !rfcType) return;
+        
         setIsSubmitting(true);
-        // In a real app, we might upload the file here or pass it to the parent
         onSave(details);
         setIsSubmitting(false);
     };
@@ -60,14 +119,24 @@ export default function BillingModal({ isOpen, onClose, onSave }: BillingModalPr
                     </p>
                     <form id="billing-form" onSubmit={handleSubmit} className={styles.billingForm}>
                         <div className={styles.formGroup}>
-                            <label>RFC *</label>
+                            <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+                                RFC *
+                                {rfcType && (
+                                    <span style={{ fontSize: '0.75rem', color: '#00BBB4', fontWeight: 'bold' }}>
+                                        {rfcType === 'physical' ? 'PERSONA FÍSICA' : 'PERSONA MORAL'}
+                                    </span>
+                                )}
+                            </label>
                             <input
                                 type="text"
                                 required
                                 value={details.rfc}
-                                onChange={(e) => setDetails({ ...details, rfc: e.target.value.toUpperCase() })}
+                                onChange={(e) => handleRFCChange(e.target.value)}
                                 placeholder="ABCD123456XYZ"
+                                maxLength={13}
+                                style={{ borderColor: rfcError ? '#E53E3E' : (rfcType ? '#38A169' : '#E2E8F0') }}
                             />
+                            {rfcError && <span style={{ color: '#E53E3E', fontSize: '0.75rem', marginTop: '4px' }}>{rfcError}</span>}
                         </div>
                         <div className={styles.formGroup}>
                             <label>Nombre o Razón Social *</label>
@@ -94,14 +163,12 @@ export default function BillingModal({ isOpen, onClose, onSave }: BillingModalPr
                                 required
                                 value={details.taxRegime}
                                 onChange={(e) => setDetails({ ...details, taxRegime: e.target.value })}
+                                disabled={!rfcType}
                             >
-                                <option value="">Selecciona...</option>
-                                <option value="601">General de Ley Personas Morales</option>
-                                <option value="603">Personas Morales con Fines no Lucrativos</option>
-                                <option value="605">Sueldos y Salarios</option>
-                                <option value="606">Arrendamiento</option>
-                                <option value="612">Actividades Empresariales y Profesionales</option>
-                                <option value="626">RESICO</option>
+                                <option value="">{rfcType ? 'Selecciona...' : 'Ingresa un RFC válido primero...'}</option>
+                                {filteredRegimes.map(regime => (
+                                    <option key={regime.id} value={regime.id}>{regime.name}</option>
+                                ))}
                             </select>
                         </div>
                         <div className={styles.formGroup}>

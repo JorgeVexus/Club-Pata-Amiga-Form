@@ -121,12 +121,14 @@ export async function savePetsToMemberstack(
 
             // Validar y asignar con valores por defecto
             customFields[`${prefix}-name`] = pet.name || '';
-            customFields[`${prefix}-last-name`] = pet.lastName || '';
             customFields[`${prefix}-type`] = pet.petType || '';
             // Nota: gender se guarda solo en Supabase, no en Memberstack
             customFields[`${prefix}-is-mixed`] = (pet.isMixed ?? false).toString();
             customFields[`${prefix}-breed`] = pet.breed || '';
-            customFields[`${prefix}-breed-size`] = pet.breedSize || '';
+            customFields[`${prefix}-coat-color`] = pet.coatColor || '';
+            customFields[`${prefix}-nose-color`] = pet.noseColor || '';
+            customFields[`${prefix}-eye-color`] = pet.eyeColor || '';
+
             customFields[`${prefix}-age`] = pet.age || '';
             customFields[`${prefix}-exceeds-max-age`] = (pet.exceedsMaxAge ?? false).toString();
             customFields[`${prefix}-is-adopted`] = (pet.isAdopted ?? false).toString();

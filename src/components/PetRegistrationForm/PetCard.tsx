@@ -12,6 +12,7 @@ import FileUpload from '@/components/FormFields/FileUpload';
 import BreedAutocomplete from '@/components/FormFields/BreedAutocomplete';
 import SelectWithInfo from '@/components/FormFields/SelectWithInfo';
 import TextArea from '@/components/FormFields/TextArea';
+import ColorAutocomplete from '@/components/FormFields/ColorAutocomplete';
 import type { PetFormData } from '@/types/pet.types';
 import styles from './PetCard.module.css';
 
@@ -57,23 +58,6 @@ export default function PetCard({
         { value: '15+-años', label: '15+ años', numericAge: 15 },
     ];
 
-    // Opciones de tamaño según tipo de mascota
-    const dogSizeOptions = [
-        { value: 'chica', label: 'Chica (hasta 10kg)' },
-        { value: 'mediana', label: 'Mediana (11-25kg)' },
-        { value: 'grande', label: 'Grande (26-45kg)' },
-        { value: 'gigante', label: 'Gigante (46kg+)' },
-    ];
-
-    const catSizeOptions = [
-        { value: 'chica', label: 'Chica (hasta 4.5kg)' },
-        { value: 'mediana', label: 'Mediana (4.5-7kg)' },
-        { value: 'grande', label: 'Grande (7kg+)' },
-    ];
-
-    // Seleccionar opciones según tipo de mascota
-    const sizeOptions = petData.petType === 'gato' ? catSizeOptions : dogSizeOptions;
-
     // Validar edad senior (Unificado a 10 años para todos)
     useEffect(() => {
         const ageNum = ageOptions.find(opt => opt.value === petData.age)?.numericAge || 0;
@@ -88,8 +72,6 @@ export default function PetCard({
             onUpdate({ ...petData, exceedsMaxAge: false, vetCertificate: null });
         }
     }, [petData.age]);
-
-
 
     // Manejar cambio de raza
     const handleBreedChange = (
@@ -106,6 +88,8 @@ export default function PetCard({
     const handleAgeChange = (value: string) => {
         onUpdate({ ...petData, age: value });
     };
+
+    const petType = petData.petType === 'gato' ? 'gato' : 'perro';
 
     return (
         <div className={styles.petCard}>
@@ -128,7 +112,7 @@ export default function PetCard({
                 {/* Columna Izquierda */}
                 <div className={styles.column}>
                     <TextInput
-                        label="¿Cómo se llama tu peludo?"
+                        label={petType === 'gato' ? '¿Cómo se llama tu michi?' : '¿Cómo se llama tu peludo?'}
                         name={`pet-${petNum}-name`}
                         value={petData.name || ''}
                         onChange={(value) => onUpdate({ ...petData, name: value })}
@@ -137,15 +121,6 @@ export default function PetCard({
                         error={errors[`pet-${petNum}-name`]}
                         required
                     />
-
-                    <TextInput
-                        label="¿Cuál es su apellido?"
-                        name={`pet-${petNum}-lastName`}
-                        value={petData.lastName || ''}
-                        onChange={(value) => onUpdate({ ...petData, lastName: value })}
-                        placeholder="Pérez (opcional)"
-                    />
-
 
                     <RadioGroup
                         label="¿Cuál es su sexo?"
@@ -183,7 +158,7 @@ export default function PetCard({
                         value={petData.isMixed?.toString() || ''}
                         onChange={(value) => {
                             const isMixed = value === 'true';
-                            onUpdate({ ...petData, isMixed });
+                            onUpdate({ ...petData, isMixed, breed: isMixed ? 'Mestizo' : '' });
                         }}
                         helpText="El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
                         error={errors[`pet-${petNum}-mixed`]}
@@ -194,7 +169,7 @@ export default function PetCard({
                         <BreedAutocomplete
                             label="🐕 Raza de tu peludo"
                             name={`pet-${petNum}-breed`}
-                            petType={petData.petType as 'perro' | 'gato'}
+                            petType={petType}
                             value={petData.breed || ''}
                             onChange={handleBreedChange}
                             error={errors[`pet-${petNum}-breed`]}
@@ -202,18 +177,36 @@ export default function PetCard({
                         />
                     )}
 
-                    {petData.petType && (
-                        <SelectWithInfo
-                            label="📏 Tamaño de la raza de tu peludo"
-                            name={`pet-${petNum}-size`}
-                            value={petData.breedSize || ''}
-                            onChange={(value) => onUpdate({ ...petData, breedSize: value as any })}
-                            options={sizeOptions}
-                            infoText="El tamaño ayuda a determinar las necesidades de salud de tu mascota"
-                            error={errors[`pet-${petNum}-size`]}
+                    <div className={styles.physicalAttributes}>
+                        <ColorAutocomplete
+                            label="Color de pelo"
+                            name={`pet-${petNum}-coatColor`}
+                            category="coat"
+                            petType={petType}
+                            value={petData.coatColor || ''}
+                            onChange={(value) => onUpdate({ ...petData, coatColor: value })}
+                            error={errors[`pet-${petNum}-coatColor`]}
                             required
                         />
-                    )}
+
+                        <ColorAutocomplete
+                            label="Color de nariz"
+                            name={`pet-${petNum}-noseColor`}
+                            category="nose"
+                            petType={petType}
+                            value={petData.noseColor || ''}
+                            onChange={(value) => onUpdate({ ...petData, noseColor: value })}
+                        />
+
+                        <ColorAutocomplete
+                            label="Color de ojos"
+                            name={`pet-${petNum}-eyeColor`}
+                            category="eye"
+                            petType={petType}
+                            value={petData.eyeColor || ''}
+                            onChange={(value) => onUpdate({ ...petData, eyeColor: value })}
+                        />
+                    </div>
 
                     <RadioGroup
                         label="¿Tu peludo fue adoptado o rescatado?"
@@ -289,7 +282,7 @@ export default function PetCard({
                             instruction={petData.photo1Url && petData.photo2Url ? "Ya tienes fotos guardadas. Sube nuevas si deseas reemplazarlas." : "Es obligatorio subir una foto de Selfie contigo y tu mascota. Tienes hasta 15 días posteriores para subirla si no la tienes a la mano."}
                             onChange={(files) => onUpdate({ ...petData, photos: files })}
                             error={errors[`pet-${petNum}-photos`]}
-                            required={!(petData.photo1Url && petData.photo1Url)}
+                            required={!(petData.photo1Url || petData.photo1Url)}
                         />
                         {(petData.photo1Url || petData.photo2Url) && (
                             <div style={{ marginTop: '12px', padding: '12px', background: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: '12px' }}>

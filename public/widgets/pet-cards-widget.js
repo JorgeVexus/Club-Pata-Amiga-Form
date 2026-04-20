@@ -501,19 +501,28 @@
 
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
+            // Dates formatting
+            const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            }) : 'No disponible';
+
+            const activationDate = pet.waiting_period_end ? new Date(pet.waiting_period_end).toLocaleDateString('es-MX', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            }) : '---';
+
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
             
             let photoHtml = '';
             if (photos.length > 1) {
                 photoHtml = `
-                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:5px; scrollbar-width: none;">
+                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; scrollbar-width: none;" class="pata-no-scrollbar">
                         ${photos.map(url => `
-                            <img src="${url}" style="width:140px; height:200px; object-fit:cover; border-radius:16px; flex-shrink:0; border:2px solid #f0f0f0;" onerror="this.src='${CONFIG.placeholderDog}';">
+                            <img src="${url}" style="width:180px; height:240px; object-fit:cover; border-radius:24px; flex-shrink:0; border:2px solid #f0f0f0;" onerror="this.src='${CONFIG.placeholderDog}';">
                         `).join('')}
                     </div>`;
             } else {
-                photoHtml = `<img src="${photos[0]}" style="width:100%; height:280px; object-fit:cover; border-radius:20px; display:block;" onerror="this.src='${CONFIG.placeholderDog}';">`;
+                photoHtml = `<img src="${photos[0]}" style="width:100%; height:320px; object-fit:cover; border-radius:28px; display:block;" onerror="this.src='${CONFIG.placeholderDog}';">`;
             }
 
             // Format age
@@ -533,63 +542,80 @@
 
             // Build detail rows
             const detailRows = [
-                { icon: '🐾', label: 'Tipo', value: petTypeDisplay },
+                { icon: '🐾', label: 'Especie', value: petTypeDisplay },
                 { icon: '🎂', label: 'Edad', value: ageDisplay },
-                { icon: '⚧', label: 'Sexo', value: genderDisplay },
+                { icon: '⚧', label: 'Género', value: genderDisplay },
                 { icon: '🏷️', label: 'Raza', value: breedDisplay },
+                { icon: '🎨', label: 'Color Pelo', value: pet.coat_color || 'No especificado' },
+                { icon: '👃', label: 'Color Nariz', value: pet.nose_color || 'No especificado' },
+                { icon: '👁️', label: 'Color Ojos', value: pet.eye_color || 'No especificado' },
+                { icon: '📅', label: 'Ingreso', value: registrationDate },
+                { icon: '🚀', label: 'Activación de tus beneficios', value: activationDate }
             ];
 
-            if (pet.coat_color) detailRows.push({ icon: '🎨', label: 'Color de pelo', value: pet.coat_color });
-
-
-            detailRows.push({ icon: '📅', label: 'Fecha de alta', value: new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' }) });
-
             const detailsHtml = detailRows.map(r => `
-                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid #f0f0f0;">
-                    <span style="color:#888; font-weight:600; font-size:14px;">${r.icon} ${r.label}</span>
-                    <span style="font-weight:700; font-size:14px; color:#1A1A1A; text-align:right; max-width:60%;">${r.value}</span>
+                <div style="display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid #f0f0f0;">
+                    <span style="color:#888; font-weight:700; font-size:14px; display:flex; align-items:center; gap:8px;">
+                        <span style="opacity:0.6;">${r.icon}</span> ${r.label}
+                    </span>
+                    <span style="font-weight:800; font-size:14px; color:#1A1A1A; text-align:right; max-width:60%;">${r.value}</span>
                 </div>
             `).join('');
 
             // Badges
             let badgesHtml = '';
-            if (pet.is_adopted) badgesHtml += `<span style="background:#E8F5E9; color:#2E7D32; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🏠 Adoptado</span>`;
-            if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">🔀 Mestizo</span>`;
+            if (pet.is_adopted) badgesHtml += `<span style="background:#E0F7FA; color:#006064; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🏠 ADOPTADO</span>`;
+            if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🔀 MESTIZO</span>`;
             
             const ageNum = parseInt(pet.age_value) || 0;
-            const isSenior = (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
-            if (isSenior) badgesHtml += `<span style="background:#FCE4EC; color:#C62828; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:700;">👴 Senior</span>`;
+            const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
+            if (isSenior) badgesHtml += `<span style="background:#F3E5F5; color:#7B1FA2; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">👑 SENIOR</span>`;
 
             modal.innerHTML = `
-                <div class="pata-modal-box" style="max-width:580px; max-height:90vh; overflow-y:auto;">
-                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.parentElement.parentElement.remove()">&times;</button>
+                <div class="pata-modal-box" style="max-width:580px; max-height:90vh; overflow-y:auto; padding: 30px;">
+                    <button style="position:absolute; top:20px; right:20px; border:none; background:#000; color:#fff; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; z-index:10; display:flex; align-items:center; justify-content:center; font-weight:900;" onclick="this.parentElement.parentElement.remove()">&times;</button>
 
                     ${photoHtml}
 
-                    <div style="margin-top:20px;">
-                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:5px;">
-                            <span style="background:${status.bg}; color:${status.text}; padding:4px 14px; border-radius:20px; font-size:12px; font-weight:800;">${status.icon} ${status.label}</span>
-                            ${badgesHtml ? `<div style="display:flex; gap:6px; flex-wrap:wrap;">${badgesHtml}</div>` : ''}
+                    <div style="margin-top:25px;">
+                        <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
+                            <span style="background:${status.bg}; color:${status.text}; padding:6px 16px; border-radius:50px; font-size:11px; font-weight:900; letter-spacing:0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                                ${status.icon} ${status.label}
+                            </span>
+                            ${badgesHtml}
                         </div>
 
-                        <h2 style="font-size:32px; margin:10px 0 0 0; font-weight:900; line-height:1.1;">${pet.name}</h2>
-                        <p style="color:#888; font-size:15px; margin:5px 0 20px 0; font-weight:600;">${breedDisplay}</p>
+                        <h2 style="font-size:36px; margin:0; font-weight:900; line-height:1.1; color:#1A1A1A;">${pet.name}</h2>
+                        <p style="color:#00BBB4; font-size:18px; margin:8px 0 25px 0; font-weight:800; display:flex; align-items:center; gap:8px;">
+                            ${breedDisplay}
+                        </p>
 
-                        <div style="background:#F9FAFB; border-radius:16px; padding:5px 20px;">
+                        <div style="background:#FDFDFD; border:2px solid #F0F0F0; border-radius:24px; padding:10px 25px; margin-bottom:25px;">
                             ${detailsHtml}
                         </div>
 
                         ${pet.adoption_story ? `
-                            <div style="margin-top:20px; background:#F0FFF4; border-left:4px solid #38A169; padding:15px 20px; border-radius:0 12px 12px 0;">
-                                <p style="margin:0 0 5px 0; font-weight:700; color:#276749; font-size:14px;">📜 Historia de adopción</p>
-                                <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.adoption_story}</p>
+                            <div style="margin-top:25px; background:#F1F8E9; border-radius:24px; padding:25px; border: 2px solid #C8E6C9;">
+                                <p style="margin:0 0 10px 0; font-weight:900; color:#2E7D32; font-size:12px; text-transform:uppercase; letter-spacing:1px;">📜 Historia de adopción</p>
+                                <p style="margin:0; color:#333; font-size:15px; line-height:1.6; font-weight:600;">${pet.adoption_story}</p>
                             </div>
                         ` : ''}
 
                         ${pet.admin_notes ? `
-                            <div style="margin-top:15px; background:#FFFDE7; border-left:4px solid #FFC107; padding:15px 20px; border-radius:0 12px 12px 0;">
-                                <p style="margin:0 0 5px 0; font-weight:700; color:#5D4037; font-size:14px;">📝 Nota del equipo</p>
-                                <p style="margin:0; color:#555; font-size:14px; line-height:1.5;">${pet.admin_notes}</p>
+                            <div style="margin-top:20px; background:#FFFDE7; border-radius:24px; padding:25px; border: 2px solid #FFF59D;">
+                                <p style="margin:0 0 10px 0; font-weight:900; color:#F57F17; font-size:12px; text-transform:uppercase; letter-spacing:1px;">📝 Notas del equipo</p>
+                                <p style="margin:0; color:#333; font-size:15px; line-height:1.6; font-weight:600;">${pet.admin_notes}</p>
+                            </div>
+                        ` : ''}
+
+                        ${isSenior ? `
+                            <div style="margin-top:25px; background:#E1F5FE; border-radius:24px; padding:25px; border: 2px solid #B3E5FC;">
+                                <p style="margin:0 0 10px 0; font-weight:900; color:#01579B; font-size:12px; text-transform:uppercase; letter-spacing:1px;">🏥 Información Veterinaria</p>
+                                ${pet.vet_certificate_url ? 
+                                    `<a href="${pet.vet_certificate_url}" target="_blank" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#000; font-weight:800; background:#fff; padding:12px 20px; border-radius:15px; border:2px solid #000; box-shadow:4px 4px 0 rgba(0,0,0,0.1); margin-top:10px;">
+                                        <span style="font-size:20px;">📄</span> Ver Certificado Médico →
+                                    </a>` : 
+                                    '<p style="margin:0; color:#D32F2F; font-size:14px; font-weight:800;">⚠️ El certificado médico para este peludo senior está pendiente de revisión.</p>'}
                             </div>
                         ` : ''}
                     </div>

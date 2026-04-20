@@ -1491,6 +1491,10 @@
                 day: 'numeric', month: 'long', year: 'numeric'
             }) : 'No disponible';
 
+            const activationDate = pet.waiting_period_end ? new Date(pet.waiting_period_end).toLocaleDateString('es-MX', {
+                day: 'numeric', month: 'long', year: 'numeric'
+            }) : '---';
+
             // Distinctive Editorial Layout
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal">
@@ -1544,6 +1548,11 @@
                                                 🏠 ADOPTADO
                                             </div>
                                         ` : ''}
+                                        ${pet.is_mixed_breed ? `
+                                            <div style="background: #FFF3E0; color: #EF6C00; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                                🔀 MESTIZO
+                                            </div>
+                                        ` : ''}
                                     </div>
     
                                     <h2 class="pata-editorial-name">${pet.name}</h2>
@@ -1556,8 +1565,12 @@
                                             { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
                                             { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
                                             { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                                            { label: 'Color', value: pet.color || pet.pet_color || pet.coat_color || 'Multicolor', icon: '🎨' },
-                                            { label: 'Ingreso', value: registrationDate, icon: '📅' }
+                                            { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
+                                            { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
+                                            { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
+                                            { label: 'Ingreso', value: registrationDate, icon: '📅' },
+                                            { label: 'Activación de tus beneficios', value: activationDate, icon: '🚀' }
+
                                         ].map(item => `
                                             <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">
                                                 <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
@@ -1568,9 +1581,23 @@
                                         `).join('')}
                                     </div>
     
+                                    ${pet.adoption_story ? `
+                                        <div style="margin-top: 30px; background: #F1F8E9; border: 3px solid #000; padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                            <div style="font-size: 11px; font-weight: 950; color: #2E7D32; text-transform: uppercase; margin-bottom: 8px;">📜 Historia de Adopción</div>
+                                            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.adoption_story}</p>
+                                        </div>
+                                    ` : ''}
+
+                                    ${pet.admin_notes ? `
+                                        <div style="margin-top: 20px; background: #FFF9C4; border: 3px solid #000; padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                            <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">📝 Notas del Equipo</div>
+                                            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.admin_notes}</p>
+                                        </div>
+                                    ` : ''}
+
                                     ${this.isSenior(pet) ? `
-                                        <div style="background: #FFF9C4; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                            <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
+                                        <div style="background: #E1F5FE; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                            <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
                                             ${pet.vet_certificate_url ? 
                                                 `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
                                                     <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
@@ -1591,6 +1618,7 @@
                     </div>
                 </div>
             `;
+        }
         }
 
         renderMissingPhotosView(firstName, pet) {

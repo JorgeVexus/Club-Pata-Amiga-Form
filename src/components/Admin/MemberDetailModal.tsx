@@ -8,7 +8,8 @@ interface Pet {
     id: string;
     name: string;
     breed: string;
-    breed_size: string;
+    breed: string;
+
     gender?: string;
     age_value?: string | number;
     age_unit?: string;
@@ -441,7 +442,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <div className={styles.petInfo}>
                                                 <h4>{pet.name}</h4>
                                                 <div className={styles.petBreed}>
-                                                    {pet.is_mixed_breed ? 'Mestizo' : pet.breed} • {pet.breed_size}
+                                                    {pet.is_mixed_breed ? 'Mestizo' : pet.breed}
+
                                                 </div>
                                             </div>
                                             <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
@@ -491,11 +493,31 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             )}
 
                                             <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>🧬 Tipo</span>
+                                                <span className={styles.detailValue}>
+                                                    {pet.pet_type === 'cat' ? 'Gato' : pet.pet_type === 'dog' ? 'Perro' : pet.pet_type || 'No especificado'}
+                                                </span>
+                                            </div>
+                                            <div className={styles.detailRow}>
                                                 <span className={styles.detailLabel}>📅 Registro</span>
                                                 <span className={styles.detailValue}>
                                                     {new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}
                                                 </span>
                                             </div>
+                                            {pet.vet_certificate_url && (
+                                                <div className={styles.detailRow} style={{ gridColumn: 'span 2' }}>
+                                                    <span className={styles.detailLabel}>⚕️ Certificado Médico</span>
+                                                    <a 
+                                                        href={pet.vet_certificate_url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className={styles.viewDocButton}
+                                                        style={{ display: 'inline-block', marginTop: '4px' }}
+                                                    >
+                                                        Ver Certificado Senior 📄
+                                                    </a>
+                                                </div>
+                                            )}
                                         </div>
 
                                         {/* Adoption Story */}

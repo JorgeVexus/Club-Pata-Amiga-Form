@@ -6,15 +6,18 @@
 export interface PetFormData {
     // Información básica
     name: string;
-    lastName: string;
     petType: 'perro' | 'gato' | string;
     gender: 'macho' | 'hembra' | string;
-    isMixed: boolean;
+    isMixedBreed: boolean;
     breed: string;
-    breedSize: 'pequeño' | 'mediano' | 'grande' | 'gigante' | string;
+    coatColor: string;
+    noseColor?: string;
+    eyeColor?: string;
 
     // Edad
-    age: string;
+    ageValue: number;
+    ageUnit: 'years' | 'months';
+    age: string; // Representación legible "X años"
     exceedsMaxAge: boolean;
     vetCertificate?: File | null;
 

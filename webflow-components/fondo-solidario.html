@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Outfit Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <!-- Fraiche Fallback (Webflow will handle the actual font) -->
+    <style>
+        @font-face {
+            font-family: 'Fraiche';
+            src: local('Fraiche'), local('Fraiche-Regular');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        :root {
+            --color-bg: #BAE53F;
+            --color-blob: rgba(255, 255, 255, 0.2);
+            --color-white: #FFFFFF;
+            --color-text-dark: #2D3748;
+            --color-text-muted: #4A5568;
+            --radius-main: 50px;
+            --font-heading: 'Fraiche', 'Outfit', sans-serif;
+            --font-body: 'Outfit', sans-serif;
+            --transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: #f5f5f5;
+        }
+
+        /* Container Section */
+        .cp-solidario-section {
+            width: 100%;
+            background-color: var(--color-bg);
+            padding: 80px 24px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Background Blobs Animation */
+        .cp-blob {
+            position: absolute;
+            background: var(--color-blob);
+            filter: blur(40px);
+            border-radius: 50%;
+            z-index: 1;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .cp-blob-1 { width: 300px; height: 300px; top: -50px; left: -100px; }
+        .cp-blob-2 { width: 400px; height: 400px; bottom: -100px; right: -150px; animation-duration: 25s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(40px, 60px) rotate(15deg); }
+        }
+
+        .cp-content-wrapper {
+            max-width: 1100px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header Styles */
+        .cp-header {
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+        }
+
+        .cp-en-preparacion {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--color-text-dark);
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .cp-main-title {
+            font-family: var(--font-heading);
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            color: var(--color-white);
+            line-height: 1;
+            margin-bottom: 24px;
+            letter-spacing: -2px;
+        }
+
+        .cp-description {
+            font-size: 1.15rem;
+            color: var(--color-text-dark);
+            max-width: 700px;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        /* Benefits Row */
+        .cp-benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 60px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: var(--transition);
+            transition-delay: 0.2s;
+        }
+
+        .cp-benefit-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .cp-benefit-card:hover {
+            transform: scale(1.03);
+        }
+
+        .cp-icon-circle {
+            width: 90px;
+            height: 90px;
+            background: var(--color-white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .cp-icon-circle img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+        }
+
+        .cp-benefit-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cp-benefit-name {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--color-text-dark);
+            margin-bottom: 2px;
+            line-height: 1.2;
+        }
+
+        .cp-benefit-amount {
+            font-size: 0.95rem;
+            color: var(--color-text-dark);
+            opacity: 0.8;
+        }
+
+        .cp-footer-line {
+            font-size: 1.15rem;
+            color: var(--color-text-dark);
+            margin-bottom: 60px;
+            font-weight: 400;
+        }
+
+        /* White Card - Periodo de Carencia */
+        .cp-carencia-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-main);
+            padding: 2px; /* For the subtle border if needed */
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.08);
+            opacity: 0;
+            transform: scale(0.95);
+            transition: var(--transition);
+            transition-delay: 0.4s;
+        }
+
+        .cp-card-left {
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .cp-card-title {
+            font-family: var(--font-heading);
+            font-size: clamp(2rem, 4vw, 3rem);
+            color: var(--color-text-dark);
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+
+        .cp-card-desc {
+            font-size: 1rem;
+            color: var(--color-text-muted);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .cp-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .cp-check-item {
+            display: flex;
+            gap: 16px;
+        }
+
+        .cp-check-icon {
+            width: 48px;
+            height: 48px;
+            background: #f8fcf0;
+            border: 2px solid var(--color-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .cp-check-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--color-bg);
+        }
+
+        .cp-check-title {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--color-text-dark);
+            margin-bottom: 4px;
+        }
+
+        .cp-check-text {
+            font-size: 0.95rem;
+            color: var(--color-text-muted);
+            line-height: 1.5;
+        }
+
+        .cp-card-right {
+            position: relative;
+            background: #fcfcfc;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .cp-dog-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: bottom right;
+            transform-origin: bottom center;
+            transition: transform 0.6s ease;
+        }
+
+        .cp-carencia-card:hover .cp-dog-img {
+            transform: scale(1.05);
+        }
+
+        /* Show Class for Intersection Observer */
+        .cp-show {
+            opacity: 1 !important;
+            transform: translate(0) scale(1) !important;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 991px) {
+            .cp-solidario-section { padding: 60px 20px; }
+            .cp-carencia-card { grid-template-columns: 1fr; }
+            .cp-card-left { padding: 40px; }
+            .cp-card-right { min-height: 400px; }
+            .cp-benefits-grid { grid-template-columns: 1fr; gap: 24px; }
+        }
+
+        @media (max-width: 767px) {
+            .cp-main-title { font-size: 3.5rem; }
+            .cp-icon-circle { width: 70px; height: 70px; }
+            .cp-icon-circle img { width: 35px; height: 35px; }
+            .cp-card-title { font-size: 2rem; }
+            .cp-benefit-name { font-size: 1rem; }
+            .cp-check-title { font-size: 1.1rem; }
+            .cp-card-left { padding: 30px; }
+        }
+    </style>
+</head>
+<body>
+
+    <section class="cp-solidario-section">
+        <!-- Abstract Shapes -->
+        <div class="cp-blob cp-blob-1"></div>
+        <div class="cp-blob cp-blob-2"></div>
+
+        <div class="cp-content-wrapper">
+            <!-- Header Section -->
+            <header class="cp-header js-animate">
+                <span class="cp-en-preparacion">En preparación</span>
+                <h1 class="cp-main-title">Fondo solidario</h1>
+                <p class="cp-description">
+                    Durante tus primeros meses, tu membresía ayuda a construir el fondo que protege a toda la manada. 
+                    Cuando completes tu periodo de carencia, podrás solicitar apoyo si tu compañero lo necesita.
+                </p>
+            </header>
+
+            <!-- Benefits Row -->
+            <div class="cp-benefits-grid js-animate">
+                <!-- Gastos por enfermedad -->
+                <div class="cp-benefit-card">
+                    <div class="cp-icon-circle">
+                        <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg" alt="Emergencias">
+                    </div>
+                    <div class="cp-benefit-info">
+                        <span class="cp-benefit-name">Gastos por enfermedad o accidente</span>
+                        <span class="cp-benefit-amount">Hasta $3,000 MXN</span>
+                    </div>
+                </div>
+
+                <!-- Vacunación -->
+                <div class="cp-benefit-card">
+                    <div class="cp-icon-circle">
+                        <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/Icon-vacuna_ybuall.svg" alt="Vacuna">
+                    </div>
+                    <div class="cp-benefit-info">
+                        <span class="cp-benefit-name">Vacunación anual</span>
+                        <span class="cp-benefit-amount">Hasta $300 MXN</span>
+                    </div>
+                </div>
+
+                <!-- Fallecimiento -->
+                <div class="cp-benefit-card">
+                    <div class="cp-icon-circle">
+                        <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png" alt="Fallecimiento">
+                    </div>
+                    <div class="cp-benefit-info">
+                        <span class="cp-benefit-name">Apoyo en caso de fallecimiento</span>
+                        <span class="cp-benefit-amount">Hasta $2,000 MXN</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="cp-footer-line js-animate">Así cuidamos juntos, con empatía y responsabilidad.</p>
+
+            <!-- Periodo de Carencia Card -->
+            <div class="cp-carencia-card js-animate">
+                <div class="cp-card-left">
+                    <h2 class="cp-card-title">¿Por qué existe el periodo de carencia?</h2>
+                    <p class="cp-card-desc">
+                        El periodo de carencia nos permite proteger a todos los miembros y asegurar que el fondo se use de forma responsable y solidaria.
+                    </p>
+
+                    <div class="cp-checklist">
+                        <!-- Item 1 -->
+                        <div class="cp-check-item">
+                            <div class="cp-check-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div class="cp-check-content">
+                                <h3 class="cp-check-title">Protege a la comunidad</h3>
+                                <p class="cp-check-text">Garantiza que todos tengamos acceso justo y equitativo al fondo cuando más lo necesitemos.</p>
+                            </div>
+                        </div>
+
+                        <!-- Item 2 -->
+                        <div class="cp-check-item">
+                            <div class="cp-check-icon">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div class="cp-check-content">
+                                <h3 class="cp-check-title">Ya formas parte</h3>
+                                <p class="cp-check-text">Tu perfil y tus peludos ya están en la manada. El tiempo pasa volando y pronto tendrás todo disponible.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cp-card-right">
+                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/69e6abea3b4efea16522cce1_perrito%20fondo.webp" alt="Perrito Pata Amiga" class="cp-dog-img">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scroll Animation Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observerOptions = {
+                threshold: 0.1
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('cp-show');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.js-animate').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
