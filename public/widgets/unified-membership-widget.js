@@ -1016,6 +1016,11 @@
                             Te notificaremos por correo una vez que tu cuenta sea activada.
                         </p>
 
+                        <div style="background: rgba(255,255,255,0.5); border: 2px dashed #00BBB4; padding: 15px; border-radius: 20px; margin-top: 20px; text-align: center;">
+                            <p style="margin:0; font-size: 14px; font-weight: 900; color: #008884;">🛡️ Control total de tu cuenta</p>
+                            <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que puedes <strong>cancelar tu membresía en cualquier momento</strong> desde tu panel sin complicaciones.</p>
+                        </div>
+
                         <div style="text-align: center; margin-top: 30px;">
                             <a href="https://www.pataamiga.mx/beneficios" class="pata-btn pata-btn-conocer">
                                 Conocer beneficios de socio
@@ -1052,6 +1057,11 @@
                             <a href="https://app.pataamiga.mx/registro?reason=complete_payment" class="pata-btn" style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
                                 Seleccionar Plan
                             </a>
+                        </div>
+
+                        <div style="background: rgba(254, 143, 21, 0.1); border: 2px solid #FE8F15; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
+                            <p style="margin:0; font-size: 14px; font-weight: 900; color: #E65100;">✨ Suscríbete con confianza</p>
+                            <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Sin plazos forzosos. <strong>Cancela cuando quieras</strong> con un solo clic.</p>
                         </div>
 
                         <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
@@ -1125,6 +1135,11 @@
                             </a>
                         </div>
 
+                        <div style="background: rgba(0, 187, 180, 0.1); border: 2px solid #00BBB4; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
+                            <p style="margin:0; font-size: 14px; font-weight: 900; color: #008884;">🛡️ Membresía Flexible</p>
+                            <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que tienes el control total: <strong>cancela en cualquier momento</strong> si lo necesitas.</p>
+                        </div>
+
                         <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
                             Este proceso te tomará menos de 2 minutos.
                         </p>
@@ -1185,6 +1200,12 @@
                     <p class="pata-disclaimer">
                         No se hará ningún cargo definitivo hasta que tu solicitud sea aprobada.
                     </p>
+
+                    <div style="background: rgba(255,255,255,0.3); border: 2px dashed rgba(0,0,0,0.1); padding: 12px; border-radius: 15px; margin-top: 15px; text-align: center;">
+                        <p style="margin:0; font-size: 12px; color: #666;">
+                            🔒 Tienes control total: <strong>cancela en cualquier momento</strong> desde tu perfil.
+                        </p>
+                    </div>
 
                     <div style="text-align: center; margin-top: 30px;">
                         <a href="https://www.pataamiga.mx" class="pata-btn pata-btn-conocer">
@@ -1288,6 +1309,12 @@
                         <strong>¿Adoptaste a alguno de tus compañeros?</strong><br>
                         Puedes acelerar tu acceso al fondo. <a href="https://wa.me/525637545068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Contáctanos aquí</a> para validar tus documentos.
                     </div>
+                </div>
+
+                <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); text-align: center;">
+                    <p style="margin:0; font-size: 13px; color: #666;">
+                        Tienes control total sobre tu suscripción. Puedes <strong>cancelar en cualquier momento</strong> desde la configuración de tu cuenta.
+                    </p>
                 </div>
             `;
         }

@@ -95,10 +95,26 @@ export default function Step6Success({ petName, member, userEmail }: Step6Succes
                 }}>
                     El registro de {petName || 'tu mascota'} ha sido completado.
                 </h3>
-                <p className={styles.subtitle} style={{ maxWidth: '400px', margin: '1rem auto' }}>
-                    Nuestro equipo revisará la información y fotos enviadas.
+                <p style={{
+                    fontSize: '1rem',
+                    color: '#718096',
+                    marginTop: '0.5rem',
+                    fontFamily: 'Outfit, sans-serif'
+                }}>
                     Recibirás una notificación una vez que {petName || 'tu mascota'} sea aprobada.
                 </p>
+                <div style={{
+                    marginTop: '2rem',
+                    padding: '1rem',
+                    backgroundColor: '#E6FFFA',
+                    borderRadius: '12px',
+                    border: '1px solid #B2F5EA',
+                    color: '#2C7A7B',
+                    fontWeight: '600',
+                    fontSize: '0.95rem'
+                }}>
+                    ✨ Recuerda: Tienes control total sobre tu membresía. Puedes cancelar en cualquier momento desde tu panel de usuario.
+                </div>
             </div>
 
             <div className={styles.section} style={{ marginTop: '2.5rem' }}>

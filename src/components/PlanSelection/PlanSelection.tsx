@@ -185,7 +185,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             <div className={styles.footerInfo}>
                 <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo solidario.</p>
                 <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado o llegas con código referido).</p>
-                <p>Tu membresía se renovará automáticamente. Cancela cuando quieras</p>
+                <p style={{ fontWeight: '700', color: '#2D3748' }}>Recuerda que puedes cancelar tu membresía en cualquier momento.</p>
             </div>
 
             {/* Terms & Conditions & Consent Section */}
@@ -320,6 +320,16 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
                         </div>
                     </button>
+                    <p style={{ 
+                        fontSize: '0.85rem', 
+                        color: '#718096', 
+                        marginTop: '0.5rem', 
+                        textAlign: 'right',
+                        width: '100%',
+                        fontWeight: '600'
+                    }}>
+                        Cancela en cualquier momento sin compromisos. 🐾
+                    </p>
                 </div>
             </div>
 

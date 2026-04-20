@@ -405,8 +405,32 @@ export default function Step3PlanSelection({
             </div>
 
             <p className={styles.securityNote}>
-                🔒 Pago seguro procesado por Stripe
+                🔒 Pago seguro procesado por Stripe. <strong>Recuerda que puedes cancelar tu membresía en cualquier momento.</strong> 🐾
             </p>
+
+            <div style={{
+                marginTop: '1.5rem',
+                textAlign: 'center',
+                backgroundColor: '#F7FAFC',
+                padding: '1.5rem',
+                borderRadius: '20px',
+                border: '2px dashed #7DD8D5',
+                marginBottom: '1rem'
+            }}>
+                <p style={{
+                    color: '#2D3748',
+                    fontSize: '1rem',
+                    fontWeight: '700',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px'
+                }}>
+                    <span style={{ fontSize: '1.4rem' }}>✨</span>
+                    Transparencia Total: Cancela tu suscripción cuando quieras sin complicaciones.
+                </p>
+            </div>
 
             {skipPaymentEnabled && (
                 <div style={{
