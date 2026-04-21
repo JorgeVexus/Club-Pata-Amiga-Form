@@ -577,17 +577,23 @@
             const hasAnyPhoto = photoSlots.some(url => url && url.startsWith('http'));
             const photoHtml = hasAnyPhoto ? galleryHtml : `<img src="${CONFIG.placeholderDog}" style="width:100%; height:320px; object-fit:cover; border-radius:28px; display:block;">`;
 
+            const typeLower = (pet.type || pet.pet_type || '').toLowerCase();
+            const isCat = typeLower === 'gato' || typeLower === 'cat';
+            const petNickName = isCat ? 'michi' : 'peludo';
+            const petTypeDisplay = isCat ? '🐱 Gato' : '🐶 Perro';
+
             // Alert Box for missing documents
             const statusContext = this.getPetStatusContext(pet);
             let alertHtml = '';
             if (statusContext.isMissingCert || statusContext.isMissingPhotos) {
                 alertHtml = `
                     <div style="background: #FFF9E6; border: 2px solid #FFD000; border-radius: 24px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; align-items: center;">
-                        <div style="font-size: 30px;">⚠️</div>
+                        <div style="font-size: 30px;">✨</div>
                         <div>
-                            <p style="margin: 0; font-weight: 900; color: #D97706; font-size: 14px; text-transform: uppercase;">Acción Requerida</p>
+                            <p style="margin: 0; font-weight: 900; color: #D97706; font-size: 14px; text-transform: uppercase;">¡Casi listo!</p>
                             <p style="margin: 5px 0 0 0; color: #854D0E; font-size: 13px; line-height: 1.4; font-weight: 600;">
-                                Tienes 15 días para subir la documentación faltante (fotos/certificados). De lo contrario, los beneficios de esta mascota serán suspendidos.
+                                Recuerda subir los documentos faltantes para poder seguir protegiendo a tu <strong>${petNickName}</strong>. 
+                                Tienes 15 días para completarlos y mantener todos sus beneficios activos. ¡Gracias por cuidarlo tanto! 🐾
                             </p>
                         </div>
                     </div>
@@ -601,10 +607,6 @@
 
             // Format gender
             const genderDisplay = pet.gender === 'macho' ? '♂ Macho' : pet.gender === 'hembra' ? '♀ Hembra' : 'No especificado';
-
-            // Pet type with icon
-            const typeLower = (pet.type || pet.pet_type || '').toLowerCase();
-            const petTypeDisplay = typeLower === 'gato' || typeLower === 'cat' ? '🐱 Gato' : '🐶 Perro';
 
             // Breed info
             const breedDisplay = pet.is_mixed_breed ? '🔀 Mestizo' : (pet.breed || 'No especificada');
@@ -691,7 +693,7 @@
                                             onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-upload')">
                                         <span class="pata-upload-icon" style="font-size: 40px; margin-bottom: 10px;">📄</span>
                                         <p class="pata-upload-text" style="color: #D97706; font-size: 15px; text-transform: uppercase;">TU CERTIFICADO ESTÁ PENDIENTE DE SUBIR</p>
-                                        <p class="pata-upload-subtext" style="margin-top: 5px;">Tu peludo senior necesita su certificado para activar sus beneficios.</p>
+                                        <p class="pata-upload-subtext" style="margin-top: 5px;">Tu ${petNickName} senior necesita su certificado para activar sus beneficios y que podamos cuidarlo como se merece. ✨</p>
                                     </div>`
                                 }
                             </div>
