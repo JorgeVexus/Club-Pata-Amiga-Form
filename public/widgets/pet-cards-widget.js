@@ -449,16 +449,11 @@
             const ageNum = parseInt(pet.age_value) || 0;
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             
-            // Check for missing photos
-            const photosCount = [
-                pet.photo_url || pet.primary_photo_url,
-                pet.photo2_url,
-                pet.photo3_url,
-                pet.photo4_url,
-                pet.photo5_url
-            ].filter(url => url && url.startsWith('http')).length;
+            // Check for missing photos - ONLY primary photo is mandatory
+            const primaryPhotoUrl = pet.photo_url || pet.primary_photo_url;
+            const hasPrimaryPhoto = primaryPhotoUrl && primaryPhotoUrl.startsWith('http');
 
-            const isMissingPhotos = photosCount < 5;
+            const isMissingPhotos = !hasPrimaryPhoto;
             const isMissingCert = isSenior && !pet.vet_certificate_url;
 
             // Updated status logic: Prioritize missing documentation for UX clarity
@@ -573,9 +568,8 @@
                     }).join('')}
                 </div>`;
 
-            // Display title or primary photo if it's the only one
-            const hasAnyPhoto = photoSlots.some(url => url && url.startsWith('http'));
-            const photoHtml = hasAnyPhoto ? galleryHtml : `<img src="${CONFIG.placeholderDog}" style="width:100%; height:320px; object-fit:cover; border-radius:28px; display:block;">`;
+            // Always show the gallery so users can upload photos even if none are uploaded yet
+            const photoHtml = galleryHtml;
 
             const typeLower = (pet.type || pet.pet_type || '').toLowerCase();
             const isCat = typeLower === 'gato' || typeLower === 'cat';
