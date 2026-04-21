@@ -794,7 +794,7 @@
             if (!pet) return [];
             const missing = [];
             if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto de tu mascota");
-            if (this.isSenior(pet) && !pet.medical_certificate_url) missing.push("Información de salud (Senior 10+ años)");
+            // Certificado médico es opcional, no lo bloqueamos
             return missing;
         }
 
@@ -1148,17 +1148,44 @@
             `;
         }
 
+        renderOptionalDocsBanner(pet) {
+            if (this.isSenior(pet) && !pet.vet_certificate_url) {
+                return `
+                    <div class="pata-alert-banner pata-alert-info" style="background: #F3E5F5; border-color: #7B1FA2; margin-bottom: 20px;">
+                        <span>🩺</span>
+                        <div>
+                            <div class="pata-subtitle" style="color: #7B1FA2; font-size: 14px; margin-bottom: 5px;">Certificado pendiente (Opcional)</div>
+                            <p style="margin:0; font-size:14px; color:#1A1A1A;">Como es un peludito senior (10+ años), puedes subir su certificado médico para agilizar cualquier atención futura.</p>
+                            <div style="margin-top: 15px;">
+                                <button class="pata-btn" id="pata-btn-open-update-cert" data-pet-id="${pet.id}" style="background: #7B1FA2; color: white; padding: 8px 20px; font-size: 14px; font-weight: 900; border-radius: 50px; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                    📎 Subir Certificado
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            return '';
+        }
+
         renderPetContent(pet) {
+            let content = '';
+            
+            // Si falta el certificado y no estamos ya en acción requerida prevemos banner
+            if (pet.status !== 'action_required') {
+                content += this.renderOptionalDocsBanner(pet);
+            }
+
             if (pet.status === 'approved') {
-                return this.renderApprovedContent(pet);
+                return content + this.renderApprovedContent(pet);
             } else if (pet.status === 'rejected') {
-                return this.renderRejectedContent(pet);
+                return content + this.renderRejectedContent(pet);
             } else if (pet.status === 'action_required') {
-                return this.renderActionRequiredContent(pet);
+                return content + this.renderActionRequiredContent(pet);
             } else if (pet.status === 'appealed') {
-                return this.renderAppealedContent(pet);
+                return content + this.renderAppealedContent(pet);
             } else {
-                return this.renderPendingContent(pet);
+                return content + this.renderPendingContent(pet);
             }
         }
 
@@ -1445,7 +1472,7 @@
                                 `).join('')}
                             </div>
 
-                            ${isSenior ? `
+                                ${isSenior ? `
                                 <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
                                     <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                                     <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
@@ -1454,7 +1481,7 @@
                                         <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
                                     </div>
                                 </div>
-                            ` : ''}
+                                ` : ''}
 
                             <div style="margin-top: 25px;">
                                 <label style="font-weight: 800; margin-bottom: 10px; display: block;">Mensaje adicional:</label>
@@ -1701,9 +1728,7 @@
             if (submitBtn) {
                 submitBtn.onclick = async () => {
                     const isSenior = pet.age_value >= 10;
-                    if (isSenior && !this.missingPhotosFiles.cert) {
-                        return alert('Por favor sube la información de salud (requerido para mascotas senior 10+ años).');
-                    }
+                    // El certificado de salud es opcional, incluso para senior, por lo tanto no bloqueamos.
 
                     submitBtn.disabled = true;
                     submitBtn.innerText = 'Subiendo información...';
@@ -1955,7 +1980,19 @@
             if (openUpdateBtn) {
                 openUpdateBtn.onclick = () => {
                     this.showUpdateModal = true;
-                    this.uploadFiles = { photo1: null, photo2: null };
+                    this.uploadFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null, cert: null };
+                    const pet = this.pets[this.currentIndex];
+                    document.body.insertAdjacentHTML('beforeend', this.renderUpdateModal(pet));
+                    this.attachModalEvents();
+                };
+            }
+
+            // 🆕 Abrir modal desde banner opcional
+            const openUpdateCertBtn = document.getElementById('pata-btn-open-update-cert');
+            if (openUpdateCertBtn) {
+                openUpdateCertBtn.onclick = () => {
+                    this.showUpdateModal = true;
+                    this.uploadFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null, cert: null };
                     const pet = this.pets[this.currentIndex];
                     document.body.insertAdjacentHTML('beforeend', this.renderUpdateModal(pet));
                     this.attachModalEvents();
@@ -2013,72 +2050,43 @@
             const submitBtn = document.getElementById('pata-btn-submit-update');
             if (submitBtn) {
                 submitBtn.onclick = async () => {
-                    if (!this.uploadFiles.photo1 && !this.uploadFiles.photo2) {
-                        return alert('Por favor sube al menos una foto.');
+                    const hasFiles = [1, 2, 3, 4, 5].some(num => this.uploadFiles[`photo${num}`]) || this.uploadFiles.cert;
+                    if (!hasFiles) {
+                        return alert('Por favor selecciona al menos un archivo para subir.');
                     }
 
                     submitBtn.disabled = true;
-                    submitBtn.innerText = 'Subiendo fotos...';
+                    submitBtn.innerText = 'Subiendo archivos...';
                     this.uploading = true;
 
                     try {
                         const pet = this.pets[this.currentIndex];
-                        console.log('📤 [WidgetUpdate] Iniciando envío:', {
-                            petId: pet?.id,
-                            petName: pet?.name,
-                            userId: this.member.id,
-                            files: {
-                                photo1: !!this.uploadFiles.photo1,
-                                photo2: !!this.uploadFiles.photo2,
-                                cert: !!this.uploadFiles.cert
-                            }
-                        });
-
-                        let photo1Url = null;
-                        let photo2Url = null;
+                        
+                        let photoUrls = [null, null, null, null, null];
                         let vetCertificateUrl = null;
 
-                        // Subir foto 1
-                        if (this.uploadFiles.photo1) {
-                            console.log('📸 Subiendo Foto 1...');
-                            const formData = new FormData();
-                            formData.append('file', this.uploadFiles.photo1);
-                            formData.append('userId', this.member.id);
-                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
-                                method: 'POST',
-                                body: formData
-                            });
-                            const data = await res.json();
-                            if (data.success) {
-                                photo1Url = data.url;
-                                console.log('✅ Foto 1 subida:', photo1Url);
-                            } else {
-                                throw new Error('Error al subir foto 1: ' + (data.error || 'Error desconocido'));
-                            }
-                        }
-
-                        // Subir foto 2
-                        if (this.uploadFiles.photo2) {
-                            console.log('📸 Subiendo Foto 2...');
-                            const formData = new FormData();
-                            formData.append('file', this.uploadFiles.photo2);
-                            formData.append('userId', this.member.id);
-                            const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
-                                method: 'POST',
-                                body: formData
-                            });
-                            const data = await res.json();
-                            if (data.success) {
-                                photo2Url = data.url;
-                                console.log('✅ Foto 2 subida:', photo2Url);
-                            } else {
-                                throw new Error('Error al subir foto 2: ' + (data.error || 'Error desconocido'));
+                        // Subir fotos
+                        for (let i = 1; i <= 5; i++) {
+                            if (this.uploadFiles[`photo${i}`]) {
+                                submitBtn.innerText = `Subiendo foto ${i}...`;
+                                const formData = new FormData();
+                                formData.append('file', this.uploadFiles[`photo${i}`]);
+                                formData.append('userId', this.member.id);
+                                const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
+                                    method: 'POST',
+                                    body: formData
+                                });
+                                const data = await res.json();
+                                if (data.success) {
+                                    photoUrls[i - 1] = data.url;
+                                } else {
+                                    throw new Error(`Error al subir foto ${i}: ` + (data.error || 'Error desconocido'));
+                                }
                             }
                         }
 
                         // Subir certificado (si aplica)
                         if (this.uploadFiles.cert) {
-                            console.log('📜 Subiendo Certificado...');
                             submitBtn.innerText = 'Subiendo certificado...';
                             const formData = new FormData();
                             formData.append('file', this.uploadFiles.cert);
@@ -2090,7 +2098,6 @@
                             const data = await res.json();
                             if (data.success) {
                                 vetCertificateUrl = data.url;
-                                console.log('✅ Certificado subido:', vetCertificateUrl);
                             } else {
                                 throw new Error('Error al subir certificado: ' + (data.error || 'Error desconocido'));
                             }
@@ -2099,22 +2106,17 @@
                         submitBtn.innerText = 'Guardando...';
                         const message = document.getElementById('pata-update-message')?.value || '';
 
-                        console.log('📡 Llamando a la API de actualización...', {
-                            userId: this.member.id,
-                            photo1Url,
-                            photo2Url,
-                            vetCertificateUrl,
-                            messageLength: message.length
-                        });
-
                         // Actualizar mascota
                         const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 userId: this.member.id,
-                                photo1Url,
-                                photo2Url,
+                                photo1Url: photoUrls[0],
+                                photo2Url: photoUrls[1],
+                                photo3Url: photoUrls[2],
+                                photo4Url: photoUrls[3],
+                                photo5Url: photoUrls[4],
                                 vetCertificateUrl,
                                 message
                             })
