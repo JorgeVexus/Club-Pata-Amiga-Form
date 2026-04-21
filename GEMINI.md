@@ -208,6 +208,7 @@ Variables defined in `src/app/globals.css`:
 - Format: `git commit -m "<type>: <short description>"`
 - Allowed types: feat, fix, refactor, style, chore, docs
 - NEVER execute `git commit` or `git push` without explicit user authorization
+- **MANDATORY**: ALWAYS run `npm run build` or `npm run type-check` BEFORE committing to identify errors.
 - **MANDATORY**: ALWAYS update or create the daily changelog in `changelogs/YYYY-MM-DD.md` after every `git push`, detailing all changes and their impact.
 
 ### Common API Routes
