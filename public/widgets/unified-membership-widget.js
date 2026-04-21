@@ -1619,7 +1619,6 @@
                 </div>
             `;
         }
-        }
 
         renderMissingPhotosView(firstName, pet) {
             const isSenior = pet.age_value >= 10;
