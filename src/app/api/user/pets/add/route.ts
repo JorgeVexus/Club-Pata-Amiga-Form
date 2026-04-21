@@ -203,9 +203,6 @@ export async function POST(request: NextRequest) {
             breed: petData.breed || (petData.isMixed ? 'Mestizo' : ''),
             photo_url: petData.photo1Url,
             photo2_url: petData.photo2Url || null,
-            photo3_url: petData.photo3Url || null,
-            photo4_url: petData.photo4Url || null,
-            photo5_url: petData.photo5Url || null,
             status: 'pending',
             created_at: new Date().toISOString()
         };

@@ -133,12 +133,30 @@ export async function POST(
         }
 
         console.log('📋 Actualizando mascota en DB...', JSON.stringify(updateData));
-
-        // 4. Ejecutar actualización
-        const { error: updateError } = await supabaseAdmin
+        
+        // 4. Ejecutar actualización con manejo de fallback para columnas faltantes
+        let { error: updateError } = await supabaseAdmin
             .from('pets')
             .update(updateData)
             .eq('id', petId);
+            
+        // Si el error es PGRST204 significa que alguna columna no existe (ej. photo3_url)
+        if (updateError && updateError.code === 'PGRST204') {
+            console.warn('⚠️ [PetUpdate] Columnas extendidas no existen. Reintentando sin fotos adicionales...');
+            
+            // Filtrar las columnas que sabemos que podrían faltar
+            const safeUpdateData = { ...updateData };
+            delete safeUpdateData.photo3_url;
+            delete safeUpdateData.photo4_url;
+            delete safeUpdateData.photo5_url;
+            
+            const retryResult = await supabaseAdmin
+                .from('pets')
+                .update(safeUpdateData)
+                .eq('id', petId);
+            
+            updateError = retryResult.error;
+        }
 
         if (updateError) {
             console.error('❌ Error actualizando mascota:', updateError);
