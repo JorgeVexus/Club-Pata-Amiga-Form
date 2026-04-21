@@ -362,7 +362,7 @@ export default function NewRegistrationFlow() {
 
                 // Determinar a qué paso ir (usar el estado actual que ya se cargó en loadSavedState)
                 // Si por alguna razón currentStep es 1 (porque falló la carga), ir al 2
-                const targetStep = currentStep > 1 ? currentStep : 2;
+                const targetStep = (currentStep && currentStep > 1) ? currentStep : 2;
 
                 // Asegurarnos de que el paso esté sincronizado
                 await registerUserInSupabase({
@@ -370,7 +370,7 @@ export default function NewRegistrationFlow() {
                     registration_step: targetStep
                 }, member.id);
 
-                goToStep(currentStep - 1);
+                goToStep(targetStep);
                 setIsLoading(false);
                 return;
             }
@@ -635,7 +635,7 @@ export default function NewRegistrationFlow() {
                 if (updatedMember) setMember(updatedMember);
             }
 
-            setCurrentStep(4);
+            goToStep(4);
             setIsPaymentSuccessTransition(true);
         } catch (error: any) {
             console.error('Error skipping payment:', error);
@@ -804,7 +804,7 @@ export default function NewRegistrationFlow() {
             showToast('¡Registro completado!', 'success');
 
             // En lugar de redirigir, mostramos la pantalla de éxito final
-            setCurrentStep(6);
+            goToStep(6);
         } catch (error: any) {
             console.error('Error en Paso 5:', error);
             showToast(error.message || 'Error guardando mascota', 'error');
@@ -815,13 +815,13 @@ export default function NewRegistrationFlow() {
 
     // Navegación entre pasos
     const handleBack = () => {
-        if (currentStep > 1) {
-            setCurrentStep(prev => prev - 1);
+        if (currentStep && currentStep > 1) {
+            goToStep(currentStep - 1);
         }
     };
 
     // Renderizar paso actual
-    const CurrentStepComponent = STEPS[currentStep - 1]?.component;
+    const CurrentStepComponent = (currentStep !== null && STEPS[currentStep - 1]) ? STEPS[currentStep - 1].component : null;
 
     if (isLoading || currentStep === null) {
         return (
