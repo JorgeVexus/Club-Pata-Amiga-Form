@@ -111,11 +111,12 @@ export default function BreedAutocomplete({
     };
 
     const handleSelectBreed = (breed: Breed) => {
-        setInputValue(breed.name);
+        const displayName = (breed.id === 'mestizo' && petType === 'gato') ? 'Doméstico' : breed.name;
+        setInputValue(displayName);
         setSelectedBreed(breed);
         setShowSuggestions(false);
         onChange(
-            breed.name,
+            displayName,
             breed.has_genetic_issues, // DB usa snake_case
             breed.warning_message,    // DB usa snake_case
             breed.max_age             // DB usa snake_case
@@ -148,19 +149,22 @@ export default function BreedAutocomplete({
 
                 {showSuggestions && suggestions.length > 0 && (
                     <ul className={styles.suggestionsList}>
-                        {suggestions.map((breed, index) => (
-                            <li
-                                key={breed.id}
-                                className={`${styles.suggestionItem} ${index === activeIndex ? styles.active : ''}`}
-                                onClick={() => handleSelectBreed(breed)}
-                                style={{ background: index === activeIndex ? '#f5f5f5' : 'transparent' }} // Fallback style
-                            >
-                                {breed.name}
-                                {breed.has_genetic_issues && (
-                                    <span className={styles.warningIcon}>⚠️</span>
-                                )}
-                            </li>
-                        ))}
+                        {suggestions.map((breed, index) => {
+                            const displayName = (breed.id === 'mestizo' && petType === 'gato') ? 'Doméstico' : breed.name;
+                            return (
+                                <li
+                                    key={breed.id}
+                                    className={`${styles.suggestionItem} ${index === activeIndex ? styles.active : ''}`}
+                                    onClick={() => handleSelectBreed(breed)}
+                                    style={{ background: index === activeIndex ? '#f5f5f5' : 'transparent' }} // Fallback style
+                                >
+                                    {displayName}
+                                    {breed.has_genetic_issues && (
+                                        <span className={styles.warningIcon}>⚠️</span>
+                                    )}
+                                </li>
+                            );
+                        })}
                     </ul>
                 )}
             </div>

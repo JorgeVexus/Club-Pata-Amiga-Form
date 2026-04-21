@@ -442,7 +442,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <div className={styles.petInfo}>
                                                 <h4>{pet.name}</h4>
                                                 <div className={styles.petBreed}>
-                                                    {pet.is_mixed_breed ? 'Mestizo' : pet.breed}
+                                                    {pet.is_mixed_breed 
+                                                        ? (pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo') 
+                                                        : pet.breed}
 
                                                 </div>
                                             </div>
@@ -457,7 +459,11 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         {/* Pet Badges */}
                                         <div className={styles.petBadges}>
                                             {pet.is_adopted && <span className={`${styles.petBadge} ${styles.adopted}`}>🏠 Adoptado</span>}
-                                            {pet.is_mixed_breed && <span className={`${styles.petBadge} ${styles.mixed}`}>🔀 Mestizo</span>}
+                                            {pet.is_mixed_breed && (
+                                                <span className={`${styles.petBadge} ${styles.mixed}`}>
+                                                    🔀 {pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo'}
+                                                </span>
+                                            )}
                                             {pet.is_senior && <span className={`${styles.petBadge} ${styles.senior}`}>👴 Senior</span>}
                                         </div>
 

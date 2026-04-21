@@ -609,7 +609,7 @@
             const genderDisplay = pet.gender === 'macho' ? '♂ Macho' : pet.gender === 'hembra' ? '♀ Hembra' : 'No especificado';
 
             // Breed info
-            const breedDisplay = pet.is_mixed_breed ? '🔀 Mestizo' : (pet.breed || 'No especificada');
+            const breedDisplay = pet.is_mixed_breed ? (isCat ? '🏠 Doméstico' : '🔀 Mestizo') : (pet.breed || 'No especificada');
 
             // Build detail rows
             const detailRows = [
@@ -636,7 +636,7 @@
             // Badges
             let badgesHtml = '';
             if (pet.is_adopted) badgesHtml += `<span style="background:#E0F7FA; color:#006064; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🏠 ADOPTADO</span>`;
-            if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🔀 MESTIZO</span>`;
+            if (pet.is_mixed_breed) badgesHtml += `<span style="background:#FFF3E0; color:#EF6C00; padding:5px 14px; border-radius:20px; font-size:11px; font-weight:800; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">${isCat ? '🏠 DOMÉSTICO' : '🔀 MESTIZO'}</span>`;
             
             const ageNum = parseInt(pet.age_value) || 0;
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
@@ -964,14 +964,14 @@
                     <div class="pata-breed-type-switch">
                         <button type="button" class="pata-switch-btn ${d.breedType==='mestizo'?'active':''}" data-bt="mestizo">
                             ${d.breedType==='mestizo' ? '<span class="pata-switch-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : ''}
-                            Mestizo
+                            ${isGato ? 'Doméstico' : 'Mestizo'}
                         </button>
                         <button type="button" class="pata-switch-btn ${d.breedType==='raza'?'active':''}" data-bt="raza">
                             ${d.breedType==='raza' ? '<span class="pata-switch-icon"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></span>' : ''}
                             Raza
                         </button>
                     </div>
-                    <p style="font-size:11px; color:#A0A0A0; margin-top:-5px;">Selecciona si es mestizo o de raza definida</p>
+                    <p style="font-size:11px; color:#A0A0A0; margin-top:-5px;">Selecciona si es ${isGato ? 'doméstico' : 'mestizo'} o de raza definida</p>
                 </div>
 
                 <div class="pata-form-group" id="breed-group" style="display:${d.breedType==='raza'?'block':'none'}">
@@ -1094,7 +1094,7 @@
                     if (d.breedType === 'raza') {
                         d.breed = ''; // Reset breed name to pick a new one
                     } else {
-                        d.breed = 'Mestizo';
+                        d.breed = isGato ? 'Doméstico' : 'Mestizo';
                     }
                     
                     this.saveStep2Fields();
@@ -1270,15 +1270,19 @@
             const show = (q) => {
                 const list = this.breedsCache[type] || [];
                 const filtered = q ? list.filter(b => b.name.toLowerCase().includes(q.toLowerCase())).slice(0,10) : list.slice(0,8);
-                suggestions.innerHTML = filtered.map(b => `<div class="pata-breed-suggestion" data-name="${b.name}" data-warning="${b.warning_message||''}">${b.name}</div>`).join('');
+                suggestions.innerHTML = filtered.map(b => {
+                const displayName = (b.id === 'mestizo' && type === 'gato') ? 'Doméstico' : b.name;
+                    return `<div class="pata-breed-suggestion" data-id="${b.id}" data-name="${b.name}" data-warning="${b.warning_message||''}">${displayName}</div>`;
+                }).join('');
                 suggestions.classList.add('active');
             };
 
             suggestions.onclick = (e) => {
                 const item = e.target.closest('.pata-breed-suggestion');
                 if (item) {
-                    input.value = item.dataset.name;
-                    this.addFormData.breed = item.dataset.name;
+                    const displayName = item.innerText.trim();
+                    input.value = displayName;
+                    this.addFormData.breed = displayName;
                     suggestions.classList.remove('active');
                     if (item.dataset.warning) {
                         warning.innerHTML = item.dataset.warning;
@@ -1380,7 +1384,7 @@
                         ageValue: parseInt(d.ageValue),
                         ageUnit: d.ageUnit,
                         gender: d.gender,
-                        breed: d.isMixed ? 'Mestizo' : d.breed,
+                        breed: d.isMixed ? (d.petType === 'gato' ? 'Doméstico' : 'Mestizo') : d.breed,
                         isMixed: d.isMixed,
                         coatColor: d.coatColor,
                         noseColor: d.noseColor,

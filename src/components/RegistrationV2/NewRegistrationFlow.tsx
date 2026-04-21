@@ -111,6 +111,7 @@ export default function NewRegistrationFlow() {
                 }
 
                 if (window.$memberstackDom) {
+                    console.log('🔍 Inicializando Memberstack...');
                     const { data: currentMember } = await window.$memberstackDom.getCurrentMember();
 
                     if (currentMember) {
@@ -226,17 +227,46 @@ export default function NewRegistrationFlow() {
 
                         // Caso especial: Recuperación de pago (desde email o Stripe back)
                         const paymentStatus = currentMember.customFields?.['payment-status'];
+                        const isPaymentSuccess = searchParams.get('payment') === 'success';
+
+                        console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, finalStep, msStep, dbStep });
+
                         if (isRecovery && finalStep < 3) {
                             finalStep = 3;
                         }
 
-                        if (paymentStatus === 'completed' && finalStep < 4) {
+                        // Si hay éxito en el pago (por URL o por Memberstack), forzar paso 4
+                        if ((isPaymentSuccess || paymentStatus === 'completed') && finalStep < 4) {
+                            console.log('💰 Pago detectado, avanzando al paso 4');
                             finalStep = 4;
+
+                            // Si venimos específicamente de la URL de éxito, activamos la animación de confeti/éxito
+                            if (isPaymentSuccess) {
+                                setIsPaymentSuccessTransition(true);
+                            }
+
+                            // Sincronización preventiva: si la URL dice éxito pero Memberstack no, actualizamos Memberstack
+                            if (isPaymentSuccess && paymentStatus !== 'completed') {
+                                console.log('🔄 Sincronizando estado de pago (URL success -> MS/DB)');
+                                window.$memberstackDom.updateMember({
+                                    customFields: {
+                                        'payment-status': 'completed',
+                                        'registration-step': 4
+                                    }
+                                });
+                                saveProgress(4, loadedData);
+                            }
                         }
 
                         console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}) -> Paso Actual(${finalStep})`);
                         goToStep(finalStep, true); // replaceState para el paso inicial
+                    } else {
+                        console.log('👤 No hay sesión activa de Memberstack, iniciando en paso 1');
+                        goToStep(1, true);
                     }
+                } else {
+                    console.warn('⚠️ Memberstack no se cargó correctamente, iniciando en paso 1');
+                    goToStep(1, true);
                 }
             } catch (error) {
                 console.error('Error loading saved state:', error);

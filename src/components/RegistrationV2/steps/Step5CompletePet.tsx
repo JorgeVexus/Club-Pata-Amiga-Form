@@ -30,6 +30,8 @@ interface Step5CompletePetProps {
 
 export default function Step5CompletePet({ data, onNext, showToast }: Step5CompletePetProps) {
     const petBasic = data?.petBasic;
+    const petType = petBasic?.petType === 'gato' ? 'gato' : 'perro';
+    
     const isSenior = petBasic?.petAgeUnit === 'years'
         ? petBasic?.petAge >= 10
         : Math.floor(petBasic?.petAge / 12) >= 10;
@@ -57,7 +59,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
     useEffect(() => {
         if (data?.petComplete && !isLoaded) {
             const pet = data.petComplete;
-            const isMixed = pet.isMixedBreed || pet.breed === 'Mestizo';
+            const isMixed = pet.isMixedBreed || pet.breed === 'Mestizo' || pet.breed === 'Doméstico';
 
             setFormData(prev => ({
                 ...prev,
@@ -103,7 +105,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         if (type === 'mestizo') {
             setFormData(prev => ({
                 ...prev,
-                breed: 'Mestizo',
+                breed: petType === 'gato' ? 'Doméstico' : 'Mestizo',
                 isMixedBreed: true
             }));
         } else {
@@ -139,8 +141,6 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         await onNext(formData);
         setIsLoading(false);
     };
-
-    const petType = petBasic?.petType === 'gato' ? 'gato' : 'perro';
 
     return (
         <div className={styles.stepCard}>
@@ -191,7 +191,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                         </svg>
                                     </span>
                                 )}
-                                Mestizo
+                                {petType === 'gato' ? 'Doméstico' : 'Mestizo'}
                             </button>
                             <button
                                 type="button"
@@ -209,7 +209,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                             </button>
                         </div>
                         <p className={styles.helpText}>
-                            Selecciona si tu mascota es mestiza o de raza definida
+                            Selecciona si tu mascota es {petType === 'gato' ? 'doméstica' : 'mestiza'} o de raza definida
                         </p>
                     </div>
 
@@ -224,7 +224,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                 setFormData({
                                     ...formData,
                                     breed: value,
-                                    isMixedBreed: value === 'Mestizo'
+                                    isMixedBreed: value === 'Mestizo' || value === 'Doméstico'
                                 });
                             }}
                             error={errors.breed}

@@ -16,7 +16,7 @@ const DOG_BREEDS = [
     { id: 'beagle', name: 'Beagle', type: 'dog' },
     { id: 'poodle', name: 'Poodle', type: 'dog' },
     { id: 'boxer', name: 'Boxer', type: 'dog' },
-    { id: 'mestizo', name: 'Mestizo (Sin raza definida)', type: 'dog' },
+    { id: 'mestizo', name: 'Mestizo', type: 'dog' },
     { id: 'otro', name: 'Otra raza', type: 'dog' }
 ];
 
@@ -29,7 +29,7 @@ const CAT_BREEDS = [
     { id: 'ragdoll', name: 'Ragdoll', type: 'cat' },
     { id: 'sphynx', name: 'Sphynx (Sin pelo)', type: 'cat' },
     { id: 'angora', name: 'Angora Turco', type: 'cat' },
-    { id: 'mestizo', name: 'Mestizo (Sin raza definida)', type: 'cat' },
+    { id: 'mestizo', name: 'Doméstico', type: 'cat' },
     { id: 'otro', name: 'Otra raza', type: 'cat' }
 ];
 

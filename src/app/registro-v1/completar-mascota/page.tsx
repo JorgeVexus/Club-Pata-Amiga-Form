@@ -193,8 +193,16 @@ export default function CompletarMascota() {
                                         isMixedBreed: value === 'mestizo'
                                     });
                                 }}
-                                options={breedOptions}
-                                infoText="Selecciona 'Mestizo' si no tiene raza definida"
+                                options={breedOptions.map(opt => {
+                                    if (opt.value === 'mestizo') {
+                                        return { ...opt, label: petData.petType === 'gato' ? 'Doméstico' : 'Mestizo' };
+                                    }
+                                    return opt;
+                                })}
+                                infoText={petData.petType === 'gato' 
+                                    ? "Selecciona 'Doméstico' si no tiene raza definida"
+                                    : "Selecciona 'Mestizo' si no tiene raza definida"
+                                }
                                 error={errors.breed}
                                 required
                             />

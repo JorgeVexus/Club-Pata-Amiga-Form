@@ -152,15 +152,22 @@ export default function PetCard({
                         label="¿De qué raza es tu peludo?"
                         name={`pet-${petNum}-mixed`}
                         options={[
-                            { value: 'true', label: 'Mestizo/Doméstico' },
+                            { value: 'true', label: petData.petType === 'gato' ? 'Doméstico' : 'Mestizo' },
                             { value: 'false', label: 'Raza' },
                         ]}
                         value={petData.isMixedBreed?.toString() || ''}
                         onChange={(value) => {
                             const isMixed = value === 'true';
-                            onUpdate({ ...petData, isMixedBreed: isMixed, breed: isMixed ? 'Mestizo' : '' });
+                            onUpdate({ 
+                                ...petData, 
+                                isMixedBreed: isMixed, 
+                                breed: isMixed ? (petData.petType === 'gato' ? 'Doméstico' : 'Mestizo') : '' 
+                            });
                         }}
-                        helpText="El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
+                        helpText={petData.petType === 'gato' 
+                            ? "El amor no tiene raza. Los domésticos son bienvenidos con los brazos abiertos"
+                            : "El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
+                        }
                         error={errors[`pet-${petNum}-mixed`]}
                         required
                     />
