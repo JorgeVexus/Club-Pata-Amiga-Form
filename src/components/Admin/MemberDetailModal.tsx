@@ -300,10 +300,6 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 </span>
                             </div>
                             <div className={styles.field}>
-                                <span className={styles.label}>Género</span>
-                                <span className={styles.value}>{fields['gender'] || supabaseUser?.gender || '-'}</span>
-                            </div>
-                            <div className={styles.field}>
                                 <span className={styles.label}>Fecha de Nacimiento</span>
                                 <span className={styles.value}>{fields['birth-date'] || supabaseUser?.birth_date || '-'}</span>
                             </div>
@@ -319,7 +315,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Correo Electrónico</span>
-                                <span className={styles.value}>{member.email}</span>
+                                <span className={styles.value}>{member.auth?.email || member.email || supabaseUser?.email || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Teléfono</span>
@@ -329,6 +325,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 <span className={styles.label}>Fecha de Registro</span>
                                 <span className={styles.value}>
                                     {fields['registration-date'] ? new Date(fields['registration-date']).toLocaleDateString('es-MX', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }) : supabaseUser?.created_at ? new Date(supabaseUser.created_at).toLocaleDateString('es-MX', {
                                         day: '2-digit',
                                         month: 'long',
                                         year: 'numeric'
