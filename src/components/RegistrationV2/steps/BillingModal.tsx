@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import styles from './steps.module.css';
+import { validateRFC, formatRFC } from '@/utils/rfc-validator';
 
 interface BillingData {
     rfc: string;
@@ -32,37 +33,28 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
 
     if (!isOpen) return null;
 
-    const validateRFC = (rfc: string) => {
-        const cleanRFC = rfc.trim().toUpperCase();
+    const validateRFCLocal = (rfc: string) => {
+        const cleanRFC = formatRFC(rfc);
         if (!cleanRFC) {
             setRfcError('');
             setRfcType(null);
             return;
         }
 
-        const FISICA_REGEX = /^[A-Z&]{4}[0-9]{6}[A-Z0-9]{3}$/;
-        const MORAL_REGEX = /^[A-Z&]{3}[0-9]{6}[A-Z0-9]{3}$/;
+        const result = validateRFC(cleanRFC);
+        
+        // Always try to detect type based on length for better UX
+        if (cleanRFC.length === 12) setRfcType('moral');
+        else if (cleanRFC.length === 13) setRfcType('physical');
+        else if (cleanRFC.length < 12) setRfcType(null);
 
-        if (cleanRFC.length === 12) {
-            if (MORAL_REGEX.test(cleanRFC)) {
-                setRfcType('moral');
-                setRfcError('');
-            } else {
-                setRfcType(null);
-                setRfcError('Formato de RFC Persona Moral inválido');
-            }
-        } else if (cleanRFC.length === 13) {
-            if (FISICA_REGEX.test(cleanRFC)) {
-                setRfcType('physical');
-                setRfcError('');
-            } else {
-                setRfcType(null);
-                setRfcError('Formato de RFC Persona Física inválido');
-            }
+        if (result.isValid) {
+            setRfcType(result.type || null);
+            setRfcError('');
         } else {
-            setRfcType(null);
-            if (cleanRFC.length > 0) {
-                setRfcError('El RFC debe tener 12 o 13 caracteres');
+            // Only show error if length is at least the minimum for an RFC
+            if (cleanRFC.length >= 12) {
+                setRfcError(result.error || 'RFC inválido');
             } else {
                 setRfcError('');
             }
@@ -70,9 +62,9 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
     };
 
     const handleRFCChange = (val: string) => {
-        const upperVal = val.toUpperCase();
-        setDetails({ ...details, rfc: upperVal, taxRegime: '' }); // Reset regime when RFC changes
-        validateRFC(upperVal);
+        const formatted = formatRFC(val);
+        setDetails({ ...details, rfc: formatted, taxRegime: '' }); // Reset regime when RFC changes
+        validateRFCLocal(formatted);
     };
 
     const allRegimes = [
@@ -90,7 +82,11 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (rfcError || !rfcType) return;
+        const result = validateRFC(details.rfc);
+        if (!result.isValid) {
+            setRfcError(result.error || 'RFC inválido');
+            return;
+        }
         
         setIsSubmitting(true);
         try {
@@ -120,10 +116,18 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
 
                     <form onSubmit={handleSubmit} className={styles.billingForm}>
                         <div className={styles.formGroup}>
-                            <label style={{ display: 'flex', justifyContent: 'space-between' }}>
+                            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                 RFC *
                                 {rfcType && (
-                                    <span style={{ fontSize: '0.75rem', color: '#00BBB4', fontWeight: 'bold' }}>
+                                    <span style={{ 
+                                        fontSize: '0.65rem', 
+                                        backgroundColor: rfcType === 'physical' ? '#EBF8FF' : '#F0FFF4',
+                                        color: rfcType === 'physical' ? '#2B6CB0' : '#2F855A',
+                                        padding: '2px 8px',
+                                        borderRadius: '10px',
+                                        fontWeight: 'bold',
+                                        border: `1px solid ${rfcType === 'physical' ? '#BEE3F8' : '#C6F6D5'}`
+                                    }}>
                                         {rfcType === 'physical' ? 'PERSONA FÍSICA' : 'PERSONA MORAL'}
                                     </span>
                                 )}
@@ -135,9 +139,17 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                                 onChange={(e) => handleRFCChange(e.target.value)}
                                 placeholder="ABCD123456XYZ"
                                 maxLength={13}
-                                style={{ borderColor: rfcError ? '#E53E3E' : (rfcType ? '#38A169' : '#E2E8F0') }}
+                                style={{ 
+                                    borderColor: rfcError ? '#E53E3E' : (details.rfc.length >= 12 && !rfcError ? '#38A169' : '#E2E8F0'),
+                                    boxShadow: rfcError ? '0 0 0 1px #E53E3E' : (details.rfc.length >= 12 && !rfcError ? '0 0 0 1px #38A169' : 'none'),
+                                    textTransform: 'uppercase'
+                                }}
                             />
-                            {rfcError && <span style={{ color: '#E53E3E', fontSize: '0.75rem', marginTop: '4px' }}>{rfcError}</span>}
+                            {rfcError && (
+                                <span style={{ color: '#E53E3E', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
+                                    {rfcError}
+                                </span>
+                            )}
                         </div>
 
                         <div className={styles.formGroup}>

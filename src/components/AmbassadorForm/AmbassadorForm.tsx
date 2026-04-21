@@ -14,6 +14,7 @@ import Step2AdditionalInfo from './Step2AdditionalInfo';
 import Step3BankingInfo from './Step3BankingInfo';
 import Step4Success from './Step4Success';
 import { trackLead, trackCompleteRegistration, trackSubmitApplication } from '@/components/Analytics/MetaPixel';
+import { validateRFC, formatRFC } from '@/utils/rfc-validator';
 import styles from './AmbassadorForm.module.css';
 
 // Initial values
@@ -268,7 +269,11 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
     };
 
     const handleStep3Change = (field: keyof AmbassadorStep3Data, value: string | boolean) => {
-        setStep3Data(prev => ({ ...prev, [field]: value }));
+        let finalValue = value;
+        if (field === 'rfc' && typeof value === 'string') {
+            finalValue = formatRFC(value);
+        }
+        setStep3Data(prev => ({ ...prev, [field]: finalValue }));
         if (errors[field]) {
             setErrors(prev => {
                 const newErrors = { ...prev };
@@ -338,13 +343,14 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
 
         // 3. Validación de RFC
         if (field === 'rfc' && step3Data.rfc) {
-            const rfc = step3Data.rfc.toUpperCase();
+            const rfc = formatRFC(step3Data.rfc);
+            const rfcValidation = validateRFC(rfc);
 
-            // Regex RFC (Personas Físicas)
-            const rfcRegex = /^([A-ZÑ&]{4})\d{6}([A-Z\d]{3})$/;
-
-            if (!rfcRegex.test(rfc)) {
-                setErrors(prev => ({ ...prev, rfc: 'RFC inválido (Formato persona física)' }));
+            if (!rfcValidation.isValid) {
+                setErrors(prev => ({ 
+                    ...prev, 
+                    rfc: rfcValidation.error || 'RFC inválido' 
+                }));
                 return;
             }
 
@@ -471,8 +477,11 @@ export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preload
 
         if (!step3Data.rfc.trim()) {
             newErrors.rfc = 'El RFC es requerido';
-        } else if (step3Data.rfc.length < 12 || step3Data.rfc.length > 13) {
-            newErrors.rfc = 'RFC inválido (12 o 13 caracteres)';
+        } else {
+            const rfcValidation = validateRFC(step3Data.rfc);
+            if (!rfcValidation.isValid) {
+                newErrors.rfc = rfcValidation.error || 'RFC inválido';
+            }
         }
 
         if (!step3Data.payment_method) {

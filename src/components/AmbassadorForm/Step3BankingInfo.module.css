@@ -77,6 +77,19 @@
     font-weight: 600;
     color: white;
     margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.rfcTypeBadge {
+    font-size: 0.7rem;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 500;
+    color: white;
 }
 
 /* Inputs naranja */

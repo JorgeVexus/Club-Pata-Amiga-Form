@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { AmbassadorStep3Data, PaymentMethod } from '@/types/ambassador.types';
+import { validateRFC } from '@/utils/rfc-validator';
 import HelpSection from '@/components/UI/HelpSection';
 import TermsModal from './TermsModal';
 import styles from './Step3BankingInfo.module.css';
@@ -46,15 +47,26 @@ export default function Step3BankingInfo({ data, onChange, errors, onBlur, onBac
 
                 {/* RFC */}
                 <div className={styles.fieldGroup}>
-                    <label className={styles.groupLabel}>Ingrese su RFC *</label>
+                    <label className={styles.groupLabel}>
+                        Ingrese su RFC *
+                        {data.rfc && !errors.rfc && (
+                            <span className={styles.rfcTypeBadge}>
+                                {validateRFC(data.rfc).type === 'physical' ? '👤 Persona Física' : '🏢 Persona Moral'}
+                            </span>
+                        )}
+                    </label>
                     <input
                         type="text"
                         value={data.rfc}
-                        onChange={(e) => onChange('rfc', e.target.value.toUpperCase())}
+                        onChange={(e) => onChange('rfc', e.target.value)}
                         placeholder="Ejem. ABCD123456EFG"
                         maxLength={13}
                         className={`${styles.orangeInput} ${errors.rfc ? styles.error : ''}`}
                         onBlur={() => onBlur?.('rfc')}
+                        style={{ 
+                            textTransform: 'uppercase',
+                            borderColor: errors.rfc ? '#E53E3E' : (data.rfc && !errors.rfc ? '#38A169' : '')
+                        }}
                     />
                     {errors.rfc && <span className={styles.errorMessage}>{errors.rfc}</span>}
                     <span className={styles.inputHint}>Requerido para emitir tus comprobantes fiscales</span>
