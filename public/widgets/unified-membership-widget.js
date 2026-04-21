@@ -1275,8 +1275,8 @@
                     </div>
 
                     <div style="text-align: center; margin-top: 30px;">
-                        <a href="https://www.pataamiga.mx" class="pata-btn pata-btn-conocer">
-                            Conocer más de pata amiga
+                        <a href="https://www.pataamiga.mx/pets/pet-waiting-period#beneficios" class="pata-btn pata-btn-conocer">
+                            Conoce tus beneficios
                         </a>
                     </div>
                 </div>
@@ -1483,45 +1483,67 @@
         renderUpdateModal(pet) {
             const adminMsg = pet.last_admin_response || 'Por favor actualiza la información solicitada.';
             const isSenior = pet.age_value >= 10;
+            const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
+            const hasCert = !!pet.vet_certificate_url;
+            
+            let uploadFields = '';
+            
+            if (!hasPhoto1) {
+                uploadFields += `
+                    <div style="margin-bottom: 20px;">
+                        <p style="font-weight: 800; font-size: 16px; margin-bottom: 15px;">Sube la foto principal de su álbum:</p>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 200px;">
+                            <div class="pata-form-group">
+                                <div class="pata-upload-area" id="pata-upload-area-1" style="min-height: 120px; border-radius: 20px;">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;">
+                                    <div class="pata-upload-icon" style="font-size: 24px;">📷</div>
+                                    <div class="pata-upload-text" style="font-size: 12px;">Foto Principal</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (isSenior && !hasCert) {
+                uploadFields += `
+                    <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
+                        <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
+                        <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
+                            <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
+                            <div class="pata-upload-icon">📄</div>
+                            <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (hasPhoto1 && (!isSenior || hasCert)) {
+                uploadFields = `
+                    <div style="padding: 20px; background: #E8F5E9; border: 2px solid #4CAF50; border-radius: 20px; text-align: center; margin-bottom: 25px;">
+                        <div style="font-size: 30px; margin-bottom: 10px;">✅</div>
+                        <p style="margin:0; font-size: 16px; font-weight: 800; color: #2E7D32;">¡Documentos completos!</p>
+                        <p style="margin:5px 0 0 0; font-size: 14px; color: #4CAF50;">Ya recibimos la información necesaria para esta etapa.</p>
+                    </div>
+                `;
+            }
 
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
                     <div class="pata-modal" style="max-width: 700px;">
                         <div class="pata-modal-header" style="background: #fff; border-bottom: 2px solid #000;">
-                            <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px;">📸 Actualizar Álbum de ${pet.name}</h3>
+                            <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px;">📸 Actualizar Información de ${pet.name}</h3>
                             <button class="pata-modal-close" id="pata-modal-close">&times;</button>
                         </div>
                         <div class="pata-modal-body" style="padding: 30px;">
-                            <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
-                                <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
-                                <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
-                            </div>
-
-                            <p style="font-weight: 800; font-size: 16px; margin-bottom: 20px;">Sube hasta 5 fotos para su álbum:</p>
-                            
-                            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
-                                ${[1, 2, 3, 4, 5].map(num => `
-                                    <div class="pata-form-group">
-                                        <label style="font-weight: 700; font-size: 12px; margin-bottom: 8px; display: block; color: #666; text-transform: uppercase;">Foto ${num} ${num === 1 ? '*' : '(Opcional)'}</label>
-                                        <div class="pata-upload-area" id="pata-upload-area-${num}" style="min-height: 120px; border-radius: 20px;">
-                                            <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-${num}" style="display:none;">
-                                            <div class="pata-upload-icon" style="font-size: 24px;">📷</div>
-                                            <div class="pata-upload-text" style="font-size: 12px;">${num === 1 ? 'Foto Principal' : 'Añadir'}</div>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-
-                                ${isSenior ? `
-                                <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
-                                    <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
-                                    <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
-                                        <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
-                                        <div class="pata-upload-icon">📄</div>
-                                        <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
-                                    </div>
+                            ${pet.status === 'action_required' ? `
+                                <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
+                                    <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
+                                    <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
                                 </div>
-                                ` : ''}
+                            ` : ''}
+
+                            ${uploadFields}
 
                             <div style="margin-top: 25px;">
                                 <label style="font-weight: 800; margin-bottom: 10px; display: block;">Mensaje adicional:</label>
@@ -1531,7 +1553,7 @@
                         </div>
                         <div class="pata-modal-footer" style="background: #fff; border-top: 2px solid #000; padding: 25px 30px;">
                             <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update" style="border-radius: 50px; padding: 14px 30px;">Cancelar</button>
-                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${this.uploading ? 'disabled' : ''}>
+                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${this.uploading || (hasPhoto1 && (!isSenior || hasCert)) ? 'disabled' : ''}>
                                 ${this.uploading ? 'Enviando...' : 'Guardar Cambios →'}
                             </button>
                         </div>
@@ -1689,6 +1711,11 @@
 
         renderMissingPhotosView(firstName, pet) {
             const isSenior = pet.age_value >= 10;
+            const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
+            const hasCert = !!pet.vet_certificate_url;
+            
+            const needsPhoto1 = !hasPhoto1;
+            const needsCert = isSenior && !hasCert;
 
             return `
                 <div class="pata-external-greeting">
@@ -1705,22 +1732,22 @@
                         <h2 class="pata-title" style="margin-bottom: 8px;">tu registro está en revisión</h2>
                         <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 25px;">
                             Sin embargo, aún falta que nos envíes información sobre tu mascota <strong>${pet.name}</strong>. 
-                            ${isSenior ? '<br><span style="color: #7B1FA2; font-weight: 900;">Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙</span>' : ''}
+                            ${needsCert ? '<br><span style="color: #7B1FA2; font-weight: 900;">Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙</span>' : ''}
                             Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
                         </p>
                         
                         <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
-                            ${[1, 2, 3, 4, 5].map(num => `
+                            ${needsPhoto1 ? `
                                 <div>
-                                    <label style="font-weight: 700; font-size: 13px; margin-bottom: 8px; display: block;">Foto ${num} ${num === 1 ? '*' : '(Opcional)'}:</label>
-                                    <div class="pata-upload-area" id="pata-missing-upload-${num}">
-                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-${num}" style="display:none;">
+                                    <label style="font-weight: 700; font-size: 13px; margin-bottom: 8px; display: block;">Foto Principal *:</label>
+                                    <div class="pata-upload-area" id="pata-missing-upload-1">
+                                        <input type="file" accept="image/*" class="pata-upload-input" id="pata-missing-file-1" style="display:none;">
                                         <div class="pata-upload-icon">📷</div>
-                                        <div class="pata-upload-text">${num === 1 ? 'Foto Principal' : 'Añadir'}</div>
+                                        <div class="pata-upload-text">Foto Principal</div>
                                     </div>
                                 </div>
-                            `).join('')}
-                            ${isSenior ? `
+                            ` : ''}
+                            ${needsCert ? `
                                 <div>
                                     <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                                     <div class="pata-upload-area" id="pata-missing-upload-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
@@ -1733,9 +1760,15 @@
                         </div>
 
                         <div style="text-align: center;">
-                            <button class="pata-btn" id="pata-btn-submit-missing" style="background: #00BBB4; color: white; padding: 18px 60px; font-size: 18px; width: 100%; max-width: 400px; font-weight: 900; border-radius: 50px;">
+                            ${(needsPhoto1 || needsCert) ? `
+                            <button class="pata-btn" id="pata-btn-submit-missing" style="background: #00BBB4; color: white; padding: 18px 60px; font-size: 18px; width: 100%; max-width: 400px; font-weight: 900; border-radius: 50px; margin-bottom: 15px;">
                                 Enviar información →
                             </button>
+                            ` : ''}
+                            <br>
+                            <a href="https://www.pataamiga.mx/pets/pet-waiting-period#beneficios" class="pata-btn pata-btn-conocer" style="display: inline-block; text-decoration: none; background: transparent; color: #00BBB4; border: 2px solid #00BBB4; padding: 18px 60px; font-size: 18px; font-weight: 900; border-radius: 50px; width: 100%; max-width: 400px;">
+                                Conoce tus beneficios
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1759,28 +1792,23 @@
         }
 
         attachMissingPhotosEvents(pet) {
-            [1, 2, 3, 4, 5].forEach(num => {
-                this.setupMissingPhotoUpload(`pata-missing-upload-${num}`, `pata-missing-file-${num}`, `photo${num}`);
-            });
+            this.setupMissingPhotoUpload('pata-missing-upload-1', 'pata-missing-file-1', 'photo1');
             this.setupMissingPhotoUpload('pata-missing-upload-cert', 'pata-missing-file-cert', 'cert');
 
             const submitBtn = document.getElementById('pata-btn-submit-missing');
             if (submitBtn) {
                 submitBtn.onclick = async () => {
                     const isSenior = pet.age_value >= 10;
-                    // El certificado de salud es opcional, incluso para senior, por lo tanto no bloqueamos.
 
                     submitBtn.disabled = true;
                     submitBtn.innerText = 'Subiendo información...';
 
                     try {
-                        let photoUrls = [null, null, null, null, null];
+                        let photo1Url = null;
                         let vetCertificateUrl = null;
 
-                        for (let i = 1; i <= 5; i++) {
-                            if (this.missingPhotosFiles[`photo${i}`]) {
-                                photoUrls[i - 1] = await this.uploadPhoto(this.missingPhotosFiles[`photo${i}`]);
-                            }
+                        if (this.missingPhotosFiles.photo1) {
+                            photo1Url = await this.uploadPhoto(this.missingPhotosFiles.photo1);
                         }
 
                         if (this.missingPhotosFiles.cert) {
@@ -1794,12 +1822,8 @@
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 userId: this.member.id,
-                                photo1Url: photoUrls[0],
-                                photo2Url: photoUrls[1],
-                                photo3Url: photoUrls[2],
-                                photo4Url: photoUrls[3],
-                                photo5Url: photoUrls[4],
-                                vetCertificateUrl,
+                                photo1Url: photo1Url,
+                                vetCertificateUrl: vetCertificateUrl,
                                 message: 'Fotos subidas post-registro' + (isSenior ? ' (incluye certificado senior)' : '')
                             })
                         });
