@@ -1030,7 +1030,7 @@
                     </div>
 
                     <div class="pata-adoption-checkbox-wrapper" id="adoption-toggle">
-                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''}>
+                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="pointer-events: none;">
                         <span class="pata-adoption-checkbox-text">¡Sí, es rescatada / adoptada!</span>
                     </div>
 
@@ -1096,9 +1096,11 @@
                 };
             });
 
-            document.getElementById('adoption-toggle').onclick = () => {
+            document.getElementById('adoption-toggle').onclick = (e) => {
                 const cb = document.getElementById('add-adopted');
-                cb.checked = !cb.checked;
+                if (e.target !== cb) {
+                    cb.checked = !cb.checked;
+                }
                 d.isAdopted = cb.checked;
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
