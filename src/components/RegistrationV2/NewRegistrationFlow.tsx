@@ -70,13 +70,27 @@ interface RegistrationData {
 
 export default function NewRegistrationFlow() {
     const router = useRouter();
-    const [currentStep, setCurrentStep] = useState(1);
+    const [currentStep, setCurrentStep] = useState<number | null>(null); // null mientras carga inicial
     const searchParams = useSearchParams();
     const isRecovery = searchParams.get('reason') === 'complete_payment';
     const [member, setMember] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isPaymentSuccessTransition, setIsPaymentSuccessTransition] = useState(false);
+
+    // Función para cambiar de paso sincronizando con la URL
+    const goToStep = (step: number, replace: boolean = false) => {
+        setCurrentStep(step);
+        if (typeof window !== 'undefined') {
+            const url = new URL(window.location.href);
+            url.searchParams.set('step', step.toString());
+            if (replace) {
+                window.history.replaceState({ step }, '', url.toString());
+            } else {
+                window.history.pushState({ step }, '', url.toString());
+            }
+        }
+    };
 
     // Datos del registro
     const [registrationData, setRegistrationData] = useState<RegistrationData>({});
@@ -196,9 +210,7 @@ export default function NewRegistrationFlow() {
                         // Verificar estado de registro (Comparar Memberstack vs Supabase)
                         const msStep = Number(currentMember.customFields?.['registration-step'] || 1);
                         const dbStep = Number(userData?.registration_step || 1);
-                        const paymentStatus = currentMember.customFields?.['payment-status'];
-
-                        // El paso real es el más avanzado entre los dos (MS o DB)
+                        const urlStep = parseInt(searchParams.get('step') || '0', 10);
                         let finalStep = Math.max(msStep, dbStep);
 
                         // Si ya tiene sesión activa (ya tiene cuenta), saltamos directo al paso 2 mínimo
@@ -206,50 +218,24 @@ export default function NewRegistrationFlow() {
                             finalStep = 2;
                         }
 
-                        // ==========================================
-                        // 🔥 REFUERZO DE PAGO EXITOSO (Stripe Return)
-                        // ==========================================
-                        const isPaymentFromUrl = searchParams.get('payment') === 'success';
-                        
-                        if (isPaymentFromUrl) {
-                            console.log('💰 [Checkout Success] Pago detectado en URL. Forzando Paso 4...');
-                            finalStep = 4;
-                            setIsPaymentSuccessTransition(true);
-                            
-                            // Sincronizar de inmediato para evitar que un refresh nos regrese atrás
-                            registerUserInSupabase({ 
-                                registration_step: 4, 
-                                membership_status: 'pending' 
-                            }, msId).catch((err: any) => console.error('Error sincronizando pago en DB:', err));
-                            
-                            if (window.$memberstackDom) {
-                                window.$memberstackDom.updateMember({
-                                    customFields: {
-                                        'payment-status': 'completed',
-                                        'registration-step': 4,
-                                        'approval-status': 'pending'
-                                    }
-                                }).catch((err: any) => console.error('Error sincronizando pago en MS:', err));
-                            }
-                        } else {
-                            // Regla de negocio normal: Si el servidor ya dice que pagó
-                            if (paymentStatus === 'completed' && finalStep < 4) {
-                                finalStep = 4;
-                            }
-
-                            // NUEVA REGLA: Si NO ha pagado y está en paso 4 o 5 (y no es skip payment), lo regresamos al 3
-                            const isSkipPaymentEnv = window.location.hostname === 'localhost' || skipPaymentEnabled;
-                            if (paymentStatus !== 'completed' && finalStep >= 4 && !isSkipPaymentEnv) {
-                                console.warn('⚠️ Intento de acceso a pasos post-pago sin completar el pago');
-                                finalStep = 3;
-                                setTimeout(() => {
-                                    showToast('Aún no has completado tu pago, inténtalo nuevamente 🐾', 'warning');
-                                }, 500);
-                            }
+                        // Si la URL especifica un paso, lo respetamos siempre que no sea superior al progreso real
+                        // o si es una recuperación de pago
+                        if (urlStep > 0 && urlStep <= 5) {
+                            finalStep = urlStep;
                         }
 
-                        console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}) -> Paso Actual(${finalStep})`);
-                        setCurrentStep(finalStep);
+                        // Caso especial: Recuperación de pago (desde email o Stripe back)
+                        const paymentStatus = currentMember.customFields?.['payment-status'];
+                        if (isRecovery && finalStep < 3) {
+                            finalStep = 3;
+                        }
+
+                        if (paymentStatus === 'completed' && finalStep < 4) {
+                            finalStep = 4;
+                        }
+
+                        console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}) -> Paso Actual(${finalStep})`);
+                        goToStep(finalStep, true); // replaceState para el paso inicial
                     }
                 }
             } catch (error) {
@@ -271,6 +257,25 @@ export default function NewRegistrationFlow() {
 
         loadSavedState();
         fetchSettings();
+    }, []);
+
+    // Escuchar cambios en el historial (botón atrás/adelante del navegador)
+    useEffect(() => {
+        const handlePopState = (event: PopStateEvent) => {
+            if (event.state && typeof event.state.step === 'number') {
+                setCurrentStep(event.state.step);
+            } else {
+                // Fallback: leer de la URL
+                const params = new URLSearchParams(window.location.search);
+                const step = parseInt(params.get('step') || '', 10);
+                if (!isNaN(step)) {
+                    setCurrentStep(step);
+                }
+            }
+        };
+
+        window.addEventListener('popstate', handlePopState);
+        return () => window.removeEventListener('popstate', handlePopState);
     }, []);
 
     const showToast = (message: string, type: 'error' | 'success' | 'warning' = 'error') => {
@@ -365,7 +370,7 @@ export default function NewRegistrationFlow() {
                     registration_step: targetStep
                 }, member.id);
 
-                setCurrentStep(targetStep);
+                goToStep(currentStep - 1);
                 setIsLoading(false);
                 return;
             }
@@ -447,7 +452,7 @@ export default function NewRegistrationFlow() {
             );
 
             setRegistrationData(prev => ({ ...prev, account: data }));
-            setCurrentStep(2);
+            goToStep(2);
             showToast('¡Cuenta creada!', 'success');
 
         } catch (error: any) {
@@ -494,7 +499,7 @@ export default function NewRegistrationFlow() {
             if (updatedMember) setMember(updatedMember);
         }
 
-        setCurrentStep(3);
+        goToStep(3);
     };
 
         // Paso 3: Seleccionar plan y proceder a pago
@@ -536,6 +541,7 @@ export default function NewRegistrationFlow() {
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: planId,
                 successUrl: window.location.origin + '/payment-success',
+                cancelUrl: window.location.href,
                 allow_promotion_codes: false,
                 allowPromotionCodes: false
             });
@@ -595,7 +601,7 @@ export default function NewRegistrationFlow() {
 
                 // Guardar progreso del pago en Supabase
                 await saveProgress(4, completedData);
-                setCurrentStep(4);
+                goToStep(4);
                 setIsPaymentSuccessTransition(true);
             }
         } catch (error: any) {
@@ -669,7 +675,7 @@ export default function NewRegistrationFlow() {
                 );
             }
 
-            setCurrentStep(5);
+            goToStep(5);
             showToast('Perfil completado', 'success');
         } catch (error: any) {
             showToast(error.message || 'Error guardando perfil', 'error');
@@ -817,7 +823,7 @@ export default function NewRegistrationFlow() {
     // Renderizar paso actual
     const CurrentStepComponent = STEPS[currentStep - 1]?.component;
 
-    if (isLoading) {
+    if (isLoading || currentStep === null) {
         return (
             <div className={styles.loadingContainer}>
                 <div className={styles.spinner} />
@@ -895,7 +901,7 @@ export default function NewRegistrationFlow() {
                                         <Step3_5PaymentSuccess
                                             onNext={() => {
                                                 setIsPaymentSuccessTransition(false);
-                                                setCurrentStep(4);
+                                                goToStep(4);
                                                 showToast('¡Pago exitoso! Completa tu perfil.', 'success');
                                             }}
                                         />
