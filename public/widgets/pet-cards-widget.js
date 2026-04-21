@@ -14,7 +14,8 @@
             pending: { bg: '#FFF3E0', text: '#EF6C00', label: 'PENDIENTE', icon: '⏳' },
             rejected: { bg: '#FFEBEE', text: '#C62828', label: 'RECHAZADA', icon: '❌' },
             action_required: { bg: '#E3F2FD', text: '#1565C0', label: 'ACCION REQUERIDA', icon: '⚠️' },
-            appealed: { bg: '#F3E5F5', text: '#7B1FA2', label: 'APELADA', icon: '⚖️' }
+            appealed: { bg: '#F3E5F5', text: '#7B1FA2', label: 'APELADA', icon: '⚖️' },
+            incomplete: { bg: '#FFF9E6', text: '#D97706', label: 'COMPLETAR PERFIL', icon: '⚠️' }
         }
     };
 
@@ -344,6 +345,9 @@
         }
         .pata-upload-box:hover { border-color: #7DD8D5; background: rgba(125, 216, 213, 0.05); }
         .pata-upload-box.has-file { border-style: solid; border-color: #9FD406; background: #F6FFF6; }
+        .pata-upload-box.small { padding: 15px; border-radius: 20px; min-height: 110px; height: 110px; }
+        .pata-upload-box.small .pata-upload-icon { font-size: 20px; margin-bottom: 2px; }
+        .pata-upload-box.small .pata-upload-text { font-size: 10px; }
         .pata-upload-preview { width: 100%; max-height: 120px; object-fit: contain; border-radius: 12px; }
         .pata-upload-icon { font-size: 32px; }
         .pata-upload-text { font-size: 13px; font-weight: 700; color: #4A5568; margin: 0; }
@@ -441,6 +445,43 @@
             }
         }
 
+        getPetStatusContext(pet) {
+            const ageNum = parseInt(pet.age_value) || 0;
+            const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
+            
+            // Check for missing photos
+            const photosCount = [
+                pet.photo_url || pet.primary_photo_url,
+                pet.photo2_url,
+                pet.photo3_url,
+                pet.photo4_url,
+                pet.photo5_url
+            ].filter(url => url && url.startsWith('http')).length;
+
+            const isMissingPhotos = photosCount < 5;
+            const isMissingCert = isSenior && !pet.vet_certificate_url;
+
+            // Updated status logic: Prioritize missing documentation for UX clarity
+            // If it's missing photos or certificate, it should show specific action label regardless of database status
+            if (isMissingCert) {
+                return { ...CONFIG.statusColors.incomplete, label: 'CERTIFICADO PENDIENTE', isMissingCert: true };
+            }
+            if (isMissingPhotos) {
+                return { ...CONFIG.statusColors.incomplete, label: 'COMPLETAR FOTOS', isMissingPhotos: true };
+            }
+
+            // Normal flow statuses
+            if (pet.status === 'pending') {
+                return { ...CONFIG.statusColors.pending, label: 'EN REVISIÓN' };
+            }
+
+            if (pet.status === 'approved') {
+                return { ...CONFIG.statusColors.approved, label: 'APROBADA' };
+            }
+
+            return { ...CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending };
+        }
+
         render() {
             const petCards = this.pets.map((pet, idx) => this.createPetCardHtml(pet, idx + 1)).join('');
             const addCard = this.pets.length < CONFIG.maxPets ? this.createAddCardHtml() : '';
@@ -457,15 +498,15 @@
         }
 
         createPetCardHtml(pet, index) {
-            const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
+            const statusContext = this.getPetStatusContext(pet);
             const msPhotoUrl = this.msFields[`pet-${index}-photo-1-url`];
             const imageUrl = pet.primary_photo_url || pet.photo_url || msPhotoUrl || CONFIG.placeholderDog;
 
             return `
                 <div class="pata-pet-card" onclick="window.ManadaWidget.showDetails('${pet.id}')">
                     <div class="pata-card-photo-wrapper">
-                        <div class="pata-card-overlay-status">
-                            ${status.label}
+                        <div class="pata-card-overlay-status" style="background: ${statusContext.bg}; color: ${statusContext.text};">
+                            ${statusContext.icon} ${statusContext.label}
                         </div>
                         <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}';">
                         <div class="pata-card-overlay-name">${pet.name}</div>
@@ -480,25 +521,13 @@
                     <div class="pata-add-icon-circle">+</div>
                     <h3 class="pata-add-text-title">Agregar otro peludo</h3>
                     <p class="pata-add-text-subtitle">Periodo de carencia de 6 meses</p>
+                </div>
             `;
         }
 
         showDetails(petId) {
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
-            const index = this.pets.indexOf(pet) + 1;
-
-            // Collect up to 5 photos
-            const photos = [
-                pet.photo_url || pet.primary_photo_url,
-                pet.photo2_url,
-                pet.photo3_url,
-                pet.photo4_url,
-                pet.photo5_url
-            ].filter(url => url && url.startsWith('http'));
-
-            if (photos.length === 0) photos.push(CONFIG.placeholderDog);
-
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
             // Dates formatting
@@ -512,17 +541,57 @@
 
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
-            
-            let photoHtml = '';
-            if (photos.length > 1) {
-                photoHtml = `
-                    <div style="display:flex; gap:10px; overflow-x:auto; padding-bottom:10px; scrollbar-width: none;" class="pata-no-scrollbar">
-                        ${photos.map(url => `
-                            <img src="${url}" style="width:180px; height:240px; object-fit:cover; border-radius:24px; flex-shrink:0; border:2px solid #f0f0f0;" onerror="this.src='${CONFIG.placeholderDog}';">
-                        `).join('')}
-                    </div>`;
-            } else {
-                photoHtml = `<img src="${photos[0]}" style="width:100%; height:320px; object-fit:cover; border-radius:28px; display:block;" onerror="this.src='${CONFIG.placeholderDog}';">`;
+
+            // Photo Gallery Logic: Always show 5 slots
+            const photoSlots = [
+                pet.photo_url || pet.primary_photo_url,
+                pet.photo2_url,
+                pet.photo3_url,
+                pet.photo4_url,
+                pet.photo5_url
+            ];
+
+            const galleryHtml = `
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;">
+                    ${photoSlots.map((url, i) => {
+                        const num = i + 1;
+                        if (url && url.startsWith('http')) {
+                            return `
+                                <div style="position: relative; height: 110px; border-radius: 20px; overflow: hidden; border: 2px solid #F0F0F0;">
+                                    <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
+                                    <div style="position: absolute; top: 5px; left: 5px; background: rgba(255,255,255,0.8); padding: 2px 6px; border-radius: 10px; font-size: 8px; font-weight: 800;">FOTO ${num}</div>
+                                </div>`;
+                        } else {
+                            return `
+                                <div class="pata-upload-box small" id="modal-photo-upload-${num}" style="position: relative; overflow: hidden;">
+                                    <input type="file" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
+                                        onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo${num}', this.files[0], 'modal-photo-upload-${num}')">
+                                    <span class="pata-upload-icon">📷</span>
+                                    <span class="pata-upload-text">Subir Foto ${num}</span>
+                                </div>`;
+                        }
+                    }).join('')}
+                </div>`;
+
+            // Display title or primary photo if it's the only one
+            const hasAnyPhoto = photoSlots.some(url => url && url.startsWith('http'));
+            const photoHtml = hasAnyPhoto ? galleryHtml : `<img src="${CONFIG.placeholderDog}" style="width:100%; height:320px; object-fit:cover; border-radius:28px; display:block;">`;
+
+            // Alert Box for missing documents
+            const statusContext = this.getPetStatusContext(pet);
+            let alertHtml = '';
+            if (statusContext.isMissingCert || statusContext.isMissingPhotos) {
+                alertHtml = `
+                    <div style="background: #FFF9E6; border: 2px solid #FFD000; border-radius: 24px; padding: 20px; margin-bottom: 25px; display: flex; gap: 15px; align-items: center;">
+                        <div style="font-size: 30px;">⚠️</div>
+                        <div>
+                            <p style="margin: 0; font-weight: 900; color: #D97706; font-size: 14px; text-transform: uppercase;">Acción Requerida</p>
+                            <p style="margin: 5px 0 0 0; color: #854D0E; font-size: 13px; line-height: 1.4; font-weight: 600;">
+                                Tienes 15 días para subir la documentación faltante (fotos/certificados). De lo contrario, los beneficios de esta mascota serán suspendidos.
+                            </p>
+                        </div>
+                    </div>
+                `;
             }
 
             // Format age
@@ -578,9 +647,11 @@
                     ${photoHtml}
 
                     <div style="margin-top:25px;">
+                        ${alertHtml}
+
                         <div style="display:flex; align-items:center; gap:10px; margin-bottom:15px; flex-wrap:wrap;">
-                            <span style="background:${status.bg}; color:${status.text}; padding:6px 16px; border-radius:50px; font-size:11px; font-weight:900; letter-spacing:0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
-                                ${status.icon} ${status.label}
+                            <span style="background:${statusContext.bg}; color:${statusContext.text}; padding:6px 16px; border-radius:50px; font-size:11px; font-weight:900; letter-spacing:0.5px; box-shadow: 0 2px 6px rgba(0,0,0,0.05);">
+                                ${statusContext.icon} ${statusContext.label}
                             </span>
                             ${badgesHtml}
                         </div>
@@ -615,7 +686,14 @@
                                     `<a href="${pet.vet_certificate_url}" target="_blank" style="display:flex; align-items:center; gap:12px; text-decoration:none; color:#000; font-weight:800; background:#fff; padding:12px 20px; border-radius:15px; border:2px solid #000; box-shadow:4px 4px 0 rgba(0,0,0,0.1); margin-top:10px;">
                                         <span style="font-size:20px;">📄</span> Ver Certificado Médico →
                                     </a>` : 
-                                    '<p style="margin:0; color:#D32F2F; font-size:14px; font-weight:800;">⚠️ El certificado médico para este peludo senior está pendiente de revisión.</p>'}
+                                    `<div class="pata-upload-box" id="modal-vet-upload" style="border-color: #D97706; background: rgba(217, 119, 6, 0.05); cursor: pointer; padding: 25px; min-height: 140px;">
+                                        <input type="file" accept=".pdf,image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;" 
+                                            onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-upload')">
+                                        <span class="pata-upload-icon" style="font-size: 40px; margin-bottom: 10px;">📄</span>
+                                        <p class="pata-upload-text" style="color: #D97706; font-size: 15px; text-transform: uppercase;">TU CERTIFICADO ESTÁ PENDIENTE DE SUBIR</p>
+                                        <p class="pata-upload-subtext" style="margin-top: 5px;">Tu peludo senior necesita su certificado para activar sus beneficios.</p>
+                                    </div>`
+                                }
                             </div>
                         ` : ''}
                     </div>
@@ -1413,7 +1491,11 @@
                 
                 // 2. Prepare payload
                 const updateData = { userId: this.member.id };
+                if (type === 'photo1') updateData.photo1Url = url;
                 if (type === 'photo2') updateData.photo2Url = url;
+                if (type === 'photo3') updateData.photo3Url = url;
+                if (type === 'photo4') updateData.photo4Url = url;
+                if (type === 'photo5') updateData.photo5Url = url;
                 if (type === 'vet') updateData.vetCertificateUrl = url;
 
                 // 3. Update in database
