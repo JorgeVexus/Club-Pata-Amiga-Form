@@ -123,7 +123,7 @@ export async function savePetsToMemberstack(
             customFields[`${prefix}-name`] = pet.name || '';
             customFields[`${prefix}-type`] = pet.petType || '';
             // Nota: gender se guarda solo en Supabase, no en Memberstack
-            customFields[`${prefix}-is-mixed`] = (pet.isMixed ?? false).toString();
+            customFields[`${prefix}-is-mixed`] = (pet.isMixedBreed ?? false).toString();
             customFields[`${prefix}-breed`] = pet.breed || '';
             customFields[`${prefix}-coat-color`] = pet.coatColor || '';
             customFields[`${prefix}-nose-color`] = pet.noseColor || '';

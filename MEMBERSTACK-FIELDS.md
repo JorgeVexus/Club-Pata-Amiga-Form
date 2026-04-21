@@ -236,6 +236,8 @@ Para cada mascota (reemplaza `X` con 1, 2, o 3):
 - **`pet-X-is-mixed`** (Text): Si es mestiza (`true` o `false`)
 - **`pet-X-breed`** (Text): Raza de la mascota
 - **`pet-X-breed-size`** (Text): Tamaño (`pequeño`, `mediano`, `grande`, `gigante`)
+- **`pet-X-nose-color`** (Text): Color de nariz
+- **`pet-X-eye-color`** (Text): Color de ojos
 
 #### Edad y Validación
 
@@ -245,6 +247,7 @@ Para cada mascota (reemplaza `X` con 1, 2, o 3):
 #### Adopción y Documentos
 
 - **`pet-X-is-adopted`** (Text): Si fue adoptada (`true` o `false`)
+- **`pet-X-adoption-story`** (Text): Historia de adopción
 
 #### URLs de Archivos
 

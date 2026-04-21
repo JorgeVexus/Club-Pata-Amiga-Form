@@ -155,17 +155,17 @@ export default function PetCard({
                             { value: 'true', label: 'Mestizo/Doméstico' },
                             { value: 'false', label: 'Raza' },
                         ]}
-                        value={petData.isMixed?.toString() || ''}
+                        value={petData.isMixedBreed?.toString() || ''}
                         onChange={(value) => {
                             const isMixed = value === 'true';
-                            onUpdate({ ...petData, isMixed, breed: isMixed ? 'Mestizo' : '' });
+                            onUpdate({ ...petData, isMixedBreed: isMixed, breed: isMixed ? 'Mestizo' : '' });
                         }}
                         helpText="El amor no tiene raza. Los mestizos son bienvenidos con los brazos abiertos"
                         error={errors[`pet-${petNum}-mixed`]}
                         required
                     />
 
-                    {petData.petType && !petData.isMixed && (
+                    {petData.petType && !petData.isMixedBreed && (
                         <BreedAutocomplete
                             label="🐕 Raza de tu peludo"
                             name={`pet-${petNum}-breed`}

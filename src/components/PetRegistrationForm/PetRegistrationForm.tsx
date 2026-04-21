@@ -109,9 +109,8 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                             name: pet.name || '',
                             petType: pet.pet_type === 'cat' ? 'gato' : 'perro',
                             gender: pet.gender || '',
-                            isMixed: pet.breed === 'Mestizo',
+                            isMixedBreed: pet.breed === 'Mestizo',
                             breed: pet.breed || '',
-                            breedSize: pet.breed_size || '',
                             age: ageKey,
                             // No podemos recuperar los archivos File, solo las URLs
                             photo1Url: pet.photo_url || '',
@@ -262,16 +261,8 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 newErrors[`pet-${petNum}-type`] = 'Selecciona el tipo de mascota';
             }
 
-            if (pet.isMixed === undefined) {
-                newErrors[`pet-${petNum}-mixed`] = 'Indica si es mestizo';
-            }
-
-            if (!pet.isMixed && !pet.breed?.trim()) {
+            if (!pet.isMixedBreed && !pet.breed?.trim()) {
                 newErrors[`pet-${petNum}-breed`] = 'La raza es requerida';
-            }
-
-            if (!pet.breedSize) {
-                newErrors[`pet-${petNum}-size`] = 'El tamaño es requerido';
             }
 
             if (!pet.age) {
@@ -321,7 +312,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
                 const calculation = calculateWaitingPeriod(
                     pet.isOriginal!,
                     pet.isAdopted || false,
-                    pet.isMixed || false
+                    pet.isMixedBreed || false
                 );
 
                 return {

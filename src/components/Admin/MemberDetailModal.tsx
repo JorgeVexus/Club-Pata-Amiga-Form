@@ -8,8 +8,6 @@ interface Pet {
     id: string;
     name: string;
     breed: string;
-    breed: string;
-
     gender?: string;
     age_value?: string | number;
     age_unit?: string;
@@ -24,12 +22,14 @@ interface Pet {
     vet_certificate_url?: string;
     coat_color?: string;
     nose_color?: string;
+    nose_color_code?: string;
     eye_color?: string;
+    eye_color_code?: string;
     is_mixed_breed?: boolean;
     is_adopted?: boolean;
     adoption_story?: string;
     is_senior?: boolean;
-
+    waiting_period_end?: string | null;
     created_at: string;
 }
 
@@ -504,9 +504,21 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     {new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}
                                                 </span>
                                             </div>
+                                            {pet.waiting_period_end && (
+                                                <div className={styles.detailRow} style={{ gridColumn: 'span 2' }}>
+                                                    <span className={styles.detailLabel}>🚀 Activación de beneficios</span>
+                                                    <span className={styles.detailValue} style={{ color: '#0088BD', fontWeight: 600 }}>
+                                                        {new Date(pet.waiting_period_end).toLocaleDateString('es-MX', { 
+                                                            day: '2-digit', 
+                                                            month: 'long', 
+                                                            year: 'numeric' 
+                                                        })}
+                                                    </span>
+                                                </div>
+                                            )}
                                             {pet.vet_certificate_url && (
                                                 <div className={styles.detailRow} style={{ gridColumn: 'span 2' }}>
-                                                    <span className={styles.detailLabel}>⚕️ Certificado Médico</span>
+                                                    <span className={styles.detailLabel}>⚕️ Certificado Médico Senior</span>
                                                     <a 
                                                         href={pet.vet_certificate_url} 
                                                         target="_blank" 
@@ -514,7 +526,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         className={styles.viewDocButton}
                                                         style={{ display: 'inline-block', marginTop: '4px' }}
                                                     >
-                                                        Ver Certificado Senior 📄
+                                                        Descargar Certificado 📄
                                                     </a>
                                                 </div>
                                             )}
