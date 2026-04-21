@@ -197,17 +197,6 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                             />
                             {errors.neighborhood && <span className={styles.errorMessage}>{errors.neighborhood}</span>}
                         </div>
-                        <div className={styles.fieldGroup}>
-                            <input 
-                                type="text" 
-                                placeholder="Calle y numero (int y ext)" 
-                                className={styles.orangeInput}
-                                value={data.address}
-                                onChange={(e) => onChange('address', e.target.value)}
-                            />
-                            <span className={styles.inputHint}>Queremos conocer de donde vienes</span>
-                        </div>
-
                         {/* Email */}
                         <div className={styles.fieldGroup}>
                             <input 

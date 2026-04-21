@@ -296,20 +296,20 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             <div className={styles.field}>
                                 <span className={styles.label}>Nombre Completo</span>
                                 <span className={styles.value}>
-                                    {fields['first-name']} {fields['paternal-last-name']} {fields['maternal-last-name']}
+                                    {fields['first-name'] || supabaseUser?.first_name || '-'} {fields['paternal-last-name'] || supabaseUser?.last_name || ''} {fields['maternal-last-name'] || supabaseUser?.mother_last_name || ''}
                                 </span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Género</span>
-                                <span className={styles.value}>{fields['gender'] || '-'}</span>
+                                <span className={styles.value}>{fields['gender'] || supabaseUser?.gender || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Fecha de Nacimiento</span>
-                                <span className={styles.value}>{fields['birth-date'] || '-'}</span>
+                                <span className={styles.value}>{fields['birth-date'] || supabaseUser?.birth_date || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>CURP</span>
-                                <span className={styles.value}>{fields['curp'] || '-'}</span>
+                                <span className={styles.value}>{fields['curp'] || supabaseUser?.curp || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Nacionalidad</span>
@@ -323,7 +323,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Teléfono</span>
-                                <span className={styles.value}>{fields['phone'] || '-'}</span>
+                                <span className={styles.value}>{fields['phone'] || supabaseUser?.phone || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Fecha de Registro</span>
@@ -343,20 +343,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                         <h3 className={styles.sectionTitle}>Dirección</h3>
                         <div className={styles.grid}>
                             <div className={styles.field}>
-                                <span className={styles.label}>Calle y Número</span>
-                                <span className={styles.value}>{fields['address']}</span>
-                            </div>
-                            <div className={styles.field}>
                                 <span className={styles.label}>Colonia</span>
-                                <span className={styles.value}>{fields['colony']}</span>
+                                <span className={styles.value}>{fields['colony'] || supabaseUser?.colony || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Ciudad/Estado</span>
-                                <span className={styles.value}>{fields['city']}, {fields['state']}</span>
+                                <span className={styles.value}>{(fields['city'] || supabaseUser?.city || '')}, {(fields['state'] || supabaseUser?.state || '')}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Código Postal</span>
-                                <span className={styles.value}>{fields['postal-code']}</span>
+                                <span className={styles.value}>{fields['postal-code'] || supabaseUser?.postal_code || '-'}</span>
                             </div>
                         </div>
                     </div>
