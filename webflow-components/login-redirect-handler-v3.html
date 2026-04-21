@@ -101,6 +101,17 @@
                 }
 
                 logger.log('Redirigiendo a:', redirectUrl);
+
+                // PREVENIR BUCLES: No redirigir si ya estamos en la página de destino
+                const currentUrl = window.location.href.split('?')[0].split('#')[0].replace(/\/$/, '');
+                const targetUrl = redirectUrl.split('?')[0].split('#')[0].replace(/\/$/, '');
+
+                if (currentUrl === targetUrl) {
+                    logger.log('Ya estás en la página de destino, cancelando redirección para evitar bucles.');
+                    hideLoadingMessage();
+                    return true;
+                }
+
                 showLoadingMessage('¡Bienvenido! Redirigiendo...');
 
                 // Redirigir
@@ -215,6 +226,9 @@
         function hideLoadingMessage() {
             const el = document.getElementById('login-redirect-message');
             if (el) el.style.display = 'none';
+            
+            const overlay = document.getElementById('pata-auth-overlay');
+            if (overlay) overlay.style.display = 'none';
         }
 
         // ============================================

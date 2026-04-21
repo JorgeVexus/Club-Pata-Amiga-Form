@@ -77,7 +77,10 @@
                     // TEMPORAL: Permitir acceso al dashboard en pruebas aunque no haya pago
                     logger.log('⚠️ Sin plan activo, pero permitiendo paso (MODO PRUEBA)...');
 
-                    // Cuando actives los pagos, descomenta esta línea:
+                    // Mostrar el dashboard para que el widget muestre el requerimiento de pago
+                    showDashboardContent();
+                    
+                    // Cuando actives los pagos desde este script en lugar del widget, usa:
                     // showPaymentRequiredMessage();
                     return;
                 }
@@ -103,7 +106,7 @@
         // ============================================
         function showDashboardContent() {
             // Ocultar loader
-            const loader = document.querySelector('.loading-screen, [data-loader]');
+            const loader = document.querySelector('.loading-screen, [data-loader], #pata-auth-overlay, #login-redirect-message');
             if (loader) {
                 loader.style.opacity = '0';
                 setTimeout(() => {

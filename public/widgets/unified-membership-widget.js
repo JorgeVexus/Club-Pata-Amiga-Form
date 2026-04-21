@@ -641,6 +641,12 @@
             console.log('🚀 Unified Widget: Starting initialization...');
             this.injectStyles();
 
+            // Asegurar que ocultamos cualquier loader si algo falla o tarda (Fail-safe)
+            this.safetyTimeout = setTimeout(() => {
+                console.log('🛡️ Unified Widget: Safety timeout reached, forcing hide loaders.');
+                this.hideGlobalLoaders();
+            }, 10000);
+
             try {
                 console.log('⏳ Unified Widget: Waiting for Memberstack...');
                 await this.waitForMemberstack();
@@ -648,6 +654,7 @@
                 if (!this.member) {
                     console.warn('⚠️ Unified Widget: No member session found.');
                     this.container.innerHTML = '<!-- Pata Amiga: No member session -->';
+                    this.hideGlobalLoaders();
                     return;
                 }
                 console.log('✅ Unified Widget: Member loaded:', this.member.id);
@@ -672,10 +679,19 @@
                         </div>
                     `;
                     this.container.classList.add('show');
+                    this.hideGlobalLoaders();
                 }
             } catch (err) {
                 console.error('❌ Unified Widget: Critical error during init:', err);
                 this.container.innerHTML = `<div style="color:red; padding:10px; font-size:12px;">Widget Error: ${err.message}</div>`;
+                this.hideGlobalLoaders();
+            } finally {
+                // Si llegamos aquí y no hay mascotas para renderizar de forma normal,
+                // aseguramos que el loader se vaya de todos modos.
+                if (this.pets.length === 0 && !['pending', 'pending_payment', 'payment_processing'].includes(this.membershipStatus)) {
+                    this.hideGlobalLoaders();
+                }
+                if (this.safetyTimeout) clearTimeout(this.safetyTimeout);
             }
         }
 
@@ -847,6 +863,7 @@
                 console.log('💳 Unified Widget: User has not paid. Rendering payment required view.');
                 this.container.innerHTML = this.renderPaymentRequiredView(firstName);
                 this.container.classList.add('show');
+                this.hideGlobalLoaders();
                 return;
             }
 
@@ -855,6 +872,7 @@
                 console.log('⏳ Unified Widget: Payment processing. Rendering processing view.');
                 this.container.innerHTML = this.renderPaymentProcessingView(firstName);
                 this.container.classList.add('show');
+                this.hideGlobalLoaders();
                 return;
             }
 
@@ -878,9 +896,11 @@
                 console.log('⏳ Unified Widget: User status is pending. Rendering global pending view.');
                 this.container.innerHTML = this.renderUserPendingView(firstName);
                 this.container.classList.add('show');
+                this.hideGlobalLoaders();
                 return;
             }
 
+            this.hideGlobalLoaders(); // Safety hide for other states
             const pet = this.pets[this.currentIndex];
             const isApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
             const isRejected = pet?.status === 'rejected' || this.membershipStatus === 'rejected' || this.membershipStatus === 'denied';
@@ -905,10 +925,12 @@
                     console.log('🏁 Unified Widget: User has paid but no pets found. Rendering finish registration view.');
                     this.container.innerHTML = this.renderCompleteRegistrationView(firstName);
                     this.container.classList.add('show');
+                    this.hideGlobalLoaders();
                     return;
                 }
 
                 this.container.innerHTML = `<div class="pata-welcome-title" style="color:white; padding:40px;">Cargando mascotas...</div>`;
+                this.hideGlobalLoaders();
                 return;
             }
 
@@ -1146,6 +1168,24 @@
                     </div>
                 </div>
             `;
+        }
+
+        // 🛡️ NUEVO: Ocultar cualquier loader global de Webflow
+        hideGlobalLoaders() {
+            console.log('🛡️ Unified Widget: hideGlobalLoaders called');
+            const loaders = document.querySelectorAll('.loading-screen, [data-loader], #pata-auth-overlay, #login-redirect-message');
+            loaders.forEach(loader => {
+                loader.style.opacity = '0';
+                loader.style.pointerEvents = 'none'; // Desactivar interacción inmediatamente
+                setTimeout(() => {
+                    loader.style.display = 'none';
+                }, 400);
+                
+                // Fallback agresivo: display none después de 500ms sin transiciones if it's still there
+                setTimeout(() => {
+                    if (loader.style.display !== 'none') loader.style.display = 'none';
+                }, 600);
+            });
         }
 
         renderOptionalDocsBanner(pet) {
