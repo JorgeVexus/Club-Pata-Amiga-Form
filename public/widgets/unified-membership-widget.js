@@ -616,87 +616,102 @@
 
         .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
 
-        /* Benefits Section in Review */
+        /* Benefits Section in Review - Refined Premium Design */
         .pata-benefits-review {
-            margin-top: 35px;
-            padding: 30px;
+            margin-top: 40px;
+            padding: 35px;
             background: #FFFFFF;
-            border-radius: 35px;
+            border-radius: 40px;
             border: 2px solid #E0F2F1;
             text-align: left;
-            box-shadow: 0 10px 30px rgba(0, 187, 180, 0.05);
+            box-shadow: 0 15px 45px rgba(0, 187, 180, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        .pata-benefits-review::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: #00BBB4;
         }
         .pata-benefits-title {
-            font-size: 20px;
-            font-weight: 900;
+            font-size: 22px;
+            font-weight: 950;
             color: #00BBB4;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            text-transform: lowercase;
+            letter-spacing: -0.5px;
         }
         .pata-benefit-card {
             display: flex;
-            gap: 18px;
-            margin-bottom: 25px;
+            gap: 20px;
+            margin-bottom: 30px;
             align-items: flex-start;
-            padding: 15px;
-            border-radius: 25px;
-            transition: all 0.3s ease;
+            padding: 20px;
+            border-radius: 30px;
+            background: #F8FBFF;
+            border: 1px solid #F0F2F5;
+            transition: all 0.4s var(--pata-spring);
         }
         .pata-benefit-card:hover {
-            background: rgba(0, 187, 180, 0.03);
-            transform: translateX(5px);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border-color: #00BBB4;
         }
         .pata-benefit-card:last-child { margin-bottom: 0; }
         .pata-benefit-icon-box {
-            font-size: 24px;
-            background: #F0FEFE;
+            font-size: 28px;
+            background: #FFFFFF;
             color: #00BBB4;
-            width: 50px;
-            height: 50px;
-            border-radius: 18px;
+            width: 56px;
+            height: 56px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
             border: 1px solid #E0F2F1;
+            box-shadow: 0 5px 15px rgba(0, 187, 180, 0.1);
         }
         .pata-benefit-info h4 {
-            margin: 0 0 6px 0;
-            font-size: 17px;
+            margin: 0 0 8px 0;
+            font-size: 19px;
             font-weight: 900;
             color: #1A1A1A;
+            letter-spacing: -0.3px;
         }
         .pata-benefit-info p {
             margin: 0;
-            font-size: 14px;
-            color: #666;
+            font-size: 15px;
+            color: #555;
             line-height: 1.5;
+            font-weight: 500;
         }
-        .pata-bot-speech-bubble {
-            background: #F0FEFE;
-            padding: 16px 20px;
+        .pata-pati-message {
+            margin-top: 15px;
+            padding: 15px 20px;
+            background: #00BBB4;
+            color: #FFFFFF;
             border-radius: 20px;
-            margin-top: 12px;
-            border: 1px solid #B2DFDB;
-            position: relative;
-        }
-        .pata-bot-speech-bubble::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 20px;
-            border-width: 0 10px 10px 10px;
-            border-style: solid;
-            border-color: transparent transparent #B2DFDB transparent;
-        }
-        .pata-bot-message-text {
-            margin: 0;
             font-size: 14px;
-            color: #00796B;
-            font-weight: 600;
+            font-weight: 700;
             line-height: 1.4;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 187, 180, 0.2);
+        }
+        .pata-pati-message::after {
+            content: '🩺';
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            font-size: 20px;
+            opacity: 0.3;
         }
     `;
 
@@ -1121,12 +1136,18 @@
                             Te notificaremos por correo una vez que tu cuenta sea activada.
                         </p>
 
-                        <div style="background: rgba(255,255,255,0.5); border: 2px dashed #00BBB4; padding: 15px; border-radius: 20px; margin-top: 20px; text-align: center;">
+                        ${this.renderInReviewBenefits()}
+
+                        <div style="text-align: center; margin-top: 25px;">
+                            <a href="https://www.pataamiga.mx/pets/pet-waiting-period#beneficios" class="pata-btn pata-btn-conocer" style="display: inline-block; text-decoration: none; background: transparent; color: #00BBB4; border: 2px solid #00BBB4; padding: 18px 60px; font-size: 18px; font-weight: 900; border-radius: 50px; width: 100%; max-width: 400px; transition: all 0.3s ease;">
+                                Conoce tus futuros beneficios
+                            </a>
+                        </div>
+
+                        <div style="background: rgba(255,255,255,0.5); border: 2px dashed #00BBB4; padding: 15px; border-radius: 20px; margin-top: 30px; text-align: center;">
                             <p style="margin:0; font-size: 14px; font-weight: 900; color: #008884;">🛡️ Control total de tu cuenta</p>
                             <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que puedes <strong>cancelar tu membresía en cualquier momento</strong> desde tu panel sin complicaciones.</p>
                         </div>
-
-                        ${this.renderInReviewBenefits()}
                     </div>
                 </div>
             `;
@@ -1241,9 +1262,6 @@
                             <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que tienes el control total: <strong>cancela en cualquier momento</strong> si lo necesitas.</p>
                         </div>
 
-                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
-                            Este proceso te tomará menos de 2 minutos.
-                        </p>
                     </div>
                 </div>
             `;
@@ -1259,12 +1277,10 @@
                     <div class="pata-benefit-card">
                         <div class="pata-benefit-icon-box">🩺</div>
                         <div class="pata-benefit-info">
-                            <h4>Acceso inmediato al chatbot veterinario</h4>
-                            <p>¡No tienes que esperar! Resuelve cualquier duda sobre la salud de tus peludos ahora mismo.</p>
-                            <div class="pata-bot-speech-bubble">
-                                <p class="pata-bot-message-text">
-                                    "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día. 🐾"
-                                </p>
+                            <h4>Acceso inmediato al chat con la Dra. PATi</h4>
+                            <p>¡No tienes que esperar! Aclara dudas sobre la salud de tus peludos ahora mismo.</p>
+                            <div class="pata-pati-message">
+                                "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día."
                             </div>
                         </div>
                     </div>
@@ -1378,13 +1394,19 @@
                         No se hará ningún cargo definitivo hasta que tu solicitud sea aprobada.
                     </p>
 
-                    <div style="background: rgba(255,255,255,0.3); border: 2px dashed rgba(0,0,0,0.1); padding: 12px; border-radius: 15px; margin-top: 15px; text-align: center;">
+                    ${this.renderInReviewBenefits()}
+
+                    <div style="text-align: center; margin-top: 25px;">
+                        <a href="https://www.pataamiga.mx/pets/pet-waiting-period#beneficios" class="pata-btn pata-btn-conocer" style="display: inline-block; text-decoration: none; background: transparent; color: #00BBB4; border: 2px solid #00BBB4; padding: 18px 60px; font-size: 18px; font-weight: 900; border-radius: 50px; width: 100%; max-width: 400px; transition: all 0.3s ease;">
+                            Conoce tus futuros beneficios
+                        </a>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.3); border: 2px dashed rgba(0,0,0,0.1); padding: 12px; border-radius: 15px; margin-top: 30px; text-align: center;">
                         <p style="margin:0; font-size: 12px; color: #666;">
                             🔒 Tienes control total: <strong>cancela en cualquier momento</strong> desde tu perfil.
                         </p>
                     </div>
-
-                    ${this.renderInReviewBenefits()}
                 </div>
             `;
         }
@@ -1489,8 +1511,6 @@
                         Tienes control total sobre tu suscripción. Puedes <strong>cancelar en cualquier momento</strong> desde la configuración de tu cuenta.
                     </p>
                 </div>
-
-                ${this.renderInReviewBenefits("Beneficios activos de tu membresía")}
             `;
         }
 
