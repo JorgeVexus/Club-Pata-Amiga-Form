@@ -615,6 +615,89 @@
         }
 
         .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
+
+        /* Benefits Section in Review */
+        .pata-benefits-review {
+            margin-top: 35px;
+            padding: 30px;
+            background: #FFFFFF;
+            border-radius: 35px;
+            border: 2px solid #E0F2F1;
+            text-align: left;
+            box-shadow: 0 10px 30px rgba(0, 187, 180, 0.05);
+        }
+        .pata-benefits-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #00BBB4;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .pata-benefit-card {
+            display: flex;
+            gap: 18px;
+            margin-bottom: 25px;
+            align-items: flex-start;
+            padding: 15px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .pata-benefit-card:hover {
+            background: rgba(0, 187, 180, 0.03);
+            transform: translateX(5px);
+        }
+        .pata-benefit-card:last-child { margin-bottom: 0; }
+        .pata-benefit-icon-box {
+            font-size: 24px;
+            background: #F0FEFE;
+            color: #00BBB4;
+            width: 50px;
+            height: 50px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border: 1px solid #E0F2F1;
+        }
+        .pata-benefit-info h4 {
+            margin: 0 0 6px 0;
+            font-size: 17px;
+            font-weight: 900;
+            color: #1A1A1A;
+        }
+        .pata-benefit-info p {
+            margin: 0;
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+        .pata-bot-speech-bubble {
+            background: #F0FEFE;
+            padding: 16px 20px;
+            border-radius: 20px;
+            margin-top: 12px;
+            border: 1px solid #B2DFDB;
+            position: relative;
+        }
+        .pata-bot-speech-bubble::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent #B2DFDB transparent;
+        }
+        .pata-bot-message-text {
+            margin: 0;
+            font-size: 14px;
+            color: #00796B;
+            font-weight: 600;
+            line-height: 1.4;
+        }
     `;
 
 
@@ -1043,11 +1126,7 @@
                             <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que puedes <strong>cancelar tu membresía en cualquier momento</strong> desde tu panel sin complicaciones.</p>
                         </div>
 
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="https://www.pataamiga.mx/beneficios" class="pata-btn pata-btn-conocer">
-                                Conocer beneficios de socio
-                            </a>
-                        </div>
+                        ${this.renderInReviewBenefits()}
                     </div>
                 </div>
             `;
@@ -1170,6 +1249,37 @@
             `;
         }
 
+        renderInReviewBenefits(title = "Mientras revisamos tu registro...") {
+            return `
+                <div class="pata-benefits-review">
+                    <h3 class="pata-benefits-title">
+                        <span>✨</span> ${title}
+                    </h3>
+                    
+                    <div class="pata-benefit-card">
+                        <div class="pata-benefit-icon-box">🩺</div>
+                        <div class="pata-benefit-info">
+                            <h4>Acceso inmediato al chatbot veterinario</h4>
+                            <p>¡No tienes que esperar! Resuelve cualquier duda sobre la salud de tus peludos ahora mismo.</p>
+                            <div class="pata-bot-speech-bubble">
+                                <p class="pata-bot-message-text">
+                                    "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día. 🐾"
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pata-benefit-card">
+                        <div class="pata-benefit-icon-box">🤝</div>
+                        <div class="pata-benefit-info">
+                            <h4>Donaciones a refugios/ONGs</h4>
+                            <p>Por cada 1,000 miembros que se suman, la manada apoya a quienes más lo necesitan. Juntos protegemos más.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         // 🛡️ NUEVO: Ocultar cualquier loader global de Webflow
         hideGlobalLoaders() {
             console.log('🛡️ Unified Widget: hideGlobalLoaders called');
@@ -1274,11 +1384,7 @@
                         </p>
                     </div>
 
-                    <div style="text-align: center; margin-top: 30px;">
-                        <a href="https://www.pataamiga.mx/pets/pet-waiting-period#beneficios" class="pata-btn pata-btn-conocer">
-                            Conoce tus beneficios
-                        </a>
-                    </div>
+                    ${this.renderInReviewBenefits()}
                 </div>
             `;
         }
@@ -1383,6 +1489,8 @@
                         Tienes control total sobre tu suscripción. Puedes <strong>cancelar en cualquier momento</strong> desde la configuración de tu cuenta.
                     </p>
                 </div>
+
+                ${this.renderInReviewBenefits("Beneficios activos de tu membresía")}
             `;
         }
 
@@ -1770,6 +1878,8 @@
                                 Conoce tus beneficios
                             </a>
                         </div>
+
+                        ${this.renderInReviewBenefits()}
                     </div>
                 </div>
             `;
