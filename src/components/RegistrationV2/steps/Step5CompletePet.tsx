@@ -31,7 +31,7 @@ interface Step5CompletePetProps {
 export default function Step5CompletePet({ data, onNext, showToast }: Step5CompletePetProps) {
     const petBasic = data?.petBasic;
     const petType = petBasic?.petType === 'gato' ? 'gato' : 'perro';
-    
+
     const isSenior = petBasic?.petAgeUnit === 'years'
         ? petBasic?.petAge >= 10
         : Math.floor(petBasic?.petAge / 12) >= 10;
@@ -147,7 +147,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
             <div className={styles.header}>
                 <span className={styles.stepBadge}>Paso 2 de 2 post-pago</span>
                 <h2 className={styles.title}>
-                    {petBasic?.petName 
+                    {petBasic?.petName
                         ? <>Completa los datos de {petType === 'gato' ? '🐱' : '🐶'} <em style={{ fontStyle: 'normal', color: 'var(--color-primary, #00BBB4)' }}>{petBasic.petName}</em></>
                         : 'Completa los datos de tu mascota'
                     }
@@ -244,8 +244,8 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                         <div className={styles.adoptionCheckboxWrapper}>
                             <label className={styles.adoptionCheckbox}>
-                                <input 
-                                    type="checkbox" 
+                                <input
+                                    type="checkbox"
                                     checked={formData.isAdopted}
                                     onChange={(e) => setFormData({ ...formData, isAdopted: e.target.checked })}
                                 />
@@ -261,7 +261,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                     </svg>
                                     Cuéntanos su historia
                                 </label>
-                                <textarea 
+                                <textarea
                                     className={styles.adoptionTextarea}
                                     placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
                                     value={formData.adoptionStory}
@@ -382,7 +382,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                 <div className={styles.infoNote}>
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+                        <circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" />
                     </svg>
                     <span>Desde tu perfil podrás registrar a tus otras dos mascotas</span>
                 </div>
