@@ -231,7 +231,7 @@ function CompletarDocumentacionContent() {
                 const photoFormData = new FormData();
                 photoFormData.append('file', photoFile);
                 photoFormData.append('petIndex', String(idx));
-                photoFormData.append('memberId', authenticatedMemberId);
+                photoFormData.append('userId', authenticatedMemberId);
 
                 const photoRes = await fetch('/api/upload/pet-photo', {
                     method: 'POST',
