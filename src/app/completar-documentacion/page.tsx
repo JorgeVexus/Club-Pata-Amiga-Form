@@ -11,7 +11,7 @@
 
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styles from './completar-documentacion.module.css';
 
@@ -40,9 +40,19 @@ async function getMemberstackMember(): Promise<any | null> {
     return data;
 }
 
-// ─── Componente principal ─────────────────────────────────────────────────────
+// ─── Wrapper con Suspense (requerido por Next.js 15 para useSearchParams) ────
 
 export default function CompletarDocumentacionPage() {
+    return (
+        <Suspense fallback={<LoadingScreen />}>
+            <CompletarDocumentacionContent />
+        </Suspense>
+    );
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
+
+function CompletarDocumentacionContent() {
     const searchParams = useSearchParams();
     const memberId = searchParams.get('m') || '';
     const petIndexParam = parseInt(searchParams.get('p') || '1', 10);
