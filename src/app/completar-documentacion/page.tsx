@@ -1,12 +1,13 @@
 /**
  * Página de Carga de Documentación Faltante de Mascotas
  *
- * Ruta: /completar-documentacion?m={memberId}&p={petIndex}
+ * Ruta: /completar-documentacion?m={memberId}&p={petIndex}&t={token}&exp={expiry}
  *
  * Esta página es el destino del enlace enviado en los correos de seguimiento.
- * Detecta automáticamente qué documentos faltan (foto, certificado o ambos)
- * y presenta solo los campos necesarios. Al completar, muestra una pantalla
- * de éxito con acceso a la zona de miembros.
+ * Usa un token seguro (magic link) para permitir la subida de documentos
+ * SIN necesidad de iniciar sesión en Memberstack.
+ *
+ * También soporta acceso con sesión de Memberstack activa (sin token).
  */
 
 'use client';
@@ -27,19 +28,6 @@ interface PetInfo {
     missingDocs: MissingDocs;
 }
 
-// ─── Utilidades ───────────────────────────────────────────────────────────────
-
-async function getMemberstackMember(): Promise<any | null> {
-    let attempts = 0;
-    while (!window.$memberstackDom && attempts < 30) {
-        await new Promise(r => setTimeout(r, 200));
-        attempts++;
-    }
-    if (!window.$memberstackDom) return null;
-    const { data } = await window.$memberstackDom.getCurrentMember();
-    return data;
-}
-
 // ─── Wrapper con Suspense (requerido por Next.js 15 para useSearchParams) ────
 
 export default function CompletarDocumentacionPage() {
@@ -54,12 +42,15 @@ export default function CompletarDocumentacionPage() {
 
 function CompletarDocumentacionContent() {
     const searchParams = useSearchParams();
-    const memberId = searchParams.get('m') || '';
+    const memberId     = searchParams.get('m') || '';
     const petIndexParam = parseInt(searchParams.get('p') || '1', 10);
+    const token        = searchParams.get('t') || '';
+    const exp          = searchParams.get('exp') || '';
 
     const [petInfo, setPetInfo] = useState<PetInfo | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [authError, setAuthError] = useState<string | null>(null);
+    const [authenticatedMemberId, setAuthenticatedMemberId] = useState<string>('');
 
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
@@ -72,25 +63,86 @@ function CompletarDocumentacionContent() {
     const photoInputRef = useRef<HTMLInputElement>(null);
     const certInputRef  = useRef<HTMLInputElement>(null);
 
-    // ── 1. Autenticación y carga de datos ─────────────────────────────────────
+    // ── 1. Autenticación (Token magic link O Memberstack) ─────────────────────
     useEffect(() => {
         const init = async () => {
             try {
-                const member = await getMemberstackMember();
+                // RUTA A: Magic link con token (sin login)
+                if (token && exp && memberId) {
+                    console.log('[CompletarDocs] Verificando token de acceso directo...');
 
+                    const verifyRes = await fetch('/api/user/verify-upload-token', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            memberId,
+                            petIndex: petIndexParam,
+                            token,
+                            exp: Number(exp),
+                        }),
+                    });
+
+                    const verifyData = await verifyRes.json();
+
+                    if (!verifyData.valid) {
+                        setAuthError(
+                            verifyData.error === 'Enlace inválido o expirado'
+                                ? 'Este enlace ha expirado. Por favor revisa tu correo más reciente o contacta a soporte.'
+                                : verifyData.error || 'No se pudo verificar el enlace.'
+                        );
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    // Token válido — cargar info de mascota
+                    setAuthenticatedMemberId(memberId);
+
+                    if (!verifyData.petInfo.missingDocs) {
+                        setIsSuccess(true);
+                        setIsLoading(false);
+                        return;
+                    }
+
+                    setPetInfo({
+                        name: verifyData.petInfo.name,
+                        type: verifyData.petInfo.type,
+                        petIndex: petIndexParam,
+                        missingDocs: verifyData.petInfo.missingDocs as MissingDocs,
+                    });
+
+                    setIsLoading(false);
+                    return;
+                }
+
+                // RUTA B: Autenticación con Memberstack (usuario con sesión activa)
+                console.log('[CompletarDocs] Sin token, intentando Memberstack...');
+                let attempts = 0;
+                while (!(window as any).$memberstackDom && attempts < 30) {
+                    await new Promise(r => setTimeout(r, 200));
+                    attempts++;
+                }
+
+                if (!(window as any).$memberstackDom) {
+                    setAuthError('Debes iniciar sesión para acceder a esta página.');
+                    setIsLoading(false);
+                    return;
+                }
+
+                const { data: member } = await (window as any).$memberstackDom.getCurrentMember();
                 if (!member) {
                     setAuthError('Debes iniciar sesión para acceder a esta página.');
                     setIsLoading(false);
                     return;
                 }
 
-                // Verificar que el memberId del URL coincide con el miembro autenticado
-                // (seguridad básica: el usuario solo puede editar sus propias mascotas)
                 if (memberId && member.id !== memberId) {
                     setAuthError('No tienes permiso para editar este perfil.');
                     setIsLoading(false);
                     return;
                 }
+
+                const effectiveMemberId = memberId || member.id;
+                setAuthenticatedMemberId(effectiveMemberId);
 
                 const cf = member.customFields || {};
                 const idx = petIndexParam;
@@ -112,7 +164,6 @@ function CompletarDocumentacionContent() {
                 else if (requiresCert && !hasCert) missing = 'certificate';
 
                 if (!missing) {
-                    // Todo está completo — mostrar pantalla de éxito directamente
                     setIsSuccess(true);
                     setIsLoading(false);
                     return;
@@ -134,7 +185,7 @@ function CompletarDocumentacionContent() {
         };
 
         init();
-    }, [memberId, petIndexParam]);
+    }, [memberId, petIndexParam, token, exp]);
 
     // ── 2. Manejadores de archivos ────────────────────────────────────────────
 
@@ -154,7 +205,7 @@ function CompletarDocumentacionContent() {
     // ── 3. Subida de archivos ─────────────────────────────────────────────────
 
     const handleSubmit = async () => {
-        if (!petInfo) return;
+        if (!petInfo || !authenticatedMemberId) return;
 
         const needsPhoto = petInfo.missingDocs === 'photo' || petInfo.missingDocs === 'both';
         const needsCert  = petInfo.missingDocs === 'certificate' || petInfo.missingDocs === 'both';
@@ -172,9 +223,6 @@ function CompletarDocumentacionContent() {
         setUploadStatus('uploading');
 
         try {
-            const member = await getMemberstackMember();
-            if (!member) throw new Error('Sesión expirada. Recarga la página.');
-
             const idx = petInfo.petIndex;
             const updatedFields: Record<string, string> = {};
 
@@ -183,7 +231,7 @@ function CompletarDocumentacionContent() {
                 const photoFormData = new FormData();
                 photoFormData.append('file', photoFile);
                 photoFormData.append('petIndex', String(idx));
-                photoFormData.append('memberId', member.id);
+                photoFormData.append('memberId', authenticatedMemberId);
 
                 const photoRes = await fetch('/api/upload/pet-photo', {
                     method: 'POST',
@@ -199,7 +247,7 @@ function CompletarDocumentacionContent() {
                 const certFormData = new FormData();
                 certFormData.append('file', certFile);
                 certFormData.append('petIndex', String(idx));
-                certFormData.append('memberId', member.id);
+                certFormData.append('memberId', authenticatedMemberId);
 
                 const certRes = await fetch('/api/upload/vet-certificate', {
                     method: 'POST',
@@ -210,8 +258,21 @@ function CompletarDocumentacionContent() {
                 updatedFields[`pet-${idx}-vet-certificate-url`] = certData.url;
             }
 
-            // Actualizar Memberstack con las URLs
-            await window.$memberstackDom.updateMember({ customFields: updatedFields });
+            // Actualizar Memberstack con las URLs (via API admin, no requiere sesión)
+            const updateRes = await fetch('/api/user/update-pet-docs', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    memberId: authenticatedMemberId,
+                    fields: updatedFields,
+                    token,
+                    exp: Number(exp),
+                    petIndex: petIndexParam,
+                }),
+            });
+
+            const updateData = await updateRes.json();
+            if (!updateData.success) throw new Error(updateData.error || 'Error actualizando el perfil');
 
             setUploadStatus('success');
             setIsSuccess(true);

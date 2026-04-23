@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { sendMissingPetDocsEmail, type MissingDocType, type FollowupDay } from '@/app/actions/comm.actions';
+import { generateUploadToken } from '@/utils/upload-token';
 
 // Días de seguimiento en los que se envía email
 const FOLLOWUP_DAYS: FollowupDay[] = [0, 10, 13, 14, 15];
@@ -50,10 +51,11 @@ function getMissingDocs(
     return null; // Todo completo
 }
 
-/** Construye la URL de la página de carga de documentos */
+/** Construye la URL de la página de carga de documentos (con token de acceso directo) */
 function buildUploadUrl(memberId: string, petIndex: number): string {
     const base = process.env.NEXT_PUBLIC_APP_URL || 'https://app.pataamiga.mx';
-    return `${base}/completar-documentacion?m=${memberId}&p=${petIndex}`;
+    const { token, exp } = generateUploadToken(memberId, petIndex);
+    return `${base}/completar-documentacion?m=${memberId}&p=${petIndex}&t=${token}&exp=${exp}`;
 }
 
 export async function POST(req: NextRequest) {
