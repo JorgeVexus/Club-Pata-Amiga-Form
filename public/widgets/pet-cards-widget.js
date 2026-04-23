@@ -451,58 +451,85 @@
 
             .pata-modal-gallery {
                 width: 100% !important;
-                min-height: 380px !important;
-                max-height: none !important;
-                padding: 20px !important;
+                min-height: auto !important;
+                padding: 16px 0 !important;
                 border-right: none !important;
                 border-bottom: 1px solid rgba(0,0,0,0.05);
                 flex: 0 0 auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
             }
 
             .pata-gallery-main {
-                height: 240px !important;
+                width: calc(100% - 40px) !important;
+                height: 200px !important;
+                margin: 0 auto !important;
                 border-radius: 20px !important;
             }
 
-            .pata-gallery-grid {
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 10px !important;
+            .pata-gallery-grid { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                gap: 10px !important; 
+                width: calc(100% - 40px) !important; 
+                margin: 12px auto 0 auto !important; 
             }
 
             .pata-modal-info {
                 width: 100% !important;
                 padding: 24px 20px 40px 20px !important;
-                overflow-y: visible !important;
+                overflow-y: visible !important; /* Let the box handle scroll */
                 flex: 1 1 auto !important;
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 24px !important;
             }
 
             .pata-pet-name {
                 font-size: 34px !important;
                 margin-bottom: 4px !important;
+                line-height: 1.1 !important;
             }
 
             .pata-info-grid {
+                display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
                 gap: 16px !important;
                 background: #F8F9FD !important;
                 padding: 20px !important;
                 border-radius: 24px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             .pata-info-item {
                 padding: 0 !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 12px !important;
             }
 
             .pata-close-modal {
                 position: fixed !important;
-                top: 15px !important;
-                right: 15px !important;
-                z-index: 1000 !important;
+                top: 20px !important;
+                right: 20px !important;
+                z-index: 10000 !important;
                 background: white !important;
-                width: 44px !important;
-                height: 44px !important;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+                width: 48px !important;
+                height: 48px !important;
+                border-radius: 50% !important;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
                 border: 1px solid rgba(0,0,0,0.05) !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                cursor: pointer !important;
+                -webkit-tap-highlight-color: transparent !important;
+            }
+            
+            .pata-close-modal span {
+                font-size: 24px !important;
+                color: #1E293B !important;
             }
 
             /* Banners & Cards in Mobile */
