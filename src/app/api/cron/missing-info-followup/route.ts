@@ -105,28 +105,13 @@ export async function POST(req: NextRequest) {
                 continue;
             }
 
-            // Calcular días desde registro
-            const registrationDate = user.created_at;
-            if (!registrationDate) {
-                results.skipped++;
-                continue;
-            }
-
-            const daysSinceReg = daysSince(registrationDate);
-
-            // Verificar si el día actual corresponde a un día de seguimiento
-            if (!FOLLOWUP_DAYS.includes(daysSinceReg as FollowupDay)) {
-                results.skipped++;
-                continue;
-            }
-
-            const followupDay = daysSinceReg as FollowupDay;
+            // Calcular días desde registro del usuario (eliminado para hacerlo por mascota)
             const userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Miembro';
 
             // 4. Buscar mascotas del usuario en Supabase
             const { data: pets, error: petsError } = await supabaseAdmin
                 .from('pets')
-                .select('id, name, photo_url, vet_certificate_url, is_senior')
+                .select('id, name, photo_url, vet_certificate_url, is_senior, created_at')
                 .eq('owner_id', user.id)
                 .order('created_at', { ascending: true });
 
@@ -135,10 +120,26 @@ export async function POST(req: NextRequest) {
                 continue;
             }
 
-            // Revisar cada mascota
+            let userHadAnyValidPet = false;
+
+            // Revisar cada mascota independientemente
             for (let petIdx = 0; petIdx < pets.length; petIdx++) {
                 const pet = pets[petIdx];
                 const petIndexOneBased = petIdx + 1;
+
+                // Calcular días desde registro de la MASCOTA
+                const petRegDate = pet.created_at;
+                if (!petRegDate) continue;
+
+                const daysSincePetReg = daysSince(petRegDate);
+
+                // Verificar si el día actual corresponde a un día de seguimiento para ESTA mascota
+                if (!FOLLOWUP_DAYS.includes(daysSincePetReg as FollowupDay)) {
+                    continue;
+                }
+
+                userHadAnyValidPet = true;
+                const followupDay = daysSincePetReg as FollowupDay;
 
                 // Determinar docs faltantes
                 const hasPhoto = !!(pet.photo_url?.trim());
