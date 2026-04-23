@@ -441,6 +441,7 @@
                 margin: 0 !important;
                 border-radius: 30px 30px 0 0 !important;
                 overflow-y: auto !important;
+                background: #fff !important;
                 animation: pataSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             }
 
@@ -449,23 +450,30 @@
                 to { transform: translateY(0); }
             }
 
+            .pata-modal-main {
+                display: flex !important;
+                flex-direction: column !important;
+                height: auto !important;
+                width: 100% !important;
+            }
+
             .pata-modal-gallery {
                 width: 100% !important;
                 min-height: auto !important;
-                padding: 16px 20px !important;
+                padding: 16px 20px 8px 20px !important;
                 border-right: none !important;
                 border-bottom: 1px solid rgba(0,0,0,0.05);
                 flex: 0 0 auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
-                gap: 12px !important;
+                gap: 8px !important;
                 box-sizing: border-box !important;
             }
 
             .pata-gallery-main {
                 width: 100% !important;
-                height: 160px !important;
+                height: 140px !important;
                 margin: 0 !important;
                 border-radius: 20px !important;
             }
@@ -477,7 +485,7 @@
                 gap: 10px !important;
                 width: 100% !important;
                 margin: 0 !important;
-                padding-bottom: 5px !important;
+                padding: 4px 0 8px 0 !important;
                 -webkit-overflow-scrolling: touch !important;
             }
 
@@ -491,20 +499,21 @@
             }
 
             .pata-modal-upload-box {
-                flex: 0 0 75px !important;
-                width: 75px !important;
-                height: 75px !important;
+                flex: 0 0 70px !important;
+                width: 70px !important;
+                height: 70px !important;
                 border-radius: 12px !important;
             }
 
+            /* Adjust info section for visibility */
             .pata-modal-info {
                 width: 100% !important;
-                padding: 24px 20px 40px 20px !important;
-                overflow-y: visible !important; /* Let the box handle scroll */
+                padding: 12px 20px 40px 20px !important;
+                overflow-y: visible !important;
                 flex: 1 1 auto !important;
                 display: flex !important;
                 flex-direction: column !important;
-                gap: 24px !important;
+                gap: 16px !important;
                 box-sizing: border-box !important;
             }
 
@@ -946,6 +955,9 @@
             const modalOverlay = document.createElement('div');
             modalOverlay.className = 'pata-modal-overlay';
             modalOverlay.id = 'pata-details-modal';
+            
+            // Lock body scroll
+            document.body.style.overflow = 'hidden';
 
             // Close on backdrop click
             modalOverlay.onclick = (e) => {
@@ -1172,7 +1184,11 @@
         }
 
         closeModal(modalElement) {
-            if (modalElement) modalElement.remove();
+            if (modalElement) {
+                modalElement.remove();
+                // Restore body scroll
+                document.body.style.overflow = '';
+            }
         }
 
         async saveAdoptionStory(petId) {
