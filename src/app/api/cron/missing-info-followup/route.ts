@@ -5,18 +5,25 @@
  *
  * Configurar en vercel.json:
  * {
- *   "crons": [{ "path": "/api/cron/missing-info-followup", "schedule": "0 10 * * *" }]
+ *   "crons": [{ "path": "/api/cron/missing-info-followup", "schedule": "0 16 * * *" }]
  * }
  *
- * Ejecuta diariamente a las 10:00 AM UTC (4:00 AM Ciudad de México).
- * Detecta miembros con documentación faltante y envía el correo correspondiente
- * según los días transcurridos desde su registro: Día 0, 10, 13, 14 y 15.
+ * Ejecuta diariamente a las 10:00 AM CDMX (16:00 UTC).
+ * Detecta miembros con documentación faltante (foto, certificado) en Supabase
+ * y envía el correo correspondiente según los días transcurridos desde su registro:
+ * Día 0, 10, 13, 14 y 15.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { sendMissingPetDocsEmail, type MissingDocType, type FollowupDay } from '@/app/actions/comm.actions';
 import { generateUploadToken } from '@/utils/upload-token';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 // Días de seguimiento en los que se envía email
 const FOLLOWUP_DAYS: FollowupDay[] = [0, 10, 13, 14, 15];
@@ -26,29 +33,6 @@ function daysSince(dateIso: string): number {
     const reg = new Date(dateIso);
     const now = new Date();
     return Math.floor((now.getTime() - reg.getTime()) / (1000 * 60 * 60 * 24));
-}
-
-/** Determina qué documentos faltan para una mascota según sus custom fields */
-function getMissingDocs(
-    customFields: Record<string, any>,
-    petIndex: number // 1, 2, o 3
-): MissingDocType | null {
-    const photoKey = `pet-${petIndex}-photo-1-url`;
-    const certKey  = `pet-${petIndex}-vet-certificate-url`;
-
-    const hasPhoto = !!(customFields[photoKey] && customFields[photoKey].trim());
-    const hasCert  = !!(customFields[certKey]  && customFields[certKey].trim());
-
-    // El certificado solo es obligatorio para mascotas senior/que exceden la edad máxima
-    // Revisamos si el campo de "requires cert" existe en Memberstack
-    const requiresCert = customFields[`pet-${petIndex}-vet-certificate-required`] === 'true'
-        || customFields[`pet-${petIndex}-vet-certificate-required`] === true;
-
-    if (!hasPhoto && requiresCert && !hasCert) return 'both';
-    if (!hasPhoto) return 'photo';
-    if (requiresCert && !hasCert) return 'certificate';
-
-    return null; // Todo completo
 }
 
 /** Construye la URL de la página de carga de documentos (con token de acceso directo) */
@@ -80,35 +64,50 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-        // 2. Obtener todos los miembros con estado approved, pending_approval o waiting_approval
-        // (quienes ya tienen mascotas registradas pero potencialmente docs faltantes)
+        // 2. Obtener miembros de Memberstack (para verificar quién tiene plan pagado)
         const membersRes = await memberstackAdmin.listMembers(undefined, { paidOnly: false });
 
         if (!membersRes.success || !membersRes.data) {
-            console.error('❌ [Cron] Error obteniendo miembros:', membersRes.error);
+            console.error('❌ [Cron] Error obteniendo miembros de Memberstack:', membersRes.error);
             return NextResponse.json({ error: 'No se pudo obtener miembros' }, { status: 500 });
         }
 
         const allMembers = membersRes.data;
-        console.log(`📊 [Cron] Total miembros a revisar: ${allMembers.length}`);
+        console.log(`📊 [Cron] Total miembros Memberstack: ${allMembers.length}`);
 
-        for (const member of allMembers) {
+        // Filtrar solo los que tienen plan pagado (no en estado 'pending')
+        const paidMembers = allMembers.filter(m => {
+            const status = m.customFields?.['approval-status'];
+            return status && status !== 'pending';
+        });
+
+        console.log(`💳 [Cron] Miembros con pago realizado: ${paidMembers.length}`);
+
+        // 3. Para cada miembro pagado, buscar su data en Supabase
+        for (const member of paidMembers) {
             results.checked++;
 
-            const customFields = member.customFields || {};
             const userEmail = member.auth?.email;
-            const registrationDate = customFields['registration-date'];
-            const approvalStatus = customFields['approval-status'];
-            const firstName = customFields['first-name'] || '';
-            const lastName = customFields['paternal-last-name'] || '';
-            const userName = `${firstName} ${lastName}`.trim() || 'Miembro';
+            if (!userEmail) {
+                results.skipped++;
+                continue;
+            }
 
-            // Solo procesar miembros que:
-            // - Tienen mascotas (pet-1-name existe)
-            // - Tienen fecha de registro
-            // - Tienen email
-            // - NO están en estado 'pending' (aún no han pagado)
-            if (!userEmail || !registrationDate || !customFields['pet-1-name'] || approvalStatus === 'pending') {
+            // Buscar usuario en Supabase por memberstack_id
+            const { data: user, error: userError } = await supabaseAdmin
+                .from('users')
+                .select('id, first_name, last_name, created_at')
+                .eq('memberstack_id', member.id)
+                .single();
+
+            if (userError || !user) {
+                results.skipped++;
+                continue;
+            }
+
+            // Calcular días desde registro
+            const registrationDate = user.created_at;
+            if (!registrationDate) {
                 results.skipped++;
                 continue;
             }
@@ -122,26 +121,48 @@ export async function POST(req: NextRequest) {
             }
 
             const followupDay = daysSinceReg as FollowupDay;
+            const userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Miembro';
 
-            // Revisar las 3 mascotas posibles
-            for (let petIdx = 1; petIdx <= 3; petIdx++) {
-                const petName = customFields[`pet-${petIdx}-name`];
-                if (!petName) continue; // Mascota no registrada
+            // 4. Buscar mascotas del usuario en Supabase
+            const { data: pets, error: petsError } = await supabaseAdmin
+                .from('pets')
+                .select('id, name, photo_url, vet_certificate_url, is_senior')
+                .eq('owner_id', user.id)
+                .order('created_at', { ascending: true });
 
-                const missingDocs = getMissingDocs(customFields, petIdx);
-                if (!missingDocs) continue; // Todo completo, saltar
+            if (petsError || !pets || pets.length === 0) {
+                results.skipped++;
+                continue;
+            }
+
+            // Revisar cada mascota
+            for (let petIdx = 0; petIdx < pets.length; petIdx++) {
+                const pet = pets[petIdx];
+                const petIndexOneBased = petIdx + 1;
+
+                // Determinar docs faltantes
+                const hasPhoto = !!(pet.photo_url?.trim());
+                const isSenior = pet.is_senior === true;
+                const hasCert = !!(pet.vet_certificate_url?.trim());
+
+                let missingDocs: MissingDocType | null = null;
+                if (!hasPhoto && isSenior && !hasCert) missingDocs = 'both';
+                else if (!hasPhoto) missingDocs = 'photo';
+                else if (isSenior && !hasCert) missingDocs = 'certificate';
+
+                if (!missingDocs) continue; // Todo completo
 
                 // Enviar email de seguimiento
-                const uploadUrl = buildUploadUrl(member.id, petIdx);
-                console.log(`📧 [Cron] Enviando día ${followupDay} a ${userEmail} para ${petName} (falta: ${missingDocs})`);
+                const uploadUrl = buildUploadUrl(member.id, petIndexOneBased);
+                console.log(`📧 [Cron] Enviando día ${followupDay} a ${userEmail} para ${pet.name} (falta: ${missingDocs})`);
 
                 try {
                     const result = await sendMissingPetDocsEmail({
                         userId: member.id,
                         userEmail,
                         userName,
-                        petName,
-                        petIndex: petIdx,
+                        petName: pet.name,
+                        petIndex: petIndexOneBased,
                         missingDocs,
                         followupDay,
                         uploadUrl,
@@ -152,7 +173,7 @@ export async function POST(req: NextRequest) {
                         results.details.push({
                             memberId: member.id,
                             email: userEmail,
-                            petName,
+                            petName: pet.name,
                             missingDocs,
                             followupDay,
                             resendId: result.id,

@@ -1,19 +1,26 @@
 /**
  * API Route: /api/user/update-pet-docs
  *
- * Actualiza los custom fields de un miembro en Memberstack con las URLs
- * de los documentos subidos. Acepta autenticación por token (magic link).
+ * Actualiza los documentos de una mascota en Supabase y Memberstack.
+ * Acepta autenticación por token (magic link).
  *
- * POST body: { memberId, fields, token?, exp?, petIndex? }
+ * POST body: { memberId, petId, fields, token?, exp?, petIndex? }
+ *
+ * fields: { photo_url?: string, vet_certificate_url?: string }
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUploadToken } from '@/utils/upload-token';
-import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { createClient } from '@supabase/supabase-js';
+
+const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
 export async function POST(req: NextRequest) {
     try {
-        const { memberId, fields, token, exp, petIndex } = await req.json();
+        const { memberId, petId, fields, token, exp, petIndex } = await req.json();
 
         if (!memberId || !fields || Object.keys(fields).length === 0) {
             return NextResponse.json({ success: false, error: 'Parámetros incompletos' }, { status: 400 });
@@ -26,21 +33,61 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ success: false, error: 'Token inválido o expirado' }, { status: 401 });
             }
         } else {
-            // Sin token — este endpoint requiere algún tipo de autenticación
             return NextResponse.json({ success: false, error: 'Autenticación requerida' }, { status: 401 });
         }
 
-        // Actualizar custom fields en Memberstack
-        console.log(`📝 [UpdatePetDocs] Actualizando miembro ${memberId}:`, Object.keys(fields));
+        // Buscar el usuario en Supabase
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberId)
+            .single();
 
-        const updateRes = await memberstackAdmin.updateMemberFields(memberId, fields);
-
-        if (!updateRes.success) {
-            console.error('❌ [UpdatePetDocs] Error actualizando Memberstack:', updateRes.error);
-            return NextResponse.json({ success: false, error: 'Error actualizando el perfil' }, { status: 500 });
+        if (userError || !user) {
+            return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        console.log(`✅ [UpdatePetDocs] Miembro ${memberId} actualizado exitosamente`);
+        // Si tenemos petId, actualizar directamente; sino buscar por índice
+        let targetPetId = petId;
+
+        if (!targetPetId) {
+            const { data: pets, error: petsError } = await supabaseAdmin
+                .from('pets')
+                .select('id')
+                .eq('owner_id', user.id)
+                .order('created_at', { ascending: true });
+
+            if (petsError || !pets || pets.length === 0) {
+                return NextResponse.json({ success: false, error: 'Mascotas no encontradas' }, { status: 404 });
+            }
+
+            const idx = Number(petIndex) - 1;
+            if (idx < 0 || idx >= pets.length) {
+                return NextResponse.json({ success: false, error: 'Índice de mascota inválido' }, { status: 404 });
+            }
+
+            targetPetId = pets[idx].id;
+        }
+
+        // Construir campos a actualizar en Supabase
+        const supabaseUpdate: Record<string, any> = {};
+        if (fields.photo_url) supabaseUpdate.photo_url = fields.photo_url;
+        if (fields.vet_certificate_url) supabaseUpdate.vet_certificate_url = fields.vet_certificate_url;
+
+        console.log(`📝 [UpdatePetDocs] Actualizando pet ${targetPetId}:`, Object.keys(supabaseUpdate));
+
+        // Actualizar en Supabase
+        const { error: updateError } = await supabaseAdmin
+            .from('pets')
+            .update(supabaseUpdate)
+            .eq('id', targetPetId);
+
+        if (updateError) {
+            console.error('❌ [UpdatePetDocs] Error actualizando Supabase:', updateError);
+            return NextResponse.json({ success: false, error: 'Error actualizando la mascota' }, { status: 500 });
+        }
+
+        console.log(`✅ [UpdatePetDocs] Mascota ${targetPetId} actualizada exitosamente`);
 
         return NextResponse.json({ success: true });
 

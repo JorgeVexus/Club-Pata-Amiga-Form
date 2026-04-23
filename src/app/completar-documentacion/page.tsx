@@ -239,7 +239,7 @@ function CompletarDocumentacionContent() {
                 });
                 const photoData = await photoRes.json();
                 if (!photoData.success) throw new Error(photoData.error || 'Error subiendo la foto');
-                updatedFields[`pet-${idx}-photo-1-url`] = photoData.url;
+                updatedFields['photo_url'] = photoData.url;
             }
 
             // Subir certificado
@@ -255,10 +255,10 @@ function CompletarDocumentacionContent() {
                 });
                 const certData = await certRes.json();
                 if (!certData.success) throw new Error(certData.error || 'Error subiendo el certificado');
-                updatedFields[`pet-${idx}-vet-certificate-url`] = certData.url;
+                updatedFields['vet_certificate_url'] = certData.url;
             }
 
-            // Actualizar Memberstack con las URLs (via API admin, no requiere sesión)
+            // Actualizar Supabase con las URLs (via API, no requiere sesión)
             const updateRes = await fetch('/api/user/update-pet-docs', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
