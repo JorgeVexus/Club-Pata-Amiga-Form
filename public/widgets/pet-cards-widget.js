@@ -185,7 +185,6 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.15);
             font-family: 'Outfit', sans-serif;
             overflow: hidden;
-            display: flex;
             max-height: 90vh;
             animation: pataSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
@@ -433,7 +432,7 @@
             }
 
             .pata-modal-box {
-                flex-direction: column !important;
+                display: block !important;
                 width: 100% !important;
                 max-width: 100% !important;
                 height: 92vh !important;
@@ -1261,7 +1260,7 @@
             modal.className = 'pata-modal-overlay';
             modal.id = 'pata-add-modal';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `<div class="pata-modal-box" id="pata-add-content" style="max-width:550px; max-height:90vh; overflow-y:auto;"></div>`;
+            modal.innerHTML = `<div class="pata-modal-box" id="pata-add-content" style="max-width:550px; max-height:90vh; overflow-y:auto; padding: 40px; box-sizing: border-box;"></div>`;
             document.body.appendChild(modal);
             
             this.renderAddStep();
