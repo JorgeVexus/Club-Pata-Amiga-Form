@@ -40,16 +40,27 @@ export async function POST(request: NextRequest) {
                     .maybeSingle();
 
                 if (user) {
+                    // 1.5. Borrar dependencias directas para evitar Foreign Key constraints
+                    await supabaseAdmin.from('appeal_logs').delete().eq('user_id', msId);
+                    await supabaseAdmin.from('appeal_logs').delete().eq('user_id', user.id);
+                    await supabaseAdmin.from('notifications').delete().eq('user_id', msId);
+                    await supabaseAdmin.from('notifications').delete().eq('user_id', user.id);
+
                     // Borrar Mascotas (los archivos los dejamos para no saturar si es masivo, 
                     // o intentamos borrar solo si hay pocos. Para simplificar borramos registros).
                     // Pero el usuario pidió "fotos y todo". Hagamos un intento rápido.
                     
                     const { data: pets } = await supabaseAdmin
                         .from('pets')
-                        .select('photo_url')
+                        .select('id, photo_url')
                         .eq('owner_id', user.id);
                     
                     if (pets) {
+                        const petIds = pets.map(p => p.id);
+                        if (petIds.length > 0) {
+                            await supabaseAdmin.from('appeal_logs').delete().in('pet_id', petIds);
+                        }
+
                         const photoPaths = pets
                             .map(p => p.photo_url?.split('/').pop())
                             .filter(Boolean) as string[];

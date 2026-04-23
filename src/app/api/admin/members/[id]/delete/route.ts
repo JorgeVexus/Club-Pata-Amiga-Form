@@ -34,6 +34,12 @@ export async function DELETE(
         if (user) {
             console.log(`👤 Usuario encontrado en Supabase con ID: ${user.id}`);
 
+            // 1.5. Borrar dependencias directas para evitar Foreign Key constraints
+            await supabaseAdmin.from('appeal_logs').delete().eq('user_id', id);
+            await supabaseAdmin.from('appeal_logs').delete().eq('user_id', user.id);
+            await supabaseAdmin.from('notifications').delete().eq('user_id', id);
+            await supabaseAdmin.from('notifications').delete().eq('user_id', user.id);
+
             // 2. Borrar mascotas y sus archivos de storage
             const { data: pets } = await supabaseAdmin
                 .from('pets')
@@ -42,6 +48,13 @@ export async function DELETE(
 
             if (pets && pets.length > 0) {
                 console.log(`🐾 Eliminando ${pets.length} mascotas...`);
+                
+                // Borrar appeal_logs que hagan referencia al pet_id
+                const petIds = pets.map(p => p.id);
+                if (petIds.length > 0) {
+                    await supabaseAdmin.from('appeal_logs').delete().in('pet_id', petIds);
+                }
+
                 for (const pet of pets) {
                     // Borrar foto de mascota
                     if (pet.photo_url) {
