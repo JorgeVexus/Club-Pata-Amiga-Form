@@ -452,27 +452,49 @@
             .pata-modal-gallery {
                 width: 100% !important;
                 min-height: auto !important;
-                padding: 16px 0 !important;
+                padding: 16px 20px !important;
                 border-right: none !important;
                 border-bottom: 1px solid rgba(0,0,0,0.05);
                 flex: 0 0 auto !important;
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
+                gap: 12px !important;
+                box-sizing: border-box !important;
             }
 
             .pata-gallery-main {
-                width: calc(100% - 40px) !important;
-                height: 200px !important;
-                margin: 0 auto !important;
+                width: 100% !important;
+                height: 160px !important;
+                margin: 0 !important;
                 border-radius: 20px !important;
             }
 
             .pata-gallery-grid { 
-                grid-template-columns: repeat(2, 1fr) !important; 
-                gap: 10px !important; 
-                width: calc(100% - 40px) !important; 
-                margin: 12px auto 0 auto !important; 
+                display: flex !important;
+                flex-direction: row !important;
+                overflow-x: auto !important;
+                gap: 10px !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding-bottom: 5px !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+
+            .pata-gallery-grid::-webkit-scrollbar {
+                height: 4px !important;
+            }
+
+            .pata-gallery-grid::-webkit-scrollbar-thumb {
+                background: rgba(0,0,0,0.1) !important;
+                border-radius: 10px !important;
+            }
+
+            .pata-modal-upload-box {
+                flex: 0 0 75px !important;
+                width: 75px !important;
+                height: 75px !important;
+                border-radius: 12px !important;
             }
 
             .pata-modal-info {
@@ -483,21 +505,22 @@
                 display: flex !important;
                 flex-direction: column !important;
                 gap: 24px !important;
+                box-sizing: border-box !important;
             }
 
             .pata-pet-name {
-                font-size: 34px !important;
-                margin-bottom: 4px !important;
+                font-size: 32px !important;
+                margin-bottom: 2px !important;
                 line-height: 1.1 !important;
             }
 
             .pata-info-grid {
                 display: grid !important;
                 grid-template-columns: 1fr 1fr !important;
-                gap: 16px !important;
+                gap: 12px !important;
                 background: #F8F9FD !important;
-                padding: 20px !important;
-                border-radius: 24px !important;
+                padding: 16px !important;
+                border-radius: 20px !important;
                 width: 100% !important;
                 box-sizing: border-box !important;
             }
