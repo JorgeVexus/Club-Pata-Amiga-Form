@@ -412,32 +412,125 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Responsive - Modal */
-        @media (max-width: 1024px) {
-            .pata-modal-box { max-width: 90%; }
-            .pata-pet-name { font-size: 34px; }
+        /* ==========================================================================
+           RESPONSIVE - MODAL REDESIGN
+           ========================================================================== */
+
+        /* Tablet & Large Mobile */
+        @media (max-width: 900px) {
+            .pata-modal-box {
+                max-width: 90%;
+                width: 600px;
+            }
+            .pata-pet-name { font-size: 36px; }
         }
 
-        @media (max-width: 850px) {
-            .pata-modal-box { flex-direction: column; max-height: 95vh; border-radius: 30px; margin: 10px; }
-            .pata-modal-gallery { width: 100%; max-height: 320px; overflow-y: visible; padding: 20px; }
-            .pata-modal-info { width: 100%; padding: 24px; }
-            .pata-gallery-grid { grid-template-columns: repeat(4, 1fr); }
-            .pata-info-grid { gap: 16px; }
-            .pata-pet-name { font-size: 32px; }
-            .pata-close-modal { position: absolute; top: 16px; right: 16px; z-index: 10; background: rgba(255,255,255,0.8); backdrop-filter: blur(4px); }
+        /* Mobile Breakpoint (The Big Switch) */
+        @media (max-width: 768px) {
+            .pata-modal-overlay {
+                padding: 0;
+                align-items: flex-end; /* Slide up feel */
+            }
+
+            .pata-modal-box {
+                flex-direction: column !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 92vh !important;
+                max-height: 92vh !important;
+                margin: 0 !important;
+                border-radius: 30px 30px 0 0 !important;
+                overflow-y: auto !important;
+                animation: pataSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            }
+
+            @keyframes pataSlideUp {
+                from { transform: translateY(100%); }
+                to { transform: translateY(0); }
+            }
+
+            .pata-modal-gallery {
+                width: 100% !important;
+                min-height: 380px !important;
+                max-height: none !important;
+                padding: 20px !important;
+                border-right: none !important;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+                flex: 0 0 auto !important;
+            }
+
+            .pata-gallery-main {
+                height: 240px !important;
+                border-radius: 20px !important;
+            }
+
+            .pata-gallery-grid {
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 10px !important;
+            }
+
+            .pata-modal-info {
+                width: 100% !important;
+                padding: 24px 20px 40px 20px !important;
+                overflow-y: visible !important;
+                flex: 1 1 auto !important;
+            }
+
+            .pata-pet-name {
+                font-size: 34px !important;
+                margin-bottom: 4px !important;
+            }
+
+            .pata-info-grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 16px !important;
+                background: #F8F9FD !important;
+                padding: 20px !important;
+                border-radius: 24px !important;
+            }
+
+            .pata-info-item {
+                padding: 0 !important;
+            }
+
+            .pata-close-modal {
+                position: fixed !important;
+                top: 15px !important;
+                right: 15px !important;
+                z-index: 1000 !important;
+                background: white !important;
+                width: 44px !important;
+                height: 44px !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+                border: 1px solid rgba(0,0,0,0.05) !important;
+            }
+
+            /* Banners & Cards in Mobile */
+            .pata-vet-banner {
+                flex-direction: column !important;
+                text-align: center !important;
+                padding: 20px !important;
+            }
+            .pata-vet-banner-left {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            .pata-vet-btn {
+                width: 100% !important;
+                justify-content: center !important;
+            }
+
+            .pata-alert-card, .pata-notes-card, .pata-story-card {
+                padding: 20px !important;
+            }
         }
 
-        @media (max-width: 480px) {
-            .pata-modal-box { margin: 0; border-radius: 0; max-height: 100vh; height: 100%; }
-            .pata-modal-gallery { max-height: 240px; padding: 16px; }
-            .pata-gallery-grid { grid-template-columns: repeat(2, 1fr); }
-            .pata-modal-info { padding: 20px; }
-            .pata-info-grid { grid-template-columns: 1fr; gap: 12px; }
-            .pata-pet-name { font-size: 28px; }
-            .pata-vet-banner { flex-direction: column; text-align: center; gap: 12px; }
-            .pata-vet-banner-left { flex-direction: column; text-align: center; }
-            .pata-vet-btn { width: 100%; justify-content: center; }
+        /* Very Small Devices */
+        @media (max-width: 380px) {
+            .pata-info-grid {
+                grid-template-columns: 1fr !important; /* Single column for very narrow screens */
+            }
+            .pata-gallery-main { height: 200px !important; }
         }
 
         /* Responsive - Grid */
@@ -954,6 +1047,20 @@
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Pelo</span>
                                             <span class="pata-info-value">${pet.coat_color || '---'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="pata-info-item">
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">visibility</span></div>
+                                        <div class="pata-info-texts">
+                                            <span class="pata-info-label">Color Ojos</span>
+                                            <span class="pata-info-value">${pet.eye_color || '---'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="pata-info-item">
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">fiber_manual_record</span></div>
+                                        <div class="pata-info-texts">
+                                            <span class="pata-info-label">Color Nariz</span>
+                                            <span class="pata-info-value">${pet.nose_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
