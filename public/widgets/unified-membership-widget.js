@@ -193,7 +193,168 @@
             font-weight: 900;
         }
 
-        /* Progress Bar Revamp */
+        /* 💬 Chat Styles - Pata Chat */
+        .pata-chat-container {
+            margin-top: 35px;
+            background: #fff;
+            border-radius: 30px;
+            border: 4px solid #000;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 480px;
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+
+        .pata-chat-header {
+            padding: 18px 25px;
+            background: #00BBB4;
+            color: #fff;
+            font-weight: 950;
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-bottom: 4px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .pata-chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            background-image: radial-gradient(#00bbb4 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-color: #fafafa;
+        }
+
+        .pata-chat-bubble {
+            max-width: 82%;
+            padding: 16px 20px;
+            border-radius: 24px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            position: relative;
+            font-weight: 700;
+            border: 3px solid #000;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+            word-wrap: break-word;
+        }
+
+        .pata-chat-bubble.admin {
+            align-self: flex-start;
+            background: #fff;
+            border-bottom-left-radius: 6px;
+            color: #1A1A1A;
+        }
+
+        .pata-chat-bubble.user {
+            align-self: flex-end;
+            background: #00BBB4;
+            color: #fff;
+            border-bottom-right-radius: 6px;
+        }
+
+        .pata-chat-bubble.system {
+            align-self: center;
+            background: #E8F5E9;
+            color: #2E7D32;
+            border: 3px dashed #2E7D32;
+            font-size: 12.5px;
+            text-align: center;
+            max-width: 92%;
+            border-radius: 15px;
+            box-shadow: none;
+            padding: 12px 20px;
+        }
+
+        .pata-chat-meta {
+            font-size: 10px;
+            font-weight: 950;
+            opacity: 0.5;
+            margin-top: 8px;
+            display: block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pata-chat-input-area {
+            padding: 18px;
+            background: #fff;
+            border-top: 4px solid #000;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .pata-chat-input {
+            flex: 1;
+            border: 3px solid #000;
+            border-radius: 50px;
+            padding: 14px 25px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 700;
+            outline: none;
+            transition: all 0.2s;
+            background: #fff;
+        }
+
+        .pata-chat-input:focus {
+            background: #F0FEFE;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.1);
+        }
+
+        .pata-chat-send {
+            background: #FE8F15;
+            border: 3px solid #000;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            flex-shrink: 0;
+            color: #fff;
+            font-size: 20px;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .pata-chat-send:hover { transform: scale(1.1) rotate(8deg); }
+        .pata-chat-send:active { transform: scale(0.9); }
+        .pata-chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        .pata-chat-empty {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .pata-chat-loading {
+            padding: 20px;
+            text-align: center;
+            font-weight: 800;
+            color: #00BBB4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Approved View Layout */
         .pata-progress-container-v2 {
             margin: 40px 0;
         }
@@ -1690,7 +1851,142 @@
             `;
         }
 
+        renderChatInterface(logs, petId, status) {
+            const canSend = ['action_required', 'rejected', 'appealed'].includes(status);
+            
+            const bubbles = logs.map(log => {
+                let bubbleClass = 'system';
+                const type = log.type || '';
+                
+                if (type === 'user_response' || type === 'user_appeal' || type === 'user_message') {
+                    bubbleClass = 'user';
+                } else if (type === 'admin_request' || type === 'admin_message') {
+                    bubbleClass = 'admin';
+                } else {
+                    bubbleClass = 'system';
+                }
+
+                const dateStr = log.date || log.created_at;
+                const date = dateStr ? new Date(dateStr).toLocaleString('es-MX', {
+                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                }) : '---';
+
+                const icon = log.icon || '📋';
+
+                if (bubbleClass === 'system') {
+                    return `
+                        <div class="pata-chat-bubble system">
+                            <span style="margin-right: 8px;">${icon}</span> ${log.message}
+                            <span class="pata-chat-meta">${date}</span>
+                        </div>
+                    `;
+                }
+
+                return `
+                    <div class="pata-chat-bubble ${bubbleClass}">
+                        ${log.message}
+                        <span class="pata-chat-meta">${date}</span>
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="pata-chat-container">
+                    <div class="pata-chat-header">
+                        Historial de Comunicación
+                    </div>
+                    <div class="pata-chat-messages" id="pata-chat-messages-container">
+                        ${logs.length === 0 ? `
+                            <div class="pata-chat-empty">
+                                <div style="font-size: 40px; margin-bottom: 10px;">💬</div>
+                                <p style="font-weight: 900; margin: 0; color: #000;">Sin mensajes aún</p>
+                                <p style="font-size: 13px; margin: 5px 0 0 0;">Aquí verás las actualizaciones de tu solicitud.</p>
+                            </div>
+                        ` : bubbles}
+                    </div>
+                    
+                    ${canSend ? `
+                        <div class="pata-chat-input-area">
+                            <textarea id="pata-chat-input" placeholder="Escribe un mensaje aquí..." class="pata-chat-input" style="border-radius: 20px; min-height: 50px; resize: none;"></textarea>
+                            <button id="pata-chat-send" class="pata-chat-send" data-pet-id="${petId}">
+                                ➔
+                            </button>
+                        </div>
+                    ` : `
+                        <div style="padding: 20px; background: #F8F9FA; border-top: 4px solid #000; text-align: center; font-size: 13px; font-weight: 800; color: #666; line-height: 1.4;">
+                            El canal de comunicación se activará si nuestro equipo requiere información adicional o si tu solicitud cambia de estado.
+                        </div>
+                    `}
+                </div>
+            `;
+        }
+
+        async fetchAndRenderChat(petId) {
+            const root = document.getElementById('pata-chat-root');
+            if (!root) return;
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`);
+                const data = await res.json();
+
+                if (!data.success) throw new Error(data.error);
+
+                const pet = this.pets.find(p => p.id === petId);
+                root.innerHTML = this.renderChatInterface(data.logs || [], petId, pet?.status);
+
+                // Scroll to bottom
+                const container = document.getElementById('pata-chat-messages-container');
+                if (container) container.scrollTop = container.scrollHeight;
+
+                // Bind send event
+                const sendBtn = document.getElementById('pata-chat-send');
+                if (sendBtn) {
+                    sendBtn.onclick = () => this.handleSendMessage(petId);
+                }
+            } catch (err) {
+                console.error('❌ Error fetching chat:', err);
+                root.innerHTML = `<div style="color:red; padding:20px; text-align:center; font-weight:800; font-size:14px;">⚠️ No se pudo cargar el historial de mensajes.</div>`;
+            }
+        }
+
+        async handleSendMessage(petId) {
+            const input = document.getElementById('pata-chat-input');
+            const btn = document.getElementById('pata-chat-send');
+            const msg = input?.value?.trim();
+
+            if (!msg) return;
+            if (msg.length < 3) return alert('El mensaje es muy corto.');
+
+            btn.disabled = true;
+            btn.innerText = '...';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/chat/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.member.id,
+                        petId: petId,
+                        message: msg
+                    })
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                input.value = '';
+                await this.fetchAndRenderChat(petId);
+            } catch (err) {
+                console.error('❌ Error sending message:', err);
+                alert('No se pudo enviar el mensaje. Intenta de nuevo.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = '➔';
+            }
+        }
+
         renderPetDetailsModal(pet) {
+
             const carencia = this.calculateCarencia(pet);
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
@@ -1797,6 +2093,15 @@
                                             </div>
                                         `).join('')}
                                     </div>
+
+                                    <!-- 🆕 Chat Interface Container -->
+                                    <div id="pata-chat-root" style="margin-top: 20px;">
+                                        <div class="pata-chat-loading">
+                                            <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
+                                            Cargando historial de comunicación...
+                                        </div>
+                                    </div>
+                                </div>
     
                                     ${pet.adoption_story ? `
                                         <div style="margin-top: 30px; background: #F1F8E9; border: 3px solid #000; padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
@@ -2028,6 +2333,10 @@
                     const closeBtn2 = document.getElementById('pata-close-details-btn');
                     if (closeBtn1) closeBtn1.onclick = close;
                     if (closeBtn2) closeBtn2.onclick = close;
+
+                    // 🆕 Initialize Chat
+                    this.fetchAndRenderChat(pet.id);
+
 
                     const modalOverlay = document.getElementById('pata-pet-details-modal');
                     if (modalOverlay) {

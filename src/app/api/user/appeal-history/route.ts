@@ -37,10 +37,10 @@ export async function GET(request: NextRequest) {
         // Construir query
         let query = supabaseAdmin
             .from('appeal_logs')
-            .select('id, type, message, created_at, pet_id, admin_id')
+            .select('id, type, message, created_at, pet_id, admin_id, metadata')
             .eq('user_id', memberId)
-            .order('created_at', { ascending: false })
-            .limit(20);
+            .order('created_at', { ascending: true }) // Cambiado a ascendente para el chat
+            .limit(50); // Aumentado para tener más historial
 
         // Si se especifica petId, filtrar por mascota
         if (petId) {
@@ -58,6 +58,7 @@ export async function GET(request: NextRequest) {
             message: log.message,
             date: log.created_at,
             petId: log.pet_id,
+            metadata: log.metadata,
             isFromAdmin: log.type.startsWith('admin_') || log.admin_id,
             icon: getLogIcon(log.type)
         }));
@@ -84,7 +85,10 @@ function getLogIcon(type: string): string {
         case 'admin_request':
             return '📩';
         case 'user_response':
+        case 'user_message':
             return '💬';
+        case 'admin_message':
+            return '🗨️';
         default:
             return '📋';
     }
