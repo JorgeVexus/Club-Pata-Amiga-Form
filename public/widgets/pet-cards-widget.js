@@ -1296,9 +1296,27 @@
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.addFormData.photos = this.addFormData.photos || {};
-                        this.addFormData.photos[`photo${num}`] = url;
-                        box.classList.add('has-file');
-                        box.innerHTML = `<input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"><img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"><div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>`;
+                        
+                        let targetNum = num;
+                        // Si no hay foto 1 y estamos subiendo otra, promover a la 1
+                        if (!this.addFormData.photos.photo1 && num !== "1") {
+                            console.log(`🐾 UI: Promoviendo subida de foto ${num} a Principal.`);
+                            targetNum = "1";
+                        }
+                        
+                        this.addFormData.photos[`photo${targetNum}`] = url;
+                        const targetBox = document.getElementById(`photo-box-${targetNum}`);
+                        
+                        if (targetBox) {
+                            targetBox.classList.add('has-file');
+                            targetBox.innerHTML = `<input type="file" accept="image/*" class="pata-photo-input" data-num="${targetNum}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"><img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"><div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>`;
+                        }
+                        
+                        // Si se promovió, restauramos el box original para que no parezca que tiene foto ahí
+                        if (targetNum !== num) {
+                            box.innerHTML = originalContent;
+                        }
+                        
                         this.setupFileUploads();
                     } catch(err) { alert('Error subiendo foto'); box.innerHTML = originalContent; this.setupFileUploads(); }
                 };
@@ -1402,6 +1420,16 @@
             if (!d.gender) return alert('Selecciona el sexo');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
+            // Normalizar fotos: asegurar que si hay alguna foto, haya una photo1
+            if (d.photos && !d.photos.photo1) {
+                const firstAvailableNum = [2, 3, 4, 5].find(num => d.photos[`photo${num}`]);
+                if (firstAvailableNum) {
+                    console.log(`🐾 Normalizando: Promoviendo photo${firstAvailableNum} a photo1 para el registro inicial.`);
+                    d.photos.photo1 = d.photos[`photo${firstAvailableNum}`];
+                    delete d.photos[`photo${firstAvailableNum}`];
+                }
+            }
+
             btn.disabled = true; btn.innerText = 'Guardando...';
             try {
                 const payload = {
@@ -1473,6 +1501,15 @@
             try {
                 const url = await this.uploadNewPetPhoto(file);
                 const updateData = { userId: this.member.id };
+                
+                // Si no hay foto principal y estamos subiendo otra foto, promoverla a principal
+                const pet = this.pets.find(p => p.id === petId);
+                const hasPrimary = pet && (pet.photo_url || pet.primary_photo_url);
+                if (!hasPrimary && type !== 'vet' && type !== 'photo1') {
+                    console.log(`🐾 Modal: Promoviendo ${type} a photo1 porque no hay foto principal.`);
+                    type = 'photo1';
+                }
+
                 if (type === 'photo1') updateData.photo1Url = url;
                 if (type === 'photo2') updateData.photo2Url = url;
                 if (type === 'photo3') updateData.photo3Url = url;
