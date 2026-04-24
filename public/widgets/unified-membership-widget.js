@@ -1714,29 +1714,16 @@
                                     📜 Ver historial y chat
                                 </button>
                             </div>
-                        ` : !this.showAppealForm ? `
+                        ` : `
                             <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; padding: 18px 50px;">
-                                    Apelar mi solicitud
-                                </button>
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: rgba(0,0,0,0.3); color: white; border: 2px solid #fff; padding: 18px 30px;">
-                                    📜 Chat y Historial
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #00BBB4; color: white; border: 2px solid #000; padding: 18px 50px; font-weight: 900; font-size: 18px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                                    💬 Ver historial y Apelar
                                 </button>
                             </div>
                             <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
-                                Revisaremos tu apelación con gusto ♡
+                                Puedes apelar tu solicitud directamente desde el chat ♡
                             </p>
-                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6;">Intentos restantes: ${maxAppeals - appealCount}</p>
-                        ` : `
-                            <div class="pata-appeal-form active" style="text-align: left; background: white; padding: 30px; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); max-width: 600px; margin: 0 auto;">
-                                <p style="font-size:16px; margin-bottom:15px; font-weight: 700; color: #1A1A1A;">Explícanos por qué debemos reconsiderar el caso:</p>
-                                <textarea id="pata-textarea-appeal" class="pata-textarea" placeholder="Escribe aquí los detalles de tu apelación..." data-pet-id="${pet.id}" style="min-height: 120px; margin-bottom: 20px; border: 1px solid #E0E0E0; border-radius: 12px; padding: 15px; width: 100%; font-family: inherit; color: #333;"></textarea>
-                                
-                                <div style="display:flex; gap:15px; justify-content: flex-end;">
-                                    <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-appeal" style="border: 1px solid #DDD; color: #666; background: transparent;">Cancelar</button>
-                                    <button class="pata-btn" id="pata-btn-submit-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; color: white;">Enviar Apelación</button>
-                                </div>
-                            </div>
+                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6;">Intentos de apelación: ${appealCount} / ${maxAppeals}</p>
                         `}
                     </div>
                 </div>
@@ -1769,13 +1756,13 @@
                 <p style="font-size:14px; color:#fff; margin-top:15px;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
 
                 ${adminMsg ? `
-                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
-                        <button class="pata-btn pata-btn-success" id="pata-btn-open-update" data-pet-id="${pet.id}">
-                            📎 Actualizar Información
+                    <div style="margin-top: 25px;">
+                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #00BBB4; color: white; border: 4px solid #000; width: 100%; padding: 22px; font-size: 20px; font-weight: 950; box-shadow: 10px 10px 0 rgba(0,0,0,0.1);">
+                            💬 Chat con Soporte y Actualizar
                         </button>
-                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #000; color: #fff; border: 2px solid #000;">
-                            💬 Chat con Soporte
-                        </button>
+                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                            Usa el chat para enviar las fotos o información que solicitó el equipo.
+                        </p>
                     </div>
                 ` : ''}
             `;
@@ -1895,9 +1882,40 @@
                     `;
                 }
 
+                let messageContent = log.message || '';
+                
+                // Detectar imágenes en formato [Imagen adjunta](url) o links [Archivo adjunto](url)
+                const imageMatch = messageContent.match(/\[Imagen adjunta\]\((.*?)\)/);
+                const fileMatch = messageContent.match(/\[Archivo adjunto\]\((.*?)\)/);
+                const genericLinkMatch = messageContent.match(/\[(.*?)\]\((.*?)\)/);
+
+                if (imageMatch) {
+                    const url = imageMatch[1];
+                    messageContent = `
+                        <div style="margin-bottom: 8px; font-weight: 700; font-size: 12px; opacity: 0.8;">📸 Imagen adjunta:</div>
+                        <a href="${url}" target="_blank">
+                            <img src="${url}" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; display: block; margin-bottom: 5px;">
+                        </a>
+                    `;
+                } else if (fileMatch) {
+                    const url = fileMatch[1];
+                    messageContent = `
+                        <a href="${url}" target="_blank" style="display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.05); padding: 10px; border-radius: 10px; text-decoration: none; color: inherit; border: 1px solid rgba(0,0,0,0.1);">
+                            <span style="font-size: 20px;">📄</span>
+                            <div style="overflow: hidden;">
+                                <div style="font-weight: 700; font-size: 12px;">Documento adjunto</div>
+                                <div style="font-size: 10px; opacity: 0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${url.split('/').pop()}</div>
+                            </div>
+                        </a>
+                    `;
+                } else if (genericLinkMatch) {
+                    // Fallback para cualquier link [texto](url)
+                    messageContent = messageContent.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color: #00BBB4; font-weight: 700;">$1</a>');
+                }
+
                 return `
                     <div class="pata-chat-bubble ${bubbleClass}">
-                        ${log.message}
+                        ${messageContent}
                         <span class="pata-chat-meta">${date}</span>
                     </div>
                 `;
@@ -1919,9 +1937,13 @@
                     </div>
                     
                     ${canSend ? `
-                        <div class="pata-chat-input-area">
-                            <textarea id="pata-chat-input" placeholder="Escribe un mensaje aquí..." class="pata-chat-input" style="border-radius: 20px; min-height: 50px; resize: none;"></textarea>
-                            <button id="pata-chat-send" class="pata-chat-send" data-pet-id="${petId}">
+                        <div class="pata-chat-input-area" style="display: flex; gap: 10px; align-items: flex-end; padding: 15px; background: #fff; border-top: 4px solid #000;">
+                            <button id="pata-chat-attach" class="pata-chat-btn" style="background: #F0F2F5; border: 2px solid #000; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: 0.2s;">
+                                📎
+                            </button>
+                            <input type="file" id="pata-chat-file-input" style="display: none;" accept="image/*,application/pdf">
+                            <textarea id="pata-chat-input" placeholder="Escribe un mensaje o adjunta archivos..." class="pata-chat-input" style="border-radius: 20px; min-height: 50px; resize: none; border: 2px solid #000; flex: 1; padding: 12px 15px; font-family: inherit;"></textarea>
+                            <button id="pata-chat-send" class="pata-chat-send" data-pet-id="${petId}" style="background: #00BBB4; border: 2px solid #000; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; font-weight: 900;">
                                 ➔
                             </button>
                         </div>
@@ -1956,9 +1978,71 @@
                 if (sendBtn) {
                     sendBtn.onclick = () => this.handleSendMessage(petId);
                 }
+
+                // Bind attach events
+                const attachBtn = document.getElementById('pata-chat-attach');
+                const fileInput = document.getElementById('pata-chat-file-input');
+                if (attachBtn && fileInput) {
+                    attachBtn.onclick = () => fileInput.click();
+                    fileInput.onchange = () => this.handleChatUpload(petId);
+                }
             } catch (err) {
                 console.error('❌ Error fetching chat:', err);
                 root.innerHTML = `<div style="color:red; padding:20px; text-align:center; font-weight:800; font-size:14px;">⚠️ No se pudo cargar el historial de mensajes.</div>`;
+            }
+        }
+
+        async handleChatUpload(petId) {
+            const fileInput = document.getElementById('pata-chat-file-input');
+            const file = fileInput?.files[0];
+            const sendBtn = document.getElementById('pata-chat-send');
+
+            if (!file) return;
+
+            // Mostrar estado de carga en el botón
+            const originalText = sendBtn.innerText;
+            sendBtn.disabled = true;
+            sendBtn.innerText = '⌛';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('userId', this.member.id);
+
+                const res = await fetch(`${CONFIG.apiUrl}/api/upload/pet-photo`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await res.json();
+                if (!data.success) throw new Error(data.error);
+
+                const fileUrl = data.url;
+                const isImage = file.type.startsWith('image/');
+                const message = isImage ? `[Imagen adjunta](${fileUrl})` : `[Archivo adjunto](${fileUrl})`;
+
+                // Enviar mensaje con el link
+                const chatRes = await fetch(`${CONFIG.apiUrl}/api/user/chat/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.member.id,
+                        petId: petId,
+                        message: message
+                    })
+                });
+
+                const chatData = await chatRes.json();
+                if (!chatData.success) throw new Error(chatData.error);
+
+                await this.fetchAndRenderChat(petId);
+            } catch (err) {
+                console.error('❌ Error en upload de chat:', err);
+                alert('No se pudo subir el archivo. Intenta de nuevo.');
+            } finally {
+                sendBtn.disabled = false;
+                sendBtn.innerText = originalText;
+                fileInput.value = '';
             }
         }
 
@@ -2361,24 +2445,7 @@
                 }
             };
 
-            // Reveal appeal form
-            const revealBtn = document.getElementById('pata-btn-reveal-appeal');
-            if (revealBtn) {
-                revealBtn.onclick = () => {
-                    this.showAppealForm = true;
-                    this.render();
-                };
-            }
 
-            // Cancel appeal
-            const cancelBtn = document.getElementById('pata-btn-cancel-appeal');
-            if (cancelBtn) {
-                cancelBtn.onclick = () => {
-                    this.showAppealForm = false;
-                    this.appealFiles = { photo1: null, photo2: null };
-                    this.render();
-                };
-            }
 
             // 🆕 Eventos para carga de fotos en apelación
             this.setupAppealPhotoUpload('pata-appeal-upload-1', 'pata-appeal-file-1', 'pata-appeal-preview-1', 'photo1');
@@ -2482,17 +2549,6 @@
                 };
             }
 
-            // 🆕 Abrir modal de actualización
-            const openUpdateBtn = document.getElementById('pata-btn-open-update');
-            if (openUpdateBtn) {
-                openUpdateBtn.onclick = () => {
-                    this.showUpdateModal = true;
-                    this.uploadFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null, cert: null };
-                    const pet = this.pets[this.currentIndex];
-                    document.body.insertAdjacentHTML('beforeend', this.renderUpdateModal(pet));
-                    this.attachModalEvents();
-                };
-            }
 
             // 🆕 Abrir modal desde banner opcional
             const openUpdateCertBtn = document.getElementById('pata-btn-open-update-cert');
