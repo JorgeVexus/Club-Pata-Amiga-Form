@@ -1,0 +1,474 @@
+<div class="verified-page-wrapper">
+  <div class="verified-main-container">
+    <!-- Decorative background elements -->
+    <div class="bg-decoration">
+      <div class="paw-pattern"></div>
+      <div class="floating-shape shape-1"></div>
+      <div class="floating-shape shape-2"></div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-inner">
+        <!-- Left Side: Visual Celebration -->
+        <div class="visual-section">
+          <div class="success-illustration">
+            <div class="icon-orb">
+              <svg class="check-svg" viewBox="0 0 52 52" role="img" aria-labelledby="success-title">
+                <title id="success-title">Verificación exitosa</title>
+                <circle class="check-circle-path" cx="26" cy="26" r="25" />
+                <path class="check-mark-path" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+              </svg>
+            </div>
+            <!-- Decorative particles -->
+            <div class="particle p1">🐾</div>
+            <div class="particle p2">✨</div>
+            <div class="particle p3">🐾</div>
+            <div class="particle p4">✨</div>
+          </div>
+        </div>
+
+        <!-- Right Side: Actionable Content -->
+        <div class="info-section">
+          <div class="badge">¡Éxito!</div>
+          <h1 class="verified-title">¡Qué alegría verte por aquí!</h1>
+          <p class="verified-text">
+            Tu correo ha sido verificado con éxito. Ya eres parte de la comunidad que más ama a sus peluditos.
+            <strong>¡Estamos listos para empezar!</strong>
+          </p>
+
+          <div class="action-container">
+            <a href="https://www.pataamiga.mx/user/inicio-de-sesion" class="primary-cta">
+              <span>Iniciar sesión</span>
+              <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+            <p class="helper-text">¿Necesitas ayuda? <a href="mailto:[miembros@pataamiga.mx]">Contáctanos</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap');
+
+  /* Fallback fonts for Pata Amiga Branding */
+  @font-face {
+    font-family: 'Fraiche';
+    src: url('https://fonts.cdnfonts.com/s/91214/Fraiche.woff') format('woff');
+    font-display: swap;
+  }
+
+  :root {
+    --pata-turquoise: #7DD8D5;
+    --pata-turquoise-dark: #00BBB4;
+    --pata-orange: #FE8F15;
+    --pata-orange-light: #FFB35C;
+    --pata-black: #1A1A1A;
+    --pata-white: #FFFFFF;
+    --font-heading: 'Fraiche', sans-serif;
+    --font-body: 'Outfit', sans-serif;
+  }
+
+  .verified-page-wrapper {
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: #F8FDFF;
+    overflow: hidden;
+    position: relative;
+    width: 100%;
+  }
+
+  .verified-main-container {
+    max-width: 1000px;
+    width: 100%;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Background Decorations */
+  .bg-decoration {
+    position: absolute;
+    inset: -100px;
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .paw-pattern {
+    position: absolute;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 30c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm10-2c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-20 0c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm10 12c4.42 0 8-3.58 8-8s-3.58-8-8-8-8 3.58-8 8 3.58 8 8 8z' fill='%231A1A1A' fill-rule='evenodd'/%3E%3C/svg%3E");
+  }
+
+  .floating-shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+  }
+
+  .shape-1 {
+    width: 400px;
+    height: 400px;
+    background: var(--pata-turquoise);
+    top: -100px;
+    left: -100px;
+    animation: pulse 10s infinite alternate;
+  }
+
+  .shape-2 {
+    width: 300px;
+    height: 300px;
+    background: var(--pata-orange);
+    bottom: -100px;
+    right: -100px;
+    animation: pulse 8s infinite alternate-reverse;
+  }
+
+  @keyframes pulse {
+    0% {
+      transform: scale(1) translate(0, 0);
+      opacity: 0.3;
+    }
+
+    100% {
+      transform: scale(1.2) translate(30px, 30px);
+      opacity: 0.5;
+    }
+  }
+
+  /* Main Card */
+  .content-card {
+    background: var(--pata-white);
+    border: 3px solid var(--pata-black);
+    border-radius: 60px;
+    box-shadow: 16px 16px 0px var(--pata-black);
+    overflow: hidden;
+    animation: cardReveal 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes cardReveal {
+    0% {
+      transform: translateY(40px) scale(0.95);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+  }
+
+  .card-inner {
+    display: flex;
+    flex-direction: row;
+    min-height: 500px;
+  }
+
+  /* Visual Section (Left) */
+  .visual-section {
+    flex: 1;
+    background-color: var(--pata-turquoise);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 40px;
+    border-right: 3px solid var(--pata-black);
+  }
+
+  .success-illustration {
+    position: relative;
+    width: 240px;
+    height: 240px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .icon-orb {
+    width: 140px;
+    height: 140px;
+    background: var(--pata-white);
+    border: 3px solid var(--pata-black);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 8px 8px 0px var(--pata-black);
+    z-index: 5;
+    animation: orbFloat 4s ease-in-out infinite;
+  }
+
+  @keyframes orbFloat {
+
+    0%,
+    100% {
+      transform: translateY(0) rotate(0);
+    }
+
+    50% {
+      transform: translateY(-15px) rotate(5deg);
+    }
+  }
+
+  .check-svg {
+    width: 80px;
+    height: 80px;
+  }
+
+  .check-circle-path {
+    fill: none;
+    stroke: var(--pata-turquoise-dark);
+    stroke-width: 4;
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: strokeDraw 0.6s ease-out 0.4s forwards;
+  }
+
+  .check-mark-path {
+    fill: none;
+    stroke: var(--pata-turquoise-dark);
+    stroke-width: 5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: strokeDraw 0.4s ease-out 1s forwards;
+  }
+
+  @keyframes strokeDraw {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .particle {
+    position: absolute;
+    font-size: 32px;
+    pointer-events: none;
+    animation: particleFloat 3s ease-in-out infinite;
+  }
+
+  .p1 {
+    top: 0;
+    left: 0;
+    animation-delay: 0s;
+  }
+
+  .p2 {
+    top: 20px;
+    right: 0;
+    animation-delay: 0.5s;
+    font-size: 24px;
+  }
+
+  .p3 {
+    bottom: 20px;
+    left: 30px;
+    animation-delay: 1s;
+    font-size: 28px;
+  }
+
+  .p4 {
+    bottom: 0;
+    right: 20px;
+    animation-delay: 1.5s;
+  }
+
+  @keyframes particleFloat {
+
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.8;
+    }
+
+    50% {
+      transform: translate(10px, -20px) scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  /* Info Section (Right) */
+  .info-section {
+    flex: 1.2;
+    padding: 60px 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: left;
+    background-color: var(--pata-white);
+  }
+
+  .badge {
+    display: inline-block;
+    width: fit-content;
+    background: var(--pata-turquoise);
+    color: var(--pata-black);
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 12px;
+    padding: 6px 16px;
+    border: 2px solid var(--pata-black);
+    border-radius: 20px;
+    margin-bottom: 24px;
+    box-shadow: 4px 4px 0px var(--pata-black);
+    animation: fadeInStagger 0.5s ease-out 0.6s both;
+  }
+
+  .verified-title {
+    font-family: var(--font-heading);
+    font-size: 52px;
+    line-height: 1.05;
+    color: var(--pata-black);
+    margin-bottom: 20px;
+    animation: fadeInStagger 0.5s ease-out 0.7s both;
+  }
+
+  .verified-text {
+    font-family: var(--font-body);
+    font-size: 20px;
+    line-height: 1.6;
+    color: #4A4A4A;
+    margin-bottom: 40px;
+    animation: fadeInStagger 0.5s ease-out 0.8s both;
+  }
+
+  @keyframes fadeInStagger {
+    0% {
+      opacity: 0;
+      transform: translateX(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  .action-container {
+    animation: fadeInStagger 0.5s ease-out 0.9s both;
+  }
+
+  .primary-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--pata-orange);
+    color: var(--pata-black);
+    font-family: var(--font-heading);
+    font-size: 24px;
+    padding: 20px 48px;
+    border: 3px solid var(--pata-black);
+    border-radius: 50px;
+    text-decoration: none;
+    box-shadow: 8px 8px 0px var(--pata-black);
+    transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    top: 0;
+    left: 0;
+  }
+
+  .primary-cta:hover {
+    background: var(--pata-orange-light);
+    transform: translate(-4px, -4px);
+    box-shadow: 12px 12px 0px var(--pata-black);
+  }
+
+  .primary-cta:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px var(--pata-black);
+  }
+
+  .arrow-icon {
+    width: 24px;
+    height: 24px;
+    transition: transform 0.3s ease;
+  }
+
+  .primary-cta:hover .arrow-icon {
+    transform: translateX(6px);
+  }
+
+  .helper-text {
+    margin-top: 24px;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: #555;
+  }
+
+  .helper-text a {
+    color: var(--pata-turquoise-dark);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .helper-text a:hover {
+    text-decoration: underline;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 992px) {
+    .card-inner {
+      flex-direction: column;
+    }
+
+    .visual-section {
+      border-right: none;
+      border-bottom: 3px solid var(--pata-black);
+      padding: 60px 20px;
+    }
+
+    .info-section {
+      padding: 40px 30px;
+      text-align: center;
+      align-items: center;
+    }
+
+    .verified-title {
+      font-size: 40px;
+    }
+
+    .verified-text {
+      font-size: 18px;
+    }
+
+    .primary-cta {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .verified-page-wrapper {
+      padding: 20px 15px;
+    }
+
+    .content-card {
+      border-radius: 40px;
+      box-shadow: 8px 8px 0px var(--pata-black);
+    }
+
+    .info-section {
+      padding: 40px 20px;
+    }
+
+    .verified-title {
+      font-size: 32px;
+    }
+
+    .primary-cta {
+      padding: 16px 24px;
+      font-size: 20px;
+      box-shadow: 6px 6px 0px var(--pata-black);
+    }
+  }
+</style>

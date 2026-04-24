@@ -1024,12 +1024,21 @@
                     <main class="pata-modal-main">
                         <!-- Left: Gallery -->
                         <section class="pata-modal-gallery hide-scrollbar">
-                            <div class="pata-gallery-main">
-                                <img src="${photoSlots[0] || CONFIG.placeholderDog}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'">
-                                <div class="pata-gallery-label">
-                                    <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
-                                    <span>Foto Principal</span>
-                                </div>
+                            <div class="pata-gallery-main" id="modal-photo-upload-1">
+                                ${(photoSlots[0] && photoSlots[0].startsWith('http')) ? `
+                                    <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'">
+                                    <div class="pata-gallery-label">
+                                        <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
+                                        <span>Foto Principal</span>
+                                    </div>
+                                ` : `
+                                    <div class="pata-modal-upload-box" style="width:100%; height:100%; border:none;">
+                                        <input type="file" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
+                                            onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo1', this.files[0], 'modal-photo-upload-1')">
+                                        <span class="material-symbols-outlined" style="font-size:48px; color:#A0AEC0">add_a_photo</span>
+                                        <span style="font-size:12px; font-weight:800; color:#718096; text-transform:uppercase; margin-top:10px">Subir Foto Principal *</span>
+                                    </div>
+                                `}
                             </div>
                             <div class="pata-gallery-grid">
                                 ${photoSlots.slice(1).map((url, i) => {
