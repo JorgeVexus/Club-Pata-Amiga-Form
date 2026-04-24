@@ -1597,8 +1597,8 @@
                         <p style="margin:0; font-size:13px; color:#616161;">
                             <span style="font-weight:600;">📋 Estado:</span> Nuestro equipo está revisando tu caso.
                         </p>
-                        <button class="pata-btn-history" data-pet-id="${pet.id}" style="background:#7B1FA2; color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
-                            📜 Ver historial
+                        <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background:#7B1FA2; color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
+                            📜 Ver historial y chat
                         </button>
                     </div>
                 </div>
@@ -1709,10 +1709,20 @@
                             <p style="color: #FFFFFF; font-size: 14px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; display: inline-block;">
                                 Has agotado el límite de apelaciones para esta mascota.
                             </p>
+                            <div style="margin-top: 15px;">
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white;">
+                                    📜 Ver historial y chat
+                                </button>
+                            </div>
                         ` : !this.showAppealForm ? `
-                            <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; padding: 18px 50px;">
-                                Apelar mi solicitud
-                            </button>
+                            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
+                                <button class="pata-btn pata-btn-success" id="pata-btn-reveal-appeal" data-pet-id="${pet.id}" style="background: #00BBB4; padding: 18px 50px;">
+                                    Apelar mi solicitud
+                                </button>
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: rgba(0,0,0,0.3); color: white; border: 2px solid #fff; padding: 18px 30px;">
+                                    📜 Chat y Historial
+                                </button>
+                            </div>
                             <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
                                 Revisaremos tu apelación con gusto ♡
                             </p>
@@ -1759,9 +1769,12 @@
                 <p style="font-size:14px; color:#fff; margin-top:15px;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
 
                 ${adminMsg ? `
-                    <div style="margin-top: 20px;">
+                    <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
                         <button class="pata-btn pata-btn-success" id="pata-btn-open-update" data-pet-id="${pet.id}">
-                            📎 Actualizar Información de ${pet.name}
+                            📎 Actualizar Información
+                        </button>
+                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #000; color: #fff; border: 2px solid #000;">
+                            💬 Chat con Soporte
                         </button>
                     </div>
                 ` : ''}
@@ -2317,7 +2330,9 @@
             this.container.onclick = (e) => {
                 const detailsBtn = e.target.closest('.pata-btn-ver-detalles');
                 if (detailsBtn) {
-                    const pet = this.pets[this.currentIndex];
+                    const petId = detailsBtn.dataset.petId;
+                    // Buscar la mascota por ID (más robusto para botones fuera del tab actual)
+                    const pet = petId ? this.pets.find(p => p.id === petId) : this.pets[this.currentIndex];
                     if (!pet) return;
 
                     const modalHtml = this.renderPetDetailsModal(pet);
@@ -2336,7 +2351,6 @@
 
                     // 🆕 Initialize Chat
                     this.fetchAndRenderChat(pet.id);
-
 
                     const modalOverlay = document.getElementById('pata-pet-details-modal');
                     if (modalOverlay) {
@@ -2361,19 +2375,8 @@
             if (cancelBtn) {
                 cancelBtn.onclick = () => {
                     this.showAppealForm = false;
-                    this.appealFiles = { photo1: null, photo2: null }; // Limpiar archivos
+                    this.appealFiles = { photo1: null, photo2: null };
                     this.render();
-                };
-            }
-
-            // 🆕 Evento para ver historial de apelaciones
-            const historyBtn = this.container.querySelector('.pata-btn-history');
-            if (historyBtn) {
-                historyBtn.onclick = async () => {
-                    const petId = historyBtn.dataset.petId;
-                    if (petId) {
-                        await this.showAppealHistory(petId);
-                    }
                 };
             }
 
