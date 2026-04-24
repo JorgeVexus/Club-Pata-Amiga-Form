@@ -119,6 +119,7 @@ export function validateRFC(rfc: string): {
     isValid: boolean;
     type?: 'physical' | 'moral';
     error?: string;
+    checkDigitValid?: boolean;
 } {
     // 1. Validar formato y longitud
     const formatResult = validateRFCFormat(rfc);
@@ -143,17 +144,14 @@ export function validateRFC(rfc: string): {
     }
 
     // 3. Validar dígito verificador
-    // Nota: Aunque el algoritmo es estándar, algunos RFCs antiguos o especiales pueden no seguirlo perfectamente.
-    // Sin embargo, para CFDI 4.0 el SAT es estricto.
-    if (!validateRFCCheckDigit(cleanRFC)) {
-        return { 
-            isValid: false, 
-            type: formatResult.type,
-            error: 'El dígito verificador del RFC no es válido' 
-        };
-    }
+    // Hacemos esta validación no bloqueante para evitar problemas con RFCs especiales
+    const isCheckDigitValid = validateRFCCheckDigit(cleanRFC);
 
-    return { isValid: true, type: formatResult.type };
+    return { 
+        isValid: true, 
+        type: formatResult.type,
+        checkDigitValid: isCheckDigitValid
+    };
 }
 
 /**
