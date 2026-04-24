@@ -244,6 +244,20 @@
             transform: scale(1.05);
         }
 
+        .pata-modal-upload-box {
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pata-modal-upload-box:hover {
+            background: rgba(0, 187, 180, 0.05);
+        }
+
         .pata-gallery-label {
             position: absolute;
             top: 12px;
