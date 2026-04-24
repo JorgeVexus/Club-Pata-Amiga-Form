@@ -28,7 +28,6 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
         cfdiUse: '',
     });
     const [rfcError, setRfcError] = useState('');
-    const [rfcWarning, setRfcWarning] = useState('');
     const [rfcType, setRfcType] = useState<'physical' | 'moral' | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -52,16 +51,8 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
         if (result.isValid) {
             setRfcType(result.type || null);
             setRfcError('');
-            
-            // Si el formato es válido pero el dígito no coincide, mostramos aviso pero no bloqueamos
-            if (result.checkDigitValid === false && cleanRFC.length >= 12) {
-                setRfcWarning('El dígito verificador no coincide. Asegúrate de que sea correcto.');
-            } else {
-                setRfcWarning('');
-            }
         } else {
             // Only show error if length is at least the minimum for an RFC
-            setRfcWarning('');
             if (cleanRFC.length >= 12) {
                 setRfcError(result.error || 'RFC inválido');
             } else {
@@ -149,19 +140,14 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                                 placeholder="ABCD123456XYZ"
                                 maxLength={13}
                                 style={{ 
-                                    borderColor: rfcError ? '#E53E3E' : (rfcWarning ? '#DD6B20' : (details.rfc.length >= 12 && !rfcError ? '#38A169' : '#E2E8F0')),
-                                    boxShadow: rfcError ? '0 0 0 1px #E53E3E' : (rfcWarning ? '0 0 0 1px #DD6B20' : (details.rfc.length >= 12 && !rfcError ? '0 0 0 1px #38A169' : 'none')),
+                                    borderColor: rfcError ? '#E53E3E' : (details.rfc.length >= 12 && !rfcError ? '#38A169' : '#E2E8F0'),
+                                    boxShadow: rfcError ? '0 0 0 1px #E53E3E' : (details.rfc.length >= 12 && !rfcError ? '0 0 0 1px #38A169' : 'none'),
                                     textTransform: 'uppercase'
                                 }}
                             />
                             {rfcError && (
                                 <span style={{ color: '#E53E3E', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
                                     {rfcError}
-                                </span>
-                            )}
-                            {rfcWarning && !rfcError && (
-                                <span style={{ color: '#DD6B20', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
-                                    ⚠️ {rfcWarning}
                                 </span>
                             )}
                         </div>

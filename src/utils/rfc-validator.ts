@@ -119,7 +119,6 @@ export function validateRFC(rfc: string): {
     isValid: boolean;
     type?: 'physical' | 'moral';
     error?: string;
-    checkDigitValid?: boolean;
 } {
     // 1. Validar formato y longitud
     const formatResult = validateRFCFormat(rfc);
@@ -143,14 +142,9 @@ export function validateRFC(rfc: string): {
         return { isValid: false, error: 'El día en el RFC es inválido' };
     }
 
-    // 3. Validar dígito verificador
-    // Hacemos esta validación no bloqueante para evitar problemas con RFCs especiales
-    const isCheckDigitValid = validateRFCCheckDigit(cleanRFC);
-
     return { 
         isValid: true, 
-        type: formatResult.type,
-        checkDigitValid: isCheckDigitValid
+        type: formatResult.type
     };
 }
 
