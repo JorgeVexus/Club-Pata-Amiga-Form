@@ -206,6 +206,203 @@
             animation: pataSlideDown 0.4s var(--pata-spring);
         }
 
+        .pata-modal-main {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Left Section: Gallery */
+        .pata-modal-gallery {
+            width: 40%;
+            background: var(--pata-primary-light);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow-y: auto;
+        }
+
+        .pata-gallery-main {
+            aspect-ratio: 1;
+            width: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: #fff;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .pata-gallery-main img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .pata-gallery-main:hover img {
+            transform: scale(1.05);
+        }
+
+        .pata-gallery-label {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: flex; align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #000;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 2px solid #000;
+        }
+
+        .pata-gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        /* Right Section: Info */
+        .pata-modal-info {
+            width: 60%;
+            padding: 32px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .pata-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .pata-pet-name {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 40px;
+            color: #000;
+            margin: 0;
+            line-height: 1;
+            text-transform: lowercase;
+        }
+
+        .pata-pet-breed-info {
+            display: flex;
+            align-items: center; gap: 8px;
+            color: #4A5568;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .pata-close-modal {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #EDECFF;
+            border: 2px solid #000;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; color: #000;
+        }
+
+        .pata-close-modal:hover {
+            background: #E6E6FF; transform: rotate(90deg);
+        }
+
+        .pata-badge-row {
+            display: flex; flex-wrap: wrap; gap: 8px;
+        }
+
+        .pata-badge {
+            padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 800;
+            text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+        }
+
+        /* Info Card */
+        .pata-info-card {
+            background: var(--pata-primary-light); border-radius: 24px; padding: 24px;
+            border: var(--pata-border-thin);
+        }
+
+        .pata-info-card-title {
+            font-size: 10px; font-weight: 800; color: #000;
+            text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .pata-info-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
+        }
+
+        .pata-info-item {
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .pata-info-icon-wrap {
+            width: 36px; height: 36px; border-radius: 12px; background: #fff;
+            display: flex; align-items: center; justify-content: center; color: #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05); flex-shrink: 0;
+            border: 2px solid #000;
+        }
+
+        .pata-info-texts {
+            display: flex; flex-direction: column;
+        }
+
+        .pata-info-label {
+            font-size: 9px; font-weight: 800; color: #718096; text-transform: uppercase;
+            line-height: 1; margin-bottom: 2px;
+        }
+
+        .pata-info-value {
+            font-size: 14px; font-weight: 700; color: #1A1A1E; line-height: 1.2;
+        }
+
+        /* Vet Banner */
+        .pata-vet-banner {
+            background: #fff;
+            border: var(--pata-border-thin);
+            border-style: dashed;
+            border-radius: 24px; padding: 20px;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+            margin-top: auto;
+        }
+
+        .pata-vet-banner-left {
+            display: flex; align-items: center; gap: 16px;
+        }
+
+        .pata-vet-icon-main {
+            width: 44px; height: 44px; border-radius: 50%; background: var(--pata-primary); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.2);
+            border: 2px solid #000;
+        }
+
+        .pata-vet-texts h4 {
+            font-size: 11px; font-weight: 950; color: #000; margin: 0; text-transform: uppercase;
+        }
+
+        .pata-vet-texts p {
+            font-size: 11px; color: #666; margin: 2px 0 0 0; font-weight: 600;
+        }
+
+        .pata-vet-btn {
+            background: var(--pata-primary); color: #fff; padding: 10px 20px; border-radius: 50px;
+            font-size: 12px; font-weight: 700; text-decoration: none;
+            display: flex; align-items: center; gap: 8px; transition: all 0.2s; border: var(--pata-border-thin); cursor: pointer; white-space: nowrap;
+        }
+
+        .pata-vet-btn:hover { background: var(--pata-primary-light); transform: scale(1.02); }
+
         /* Multi-step Form UI */
         .pata-step-indicator { display: flex; align-items: center; gap: 12px; margin-bottom: 35px; justify-content: center; }
         .pata-step-dot { width: 12px; height: 12px; border-radius: 50%; background: #E0E0E0; border: 2px solid transparent; transition: all 0.4s var(--pata-spring); }
@@ -262,25 +459,21 @@
         .pata-btn-secondary { background: var(--pata-primary); color: #FFF; }
         .pata-btn:hover { transform: translateY(-4px); box-shadow: 8px 8px 0 rgba(0,0,0,0.1); }
 
-        /* Custom Dropdowns */
-        .pata-autocomplete-suggestions {
-            position: absolute; top: 100%; left: 0; right: 0;
-            background: #fff; border: var(--pata-border-thin);
-            border-top: none; border-radius: 0 0 24px 24px;
-            max-height: 200px; overflow-y: auto; z-index: 1000;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-            display: none; padding: 10px;
-        }
-        .pata-autocomplete-suggestions.active { display: block; }
-        .pata-autocomplete-suggestion {
-            padding: 12px 18px; cursor: pointer; font-size: 15px; font-weight: 700;
-            border-radius: 12px; transition: all 0.2s; margin-bottom: 4px;
-        }
-        .pata-autocomplete-suggestion:hover { background: var(--pata-primary-light); color: #000; }
+        /* Utils */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         @keyframes pataFadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes pataSlideDown { from { opacity: 0; transform: translateY(-20px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes pataSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        @media (max-width: 900px) {
+            .pata-modal-box { max-width: 90%; width: 600px; }
+            .pata-pet-name { font-size: 36px; }
+            .pata-modal-main { flex-direction: column; }
+            .pata-modal-gallery { width: 100%; border-right: none !important; border-bottom: var(--pata-border-thick); }
+            .pata-modal-info { width: 100%; }
+        }
 
         @media (max-width: 750px) {
             .pata-cards-grid { justify-content: center; }
@@ -290,7 +483,7 @@
             .pata-unit-toggle { width: 100%; }
             .pata-unit-btn { flex: 1; }
         }
-    `;;
+    `;
 
     class ManadaWidget {
         constructor(containerId) {
@@ -356,15 +549,12 @@
             const ageNum = parseInt(pet.age_value) || 0;
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             
-            // Check for missing photos - ONLY primary photo is mandatory
             const primaryPhotoUrl = pet.photo_url || pet.primary_photo_url;
             const hasPrimaryPhoto = primaryPhotoUrl && primaryPhotoUrl.startsWith('http');
 
             const isMissingPhotos = !hasPrimaryPhoto;
             const isMissingCert = isSenior && !pet.vet_certificate_url;
 
-            // Updated status logic: Prioritize missing documentation for UX clarity
-            // If it's missing photos or certificate, it should show specific action label regardless of database status
             if (isMissingCert) {
                 return { ...CONFIG.statusColors.incomplete, label: 'CERTIFICADO PENDIENTE', isMissingCert: true };
             }
@@ -372,7 +562,6 @@
                 return { ...CONFIG.statusColors.incomplete, label: 'COMPLETAR FOTOS', isMissingPhotos: true };
             }
 
-            // Normal flow statuses
             if (pet.status === 'pending') {
                 return { ...CONFIG.statusColors.pending, label: 'EN REVISIÓN' };
             }
@@ -431,7 +620,6 @@
             const pet = this.pets.find(p => p.id === petId);
             if (!pet) return;
             
-            // Dates formatting
             const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', {
                 day: 'numeric', month: 'short', year: 'numeric'
             }) : 'No disponible';
@@ -447,15 +635,12 @@
             modalOverlay.setAttribute('aria-modal', 'true');
             modalOverlay.setAttribute('aria-labelledby', 'pata-modal-pet-name');
             
-            // Lock body scroll
             document.body.style.overflow = 'hidden';
 
-            // Close on backdrop click
             modalOverlay.onclick = (e) => {
                 if (e.target === modalOverlay) this.closeModal(modalOverlay);
             };
 
-            // Close on Escape key
             const escListener = (e) => {
                 if (e.key === 'Escape') {
                     this.closeModal(modalOverlay);
@@ -464,7 +649,6 @@
             };
             document.addEventListener('keydown', escListener);
 
-            // Photo Gallery Logic
             const photoSlots = [
                 pet.photo_url || pet.primary_photo_url,
                 pet.photo2_url,
@@ -486,14 +670,12 @@
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             const breedDisplay = pet.is_mixed_breed ? (isCat ? 'Doméstico' : 'Mestizo') : (pet.breed || 'Mestizo');
 
-            // Badges
             const badges = [];
             if (pet.status === 'pending') badges.push({ text: 'EN REVISIÓN', bg: 'rgba(255, 183, 2, 0.2)', color: '#6B4B00', dot: true });
             if (pet.is_adopted) badges.push({ text: 'ADOPTADO', bg: 'rgba(74, 182, 167, 0.2)', color: '#00433C', icon: 'verified' });
             if (pet.is_mixed_breed) badges.push({ text: breedDisplay.toUpperCase(), bg: 'rgba(179, 235, 255, 0.3)', color: '#00677D' });
             if (isSenior) badges.push({ text: 'SENIOR', bg: 'rgba(109, 121, 126, 0.2)', color: '#3D494D' });
 
-            // Alert Box for missing documents
             const statusContext = this.getPetStatusContext(pet);
             let alertHtml = '';
             if (statusContext.isMissingCert || statusContext.isMissingPhotos) {
@@ -514,12 +696,11 @@
             modalOverlay.innerHTML = `
                 <div class="pata-modal-box">
                     <main class="pata-modal-main">
-                        <!-- Left: Gallery -->
                         <section class="pata-modal-gallery hide-scrollbar" style="border-right: var(--pata-border-thick);">
                             <div class="pata-gallery-main" id="modal-photo-upload-1" style="border: var(--pata-border-thick);">
                                 ${(photoSlots[0] && photoSlots[0].startsWith('http')) ? `
                                     <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy">
-                                    <div class="pata-gallery-label" style="border: 2px solid #000;">
+                                    <div class="pata-gallery-label">
                                         <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
                                         <span>Foto Principal</span>
                                     </div>
@@ -542,7 +723,7 @@
                                             </div>`;
                                     } else {
                                         return `
-                                            <div class="pata-modal-upload-box" id="modal-photo-upload-${num}" style="border:var(--pata-border-thin); border-style:dashed;">
+                                            <div class="pata-modal-upload-box" id="modal-photo-upload-${num}" style="border:var(--pata-border-thin); border-style:dashed; aspect-ratio:1; border-radius:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer;">
                                                 <input type="file" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
                                                     onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo${num}', this.files[0], 'modal-photo-upload-${num}')" aria-label="Subir foto ${num}">
                                                 <span class="material-symbols-outlined" style="font-size:24px; color:#666">add_a_photo</span>
@@ -553,7 +734,6 @@
                             </div>
                         </section>
 
-                        <!-- Right: Info -->
                         <section class="pata-modal-info hide-scrollbar">
                             <header class="pata-info-header">
                                 <div>
@@ -580,60 +760,60 @@
 
                             ${alertHtml}
 
-                            <div class="pata-info-card" style="border: var(--pata-border-thin); background: var(--pata-primary-light);">
-                                <h3 class="pata-info-card-title" style="color:#000; opacity:0.6;">Información General</h3>
+                            <div class="pata-info-card">
+                                <h3 class="pata-info-card-title">Información General</h3>
                                 <div class="pata-info-grid">
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">category</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">category</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Especie</span>
                                             <span class="pata-info-value">${petTypeDisplay}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">event</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">event</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Edad</span>
                                             <span class="pata-info-value">${ageValue} ${ageUnit}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">${genderIcon}</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">${genderIcon}</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Género</span>
                                             <span class="pata-info-value">${genderDisplay}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">palette</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">palette</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Pelo</span>
                                             <span class="pata-info-value">${pet.coat_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">visibility</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">visibility</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Ojos</span>
                                             <span class="pata-info-value">${pet.eye_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">fiber_manual_record</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">fiber_manual_record</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Nariz</span>
                                             <span class="pata-info-value">${pet.nose_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">login</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">login</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Ingreso</span>
                                             <span class="pata-info-value">${registrationDate}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap" style="border: 2px solid #000;"><span class="material-symbols-outlined">rocket_launch</span></div>
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">rocket_launch</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Activación</span>
                                             <span class="pata-info-value">${activationDate}</span>
@@ -643,25 +823,25 @@
                             </div>
 
                             ${pet.adoption_story ? `
-                                <div class="pata-story-card" style="border: var(--pata-border-thin);">
+                                <div class="pata-story-card" style="border: var(--pata-border-thin); background:#F1F8E9; border-radius:24px; padding:24px; margin-bottom:8px;">
                                     <p style="margin:0 0 8px 0; font-weight:950; color:var(--pata-primary); font-size:10px; text-transform:uppercase;">📜 Historia de adopción</p>
                                     <p style="margin:0; color:#333; font-size:14px; line-height:1.6; font-weight:700;">${pet.adoption_story}</p>
                                 </div>
                             ` : ''}
 
-                            <div class="pata-vet-banner" style="border: var(--pata-border-thin); border-style: dashed;">
+                            <div class="pata-vet-banner">
                                 <div class="pata-vet-banner-left">
-                                    <div class="pata-vet-icon-main" style="border: 2px solid #000;"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">medical_services</span></div>
+                                    <div class="pata-vet-icon-main"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">medical_services</span></div>
                                     <div class="pata-vet-texts">
-                                        <h4 style="font-weight:950;">INFORMACIÓN VETERINARIA</h4>
-                                        <p style="font-weight:600;">Historial médico completo y vacunas.</p>
+                                        <h4>INFORMACIÓN VETERINARIA</h4>
+                                        <p>Historial médico completo y vacunas.</p>
                                     </div>
                                 </div>
                                 ${pet.vet_certificate_url ? 
-                                    `<a href="${pet.vet_certificate_url}" target="_blank" class="pata-vet-btn" style="border: var(--pata-border-thin);">
+                                    `<a href="${pet.vet_certificate_url}" target="_blank" class="pata-vet-btn">
                                         Ver Certificado <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
                                     </a>` : 
-                                    `<div class="pata-vet-btn" style="position:relative; overflow:hidden; cursor:pointer; border: var(--pata-border-thin);">
+                                    `<div class="pata-vet-btn" style="position:relative; overflow:hidden; cursor:pointer;">
                                         <input type="file" accept=".pdf,image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2" 
                                             onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-upload-placeholder')" aria-label="Subir certificado veterinario">
                                         <span id="modal-vet-upload-placeholder">Subir Certificado</span>
@@ -675,14 +855,10 @@
             `;
             document.body.appendChild(modalOverlay);
         }
-;
-            document.body.appendChild(modalOverlay);
-        }
 
         closeModal(modalElement) {
             if (modalElement) {
                 modalElement.remove();
-                // Restore body scroll
                 document.body.style.overflow = '';
             }
         }
@@ -715,10 +891,8 @@
                 const data = await res.json();
                 if (data.success) {
                     alert('¡Historia guardada exitosamente!');
-                    // Cerrar el modal actual
                     const modal = btn.closest('.pata-modal-overlay');
                     if (modal) modal.remove();
-                    // Recargar los datos para refrescar la UI
                     this.init();
                 } else {
                     alert('Error al guardar: ' + (data.error || 'Desconocido'));
@@ -744,8 +918,6 @@
             };
             this.uploadedPhotoUrl = null;
             this.uploadedVetUrl = null;
-
-            // Inicializar caches una sola vez por sesión de "Añadir mascota"
             this.breedsCache = { perro: [], gato: [] };
             this.colorsCache = {
                 coat: { perro: [], gato: [] },
@@ -766,7 +938,6 @@
         renderAddStep() {
             const content = document.getElementById('pata-add-content');
             if (!content) return;
-            
             if (this.addStep === 1) this.renderStep1(content);
             else this.renderStep2(content);
         }
@@ -814,7 +985,6 @@
                     <button class="pata-btn pata-btn-primary" id="add-next" style="border: var(--pata-border-thick);">Continuar →</button>
                 </div>`;
 
-            // Events
             container.querySelectorAll('.pata-type-btn').forEach(btn => {
                 btn.onclick = () => {
                     d.petType = btn.dataset.type;
@@ -824,23 +994,15 @@
                 };
             });
 
-            // Age Unit Toggle Events
             container.querySelectorAll('.pata-unit-btn').forEach(btn => {
                 btn.onclick = () => {
                     const newUnit = btn.dataset.unit;
                     if (d.ageUnit === newUnit) return;
-                    
-                    // Convert value logic (optional but nice)
                     let currentVal = parseInt(document.getElementById('add-age-val').value) || 0;
-                    if (d.ageUnit === 'years' && newUnit === 'months') {
-                        currentVal = currentVal * 12;
-                    } else if (d.ageUnit === 'months' && newUnit === 'years') {
-                        currentVal = Math.floor(currentVal / 12);
-                    }
-                    
+                    if (d.ageUnit === 'years' && newUnit === 'months') currentVal = currentVal * 12;
+                    else if (d.ageUnit === 'months' && newUnit === 'years') currentVal = Math.floor(currentVal / 12);
                     d.ageUnit = newUnit;
                     document.getElementById('add-age-val').value = currentVal;
-                    
                     container.querySelectorAll('.pata-unit-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     updateAgeFeedback();
@@ -851,48 +1013,20 @@
                 const ageVal = parseInt(document.getElementById('add-age-val').value) || 0;
                 const infoDiv = document.getElementById('pata-age-info');
                 if (!infoDiv) return;
-
-                if (ageVal <= 0) {
-                    infoDiv.innerHTML = '';
-                    return;
-                }
-
+                if (ageVal <= 0) { infoDiv.innerHTML = ''; return; }
                 const totalMonths = d.ageUnit === 'years' ? ageVal * 12 : ageVal;
-                const isSenior = totalMonths >= 120; // 10 years
-
+                const isSenior = totalMonths >= 120;
                 if (totalMonths < 4) {
-                    infoDiv.innerHTML = `
-                        <div class="pata-info-box error">
-                            <span class="pata-info-icon">❌</span>
-                            <p class="pata-info-text">
-                                La edad mínima de tu peludo debe ser superior a <strong>4 meses</strong> para poder registrarse.
-                            </p>
-                        </div>
-                    `;
+                    infoDiv.innerHTML = `<div class="pata-info-box error"><span class="pata-info-icon">❌</span><p class="pata-info-text">La edad mínima de tu peludo debe ser superior a <strong>4 meses</strong> para poder registrarse.</p></div>`;
                 } else if (isSenior) {
-                    infoDiv.innerHTML = `
-                        <div class="pata-info-box">
-                            <span class="pata-info-icon">💡</span>
-                            <p class="pata-info-text">
-                                Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙
-                            </p>
-                        </div>
-                    `;
+                    infoDiv.innerHTML = `<div class="pata-info-box"><span class="pata-info-icon">💡</span><p class="pata-info-text">Como es un peludito senior (10+ años), más adelante te vamos a pedir un poco más de información sobre su estado de salud actual. 🐾💙</p></div>`;
                 } else {
-                    infoDiv.innerHTML = `
-                        <div class="pata-info-box">
-                            <span class="pata-info-icon">💡</span>
-                            <p class="pata-info-text">
-                                ¡Perfecto! La foto de tu mascota la podrás subir en el siguiente paso. 
-                                <strong>Tienes 15 días para hacerlo.</strong>
-                            </p>
-                        </div>
-                    `;
+                    infoDiv.innerHTML = `<div class="pata-info-box"><span class="pata-info-icon">💡</span><p class="pata-info-text">¡Perfecto! La foto de tu mascota la podrás subir en el siguiente paso. <strong>Tienes 15 días para hacerlo.</strong></p></div>`;
                 }
             };
 
             document.getElementById('add-age-val').oninput = updateAgeFeedback;
-            updateAgeFeedback(); // Initial call
+            updateAgeFeedback();
 
             document.getElementById('add-next').onclick = () => {
                 const name = document.getElementById('add-name').value.trim();
@@ -900,14 +1034,10 @@
                 if (!d.petType) return alert('Selecciona si es perro o gato');
                 if (!name) return alert('El nombre es requerido');
                 if (!age || age < 0) return alert('Ingresa una edad válida');
-                
                 const totalMonths = d.ageUnit === 'years' ? parseInt(age) * 12 : parseInt(age);
                 if (totalMonths < 4) return alert('La edad mínima de tu peludo debe ser superior a 4 meses para poder registrarse.');
-                
                 d.name = name;
                 d.ageValue = age;
-                // d.ageUnit already updated by toggle clicks
-
                 this.addStep = 2;
                 this.renderAddStep();
             };
@@ -965,7 +1095,6 @@
                     </div>
                 </div>
 
-
                 <div class="pata-form-row">
                     <div class="pata-form-group">
                         <label class="pata-form-label" for="add-coat">Color de pelo *</label>
@@ -997,7 +1126,7 @@
                     
                     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 20px;">
                         ${[1,2,3,4,5].map(num => `
-                            <div class="pata-upload-box small" id="photo-box-${num}" style="position: relative; overflow: hidden; height: 110px; border-radius: 20px; border: var(--pata-border-thin); border-style: dashed;">
+                            <div class="pata-upload-box small" id="photo-box-${num}" style="position: relative; overflow: hidden; height: 110px; border-radius: 20px; border: var(--pata-border-thin); border-style: dashed; display:flex; align-items:center; justify-content:center; cursor:pointer;">
                                 <input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;" aria-label="Subir foto ${num === 1 ? 'principal' : num}">
                                 <div class="pata-upload-content" style="text-align: center; padding: 10px;">
                                     <span class="pata-upload-icon" style="font-size: 24px; display: block; margin-bottom: 4px;">📷</span>
@@ -1008,31 +1137,29 @@
                     </div>
                 </div>
 
-                <div class="pata-adoption-section" style="border: var(--pata-border-thin); box-shadow: 8px 8px 0 rgba(0, 187, 180, 0.05);">
-                    <div class="pata-adoption-header">
-                        <div class="pata-adoption-icon" style="border: 2px solid #000;">🏠</div>
+                <div class="pata-adoption-section" style="border: var(--pata-border-thin); box-shadow: 8px 8px 0 rgba(0, 187, 180, 0.05); background: #E6FFFA; border-radius: 20px; padding: 20px; margin: 10px 0 20px 0;">
+                    <div class="pata-adoption-header" style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                        <div class="pata-adoption-icon" style="border: 2px solid #000; width: 44px; height: 44px; background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0, 187, 180, 0.1);">🏠</div>
                         <div>
-                            <h4 class="pata-adoption-title">¿Tu mascota es adoptada?</h4>
-                            <p class="pata-adoption-subtitle">Nos encantaría conocer su origen</p>
+                            <h4 class="pata-adoption-title" style="font-weight: 800; font-size: 15px; color: #234E52; margin: 0;">¿Tu mascota es adoptada?</h4>
+                            <p class="pata-adoption-subtitle" style="font-size: 12px; color: #4A7C7F; margin: 2px 0 0 0;">Nos encantaría conocer su origen</p>
                         </div>
                     </div>
 
-                    <label class="pata-adoption-checkbox-wrapper" id="adoption-toggle" for="add-adopted">
-                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="pointer-events: none;">
-                        <span class="pata-adoption-checkbox-text">¡Sí, es rescatada / adoptada!</span>
+                    <label class="pata-adoption-checkbox-wrapper" id="adoption-toggle" for="add-adopted" style="background: rgba(255, 255, 255, 0.6); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="pointer-events: none; width: 22px; height: 22px; accent-color: #15BEB2; cursor: pointer;">
+                        <span class="pata-adoption-checkbox-text" style="font-size: 14px; font-weight: 700; color: #2D3748;">¡Sí, es rescatada / adoptada!</span>
                     </label>
 
-                    <div class="pata-adoption-story-wrapper" id="story-group" style="display:${d.isAdopted?'block':'none'}; border: var(--pata-border-thin);">
-                        <label class="pata-adoption-story-label" for="add-story">
+                    <div class="pata-adoption-story-wrapper" id="story-group" style="display:${d.isAdopted?'block':'none'}; border: var(--pata-border-thin); background: rgba(255, 255, 255, 0.9); border-radius: 16px; padding: 15px; margin-top: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                        <label class="pata-adoption-story-label" for="add-story" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 14px; color: #1a365d; margin-bottom: 10px;">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--pata-primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
                             Cuéntanos su historia
                         </label>
-                        <textarea class="pata-adoption-textarea" id="add-story" placeholder="Ej: La encontramos en un refugio hace 2 años...">${d.adoptionStory}</textarea>
+                        <textarea class="pata-adoption-textarea" id="add-story" placeholder="Ej: La encontramos en un refugio hace 2 años..." style="width: 100%; padding: 12px; border: 1.5px solid #E2E8F0; border-radius: 14px; font-family: inherit; font-size: 14px; resize: vertical; min-height: 100px; box-sizing: border-box; transition: all 0.2s;">${d.adoptionStory}</textarea>
                         <p style="font-size:10px; color:#666; margin-top:8px; line-height:1.3; font-weight:600;">⚠️ <strong>AVISO:</strong> Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.</p>
                     </div>
                 </div>
-
-
 
                 <div class="pata-form-group">
                     <label class="pata-form-label" for="add-referral-code">Código de Embajador (Opcional)</label>
@@ -1041,7 +1168,7 @@
                            value="${d.referralCode}" 
                            placeholder="Ej: MARCOS24" 
                            style="text-transform: uppercase;">
-                    <div id="referral-msg" class="pata-referral-msg ${d.isReferralValid ? 'success' : 'error'}" aria-live="polite">
+                    <div id="referral-msg" class="pata-referral-msg" style="font-size: 11px; margin-top: 5px; font-weight: 600; min-height: 14px;" aria-live="polite">
                         ${d.referralName ? `✓ Embajador: ${d.referralName}` : ''}
                     </div>
                 </div>
@@ -1049,36 +1176,28 @@
                 ${isSenior ? `
                 <div class="pata-form-group">
                     <label class="pata-form-label" for="add-vet">Sobre su salud (Senior 10+ años)</label>
-                    <div class="pata-upload-box" id="vet-box" style="border: var(--pata-border-thin); border-style: dashed;">
-                        <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" aria-label="Subir certificado médico">
+                    <div class="pata-upload-box" id="vet-box" style="border: var(--pata-border-thin); border-style: dashed; border-radius: 25px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; background: #FAFAFA; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                        <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2" aria-label="Subir certificado médico">
                         <div id="vet-preview-wrap">
-                            ${this.uploadedVetUrl ? '<span class="pata-upload-icon">✅</span>' : '<span class="pata-upload-icon">📄</span>'}
-                            <p class="pata-upload-text">${this.uploadedVetUrl ? '✓ Información lista' : 'Subir información de salud'}</p>
-                            <p class="pata-upload-subtext" style="font-weight:600;">Como es un peludito senior (10+ años), necesitamos conocer su estado de salud actual. 🐾💙</p>
+                            ${this.uploadedVetUrl ? '<span class="pata-upload-icon" style="font-size:32px;">✅</span>' : '<span class="pata-upload-icon" style="font-size:32px;">📄</span>'}
+                            <p class="pata-upload-text" style="font-size: 13px; font-weight: 700; color: #4A5568; margin: 0;">${this.uploadedVetUrl ? '✓ Información lista' : 'Subir información de salud'}</p>
+                            <p class="pata-upload-subtext" style="font-weight:600; font-size: 11px; color: #718096; margin: 0;">Como es un peludito senior (10+ años), necesitamos conocer su estado de salud actual. 🐾💙</p>
                         </div>
                     </div>
                 </div>` : ''}
 
-
-                <div class="pata-btn-row">
+                <div class="pata-btn-row" style="display: flex; gap: 15px; margin-top: 25px;">
                     <button class="pata-btn pata-btn-secondary" id="add-back" style="border: var(--pata-border-thick);">← Atrás</button>
                     <button class="pata-btn pata-btn-primary" id="pata-save-btn" style="border: var(--pata-border-thick);">Registrar mascota ✓</button>
                 </div>`;
 
-            // Setup Events
             document.getElementById('add-back').onclick = () => { this.saveStep2Fields(); this.addStep = 1; this.renderAddStep(); };
             
             container.querySelectorAll('.pata-switch-btn').forEach(btn => {
                 btn.onclick = () => {
                     d.breedType = btn.dataset.bt;
                     d.isMixed = (d.breedType === 'mestizo');
-                    
-                    if (d.breedType === 'raza') {
-                        d.breed = ''; // Reset breed name to pick a new one
-                    } else {
-                        d.breed = isGato ? 'Doméstico' : 'Mestizo';
-                    }
-                    
+                    d.breed = d.breedType === 'raza' ? '' : (isGato ? 'Doméstico' : 'Mestizo');
                     this.saveStep2Fields();
                     this.renderStep2(container);
                 };
@@ -1086,15 +1205,10 @@
 
             document.getElementById('adoption-toggle').onclick = (e) => {
                 const cb = document.getElementById('add-adopted');
-                if (e.target !== cb) {
-                    cb.checked = !cb.checked;
-                }
+                if (e.target !== cb) cb.checked = !cb.checked;
                 d.isAdopted = cb.checked;
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
-
-
-
 
             this.setupBreedAutocomplete(container);
             this.setupColorAutocomplete('add-coat', 'pata-coat-suggestions', 'coat');
@@ -1116,7 +1230,6 @@
             d.eyeColor = document.getElementById('add-eyes').value;
             d.noseColor = document.getElementById('add-nose').value;
             d.adoptionStory = document.getElementById('add-story') ? document.getElementById('add-story').value : '';
-
             d.referralCode = document.getElementById('add-referral-code').value.toUpperCase();
             if (d.breedType === 'raza') d.breed = document.getElementById('pata-breed-input').value;
         }
@@ -1125,56 +1238,39 @@
             const input = document.getElementById('add-referral-code');
             const msg = document.getElementById('referral-msg');
             if (!input || !msg) return;
-
             let debounceTimer;
             input.addEventListener('input', (e) => {
                 const code = e.target.value.toUpperCase();
                 this.addFormData.referralCode = code;
                 clearTimeout(debounceTimer);
-
                 if (!code) {
-                    msg.innerHTML = '';
-                    input.classList.remove('valid', 'invalid');
-                    this.addFormData.isReferralValid = false;
-                    this.addFormData.referralName = '';
+                    msg.innerHTML = ''; input.classList.remove('valid', 'invalid');
+                    this.addFormData.isReferralValid = false; this.addFormData.referralName = '';
                     return;
                 }
-
-                msg.innerHTML = 'Validando...';
-                msg.className = 'pata-referral-msg loading';
-                
+                msg.innerHTML = 'Validando...'; msg.className = 'pata-referral-msg loading';
                 debounceTimer = setTimeout(async () => {
                     try {
                         const res = await fetch(`${CONFIG.apiUrl}/api/referrals/validate-code?code=${code}`);
                         const data = await res.json();
-                        
                         if (data.success && data.valid) {
                             const ambassadorName = data.ambassador_name || 'Embajador';
                             msg.innerHTML = `✓ Embajador: ${ambassadorName}`;
                             msg.className = 'pata-referral-msg success';
-                            input.classList.add('valid');
-                            input.classList.remove('invalid');
-                            this.addFormData.isReferralValid = true;
-                            this.addFormData.referralName = ambassadorName;
+                            input.classList.add('valid'); input.classList.remove('invalid');
+                            this.addFormData.isReferralValid = true; this.addFormData.referralName = ambassadorName;
                         } else {
                             msg.innerHTML = data.message || '❌ Código no válido';
                             msg.className = 'pata-referral-msg error';
-                            input.classList.add('invalid');
-                            input.classList.remove('valid');
-                            this.addFormData.isReferralValid = false;
-                            this.addFormData.referralName = '';
+                            input.classList.add('invalid'); input.classList.remove('valid');
+                            this.addFormData.isReferralValid = false; this.addFormData.referralName = '';
                         }
-                    } catch (err) {
-                        console.error('Referral validation catch:', err);
-                        msg.innerHTML = '⚠️ Error al validar';
-                        msg.className = 'pata-referral-msg error';
-                    }
+                    } catch (err) { msg.innerHTML = '⚠️ Error al validar'; msg.className = 'pata-referral-msg error'; }
                 }, 600);
             });
         }
 
         setupFileUploads() {
-            // Multiple Pet Photos
             document.querySelectorAll('.pata-photo-input').forEach(input => {
                 input.onchange = async (e) => {
                     const file = e.target.files[0];
@@ -1182,29 +1278,17 @@
                     const num = input.dataset.num;
                     const box = document.getElementById(`photo-box-${num}`);
                     const originalContent = box.innerHTML;
-                    
                     box.innerHTML = '<div style="width:24px; height:24px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; position: absolute; top: 50%; left: 50%; margin: -12px 0 0 -12px;"></div>';
-                    
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.addFormData.photos = this.addFormData.photos || {};
                         this.addFormData.photos[`photo${num}`] = url;
-                        
                         box.classList.add('has-file');
-                        box.innerHTML = `
-                            <input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;">
-                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;">
-                            <div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>
-                        `;
-                        this.setupFileUploads(); // Re-attach listeners for other inputs
-                    } catch(err) { 
-                        alert('Error subiendo foto'); 
-                        box.innerHTML = originalContent;
+                        box.innerHTML = `<input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"><img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"><div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>`;
                         this.setupFileUploads();
-                    }
+                    } catch(err) { alert('Error subiendo foto'); box.innerHTML = originalContent; this.setupFileUploads(); }
                 };
             });
-
             const vetInput = document.getElementById('add-vet');
             if (vetInput) {
                 vetInput.onchange = async (e) => {
@@ -1219,11 +1303,7 @@
                         box.classList.add('has-file');
                         box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Información lista</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
                         this.setupFileUploads();
-                    } catch(err) { 
-                        alert('Error subiendo certificado'); 
-                        box.innerHTML = originalContent;
-                        this.setupFileUploads();
-                    }
+                    } catch(err) { alert('Error subiendo certificado'); box.innerHTML = originalContent; this.setupFileUploads(); }
                 };
             }
         }
@@ -1232,9 +1312,7 @@
             const suggestions = document.getElementById('pata-breed-suggestions');
             const warning = document.getElementById('pata-breed-warning');
             if (!input || !suggestions) return;
-
             const type = this.addFormData.petType;
-
             const load = async () => {
                 if (this.breedsCache[type].length) return;
                 try {
@@ -1243,14 +1321,8 @@
                     if (data.success) this.breedsCache[type] = data.breeds;
                 } catch(e) { console.error('Error loading breeds', e); }
             };
-
-            input.onfocus = async () => {
-                await load();
-                show('');
-            };
-
+            input.onfocus = async () => { await load(); show(''); };
             input.oninput = (e) => show(e.target.value);
-
             const show = (q) => {
                 const list = this.breedsCache[type] || [];
                 const filtered = q ? list.filter(b => b.name.toLowerCase().includes(q.toLowerCase())).slice(0,10) : list.slice(0,8);
@@ -1260,23 +1332,16 @@
                 }).join('');
                 suggestions.classList.add('active');
             };
-
             suggestions.onclick = (e) => {
                 const item = e.target.closest('.pata-breed-suggestion');
                 if (item) {
                     const displayName = item.innerText.trim();
-                    input.value = displayName;
-                    this.addFormData.breed = displayName;
+                    input.value = displayName; this.addFormData.breed = displayName;
                     suggestions.classList.remove('active');
-                    if (item.dataset.warning) {
-                        warning.innerHTML = item.dataset.warning;
-                        warning.style.display = 'block';
-                    } else {
-                        warning.style.display = 'none';
-                    }
+                    if (item.dataset.warning) { warning.innerHTML = item.dataset.warning; warning.style.display = 'block'; }
+                    else warning.style.display = 'none';
                 }
             };
-
             document.addEventListener('click', (e) => { if (!input.contains(e.target)) suggestions.classList.remove('active'); });
         }
 
@@ -1284,115 +1349,59 @@
             const input = document.getElementById(inputId);
             const suggestions = document.getElementById(suggestionsId);
             if (!input || !suggestions) return;
-
             const type = this.addFormData.petType;
-            const apiType = type === 'perro' ? 'perro' : 'gato'; // El API espera perro/gato y lo mapea internamente a dog/cat
-
+            const apiType = type === 'perro' ? 'perro' : 'gato';
             const load = async () => {
                 if (this.colorsCache[category][type].length) return;
                 try {
                     const res = await fetch(`${CONFIG.apiUrl}/api/catalogs/coat-colors?petType=${apiType}&category=${category}`);
                     const data = await res.json();
-                    if (data.success) {
-                        this.colorsCache[category][type] = data.data;
-                    }
+                    if (data.success) this.colorsCache[category][type] = data.data;
                 } catch(e) { console.error(`Error loading ${category} colors`, e); }
             };
-
             const show = (q) => {
                 const list = this.colorsCache[category][type] || [];
-                const filtered = q 
-                    ? list.filter(c => c.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10) 
-                    : list.slice(0, 8);
-                
-                if (filtered.length === 0 && !q) {
-                    suggestions.classList.remove('active');
-                    return;
-                }
-
-                suggestions.innerHTML = filtered.map(c => `
-                    <div class="pata-autocomplete-suggestion" data-name="${c.name}">
-                        ${c.name}
-                    </div>
-                `).join('');
+                const filtered = q ? list.filter(c => c.name.toLowerCase().includes(q.toLowerCase())).slice(0, 10) : list.slice(0, 8);
+                if (filtered.length === 0 && !q) { suggestions.classList.remove('active'); return; }
+                suggestions.innerHTML = filtered.map(c => `<div class="pata-autocomplete-suggestion" data-name="${c.name}">${c.name}</div>`).join('');
                 suggestions.classList.add('active');
             };
-
-            input.onfocus = async () => {
-                await load();
-                show(input.value);
-            };
-
+            input.onfocus = async () => { await load(); show(input.value); };
             input.oninput = (e) => show(e.target.value);
-
             suggestions.onclick = (e) => {
                 const item = e.target.closest('.pata-autocomplete-suggestion');
                 if (item) {
                     input.value = item.dataset.name;
-                    // Update appropriate field in addFormData
                     if (category === 'coat') this.addFormData.coatColor = item.dataset.name;
                     if (category === 'nose') this.addFormData.noseColor = item.dataset.name;
                     if (category === 'eye') this.addFormData.eyeColor = item.dataset.name;
                     suggestions.classList.remove('active');
                 }
             };
-
-            document.addEventListener('click', (e) => { 
-                if (!input.contains(e.target) && !suggestions.contains(e.target)) {
-                    suggestions.classList.remove('active'); 
-                }
-            });
+            document.addEventListener('click', (e) => { if (!input.contains(e.target) && !suggestions.contains(e.target)) suggestions.classList.remove('active'); });
         }
 
         async submitNewPet(isSenior) {
             const btn = document.getElementById('pata-save-btn');
             this.saveStep2Fields();
             const d = this.addFormData;
-
             if (!d.gender) return alert('Selecciona el sexo');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
-
-            // Las fotos y certificados ahora son opcionales con aviso de 15 días para completar
-
-
-            btn.disabled = true;
-            btn.innerText = 'Guardando...';
-
+            btn.disabled = true; btn.innerText = 'Guardando...';
             try {
                 const payload = {
                     memberstackId: this.member.id,
                     petData: {
-                        name: d.name,
-                        petType: d.petType,
-                        ageValue: parseInt(d.ageValue),
-                        ageUnit: d.ageUnit,
-                        gender: d.gender,
+                        name: d.name, petType: d.petType, ageValue: parseInt(d.ageValue), ageUnit: d.ageUnit, gender: d.gender,
                         breed: d.isMixed ? (d.petType === 'gato' ? 'Doméstico' : 'Mestizo') : d.breed,
-                        isMixed: d.isMixed,
-                        coatColor: d.coatColor,
-                        noseColor: d.noseColor,
-                        eyeColor: d.eyeColor,
-                        isAdopted: d.isAdopted,
-                        adoptionStory: d.adoptionStory,
-                        photo1Url: d.photos?.photo1 || null,
-                        photo2Url: d.photos?.photo2 || null,
-                        photo3Url: d.photos?.photo3 || null,
-                        photo4Url: d.photos?.photo4 || null,
-                        photo5Url: d.photos?.photo5 || null,
-                        isSenior: isSenior,
-                        vetCertificateUrl: this.uploadedVetUrl,
-
-                        referralCode: d.isReferralValid ? d.referralCode : ''
+                        isMixed: d.isMixed, coatColor: d.coatColor, noseColor: d.noseColor, eyeColor: d.eyeColor,
+                        isAdopted: d.isAdopted, adoptionStory: d.adoptionStory,
+                        photo1Url: d.photos?.photo1 || null, photo2Url: d.photos?.photo2 || null, photo3Url: d.photos?.photo3 || null, photo4Url: d.photos?.photo4 || null, photo5Url: d.photos?.photo5 || null,
+                        isSenior: isSenior, vetCertificateUrl: this.uploadedVetUrl, referralCode: d.isReferralValid ? d.referralCode : ''
                     }
                 };
-
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await res.json();
                 if (data.success) {
                     alert('¡Mascota registrada! Revisaremos la información pronto.');
@@ -1403,33 +1412,17 @@
                     btn.disabled = false;
                     btn.innerText = 'Registrar mascota ✓';
                 }
-            } catch (err) {
-                console.error('Error:', err);
-                alert('Ocurrió un error al guardar');
-                btn.disabled = false;
-                btn.innerText = 'Registrar mascota ✓';
-            }
+            } catch (err) { console.error('Error:', err); alert('Ocurrió un error al guardar'); btn.disabled = false; btn.innerText = 'Registrar mascota ✓'; }
         }
 
         async uploadNewPetPhoto(file) {
-            // Client-side validation
             const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
-            if (!allowedTypes.includes(file.type)) {
-                throw new Error(`Formato ${file.type} no soportado. Usa JPG, PNG o PDF.`);
-            }
-            if (file.size > 10 * 1024 * 1024) { // 10MB limit
-                throw new Error('El archivo excede el límite de 10MB.');
-            }
-
+            if (!allowedTypes.includes(file.type)) throw new Error(`Formato ${file.type} no soportado. Usa JPG, PNG o PDF.`);
+            if (file.size > 10 * 1024 * 1024) throw new Error('El archivo excede el límite de 10MB.');
             const formData = new FormData();
             formData.append('file', file);
             formData.append('userId', this.member.id);
-
-            const res = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, {
-                method: 'POST',
-                body: formData
-            });
-
+            const res = await fetch(`${CONFIG.apiUrl}/api/user/upload-pet-photo`, { method: 'POST', body: formData });
             const data = await res.json();
             if (data.success && data.url) return data.url;
             throw new Error(data.error || 'Error subiendo archivo');
@@ -1441,30 +1434,15 @@
             const modal = document.createElement('div');
             modal.className = 'pata-modal-overlay';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
-            modal.innerHTML = `
-                <div class="pata-modal-box">
-                    <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button>
-                    <h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 15px 0;">⚖️ Apelar para ${pet.name}</h2>
-                    ${pet.admin_notes ? `<div style="background:#FFEBEE; padding:12px; border-radius:10px; margin-bottom:20px; border-left:4px solid #C62828;"><strong>Motivo del rechazo:</strong><br>${pet.admin_notes}</div>` : ''}
-                    <form id="pata-appeal-form">
-                        <p style="margin-bottom:10px; color:#666;">Explica por qué reconsiderar la decisión.</p>
-                        <textarea id="pata-appeal-msg" required placeholder="Escribe tu mensaje..." style="width:100%; height:100px; padding:15px; border-radius:10px; border:1px solid #ddd; resize:none; font-family:inherit; font-size:14px;"></textarea>
-                        <button type="submit" class="pata-btn pata-btn-primary" style="width:100%; height:55px; font-size:16px; background:#7B1FA2; margin-top:15px;" id="pata-appeal-btn">Enviar Apelación</button>
-                    </form>
-                </div>`;
+            modal.innerHTML = `<div class="pata-modal-box"><button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer;" onclick="this.closest('.pata-modal-overlay').remove()">&times;</button><h2 style="text-align:center; font-weight:800; font-size:26px; margin:0 0 15px 0;">⚖️ Apelar para ${pet.name}</h2>${pet.admin_notes ? `<div style="background:#FFEBEE; padding:12px; border-radius:10px; margin-bottom:20px; border-left:4px solid #C62828;"><strong>Motivo del rechazo:</strong><br>${pet.admin_notes}</div>` : ''}<form id="pata-appeal-form"><p style="margin-bottom:10px; color:#666;">Explica por qué reconsiderar la decisión.</p><textarea id="pata-appeal-msg" required placeholder="Escribe tu mensaje..." style="width:100%; height:100px; padding:15px; border-radius:10px; border:1px solid #ddd; resize:none; font-family:inherit; font-size:14px;"></textarea><button type="submit" class="pata-btn pata-btn-primary" style="width:100%; height:55px; font-size:16px; background:#7B1FA2; margin-top:15px;" id="pata-appeal-btn">Enviar Apelación</button></form></div>`;
             document.body.appendChild(modal);
-
             document.getElementById('pata-appeal-form').onsubmit = async (e) => {
                 e.preventDefault();
                 const btn = document.getElementById('pata-appeal-btn');
                 const msg = document.getElementById('pata-appeal-msg').value.trim();
                 btn.disabled = true; btn.innerText = 'Enviando...';
                 try {
-                    const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ memberId: this.member.id, petId, appealMessage: msg })
-                    });
+                    const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: this.member.id, petId, appealMessage: msg }) });
                     const data = await res.json();
                     if (data.success) { alert('¡Apelación enviada!'); modal.remove(); this.init(); }
                     else { alert('Error: ' + data.error); btn.disabled = false; btn.innerText = 'Enviar Apelación'; }
@@ -1476,19 +1454,10 @@
             if (!file) return;
             const container = document.getElementById(elementId);
             const originalContent = container.innerHTML;
-            
-            // Show loading
-            container.innerHTML = `
-                <div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:10px auto;"></div>
-                <p style="font-size:12px; color:#666; font-weight:600;">Subiendo...</p>
-            `;
+            container.innerHTML = `<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:10px auto;"></div><p style="font-size:12px; color:#666; font-weight:600;">Subiendo...</p>`;
             container.style.pointerEvents = 'none';
-
             try {
-                // 1. Upload to storage
                 const url = await this.uploadNewPetPhoto(file);
-                
-                // 2. Prepare payload
                 const updateData = { userId: this.member.id };
                 if (type === 'photo1') updateData.photo1Url = url;
                 if (type === 'photo2') updateData.photo2Url = url;
@@ -1496,51 +1465,30 @@
                 if (type === 'photo4') updateData.photo4Url = url;
                 if (type === 'photo5') updateData.photo5Url = url;
                 if (type === 'vet') updateData.vetCertificateUrl = url;
-
-                // 3. Update in database
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updateData)
-                });
-
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData) });
                 const data = await res.json();
                 if (data.success) {
                     container.innerHTML = `<span style="font-size:30px;">✅</span><p style="font-size:13px; font-weight:700; color:#2E7D32; margin:0;">¡Listo!</p>`;
                     setTimeout(() => {
-                        // Refresh both the main grid and the modal
                         this.init().then(() => {
-                            // Re-open/refresh details if the modal is still there
                             const modal = container.closest('.pata-modal-overlay');
-                            if (modal) {
-                                modal.remove();
-                                this.showDetails(petId);
-                            }
+                            if (modal) { modal.remove(); this.showDetails(petId); }
                         });
                     }, 1500);
-                } else {
-                    throw new Error(data.error || 'Error actualizando registro');
-                }
+                } else throw new Error(data.error || 'Error actualizando registro');
             } catch (err) {
-                console.error('Modal upload error:', err);
-                alert('No se pudo subir: ' + err.message);
-                container.innerHTML = originalContent;
-                container.style.pointerEvents = 'auto';
+                console.error('Modal upload error:', err); alert('No se pudo subir: ' + err.message);
+                container.innerHTML = originalContent; container.style.pointerEvents = 'auto';
             }
         }
-
-
     }
 
-    // Exponer al global con espera de DOM
     function initManadaWidget() {
         const container = document.getElementById('pata-amiga-manada-widget');
         if (container) {
             if (!window.ManadaWidget || !window.ManadaWidget.container) {
                 console.log('🐾 Inicializando ManadaWidget...');
                 window.ManadaWidget = new ManadaWidget('pata-amiga-manada-widget');
-            } else {
-                console.log('🐾 El widget ya estaba inicializado en el global.');
             }
         } else {
             console.log('🐾 Contenedor no encontrado aún, reintentando en 500ms...');
@@ -1548,9 +1496,6 @@
         }
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initManadaWidget);
-    } else {
-        initManadaWidget();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initManadaWidget);
+    else initManadaWidget();
 })();
