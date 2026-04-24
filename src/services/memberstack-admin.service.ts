@@ -12,8 +12,20 @@ export interface MemberstackMember {
     customFields: Record<string, any>;
     createdAt: string;
     planConnections?: {
-        priceId: string;
-        status: string;
+        id?: string;
+        active?: boolean;
+        status?: string;
+        planId?: string;
+        planName?: string;
+        type?: string;
+        priceId?: string; // Para compatibilidad
+        payment?: {
+            status?: string;
+            amount?: number;
+            currency?: string;
+            priceId?: string;
+            stripeSubscriptionId?: string;
+        };
     }[];
 }
 

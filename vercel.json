@@ -2,7 +2,7 @@
     "crons": [
         {
             "path": "/api/cron/missing-info-followup",
-            "schedule": "0 16 * * *"
+            "schedule": "10 23 * * *"
         }
     ]
 }

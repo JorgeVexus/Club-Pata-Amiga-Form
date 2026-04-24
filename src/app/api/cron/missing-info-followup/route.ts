@@ -75,13 +75,25 @@ export async function POST(req: NextRequest) {
         const allMembers = membersRes.data;
         console.log(`📊 [Cron] Total miembros Memberstack: ${allMembers.length}`);
 
-        // Filtrar solo los que tienen plan pagado (no en estado 'pending')
+        // Filtrar solo los que tienen plan pagado
+        // Mejorado: Incluimos a los que tienen un plan activo en Memberstack, 
+        // aunque su status custom siga en 'pending' o esté vacío.
         const paidMembers = allMembers.filter(m => {
-            const status = m.customFields?.['approval-status'];
-            return status && status !== 'pending';
+            const approvalStatus = m.customFields?.['approval-status'];
+            const hasActivePlan = m.planConnections?.some(pc => 
+                pc.active === true && pc.payment?.status === 'PAID'
+            );
+
+            const isPaid = (approvalStatus && approvalStatus !== 'pending') || hasActivePlan;
+            
+            if (!isPaid) {
+                // console.log(`⏩ [Cron] Saltando ${m.auth?.email}: status=${approvalStatus}, plans=${m.planConnections?.length || 0}`);
+            }
+            
+            return isPaid;
         });
 
-        console.log(`💳 [Cron] Miembros con pago realizado: ${paidMembers.length}`);
+        console.log(`💳 [Cron] Miembros considerados para seguimiento: ${paidMembers.length}`);
 
         // 3. Para cada miembro pagado, buscar su data en Supabase
         for (const member of paidMembers) {
@@ -132,9 +144,11 @@ export async function POST(req: NextRequest) {
                 if (!petRegDate) continue;
 
                 const daysSincePetReg = daysSince(petRegDate);
+                const isFollowupDay = FOLLOWUP_DAYS.includes(daysSincePetReg as FollowupDay);
 
-                // Verificar si el día actual corresponde a un día de seguimiento para ESTA mascota
-                if (!FOLLOWUP_DAYS.includes(daysSincePetReg as FollowupDay)) {
+                console.log(`🔍 [Cron] Revisando ${userEmail} | Mascota: ${pet.name} | Días: ${daysSincePetReg} | ¿Toca hoy?: ${isFollowupDay}`);
+
+                if (!isFollowupDay) {
                     continue;
                 }
 
