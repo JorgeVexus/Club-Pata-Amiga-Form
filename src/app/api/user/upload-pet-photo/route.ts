@@ -29,6 +29,17 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Missing file or userId' }, { status: 400, headers: corsHeaders });
         }
 
+        // Validar tamaño (10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            return NextResponse.json({ error: 'El archivo es muy grande. Máximo 10MB.' }, { status: 400, headers: corsHeaders });
+        }
+
+        // Validar tipo
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+        if (!validTypes.includes(file.type)) {
+            return NextResponse.json({ error: 'Tipo de archivo no válido. Usa JPG, PNG, WebP o PDF.' }, { status: 400, headers: corsHeaders });
+        }
+
         const fileExt = file.name.split('.').pop();
         const fileName = `${userId}_${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `pets/${fileName}`;

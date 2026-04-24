@@ -1925,6 +1925,15 @@
         }
 
         async uploadNewPetPhoto(file) {
+            // Client-side validation
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+            if (!allowedTypes.includes(file.type)) {
+                throw new Error(`Formato ${file.type} no soportado. Usa JPG, PNG o PDF.`);
+            }
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                throw new Error('El archivo excede el límite de 10MB.');
+            }
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('userId', this.member.id);

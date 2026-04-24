@@ -1638,7 +1638,7 @@
                     <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
                         <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                         <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
-                            <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-file-cert" style="display:none;">
+                            <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-file-cert" style="display:none;">
                             <div class="pata-upload-icon">📄</div>
                             <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
                         </div>
@@ -1879,7 +1879,7 @@
                                 <div>
                                     <label style="font-weight: 700; font-size: 14px; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                                     <div class="pata-upload-area" id="pata-missing-upload-cert" style="border-color: #7B1FA2; background: #F3E5F5;">
-                                        <input type="file" accept="image/*,application/pdf" class="pata-upload-input" id="pata-missing-file-cert" style="display:none;">
+                                        <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-missing-file-cert" style="display:none;">
                                         <div class="pata-upload-icon">📄</div>
                                         <div class="pata-upload-text" style="color: #7B1FA2;">Sube el certificado aquí</div>
                                     </div>
@@ -1988,8 +1988,9 @@
                     if (file) {
                         this.missingPhotosFiles[key] = file;
                         area.classList.add('has-file');
+                        const isImage = file.type.startsWith('image/');
                         area.innerHTML = `
-                            <img src="${URL.createObjectURL(file)}" class="pata-upload-preview">
+                            ${isImage ? `<img src="${URL.createObjectURL(file)}" class="pata-upload-preview">` : `<div class="pata-upload-preview" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5; border-radius:10px;"><span style="font-size:30px;">📄</span></div>`}
                             <div class="pata-upload-filename">✓ ${file.name.substring(0, 15)}...</div>
                         `;
                     }
@@ -2226,9 +2227,10 @@
                         if (file) {
                             this.uploadFiles[key] = file;
                             area.classList.add('has-file');
+                            const isImage = file.type.startsWith('image/');
                             area.innerHTML = `
-                                <img src="${URL.createObjectURL(file)}" class="pata-upload-preview">
-                                <div class="pata-upload-filename">✓ Foto ${key.replace('photo', '')}</div>
+                                ${isImage ? `<img src="${URL.createObjectURL(file)}" class="pata-upload-preview">` : `<div class="pata-upload-preview" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5; border-radius:10px;"><span style="font-size:30px;">📄</span></div>`}
+                                <div class="pata-upload-filename">✓ ${key === 'cert' ? 'Certificado' : 'Foto ' + key.replace('photo', '')}</div>
                             `;
                         }
                     };
@@ -2364,8 +2366,9 @@
                     const reader = new FileReader();
                     reader.onload = (ev) => {
                         if (preview) {
+                            const isImage = file.type.startsWith('image/');
                             preview.innerHTML = `
-                                <img src="${ev.target.result}" style="max-width:100%; max-height:80px; border-radius:4px; object-fit:cover;">
+                                ${isImage ? `<img src="${ev.target.result}" style="max-width:100%; max-height:80px; border-radius:4px; object-fit:cover;">` : `<div style="width:100%; height:80px; background:#f5f5f5; border-radius:4px; display:flex; align-items:center; justify-content:center;"><span style="font-size:30px;">📄</span></div>`}
                                 <p style="margin:5px 0 0 0; font-size:11px; color:#4CAF50;">✓ ${file.name.substring(0, 15)}...</p>
                             `;
                         }
@@ -2402,7 +2405,7 @@
             area.ondrop = (e) => {
                 e.preventDefault();
                 const file = e.dataTransfer.files[0];
-                if (file && file.type.startsWith('image/')) {
+                if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
                     fileInput.files = e.dataTransfer.files;
                     fileInput.dispatchEvent(new Event('change'));
                 }
@@ -2412,15 +2415,15 @@
         // 🆕 Subir foto a Supabase Storage
         async uploadPhoto(file) {
             // Validación Cliente: Formato y Tamaño
-            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
             if (!allowedTypes.includes(file.type)) {
                 if (file.type === 'image/webp') {
                     throw new Error('Formato WebP no soportado. Por favor usa JPG o PNG.');
                 }
-                throw new Error(`Formato ${file.type} no soportado. Solo JPG o PNG.`);
+                throw new Error(`Formato ${file.type} no soportado. Solo JPG, PNG o PDF.`);
             }
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
-                throw new Error('La imagen excede 5MB. Por favor comprímela.');
+            if (file.size > 10 * 1024 * 1024) { // 10MB limit
+                throw new Error('El archivo excede 10MB. Por favor comprímelo o usa un archivo más pequeño.');
             }
 
             const formData = new FormData();

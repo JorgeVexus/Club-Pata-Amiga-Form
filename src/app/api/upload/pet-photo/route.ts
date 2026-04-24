@@ -14,7 +14,7 @@ const supabaseAdmin = createClient(
 );
 
 const BUCKET_NAME = 'pet-photos';
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 // Headers CORS para permitir requests desde Webflow
 const corsHeaders = {
@@ -44,13 +44,13 @@ export async function POST(request: NextRequest) {
 
         // Validar tamaño
         if (file.size > MAX_FILE_SIZE) {
-            return NextResponse.json({ error: 'El archivo es muy grande. Máximo 5MB.' }, { status: 400, headers: corsHeaders });
+            return NextResponse.json({ error: 'El archivo es muy grande. Máximo 10MB.' }, { status: 400, headers: corsHeaders });
         }
 
         // Validar tipo
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
         if (!validTypes.includes(file.type)) {
-            return NextResponse.json({ error: 'Tipo de archivo no válido. Usa JPG, PNG o WebP.' }, { status: 400, headers: corsHeaders });
+            return NextResponse.json({ error: 'Tipo de archivo no válido. Usa JPG, PNG, WebP o PDF.' }, { status: 400, headers: corsHeaders });
         }
 
         console.log(`📷 Subiendo foto para usuario ${userId}...`);
