@@ -177,7 +177,7 @@ export async function GET(req: NextRequest) {
 
                 try {
                     const result = await sendMissingPetDocsEmail({
-                        userId: member.id,
+                        userId: user.id, // Usar UUID de Supabase para logs de comunicación
                         userEmail,
                         userName,
                         petName: pet.name,
