@@ -289,6 +289,20 @@ export default function NewRegistrationFlow() {
         fetchSettings();
     }, []);
 
+    const handleLogout = async () => {
+        try {
+            if (window.$memberstackDom) {
+                await window.$memberstackDom.logout();
+                // Limpiar cualquier backup local si existe
+                localStorage.removeItem('petBasicBackup');
+                window.location.reload();
+            }
+        } catch (error) {
+            console.error('❌ Error logging out:', error);
+            window.location.reload();
+        }
+    };
+
     // Escuchar cambios en el historial (botón atrás/adelante del navegador)
     useEffect(() => {
         const handlePopState = (event: PopStateEvent) => {
@@ -868,6 +882,18 @@ export default function NewRegistrationFlow() {
             {currentStep <= 3 && <BenefitsBanner />}
 
             <div className={styles.content}>
+                {member && currentStep < 6 && (
+                    <div className={styles.logoutWrapper}>
+                        <button 
+                            type="button" 
+                            className={styles.logoutLink}
+                            onClick={handleLogout}
+                        >
+                            Cerrar sesión
+                        </button>
+                    </div>
+                )}
+
                 {/* Indicador de pasos (Oculto en el paso de éxito y transición) */}
                 {currentStep <= 5 && !isPaymentSuccessTransition && (
                     <StepIndicator

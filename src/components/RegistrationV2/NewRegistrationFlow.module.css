@@ -70,3 +70,34 @@
     0%, 100% { opacity: 1; }
     50% { opacity: 0.5; }
 }
+
+.logoutWrapper {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.5rem;
+}
+
+.logoutLink {
+    background: transparent !important;
+    border: none !important;
+    color: #718096 !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-size: 0.875rem !important;
+    cursor: pointer;
+    text-decoration: underline;
+    transition: all 0.2s ease;
+    padding: 0.25rem 0.5rem;
+    box-shadow: none !important;
+    transform: none !important;
+    height: auto !important;
+    line-height: normal !important;
+    border-radius: 0 !important;
+}
+
+.logoutLink:hover {
+    color: #2D3748 !important;
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
+    opacity: 0.8;
+}
