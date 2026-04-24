@@ -133,6 +133,16 @@ export default function Step3PlanSelection({
         }
     };
 
+    // Cargar código de referido desde Memberstack si existe
+    useEffect(() => {
+        const savedCode = member?.customFields?.['ambassador-code'];
+        if (savedCode && !referralCode) {
+            console.log('🎟️ Cargando código de embajador persistido:', savedCode);
+            setReferralCode(savedCode);
+            // La validación se disparará por el useEffect de referralCode
+        }
+    }, [member]);
+
     // Validación automática con debounce (estilo CURP)
     useEffect(() => {
         // Efecto para auto-validación de código de referido
@@ -147,6 +157,13 @@ export default function Step3PlanSelection({
                 setReferralError('');
                 setAmbassadorName('');
                 setIsCodeValidated(false);
+                
+                // Si el usuario borra el código, también lo limpiamos en Memberstack
+                if (member?.customFields?.['ambassador-code']) {
+                    window.$memberstackDom?.updateMember({
+                        customFields: { 'ambassador-code': '' }
+                    });
+                }
             }
         }, 600); // 600ms de calma antes de validar
 
@@ -166,10 +183,23 @@ export default function Step3PlanSelection({
             if (result.success && result.valid) {
                 setAmbassadorName(result.ambassador_name);
                 setIsCodeValidated(true);
-                // No mostramos toast para no interrumpir el flujo, el feedback visual es suficiente
+                
+                // 🔥 Persistir en Memberstack para que se mantenga si recarga o regresa
+                if (window.$memberstackDom) {
+                    window.$memberstackDom.updateMember({
+                        customFields: { 'ambassador-code': code.toUpperCase() }
+                    });
+                }
             } else {
                 setReferralError(result.message || 'Ese código no es válido/no existe');
                 setIsCodeValidated(false);
+                
+                // Si el código es inválido, asegurarnos de que no esté guardado
+                if (window.$memberstackDom && member?.customFields?.['ambassador-code']) {
+                    window.$memberstackDom.updateMember({
+                        customFields: { 'ambassador-code': '' }
+                    });
+                }
             }
         } catch (error) {
             console.error('Error validating code:', error);

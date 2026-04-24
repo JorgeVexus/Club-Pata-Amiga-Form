@@ -228,8 +228,15 @@ export default function NewRegistrationFlow() {
                         // Caso especial: Recuperación de pago (desde email o Stripe back)
                         const paymentStatus = currentMember.customFields?.['payment-status'];
                         const isPaymentSuccess = searchParams.get('payment') === 'success';
+                        const isCheckoutPending = currentMember.customFields?.['checkout-pending'] === 'true' || currentMember.customFields?.['checkout-pending'] === true;
 
-                        console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, finalStep, msStep, dbStep });
+                        console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, isCheckoutPending, finalStep, msStep, dbStep });
+
+                        // Si el pago está pendiente de checkout, forzamos que no baje del paso 3
+                        if (isCheckoutPending && finalStep < 3 && paymentStatus !== 'completed') {
+                            console.log('🕒 Checkout pendiente detectado, manteniendo en paso 3');
+                            finalStep = 3;
+                        }
 
                         if (isRecovery && finalStep < 3) {
                             finalStep = 3;
@@ -251,14 +258,15 @@ export default function NewRegistrationFlow() {
                                 window.$memberstackDom.updateMember({
                                     customFields: {
                                         'payment-status': 'completed',
-                                        'registration-step': 4
+                                        'registration-step': 4,
+                                        'checkout-pending': false
                                     }
                                 });
                                 saveProgress(4, loadedData);
                             }
                         }
 
-                        console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}) -> Paso Actual(${finalStep})`);
+                        console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}), Pending(${isCheckoutPending}) -> Paso Actual(${finalStep})`);
                         goToStep(finalStep, true); // replaceState para el paso inicial
                     } else {
                         console.log('👤 No hay sesión activa de Memberstack, iniciando en paso 1');
@@ -582,6 +590,18 @@ export default function NewRegistrationFlow() {
 
         // Iniciar checkout de Stripe
         try {
+            console.log('💳 [handleStep3Complete] Iniciando checkout de Stripe...');
+            
+            // 🔥 Marcamos checkout como pendiente para asegurar que si regresa se mantenga en paso 3
+            if (member && window.$memberstackDom) {
+                await window.$memberstackDom.updateMember({
+                    customFields: {
+                        'checkout-pending': true,
+                        'registration-step': 3
+                    }
+                });
+            }
+
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: planId,
                 successUrl: window.location.origin + '/payment-success',
@@ -616,6 +636,7 @@ export default function NewRegistrationFlow() {
                         'registration-step': 4,
                         'approval-status': 'pending',
                         'ambassador-code': referralCode || '',
+                        'checkout-pending': false
                     },
                 });
                 if (updatedMember) setMember(updatedMember);
