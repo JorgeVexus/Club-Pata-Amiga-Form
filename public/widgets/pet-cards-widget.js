@@ -473,6 +473,62 @@
         .pata-btn-secondary { background: var(--pata-primary); color: #FFF; }
         .pata-btn:hover { transform: translateY(-4px); box-shadow: 8px 8px 0 rgba(0,0,0,0.1); }
 
+        /* Form Layout */
+        .pata-btn-row { display: flex; gap: 15px; margin-top: 25px; }
+        .pata-form-row { display: flex; gap: 15px; align-items: flex-start; }
+        .pata-form-row > .pata-form-group { flex: 1; }
+
+        /* Breed Type Switch */
+        .pata-breed-type-switch { display: flex; gap: 10px; margin: 5px 0 10px 0; }
+        .pata-switch-btn {
+            flex: 1; padding: 12px 15px; border: var(--pata-border-thin); border-radius: 50px;
+            background: #fff; cursor: pointer; font-family: inherit; font-weight: 800; font-size: 13px;
+            display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s;
+            text-transform: lowercase;
+        }
+        .pata-switch-btn.active { background: var(--pata-primary-light); border-color: var(--pata-primary); box-shadow: 4px 4px 0 rgba(0,0,0,0.05); }
+        .pata-switch-icon { 
+            display: flex; align-items: center; justify-content: center; 
+            width: 18px; height: 18px; background: #000; color: #fff; 
+            border-radius: 50%; padding: 2px; flex-shrink: 0;
+        }
+
+        /* Autocomplete / Suggestions */
+        .pata-autocomplete-wrapper, .pata-breed-wrapper { position: relative; }
+        .pata-autocomplete-suggestions, .pata-breed-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; background: #fff;
+            border: var(--pata-border-thin); border-radius: 24px; margin-top: 8px;
+            max-height: 220px; overflow-y: auto; z-index: 1000; display: none;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            padding: 8px;
+        }
+        .pata-autocomplete-suggestions.active, .pata-breed-suggestions.active { display: block; }
+        .pata-autocomplete-suggestion, .pata-breed-suggestion {
+            padding: 12px 20px; font-size: 14px; font-weight: 700; cursor: pointer;
+            transition: all 0.2s; border-radius: 15px; color: #1A1A1A;
+            margin-bottom: 2px;
+        }
+        .pata-autocomplete-suggestion:hover, .pata-breed-suggestion:hover { background: var(--pata-primary-light); }
+        
+        .pata-breed-warning {
+            background: #FFF5F5; color: #C53030; padding: 14px;
+            border-radius: 18px; font-size: 11px; font-weight: 700;
+            margin-top: 12px; border: 1.5px solid #FEB2B2;
+            line-height: 1.4;
+        }
+
+        /* Referral Validation States */
+        .pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
+        .pata-form-input.invalid { border-color: #E53E3E; background: #FFF5F5; }
+        .pata-referral-msg.success { color: #2F855A; }
+        .pata-referral-msg.error { color: #C53030; }
+        .pata-referral-msg.loading { color: #718096; }
+
+        /* Adoption Checkbox Styling */
+        .pata-adoption-checkbox-wrapper:hover { background: rgba(255, 255, 255, 1) !important; transform: scale(1.01); }
+        .pata-adoption-checkbox { cursor: pointer; transition: transform 0.2s; }
+        .pata-adoption-checkbox:active { transform: scale(0.9); }
+
         /* Utils */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -1160,8 +1216,8 @@
                         </div>
                     </div>
 
-                    <label class="pata-adoption-checkbox-wrapper" id="adoption-toggle" for="add-adopted" style="background: rgba(255, 255, 255, 0.6); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
-                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="pointer-events: none; width: 22px; height: 22px; accent-color: #15BEB2; cursor: pointer;">
+                    <label class="pata-adoption-checkbox-wrapper" for="add-adopted" style="background: rgba(255, 255, 255, 0.6); border-radius: 12px; padding: 12px 15px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;">
+                        <input type="checkbox" class="pata-adoption-checkbox" id="add-adopted" ${d.isAdopted?'checked':''} style="width: 22px; height: 22px; accent-color: #15BEB2; cursor: pointer;">
                         <span class="pata-adoption-checkbox-text" style="font-size: 14px; font-weight: 700; color: #2D3748;">¡Sí, es rescatada / adoptada!</span>
                     </label>
 
@@ -1217,10 +1273,8 @@
                 };
             });
 
-            document.getElementById('adoption-toggle').onclick = (e) => {
-                const cb = document.getElementById('add-adopted');
-                if (e.target !== cb) cb.checked = !cb.checked;
-                d.isAdopted = cb.checked;
+            document.getElementById('add-adopted').onchange = (e) => {
+                d.isAdopted = e.target.checked;
                 document.getElementById('story-group').style.display = d.isAdopted ? 'block' : 'none';
             };
 
