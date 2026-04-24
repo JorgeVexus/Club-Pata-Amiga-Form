@@ -42,12 +42,16 @@ function buildUploadUrl(memberId: string, petIndex: number): string {
     return `${base}/completar-documentacion?m=${memberId}&p=${petIndex}&t=${token}&exp=${exp}`;
 }
 
-export async function POST(req: NextRequest) {
+export async function GET(req: NextRequest) {
     // 1. Verificar autorización del cron (Vercel envía el header automáticamente en producción)
-    const cronSecret = req.headers.get('authorization');
-    const expectedSecret = `Bearer ${process.env.CRON_SECRET}`;
+    const authHeader = req.headers.get('authorization');
+    const cronSecret = process.env.CRON_SECRET;
+    const expectedSecret = `Bearer ${cronSecret}`;
 
-    if (process.env.NODE_ENV === 'production' && cronSecret !== expectedSecret) {
+    // Permitir ejecución si es desarrollo o si el secret coincide
+    const isAuthorized = process.env.NODE_ENV === 'development' || authHeader === expectedSecret;
+
+    if (!isAuthorized) {
         console.warn('🚫 [Cron] Acceso no autorizado');
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -219,11 +223,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// GET para pruebas manuales desde el navegador (solo en desarrollo)
-export async function GET(req: NextRequest) {
-    if (process.env.NODE_ENV === 'production') {
-        return NextResponse.json({ error: 'Método no permitido en producción' }, { status: 405 });
-    }
-
-    return POST(req);
+// Soporte para POST por si se requiere, delegando a GET
+export async function POST(req: NextRequest) {
+    return GET(req);
 }
