@@ -472,3 +472,39 @@
     }
   }
 </style>
+
+<script>
+  /**
+   * Pata Amiga - Security Session Handler
+   * Previene conflictos de cuentas en equipos compartidos al verificar correos.
+   */
+  document.addEventListener('DOMContentLoaded', () => {
+    const securityCheck = setInterval(async () => {
+      if (window.$memberstackDom) {
+        clearInterval(securityCheck);
+        
+        try {
+          const { data: member } = await window.$memberstackDom.getCurrentMember();
+          
+          if (member) {
+            console.log('🔒 Seguridad Pata Amiga: Detectada sesión previa. Limpiando para nueva verificación.');
+            
+            // Cambiamos el texto del botón momentáneamente para dar feedback
+            const ctaBtn = document.querySelector('.primary-cta span');
+            if (ctaBtn) ctaBtn.innerText = 'Preparando acceso...';
+            
+            // Cerramos la sesión activa (Cuenta 1)
+            await window.$memberstackDom.logout();
+            
+            // Restauramos el texto original
+            if (ctaBtn) ctaBtn.innerText = 'Iniciar sesión';
+            
+            console.log('✅ Sesión limpia. Listo para nuevo ingreso.');
+          }
+        } catch (error) {
+          console.error('Error en el control de seguridad de sesión:', error);
+        }
+      }
+    }, 500); // Reintenta cada 500ms hasta que Memberstack cargue
+  });
+</script>
