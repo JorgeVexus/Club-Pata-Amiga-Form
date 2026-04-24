@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-04-24T06:33:00Z",
+  "title": "Design System: Pet Membership Form",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Club Turquoise",
+        "canonical": "oklch(85% 0.12 195)",
+        "tonalRamp": [
+          "oklch(20% 0.05 195)",
+          "oklch(35% 0.08 195)",
+          "oklch(50% 0.1 195)",
+          "oklch(65% 0.12 195)",
+          "oklch(80% 0.12 195)",
+          "oklch(85% 0.12 195)",
+          "oklch(90% 0.08 195)",
+          "oklch(95% 0.04 195)"
+        ]
+      },
+      "primary-action": {
+        "role": "primary",
+        "displayName": "Action Orange",
+        "canonical": "oklch(70% 0.18 45)",
+        "tonalRamp": [
+          "oklch(20% 0.1 45)",
+          "oklch(35% 0.14 45)",
+          "oklch(50% 0.16 45)",
+          "oklch(65% 0.18 45)",
+          "oklch(70% 0.18 45)",
+          "oklch(80% 0.15 45)",
+          "oklch(90% 0.1 45)",
+          "oklch(95% 0.05 45)"
+        ]
+      },
+      "deep-accent": {
+        "role": "secondary",
+        "displayName": "Pata Teal",
+        "canonical": "oklch(65% 0.15 195)"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display (Fraiche)",
+        "purpose": "High-impact headlines and numeric values."
+      },
+      "body": {
+        "displayName": "Body (Outfit)",
+        "purpose": "Standard reading and form inputs."
+      }
+    },
+    "shadows": [
+      {
+        "name": "pata-premium",
+        "value": "0 20px 40px rgba(0, 0, 0, 0.1)",
+        "purpose": "Used for floating panels and modals to convey depth."
+      }
+    ],
+    "motion": [
+      {
+        "name": "pata-spring",
+        "value": "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+        "purpose": "Signature bouncy entry for panels and modals."
+      }
+    ],
+    "breakpoints": [
+      { "name": "mobile", "value": "600px" },
+      { "name": "tablet", "value": "900px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The main action button (Next/Submit).",
+      "html": "<button class=\"ds-btn-primary\">CONTINUAR</button>",
+      "css": ".ds-btn-primary { background: #FE8F15; color: #000; padding: 10px 18px; font-family: 'Fraiche', sans-serif; font-weight: 300; border-radius: 50px; border: 2px solid #000; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } .ds-btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(254, 143, 21, 0.3); }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Back or Cancel actions.",
+      "html": "<button class=\"ds-btn-secondary\">ANTERIOR</button>",
+      "css": ".ds-btn-secondary { background: #00BBB4; color: #000; padding: 10px 18px; font-family: 'Fraiche', sans-serif; font-weight: 300; border-radius: 50px; border: 2px solid #000; font-size: 1rem; cursor: pointer; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } .ds-btn-secondary:hover { transform: translateY(-2px); box-shadow: 0 4px 8px rgba(0, 187, 180, 0.3); }"
+    },
+    {
+      "name": "Pet Tab",
+      "kind": "chip",
+      "description": "Tab for switching between pets in the dashboard.",
+      "html": "<div class=\"ds-pet-tab ds-active\">🐶 Max</div>",
+      "css": ".ds-pet-tab { background: #F0F2F5; border-radius: 50px; padding: 12px 28px; font-weight: 900; color: #666; font-family: 'Outfit', sans-serif; cursor: pointer; display: flex; align-items: center; gap: 10px; } .ds-pet-tab.ds-active { background: #00BBB4; color: #FFF; box-shadow: 0 8px 20px rgba(0, 187, 180, 0.3); }"
+    },
+    {
+      "name": "Glass Panel",
+      "kind": "card",
+      "description": "Main container for membership information.",
+      "html": "<div class=\"ds-glass-panel\">Contenido del Club</div>",
+      "css": ".ds-glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 35px; padding: 40px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1); font-family: 'Outfit', sans-serif; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clubhouse Sanctuary",
+    "overview": "A premium design system that transforms a complex registration process into an exclusive 'club' experience. The aesthetic balances high-energy accents with a calming, trustworthy base.",
+    "keyCharacteristics": [
+      "Glassmorphic Depth: Surfaces use semi-transparent backgrounds and backdrop blurs.",
+      "Round Confidence: Extreme border-radii (50px) on inputs and buttons.",
+      "Vibrant Precision: Saturated colors used strategically for primary actions."
+    ],
+    "rules": [
+      { "name": "The Rare Accent Rule", "body": "Action Orange is used on ≤10% of any given screen.", "section": "colors" },
+      { "name": "The Floating Panel Rule", "body": "All primary interaction areas float above the background with a soft shadow and subtle blur.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use OKLCH for dynamic color variations.",
+      "Do use Fraiche for all major numeric indicators.",
+      "Do keep buttons consistently rounded at 50px."
+    ],
+    "donts": [
+      "Don't use sharp corners (radius < 15px).",
+      "Don't use side-stripe borders as status indicators.",
+      "Don't mix more than two Action Orange elements on the same viewport."
+    ]
+  }
+}

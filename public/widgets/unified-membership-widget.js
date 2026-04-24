@@ -26,10 +26,16 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
 
         :root {
+            --pata-primary: #00BBB4;
+            --pata-primary-light: #7DD8D5;
+            --pata-action: #FE8F15;
+            --pata-accent: #FFBD12;
             --pata-glass-bg: rgba(255, 255, 255, 0.85);
             --pata-glass-border: rgba(255, 255, 255, 0.3);
             --pata-shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.1);
             --pata-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --pata-border-thick: 4px solid #000;
+            --pata-border-thin: 2px solid #000;
         }
 
         .pata-unified-panel {
@@ -70,16 +76,6 @@
             animation: pataSlideInFromRight 0.5s var(--pata-spring) forwards;
         }
 
-        /* Yellow Theme Support */
-        .pata-theme-yellow .pata-external-greeting { color: #FFFFFF; }
-        .pata-theme-yellow .pata-welcome-title { color: #FFFFFF; }
-        .pata-theme-yellow .pata-welcome-subtitle { color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-        /* Orange Theme Support */
-        .pata-theme-orange .pata-external-greeting { color: #FFFFFF; }
-        .pata-theme-orange .pata-welcome-title { color: #FFFFFF; }
-        .pata-theme-orange .pata-welcome-subtitle { color: #FFFFFF; text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
         /* External Greeting */
         .pata-external-greeting {
             width: 100%;
@@ -90,15 +86,15 @@
         }
 
         .pata-welcome-title {
-            font-size: 100px;
+            font-size: clamp(48px, 10vw, 100px);
             font-weight: 900;
             margin: 0;
             line-height: 0.9;
-            letter-spacing: -2px;
+            letter-spacing: -0.02em;
         }
 
         .pata-welcome-subtitle {
-            font-size: 20px;
+            font-size: clamp(16px, 2vw, 20px);
             font-weight: 600;
             margin: 20px 0 0 0;
             line-height: 1.4;
@@ -112,17 +108,18 @@
             gap: 12px; 
             margin-bottom: 25px; 
             overflow-x: auto;
-            scrollbar-width: none; /* Firefox */
-            -ms-overflow-style: none;  /* IE/Edge */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
             padding: 10px 5px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
-        .pata-pet-tabs::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        .pata-pet-tabs::-webkit-scrollbar { display: none; }
 
         .pata-tab-btn {
             background: #F0F2F5;
-            border: 2px solid transparent;
+            border: var(--pata-border-thin);
+            border-color: transparent;
             border-radius: 50px;
             padding: 12px 28px;
             cursor: pointer;
@@ -135,12 +132,12 @@
             font-size: 16px;
             white-space: nowrap;
             flex-shrink: 0;
-            min-height: 48px; /* Touch target */
+            min-height: 48px;
         }
 
         .pata-tab-btn:hover { transform: translateY(-2px); background: #E8EAED; }
         .pata-tab-btn.active { 
-            background: #00BBB4; 
+            background: var(--pata-primary); 
             color: #FFFFFF; 
             border-color: rgba(255,255,255,0.3);
             box-shadow: 0 8px 20px rgba(0, 187, 180, 0.3);
@@ -150,72 +147,46 @@
         /* Approved View Layout */
         .pata-approved-grid {
             display: grid;
-            grid-template-columns: 1fr 340px;
+            grid-template-columns: 1fr minmax(300px, 340px);
             gap: 30px;
             align-items: flex-start;
         }
 
         @media (max-width: 900px) {
             .pata-approved-grid { grid-template-columns: 1fr; }
-            .pata-welcome-title { font-size: 70px; }
-        }
-
-        @media (max-width: 600px) {
-            .pata-welcome-title { font-size: 50px; }
-            .pata-unified-panel { padding: 25px; border-radius: 25px; }
-            .pata-approved-grid { gap: 20px; }
         }
 
         .pata-carencia-title {
-            font-size: 44px;
+            font-size: clamp(32px, 5vw, 44px);
             font-weight: 900;
-            color: #00BBB4;
+            color: var(--pata-primary);
             margin: 0 0 10px 0;
             line-height: 1.1;
         }
 
-        .pata-carencia-subtitle {
-            font-size: 18px;
-            font-weight: 700;
-            color: #1A1A1A;
-            margin-bottom: 25px;
-        }
-
-        .pata-carencia-remaining {
-            font-size: 22px;
-            font-weight: 700;
-            color: #00BBB4;
-            margin-bottom: 30px;
-        }
-
-        .pata-carencia-remaining strong {
-            font-size: 28px;
-            font-weight: 900;
-        }
-
-        /* 💬 Chat Styles - Pata Chat */
+        /* 💬 Chat Styles */
         .pata-chat-container {
             margin-top: 35px;
             background: #fff;
             border-radius: 30px;
-            border: 4px solid #000;
+            border: var(--pata-border-thick);
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            height: 480px;
+            height: clamp(400px, 50vh, 550px);
             box-shadow: 12px 12px 0 rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
 
         .pata-chat-header {
             padding: 18px 25px;
-            background: #00BBB4;
+            background: var(--pata-primary);
             color: #fff;
             font-weight: 950;
-            font-size: 15px;
+            font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
-            border-bottom: 4px solid #000;
+            letter-spacing: 0.1em;
+            border-bottom: var(--pata-border-thick);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -228,13 +199,13 @@
             display: flex;
             flex-direction: column;
             gap: 18px;
-            background-image: radial-gradient(#00bbb4 1px, transparent 1px);
+            background-image: radial-gradient(var(--pata-primary) 1px, transparent 1px);
             background-size: 24px 24px;
             background-color: #fafafa;
         }
 
         .pata-chat-bubble {
-            max-width: 82%;
+            max-width: 85%;
             padding: 16px 20px;
             border-radius: 24px;
             font-size: 14.5px;
@@ -255,230 +226,88 @@
 
         .pata-chat-bubble.user {
             align-self: flex-end;
-            background: #00BBB4;
+            background: var(--pata-primary);
             color: #fff;
             border-bottom-right-radius: 6px;
-        }
-
-        .pata-chat-bubble.system {
-            align-self: center;
-            background: #E8F5E9;
-            color: #2E7D32;
-            border: 3px dashed #2E7D32;
-            font-size: 12.5px;
-            text-align: center;
-            max-width: 92%;
-            border-radius: 15px;
-            box-shadow: none;
-            padding: 12px 20px;
-        }
-
-        .pata-chat-meta {
-            font-size: 10px;
-            font-weight: 950;
-            opacity: 0.5;
-            margin-top: 8px;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         .pata-chat-input-area {
             padding: 18px;
             background: #fff;
-            border-top: 4px solid #000;
+            border-top: var(--pata-border-thick);
             display: flex;
             gap: 12px;
             align-items: center;
         }
 
-        .pata-chat-input {
-            flex: 1;
-            border: 3px solid #000;
-            border-radius: 50px;
-            padding: 14px 25px;
-            font-family: inherit;
-            font-size: 15px;
-            font-weight: 700;
-            outline: none;
-            transition: all 0.2s;
-            background: #fff;
-        }
-
-        .pata-chat-input:focus {
-            background: #F0FEFE;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.1);
-        }
-
-        .pata-chat-send {
-            background: #FE8F15;
-            border: 3px solid #000;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            flex-shrink: 0;
-            color: #fff;
-            font-size: 20px;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .pata-chat-send:hover { transform: scale(1.1) rotate(8deg); }
-        .pata-chat-send:active { transform: scale(0.9); }
-        .pata-chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-
-        .pata-chat-empty {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .pata-chat-loading {
-            padding: 20px;
-            text-align: center;
-            font-weight: 800;
-            color: #00BBB4;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* Approved View Layout */
-        .pata-progress-container-v2 {
-            margin: 40px 0;
-        }
-
-        .pata-progress-header {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 700;
-            margin-bottom: 15px;
-        }
-
+        /* Progress Bar */
         .pata-bar-v2 {
             height: 28px;
             background: #F0F2F5;
             border-radius: 50px;
-            border: 2px solid #1A1A1A;
+            border: var(--pata-border-thin);
             padding: 4px;
             position: relative;
         }
 
         .pata-fill-v2 {
             height: 100%;
-            background: linear-gradient(90deg, #00BBB4 0%, #00D2C9 100%);
+            background: linear-gradient(90deg, var(--pata-primary) 0%, var(--pata-primary-light) 100%);
             border-radius: 50px;
             transition: width 1.5s var(--pata-spring);
-            box-shadow: 0 2px 10px rgba(0, 187, 180, 0.2);
-        }
-
-        .pata-bar-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 14px;
-            font-weight: 700;
-            margin-top: 10px;
         }
 
         /* Pet Profile Cards */
-        .pata-pet-profile {
-            display: flex;
-            gap: 15px;
-            animation: pataSlideInFromRight 0.5s ease-out;
-        }
-
         .pata-pet-photo-box {
             width: 140px;
             height: 140px;
-            background: #00BBB4;
+            background: var(--pata-primary);
             border-radius: 24px;
             overflow: hidden;
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            box-shadow: 0 10px 20px rgba(0, 187, 180, 0.2);
-        }
-
-        .pata-pet-photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+            border: var(--pata-border-thin);
         }
 
         .pata-pet-info-box {
             flex: 1;
-            background: #00BBB4;
+            background: var(--pata-primary);
             border-radius: 24px;
             padding: 20px;
             color: #FFFFFF;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            box-shadow: 0 10px 25px rgba(0, 187, 180, 0.2);
+            border: var(--pata-border-thin);
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
         }
 
-        .pata-pet-info-box h3 {
-            font-size: 22px;
-            font-weight: 900;
-            margin: 0 0 10px 0;
-        }
-
-        .pata-pet-info-box ul {
-            list-style: none;
-            padding: 0;
-            margin: 0 0 15px 0;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .pata-pet-info-box li {
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .pata-pet-info-box li::before {
-            content: "•";
-            font-size: 18px;
-            color: rgba(255,255,255,0.6);
-        }
-
-        /* Modal Styles */
+        /* Modal Base Styles */
         .pata-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 10000;
+            padding: 20px;
         }
 
         .pata-modal-overlay.show { display: flex; }
 
         .pata-modal {
             background: #FFFFFF;
-            width: 90%;
+            width: 100%;
             max-width: 550px;
             border-radius: 40px;
+            border: var(--pata-border-thick);
             overflow: hidden;
             box-shadow: 0 30px 60px rgba(0,0,0,0.25);
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
@@ -489,326 +318,98 @@
             to { transform: translateY(0) scale(1); opacity: 1; } 
         }
 
-        .pata-modal-header {
-            padding: 30px;
-            background: #F8FBFF;
-            border-bottom: 1px solid #F0F2F5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .pata-modal-title { font-size: 22px; font-weight: 900; color: #1A1A1A; margin: 0; }
-        .pata-modal-close { background: #E8EAED; border: none; font-size: 24px; cursor: pointer; color: #666; width: 40px; height: 40px; border-radius: 20px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .pata-modal-close:hover { background: #DDD; color: #1A1A1A; transform: rotate(90deg); }
-
-        .pata-modal-body { 
-            padding: 35px; 
-            max-height: 85vh; 
-            overflow-y: auto; 
-            -ms-overflow-style: none; /* IE and Edge */
-            scrollbar-width: none; /* Firefox */
-        }
-        .pata-modal-body::-webkit-scrollbar {
-            display: none; /* Chrome, Safari and Opera */
-        }
-
-        .pata-no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .pata-no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-
-        .pata-modal-pet-details { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .pata-detail-item { margin-bottom: 15px; }
-        .pata-detail-label { font-size: 13px; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
-        .pata-detail-value { font-size: 17px; font-weight: 900; color: #1A1A1A; }
-
-        .pata-modal-footer {
-            padding: 25px 35px;
-            background: #F8FBFF;
-            border-top: 1px solid #F0F2F5;
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-        }
-
-        .pata-btn-ver-detalles {
-            background: #FFBD12;
-            color: #1A1A1A !important;
-            border: 2px solid #000;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-size: 15px;
-            font-weight: 900;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .pata-btn-ver-detalles:hover { transform: scale(1.05); box-shadow: 0 5px 15px rgba(255, 189, 18, 0.3); }
-
-        /* Orange Banner Alert */
-        .pata-orange-alert {
-            background: #FFBD12;
-            border-radius: 25px;
-            padding: 20px 30px;
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            margin-top: 30px;
-            color: #1A1A1A;
-            border: 2px solid #000;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.1);
-        }
-
-        .pata-orange-alert-icon { font-size: 36px; }
-        .pata-orange-alert-text { font-size: 15px; font-weight: 700; line-height: 1.4; }
-        .pata-orange-alert-text strong { display: block; margin-bottom: 4px; font-size: 17px; }
-
-        /* Buttons */
-        .pata-btn {
-            background: #1A1A1A;
-            color: #fff;
-            padding: 18px 40px;
-            border-radius: 60px;
-            border: 2px solid #000;
-            font-weight: 900;
-            cursor: pointer;
-            font-size: 17px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            text-decoration: none !important;
-            min-height: 52px;
-        }
-        .pata-orange-alert-text a:hover {
-            text-decoration: none !important;
-            opacity: 0.8;
-        }
-
-        /* Documentation Warning Banner (15 days logic) */
-        .pata-documentation-warning {
-            background: #FFF3CD;
-            border: 1px solid #FFE69C;
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 25px;
-            display: flex;
-            gap: 15px;
-            align-items: flex-start;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        .pata-warning-icon {
-            font-size: 24px;
-        }
-
-        .pata-warning-content {
-            color: #856404;
-            flex: 1;
-        }
-
-        .pata-warning-content strong {
-            display: block;
-            font-size: 16px;
-            margin-bottom: 5px;
-            font-weight: 800;
-        }
-
-        .pata-warning-content p {
-            margin: 2px 0;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .pata-warning-deadline {
-            margin-top: 8px !important;
-            font-weight: 600;
-        }
-
-        .pata-warning-deadline strong {
-            color: #856404;
-        }
-
-        /* Responsive Editorial Modal */
+        /* Editorial Modal Distribution */
         .pata-editorial-container {
-            max-width: 960px;
-            width: 90%;
+            max-width: 1080px;
+            width: 100%;
             max-height: 90vh;
             border-radius: 40px;
-            border: 4px solid #000;
+            border: var(--pata-border-thick);
             overflow: hidden;
             background: #fff;
+            display: flex;
+            flex-direction: column;
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
-            position: relative;
         }
 
         .pata-editorial-body {
             display: grid;
-            grid-template-columns: 440px 1fr;
+            grid-template-columns: minmax(320px, 440px) 1fr;
             height: 100%;
-            overflow-y: auto;
+            overflow: hidden; /* Control internal scrolling */
         }
 
         .pata-editorial-left {
-            background: #00BBB4;
+            background: var(--pata-primary-light);
             padding: 40px;
             display: flex;
             flex-direction: column;
             gap: 25px;
-            border-right: 4px solid #000;
-            height: 100%;
-        }
-
-        .pata-editorial-right {
-            padding: 50px;
-            background: #fff;
-            position: relative;
-            height: 100%;
+            border-right: var(--pata-border-thick);
             overflow-y: auto;
         }
 
+        .pata-editorial-right {
+            padding: 40px 50px;
+            background: #fff;
+            overflow-y: auto;
+            position: relative;
+        }
+
         .pata-editorial-name {
-            font-size: 72px;
+            font-size: clamp(48px, 6vw, 72px);
             font-weight: 950;
             line-height: 0.85;
             margin: 0 0 10px 0;
-            letter-spacing: -3px;
+            letter-spacing: -0.04em;
             color: #000;
             text-transform: lowercase;
         }
 
-        .pata-editorial-info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        @media (max-width: 850px) {
-            .pata-editorial-container {
-                max-width: 95%;
-                border-width: 3px;
-                max-height: 85vh;
-            }
-
+        @media (max-width: 900px) {
             .pata-editorial-body {
                 grid-template-columns: 1fr;
-                display: block;
+                overflow-y: auto;
             }
-
             .pata-editorial-left {
                 border-right: none;
-                border-bottom: 4px solid #000;
-                padding: 30px 20px;
-                height: auto;
+                border-bottom: var(--pata-border-thick);
+                padding: 30px;
             }
-
             .pata-editorial-right {
-                padding: 40px 25px;
-                height: auto;
-            }
-
-            .pata-editorial-name {
-                font-size: 48px;
-                letter-spacing: -2px;
-            }
-
-            .pata-editorial-info-grid {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
-            .pata-editorial-main-img-box {
-                height: 320px !important;
+                padding: 30px;
             }
         }
 
-        }
-        .pata-btn:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
-        .pata-btn:active { transform: translateY(0); }
-        
-        .pata-btn-success { background: #00BBB4; color: #fff; border-color: #008E88; }
-        .pata-btn-outline { background: transparent; border: 2px solid #DDD; color: #666; }
-        .pata-btn-outline:hover { background: #F8FBFF; border-color: #1A1A1A; color: #1A1A1A; }
-
-        /* Upload Areas */
-        .pata-upload-area {
-            border: 2px dashed #DDD;
-            border-radius: 25px;
-            padding: 25px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s var(--pata-spring);
-            background: #F8FBFF;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            position: relative;
-            overflow: hidden;
-            min-height: 140px;
-        }
-        .pata-upload-area:hover { border-color: #00BBB4; background: #F0FEFE; transform: scale(1.02); }
-        .pata-upload-area.has-file { border-style: solid; border-color: #4CAF50; background: #F6FFF6; }
-        .pata-upload-icon { font-size: 36px; transition: transform 0.3s; }
-        .pata-upload-area:hover .pata-upload-icon { transform: translateY(-5px); }
-        .pata-upload-text { font-size: 15px; font-weight: 700; color: #666; }
-        .pata-upload-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; transition: transform 0.5s; opacity: 0.9; }
-        .pata-upload-area:hover .pata-upload-preview { transform: scale(1.1); opacity: 1; }
-        .pata-upload-filename { position: relative; z-index: 2; background: #4CAF50; color: #FFF; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3); }
-
-        /* Senior Badge */
-        .pata-senior-badge {
-            background: #7B1FA2;
-            color: #FFF;
-            padding: 4px 12px;
-            border-radius: 50px;
-            font-size: 11px;
-            font-weight: 900;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: 8px;
-            vertical-align: middle;
-        }
-
-        .pata-title { font-size: 50px; font-weight: 900; margin: 0 0 15px 0; color: #1A1A1A; line-height: 1.1; }
-
-        /* Benefits Section in Review - Refined Premium Design */
+        /* ❌ REMOVED SIDE-STRIPE BAN 1 ❌ */
         .pata-benefits-review {
             margin-top: 40px;
             padding: 35px;
             background: #FFFFFF;
             border-radius: 40px;
-            border: 2px solid #E0F2F1;
+            border: var(--pata-border-thin);
             text-align: left;
             box-shadow: 0 15px 45px rgba(0, 187, 180, 0.08);
             position: relative;
-            overflow: hidden;
         }
-        .pata-benefits-review::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 6px;
-            height: 100%;
-            background: #00BBB4;
-        }
+        
+        .pata-benefits-review::before { display: none; } /* Kill the side-stripe */
+        
+        /* Replace with a more distinctive header */
         .pata-benefits-title {
             font-size: 22px;
             font-weight: 950;
-            color: #00BBB4;
+            color: var(--pata-primary);
             margin-bottom: 30px;
             display: flex;
             align-items: center;
             gap: 12px;
             text-transform: lowercase;
             letter-spacing: -0.5px;
+            padding-bottom: 12px;
+            border-bottom: 2px dashed var(--pata-primary-light);
         }
+
         .pata-benefit-card {
             display: flex;
             gap: 20px;
@@ -820,16 +421,11 @@
             border: 1px solid #F0F2F5;
             transition: all 0.4s var(--pata-spring);
         }
-        .pata-benefit-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
-            border-color: #00BBB4;
-        }
-        .pata-benefit-card:last-child { margin-bottom: 0; }
+
         .pata-benefit-icon-box {
             font-size: 28px;
             background: #FFFFFF;
-            color: #00BBB4;
+            color: var(--pata-primary);
             width: 56px;
             height: 56px;
             border-radius: 20px;
@@ -837,44 +433,54 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
-            border: 1px solid #E0F2F1;
-            box-shadow: 0 5px 15px rgba(0, 187, 180, 0.1);
+            border: var(--pata-border-thin);
+            box-shadow: 4px 4px 0 rgba(0, 187, 180, 0.1);
         }
-        .pata-benefit-info h4 {
-            margin: 0 0 8px 0;
-            font-size: 19px;
+
+        /* Utilities */
+        .pata-btn {
+            background: #1A1A1A;
+            color: #fff;
+            padding: 16px 36px;
+            border-radius: 60px;
+            border: var(--pata-border-thin);
             font-weight: 900;
-            color: #1A1A1A;
-            letter-spacing: -0.3px;
+            cursor: pointer;
+            font-size: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            text-decoration: none !important;
+            transition: all 0.2s var(--pata-spring);
         }
-        .pata-benefit-info p {
-            margin: 0;
-            font-size: 15px;
-            color: #555;
-            line-height: 1.5;
-            font-weight: 500;
-        }
-        .pata-pati-message {
-            margin-top: 15px;
-            padding: 15px 20px;
-            background: #00BBB4;
-            color: #FFFFFF;
-            border-radius: 20px;
+        .pata-btn:hover { transform: translateY(-3px); box-shadow: 6px 6px 0 rgba(0,0,0,0.1); }
+        
+        .pata-btn-ver-detalles {
+            background: var(--pata-accent);
+            color: #000 !important;
+            border: var(--pata-border-thin);
+            border-radius: 50px;
+            padding: 10px 20px;
             font-size: 14px;
-            font-weight: 700;
-            line-height: 1.4;
-            position: relative;
-            box-shadow: 0 8px 20px rgba(0, 187, 180, 0.2);
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .pata-pati-message::after {
-            content: '🩺';
-            position: absolute;
-            right: 15px;
-            bottom: 10px;
-            font-size: 20px;
-            opacity: 0.3;
+
+        .pata-orange-alert {
+            background: var(--pata-accent);
+            border-radius: 30px;
+            padding: 20px 30px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            margin-top: 30px;
+            color: #1A1A1A;
+            border: var(--pata-border-thick);
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
         }
-    `;
+    `;;
 
 
     class UnifiedWidget {
@@ -2107,136 +1713,130 @@
 
             // Distinctive Editorial Layout
             return `
-                <div class="pata-modal-overlay show" id="pata-pet-details-modal">
+                <div class="pata-modal-overlay show" id="pata-pet-details-modal" role="dialog" aria-modal="true" aria-labelledby="pata-editorial-name">
                     <div class="pata-editorial-container">
-                        <div class="pata-editorial-body pata-no-scrollbar">
+                        <div class="pata-editorial-body">
                             
                             <!-- Left Section: Visual Identity -->
                             <div class="pata-editorial-left">
-                                    <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: 4px solid #000; overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); transform: rotate(-1deg);">
-                                        <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;">
-                                        <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
-                                            ${status.icon} ${status.label}
-                                        </div>
-                                    </div>
-                                    
-                                    <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
-                                        ${photos.map((url, i) => `
-                                            <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: 3px solid #000; overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
-                                                <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;">
-                                            </div>
-                                        `).join('')}
-                                    </div>
-    
-                                    <div style="background: #FFF; border: 4px solid #000; border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
-                                        <div style="font-size: 14px; font-weight: 950; color: #00BBB4; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
-                                        <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: 3px solid #000; overflow: hidden; position: relative;">
-                                            <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: 3px solid #000;"></div>
-                                        </div>
-                                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
-                                            <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
-                                            <span style="color: #00BBB4;">Faltan ${carencia.daysRemaining} días</span>
-                                        </div>
+                                <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: var(--pata-border-thick); overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); transform: rotate(-1deg);">
+                                    <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
+                                    <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+                                        ${status.icon} ${status.label}
                                     </div>
                                 </div>
-    
-                                <!-- Right Section: Fact Sheet -->
-                                <div class="pata-editorial-right">
-                                    <button class="pata-modal-close" id="pata-close-details" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
-                                    
-                                    <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                                        <div style="background: #E8F5E9; color: #2E7D32; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                             ACTIVO
+                                
+                                <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
+                                    ${photos.map((url, i) => `
+                                        <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: var(--pata-border-thin); overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
+                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" alt="Foto ${i+1}">
                                         </div>
-                                        ${pet.is_senior || this.isSenior(pet) ? `
-                                            <div style="background: #F3E5F5; color: #7B1FA2; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
-                                                👑 SENIOR
-                                            </div>
-                                        ` : ''}
-                                        ${pet.is_adopted ? `
-                                            <div style="background: #E0F7FA; color: #006064; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                                🏠 ADOPTADO
-                                            </div>
-                                        ` : ''}
-                                        ${pet.is_mixed_breed ? `
-                                            <div style="background: #FFF3E0; color: #EF6C00; border: 3px solid #000; padding: 6px 16px; border-radius: 50px; font-size: 12px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                                🔀 MESTIZO
-                                            </div>
-                                        ` : ''}
-                                    </div>
-    
-                                    <h2 class="pata-editorial-name">${pet.name}</h2>
-                                    <p style="font-size: 22px; font-weight: 800; color: #00BBB4; margin-bottom: 45px; display: flex; align-items: center; gap: 10px; border-bottom: 4px solid #000; padding-bottom: 15px; width: fit-content;">
-                                        ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
-                                    </p>
-    
-                                    <div class="pata-editorial-info-grid">
-                                        ${[
-                                            { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
-                                            { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
-                                            { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                                            { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
-                                            { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
-                                            { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
-                                            { label: 'Ingreso', value: registrationDate, icon: '📅' },
-                                            { label: 'Activación de tus beneficios', value: activationDate, icon: '🚀' }
+                                    `).join('')}
+                                </div>
 
-                                        ].map(item => `
-                                            <div style="border-left: 4px solid #00BBB4; padding-left: 20px;">
-                                                <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
-                                                <div style="font-size: 18px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
-                                                    <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
-                                                </div>
-                                            </div>
-                                        `).join('')}
+                                <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
+                                    <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
+                                    <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
+                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
                                     </div>
-
-                                    <!-- 🆕 Chat Interface Container -->
-                                    <div id="pata-chat-root" style="margin-top: 20px;">
-                                        <div class="pata-chat-loading">
-                                            <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
-                                            Cargando historial de comunicación...
-                                        </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
+                                        <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
+                                        <span style="color: var(--pata-primary);">Faltan ${carencia.daysRemaining} días</span>
                                     </div>
                                 </div>
-    
-                                    ${pet.adoption_story ? `
-                                        <div style="margin-top: 30px; background: #F1F8E9; border: 3px solid #000; padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                            <div style="font-size: 11px; font-weight: 950; color: #2E7D32; text-transform: uppercase; margin-bottom: 8px;">📜 Historia de Adopción</div>
-                                            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.adoption_story}</p>
-                                        </div>
-                                    ` : ''}
+                            </div>
 
-                                    ${pet.admin_notes ? `
-                                        <div style="margin-top: 20px; background: #FFF9C4; border: 3px solid #000; padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                            <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">📝 Notas del Equipo</div>
-                                            <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.admin_notes}</p>
-                                        </div>
-                                    ` : ''}
-
-                                    ${this.isSenior(pet) ? `
-                                        <div style="background: #E1F5FE; border: 4px solid #000; padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                            <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
-                                            ${pet.vet_certificate_url ? 
-                                                `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
-                                                    <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
-                                                    Ver Certificado Médico →
-                                                </a>` : 
-                                                '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
-                                        </div>
-                                    ` : ''}
-    
-                                    <div style="margin-top: 50px;">
-                                        <button id="pata-close-details-btn" style="background: #FFBD12; color: #000; border: 4px solid #000; padding: 20px 40px; border-radius: 60px; font-weight: 950; font-size: 20px; cursor: pointer; width: 100%; box-shadow: 8px 8px 0 rgba(0,0,0,0.1); transition: all 0.2s;">
-                                            Cerrar Expediente
-                                        </button>
+                            <!-- Right Section: Fact Sheet -->
+                            <div class="pata-editorial-right">
+                                <button class="pata-modal-close" id="pata-close-details" aria-label="Cerrar expediente" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
+                                
+                                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
+                                    <div style="background: #E8F5E9; color: #2E7D32; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                         ACTIVO
                                     </div>
+                                    ${pet.is_senior || this.isSenior(pet) ? `
+                                        <div style="background: #F3E5F5; color: #7B1FA2; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
+                                            👑 SENIOR
+                                        </div>
+                                    ` : ''}
+                                    ${pet.is_adopted ? `
+                                        <div style="background: #E0F7FA; color: #006064; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                            🏠 ADOPTADO
+                                        </div>
+                                    ` : ''}
+                                </div>
+
+                                <h2 class="pata-editorial-name" id="pata-editorial-name">${pet.name}</h2>
+                                <p style="font-size: 20px; font-weight: 800; color: var(--pata-primary); margin-bottom: 45px; display: flex; align-items: center; gap: 10px; border-bottom: var(--pata-border-thick); padding-bottom: 15px; width: fit-content;">
+                                    ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
+                                </p>
+
+                                <div class="pata-editorial-info-grid">
+                                    ${[
+                                        { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
+                                        { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
+                                        { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
+                                        { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
+                                        { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
+                                        { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
+                                        { label: 'Ingreso', value: registrationDate, icon: '📅' },
+                                        { label: 'Activación', value: activationDate, icon: '🚀' }
+
+                                    ].map(item => `
+                                        <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
+                                            <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
+                                            <div style="font-size: 17px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
+                                                <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                ${pet.adoption_story ? `
+                                    <div style="margin-top: 30px; background: #F1F8E9; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                        <div style="font-size: 11px; font-weight: 950; color: #2E7D32; text-transform: uppercase; margin-bottom: 8px;">📜 Historia de Adopción</div>
+                                        <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.adoption_story}</p>
+                                    </div>
+                                ` : ''}
+
+                                ${pet.admin_notes ? `
+                                    <div style="margin-top: 20px; background: #FFF9C4; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                        <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">📝 Notas del Equipo</div>
+                                        <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.admin_notes}</p>
+                                    </div>
+                                ` : ''}
+
+                                ${this.isSenior(pet) ? `
+                                    <div style="background: #E1F5FE; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                        <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
+                                        ${pet.vet_certificate_url ? 
+                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                                                <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
+                                                Ver Certificado Médico →
+                                            </a>` : 
+                                            '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
+                                    </div>
+                                ` : ''}
+
+                                <!-- 🆕 Chat Interface Container - Integrated properly into flow -->
+                                <div id="pata-chat-root" style="margin-top: 40px;">
+                                    <div class="pata-chat-loading">
+                                        <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
+                                        Cargando historial de comunicación...
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 50px;">
+                                    <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente" style="background: var(--pata-accent); color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px;">
+                                        Cerrar Expediente
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             `;
+;
         }
 
         renderMissingPhotosView(firstName, pet) {
