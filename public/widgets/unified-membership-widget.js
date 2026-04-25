@@ -533,6 +533,38 @@
                     console.log('✨ Unified Widget: Rendering panel...');
                     this.container.classList.add('show');
                     this.render();
+                    
+                    // 🆕 Magic Link: Auto-open chat if URL has action=chat&petId=X
+                    try {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const action = urlParams.get('action');
+                        const magicPetId = urlParams.get('petId');
+                        if (action === 'chat' && magicPetId) {
+                            const targetPet = this.pets.find(p => p.id === magicPetId);
+                            if (targetPet) {
+                                console.log('🔗 Magic Link: Opening chat for pet', magicPetId);
+                                setTimeout(() => {
+                                    const modalHtml = this.renderPetDetailsModal(targetPet);
+                                    const modalDiv = document.createElement('div');
+                                    modalDiv.id = 'pata-details-modal-wrapper';
+                                    modalDiv.innerHTML = modalHtml;
+                                    document.body.appendChild(modalDiv);
+                                    const close = () => modalDiv.remove();
+                                    const closeBtn1 = document.getElementById('pata-close-details');
+                                    const closeBtn2 = document.getElementById('pata-close-details-btn');
+                                    if (closeBtn1) closeBtn1.onclick = close;
+                                    if (closeBtn2) closeBtn2.onclick = close;
+                                    this.fetchAndRenderChat(targetPet.id);
+                                    const modalOverlay = document.getElementById('pata-pet-details-modal');
+                                    if (modalOverlay) {
+                                        modalOverlay.onclick = (ev) => {
+                                            if (ev.target.id === 'pata-pet-details-modal') close();
+                                        };
+                                    }
+                                }, 800);
+                            }
+                        }
+                    } catch (e) { console.warn('Magic link handling error:', e); }
                 } else {
                     console.warn('⚠️ Unified Widget: No pets found for this user in Supabase.');
                     this.container.innerHTML = `
@@ -1470,10 +1502,12 @@
                 let bubbleClass = 'system';
                 const type = log.type || '';
                 
-                if (type === 'user_response' || type === 'user_appeal' || type === 'user_message') {
+                if (type === 'user_response' || type === 'user_appeal' || type === 'user_message' || type === 'user_fulfill') {
                     bubbleClass = 'user';
                 } else if (type === 'admin_request' || type === 'admin_message') {
                     bubbleClass = 'admin';
+                } else if (type === 'admin_info_request') {
+                    bubbleClass = 'action';
                 } else {
                     bubbleClass = 'system';
                 }
@@ -1484,6 +1518,38 @@
                 }) : '---';
 
                 const icon = log.icon || '📋';
+
+                // Action bubble for info requests
+                if (bubbleClass === 'action') {
+                    const meta = log.metadata || {};
+                    const requestTypes = meta.requestTypes || [];
+                    const fulfilled = meta.fulfilled === true;
+                    
+                    const typeLabels = {
+                        'PET_PHOTO_1': { label: '📸 Foto Principal', fulfilled: meta.fulfilledTypes?.includes('PET_PHOTO_1') },
+                        'PET_VET_CERT': { label: '🏥 Certificado Médico', fulfilled: meta.fulfilledTypes?.includes('PET_VET_CERT') },
+                        'OTHER_DOC': { label: '📄 Documento Adicional', fulfilled: meta.fulfilledTypes?.includes('OTHER_DOC') }
+                    };
+                    
+                    const actionButtons = requestTypes.map(rt => {
+                        const info = typeLabels[rt] || { label: rt, fulfilled: false };
+                        if (info.fulfilled || fulfilled) {
+                            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;">✅ ${info.label} — Completado</div>`;
+                        }
+                        return `<button class="pata-action-btn" data-request-type="${rt}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;">${info.label} — Subir</button>`;
+                    }).join('');
+                    
+                    return `
+                        <div class="pata-chat-bubble admin" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid #FE8F15;">
+                            <div style="font-weight:900;font-size:13px;margin-bottom:8px;color:#FE8F15;">📋 Solicitud de Información</div>
+                            <div style="font-size:13px;margin-bottom:12px;">${log.message}</div>
+                            <div style="display:flex;flex-direction:column;gap:8px;">
+                                ${actionButtons}
+                            </div>
+                            <span class="pata-chat-meta">${date}</span>
+                        </div>
+                    `;
+                }
 
                 if (bubbleClass === 'system') {
                     return `
@@ -1598,6 +1664,12 @@
                     attachBtn.onclick = () => fileInput.click();
                     fileInput.onchange = () => this.handleChatUpload(petId);
                 }
+
+                // 🆕 Bind action buttons for info requests
+                const actionBtns = root.querySelectorAll('.pata-action-btn');
+                actionBtns.forEach(btn => {
+                    btn.onclick = () => this.handleFulfillRequest(btn.dataset.petId, btn.dataset.requestType, btn.dataset.logId, btn);
+                });
             } catch (err) {
                 console.error('❌ Error fetching chat:', err);
                 root.innerHTML = `<div style="color:red; padding:20px; text-align:center; font-weight:800; font-size:14px;">⚠️ No se pudo cargar el historial de mensajes.</div>`;
@@ -1692,6 +1764,78 @@
                 btn.disabled = false;
                 btn.innerText = '➔';
             }
+        }
+
+        // 🆕 Handle fulfill request from action buttons
+        async handleFulfillRequest(petId, requestType, logId, btnElement) {
+            // Create a hidden file input
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            
+            // Set accept type based on request
+            if (requestType === 'PET_PHOTO_1') {
+                fileInput.accept = 'image/*';
+            } else if (requestType === 'PET_VET_CERT') {
+                fileInput.accept = 'image/*,application/pdf';
+            } else {
+                fileInput.accept = 'image/*,application/pdf';
+            }
+            
+            fileInput.onchange = async () => {
+                const file = fileInput.files[0];
+                if (!file) return;
+                
+                // 10MB limit
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('El archivo es muy grande. Máximo 10MB.');
+                    return;
+                }
+                
+                // Show loading state
+                const originalHTML = btnElement.innerHTML;
+                btnElement.disabled = true;
+                btnElement.innerHTML = '⏳ Subiendo...';
+                btnElement.style.opacity = '0.6';
+                
+                try {
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    formData.append('petId', petId);
+                    formData.append('memberId', this.member.id);
+                    formData.append('requestType', requestType);
+                    formData.append('logId', logId);
+                    
+                    const res = await fetch(`${CONFIG.apiUrl}/api/admin/members/${this.member.id}/fulfill-request`, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const data = await res.json();
+                    
+                    if (data.success) {
+                        // Replace button with success state
+                        btnElement.innerHTML = '✅ ¡Completado!';
+                        btnElement.style.background = '#E8F5E9';
+                        btnElement.style.border = '2px solid #4CAF50';
+                        btnElement.style.color = '#2E7D32';
+                        
+                        // Refresh chat after a short delay to show success
+                        setTimeout(() => {
+                            this.fetchAndRenderChat(petId);
+                        }, 1500);
+                    } else {
+                        throw new Error(data.error || 'Error al subir');
+                    }
+                } catch (err) {
+                    console.error('❌ Error fulfilling request:', err);
+                    alert('No se pudo completar la solicitud: ' + err.message);
+                    btnElement.innerHTML = originalHTML;
+                    btnElement.disabled = false;
+                    btnElement.style.opacity = '1';
+                }
+            };
+            
+            fileInput.click();
         }
 
         renderPetDetailsModal(pet) {

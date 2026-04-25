@@ -84,9 +84,13 @@ function getLogIcon(type: string): string {
             return '❌';
         case 'admin_request':
             return '📩';
+        case 'admin_info_request':
+            return '📋';
         case 'user_response':
         case 'user_message':
             return '💬';
+        case 'user_fulfill':
+            return '📤';
         case 'admin_message':
             return '🗨️';
         default:

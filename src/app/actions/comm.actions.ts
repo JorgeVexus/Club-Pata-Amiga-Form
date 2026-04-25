@@ -1,4 +1,4 @@
-﻿'use server';
+'use server';
 
 /**
  * ðŸ›°ï¸ Server Actions para Comunicaciones
@@ -384,5 +384,122 @@ export async function sendMissingPetDocsEmail(params: SendMissingPetDocsEmailPar
         return { success: false, error: err.message };
     }
 }
+
+// ============================================================
+// SOLICITUD DE INFORMACIÓN POR ADMIN (Triggered, no Cron)
+// ============================================================
+
+interface InfoRequestItem {
+    type: string;
+    label: string;
+    icon: string;
+    description: string;
+}
+
+interface SendInfoRequestEmailParams {
+    userId: string;
+    userEmail: string;
+    userName: string;
+    petName: string;
+    petId: string;
+    requestTypes: InfoRequestItem[];
+    customMessage: string | null;
+    dashboardUrl: string;
+}
+
+function buildInfoRequestEmailHtml(params: SendInfoRequestEmailParams): string {
+    const { petName, userName, requestTypes, customMessage, dashboardUrl } = params;
+    const firstName = userName.split(' ')[0] || 'Miembro';
+
+    const requestItems = requestTypes.map(item => {
+        const bgColor = item.type === 'PET_PHOTO_1' ? '#FE8F15' :
+            item.type === 'PET_VET_CERT' ? '#7DD8D5' : '#A0AEC0';
+
+        return `<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;">
+            <span style="width:32px;height:32px;border-radius:50%;background:${bgColor};color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">${item.icon}</span>
+            <div>
+                <strong style="color:#2D3748;display:block;margin-bottom:2px;">${item.label}</strong>
+                <span style="color:#718096;font-size:13px;">${item.description}</span>
+            </div>
+        </li>`;
+    }).join('');
+
+    const customNote = customMessage
+        ? `<div style="background:#F7FAFC;border-left:4px solid #FE8F15;padding:16px;border-radius:0 12px 12px 0;margin-bottom:28px;">
+            <p style="margin:0 0 4px;font-size:12px;font-weight:700;color:#FE8F15;text-transform:uppercase;">Mensaje del equipo</p>
+            <p style="margin:0;font-size:14px;color:#4A5568;line-height:1.6;">${customMessage}</p>
+           </div>`
+        : '';
+
+    return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Club Pata Amiga</title></head><body style="margin:0;padding:0;background-color:#F7F8FA;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8FA;padding:40px 20px;"><tr><td align="center"><table width="100%" style="max-width:580px;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:linear-gradient(135deg,#7DD8D5 0%,#00BBB4 100%);padding:36px 40px;text-align:center;"><img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929e0aea61dcbb985e68c84_logo.svg" alt="Club Pata Amiga" height="44" style="display:block;margin:0 auto 16px;"/><p style="margin:0;color:rgba(255,255,255,0.85);font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">Acción requerida</p></td></tr><tr><td style="padding:40px 40px 24px;"><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#2D3748;line-height:1.3;">Hola ${firstName}, necesitamos tu ayuda 🐾</h1><p style="margin:0 0 28px;font-size:16px;color:#4A5568;line-height:1.7;">Nuestro equipo ha revisado el expediente de <strong>${petName}</strong> y necesitamos que nos proporciones la siguiente información para continuar con la aprobación:</p><div style="background:#FFFBF5;border:1.5px solid #FEE4C4;border-radius:16px;padding:24px;margin-bottom:28px;"><p style="margin:0 0 16px;font-size:12px;font-weight:700;color:#FE8F15;text-transform:uppercase;letter-spacing:0.5px;">Información solicitada</p><ul style="margin:0;padding:0;list-style:none;">${requestItems}</ul></div>${customNote}<div style="text-align:center;margin-bottom:28px;"><a href="${dashboardUrl}" style="display:inline-block;background:#FE8F15;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;border:2px solid #000000;box-shadow:0 4px 14px rgba(254,143,21,0.35);">Abrir mi expediente</a></div><p style="margin:0 0 8px;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">También puedes subir la información directamente desde tu página de miembro en <a href="https://club.pataamiga.mx/mi-membresia" style="color:#00BBB4;font-weight:600;text-decoration:none;">club.pataamiga.mx</a></p><p style="margin:0;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">Si tienes dudas, responde este correo y con gusto te ayudamos.</p></td></tr><tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #EDF2F7;margin:0;"/></td></tr><tr><td style="padding:24px 40px 36px;text-align:center;"><p style="margin:0 0 8px;font-size:13px;color:#718096;">Con cariño, <strong style="color:#2D3748;">El equipo de Club Pata Amiga</strong></p><p style="margin:0;font-size:11px;color:#A0AEC0;">¿No reconoces esta cuenta? <a href="mailto:miembros@pataamiga.mx" style="color:#7DD8D5;text-decoration:none;">Contáctanos</a></p></td></tr></table></td></tr></table></body></html>`;
+}
+
+/**
+ * Envía email de solicitud de información disparado por un admin.
+ *
+ * FROM:     miembros@app.pataamiga.mx  (dominio verificado en Resend)
+ * REPLY-TO: miembros@pataamiga.mx     (buzón principal con bandeja activa)
+ */
+export async function sendInfoRequestEmail(params: SendInfoRequestEmailParams) {
+    const { userId, userEmail, petName, requestTypes } = params;
+
+    console.log(`📧 [InfoRequest] Enviando email a ${userEmail} | ${petName} | Items: ${requestTypes.map(r => r.type).join(', ')}`);
+
+    if (!resend) {
+        console.error('❌ [InfoRequest] Resend no configurado (falta RESEND_API_KEY)');
+        return { success: false, error: 'Resend no configurado' };
+    }
+
+    const itemLabels = requestTypes.map(r => r.label).join(', ');
+    const subject = `📋 Necesitamos ${requestTypes.length === 1 ? itemLabels : 'información adicional'} de ${petName}`;
+    const html = buildInfoRequestEmailHtml(params);
+    const plainText = `Hola, necesitamos la siguiente información de ${petName}: ${itemLabels}. Visita tu panel de miembro para completar tu expediente: ${params.dashboardUrl}`;
+
+    try {
+        const { data, error } = await resend.emails.send({
+            from: `${MEMBERS_FROM_NAME} <${MEMBERS_FROM_EMAIL}>`,
+            to: [userEmail],
+            replyTo: REPLY_TO_EMAIL,
+            subject,
+            html,
+            text: plainText,
+        });
+
+        if (error) {
+            console.error('❌ [InfoRequest] Error de Resend:', error);
+            await commService.logCommunication({
+                user_id: userId,
+                type: 'email',
+                template_id: 'admin_info_request',
+                status: 'failed',
+                content: plainText,
+                metadata: { error, petName, requestTypes: requestTypes.map(r => r.type) },
+            });
+            return { success: false, error: error.message };
+        }
+
+        console.log(`✅ [InfoRequest] Email enviado. ID: ${data?.id}`);
+
+        await commService.logCommunication({
+            user_id: userId,
+            type: 'email',
+            template_id: 'admin_info_request',
+            status: 'sent',
+            content: plainText,
+            metadata: {
+                resendId: data?.id,
+                petName,
+                requestTypes: requestTypes.map(r => r.type),
+                dashboardUrl: params.dashboardUrl
+            },
+        });
+
+        return { success: true, id: data?.id };
+    } catch (err: any) {
+        console.error('❌ [InfoRequest] Error inesperado:', err);
+        return { success: false, error: err.message };
+    }
+}
+
 
 

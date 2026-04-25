@@ -71,6 +71,11 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [loadingBilling, setLoadingBilling] = useState(false);
     const [supabaseUser, setSupabaseUser] = useState<any>(null);
     const [loadingSupabase, setLoadingSupabase] = useState(false);
+    // 🆕 Estado para solicitudes de información
+    const [showRequestUI, setShowRequestUI] = useState<Record<string, boolean>>({});
+    const [selectedRequests, setSelectedRequests] = useState<Record<string, string[]>>({});
+    const [requestCustomMsg, setRequestCustomMsg] = useState<Record<string, string>>({});
+    const [sendingRequest, setSendingRequest] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         if (isOpen && member) {
@@ -173,6 +178,59 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             }
         } catch (e) {
             alert('Error de conexión.');
+        }
+    }
+
+    // 🆕 Toggle un tipo de solicitud para una mascota
+    function toggleRequestType(petId: string, type: string) {
+        setSelectedRequests(prev => {
+            const current = prev[petId] || [];
+            if (current.includes(type)) {
+                return { ...prev, [petId]: current.filter(t => t !== type) };
+            }
+            return { ...prev, [petId]: [...current, type] };
+        });
+    }
+
+    // 🆕 Enviar solicitud de información
+    async function sendInfoRequest(petId: string) {
+        const types = selectedRequests[petId] || [];
+        if (types.length === 0) {
+            alert('Selecciona al menos un tipo de información a solicitar.');
+            return;
+        }
+
+        setSendingRequest(prev => ({ ...prev, [petId]: true }));
+        try {
+            const res = await fetch(`/api/admin/members/${member.id}/request-info`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    petId,
+                    requestTypes: types,
+                    customMessage: requestCustomMsg[petId]?.trim() || null,
+                    adminId: 'current_admin'
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                alert(`✅ Solicitud enviada: ${data.message}`);
+                // Limpiar UI
+                setSelectedRequests(prev => ({ ...prev, [petId]: [] }));
+                setRequestCustomMsg(prev => ({ ...prev, [petId]: '' }));
+                setShowRequestUI(prev => ({ ...prev, [petId]: false }));
+                // Recargar datos
+                loadPetAppealLogs(petId);
+                loadPets();
+                if (onDataChange) onDataChange();
+            } else {
+                alert('Error: ' + (data.error || 'Error al enviar'));
+            }
+        } catch (e) {
+            alert('Error de conexión.');
+        } finally {
+            setSendingRequest(prev => ({ ...prev, [petId]: false }));
         }
     }
 
@@ -659,67 +717,70 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 )}
                                             </div>
 
-                                            {/* 🆕 Sección de Comunicación por Mascota (solo para rechazados y solo SuperAdmin) */}
-                                            {isSuperAdmin && showAppealSection && (pet.status === 'rejected' || pet.status === 'action_required') && (
-                                                <div className={styles.petCommunicationSection}>
-                                                    {/* Mostrar última respuesta del admin si existe */}
-                                                    {(pet as any).last_admin_response && (
-                                                        <div className={styles.lastAdminResponse}>
-                                                            <strong>📩 Último mensaje enviado:</strong>
-                                                            <p>{(pet as any).last_admin_response}</p>
-                                                        </div>
-                                                    )}
-
-                                                    {/* Formulario de respuesta */}
-                                                    <div className={styles.petResponseForm}>
-                                                        <label>💬 Responder sobre esta mascota:</label>
-                                                        <textarea
-                                                            value={petMessages[pet.id] || ''}
-                                                            onChange={(e) => setPetMessages({ ...petMessages, [pet.id]: e.target.value })}
-                                                            placeholder="Indica qué información falta o por qué se rechaza esta mascota..."
-                                                            className={styles.notesInput}
-                                                            rows={3}
-                                                        />
+                                            {/* 🆕 Sección de Comunicación Mejorada por Mascota */}
+                                            <div className={styles.petCommunicationSection}>
+                                                    {/* Botones de acción */}
+                                                    <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
                                                         <button
-                                                            className={styles.sendResponseBtn}
-                                                            onClick={() => sendPetResponse(pet.id)}
+                                                            className={styles.loadHistoryBtn}
+                                                            style={{ background: '#FE8F15', color: '#fff', border: '2px solid #000' }}
+                                                            onClick={() => setShowRequestUI(prev => ({ ...prev, [pet.id]: !prev[pet.id] }))}
                                                         >
-                                                            Enviar Mensaje 📩
+                                                            {showRequestUI[pet.id] ? '✕ Cerrar' : '📋 Solicitar Información'}
                                                         </button>
-                                                    </div>
-
-                                                    {/* Historial de esta mascota */}
-                                                    <div className={styles.petHistorySection}>
                                                         <button
                                                             className={styles.loadHistoryBtn}
                                                             onClick={() => loadPetAppealLogs(pet.id)}
                                                         >
-                                                            {loadingLogs[pet.id] ? 'Cargando...' : '📜 Ver Historial de Mensajes'}
+                                                            {loadingLogs[pet.id] ? '⏳ Cargando...' : '📜 Historial'}
                                                         </button>
-                                                        {petLogs[pet.id] && petLogs[pet.id].length > 0 && (
-                                                            <div className={styles.historyList}>
-                                                                {petLogs[pet.id].map((log) => (
-                                                                    <div
-                                                                        key={log.id}
-                                                                        className={`${styles.historyItem} ${log.type === 'user_appeal' || log.type === 'user_update' ? styles.userMessage : styles.adminMessage}`}
-                                                                    >
-                                                                        <div className={styles.historyHeader}>
-                                                                            <span className={styles.historyAuthor}>
-                                                                                {log.type === 'user_appeal' || log.type === 'user_update'
-                                                                                    ? '👤 Usuario'
-                                                                                    : `🛡️ ${log.admin_name}`}
-                                                                            </span>
-                                                                            <span className={styles.historyDate}>{log.formatted_date}</span>
-                                                                        </div>
-                                                                        <p className={styles.historyMessage}>{log.message}</p>
-                                                                    </div>
-                                                                ))
-                                                            }
+                                                    </div>
+
+                                                    {/* Panel de Solicitud */}
+                                                    {showRequestUI[pet.id] && (
+                                                        <div style={{ background: '#FFFBF5', border: '2px solid #FEE4C4', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
+                                                            <p style={{ margin: '0 0 12px', fontWeight: 700, fontSize: '0.85rem', color: '#FE8F15', textTransform: 'uppercase' as const }}>Selecciona qué información necesitas:</p>
+                                                            {[
+                                                                { type: 'PET_PHOTO_1', label: '📸 Foto Principal', color: '#FE8F15' },
+                                                                { type: 'PET_VET_CERT', label: '🏥 Certificado Médico', color: '#7DD8D5' },
+                                                                { type: 'OTHER_DOC', label: '📄 Documento Adicional', color: '#A0AEC0' }
+                                                            ].map(opt => (
+                                                                <label key={opt.type} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '12px', border: `2px solid ${(selectedRequests[pet.id] || []).includes(opt.type) ? opt.color : '#E2E8F0'}`, background: (selectedRequests[pet.id] || []).includes(opt.type) ? `${opt.color}15` : '#fff', cursor: 'pointer', marginBottom: '8px', fontWeight: (selectedRequests[pet.id] || []).includes(opt.type) ? 700 : 400, fontSize: '0.9rem' }}>
+                                                                    <input type="checkbox" checked={(selectedRequests[pet.id] || []).includes(opt.type)} onChange={() => toggleRequestType(pet.id, opt.type)} style={{ width: '18px', height: '18px', accentColor: opt.color }} />
+                                                                    {opt.label}
+                                                                </label>
+                                                            ))}
+                                                            <textarea value={requestCustomMsg[pet.id] || ''} onChange={(e) => setRequestCustomMsg(prev => ({ ...prev, [pet.id]: e.target.value }))} placeholder="Mensaje adicional (opcional)..." className={styles.notesInput} rows={2} style={{ marginBottom: '12px' }} />
+                                                            <button style={{ background: '#FE8F15', color: '#fff', border: '2px solid #000', borderRadius: '50px', padding: '10px 24px', fontWeight: 700, cursor: 'pointer', width: '100%', fontSize: '0.9rem', opacity: sendingRequest[pet.id] ? 0.7 : 1 }} onClick={() => sendInfoRequest(pet.id)} disabled={sendingRequest[pet.id]}>
+                                                                {sendingRequest[pet.id] ? '⏳ Enviando...' : '📩 Enviar Solicitud + Email'}
+                                                            </button>
                                                         </div>
                                                     )}
+
+                                                    {/* Chat libre */}
+                                                    <div className={styles.petResponseForm}>
+                                                        <label>💬 Mensaje directo:</label>
+                                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end' }}>
+                                                            <textarea value={petMessages[pet.id] || ''} onChange={(e) => setPetMessages({ ...petMessages, [pet.id]: e.target.value })} placeholder="Escribe un mensaje al miembro..." className={styles.notesInput} rows={2} style={{ flex: 1 }} />
+                                                            <button className={styles.sendResponseBtn} onClick={() => sendPetResponse(pet.id)} style={{ whiteSpace: 'nowrap' }}>Enviar 📩</button>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            )}
+
+                                                    {/* Historial */}
+                                                    {petLogs[pet.id] && petLogs[pet.id].length > 0 && (
+                                                        <div className={styles.historyList} style={{ maxHeight: '300px', overflowY: 'auto', marginTop: '12px' }}>
+                                                            {petLogs[pet.id].map((log) => (
+                                                                <div key={log.id} className={`${styles.historyItem} ${log.type.startsWith('user_') ? styles.userMessage : styles.adminMessage}`}>
+                                                                    <div className={styles.historyHeader}>
+                                                                        <span className={styles.historyAuthor}>{log.type.startsWith('user_') ? '👤 Usuario' : `🛡️ ${log.admin_name || 'Admin'}`}</span>
+                                                                        <span className={styles.historyDate}>{log.formatted_date}</span>
+                                                                    </div>
+                                                                    <p className={styles.historyMessage}>{log.message}</p>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                            </div>
                                         </div>
                                     </div>
                                 ))}
