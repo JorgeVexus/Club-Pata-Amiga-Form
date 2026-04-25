@@ -46,6 +46,7 @@
             border-radius: 35px;
             padding: 40px;
             width: 100%;
+            max-width: 100%;
             margin: 0 auto 20px auto;
             box-shadow: var(--pata-shadow-premium);
             font-family: 'Outfit', sans-serif;
@@ -54,6 +55,18 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s var(--pata-spring);
+            box-sizing: border-box;
+        }
+
+        @media (max-width: 600px) {
+            .pata-unified-panel {
+                padding: 24px 16px;
+                border-radius: 25px;
+            }
+            .pata-external-greeting {
+                margin: 20px auto 10px auto;
+                padding: 0 16px;
+            }
         }
 
         .pata-unified-panel.show { 
@@ -83,6 +96,7 @@
             font-family: 'Outfit', sans-serif;
             color: #FFFFFF;
             text-align: left;
+            box-sizing: border-box;
         }
 
         .pata-welcome-title {
@@ -298,6 +312,7 @@
             justify-content: center;
             z-index: 10000;
             padding: 20px;
+            box-sizing: border-box;
         }
 
         .pata-modal-overlay.show { display: flex; }
@@ -336,7 +351,7 @@
             display: grid;
             grid-template-columns: minmax(320px, 440px) 1fr;
             height: 100%;
-            overflow: hidden; /* Control internal scrolling */
+            overflow: hidden; /* Control internal scrolling on desktop */
         }
 
         .pata-editorial-left {
@@ -366,18 +381,49 @@
             text-transform: lowercase;
         }
 
+        .pata-editorial-main-img-box {
+            width: 100%; 
+            height: 440px; 
+            background: #fff; 
+            border-radius: 35px; 
+            border: var(--pata-border-thick); 
+            overflow: hidden; 
+            position: relative; 
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.05); 
+            transform: rotate(-1deg);
+            transition: all 0.3s ease;
+        }
+
         @media (max-width: 900px) {
+            .pata-editorial-container {
+                max-height: 95vh;
+                border-radius: 30px;
+            }
             .pata-editorial-body {
                 grid-template-columns: 1fr;
-                overflow-y: auto;
+                overflow-y: auto; /* Allow full body scroll on mobile */
+                height: auto;
+            }
+            .pata-editorial-left, .pata-editorial-right {
+                overflow-y: visible; /* Disable independent column scroll */
+                height: auto;
             }
             .pata-editorial-left {
                 border-right: none;
                 border-bottom: var(--pata-border-thick);
-                padding: 30px;
+                padding: 24px;
+                gap: 15px;
             }
             .pata-editorial-right {
-                padding: 30px;
+                padding: 30px 20px;
+            }
+            .pata-editorial-main-img-box {
+                height: 280px;
+                transform: rotate(0);
+                border-radius: 25px;
+            }
+            .pata-editorial-name {
+                font-size: 44px;
             }
         }
 
@@ -479,6 +525,78 @@
             color: #1A1A1A;
             border: var(--pata-border-thick);
             box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
+        }
+
+        /* ❌ Rejected State Premium Styles */
+        .pata-rejected-wrapper {
+            position: relative;
+            padding: 40px 0;
+            margin-top: 20px;
+        }
+
+        .pata-rejected-white-card {
+            background: #FFFFFF;
+            border-radius: 50px;
+            border: var(--pata-border-thick);
+            padding: 50px;
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 200px;
+            gap: 30px;
+            box-shadow: 15px 15px 0 rgba(0,0,0,0.05);
+            overflow: visible;
+        }
+
+        .pata-rejected-dog-popout {
+            position: absolute;
+            right: -20px;
+            top: -60px;
+            width: 280px;
+            z-index: 5;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.1));
+            pointer-events: none;
+        }
+
+        .pata-rejected-title-hero {
+            font-size: clamp(32px, 5vw, 48px);
+            font-weight: 950;
+            line-height: 0.95;
+            margin: 0 0 15px 0;
+            letter-spacing: -0.04em;
+            color: #000;
+        }
+
+        .pata-rejected-text-hero {
+            font-size: 18px;
+            line-height: 1.5;
+            color: #444;
+            margin: 0;
+            max-width: 90%;
+        }
+
+        .pata-rejected-reason-box {
+            margin-top: 30px;
+            padding: 25px;
+            background: #FFF5F5;
+            border-radius: 30px;
+            border: 2px dashed #C62828;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        @media (max-width: 900px) {
+            .pata-rejected-white-card {
+                grid-template-columns: 1fr;
+                padding: 40px 30px;
+                border-radius: 40px;
+            }
+            .pata-rejected-dog-popout {
+                width: 180px;
+                top: -40px;
+                right: 0;
+            }
+            .pata-dog-placeholder { display: none; }
         }
     `;;
 
@@ -1328,46 +1446,44 @@
 
             return `
                 <div class="pata-rejected-wrapper">
-                    <!-- Dog pop-out image -->
                     <img src="${dogImage}" class="pata-rejected-dog-popout" alt="Pata Amiga">
                     
                     <div class="pata-rejected-white-card">
                         <div class="pata-rejected-main-info">
                             <h2 class="pata-rejected-title-hero">tu solicitud no fue aprobada</h2>
                             <p class="pata-rejected-text-hero">
-                                Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.
+                                Sabemos que este no es el resultado que esperabas. Revisa los detalles en el historial de comunicación para conocer los motivos y, si lo deseas, iniciar una apelación.
                             </p>
-
-                            <div class="pata-rejected-reason-box">
-                                <div class="pata-reason-label">Motivo del rechazo:</div>
-                                <p class="pata-reason-text">${adminMsg}</p>
-                            </div>
                         </div>
                         
-                        <!-- Empty space for the dog in desktop -->
                         <div class="pata-dog-placeholder"></div>
                     </div>
 
                     <div id="pata-appeal-section" style="text-align: center; margin-top: 40px; position: relative; z-index: 10;">
                         ${!canAppeal ? `
-                            <p style="color: #FFFFFF; font-size: 14px; background: rgba(0,0,0,0.2); padding: 15px; border-radius: 20px; display: inline-block;">
+                            <p style="color: #FFFFFF; font-size: 15px; background: rgba(0,0,0,0.2); padding: 18px 30px; border-radius: 50px; display: inline-block; font-weight: 700; border: 1px solid rgba(255,255,255,0.2);">
                                 Has agotado el límite de apelaciones para esta mascota.
                             </p>
-                            <div style="margin-top: 15px;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Ver historial de rechazo" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; border-radius: 50px; padding: 12px 30px; font-weight: 900;">
+                            <div style="margin-top: 20px;">
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FFFFFF; color: #000; border: var(--pata-border-thick); border-radius: 50px; padding: 15px 40px; font-weight: 950; font-size: 16px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
                                     📜 Ver historial y chat
                                 </button>
                             </div>
                         ` : `
-                            <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Abrir chat para apelar rechazo" style="background: #FE8F15; color: #000; border: 2px solid #000; padding: 18px 50px; font-weight: 900; font-size: 18px; border-radius: 50px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); padding: 22px 60px; font-weight: 950; font-size: 20px; border-radius: 60px; box-shadow: 10px 10px 0 rgba(0,0,0,0.1); transition: all 0.2s var(--pata-spring);">
                                     💬 Ver historial y Apelar
                                 </button>
+                                
+                                <div>
+                                    <p style="font-size: 15px; color: #FFFFFF; font-weight: 800; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                        Puedes apelar tu solicitud directamente desde el chat ♡
+                                    </p>
+                                    <p style="font-size: 13px; color: #FFFFFF; opacity: 0.7; font-weight: 600; margin-top: 4px;">
+                                        Intentos de apelación: ${appealCount} / ${maxAppeals}
+                                    </p>
+                                </div>
                             </div>
-                            <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8; font-weight: 800;">
-                                Puedes apelar tu solicitud directamente desde el chat ♡
-                            </p>
-                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6; font-weight: 600;">Intentos de apelación: ${appealCount} / ${maxAppeals}</p>
                         `}
                     </div>
                 </div>
@@ -1375,40 +1491,23 @@
         }
 
         renderActionRequiredContent(pet) {
-            // 🆕 Ahora lee el mensaje del admin directamente de la mascota
-            const adminMsg = pet.last_admin_response;
-
             return `
-                <div class="pata-alert-banner pata-alert-warning">
-                    <span>🛠️</span>
+                <div class="pata-alert-banner pata-alert-warning" style="margin-bottom: 30px; background: #FFF9E6; border: var(--pata-border-thick); border-color: #FFBD12; border-radius: 40px; padding: 30px; display: flex; gap: 25px; align-items: center; box-shadow: 10px 10px 0 rgba(255, 189, 18, 0.1);">
+                    <div style="font-size: 44px; background: #fff; width: 80px; height: 80px; border-radius: 25px; display: flex; align-items: center; justify-content: center; border: var(--pata-border-thin); border-color: #FFBD12; flex-shrink: 0; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">⚠️</div>
                     <div>
-                        <div class="pata-subtitle">Acción Requerida para ${pet.name}</div>
-                        <p style="margin:0; font-size:14px; color:inherit;"><strong>Nota del Admin:</strong> ${pet.admin_notes || 'Por favor revisa tus documentos.'}</p>
+                        <div class="pata-subtitle" style="font-weight: 950; font-size: 24px; margin-bottom: 8px; color: #000; line-height: 1.1;">Acción Requerida para ${pet.name}</div>
+                        <p style="margin:0; font-size:16px; color: #444; line-height: 1.4; font-weight: 600;">Nuestro equipo ha solicitado información adicional. Revisa los detalles en el chat para continuar.</p>
                     </div>
                 </div>
 
-                ${adminMsg ? `
-                    <div class="pata-alert-banner pata-alert-info" style="background: #E3F2FD; border-color: #1976D2; margin-top: 15px;">
-                        <span>💬</span>
-                        <div>
-                            <div class="pata-subtitle" style="color: #1976D2; font-size: 14px; margin-bottom: 5px;">Mensaje del Equipo:</div>
-                            <p style="margin:0; font-size:14px; color:#1A1A1A;">${adminMsg}</p>
-                        </div>
-                    </div>
-                ` : ''}
-
-                <p style="font-size:14px; color:#fff; margin-top:15px;">Sigue las instrucciones enviadas por el equipo para completar tu perfil.</p>
-
-                ${adminMsg ? `
-                    <div style="margin-top: 25px;">
-                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Abrir chat para subir información" style="background: #FE8F15; color: #000; border: 2px solid #000; width: 100%; padding: 22px; font-size: 20px; font-weight: 950; border-radius: 50px; box-shadow: 10px 10px 0 rgba(0,0,0,0.1);">
-                            💬 Chat con Soporte y Actualizar
-                        </button>
-                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
-                            Usa el chat para enviar las fotos o información que solicitó el equipo.
-                        </p>
-                    </div>
-                ` : ''}
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; padding: 25px; font-size: 22px; font-weight: 950; border-radius: 60px; box-shadow: 12px 12px 0 rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s var(--pata-spring);">
+                        💬 Abrir Chat y Actualizar →
+                    </button>
+                    <p style="margin-top: 20px; font-size: 15px; color: #FFFFFF; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        En el chat encontrarás la lista de documentos o fotos pendientes.
+                    </p>
+                </div>
             `;
         }
 
@@ -1871,22 +1970,22 @@
                             this.render();
                         }, 1000);
                     } else {
-                        throw new Error(data.error || 'Error al subir');
+                        throw new Error(data.error || 'Error al procesar la solicitud');
                     }
-                } catch (err) {
-                    console.error('❌ Error fulfilling request:', err);
-                    alert('No se pudo completar la solicitud: ' + err.message);
-                    btnElement.innerHTML = originalHTML;
-                    btnElement.disabled = false;
-                    btnElement.style.opacity = '1';
+                } catch (error) {
+                    console.error('❌ Error en handleFulfillRequest:', error);
+                    alert('Error: ' + error.message);
+                } finally {
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerText = originalText;
+                    }
                 }
             };
-            
-            fileInput.click();
+            input.click();
         }
 
         renderPetDetailsModal(pet) {
-
             const carencia = this.calculateCarencia(pet);
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
@@ -1916,7 +2015,7 @@
                             
                             <!-- Left Section: Visual Identity -->
                             <div class="pata-editorial-left">
-                                <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: var(--pata-border-thick); overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); transform: rotate(-1deg);">
+                                <div class="pata-editorial-main-img-box">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
                                     <div class="pata-status-badge-floating" style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
                                         ${status.icon} ${status.label}
@@ -1966,9 +2065,11 @@
                                 </div>
 
                                 <h2 class="pata-editorial-name" id="pata-editorial-name">${pet.name}</h2>
-                                <p style="font-size: 20px; font-weight: 800; color: var(--pata-primary); margin-bottom: 45px; display: flex; align-items: center; gap: 10px; border-bottom: var(--pata-border-thick); padding-bottom: 15px; width: fit-content;">
+                                <p style="font-size: 20px; font-weight: 800; color: var(--pata-primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; border-bottom: var(--pata-border-thick); padding-bottom: 15px; width: fit-content;">
                                     ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
                                 </p>
+
+                                ${this.renderModalActionButtons(pet)}
 
                                 <div class="pata-editorial-info-grid">
                                     ${[
@@ -1998,13 +2099,6 @@
                                     </div>
                                 ` : ''}
 
-                                ${pet.admin_notes ? `
-                                    <div style="margin-top: 20px; background: #FFF9C4; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                        <div style="font-size: 11px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 8px;">📝 Notas del Equipo</div>
-                                        <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.admin_notes}</p>
-                                    </div>
-                                ` : ''}
-
                                 ${this.isSenior(pet) ? `
                                     <div style="background: #E1F5FE; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
                                         <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
@@ -2027,6 +2121,51 @@
 
                                 <div style="margin-top: 50px;">
                                     <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente y volver" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px; border-radius: 50px; font-weight: 950;">
+                                        Cerrar Expediente
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderModalActionButtons(pet) {
+            let actions = '';
+            const needsPhoto = !(pet.photo_url || pet.primary_photo_url);
+            const needsCert = this.isSenior(pet) && !pet.vet_certificate_url;
+
+            if (needsPhoto) {
+                actions += `
+                    <button class="pata-btn" style="background: var(--pata-primary); color: #fff; border: var(--pata-border-thick); width: 100%; margin-bottom: 12px; font-size: 15px;" 
+                        onclick="window.pataWidget.handleFulfillRequest('${pet.id}', 'PET_PHOTO_1', null, this)">
+                        📸 Actualizar Foto Principal
+                    </button>
+                `;
+            }
+
+            if (needsCert) {
+                actions += `
+                    <button class="pata-btn" style="background: #7B1FA2; color: #fff; border: var(--pata-border-thick); width: 100%; margin-bottom: 12px; font-size: 15px;" 
+                        onclick="window.pataWidget.handleFulfillRequest('${pet.id}', 'PET_VET_CERT', null, this)">
+                        🏥 Actualizar Certificado Médico
+                    </button>
+                `;
+            }
+
+            if (!actions) return '';
+
+            return `
+                <div style="margin-bottom: 35px; background: #FFF9C4; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                    <div style="font-size: 12px; font-weight: 950; color: #F57F17; text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                        <span>⚠️</span> Acción requerida
+                    </div>
+                    ${actions}
+                </div>
+            `;
+        }
+  <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente y volver" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px; border-radius: 50px; font-weight: 950;">
                                         Cerrar Expediente
                                     </button>
                                 </div>
