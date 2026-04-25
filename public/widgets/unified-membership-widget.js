@@ -836,9 +836,15 @@
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
 
-                    <div class="pata-pet-tabs">
+                    <div class="pata-pet-tabs" role="tablist">
                         ${this.pets.map((p, i) => `
-                            <button class="pata-tab-btn ${i === this.currentIndex ? 'active' : ''}" data-idx="${i}">
+                            <button 
+                                class="pata-tab-btn ${i === this.currentIndex ? 'active' : ''}" 
+                                data-idx="${i}"
+                                role="tab"
+                                aria-selected="${i === this.currentIndex}"
+                                aria-label="Ver detalles de ${p.name}"
+                            >
                                 ${p.type === 'Gato' ? '🐱' : '🐕'} ${p.name}
                             </button>
                         `).join('')}
@@ -1185,7 +1191,7 @@
             const appealDate = pet.appealed_at ? new Date(pet.appealed_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha no disponible';
 
             return `
-                <div class="pata-alert-banner" style="background: #E8F5E9; border-left: 4px solid #7B1FA2; flex-direction: column; align-items: flex-start;">
+                <div class="pata-alert-banner" style="background: rgba(123, 31, 162, 0.05); border: 2px solid #7B1FA2; flex-direction: column; align-items: flex-start; border-radius: 30px;">
                     <div style="display:flex; gap:12px; align-items:center; width:100%; margin-bottom:12px;">
                         <span style="font-size:24px;">⚖️</span>
                         <div>
@@ -1194,7 +1200,7 @@
                         </div>
                     </div>
                     
-                    <div style="background:#fff; padding:12px 16px; border-radius:8px; width:100%; margin-bottom:12px;">
+                    <div style="background:rgba(255,255,255,0.7); padding:12px 16px; border-radius:20px; width:100%; margin-bottom:12px; border: 1px solid rgba(123, 31, 162, 0.1);">
                         <p style="margin:0; font-size:13px; color:#424242; font-weight:600;">Tu mensaje:</p>
                         <p style="margin:8px 0 0 0; font-size:14px; color:#1A1A1A; font-style:italic;">"${appealMessage}"</p>
                     </div>
@@ -1203,7 +1209,7 @@
                         <p style="margin:0; font-size:13px; color:#616161;">
                             <span style="font-weight:600;">📋 Estado:</span> Nuestro equipo está revisando tu caso.
                         </p>
-                        <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background:#7B1FA2; color:#fff; border:none; padding:8px 16px; border-radius:20px; font-size:12px; font-weight:600; cursor:pointer; transition:0.2s;">
+                        <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Abrir chat de apelación" style="background:#7B1FA2; color:#fff; border:2px solid #000; padding:12px 24px; border-radius:50px; font-size:12px; font-weight:900; cursor:pointer; transition:0.2s;">
                             📜 Ver historial y chat
                         </button>
                     </div>
@@ -1316,20 +1322,20 @@
                                 Has agotado el límite de apelaciones para esta mascota.
                             </p>
                             <div style="margin-top: 15px;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white;">
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Ver historial de rechazo" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; border-radius: 50px; padding: 12px 30px; font-weight: 900;">
                                     📜 Ver historial y chat
                                 </button>
                             </div>
                         ` : `
                             <div style="display: flex; gap: 10px; justify-content: center; align-items: center; flex-wrap: wrap;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #00BBB4; color: white; border: 2px solid #000; padding: 18px 50px; font-weight: 900; font-size: 18px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
+                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Abrir chat para apelar rechazo" style="background: #FE8F15; color: #000; border: 2px solid #000; padding: 18px 50px; font-weight: 900; font-size: 18px; border-radius: 50px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
                                     💬 Ver historial y Apelar
                                 </button>
                             </div>
-                            <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8;">
+                            <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; opacity: 0.8; font-weight: 800;">
                                 Puedes apelar tu solicitud directamente desde el chat ♡
                             </p>
-                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6;">Intentos de apelación: ${appealCount} / ${maxAppeals}</p>
+                            <p style="margin-top: 5px; font-size: 12px; color: #FFFFFF; opacity: 0.6; font-weight: 600;">Intentos de apelación: ${appealCount} / ${maxAppeals}</p>
                         `}
                     </div>
                 </div>
@@ -1363,10 +1369,10 @@
 
                 ${adminMsg ? `
                     <div style="margin-top: 25px;">
-                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #00BBB4; color: white; border: 4px solid #000; width: 100%; padding: 22px; font-size: 20px; font-weight: 950; box-shadow: 10px 10px 0 rgba(0,0,0,0.1);">
+                        <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" aria-label="Abrir chat para subir información" style="background: #FE8F15; color: #000; border: 2px solid #000; width: 100%; padding: 22px; font-size: 20px; font-weight: 950; border-radius: 50px; box-shadow: 10px 10px 0 rgba(0,0,0,0.1);">
                             💬 Chat con Soporte y Actualizar
                         </button>
-                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; font-weight: 600; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                        <p style="margin-top: 15px; font-size: 14px; color: #FFFFFF; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                             Usa el chat para enviar las fotos o información que solicitó el equipo.
                         </p>
                     </div>
@@ -1734,6 +1740,7 @@
                                     `).join('')}
                                 </div>
 
+                                ${pet.status === 'approved' ? `
                                 <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
                                     <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
                                     <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
@@ -1744,6 +1751,7 @@
                                         <span style="color: var(--pata-primary);">Faltan ${carencia.daysRemaining} días</span>
                                     </div>
                                 </div>
+                                ` : ''}
                             </div>
 
                             <!-- Right Section: Fact Sheet -->
@@ -1827,7 +1835,7 @@
                                 </div>
 
                                 <div style="margin-top: 50px;">
-                                    <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente" style="background: var(--pata-accent); color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px;">
+                                    <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente y volver" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px; border-radius: 50px; font-weight: 950;">
                                         Cerrar Expediente
                                     </button>
                                 </div>
