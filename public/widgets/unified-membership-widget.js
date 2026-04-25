@@ -1522,21 +1522,25 @@
                 // Action bubble for info requests
                 if (bubbleClass === 'action') {
                     const meta = log.metadata || {};
-                    const requestTypes = meta.requestTypes || [];
+                    const items = meta.items || [];
+                    const requestTypes = meta.request_types || [];
                     const fulfilled = meta.fulfilled === true;
                     
-                    const typeLabels = {
-                        'PET_PHOTO_1': { label: '📸 Foto Principal', fulfilled: meta.fulfilledTypes?.includes('PET_PHOTO_1') },
-                        'PET_VET_CERT': { label: '🏥 Certificado Médico', fulfilled: meta.fulfilledTypes?.includes('PET_VET_CERT') },
-                        'OTHER_DOC': { label: '📄 Documento Adicional', fulfilled: meta.fulfilledTypes?.includes('OTHER_DOC') }
-                    };
+                    // If items are not present but request_types are (fallback for older logs)
+                    const displayItems = items.length > 0 ? items : requestTypes.map(rt => {
+                        const typeLabels = {
+                            'PET_PHOTO_1': { label: '📸 Foto Principal' },
+                            'PET_VET_CERT': { label: '🏥 Certificado Médico' },
+                            'OTHER_DOC': { label: '📄 Documento Adicional' }
+                        };
+                        return { type: rt, label: typeLabels[rt]?.label || rt, fulfilled: false };
+                    });
                     
-                    const actionButtons = requestTypes.map(rt => {
-                        const info = typeLabels[rt] || { label: rt, fulfilled: false };
-                        if (info.fulfilled || fulfilled) {
-                            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;">✅ ${info.label} — Completado</div>`;
+                    const actionButtons = displayItems.map(item => {
+                        if (item.fulfilled || fulfilled) {
+                            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:4px;">✅ ${item.label} — Completado</div>`;
                         }
-                        return `<button class="pata-action-btn" data-request-type="${rt}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;">${info.label} — Subir</button>`;
+                        return `<button class="pata-action-btn" data-request-type="${item.type}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;margin-bottom:4px;box-shadow: 2px 2px 0 rgba(254, 143, 21, 0.2);">${item.label} — Subir/Actualizar</button>`;
                     }).join('');
                     
                     return `
@@ -1819,10 +1823,53 @@
                         btnElement.style.border = '2px solid #4CAF50';
                         btnElement.style.color = '#2E7D32';
                         
-                        // Refresh chat after a short delay to show success
+                        // 1. Refresh full data from server to get new URLs and status
+                        await this.loadData();
+                        
+                        // 2. Find the updated pet
+                        const updatedPet = this.pets.find(p => p.id === petId);
+                        
+                        // 3. Update the modal background and info without closing it
+                        if (updatedPet) {
+                            const modal = document.getElementById('pata-pet-details-modal');
+                            if (modal) {
+                                // Update main image if it was photo 1
+                                if (requestType === 'PET_PHOTO_1') {
+                                    const mainImg = document.getElementById('pata-main-gallery-img');
+                                    if (mainImg) mainImg.src = data.url;
+                                }
+                                
+                                // Update floating status badge
+                                const statusBadge = modal.querySelector('.pata-status-badge-floating');
+                                if (statusBadge) {
+                                    statusBadge.innerHTML = '⏳ EN REVISIÓN';
+                                    statusBadge.style.background = '#FE8F15';
+                                    statusBadge.style.color = '#000';
+                                }
+                                
+                                // Refresh benefits/info rows if status changed
+                                const statusValue = modal.querySelector('.pata-editorial-status-value');
+                                if (statusValue) {
+                                    statusValue.innerHTML = '<span style="opacity: 0.4;">🛡️</span> En revisión';
+                                    statusValue.style.color = '#FE8F15';
+                                }
+                                
+                                // Update Fact Sheet top badge
+                                const topBadge = modal.querySelector('.pata-editorial-status-badge');
+                                if (topBadge) {
+                                    topBadge.innerText = 'EN REVISIÓN';
+                                    topBadge.style.background = '#FE8F15';
+                                    topBadge.style.color = '#000';
+                                }
+                            }
+                        }
+
+                        // 4. Refresh chat after a short delay
                         setTimeout(() => {
                             this.fetchAndRenderChat(petId);
-                        }, 1500);
+                            // Also re-render main list in background
+                            this.render();
+                        }, 1000);
                     } else {
                         throw new Error(data.error || 'Error al subir');
                     }
@@ -1871,7 +1918,7 @@
                             <div class="pata-editorial-left">
                                 <div class="pata-editorial-main-img-box" style="width: 100%; height: 440px; background: #fff; border-radius: 35px; border: var(--pata-border-thick); overflow: hidden; position: relative; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); transform: rotate(-1deg);">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
-                                    <div style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+                                    <div class="pata-status-badge-floating" style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
                                         ${status.icon} ${status.label}
                                     </div>
                                 </div>
@@ -1903,8 +1950,8 @@
                                 <button class="pata-modal-close" id="pata-close-details" aria-label="Cerrar expediente" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
                                 
                                 <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                                    <div style="background: #E8F5E9; color: #2E7D32; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
-                                         ACTIVO
+                                    <div class="pata-editorial-status-badge" style="background: ${status.bg}; color: ${status.text}; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                         ${status.label.toUpperCase()}
                                     </div>
                                     ${pet.is_senior || this.isSenior(pet) ? `
                                         <div style="background: #F3E5F5; color: #7B1FA2; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
@@ -1932,11 +1979,12 @@
                                         { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
                                         { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
                                         { label: 'Ingreso', value: registrationDate, icon: '📅' },
+                                        { label: 'Estatus', value: status.label, icon: '🛡️', isStatus: true },
                                         ...(pet.status === 'approved' ? [{ label: 'Activación', value: activationDate, icon: '🚀' }] : [])
                                     ].map(item => `
                                         <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
                                             <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
-                                            <div style="font-size: 17px; font-weight: 900; color: #000; display: flex; align-items: center; gap: 8px;">
+                                            <div class="${item.isStatus ? 'pata-editorial-status-value' : ''}" style="font-size: 17px; font-weight: 900; color: ${item.isStatus ? status.bg : '#000'}; display: flex; align-items: center; gap: 8px;">
                                                 <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
                                             </div>
                                         </div>
