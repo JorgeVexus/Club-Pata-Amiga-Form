@@ -133,8 +133,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         }
     }
 
-    // 🆕 Cargar logs de apelación para una mascota específica
+    // 🆕 Cargar logs de apelación para una mascota específica (con Toggle)
     async function loadPetAppealLogs(petId: string) {
+        if (petLogs[petId]) {
+            // Toggle off
+            const newLogs = { ...petLogs };
+            delete newLogs[petId];
+            setPetLogs(newLogs);
+            return;
+        }
+
         setLoadingLogs(prev => ({ ...prev, [petId]: true }));
         try {
             const res = await fetch(`/api/admin/members/${member.id}/appeal-logs?petId=${petId}`);
@@ -147,6 +155,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         } finally {
             setLoadingLogs(prev => ({ ...prev, [petId]: false }));
         }
+    }
+
+    // 🆕 Cerrar historial de una mascota
+    function closePetHistory(petId: string) {
+        const newLogs = { ...petLogs };
+        delete newLogs[petId];
+        setPetLogs(newLogs);
     }
 
     // 🆕 Enviar mensaje de respuesta a una mascota específica
@@ -318,6 +333,43 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             // Fallback to opening in new tab if fetch fails (e.g. CORS)
             window.open(url, '_blank');
         }
+    };
+
+    // 🆕 Helper to render content with links as buttons
+    const renderMessageContent = (message: string) => {
+        const urlRegex = /(https?:\/\/[^\s)]+)/g;
+        const matches = message.match(urlRegex);
+
+        if (!matches) return <p className={styles.historyMessage}>{message}</p>;
+
+        // Clean message from URLs for the text part
+        let cleanText = message;
+        matches.forEach(url => {
+            cleanText = cleanText.replace(`(${url})`, '').replace(url, '');
+        });
+
+        return (
+            <div className={styles.messageWithLinks}>
+                <p className={styles.historyMessage}>{cleanText.trim()}</p>
+                <div className={styles.messageLinks}>
+                    {matches.map((url, i) => (
+                        <div key={i} className={styles.docActionMini}>
+                            <a href={url} target="_blank" rel="noopener noreferrer" className={styles.miniDocBtn}>
+                                👁️ Ver Archivo
+                            </a>
+                            <a 
+                                href="#" 
+                                onClick={(e) => handleDownload(e, url, `documento-${i}`)} 
+                                className={styles.miniDocBtn}
+                                style={{ background: '#f8fafc' }}
+                            >
+                                📥 Descargar
+                            </a>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -731,8 +783,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         <button
                                                             className={styles.loadHistoryBtn}
                                                             onClick={() => loadPetAppealLogs(pet.id)}
+                                                            style={{ 
+                                                                background: petLogs[pet.id] ? '#f1f5f9' : '#fff',
+                                                                borderColor: petLogs[pet.id] ? '#cbd5e1' : '#000'
+                                                            }}
                                                         >
-                                                            {loadingLogs[pet.id] ? '⏳ Cargando...' : '📜 Historial'}
+                                                            {loadingLogs[pet.id] ? '⏳ Cargando...' : petLogs[pet.id] ? '✕ Cerrar Historial' : '📜 Ver Historial'}
                                                         </button>
                                                     </div>
 
@@ -768,16 +824,25 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                                                     {/* Historial */}
                                                     {petLogs[pet.id] && petLogs[pet.id].length > 0 && (
-                                                        <div className={styles.historyList} style={{ maxHeight: '300px', overflowY: 'auto', marginTop: '12px' }}>
-                                                            {petLogs[pet.id].map((log) => (
-                                                                <div key={log.id} className={`${styles.historyItem} ${log.type.startsWith('user_') ? styles.userMessage : styles.adminMessage}`}>
-                                                                    <div className={styles.historyHeader}>
-                                                                        <span className={styles.historyAuthor}>{log.type.startsWith('user_') ? '👤 Usuario' : `🛡️ ${log.admin_name || 'Admin'}`}</span>
-                                                                        <span className={styles.historyDate}>{log.formatted_date}</span>
-                                                                    </div>
-                                                                    <p className={styles.historyMessage}>{log.message}</p>
-                                                                </div>
-                                                            ))}
+                                                        <div className={styles.historyContainer}>
+                                                           <div className={styles.historyListHeader}>
+                                                               <span>📜 Historial de Comunicación</span>
+                                                               <button onClick={() => closePetHistory(pet.id)}>✕</button>
+                                                           </div>
+                                                           <div className={styles.historyList}>
+                                                               {petLogs[pet.id].map((log) => (
+                                                                   <div key={log.id} className={`${styles.historyItem} ${log.type.startsWith('user_') ? styles.userMessage : styles.adminMessage}`}>
+                                                                       <div className={styles.historyHeader}>
+                                                                           <span className={styles.historyAuthor}>{log.type.startsWith('user_') ? '👤 Usuario' : `🛡️ ${log.admin_name || 'Admin'}`}</span>
+                                                                           <span className={styles.historyDate}>{log.formatted_date}</span>
+                                                                       </div>
+                                                                       {renderMessageContent(log.message)}
+                                                                   </div>
+                                                               ))}
+                                                           </div>
+                                                           <div className={styles.historyListFooter}>
+                                                               <button onClick={() => closePetHistory(pet.id)}>Ocultar Historial</button>
+                                                           </div>
                                                         </div>
                                                     )}
                                             </div>
