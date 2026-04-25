@@ -1976,10 +1976,9 @@
                     console.error('❌ Error en handleFulfillRequest:', error);
                     alert('Error: ' + error.message);
                 } finally {
-                    if (btn) {
-                        btn.disabled = false;
-                        btn.innerText = originalText;
-                    }
+                    btnElement.disabled = false;
+                    btnElement.innerHTML = originalHTML;
+                    btnElement.style.opacity = '1';
                 }
             };
             input.click();
@@ -2164,17 +2163,6 @@
                     ${actions}
                 </div>
             `;
-        }
-  <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente y volver" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px; border-radius: 50px; font-weight: 950;">
-                                        Cerrar Expediente
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-;
         }
 
         renderMissingPhotosView(firstName, pet) {
