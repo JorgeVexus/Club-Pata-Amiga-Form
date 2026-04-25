@@ -60,19 +60,47 @@
 
         @media (max-width: 600px) {
             .pata-unified-panel {
-                padding: 24px 16px;
-                border-radius: 25px;
-                width: calc(100% - 24px) !important;
-                margin: 12px !important;
+                padding: 35px 20px;
+                border-radius: 35px;
+                width: calc(100% - 40px) !important;
+                margin: 0 auto 20px auto !important;
+                box-sizing: border-box !important;
             }
             .pata-external-greeting {
-                margin: 20px auto 10px auto;
-                padding: 0 16px;
+                margin: 30px auto 15px auto !important;
+                padding: 0 20px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+            }
+            .pata-welcome-title {
+                font-size: clamp(32px, 11vw, 40px) !important;
+                line-height: 0.95 !important;
+                word-break: break-word !important;
+            }
+            .pata-welcome-subtitle {
+                font-size: 15px !important;
+                margin-top: 15px !important;
+                line-height: 1.5 !important;
             }
             .pata-btn-ver-detalles {
-                padding: 18px 24px !important;
-                font-size: 16px !important;
+                padding: 16px 20px !important;
+                font-size: 15px !important;
                 border-radius: 40px !important;
+            }
+            .pata-carencia-title {
+                font-size: 26px !important;
+                margin-bottom: 8px !important;
+            }
+            .pata-pet-info-box {
+                padding: 20px !important;
+                border-radius: 30px !important;
+            }
+            .pata-checklist-item {
+                font-size: 14px !important;
+            }
+            .pata-tab-btn {
+                padding: 10px 20px !important;
+                font-size: 14px !important;
             }
         }
 
@@ -131,7 +159,7 @@
             overflow-x: auto;
             scrollbar-width: none;
             -ms-overflow-style: none;
-            padding: 10px 5px;
+            padding: 10px 20px;
             scroll-behavior: smooth;
             -webkit-overflow-scrolling: touch;
         }
@@ -183,6 +211,28 @@
             color: var(--pata-primary);
             margin: 0 0 10px 0;
             line-height: 1.1;
+            text-transform: lowercase;
+            letter-spacing: -0.02em;
+        }
+
+        .pata-pet-profile {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .pata-pet-profile {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .pata-pet-photo-box {
+                width: 100% !important;
+                height: 200px !important;
+            }
+            .pata-approved-sidebar {
+                margin-top: 30px;
+            }
         }
 
         /* 💬 Chat Styles */
@@ -262,13 +312,26 @@
         }
 
         /* Progress Bar */
+        .pata-progress-container-v2 {
+            margin-top: 25px;
+        }
+        .pata-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
         .pata-bar-v2 {
-            height: 28px;
+            height: 22px;
             background: #F0F2F5;
             border-radius: 50px;
             border: var(--pata-border-thin);
             padding: 4px;
             position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .pata-fill-v2 {
@@ -276,6 +339,29 @@
             background: linear-gradient(90deg, var(--pata-primary) 0%, var(--pata-primary-light) 100%);
             border-radius: 50px;
             transition: width 1.5s var(--pata-spring);
+            position: relative;
+            overflow: hidden;
+        }
+        .pata-fill-v2::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: pataShine 2s infinite;
+        }
+        @keyframes pataShine {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        .pata-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #666;
+            padding: 0 5px;
         }
 
         /* Pet Profile Cards */
@@ -463,16 +549,58 @@
             border-bottom: 2px dashed var(--pata-primary-light);
         }
 
+        .pata-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 25px 0;
+        }
+        .pata-checklist-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #444;
+        }
+        .pata-checklist-icon {
+            width: 24px;
+            height: 24px;
+            background: #00BBB4;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+            border: 1.5px solid #000;
+        }
+
+        .pata-disclaimer {
+            font-size: 13px;
+            color: #888;
+            text-align: center;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* Editorial & Benefits Improvements */
         .pata-benefit-card {
             display: flex;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             align-items: flex-start;
-            padding: 20px;
-            border-radius: 30px;
-            background: #F8FBFF;
-            border: 1px solid #F0F2F5;
-            transition: all 0.4s var(--pata-spring);
+            padding: 24px;
+            border-radius: 35px;
+            background: #fff;
+            border: var(--pata-border-thin);
+            box-shadow: 6px 6px 0 rgba(0, 187, 180, 0.05);
+            transition: all 0.3s var(--pata-spring);
+        }
+        .pata-benefit-card:hover {
+            transform: scale(1.02);
+            box-shadow: 10px 10px 0 rgba(0, 187, 180, 0.1);
         }
 
         .pata-benefit-icon-box {
