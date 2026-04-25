@@ -62,10 +62,17 @@
             .pata-unified-panel {
                 padding: 24px 16px;
                 border-radius: 25px;
+                width: calc(100% - 24px) !important;
+                margin: 12px !important;
             }
             .pata-external-greeting {
                 margin: 20px auto 10px auto;
                 padding: 0 16px;
+            }
+            .pata-btn-ver-detalles {
+                padding: 18px 24px !important;
+                font-size: 16px !important;
+                border-radius: 40px !important;
             }
         }
 
@@ -598,7 +605,77 @@
             }
             .pata-dog-placeholder { display: none; }
         }
-    `;;
+
+        /* 📸 Mobile Carousel & Accordion Improvements */
+        .pata-photo-carousel {
+            display: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 15px;
+            padding: 10px 5px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            -webkit-overflow-scrolling: touch;
+        }
+        .pata-photo-carousel::-webkit-scrollbar { display: none; }
+        .pata-photo-carousel .pata-carousel-item {
+            flex: 0 0 85%;
+            scroll-snap-align: center;
+            height: 320px;
+            background: #fff;
+            border-radius: 35px;
+            border: var(--pata-border-thick);
+            overflow: hidden;
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.05);
+        }
+
+        .pata-mobile-accordion {
+            display: none;
+            width: 100%;
+            margin-top: 20px;
+        }
+        .pata-mobile-accordion summary {
+            list-style: none;
+            padding: 18px 25px;
+            background: #F0F2F5;
+            border-radius: 20px;
+            border: var(--pata-border-thin);
+            font-weight: 900;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        .pata-mobile-accordion summary::-webkit-details-marker { display: none; }
+        .pata-mobile-accordion summary::after {
+            content: '↓';
+            font-size: 18px;
+            transition: transform 0.3s;
+        }
+        .pata-mobile-accordion[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        /* Scroll Lock Class */
+        .pata-no-scroll {
+            overflow: hidden !important;
+            height: 100vh !important;
+        }
+
+        @media (max-width: 900px) {
+            .pata-photo-carousel { display: flex; }
+            .pata-editorial-left .pata-editorial-main-img-box,
+            .pata-editorial-left .pata-no-scrollbar { display: none; }
+            
+            .pata-editorial-right .pata-editorial-info-grid { display: none; }
+            .pata-mobile-accordion { display: block; }
+            
+            .pata-editorial-left { padding: 20px; border-bottom: none; }
+            .pata-editorial-container { border-radius: 40px 40px 0 0; max-height: 100vh; height: 100vh; }
+            .pata-editorial-body { height: 100%; }
+        }
+    `;
 
 
     class UnifiedWidget {
@@ -667,7 +744,13 @@
                                     modalDiv.id = 'pata-details-modal-wrapper';
                                     modalDiv.innerHTML = modalHtml;
                                     document.body.appendChild(modalDiv);
-                                    const close = () => modalDiv.remove();
+                                    document.body.classList.add('pata-no-scroll');
+
+                                    const close = () => {
+                                        modalDiv.remove();
+                                        document.body.classList.remove('pata-no-scroll');
+                                    };
+
                                     const closeBtn1 = document.getElementById('pata-close-details');
                                     const closeBtn2 = document.getElementById('pata-close-details-btn');
                                     if (closeBtn1) closeBtn1.onclick = close;
@@ -2006,6 +2089,27 @@
                 day: 'numeric', month: 'long', year: 'numeric'
             }) : '---';
 
+            const infoItems = [
+                { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
+                { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
+                { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
+                { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
+                { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
+                { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
+                { label: 'Ingreso', value: registrationDate, icon: '📅' },
+                { label: 'Estatus', value: status.label, icon: '🛡️', isStatus: true },
+                ...(pet.status === 'approved' ? [{ label: 'Activación', value: activationDate, icon: '🚀' }] : [])
+            ];
+
+            const infoGridHtml = infoItems.map(item => `
+                <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
+                    <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
+                    <div class="${item.isStatus ? 'pata-editorial-status-value' : ''}" style="font-size: 17px; font-weight: 900; color: ${item.isStatus ? status.bg : '#000'}; display: flex; align-items: center; gap: 8px;">
+                        <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
+                    </div>
+                </div>
+            `).join('');
+
             // Distinctive Editorial Layout
             return `
                 <div class="pata-modal-overlay show" id="pata-pet-details-modal" role="dialog" aria-modal="true" aria-labelledby="pata-editorial-name">
@@ -2014,6 +2118,16 @@
                             
                             <!-- Left Section: Visual Identity -->
                             <div class="pata-editorial-left">
+                                <!-- 📸 Mobile Carousel -->
+                                <div class="pata-photo-carousel">
+                                    ${photos.map((url, i) => `
+                                        <div class="pata-carousel-item">
+                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy">
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <!-- Desktop Main Image -->
                                 <div class="pata-editorial-main-img-box">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
                                     <div class="pata-status-badge-floating" style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
@@ -2021,6 +2135,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Desktop Thumbnails -->
                                 <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
                                     ${photos.map((url, i) => `
                                         <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: var(--pata-border-thin); overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
@@ -2070,26 +2185,18 @@
 
                                 ${this.renderModalActionButtons(pet)}
 
+                                <!-- Desktop Info Grid -->
                                 <div class="pata-editorial-info-grid">
-                                    ${[
-                                        { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
-                                        { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
-                                        { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                                        { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
-                                        { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
-                                        { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
-                                        { label: 'Ingreso', value: registrationDate, icon: '📅' },
-                                        { label: 'Estatus', value: status.label, icon: '🛡️', isStatus: true },
-                                        ...(pet.status === 'approved' ? [{ label: 'Activación', value: activationDate, icon: '🚀' }] : [])
-                                    ].map(item => `
-                                        <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
-                                            <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
-                                            <div class="${item.isStatus ? 'pata-editorial-status-value' : ''}" style="font-size: 17px; font-weight: 900; color: ${item.isStatus ? status.bg : '#000'}; display: flex; align-items: center; gap: 8px;">
-                                                <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
-                                            </div>
-                                        </div>
-                                    `).join('')}
+                                    ${infoGridHtml}
                                 </div>
+
+                                <!-- 📂 Mobile Accordion -->
+                                <details class="pata-mobile-accordion">
+                                    <summary>Ver datos de la mascota</summary>
+                                    <div class="pata-editorial-info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 0;">
+                                        ${infoGridHtml}
+                                    </div>
+                                </details>
 
                                 ${pet.adoption_story ? `
                                     <div style="margin-top: 30px; background: #F1F8E9; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
@@ -2110,7 +2217,7 @@
                                     </div>
                                 ` : ''}
 
-                                <!-- 🆕 Chat Interface Container - Integrated properly into flow -->
+                                <!-- 🆕 Chat Interface Container -->
                                 <div id="pata-chat-root" style="margin-top: 40px;">
                                     <div class="pata-chat-loading">
                                         <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
@@ -2350,9 +2457,13 @@
                     modalDiv.id = 'pata-details-modal-wrapper';
                     modalDiv.innerHTML = modalHtml;
                     document.body.appendChild(modalDiv);
+                    document.body.classList.add('pata-no-scroll');
 
                     // Close events
-                    const close = () => modalDiv.remove();
+                    const close = () => {
+                        modalDiv.remove();
+                        document.body.classList.remove('pata-no-scroll');
+                    };
 
                     const closeBtn1 = document.getElementById('pata-close-details');
                     const closeBtn2 = document.getElementById('pata-close-details-btn');
@@ -2491,6 +2602,7 @@
 
         // 🆕 Eventos específicos del modal
         attachModalEvents() {
+            document.body.classList.add('pata-no-scroll');
             // Cerrar modal
             const closeBtn = document.getElementById('pata-modal-close');
             const cancelBtn = document.getElementById('pata-btn-cancel-update');
@@ -2498,6 +2610,7 @@
                 const modal = document.getElementById('pata-update-modal');
                 if (modal) modal.remove();
                 this.showUpdateModal = false;
+                document.body.classList.remove('pata-no-scroll');
             };
             if (closeBtn) closeBtn.onclick = closeModal;
             if (cancelBtn) cancelBtn.onclick = closeModal;
