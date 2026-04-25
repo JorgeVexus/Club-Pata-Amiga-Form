@@ -102,18 +102,28 @@ export async function POST(req: NextRequest) {
 
         const fileUrl = publicUrl.publicUrl;
 
-        // 3. Actualizar el campo de la mascota (si aplica)
+        // 3. Actualizar el campo de la mascota y su estado
         if (mapping.petField) {
             const { error: updateError } = await supabaseAdmin
                 .from('pets')
-                .update({ [mapping.petField]: fileUrl })
+                .update({ 
+                    [mapping.petField]: fileUrl,
+                    status: 'pending' // Regresa a revisión al completar info
+                })
                 .eq('id', petId);
 
             if (updateError) {
                 console.error('❌ Error actualizando campo de mascota:', updateError);
-                // No frenamos el flujo, el archivo ya se subió
             } else {
-                console.log(`✅ Campo ${mapping.petField} actualizado para ${pet.name}`);
+                console.log(`✅ Campo ${mapping.petField} y status actualizados para ${pet.name}`);
+                
+                // 3.1 Recalcular status global del miembro
+                try {
+                    const { recalculateMemberStatus } = await import('@/utils/member-status');
+                    await recalculateMemberStatus(userId);
+                } catch (statusError) {
+                    console.error('⚠️ Error recalculando status de miembro:', statusError);
+                }
             }
         }
 

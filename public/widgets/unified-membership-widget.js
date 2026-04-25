@@ -1801,11 +1801,11 @@
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('petId', petId);
-                    formData.append('memberId', this.member.id);
+                    formData.append('userId', this.member.id);
                     formData.append('requestType', requestType);
                     formData.append('logId', logId);
                     
-                    const res = await fetch(`${CONFIG.apiUrl}/api/admin/members/${this.member.id}/fulfill-request`, {
+                    const res = await fetch(`${CONFIG.apiUrl}/api/user/fulfill-request`, {
                         method: 'POST',
                         body: formData
                     });
@@ -1932,8 +1932,7 @@
                                         { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
                                         { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
                                         { label: 'Ingreso', value: registrationDate, icon: '📅' },
-                                        { label: 'Activación', value: activationDate, icon: '🚀' }
-
+                                        ...(pet.status === 'approved' ? [{ label: 'Activación', value: activationDate, icon: '🚀' }] : [])
                                     ].map(item => `
                                         <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
                                             <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>

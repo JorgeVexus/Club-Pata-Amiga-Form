@@ -55,6 +55,29 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Error al guardar el mensaje' }, { status: 500, headers: corsHeaders });
         }
 
+        // 2.1 Si la mascota estaba en 'action_required', moverla a 'pending' porque el usuario respondió
+        const { data: currentPet } = await supabaseAdmin
+            .from('pets')
+            .select('status')
+            .eq('id', petId)
+            .single();
+
+        if (currentPet?.status === 'action_required') {
+            console.log(`🔄 [ChatSend] Transicionando mascota ${petId} de action_required a pending`);
+            await supabaseAdmin
+                .from('pets')
+                .update({ status: 'pending' })
+                .eq('id', petId);
+            
+            // Recalcular status global
+            try {
+                const { recalculateMemberStatus } = await import('@/utils/member-status');
+                await recalculateMemberStatus(userId);
+            } catch (statusError) {
+                console.error('⚠️ Error recalculando status de miembro en chat:', statusError);
+            }
+        }
+
         // 3. Crear notificación para el admin
         const { error: notifError } = await supabaseAdmin
             .from('notifications')

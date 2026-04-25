@@ -16,7 +16,20 @@ CREATE TABLE IF NOT EXISTS public.appeal_logs (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id VARCHAR(255) NOT NULL, -- Memberstack ID
     admin_id VARCHAR(255), -- ID del administrador
-    type TEXT NOT NULL CHECK (type IN ('user_appeal', 'admin_request', 'user_update', 'system')),
+    pet_id UUID REFERENCES public.pets(id) ON DELETE CASCADE, -- ID de la mascota (opcional)
+    type TEXT NOT NULL CHECK (type IN (
+        'user_appeal', 
+        'admin_approve', 
+        'admin_reject', 
+        'admin_request', 
+        'admin_info_request', 
+        'user_response', 
+        'user_message', 
+        'user_fulfill', 
+        'admin_message', 
+        'user_update', 
+        'system'
+    )),
     message TEXT,
     metadata JSONB DEFAULT '{}', -- Para listar qué campos se pidieron o qué archivos se subieron
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()

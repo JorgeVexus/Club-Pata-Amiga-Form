@@ -70,21 +70,51 @@ export async function POST(req: NextRequest) {
         }
 
         // Construir campos a actualizar en Supabase
-        const supabaseUpdate: Record<string, any> = {};
+        const supabaseUpdate: Record<string, any> = {
+            status: 'pending' // Regresa a revisión al subir documentos
+        };
         if (fields.photo_url) supabaseUpdate.photo_url = fields.photo_url;
         if (fields.vet_certificate_url) supabaseUpdate.vet_certificate_url = fields.vet_certificate_url;
 
         console.log(`📝 [UpdatePetDocs] Actualizando pet ${targetPetId}:`, Object.keys(supabaseUpdate));
 
         // Actualizar en Supabase
-        const { error: updateError } = await supabaseAdmin
+        const { data: updatedPet, error: updateError } = await supabaseAdmin
             .from('pets')
             .update(supabaseUpdate)
-            .eq('id', targetPetId);
+            .eq('id', targetPetId)
+            .select('name')
+            .single();
 
         if (updateError) {
             console.error('❌ [UpdatePetDocs] Error actualizando Supabase:', updateError);
             return NextResponse.json({ success: false, error: 'Error actualizando la mascota' }, { status: 500 });
+        }
+
+        // 1. Recalcular status global del miembro
+        try {
+            const { recalculateMemberStatus } = await import('@/utils/member-status');
+            await recalculateMemberStatus(memberId);
+        } catch (statusError) {
+            console.error('⚠️ [UpdatePetDocs] Error recalculando status de miembro:', statusError);
+        }
+
+        // 2. Notificación para el admin (Bell)
+        try {
+            await supabaseAdmin
+                .from('notifications')
+                .insert({
+                    user_id: 'admin',
+                    type: 'account',
+                    title: `📧 Documentación recibida (${updatedPet.name})`,
+                    message: `Un miembro ha subido documentos faltantes para ${updatedPet.name} vía magic link.`,
+                    icon: '📧',
+                    link: `/admin/dashboard?member=${memberId}`,
+                    is_read: false,
+                    created_at: new Date().toISOString()
+                });
+        } catch (notifError) {
+            console.error('⚠️ [UpdatePetDocs] Error creando notificación admin:', notifError);
         }
 
         console.log(`✅ [UpdatePetDocs] Mascota ${targetPetId} actualizada exitosamente`);
