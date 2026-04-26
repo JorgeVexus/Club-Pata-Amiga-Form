@@ -446,6 +446,20 @@
     font-weight: 600;
 }
 
+.adoptionNotice {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.85rem;
+    color: #2D3748;
+    margin: 1rem 0;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 12px;
+    border-left: 4px solid #00BBB4;
+    line-height: 1.5;
+    display: block;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
 .loginLink {
     text-align: center;
     font-family: 'Outfit', sans-serif;

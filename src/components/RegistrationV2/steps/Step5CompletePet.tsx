@@ -253,6 +253,10 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                             </label>
                         </div>
 
+                        <p className={styles.adoptionNotice}>
+                            ⚠️ AVISO: Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.
+                        </p>
+
                         {formData.isAdopted && (
                             <div className={styles.adoptionStoryWrapper}>
                                 <label className={styles.adoptionStoryLabel}>
@@ -267,6 +271,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                     value={formData.adoptionStory}
                                     onChange={(e) => setFormData({ ...formData, adoptionStory: e.target.value })}
                                     maxLength={500}
+
                                 />
                                 <div className={styles.adoptionCharCount}>
                                     <strong>{formData.adoptionStory.length}</strong> / 500 caracteres
