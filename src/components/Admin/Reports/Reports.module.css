@@ -1,60 +1,231 @@
 .reportsContainer {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xl);
+    gap: 2rem;
+    padding-bottom: 2rem;
 }
 
 .reportsHeader {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
+}
+
+.titleGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .reportsTitle {
     font-family: var(--font-heading);
-    font-size: 1.5rem;
-    color: var(--gray-900);
+    font-size: 1.8rem;
+    color: #000;
+    margin: 0;
+}
+
+.reportsSubtitle {
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.reportActions {
+    display: flex;
+    gap: 1rem;
+}
+
+.dateRange {
+    background: #fff;
+    border: 1px solid #000;
+    border-radius: 50px;
+    padding: 0.5rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dateRange:hover {
+    background: #f8f9fa;
+}
+
+.arrow {
+    font-size: 0.7rem;
+}
+
+.exportButton {
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.exportButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: var(--spacing-xl);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
 }
 
-.chartPlaceholder {
-    background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    border: 1px solid var(--gray-200);
-    box-shadow: var(--shadow-sm);
-    min-height: 250px;
+.chartCard {
+    background: #fff;
+    border-radius: 24px;
+    padding: 1.5rem;
+    border: 2px solid #000;
+    box-shadow: 6px 6px 0px #000;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
+    min-height: 280px;
 }
 
-.chartPlaceholder h3 {
-    font-size: 1rem;
-    color: var(--gray-700);
-    margin-top: 0;
-    margin-bottom: auto;
-}
-
-.visual {
-    font-size: 4rem;
+.chartHeader {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    opacity: 0.2;
+    justify-content: space-between;
+    align-items: flex-start;
 }
 
-.emptyNote {
-    background: var(--gray-50);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-md);
-    text-align: center;
-    color: var(--gray-500);
-    font-size: 0.9rem;
-    border: 1px solid var(--gray-200);
+.chartHeader h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0;
+    color: #000;
+}
+
+.growthBadge {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 0.25rem 0.6rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.amount {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #000;
+}
+
+/* Line Chart Styles */
+.chartArea {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+}
+
+.lineChart {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+/* Donut Chart Styles */
+.donutArea {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.donutChart {
+    width: 120px;
+    height: 120px;
+}
+
+.donutCenter {
+    font-weight: 700;
+    font-size: 0.4rem;
+    text-anchor: middle;
+}
+
+.legend {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.legendItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: #444;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* Bar Chart Styles */
+.barArea {
+    flex: 1;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+    height: 120px;
+}
+
+.barColumn {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    height: 100%;
+}
+
+.bar {
+    width: 100%;
+    background: #7DD8D5;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+.bar:hover {
+    background: #00BBB4;
+}
+
+.barLabel {
+    font-size: 0.7rem;
+    color: #999;
+}
+
+/* Stats Grid Styles */
+.statsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.miniStat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.miniLabel {
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.miniValue {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #000;
 }

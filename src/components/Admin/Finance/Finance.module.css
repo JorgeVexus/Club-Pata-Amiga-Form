@@ -1,9 +1,9 @@
 .ledgerContainer {
     background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-xl);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--gray-200);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 6px 6px 0px #000;
+    border: 2px solid #000;
     min-height: 400px;
 }
 
@@ -11,64 +11,151 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--spacing-xl);
+    margin-bottom: 2rem;
 }
 
 .ledgerTitle {
     font-family: var(--font-heading);
     font-size: 1.5rem;
-    color: var(--gray-900);
+    color: #000;
     margin: 0;
 }
 
-.ledgerActions {
+.syncStatus {
     display: flex;
-    gap: var(--spacing-md);
-}
-
-.exportButton {
-    background: var(--brand-green);
-    color: white;
-    border: 2px solid black;
-    padding: var(--spacing-sm) var(--spacing-lg);
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #2e7d32;
+    background: #e8f5e9;
+    padding: 0.4rem 1rem;
     border-radius: 50px;
-    font-family: var(--font-heading);
-    cursor: pointer;
-    transition: transform 0.2s;
+    font-weight: 600;
 }
 
-.exportButton:hover {
-    transform: scale(1.02);
+.syncDot {
+    width: 8px;
+    height: 8px;
+    background: #2e7d32;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
 }
 
-.statsOverview {
+@keyframes pulse {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(46, 125, 50, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
+}
+
+.tableWrapper {
+    overflow-x: auto;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th {
+    text-align: left;
+    padding: 1rem;
+    border-bottom: 2px solid #000;
+    color: #666;
+    font-weight: 600;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+
+.table td {
+    padding: 1.25rem 1rem;
+    border-bottom: 1px solid #eee;
+}
+
+.userName {
+    font-weight: 700;
+    color: #000;
+}
+
+.userEmail {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.rfcTag {
+    font-family: monospace;
+    background: #f1f1f1;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.smallText {
+    font-size: 0.8rem;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dateText {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.loading, .empty {
+    padding: 4rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+}
+
+/* Stripe Cards */
+.stripeInfo {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    width: 100%;
+    max-width: 400px;
+    margin: 1.5rem 0;
 }
 
-.statCard {
-    background: var(--gray-50);
-    padding: var(--spacing-lg);
-    border-radius: var(--radius-md);
+.stripeCard {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 12px;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
-    border: 1px solid var(--gray-100);
+    gap: 0.25rem;
+    border: 1px solid #eee;
 }
 
-.statLabel {
-    font-size: 0.8rem;
-    color: var(--gray-500);
-    text-transform: uppercase;
-    font-weight: bold;
+.stripeCard span {
+    font-size: 0.75rem;
+    color: #666;
 }
 
-.statValue {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--gray-900);
+.stripeCard strong {
+    font-size: 1.25rem;
+    color: #635bff; /* Stripe Purple */
+}
+
+.stripeButton {
+    background: #635bff;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.75rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.stripeButton:hover {
+    background: #5444d1;
+    transform: translateY(-2px);
 }
 
 .tablePlaceholder {
@@ -76,15 +163,10 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-xl);
+    padding: 3rem;
     text-align: center;
-    color: var(--gray-500);
-    border: 2px dashed var(--gray-200);
-    border-radius: var(--radius-md);
-    gap: var(--spacing-md);
-}
-
-.emptyIllustration {
-    font-size: 3rem;
-    opacity: 0.3;
+    color: #666;
+    background: #fff;
+    border-radius: 16px;
+    border: 2px dashed #ddd;
 }
