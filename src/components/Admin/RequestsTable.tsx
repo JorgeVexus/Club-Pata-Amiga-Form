@@ -194,9 +194,9 @@ export default function RequestsTable({
                 );
                 const isPaid = hasActivePlan;
 
-                if (requestType === 'member' || requestType === 'all') {
-                    // Solo mostrar miembros que YA PAGARON (tienen plan activo) en vistas normales
-                    if (!isPaid) return;
+                if ((requestType === 'member' || requestType === 'all' || mode === 'termination') && !isPaid) {
+                    // Solo mostrar miembros que YA PAGARON (tienen plan activo) en vistas normales y en Baja de Usuarios
+                    return;
                 }
                 
                 // En 'all-members', mostramos todos sin excepcion (pero requestType mantendrá el nombre)

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { commService, CommTemplate } from '@/services/comm.service';
-import { sendAdminEmail, sendCustomNotification } from '@/app/actions/comm.actions';
+import { sendAdminEmail, sendCustomNotification, buildTerminationEmailHtml } from '@/app/actions/comm.actions';
 import styles from './MessageSender.module.css';
 
 interface Member {
@@ -87,7 +87,7 @@ export default function MessageSender({ adminName, prefill }: MessageSenderProps
                         name: 'Plantilla de Baja (Sistema)',
                         type: 'email',
                         subject: 'Notificación de Baja de Membresía',
-                        content: 'Hola {{name}},\n\nTe informamos que tu membresía ha sido dada de baja por incumplimiento de políticas.\n\nAtentamente,\nClub Pata Amiga',
+                        content: 'Incumplimiento de las políticas de convivencia y bienestar animal de Club Pata Amiga.',
                         created_at: new Date().toISOString(),
                         updated_at: new Date().toISOString()
                     });
@@ -132,17 +132,29 @@ export default function MessageSender({ adminName, prefill }: MessageSenderProps
         if (!selectedMember || !selectedTemplate) return;
         const email = selectedMember.auth?.email;
         if (!email) {
-            alert('El usuario no tiene email registrado en su cuenta (auth)');
+            alert('El usuario no tiene email registrado');
             return;
         }
 
         setIsSending(true);
+
+        // Si es una baja, usamos el constructor de HTML profesional de Pata Amiga
+        let htmlVersion = undefined;
+        if (selectedTemplate.id === 'default-baja' || selectedTemplate.name.toLowerCase().includes('baja')) {
+            // El contenido procesado será el "motivo" o mensaje personalizado que el admin escribió
+            htmlVersion = await buildTerminationEmailHtml(
+                selectedMember.customFields?.['first-name'] || 'Usuario',
+                processedContent
+            );
+        }
+
         const res = await sendAdminEmail({
             userId: selectedMember.id,
             adminId: adminName,
             to: email,
             subject: processedSubject || 'Notificación de Club Pata Amiga',
             content: processedContent,
+            html: htmlVersion,
             templateId: selectedTemplate.id
         });
 
