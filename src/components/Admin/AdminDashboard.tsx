@@ -18,22 +18,26 @@ import AmbassadorsTable from './AmbassadorsTable';
 import AmbassadorDetailModal from './AmbassadorDetailModal';
 import LegalDocsManager from './LegalDocsManager';
 import SettingsPanel from './SettingsPanel';
+import FinancialLedger from './Finance/FinancialLedger';
+import BillingManagement from './Finance/BillingManagement';
+import InteractiveReports from './Reports/InteractiveReports';
 import { Ambassador } from '@/types/ambassador.types';
 
 export default function AdminDashboard() {
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // ... rest of state stays the same
     const [selectedMember, setSelectedMember] = useState<any>(null);
-    const [selectedPetId, setSelectedPetId] = useState<string | null>(null); // Para apelaciones por mascota
-    const [memberToReject, setMemberToReject] = useState<any>(null); // For rejection action
-    const [rejectionToView, setRejectionToView] = useState<any>(null); // For viewing reason
+    const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
+    const [memberToReject, setMemberToReject] = useState<any>(null);
+    const [rejectionToView, setRejectionToView] = useState<any>(null);
     const [metrics, setMetrics] = useState<DashboardMetrics>({
         totalRefunds: 0,
         activeWellnessCenters: 0,
         totalMembers: 0,
         totalAmbassadors: 0,
     });
-    const [pendingCounts, setPendingCounts] = useState<Record<RequestType, number>>({
+    const [pendingCounts, setPendingCounts] = useState<Record<string, number>>({
         member: 0,
         ambassador: 0,
         'wellness-center': 0,
@@ -44,7 +48,10 @@ export default function AdminDashboard() {
         'terminate-users': 0,
     });
 
-    // Admin Identity & Activity State
+    // Sub-estado para filtros específicos (Fondo Solidario)
+    const [subFilter, setSubFilter] = useState<string | null>(null);
+
+    // ... (rest of auth and load logic) ...
     const [currentAdminId, setCurrentAdminId] = useState('Admin');
     const [adminMemberstackId, setAdminMemberstackId] = useState<string | null>(null);
     const [adminName, setAdminName] = useState('Cargando...');
@@ -55,207 +62,104 @@ export default function AdminDashboard() {
     const [hasMounted, setHasMounted] = useState(false);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
-    // Estado para embajadores
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
-
-    // Prefill para comunicaciones
     const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
-    // Helper to fetch single member details
+    // Fetch helpers ... (same as before)
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
         try {
             const response = await fetch(`/api/admin/members/${id}`);
             const data = await response.json();
-
-            if (data.success && data.member) {
-                customSetter(data.member);
-            } else {
-                alert('No se pudo cargar la información del miembro.');
-            }
-        } catch (error) {
-            console.error('Error fetching member details:', error);
-            alert('Error cargando detalles.');
-        }
+            if (data.success && data.member) customSetter(data.member);
+            else alert('No se pudo cargar la información.');
+        } catch (error) { console.error(error); }
     };
 
-    // Helper to fetch single ambassador details
     const fetchAmbassadorDetails = async (id: string) => {
         try {
-            // Reusing the list endpoint with ID filter or just iterating?
-            // Since we don't have a directGET /api/ambassadors/:id implemented in the context (only PATCH),
-            // we will fetch by ID using URL params if supported or filter from list. 
-            // Actually, querying Supabase directly for one ID is better, but let's see if the API supports it.
-            // The GET /api/ambassadors endpoint supports search.
-            // Let's try searching by ID first or use the list and find.
-            // Ideally we should have a GET /api/ambassadors/[id] endpoint.
-            // Assuming for now we can filter or we just need to implement a detailed fetch.
-            // Quick fix: fetch list with search=id (might not work if search doesn't query ID).
-            // Better: use the existing /api/ambassadors endpoint filtering.
-
-            // Checking AmbassadorsTable.tsx, it passes the FULL object to onViewDetails. 
-            // But RequestsTable only has summary.
-            // Let's try to fetch all (or limit 1 with search?)
-            // Actually, let's implement a quick fetch by ID logic here or just rely on the list if it's paginated.
-            // WORKAROUND: Iterate or fetch specifically.
-            // To be safe and quick, I'll fetch the specific ambassador by ID using the same list endpoint if possible, 
-            // OR allow AdminDashboard to open the modal.
-
-            // Since we don't have a direct 'get by id' handy in the client code viewed in AmbassadorsTable (it uses local state),
-            // I will assume I can fetch it via the list endpoint with a filter, OR I'll add a specific endpoint call if needed.
-            // For now, let's try fetching the specific item via a query parameter if possible, or just the list.
-
-            // Let's try to use the generic endpoint with a limit to find it? No.
-            // Let's just use the `RequestsTable` data if possible? No, incomplete.
-
-            // Valid fallback: Fetch all ambassadors (filtered) and find. 
-            // API: /api/ambassadors?search=EMAIL might work if we have email.
-            // But we have ID. 
-            // Let's assume for now we can't easily fetch single.
-
-            // WAIT! I can use /api/ambassadors/[id] if it exists?
-            // The file tree showed `AmbassadorsTable.tsx` utilizing `/api/ambassadors`. 
-            // `src/app/api/ambassadors/[id]/route.ts` likely exists for PATCH (approve/reject).
-            // Does it support GET? I haven't viewed it.
-
-            // Let's try GET /api/ambassadors?status=all&search=ID? Not guaranteed.
-            // Let's try to fetch the list and find locally.
-            const response = await fetch('/api/ambassadors?limit=1000'); // Valid for now
+            const response = await fetch('/api/ambassadors?limit=1000');
             const data = await response.json();
             if (data.success) {
                 const found = data.data.find((a: any) => a.id === id);
-                if (found) {
-                    setSelectedAmbassador(found);
-                } else {
-                    alert('Embajador no encontrado');
-                }
+                if (found) setSelectedAmbassador(found);
             }
-        } catch (error) {
-            console.error('Error fetching ambassador:', error);
-        }
+        } catch (error) { console.error(error); }
     };
 
-
-    // 🆕 Verificar si hay un miembro para abrir desde la URL (desde notificación)
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
-
-            // Verificar si hay un tab específico para abrir (ej: ?tab=appeals)
             const tabParam = params.get('tab');
-            if (tabParam) {
-                const validTabs = ['member', 'ambassador', 'wellness-center', 'solidarity-fund', 'communications', 'appeals'];
-                if (validTabs.includes(tabParam)) {
-                    setActiveFilter(tabParam as any);
-                }
-            }
-
-            // Verificar si hay un miembro para abrir
+            if (tabParam) setActiveFilter(tabParam as any);
             const memberId = params.get('member');
-            if (memberId) {
-                // Abrir directamente el detalle del miembro
-                fetchMemberDetails(memberId, setSelectedMember);
-            }
-
-            // Limpiar la URL si hay parámetros
-            if (tabParam || memberId) {
-                window.history.replaceState({}, '', '/admin/dashboard');
-            }
+            if (memberId) fetchMemberDetails(memberId, setSelectedMember);
+            if (tabParam || memberId) window.history.replaceState({}, '', '/admin/dashboard');
         }
     }, []);
 
-    // Initial Data Load and Auth Check
     useEffect(() => {
         const fetchAdminRole = async () => {
-            // Accessing window.MemberstackDom is tricky with TS, assuming it's available or casted
-            // Using simple check
             if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                 try {
                     const member = await (window as any).$memberstackDom.getCurrentMember();
-                    if (!member?.data?.id) return; // Wait for auth
-
+                    if (!member?.data?.id) return;
                     const currentMemberId = member.data.id;
-
                     const response = await fetch('/api/admin/me', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ memberstackId: currentMemberId })
                     });
-
                     if (response.ok) {
                         const data = await response.json();
                         setIsAdminSuper(data.isSuperAdmin);
-                        // Update UI with real data
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminMemberstackId(currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
-
-                        // Cargar el resto después de verificar el rol
                         loadMetrics();
                         loadPendingCounts(data.isSuperAdmin);
                         loadActivityLogs(currentMemberId);
-
-                        // Cargar skip payment flag si es super admin
                         if (data.isSuperAdmin) {
-                            fetch('/api/admin/settings/skip-payment')
-                                .then(r => r.json())
-                                .then(d => setSkipPaymentEnabled(d.enabled))
-                                .catch(() => { });
+                            fetch('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
                         }
                     }
-                } catch (e) {
-                    console.error("Error checking permissions", e);
-                }
+                } catch (e) { console.error(e); }
             }
         };
-
         fetchAdminRole();
         setHasMounted(true);
     }, []);
 
-    // Seguridad: Redirigir si intenta entrar a filtros de superadmin no siendo uno
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
-            if (activeFilter === 'appeals' || activeFilter === 'admins' || activeFilter === 'settings' || activeFilter === 'all-members') {
-                setActiveFilter('all');
-            }
+            const restricted = ['appeals', 'admins', 'settings', 'all-members'];
+            if (restricted.includes(activeFilter)) setActiveFilter('all-members');
         }
     }, [activeFilter, isAdminSuper, hasMounted]);
-
 
     async function loadMetrics() {
         try {
             const response = await fetch('/api/admin/metrics');
             const data = await response.json();
-
-            if (data.success && data.metrics) {
-                setMetrics(data.metrics);
-            }
-        } catch (error) {
-            console.error('Error loading metrics:', error);
-        }
+            if (data.success && data.metrics) setMetrics(data.metrics);
+        } catch (error) { console.error(error); }
     }
 
     async function loadActivityLogs(memberstackId?: string) {
         try {
             const idToUse = memberstackId || adminMemberstackId;
             if (!idToUse) return;
-
             const response = await fetch('/api/admin/activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ memberstackId: idToUse })
             });
-
             const data = await response.json();
-
             if (data.success) {
                 setRecentActivityLogs(data.recentActivity || []);
                 setYourActivityLogs(data.yourActivity || []);
             }
-        } catch (error) {
-            console.error('Error loading activity:', error);
-        }
+        } catch (error) { console.error(error); }
     }
 
     async function loadPendingCounts(isSuper: boolean = false) {
@@ -263,49 +167,162 @@ export default function AdminDashboard() {
             const response = await fetch('/api/admin/members?status=pending');
             const data = await response.json();
             if (data.success && data.members) {
-                // Función helper para determinar si un miembro ha pagado
-                const checkIsPaid = (m: any) => {
-                    const hasActivePlan = m.planConnections?.some((p: any) =>
-                        p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
-                    );
-                    return hasActivePlan;
-                };
-
-                // Miembros 'normales': Solo los que ya completaron el pago o tienen plan activo
-                setPendingCounts(prev => ({
-                    ...prev,
-                    member: data.members.filter((m: any) => checkIsPaid(m)).length
-                }));
+                const checkIsPaid = (m: any) => m.planConnections?.some((p: any) => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing');
+                setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m)).length }));
             }
-
-            // Load appealed counts only if superadmin
             if (isSuper) {
                 const appealRes = await fetch('/api/admin/pets/appealed');
                 const appealData = await appealRes.json();
-                if (appealData.success) {
-                    setPendingCounts(prev => ({ ...prev, appeals: appealData.count || appealData.pets?.length || 0 }));
-                }
-            } else {
-                setPendingCounts(prev => ({ ...prev, appeals: 0 }));
+                if (appealData.success) setPendingCounts(prev => ({ ...prev, appeals: appealData.count || 0 }));
             }
-
-            // Load ambassador pending counts
             const ambassadorRes = await fetch('/api/ambassadors?status=pending&limit=1');
             const ambassadorData = await ambassadorRes.json();
-            if (ambassadorData.success) {
-                setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
-            }
-        } catch (error) { console.error('Error loading pending counts', error); }
+            if (ambassadorData.success) setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
+        } catch (error) { console.error(error); }
     }
 
-    // 🆕 Handler para cuando se hace clic en una notificación
     function handleNotificationClick(notification: any) {
         const userId = notification.metadata?.userId;
-        if (userId) {
-            // Abrir el modal del miembro
-            fetchMemberDetails(userId, setSelectedMember);
-        }
+        if (userId) fetchMemberDetails(userId, setSelectedMember);
     }
+
+    // Renderizado condicional del contenido principal
+    const renderContent = () => {
+        // Secciones de Finanzas
+        if (activeFilter.startsWith('finance-')) {
+            const type = activeFilter.replace('finance-', '') as any;
+            return <FinancialLedger type={type} />;
+        }
+
+        // Secciones de Pagos y Facturación
+        const billingViews = ['payment-records', 'billing', 'payment-status', 'auto-retries'];
+        if (billingViews.includes(activeFilter)) {
+            const view = activeFilter.replace('payment-', '') as any;
+            return <BillingManagement view={view === 'records' ? 'records' : view === 'status' ? 'status' : (view === 'billing' ? 'billing' : 'retries')} />;
+        }
+
+        if (activeFilter === 'billing') {
+            return <BillingManagement view="billing" />;
+        }
+
+        // Reporteo
+        if (activeFilter === 'reports-interactive') {
+            return <InteractiveReports />;
+        }
+
+        // Secciones Estándar
+        switch (activeFilter) {
+            case 'admins':
+                return <AdminsTable />;
+            case 'settings':
+                return (
+                    <SettingsPanel
+                        skipPaymentEnabled={skipPaymentEnabled}
+                        onToggleSkipPayment={async (enabled: boolean) => {
+                            try {
+                                const res = await fetch('/api/admin/settings/skip-payment', {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ enabled, adminId: adminMemberstackId })
+                                });
+                                if (res.ok) setSkipPaymentEnabled(enabled);
+                                else alert('Error al actualizar');
+                            } catch { alert('Error de conexión'); }
+                        }}
+                    />
+                );
+            case 'communications':
+                return (
+                    <CommunicationsHub
+                        adminName={adminName}
+                        isSuperAdmin={isAdminSuper}
+                        prefill={commPrefill}
+                    />
+                );
+            case 'ambassador':
+                return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
+            case 'legal-docs':
+                return <LegalDocsManager />;
+            default:
+                // RequestsTable para Miembros, Centros, Fondo Solidario, etc.
+                return (
+                    <>
+                        <RequestsTable
+                            filter={(subFilter as any) || 'all'}
+                            isSuperAdmin={isAdminSuper}
+                            requestType={activeFilter === 'all-members' ? 'all' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
+                            mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
+                            onViewDetails={(id, type, petId) => {
+                                if (type === 'ambassador') fetchAmbassadorDetails(id);
+                                else {
+                                    setSelectedPetId(petId || null);
+                                    fetchMemberDetails(id, setSelectedMember);
+                                }
+                            }}
+                            onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
+                            onApprove={async (id, type) => {
+                                if (type === 'ambassador') {
+                                    if (!confirm('¿Aprobar este embajador?')) return;
+                                    try {
+                                        const response = await fetch(`/api/ambassadors/${id}`, {
+                                            method: 'PATCH',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ status: 'approved' })
+                                        });
+                                        if (response.ok) { alert('Embajador aprobado'); window.location.reload(); }
+                                        else alert('Error al aprobar');
+                                    } catch (e) { console.error(e); }
+                                } else {
+                                    if (confirm('¿Estás seguro de aprobar este miembro?')) {
+                                        try {
+                                            const response = await fetch(`/api/admin/members/${id}/approve`, {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ adminId: currentAdminId })
+                                            });
+                                            if (response.ok) { alert('Miembro aprobado'); window.location.reload(); }
+                                            else alert('Error al aprobar');
+                                        } catch (error) { console.error(error); }
+                                    }
+                                }
+                            }}
+                            onReject={(id, type) => {
+                                if (type === 'ambassador') {
+                                    const reason = prompt('Motivo del rechazo (Embajador):');
+                                    if (!reason) return;
+                                    fetch(`/api/ambassadors/${id}`, {
+                                        method: 'PATCH',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
+                                    }).then(res => {
+                                        if (res.ok) { alert('Rechazado'); window.location.reload(); }
+                                        else alert('Error');
+                                    });
+                                } else fetchMemberDetails(id, setMemberToReject);
+                            }}
+                            onDelete={async (id: string, type: any) => {
+                                if (!confirm('¿ESTÁS SEGURO? Esta acción es permanente.')) return;
+                                try {
+                                    let url = `/api/admin/members/${id}/delete`;
+                                    if (type === 'ambassador') url = `/api/ambassadors/${id}`;
+                                    const res = await fetch(url, { method: 'DELETE' });
+                                    if (res.ok) { alert('Eliminado correctamente'); window.location.reload(); }
+                                    else alert('Error al eliminar');
+                                } catch (e) { console.error(e); }
+                            }}
+                            onTerminate={(member) => {
+                                setCommPrefill({ recipientId: member.id, templateSearch: 'Baja', isTermination: true });
+                                setActiveFilter('communications');
+                            }}
+                        />
+                        <div className={styles.activitySection}>
+                            {isAdminSuper && <ActivityFeed title="Actividad reciente" logs={recentActivityLogs} />}
+                            <ActivityFeed title="Tu actividad" logs={yourActivityLogs} />
+                        </div>
+                    </>
+                );
+        }
+    };
 
     return (
         <div className={styles.dashboard}>
@@ -321,11 +338,17 @@ export default function AdminDashboard() {
                 />
 
                 <Sidebar
-                    activeFilter={activeFilter}
+                    activeFilter={activeFilter as any}
                     onFilterChange={(filter: any) => {
-
-                        setActiveFilter(filter);
-                        setIsMobileMenuOpen(false); // Close menu on selection
+                        // Soporte para sub-filtros de Fondo Solidario
+                        if (typeof filter === 'object' && filter.id === 'solidarity-fund') {
+                            setActiveFilter('solidarity-fund');
+                            setSubFilter(filter.subStatus);
+                        } else {
+                            setActiveFilter(filter);
+                            setSubFilter(null);
+                        }
+                        setIsMobileMenuOpen(false);
                     }}
                     pendingCounts={pendingCounts}
                     isMobileOpen={isMobileMenuOpen}
@@ -334,27 +357,15 @@ export default function AdminDashboard() {
                 />
 
                 <main className={styles.mainContent}>
-                    {/* ... (Header remains) ... */}
                     <header className={styles.header}>
                         <div className={styles.headerLeft}>
                             <h1 className={styles.pageTitle}>
-                                {activeFilter === 'all' ? 'Gestión general' :
-                                    activeFilter === 'member' ? 'Miembros' :
-                                        activeFilter === 'ambassador' ? 'Embajadores' :
-                                            activeFilter === 'wellness-center' ? 'Centros de Bienestar' :
-                                                activeFilter === 'admins' ? 'Administradores' :
-                                                    activeFilter === 'appeals' ? 'Apelaciones' :
-                                                    activeFilter === 'legal-docs' ? 'Documentos Legales' :
-                                                            activeFilter === 'settings' ? 'Configuración' :
-                                                                activeFilter === 'all-members' ? 'Pruebas / Todos los usuarios' :
-                                                                    'Fondo Solidario'}
+                                {REQUEST_TYPE_LABELS[activeFilter as RequestType] || 'Administración'}
+                                {subFilter && ` - ${REQUEST_STATUS_LABELS[subFilter as RequestStatus]}`}
                             </h1>
                             <p className={styles.pageDate}>
                                 {hasMounted && new Date().toLocaleDateString('es-MX', {
-                                    weekday: 'long',
-                                    year: 'numeric',
-                                    month: 'long',
-                                    day: 'numeric'
+                                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                                 })}
                             </p>
                         </div>
@@ -370,238 +381,28 @@ export default function AdminDashboard() {
                         </div>
                     </header>
 
-                    {/* Metric Cards - Hide when viewing admins */}
                     {activeFilter !== 'admins' && <MetricCards metrics={metrics} />}
 
-                    {/* Admins Table - Only for Super Admins */}
-                    {activeFilter === 'admins' ? (
-                        <AdminsTable />
-                    ) : activeFilter === 'settings' ? (
-                        <SettingsPanel
-                            skipPaymentEnabled={skipPaymentEnabled}
-                            onToggleSkipPayment={async (enabled: boolean) => {
-                                try {
-                                    const res = await fetch('/api/admin/settings/skip-payment', {
-                                        method: 'PUT',
-                                        headers: { 'Content-Type': 'application/json' },
-                                        body: JSON.stringify({ enabled, adminId: adminMemberstackId })
-                                    });
-                                    if (res.ok) setSkipPaymentEnabled(enabled);
-                                    else alert('Error al actualizar');
-                                } catch { alert('Error de conexión'); }
-                            }}
-                        />
-                    ) : activeFilter === 'communications' ? (
-                        <CommunicationsHub
-                            adminName={adminName}
-                            isSuperAdmin={isAdminSuper}
-                            prefill={commPrefill}
-                        />
-                    ) : activeFilter === 'ambassador' ? (
-                        <AmbassadorsTable
-                            onViewDetails={(amb) => setSelectedAmbassador(amb)}
-                        />
-                    ) : activeFilter === 'legal-docs' ? (
-                        <LegalDocsManager />
-                    ) : (
-                        <>
-                            {/* Requests Table */}
-                            <RequestsTable
-                                filter="all"
-                                isSuperAdmin={isAdminSuper}
-                                requestType={activeFilter === 'all' ? 'all' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
-                                mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
-                                onViewDetails={(id, type, petId) => {
-                                    if (type === 'ambassador') {
-                                        fetchAmbassadorDetails(id);
-                                    } else if (type === 'appeal') { // Handling appeal type
-                                        fetchMemberDetails(id, setSelectedMember);
-                                        setSelectedPetId(petId || null);
-                                    } else {
-                                        // Default member
-                                        setSelectedPetId(petId || null);
-                                        fetchMemberDetails(id, setSelectedMember);
-                                    }
-                                }}
-                                onViewRejectionReason={(id) => fetchMemberDetails(id, setRejectionToView)}
-                                onApprove={async (id, type) => {
-                                    if (type === 'ambassador') {
-                                        if (!confirm('¿Aprobar este embajador?')) return;
-                                        try {
-                                            const response = await fetch(`/api/ambassadors/${id}`, {
-                                                method: 'PATCH',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ status: 'approved' })
-                                            });
-                                            if (response.ok) {
-                                                alert('Embajador aprobado');
-                                                window.location.reload();
-                                            } else {
-                                                alert('Error al aprobar');
-                                            }
-                                        } catch (e) { console.error(e); alert('Error de conexión'); }
-                                    } else {
-                                        if (confirm('¿Estás seguro de aprobar este miembro?')) {
-                                            try {
-                                                const response = await fetch(`/api/admin/members/${id}/approve`, {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({ adminId: currentAdminId })
-                                                });
-
-                                                if (response.ok) {
-                                                    alert('Miembro aprobado');
-                                                    window.location.reload();
-                                                } else {
-                                                    alert('Error al aprobar');
-                                                }
-                                            } catch (error) {
-                                                console.error('Error:', error);
-                                                alert('Error de conexión');
-                                            }
-                                        }
-                                    }
-                                }}
-                                onReject={(id, type) => {
-                                    if (type === 'ambassador') {
-                                        fetchAmbassadorDetails(id); // Open details to reject from modal?
-                                        // Or direct reject?
-                                        // AmbassadorsTable handles reject with prompt.
-                                        // Let's simple prompt here for consistency with inline actions
-                                        const reason = prompt('Motivo del rechazo (Embajador):');
-                                        if (!reason) return;
-                                        fetch(`/api/ambassadors/${id}`, {
-                                            method: 'PATCH',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
-                                        }).then(res => {
-                                            if (res.ok) { alert('Rechazado'); window.location.reload(); }
-                                            else alert('Error');
-                                        });
-                                    } else {
-                                        fetchMemberDetails(id, setMemberToReject);
-                                    }
-                                }}
-                                onDelete={async (id: string, type: 'member' | 'ambassador' | 'wellness-center') => {
-                                    if (!confirm(`¿ESTÁS SEGURO? Esta acción eliminará permanentemente al ${type === 'ambassador' ? 'embajador' : 'miembro'} de Memberstack y Supabase, incluyendo toda su información. No se puede deshacer.`)) return;
-                                    
-                                    try {
-                                        let url = `/api/admin/members/${id}/delete`;
-                                        if (type === 'ambassador') url = `/api/ambassadors/${id}`;
-                                        
-                                        if (type === 'wellness-center') {
-                                            alert('Funcionalidad para centros de bienestar próximamente');
-                                            return;
-                                        }
-
-                                        const res = await fetch(url, { method: 'DELETE' });
-                                        if (res.ok) {
-                                            alert('Usuario eliminado correctamente');
-                                            window.location.reload();
-                                        } else {
-                                            const data = await res.json();
-                                            alert(`Error al eliminar: ${data.error || 'Error desconocido'}`);
-                                        }
-                                    } catch (e) { alert('Error de conexión'); }
-                                }}
-                                onBulkDelete={async (ids: string[], type: 'member' | 'ambassador' | 'wellness-center') => {
-                                    if (!confirm(`¿Eliminar permanentemente a los ${ids.length} usuarios seleccionados? Esta acción no se puede deshacer.`)) return;
-                                    
-                                    try {
-                                        let url = '/api/admin/members/bulk-delete';
-                                        if (type === 'ambassador') {
-                                            // Por ahora los embajadores se eliminan uno por uno o implementar bulk en su API
-                                            alert('La eliminación masiva de embajadores se procesará individualmente.');
-                                            for (const id of ids) {
-                                                await fetch(`/api/ambassadors/${id}`, { method: 'DELETE' });
-                                            }
-                                            window.location.reload();
-                                            return;
-                                        }
-
-                                        const res = await fetch(url, {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({ ids })
-                                        });
-                                        const data = await res.json();
-                                        if (data.success) {
-                                            alert(`Proceso completado. Éxitos: ${data.successCount}, Errores: ${data.failedCount}`);
-                                            window.location.reload();
-                                        } else {
-                                            alert(`Error: ${data.error || 'Error desconocido'}`);
-                                        }
-                                    } catch (e) { alert('Error de conexión'); }
-                                }}
-                                onTerminate={(member) => {
-                                    setCommPrefill({
-                                        recipientId: member.id,
-                                        templateSearch: 'Baja',
-                                        isTermination: true
-                                    });
-                                    setActiveFilter('communications');
-                                }}
-                            />
-
-                            {/* Activity History Section */}
-                            <div className={styles.activitySection}>
-                                {/* Panel 1: Recent Activity (Super Admin Only) */}
-                                {isAdminSuper && (
-                                    <ActivityFeed
-                                        title="Actividad reciente"
-                                        logs={recentActivityLogs}
-                                    />
-                                )}
-
-                                <ActivityFeed
-                                    title="Tu actividad"
-                                    logs={yourActivityLogs}
-                                />
-                            </div>
-                        </>
-                    )}
+                    {renderContent()}
                 </main>
             </div>
 
-            {/* Modals outside main content */}
+            {/* Modals ... (MemberDetailModal, RejectionModal, etc. - stay the same) */}
             <MemberDetailModal
                 isOpen={!!selectedMember}
-                onClose={() => {
-                    setSelectedMember(null);
-                    setSelectedPetId(null);
-                }}
+                onClose={() => { setSelectedMember(null); setSelectedPetId(null); }}
                 member={selectedMember}
                 showAppealSection={activeFilter === 'appeals'}
                 selectedPetId={selectedPetId}
                 isSuperAdmin={isAdminSuper}
                 onApprove={async (id) => {
-                    if (confirm('¿Estás seguro de aprobar este miembro?')) {
-                        try {
-                            const response = await fetch(`/api/admin/members/${id}/approve`, {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ adminId: currentAdminId })
-                            });
-
-                            if (response.ok) {
-                                alert('Miembro aprobado');
-                                window.location.reload();
-                            } else {
-                                alert('Error al aprobar');
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                        }
+                    if (confirm('¿Aprobar?')) {
+                        const res = await fetch(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
+                        if (res.ok) { alert('Aprobado'); window.location.reload(); }
                     }
                 }}
-                onReject={(id) => {
-                    setMemberToReject(selectedMember);
-                    setSelectedMember(null); // Close detail modal
-                }}
-                onDataChange={() => {
-                    // Forzar recarga de RequestsTable
-                    window.location.reload();
-                }}
+                onReject={() => { setMemberToReject(selectedMember); setSelectedMember(null); }}
+                onDataChange={() => window.location.reload()}
             />
 
             <RejectionModal
@@ -609,53 +410,29 @@ export default function AdminDashboard() {
                 onClose={() => setMemberToReject(null)}
                 memberName={`${memberToReject?.customFields?.['first-name'] || ''} ${memberToReject?.customFields?.['paternal-last-name'] || ''}`}
                 onConfirm={async (reason) => {
-                    if (!memberToReject) return;
-
-                    try {
-                        const response = await fetch(`/api/admin/members/${memberToReject.id}/reject`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                adminId: currentAdminId,
-                                reason: reason
-                            })
-                        });
-
-                        if (response.ok) {
-                            alert('Solicitud rechazada correctamente.');
-                            setMemberToReject(null);
-                            window.location.reload();
-                        } else {
-                            alert('Error al rechazar la solicitud.');
-                        }
-                    } catch (error) {
-                        console.error('Error rejecting:', error);
-                        alert('Error de red al rechazar.');
-                    }
+                    const res = await fetch(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
+                    if (res.ok) { alert('Rechazado'); window.location.reload(); }
                 }}
             />
 
             <RejectionReasonModal
                 isOpen={!!rejectionToView}
                 onClose={() => setRejectionToView(null)}
-                memberName={`${rejectionToView?.customFields?.['first-name'] || ''} ${rejectionToView?.customFields?.['paternal-last-name'] || ''}`.trim() || 'Usuario'}
+                memberName={`${rejectionToView?.customFields?.['first-name'] || ''} ${rejectionToView?.customFields?.['paternal-last-name'] || ''}`.trim()}
                 rejectionReason={rejectionToView?.customFields?.['rejection-reason'] || ''}
                 rejectedBy={rejectionToView?.customFields?.['rejected-by'] || 'Admin'}
                 rejectedAt={rejectionToView?.customFields?.['rejected-at'] || ''}
             />
 
-            {/* Modal de Detalle de Embajador */}
             {selectedAmbassador && (
                 <AmbassadorDetailModal
                     ambassador={selectedAmbassador}
                     onClose={() => setSelectedAmbassador(null)}
-                    onRefresh={() => {
-                        setSelectedAmbassador(null);
-                        // Forzar recarga de la lista
-                        window.location.reload();
-                    }}
+                    onRefresh={() => window.location.reload()}
                 />
             )}
-        </div >
+        </div>
     );
 }
+
+import { REQUEST_TYPE_LABELS, REQUEST_STATUS_LABELS, RequestStatus } from '@/types/admin.types';

@@ -3,7 +3,25 @@
  */
 
 // Tipos de solicitudes
-export type RequestType = 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'communications' | 'appeals' | 'all-members' | 'terminate-users';
+export type RequestType = 
+    | 'member' 
+    | 'ambassador' 
+    | 'wellness-center' 
+    | 'solidarity-fund' 
+    | 'communications' 
+    | 'appeals' 
+    | 'all-members' 
+    | 'terminate-users'
+    | 'billing'
+    | 'payment-records'
+    | 'payment-status'
+    | 'auto-retries'
+    | 'finance-memberships'
+    | 'finance-refunds'
+    | 'finance-wellness'
+    | 'finance-commissions'
+    | 'reports-interactive'
+    | 'registered-centers';
 
 // Estados de solicitud
 export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in-review';
@@ -112,6 +130,16 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'appeals': BRAND_COLORS.yellow,
     'all-members': BRAND_COLORS.green,
     'terminate-users': BRAND_COLORS.pink,
+    'billing': BRAND_COLORS.orange,
+    'payment-records': BRAND_COLORS.green,
+    'payment-status': BRAND_COLORS.yellow,
+    'auto-retries': BRAND_COLORS.pink,
+    'finance-memberships': BRAND_COLORS.green,
+    'finance-refunds': BRAND_COLORS.pink,
+    'finance-wellness': BRAND_COLORS.orange,
+    'finance-commissions': BRAND_COLORS.yellow,
+    'reports-interactive': BRAND_COLORS.green,
+    'registered-centers': BRAND_COLORS.orange,
 };
 
 // Mapeo de colores por estado
@@ -125,14 +153,24 @@ export const REQUEST_STATUS_COLORS: Record<RequestStatus, string> = {
 
 // Labels en español
 export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
-    'member': 'Miembro',
-    'ambassador': 'Embajador',
-    'wellness-center': 'Centro de Bienestar',
+    'member': 'Miembros',
+    'ambassador': 'Embajadores',
+    'wellness-center': 'Centros de Bienestar',
     'solidarity-fund': 'Fondo Solidario',
     'communications': 'Comunicaciones',
     'appeals': 'Apelaciones',
-    'all-members': 'Todos los miembros',
+    'all-members': 'Gestión General',
     'terminate-users': 'Baja de Usuarios',
+    'billing': 'Facturación',
+    'payment-records': 'Registros de pagos',
+    'payment-status': 'Estado de pago',
+    'auto-retries': 'Reintentos automáticos',
+    'finance-memberships': 'Membresías (Ingresos)',
+    'finance-refunds': 'Apoyos (Reembolsos)',
+    'finance-wellness': 'Pagos a Centros',
+    'finance-commissions': 'Comisiones (Embajadores)',
+    'reports-interactive': 'Gráficas interactivas',
+    'registered-centers': 'Centros registrados',
 };
 
 export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
