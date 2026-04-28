@@ -409,7 +409,7 @@ export default function AdminDashboard() {
                             <RequestsTable
                                 filter="all"
                                 isSuperAdmin={isAdminSuper}
-                                requestType={activeFilter === 'all' ? 'all' : (activeFilter === 'terminate-users' ? 'all-members' : activeFilter as any)}
+                                requestType={activeFilter === 'all' ? 'all' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
                                 mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
                                 onViewDetails={(id, type, petId) => {
                                     if (type === 'ambassador') {
@@ -482,11 +482,19 @@ export default function AdminDashboard() {
                                         fetchMemberDetails(id, setMemberToReject);
                                     }
                                 }}
-                                onDelete={async (id: string) => {
-                                    if (!confirm('¿ESTÁS SEGURO? Esta acción eliminará permanentemente al usuario de Memberstack y Supabase, incluyendo sus mascotas y archivos. No se puede deshacer.')) return;
+                                onDelete={async (id: string, type: 'member' | 'ambassador' | 'wellness-center') => {
+                                    if (!confirm(`¿ESTÁS SEGURO? Esta acción eliminará permanentemente al ${type === 'ambassador' ? 'embajador' : 'miembro'} de Memberstack y Supabase, incluyendo toda su información. No se puede deshacer.`)) return;
                                     
                                     try {
-                                        const res = await fetch(`/api/admin/members/${id}/delete`, { method: 'DELETE' });
+                                        let url = `/api/admin/members/${id}/delete`;
+                                        if (type === 'ambassador') url = `/api/ambassadors/${id}`;
+                                        
+                                        if (type === 'wellness-center') {
+                                            alert('Funcionalidad para centros de bienestar próximamente');
+                                            return;
+                                        }
+
+                                        const res = await fetch(url, { method: 'DELETE' });
                                         if (res.ok) {
                                             alert('Usuario eliminado correctamente');
                                             window.location.reload();
@@ -496,11 +504,22 @@ export default function AdminDashboard() {
                                         }
                                     } catch (e) { alert('Error de conexión'); }
                                 }}
-                                onBulkDelete={async (ids: string[]) => {
+                                onBulkDelete={async (ids: string[], type: 'member' | 'ambassador' | 'wellness-center') => {
                                     if (!confirm(`¿Eliminar permanentemente a los ${ids.length} usuarios seleccionados? Esta acción no se puede deshacer.`)) return;
                                     
                                     try {
-                                        const res = await fetch('/api/admin/members/bulk-delete', {
+                                        let url = '/api/admin/members/bulk-delete';
+                                        if (type === 'ambassador') {
+                                            // Por ahora los embajadores se eliminan uno por uno o implementar bulk en su API
+                                            alert('La eliminación masiva de embajadores se procesará individualmente.');
+                                            for (const id of ids) {
+                                                await fetch(`/api/ambassadors/${id}`, { method: 'DELETE' });
+                                            }
+                                            window.location.reload();
+                                            return;
+                                        }
+
+                                        const res = await fetch(url, {
                                             method: 'POST',
                                             headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ ids })

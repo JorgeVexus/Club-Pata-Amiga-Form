@@ -11,8 +11,8 @@ interface MemberRequest {
     status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended' | 'action_required';
     infoStatus?: 'complete' | 'incomplete' | 'requested';
     petCount?: number;
-    type: 'member' | 'ambassador';
-    roles: ('member' | 'ambassador')[]; // New field for display tags
+    type: 'member' | 'ambassador' | 'wellness-center';
+    roles: ('member' | 'ambassador' | 'wellness-center')[];
 }
 
 interface AppealedPet {
@@ -33,13 +33,13 @@ interface AppealedPet {
 
 interface RequestsTableProps {
     filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
-    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals' | 'all-members';
-    onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal', extraId?: string) => void;
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals' | 'all-members' | 'terminate-users';
+    onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal' | 'wellness-center', extraId?: string) => void;
     onViewRejectionReason?: (id: string) => void;
-    onApprove: (id: string, type?: 'member' | 'ambassador') => void;
-    onReject: (id: string, type?: 'member' | 'ambassador') => void;
-    onDelete?: (id: string) => void;
-    onBulkDelete?: (ids: string[]) => void;
+    onApprove: (id: string, type?: 'member' | 'ambassador' | 'wellness-center') => void;
+    onReject: (id: string, type?: 'member' | 'ambassador' | 'wellness-center') => void;
+    onDelete?: (id: string, type: 'member' | 'ambassador' | 'wellness-center') => void;
+    onBulkDelete?: (ids: string[], type: 'member' | 'ambassador' | 'wellness-center') => void;
     onTerminate?: (member: MemberRequest) => void;
     mode?: 'default' | 'termination';
     isSuperAdmin?: boolean;
@@ -115,7 +115,7 @@ export default function RequestsTable({
 
             const promises = [];
 
-            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members') {
+            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'terminate-users') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
                 promises.push(
                     fetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}`)
@@ -124,12 +124,17 @@ export default function RequestsTable({
                 );
             }
 
-            if (requestType === 'all' || requestType === 'ambassador') {
+            if (requestType === 'all' || requestType === 'ambassador' || requestType === 'terminate-users') {
                 promises.push(
                     fetch(`/api/ambassadors?status=${statusParam}&limit=100`)
                         .then(res => res.json())
                         .then(data => ({ type: 'ambassador', data }))
                 );
+            }
+
+            // Placeholder para centros de bienestar en el futuro
+            if (requestType === 'wellness-center' || (requestType === 'terminate-users' && false)) {
+                // promises.push(fetch('/api/admin/wellness-centers')...)
             }
 
             const results = await Promise.all(promises);
@@ -171,6 +176,8 @@ export default function RequestsTable({
                 const petCount = memberPetCounts.get(email) || 0;
                 if (email && petCount > 0) roles.push('member');
 
+                if (mode === 'termination' && amb.status !== 'approved') return;
+
                 combinedRequests.push({
                     id: amb.id,
                     name: `${amb.first_name} ${amb.paternal_surname}`,
@@ -209,7 +216,7 @@ export default function RequestsTable({
                 // Calculate pet count: prefer API value (Supabase), fallback to local map (Legacy Memberstack)
                 const petCount = member.petCount !== undefined ? member.petCount : (memberPetCounts.get(email!) || 0);
 
-                const roles: ('member' | 'ambassador')[] = [];
+                const roles: ('member' | 'ambassador' | 'wellness-center')[] = [];
                 if (petCount > 0) roles.push('member'); // Only if has pets
                 if (email && ambassadorEmails.has(email)) roles.push('ambassador');
 
@@ -318,7 +325,7 @@ export default function RequestsTable({
         return labels[filter] || filter;
     }
 
-    const renderRoleBadges = (roles: ('member' | 'ambassador')[]) => {
+    const renderRoleBadges = (roles: ('member' | 'ambassador' | 'wellness-center')[]) => {
         return (
             <div style={{ display: 'inline-flex', gap: '4px', marginLeft: '8px', verticalAlign: 'middle' }}>
                 {roles.includes('member') && (
@@ -345,6 +352,18 @@ export default function RequestsTable({
                         EMBAJADOR
                     </span>
                 )}
+                {roles.includes('wellness-center') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#E8F5E9',
+                        color: '#1B5E20',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        CENTRO
+                    </span>
+                )}
             </div>
         );
     };
@@ -369,7 +388,10 @@ export default function RequestsTable({
                         <button 
                             className={styles.rejectButton} 
                             style={{ margin: 0, padding: '8px 16px', borderRadius: '50px' }}
-                            onClick={() => onBulkDelete?.(Array.from(selectedIds))}
+                            onClick={() => {
+                                const firstSelected = requests.find(r => selectedIds.has(r.id));
+                                onBulkDelete?.(Array.from(selectedIds), firstSelected?.type || 'member');
+                            }}
                         >
                             🗑️ Eliminar Seleccionados ({selectedIds.size})
                         </button>
@@ -616,7 +638,7 @@ export default function RequestsTable({
                                                 <button
                                                     className={styles.rejectButton}
                                                     style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
-                                                    onClick={() => onDelete?.(request.id)}
+                                                    onClick={() => onDelete?.(request.id, request.type)}
                                                 >
                                                     Eliminar
                                                 </button>
