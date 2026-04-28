@@ -95,48 +95,36 @@ export default function RequestsTable({
         }
 
         try {
-            if (requestType === 'ambassador') {
-                // Total
-                const totalRes = await fetch('/api/ambassadors?limit=1');
-                const totalData = await totalRes.json();
-                // Pending
-                const pendingRes = await fetch('/api/ambassadors?status=pending&limit=1');
-                const pendingData = await pendingRes.json();
-                // Approved
-                const approvedRes = await fetch('/api/ambassadors?status=approved&limit=1');
-                const approvedData = await approvedRes.json();
-                // Rejected
-                const rejectedRes = await fetch('/api/ambassadors?status=rejected&limit=1');
-                const rejectedData = await rejectedRes.json();
+            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'ambassador' || requestType === 'wellness-center') {
+                const fetchMember = requestType === 'all' || requestType === 'member' || requestType === 'all-members';
+                const fetchAmbassador = requestType === 'all' || requestType === 'ambassador';
+                const fetchWellness = requestType === 'all' || requestType === 'wellness-center';
+                const isAllMembers = requestType === 'all-members';
+                const baseMember = `/api/admin/members?limit=1${isAllMembers ? '&paidOnly=false' : ''}`;
+
+                const statuses = ['all', 'pending', 'approved', 'rejected'] as const;
+                const results = await Promise.all(statuses.map(async (status) => {
+                    let count = 0;
+                    if (fetchMember) {
+                        const res = await fetch(`${baseMember}&status=${status}`);
+                        const data = await res.json();
+                        count += (data.count || 0);
+                    }
+                    if (fetchAmbassador) {
+                        const statusParam = status === 'all' ? '' : `&status=${status}`;
+                        const res = await fetch(`/api/ambassadors?limit=1${statusParam}`);
+                        const data = await res.json();
+                        count += (data.total || 0);
+                    }
+                    // Wellness center logic can be added here when API is ready
+                    return { status, count };
+                }));
 
                 setStats({
-                    total: totalData.total || 0,
-                    pending: pendingData.total || 0,
-                    approved: approvedData.total || 0,
-                    rejected: rejectedData.total || 0
-                });
-            } else if (requestType === 'member' || requestType === 'all-members' || requestType === 'all') {
-                const isAll = requestType === 'all-members';
-                const base = `/api/admin/members?limit=1${isAll ? '&paidOnly=false' : ''}`;
-                
-                // Total
-                const totalRes = await fetch(`${base}&status=all`);
-                const totalData = await totalRes.json();
-                // Pending
-                const pendingRes = await fetch(`${base}&status=pending`);
-                const pendingData = await pendingRes.json();
-                // Approved
-                const approvedRes = await fetch(`${base}&status=approved`);
-                const approvedData = await approvedRes.json();
-                // Rejected
-                const rejectedRes = await fetch(`${base}&status=rejected`);
-                const rejectedData = await rejectedRes.json();
-
-                setStats({
-                    total: totalData.count || 0,
-                    pending: pendingData.count || 0,
-                    approved: approvedData.count || 0,
-                    rejected: rejectedData.count || 0
+                    total: results.find(r => r.status === 'all')?.count || 0,
+                    pending: results.find(r => r.status === 'pending')?.count || 0,
+                    approved: results.find(r => r.status === 'approved')?.count || 0,
+                    rejected: results.find(r => r.status === 'rejected')?.count || 0
                 });
             } else if (requestType === 'wellness-center') {
                 setStats({ total: 0, pending: 0, approved: 0, rejected: 0 });
@@ -483,7 +471,8 @@ export default function RequestsTable({
                             <div className={styles.statValue}>{stats.total}</div>
                             <div className={styles.statLabel}>
                                 {requestType === 'ambassador' ? 'Total Embajadores' : 
-                                 requestType === 'wellness-center' ? 'Total Centros' : 'Total Miembros'}
+                                 requestType === 'wellness-center' ? 'Total Centros' : 
+                                 requestType === 'all' ? 'Total Solicitudes' : 'Total Miembros'}
                             </div>
                         </div>
                     </div>
@@ -577,8 +566,8 @@ export default function RequestsTable({
                         />
                     </div>
 
-                    {/* Secondary Filters for Members only */}
-                    {(requestType === 'member' || requestType === 'all-members') && (
+                    {/* Secondary Filters for Members and General view */}
+                    {(requestType === 'member' || requestType === 'all-members' || requestType === 'all') && (
                         <div className={styles.filterDropdown}>
                             <button
                                 className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
