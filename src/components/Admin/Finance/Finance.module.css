@@ -170,3 +170,47 @@
     border-radius: 16px;
     border: 2px dashed #ddd;
 }
+
+.amount {
+    font-weight: 700;
+    color: #000;
+    font-family: monospace;
+}
+
+.statusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.statusSucceeded {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.statusPending {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.statusWarning {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.smallButton {
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.smallButton:hover {
+    transform: scale(1.05);
+}
