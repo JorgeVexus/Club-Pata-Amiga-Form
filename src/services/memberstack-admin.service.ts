@@ -18,6 +18,7 @@ export interface MemberstackMember {
         planId?: string;
         planName?: string;
         type?: string;
+        currentPeriodEnd?: string | number;
         priceId?: string; // Para compatibilidad
         payment?: {
             status?: string;
