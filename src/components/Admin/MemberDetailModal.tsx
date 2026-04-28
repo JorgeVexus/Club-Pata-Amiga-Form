@@ -474,27 +474,47 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 const plan = member.planConnections?.[0];
                                 if (!plan) return <p className={styles.noBilling}>No se detectaron planes activos en Memberstack.</p>;
 
-                                // Format start date (createdAt from plan connection)
-                                const startDate = plan.createdAt ? new Date(plan.createdAt).toLocaleDateString('es-MX', {
+                                // 1. Fecha de Activación (Memberstack createdAt)
+                                const activationDate = plan.createdAt ? new Date(plan.createdAt) : null;
+                                const activationDateFormatted = activationDate ? activationDate.toLocaleDateString('es-MX', {
                                     day: '2-digit',
                                     month: 'long',
                                     year: 'numeric'
                                 }) : '-';
 
-                                // Format renewal date (currentPeriodEnd)
-                                // Memberstack usually sends Unix timestamps (seconds) for currentPeriodEnd
-                                let renewalDate = '-';
-                                if (plan.currentPeriodEnd) {
-                                    const date = typeof plan.currentPeriodEnd === 'number' 
+                                // 2. Lógica Dinámica de Próxima Renovación
+                                const isAnual = stripeDetails?.subscription?.interval === 'anual' || plan.planName?.toLowerCase().includes('anual');
+                                let finalRenewalDate: Date | null = null;
+
+                                // Prioridad 1: Stripe (Directo del API)
+                                if (stripeDetails?.subscription?.currentPeriodEnd) {
+                                    finalRenewalDate = new Date(stripeDetails.subscription.currentPeriodEnd);
+                                }
+                                // Prioridad 2: Memberstack (Sync previo)
+                                else if (plan.currentPeriodEnd) {
+                                    finalRenewalDate = typeof plan.currentPeriodEnd === 'number' 
                                         ? new Date(plan.currentPeriodEnd * 1000) 
                                         : new Date(plan.currentPeriodEnd);
-                                    
-                                    renewalDate = date.toLocaleDateString('es-MX', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    });
                                 }
+                                // Prioridad 3: Cálculo basado en Último Pago
+                                else if (stripeDetails?.payments?.length > 0) {
+                                    const lastPayment = new Date(stripeDetails.payments[0].date);
+                                    finalRenewalDate = new Date(lastPayment);
+                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
+                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
+                                }
+                                // Prioridad 4: Cálculo basado en Fecha de Activación
+                                else if (activationDate) {
+                                    finalRenewalDate = new Date(activationDate);
+                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
+                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
+                                }
+
+                                const renewalDateFormatted = finalRenewalDate ? finalRenewalDate.toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                }) : '-';
 
                                 return (
                                     <>
@@ -507,7 +527,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         <div className={styles.field}>
                                             <span className={styles.label}>Frecuencia de Pago</span>
                                             <span className={styles.value} style={{ textTransform: 'capitalize' }}>
-                                                {stripeDetails?.subscription?.interval || (plan.planName?.toLowerCase().includes('anual') ? 'Anual' : 'Mensual')}
+                                                {isAnual ? 'Anual' : 'Mensual'}
                                             </span>
                                         </div>
                                         <div className={styles.field}>
@@ -517,19 +537,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             </span>
                                         </div>
                                         <div className={styles.field}>
-                                            <span className={styles.label}>Fecha de Contratación</span>
-                                            <span className={styles.value}>{startDate}</span>
+                                            <span className={styles.label}>Fecha de Activación</span>
+                                            <span className={styles.value}>{activationDateFormatted}</span>
                                         </div>
                                         <div className={styles.field}>
                                             <span className={styles.label}>Próxima Renovación</span>
                                             <span className={styles.value} style={{ fontWeight: 600 }}>
-                                                {stripeDetails?.subscription?.currentPeriodEnd 
-                                                    ? new Date(stripeDetails.subscription.currentPeriodEnd).toLocaleDateString('es-MX', {
-                                                        day: '2-digit',
-                                                        month: 'long',
-                                                        year: 'numeric'
-                                                    })
-                                                    : renewalDate}
+                                                {renewalDateFormatted}
                                             </span>
                                         </div>
                                         {stripeDetails?.payments?.length > 0 && (
