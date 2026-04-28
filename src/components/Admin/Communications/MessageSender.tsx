@@ -77,7 +77,21 @@ export default function MessageSender({ adminName, prefill }: MessageSenderProps
                 const template = templates.find(t => 
                     t.name.toLowerCase().includes(prefill.templateSearch!.toLowerCase())
                 );
-                if (template) setSelectedTemplate(template);
+                
+                if (template) {
+                    setSelectedTemplate(template);
+                } else if (prefill.isTermination) {
+                    // Fallback si no existe la plantilla en la DB
+                    setSelectedTemplate({
+                        id: 'default-baja',
+                        name: 'Plantilla de Baja (Sistema)',
+                        type: 'email',
+                        subject: 'Notificación de Baja de Membresía',
+                        content: 'Hola {{name}},\n\nTe informamos que tu membresía ha sido dada de baja por incumplimiento de políticas.\n\nAtentamente,\nClub Pata Amiga',
+                        created_at: new Date().toISOString(),
+                        updated_at: new Date().toISOString()
+                    });
+                }
             }
         }
     }, [isLoading, prefill, members, templates]);
