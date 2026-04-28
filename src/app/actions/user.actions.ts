@@ -811,6 +811,7 @@ export async function getMemberStripeDetails(memberstackId: string) {
                 interval: sub.items?.data[0]?.plan?.interval === 'year' ? 'anual' : 'mensual',
                 currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
                 currentPeriodStart: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : null,
+                startDate: sub.start_date ? new Date(sub.start_date * 1000).toISOString() : null,
                 amount: sub.items?.data[0]?.plan?.amount ? sub.items.data[0].plan.amount / 100 : 0,
                 currency: sub.currency?.toUpperCase() || 'MXN'
             };

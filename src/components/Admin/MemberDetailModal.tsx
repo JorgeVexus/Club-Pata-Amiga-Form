@@ -474,8 +474,15 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 const plan = member.planConnections?.[0];
                                 if (!plan) return <p className={styles.noBilling}>No se detectaron planes activos en Memberstack.</p>;
 
-                                // 1. Fecha de Activación (Memberstack createdAt)
-                                const activationDate = plan.createdAt ? new Date(plan.createdAt) : null;
+                                // 1. Fecha de Activación (Prioridad: Stripe startDate -> plan.createdAt -> member.createdAt -> registration-date -> primer pago)
+                                const activationDate = stripeDetails?.subscription?.startDate ? new Date(stripeDetails.subscription.startDate) :
+                                                     plan.createdAt ? new Date(plan.createdAt) : 
+                                                     (member as any).createdAt ? new Date((member as any).createdAt) :
+                                                     fields['registration-date'] ? new Date(fields['registration-date']) :
+                                                     supabaseUser?.created_at ? new Date(supabaseUser.created_at) :
+                                                     (stripeDetails?.payments?.length > 0) ? new Date(stripeDetails.payments[stripeDetails.payments.length - 1].date) :
+                                                     null;
+
                                 const activationDateFormatted = activationDate ? activationDate.toLocaleDateString('es-MX', {
                                     day: '2-digit',
                                     month: 'long',
