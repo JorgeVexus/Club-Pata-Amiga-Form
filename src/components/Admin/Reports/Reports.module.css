@@ -320,6 +320,41 @@
     font-size: 3rem;
 }
 
+.chartWrapper {
+    width: 100%;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.customChartExtended {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+}
+
+.dataPointGroup circle {
+    transition: r 0.2s ease, stroke-width 0.2s ease;
+    cursor: pointer;
+}
+
+.dataPointGroup:hover circle {
+    r: 6;
+    stroke-width: 3;
+}
+
+.barGroup rect {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+}
+
+.barGroup:hover rect {
+    opacity: 1;
+    filter: brightness(1.1);
+}
+
 .loadingOverlay {
     position: absolute;
     top: 0;
@@ -328,10 +363,10 @@
     bottom: 0;
     background: rgba(255, 255, 255, 0.8);
     display: flex;
-    align-items: center;
     justify-content: center;
-    border-radius: 24px;
+    align-items: center;
     z-index: 10;
+    border-radius: 20px;
 }
 
 .spinner {

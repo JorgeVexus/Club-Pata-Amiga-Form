@@ -81,23 +81,45 @@ export default function InteractiveReports() {
                             <h3>Crecimiento de Miembros</h3>
                             <span className={styles.growthBadge}>Real Time</span>
                         </div>
-                        <div className={styles.chartArea}>
-                            <svg viewBox="0 0 100 40" className={styles.lineChart}>
+                        <div className={styles.chartArea} style={{ padding: '20px 10px' }}>
+                            <svg viewBox="0 0 100 40" className={styles.lineChart} style={{ overflow: 'visible' }}>
+                                <defs>
+                                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="#7DD8D5" stopOpacity="0.3" />
+                                        <stop offset="100%" stopColor="#7DD8D5" stopOpacity="0" />
+                                    </linearGradient>
+                                </defs>
+                                
+                                {/* Area */}
+                                <path
+                                    d={memberGrowth.length > 1 
+                                        ? `M 0,40 L ${memberGrowth.map((v: number, i: number) => `${(i / (memberGrowth.length - 1)) * 100},${40 - (v * 2)}`).join(' L ')} L 100,40 Z`
+                                        : "M 0,40 L 0,35 L 100,35 L 100,40 Z"}
+                                    fill="url(#gradient)"
+                                />
+
+                                {/* Main Line */}
                                 <path
                                     d={memberGrowth.length > 1 
                                         ? `M ${memberGrowth.map((v: number, i: number) => `${(i / (memberGrowth.length - 1)) * 100},${40 - (v * 2)}`).join(' L ')}`
                                         : "M 0,35 L 100,35"}
                                     fill="none"
                                     stroke="#7DD8D5"
-                                    strokeWidth="2"
+                                    strokeWidth="1.5"
                                     strokeLinecap="round"
                                 />
-                                <defs>
-                                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#7DD8D5" />
-                                        <stop offset="100%" stopColor="transparent" />
-                                    </linearGradient>
-                                </defs>
+
+                                {/* Interactive Points */}
+                                {memberGrowth.map((v: number, i: number) => {
+                                    const x = (i / (memberGrowth.length - 1 || 1)) * 100;
+                                    const y = 40 - (v * 2);
+                                    return (
+                                        <g key={i} className={styles.dataPointGroup}>
+                                            <circle cx={x} cy={y} r="1" fill="white" stroke="#7DD8D5" strokeWidth="0.5" />
+                                            <title>{`Miembros: ${v}`}</title>
+                                        </g>
+                                    );
+                                })}
                             </svg>
                         </div>
                     </div>
@@ -143,13 +165,22 @@ export default function InteractiveReports() {
                             <h3>Ingresos del Periodo</h3>
                             <span className={styles.amount}>{formatCurrency(revenueTotal)}</span>
                         </div>
-                        <div className={styles.barArea}>
-                            {(analyticsData?.revenueTrends || []).slice(-7).map((d: any, i: number) => (
-                                <div key={i} className={styles.barColumn}>
-                                    <div className={styles.bar} style={{ height: `${Math.min(100, (d.amount / 1000) * 100)}%` }}></div>
-                                    <span className={styles.barLabel}>{d.date.split('-')[2]}</span>
-                                </div>
-                            ))}
+                        <div className={styles.barArea} style={{ alignItems: 'flex-end', gap: '8px', padding: '10px' }}>
+                            {(analyticsData?.revenueTrends || []).slice(-7).map((d: any, i: number) => {
+                                const h = Math.max(10, Math.min(100, (d.amount / (Math.max(...analyticsData.revenueTrends.map((t:any)=>t.amount)) || 1000)) * 100));
+                                return (
+                                    <div key={i} className={styles.barColumn} style={{ flex: 1 }}>
+                                        <div 
+                                            className={styles.bar} 
+                                            style={{ height: `${h}%`, backgroundColor: 'var(--color-primary)', borderRadius: '4px', position: 'relative' }}
+                                        >
+                                            <title>{`${d.date}: ${formatCurrency(d.amount)}`}</title>
+                                        </div>
+                                        <span className={styles.barLabel} style={{ fontSize: '10px', marginTop: '4px' }}>{d.date.split('-')[2]}</span>
+                                    </div>
+                                );
+                            })}
+                            {(analyticsData?.revenueTrends || []).length === 0 && <p>No hay datos de ingresos</p>}
                         </div>
                     </div>
 

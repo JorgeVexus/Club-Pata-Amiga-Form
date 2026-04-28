@@ -59,49 +59,154 @@ export default function CustomReportBuilder() {
         if (error) return <div className={styles.chartPlaceholder}><p>❌ {error}</p></div>;
         if (data.length === 0) return <div className={styles.chartPlaceholder}><p>No hay datos suficientes para generar este reporte.</p></div>;
 
-        // Renderizado simplificado de gráficas con SVG
+        const max = Math.max(...data.map(d => d.count || d.amount || d.value || 0)) || 10;
+        const padding = 40;
+        const width = 800;
+        const height = 300;
+
+        // Renderizado de Gráfica de Líneas
         if (chartType === 'line') {
-            const max = Math.max(...data.map(d => d.count || d.amount || d.value || 0)) || 10;
             const points = data.map((d, i) => {
-                const x = (i / (data.length - 1)) * 100;
+                const x = padding + (i / (data.length - 1 || 1)) * (width - padding * 2);
                 const val = d.count || d.amount || d.value || 0;
-                const y = 40 - (val / max) * 35;
+                const y = height - padding - (val / max) * (height - padding * 2);
                 return `${x},${y}`;
             }).join(' ');
 
             return (
-                <svg viewBox="0 0 100 40" className={styles.customChart}>
-                    <path d={`M ${points}`} fill="none" stroke="var(--color-primary)" strokeWidth="2" strokeLinecap="round" />
-                    <path d={`M 0,40 L ${points} L 100,40 Z`} fill="var(--color-primary)" opacity="0.1" />
-                </svg>
-            );
-        }
+                <div className={styles.chartWrapper}>
+                    <svg viewBox={`0 0 ${width} ${height}`} className={styles.customChartExtended}>
+                        {/* Grids and Axes */}
+                        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#e2e8f0" strokeWidth="1" />
+                        <line x1={padding} y1={padding} x2={padding} y2={height - padding} stroke="#e2e8f0" strokeWidth="1" />
+                        
+                        {/* Labels Y */}
+                        {[0, 0.5, 1].map((p, i) => (
+                            <text key={i} x={padding - 10} y={height - padding - p * (height - padding * 2)} textAnchor="end" fontSize="10" fill="#94a3b8">
+                                {Math.round(p * max)}
+                            </text>
+                        ))}
 
-        if (chartType === 'bar') {
-            const max = Math.max(...data.map(d => d.count || d.amount || d.value || 0)) || 10;
-            return (
-                <div className={styles.barArea} style={{ height: '200px' }}>
-                    {data.map((d, i) => {
-                        const val = d.count || d.amount || d.value || 0;
-                        const h = (val / max) * 100;
-                        return (
-                            <div key={i} className={styles.barColumn}>
-                                <div className={styles.bar} style={{ height: `${h}%` }}></div>
-                                <span className={styles.barLabel}>{d.date || d.name}</span>
-                            </div>
-                        );
-                    })}
+                        {/* Area Gradient */}
+                        <defs>
+                            <linearGradient id="lineGradient" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="var(--color-primary)" stopOpacity="0.2" />
+                                <stop offset="100%" stopColor="var(--color-primary)" stopOpacity="0" />
+                            </linearGradient>
+                        </defs>
+                        <path d={`M ${padding},${height - padding} L ${points} L ${width - padding},${height - padding} Z`} fill="url(#lineGradient)" />
+                        
+                        {/* Line */}
+                        <path d={`M ${points}`} fill="none" stroke="var(--color-primary)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                        
+                        {/* Data Points */}
+                        {data.map((d, i) => {
+                            const x = padding + (i / (data.length - 1 || 1)) * (width - padding * 2);
+                            const val = d.count || d.amount || d.value || 0;
+                            const y = height - padding - (val / max) * (height - padding * 2);
+                            return (
+                                <g key={i} className={styles.dataPointGroup}>
+                                    <circle cx={x} cy={y} r="4" fill="white" stroke="var(--color-primary)" strokeWidth="2" />
+                                    <title>{`${d.date || d.name}: ${val}`}</title>
+                                    {i % Math.ceil(data.length / 6) === 0 && (
+                                        <text x={x} y={height - padding + 20} textAnchor="middle" fontSize="10" fill="#94a3b8">
+                                            {(d.date || d.name || '').split('-').slice(-2).join('/')}
+                                        </text>
+                                    )}
+                                </g>
+                            );
+                        })}
+                    </svg>
                 </div>
             );
         }
 
-        return (
-            <div className={styles.chartPlaceholder}>
-                <span className={styles.placeholderIcon}>📊</span>
-                <p>Vista previa de {metric} por {dimension}</p>
-                <small>(Recharts recomendado para visualización avanzada)</small>
-            </div>
-        );
+        // Renderizado de Gráfica de Barras
+        if (chartType === 'bar') {
+            const barWidth = ((width - padding * 2) / data.length) * 0.8;
+            return (
+                <div className={styles.chartWrapper}>
+                    <svg viewBox={`0 0 ${width} ${height}`} className={styles.customChartExtended}>
+                        <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#e2e8f0" strokeWidth="1" />
+                        
+                        {data.map((d, i) => {
+                            const x = padding + (i / data.length) * (width - padding * 2) + (barWidth * 0.1);
+                            const val = d.count || d.amount || d.value || 0;
+                            const h = (val / max) * (height - padding * 2);
+                            const y = height - padding - h;
+                            
+                            return (
+                                <g key={i} className={styles.barGroup}>
+                                    <rect 
+                                        x={x} y={y} width={barWidth} height={h} 
+                                        fill="var(--color-primary)" rx="4" opacity="0.8"
+                                    />
+                                    <title>{`${d.date || d.name}: ${val}`}</title>
+                                    {i % Math.ceil(data.length / 8) === 0 && (
+                                        <text x={x + barWidth / 2} y={height - padding + 20} textAnchor="middle" fontSize="10" fill="#94a3b8">
+                                            {(d.date || d.name || '').split('-').slice(-2).join('/')}
+                                        </text>
+                                    )}
+                                </g>
+                            );
+                        })}
+                    </svg>
+                </div>
+            );
+        }
+
+        // Renderizado de Gráfica de Pie (Donut)
+        if (chartType === 'pie') {
+            let total = data.reduce((acc, d) => acc + (d.count || d.value || 0), 0);
+            let currentAngle = 0;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = 80;
+
+            return (
+                <div className={styles.chartWrapper}>
+                    <svg viewBox={`0 0 ${width} ${height}`} className={styles.customChartExtended}>
+                        <g transform={`translate(${centerX - 100}, 0)`}>
+                            {data.map((d, i) => {
+                                const val = d.count || d.value || 0;
+                                const percentage = (val / total) * 100;
+                                const angle = (val / total) * 360;
+                                
+                                // SVG Arc calculation
+                                const x1 = centerX + radius * Math.cos((currentAngle - 90) * Math.PI / 180);
+                                const y1 = centerY + radius * Math.sin((currentAngle - 90) * Math.PI / 180);
+                                currentAngle += angle;
+                                const x2 = centerX + radius * Math.cos((currentAngle - 90) * Math.PI / 180);
+                                const y2 = centerY + radius * Math.sin((currentAngle - 90) * Math.PI / 180);
+                                
+                                const largeArc = angle > 180 ? 1 : 0;
+                                const pathData = `M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                                
+                                const colors = ['#7DD8D5', '#00BBB4', '#FE8F15', '#2D3748', '#718096'];
+                                const color = colors[i % colors.length];
+
+                                return (
+                                    <g key={i}>
+                                        <path d={pathData} fill={color} stroke="white" strokeWidth="2">
+                                            <title>{`${d.name || d.date}: ${val} (${percentage.toFixed(1)}%)`}</title>
+                                        </path>
+                                        {/* Legend in SVG */}
+                                        <rect x={centerX + radius + 40} y={centerY - radius + i * 25} width="12" height="12" fill={color} rx="2" />
+                                        <text x={centerX + radius + 60} y={centerY - radius + i * 25 + 10} fontSize="12" fill="#2d3748">
+                                            {`${d.name || d.date}: ${val}`}
+                                        </text>
+                                    </g>
+                                );
+                            })}
+                            <circle cx={centerX} cy={centerY} r={radius * 0.6} fill="white" />
+                            <text x={centerX} y={centerY + 5} textAnchor="middle" fontSize="14" fontWeight="bold" fill="#2d3748">Total: {total}</text>
+                        </g>
+                    </svg>
+                </div>
+            );
+        }
+
+        return null;
     };
 
     return (
