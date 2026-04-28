@@ -115,6 +115,46 @@
     color: var(--gray-900);
 }
 
+.noBilling {
+    grid-column: 1 / -1;
+    color: var(--gray-500);
+    font-style: italic;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.paymentStatus {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.75rem;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    width: fit-content;
+}
+
+.paymentStatus.active, 
+.paymentStatus.trialing {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.paymentStatus.past_due, 
+.paymentStatus.unpaid {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.paymentStatus.canceled {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.paymentStatus.incomplete {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
 .documentCard {
     border: 1px solid var(--gray-200);
     border-radius: var(--radius-md);

@@ -448,6 +448,64 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                         </div>
                     </div>
 
+                    {/* Membership Details */}
+                    <div className={styles.section} style={{ background: '#F8FAFC', borderLeft: '4px solid #7DD8D5' }}>
+                        <h3 className={styles.sectionTitle}>Detalles de Membresía 💳</h3>
+                        <div className={styles.grid}>
+                            {(() => {
+                                const plan = member.planConnections?.[0];
+                                if (!plan) return <p className={styles.noBilling}>No se detectaron planes activos en Memberstack.</p>;
+
+                                // Format start date (createdAt from plan connection)
+                                const startDate = plan.createdAt ? new Date(plan.createdAt).toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                }) : '-';
+
+                                // Format renewal date (currentPeriodEnd)
+                                // Memberstack usually sends Unix timestamps (seconds) for currentPeriodEnd
+                                let renewalDate = '-';
+                                if (plan.currentPeriodEnd) {
+                                    const date = typeof plan.currentPeriodEnd === 'number' 
+                                        ? new Date(plan.currentPeriodEnd * 1000) 
+                                        : new Date(plan.currentPeriodEnd);
+                                    
+                                    renewalDate = date.toLocaleDateString('es-MX', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    });
+                                }
+
+                                return (
+                                    <>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Plan Actual</span>
+                                            <span className={styles.value} style={{ fontWeight: 700, color: '#0088BD' }}>
+                                                {plan.planName || plan.planId || 'Membresía Activa'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Estado de Pago</span>
+                                            <span className={`${styles.paymentStatus} ${styles[plan.status?.toLowerCase() || 'none']}`}>
+                                                {plan.status || 'Desconocido'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Fecha de Contratación</span>
+                                            <span className={styles.value}>{startDate}</span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Próxima Renovación</span>
+                                            <span className={styles.value} style={{ fontWeight: 600 }}>{renewalDate}</span>
+                                        </div>
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    </div>
+
                     {/* Address */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Dirección</h3>
