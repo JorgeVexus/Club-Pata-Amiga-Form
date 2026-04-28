@@ -71,12 +71,80 @@ export default function RequestsTable({
     const [paymentFilter, setPaymentFilter] = useState<'all' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'none'>('all');
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
     
+    const [stats, setStats] = useState({
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
+    });
+    
     // Checkbox selection
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         loadRequests();
     }, [sortFilter, requestType, infoFilter, paymentFilter]);
+
+    useEffect(() => {
+        loadStats();
+    }, [requestType]);
+
+    async function loadStats() {
+        if (requestType === 'appeals' || requestType === 'solidarity-fund' || requestType === 'terminate-users') {
+            return;
+        }
+
+        try {
+            if (requestType === 'ambassador') {
+                // Total
+                const totalRes = await fetch('/api/ambassadors?limit=1');
+                const totalData = await totalRes.json();
+                // Pending
+                const pendingRes = await fetch('/api/ambassadors?status=pending&limit=1');
+                const pendingData = await pendingRes.json();
+                // Approved
+                const approvedRes = await fetch('/api/ambassadors?status=approved&limit=1');
+                const approvedData = await approvedRes.json();
+                // Rejected
+                const rejectedRes = await fetch('/api/ambassadors?status=rejected&limit=1');
+                const rejectedData = await rejectedRes.json();
+
+                setStats({
+                    total: totalData.total || 0,
+                    pending: pendingData.total || 0,
+                    approved: approvedData.total || 0,
+                    rejected: rejectedData.total || 0
+                });
+            } else if (requestType === 'member' || requestType === 'all-members' || requestType === 'all') {
+                const isAll = requestType === 'all-members';
+                const base = `/api/admin/members?limit=1${isAll ? '&paidOnly=false' : ''}`;
+                
+                // Total
+                const totalRes = await fetch(`${base}&status=all`);
+                const totalData = await totalRes.json();
+                // Pending
+                const pendingRes = await fetch(`${base}&status=pending`);
+                const pendingData = await pendingRes.json();
+                // Approved
+                const approvedRes = await fetch(`${base}&status=approved`);
+                const approvedData = await approvedRes.json();
+                // Rejected
+                const rejectedRes = await fetch(`${base}&status=rejected`);
+                const rejectedData = await rejectedRes.json();
+
+                setStats({
+                    total: totalData.count || 0,
+                    pending: pendingData.count || 0,
+                    approved: approvedData.count || 0,
+                    rejected: rejectedData.count || 0
+                });
+            } else if (requestType === 'wellness-center') {
+                setStats({ total: 0, pending: 0, approved: 0, rejected: 0 });
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -405,21 +473,95 @@ export default function RequestsTable({
     }
 
     return (
-        <div className={styles.requestsSection}>
-            <div className={styles.requestsHeader}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <h2 className={styles.requestsTitle}>Solicitudes</h2>
-                    {selectedIds.size > 0 && (
-                        <button 
-                            className={styles.rejectButton} 
-                            style={{ margin: 0, padding: '8px 16px', borderRadius: '50px' }}
-                            onClick={() => {
-                                const firstSelected = requests.find(r => selectedIds.has(r.id));
-                                onBulkDelete?.(Array.from(selectedIds), firstSelected?.type || 'member');
-                            }}
-                        >
-                            🗑️ Eliminar Seleccionados ({selectedIds.size})
-                        </button>
+        <div className={styles.requestsContainer}>
+            {/* Stats Grid */}
+            {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all' || requestType === 'all-members') && (
+                <div className={styles.statsGrid}>
+                    <div className={styles.statCard}>
+                        <div className={styles.statIcon}>🎯</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.total}</div>
+                            <div className={styles.statLabel}>
+                                {requestType === 'ambassador' ? 'Total Embajadores' : 
+                                 requestType === 'wellness-center' ? 'Total Centros' : 'Total Miembros'}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statPending}`}>
+                        <div className={styles.statIcon}>⏳</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.pending}</div>
+                            <div className={styles.statLabel}>Solicitudes Pendientes</div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statApproved}`}>
+                        <div className={styles.statIcon}>✅</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.approved}</div>
+                            <div className={styles.statLabel}>Solicitudes Activas</div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statRejected}`}>
+                        <div className={styles.statIcon}>❌</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.rejected}</div>
+                            <div className={styles.statLabel}>Solicitudes Rechazadas</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className={styles.requestsSection}>
+                <div className={styles.requestsHeader}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <h2 className={styles.requestsTitle}>
+                            {requestType === 'ambassador' ? 'Gestión de Embajadores' : 
+                             requestType === 'wellness-center' ? 'Gestión de Centros de Bienestar' : 
+                             requestType === 'appeals' ? 'Gestión de Apelaciones' : 'Gestión de Miembros'}
+                        </h2>
+                        {selectedIds.size > 0 && (
+                            <button 
+                                className={styles.rejectButton} 
+                                style={{ margin: 0, padding: '8px 16px', borderRadius: '50px' }}
+                                onClick={() => {
+                                    const firstSelected = requests.find(r => selectedIds.has(r.id));
+                                    onBulkDelete?.(Array.from(selectedIds), firstSelected?.type || 'member');
+                                }}
+                            >
+                                🗑️ Eliminar Seleccionados ({selectedIds.size})
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Tab Filters (Standardized) */}
+                    {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all' || requestType === 'all-members') && (
+                        <div className={styles.tabFilters}>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'all' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('all')}
+                            >
+                                Todos <span className={styles.tabBadge}>{stats.total}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${(sortFilter === 'recents' || sortFilter === 'oldest' || (sortFilter !== 'approved' && sortFilter !== 'rejected' && sortFilter !== 'all')) ? styles.active : ''}`}
+                                onClick={() => setSortFilter('recents')}
+                            >
+                                Pendientes <span className={styles.tabBadge}>{stats.pending}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'approved' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('approved')}
+                            >
+                                Activos <span className={styles.tabBadge}>{stats.approved}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'rejected' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('rejected')}
+                            >
+                                Rechazados <span className={styles.tabBadge}>{stats.rejected}</span>
+                            </button>
+                        </div>
                     )}
                 </div>
 
@@ -429,46 +571,41 @@ export default function RequestsTable({
                         <input
                             type="text"
                             className={styles.searchInput}
-                            placeholder="Buscar por nombre, email o ID..."
+                            placeholder="Buscar..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
 
-                    <div className={styles.filterDropdown}>
-                        <button
-                            className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
-                            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                        >
-                            <span>
-                                <span className={styles.filterLabel}>Filtrar por:</span>
-                                {getFilterLabel(sortFilter)}
-                            </span>
-                            <span className={styles.dropdownArrow}>▼</span>
-                        </button>
-
-                        <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
-                            <button className={`${styles.dropdownOption} ${sortFilter === 'all' ? styles.selected : ''}`} onClick={() => { setSortFilter('all'); setIsDropdownOpen(false); }}>📋 Todas</button>
-                            <button className={`${styles.dropdownOption} ${sortFilter === 'recents' ? styles.selected : ''}`} onClick={() => { setSortFilter('recents'); setIsDropdownOpen(false); }}>Recientes</button>
-                            <button className={`${styles.dropdownOption} ${sortFilter === 'oldest' ? styles.selected : ''}`} onClick={() => { setSortFilter('oldest'); setIsDropdownOpen(false); }}>Antiguos</button>
-                            <button className={`${styles.dropdownOption} ${sortFilter === 'approved' ? styles.selected : ''}`} onClick={() => { setSortFilter('approved'); setIsDropdownOpen(false); }}>Aprobados</button>
-                            <button className={`${styles.dropdownOption} ${sortFilter === 'rejected' ? styles.selected : ''}`} onClick={() => { setSortFilter('rejected'); setIsDropdownOpen(false); }}>Rechazados</button>
-                            
-                            <div className={styles.dropdownDivider}></div>
-                            <div className={styles.dropdownSectionTitle}>Estado de Información</div>
-                            <button className={`${styles.dropdownOption} ${infoFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIsDropdownOpen(false); }}>📋 Todos los estados</button>
-                            <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIsDropdownOpen(false); }}>✅ Información Completa</button>
-                            <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIsDropdownOpen(false); }}>🟡 Información Faltante</button>
-                            <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIsDropdownOpen(false); }}>🔵 Información Solicitada</button>
-
-                            <div className={styles.dropdownDivider}></div>
-                            <div className={styles.dropdownSectionTitle}>Estado de Pago</div>
-                            <button className={`${styles.dropdownOption} ${paymentFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIsDropdownOpen(false); }}>📋 Todos los pagos</button>
-                            <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIsDropdownOpen(false); }}>💳 Activo / En prueba</button>
-                            <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIsDropdownOpen(false); }}>🔴 Moroso / Impago</button>
-                            <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIsDropdownOpen(false); }}>⚪ Suspendido</button>
+                    {/* Secondary Filters for Members only */}
+                    {(requestType === 'member' || requestType === 'all-members') && (
+                        <div className={styles.filterDropdown}>
+                            <button
+                                className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                                <span>
+                                    <span className={styles.filterLabel}>Filtros Extra:</span>
+                                    {infoFilter !== 'all' ? 'Info' : paymentFilter !== 'all' ? 'Pago' : 'Seleccionar'}
+                                </span>
+                                <span className={styles.dropdownArrow}>▼</span>
+                            </button>
+                            <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
+                                <div className={styles.dropdownSectionTitle}>Estado de Información</div>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIsDropdownOpen(false); }}>📋 Todos</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIsDropdownOpen(false); }}>✅ Completa</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIsDropdownOpen(false); }}>🟡 Incompleta</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIsDropdownOpen(false); }}>🔵 Solicitada</button>
+                                
+                                <div className={styles.dropdownDivider}></div>
+                                <div className={styles.dropdownSectionTitle}>Estado de Pago</div>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIsDropdownOpen(false); }}>📋 Todos</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIsDropdownOpen(false); }}>💳 Activo</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIsDropdownOpen(false); }}>🔴 Moroso</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIsDropdownOpen(false); }}>⚪ Suspendido</button>
+                            </div>
                         </div>
-                    </div>
+                    )}
                 </div>
             </div>
 
@@ -715,6 +852,7 @@ export default function RequestsTable({
                     </tbody>
                 </table>
             )}
+            </div>
         </div>
     );
 }
