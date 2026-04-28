@@ -214,3 +214,124 @@
 .smallButton:hover {
     transform: scale(1.05);
 }
+
+/* Source badges */
+.sourceBadge {
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sourceStripe {
+    background: #ede7f6;
+    color: #635bff;
+}
+
+.sourceMemberstack {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+/* Interval tag */
+.intervalTag {
+    padding: 0.15rem 0.5rem;
+    border-radius: 50px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+/* Past due status */
+.statusPastDue {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+/* Invoice link */
+.invoiceLink {
+    color: #635bff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: color 0.2s;
+}
+
+.invoiceLink:hover {
+    color: #5444d1;
+    text-decoration: underline;
+}
+
+/* Refresh button */
+.refreshBtn {
+    background: transparent;
+    border: 2px solid #000;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.refreshBtn:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Stat summary row */
+.statsSummary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.statItem {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    border: 1px solid #eee;
+    text-align: center;
+}
+
+.statItem span {
+    display: block;
+    font-size: 0.7rem;
+    color: #666;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.statItem strong {
+    font-size: 1.5rem;
+    color: #000;
+}
+
+/* Attempt count badge */
+.attemptBadge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #666;
+}
+
+.statusVoid {
+    background: #eceff1;
+    color: #546e7a;
+}
+
+.statusOpen {
+    background: #e3f2fd;
+    color: #1565c0;
+}

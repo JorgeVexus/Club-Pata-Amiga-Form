@@ -10,8 +10,8 @@ export async function GET(request: NextRequest) {
 
         const data: any = {};
 
+        // ── METRICS ──
         if (type === 'all' || type === 'metrics') {
-            // Fetch balance/summary
             const balance = await stripe.balance.retrieve();
             data.balance = {
                 available: balance.available[0]?.amount / 100 || 0,
@@ -20,10 +20,10 @@ export async function GET(request: NextRequest) {
             };
         }
 
+        // ── PAYMENT RECORDS ──
         if (type === 'all' || type === 'records') {
-            // Fetch last 15 payment intents
             const payments = await stripe.paymentIntents.list({
-                limit: 15,
+                limit: 30,
                 expand: ['data.customer']
             });
             data.payments = payments.data.map(pi => ({
@@ -37,68 +37,122 @@ export async function GET(request: NextRequest) {
             }));
         }
 
+        // ── SUBSCRIPTION STATUS (Hybrid: Stripe + Memberstack) ──
         if (type === 'all' || type === 'status') {
-            // 1. Fetch from Stripe (Up to 100 active subscriptions)
-            const subscriptions = await stripe.subscriptions.list({
-                limit: 100,
-                status: 'active',
-                expand: ['data.customer']
-            });
-            
-            const stripeSubs = subscriptions.data.map((sub: any) => ({
-                id: sub.id,
-                status: sub.status,
-                plan: (sub.items.data[0]?.price.product as string) || 'Plan',
-                amount: sub.items.data[0]?.price.unit_amount ? sub.items.data[0].price.unit_amount / 100 : 0,
-                customerEmail: (sub.customer as any)?.email || 'N/A',
-                nextBilling: new Date(sub.current_period_end * 1000).toISOString()
-            }));
+            // 1. Fetch ALL subscriptions from Stripe (not just active)
+            const relevantStatuses: Stripe.SubscriptionListParams.Status[] = ['active', 'trialing', 'past_due'];
+            const allStripeSubs: any[] = [];
 
-            // 2. Fetch from Memberstack as fallback (To catch any mismatch or members not in the first 100 Stripe subs)
-            // We only look for members with paidOnly: true
-            const msResult = await memberstackAdmin.listMembers(undefined, { paidOnly: true });
-            
-            const msSubs: any[] = [];
-            if (msResult.success && msResult.data) {
-                msResult.data.forEach(member => {
-                    const plan = member.planConnections?.[0];
-                    if (plan && plan.active) {
-                        // Check if already in Stripe list by email
-                        const alreadyInStripe = stripeSubs.some(s => s.customerEmail === member.auth.email);
-                        
-                        if (!alreadyInStripe) {
-                            msSubs.push({
-                                id: plan.payment?.stripeSubscriptionId || `ms_${member.id}`,
-                                status: plan.status?.toLowerCase() || 'active',
-                                plan: plan.planName || 'Plan Club Pata Amiga',
-                                amount: plan.payment?.amount || 0,
-                                customerEmail: member.auth.email,
-                                nextBilling: plan.currentPeriodEnd 
-                                    ? new Date(typeof plan.currentPeriodEnd === 'number' ? plan.currentPeriodEnd * 1000 : plan.currentPeriodEnd).toISOString()
-                                    : new Date().toISOString(),
-                                source: 'memberstack'
-                            });
-                        }
-                    }
-                });
+            for (const status of relevantStatuses) {
+                try {
+                    const subs = await stripe.subscriptions.list({
+                        limit: 100,
+                        status,
+                        expand: ['data.customer']
+                    });
+                    console.log(`📡 Stripe subscriptions (${status}): ${subs.data.length}`);
+                    
+                    subs.data.forEach((sub: any) => {
+                        allStripeSubs.push({
+                            id: sub.id,
+                            status: sub.status,
+                            plan: sub.items.data[0]?.price?.nickname || sub.items.data[0]?.price?.product || 'Plan',
+                            amount: sub.items.data[0]?.price?.unit_amount ? sub.items.data[0].price.unit_amount / 100 : 0,
+                            interval: sub.items.data[0]?.price?.recurring?.interval || 'month',
+                            customerEmail: (sub.customer as any)?.email || 'N/A',
+                            customerName: (sub.customer as any)?.name || '',
+                            nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
+                            startDate: new Date(sub.start_date * 1000).toISOString(),
+                            source: 'stripe'
+                        });
+                    });
+                } catch (err) {
+                    console.error(`❌ Error fetching ${status} subscriptions:`, err);
+                }
             }
 
-            data.subscriptions = [...stripeSubs, ...msSubs];
+            // 2. Memberstack fallback — catch members with paid plans not in Stripe
+            try {
+                const msResult = await memberstackAdmin.listMembers(undefined, { paidOnly: true });
+                
+                if (msResult.success && msResult.data) {
+                    console.log(`📡 Memberstack paid members: ${msResult.data.length}`);
+                    
+                    msResult.data.forEach(member => {
+                        const plan = member.planConnections?.[0];
+                        if (plan && plan.active) {
+                            const alreadyInStripe = allStripeSubs.some(
+                                s => s.customerEmail.toLowerCase() === member.auth.email.toLowerCase()
+                            );
+                            
+                            if (!alreadyInStripe) {
+                                // Determine interval from plan name
+                                const planNameLower = (plan.planName || '').toLowerCase();
+                                const interval = planNameLower.includes('anual') || planNameLower.includes('annual') ? 'year' : 'month';
+                                
+                                allStripeSubs.push({
+                                    id: plan.payment?.stripeSubscriptionId || `ms_${member.id}`,
+                                    status: plan.status?.toLowerCase() || 'active',
+                                    plan: plan.planName || 'Plan Club Pata Amiga',
+                                    amount: plan.payment?.amount ? plan.payment.amount / 100 : 0,
+                                    interval,
+                                    customerEmail: member.auth.email,
+                                    customerName: member.customFields?.['first-name'] || '',
+                                    nextBilling: plan.currentPeriodEnd
+                                        ? new Date(typeof plan.currentPeriodEnd === 'number' ? plan.currentPeriodEnd * 1000 : plan.currentPeriodEnd).toISOString()
+                                        : new Date().toISOString(),
+                                    startDate: member.createdAt || new Date().toISOString(),
+                                    source: 'memberstack'
+                                });
+                            }
+                        }
+                    });
+                }
+            } catch (msErr) {
+                console.error('❌ Memberstack fallback error:', msErr);
+            }
+
+            console.log(`📊 Total combined subscriptions: ${allStripeSubs.length}`);
+            data.subscriptions = allStripeSubs;
         }
 
+        // ── INVOICES (for auto-billing / retries view) ──
         if (type === 'all' || type === 'retries') {
-            // Fetch recent payment intents to find failures
-            const failedPayments = await stripe.paymentIntents.list({
-                limit: 30
+            const invoices = await stripe.invoices.list({
+                limit: 50,
+                expand: ['data.customer', 'data.subscription']
             });
+
+            data.invoices = invoices.data.map(inv => ({
+                id: inv.id,
+                number: inv.number || inv.id,
+                amount: (inv.amount_due || 0) / 100,
+                amountPaid: (inv.amount_paid || 0) / 100,
+                currency: (inv.currency || 'mxn').toUpperCase(),
+                status: inv.status || 'unknown',
+                date: new Date((inv.created || 0) * 1000).toISOString(),
+                dueDate: inv.due_date ? new Date(inv.due_date * 1000).toISOString() : null,
+                customerEmail: (inv.customer as Stripe.Customer)?.email || 'N/A',
+                customerName: (inv.customer as Stripe.Customer)?.name || 'N/A',
+                invoicePdf: inv.invoice_pdf || null,
+                hostedUrl: inv.hosted_invoice_url || null,
+                attemptCount: inv.attempt_count || 0,
+                nextAttempt: inv.next_payment_attempt ? new Date(inv.next_payment_attempt * 1000).toISOString() : null,
+                subscriptionId: typeof (inv as any).subscription === 'string' ? (inv as any).subscription : ((inv as any).subscription as Stripe.Subscription)?.id || null,
+                periodStart: inv.period_start ? new Date(inv.period_start * 1000).toISOString() : null,
+                periodEnd: inv.period_end ? new Date(inv.period_end * 1000).toISOString() : null,
+            }));
+
+            // Also include failed payment intents for completeness
+            const failedPayments = await stripe.paymentIntents.list({ limit: 20 });
             data.failed = failedPayments.data
                 .filter(pi => pi.status === 'requires_payment_method' || pi.status === 'canceled')
                 .map(pi => ({
-                id: pi.id,
-                amount: pi.amount / 100,
-                date: new Date(pi.created * 1000).toISOString(),
-                customerEmail: (pi.customer as Stripe.Customer)?.email || 'N/A'
-            }));
+                    id: pi.id,
+                    amount: pi.amount / 100,
+                    date: new Date(pi.created * 1000).toISOString(),
+                    customerEmail: (pi.customer as Stripe.Customer)?.email || 'N/A'
+                }));
         }
 
         return NextResponse.json({ success: true, data });

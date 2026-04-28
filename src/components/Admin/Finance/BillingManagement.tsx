@@ -18,8 +18,32 @@ interface StripeSubscription {
     status: string;
     plan: string;
     amount: number;
+    interval?: string;
     customerEmail: string;
+    customerName?: string;
     nextBilling: string;
+    startDate?: string;
+    source?: string;
+}
+
+interface StripeInvoice {
+    id: string;
+    number: string;
+    amount: number;
+    amountPaid: number;
+    currency: string;
+    status: string;
+    date: string;
+    dueDate: string | null;
+    customerEmail: string;
+    customerName: string;
+    invoicePdf: string | null;
+    hostedUrl: string | null;
+    attemptCount: number;
+    nextAttempt: string | null;
+    subscriptionId: string | null;
+    periodStart: string | null;
+    periodEnd: string | null;
 }
 
 interface BillingRecord {
@@ -41,19 +65,43 @@ interface BillingManagementProps {
     view: 'records' | 'billing' | 'status' | 'retries';
 }
 
+const INVOICE_STATUS_LABELS: Record<string, string> = {
+    paid: 'Pagado',
+    open: 'Pendiente',
+    draft: 'Borrador',
+    uncollectible: 'Incobrable',
+    void: 'Anulado',
+};
+
+const INVOICE_STATUS_STYLE: Record<string, string> = {
+    paid: 'statusSucceeded',
+    open: 'statusOpen',
+    draft: 'statusPending',
+    uncollectible: 'statusWarning',
+    void: 'statusVoid',
+};
+
+const SUB_STATUS_LABELS: Record<string, string> = {
+    active: 'Activa',
+    trialing: 'Prueba',
+    past_due: 'Atrasada',
+    canceled: 'Cancelada',
+    incomplete: 'Incompleta',
+};
+
 export default function BillingManagement({ view }: BillingManagementProps) {
     const [records, setRecords] = useState<BillingRecord[]>([]);
     const [stripePayments, setStripePayments] = useState<StripePayment[]>([]);
     const [stripeSubscriptions, setStripeSubscriptions] = useState<StripeSubscription[]>([]);
-    const [stripeFailed, setStripeFailed] = useState<any[]>([]);
+    const [stripeInvoices, setStripeInvoices] = useState<StripeInvoice[]>([]);
     const [metrics, setMetrics] = useState<any>(null);
     const [loading, setLoading] = useState(false);
 
-    const titles = {
+    const titles: Record<string, string> = {
         records: 'Registros de Pagos (Stripe)',
         billing: 'Datos de Facturación de Miembros',
         status: 'Estado de Pagos Global',
-        retries: 'Reintentos de Cobro Automático'
+        retries: 'Cobros Automáticos e Historial de Facturas'
     };
 
     useEffect(() => {
@@ -82,14 +130,15 @@ export default function BillingManagement({ view }: BillingManagementProps) {
     async function loadStripeData() {
         setLoading(true);
         try {
-            const response = await fetch(`/api/admin/finance/stripe-data?type=${view === 'records' ? 'records' : view === 'status' ? 'status' : 'retries'}`);
+            const queryType = view === 'records' ? 'records' : view === 'status' ? 'status' : 'retries';
+            const response = await fetch(`/api/admin/finance/stripe-data?type=${queryType}`);
             const data = await response.json();
             if (data.success) {
                 if (view === 'records') setStripePayments(data.data.payments || []);
                 if (view === 'status') setStripeSubscriptions(data.data.subscriptions || []);
-                if (view === 'retries') setStripeFailed(data.data.failed || []);
+                if (view === 'retries') setStripeInvoices(data.data.invoices || []);
                 
-                // Fetch metrics if available
+                // Fetch metrics
                 const metricsRes = await fetch('/api/admin/finance/stripe-data?type=metrics');
                 const metricsData = await metricsRes.json();
                 if (metricsData.success) setMetrics(metricsData.data.balance);
@@ -101,6 +150,12 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         }
     }
 
+    function handleRefresh() {
+        if (view === 'billing') loadBillingData();
+        else loadStripeData();
+    }
+
+    // ── Billing Table ──
     const renderBillingTable = () => {
         if (loading) return <div className={styles.loading}>Cargando datos fiscales...</div>;
         if (records.length === 0) return <div className={styles.empty}>No hay datos fiscales registrados aún.</div>;
@@ -142,6 +197,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         );
     };
 
+    // ── Payment Records ──
     const renderStripePayments = () => {
         if (loading) return <div className={styles.loading}>Consultando Stripe...</div>;
         if (stripePayments.length === 0) return <div className={styles.empty}>No hay pagos registrados recientemente.</div>;
@@ -181,71 +237,216 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         );
     };
 
+    // ── Subscription Status (Enhanced) ──
     const renderStripeStatus = () => {
         if (loading) return <div className={styles.loading}>Cargando estados de suscripción...</div>;
-        if (stripeSubscriptions.length === 0) return <div className={styles.empty}>No hay suscripciones activas.</div>;
+        if (stripeSubscriptions.length === 0) return <div className={styles.empty}>No hay suscripciones registradas.</div>;
+
+        // Compute stats
+        const totalActive = stripeSubscriptions.filter(s => s.status === 'active').length;
+        const totalTrialing = stripeSubscriptions.filter(s => s.status === 'trialing').length;
+        const totalPastDue = stripeSubscriptions.filter(s => s.status === 'past_due').length;
+        const fromStripe = stripeSubscriptions.filter(s => s.source === 'stripe').length;
+        const fromMs = stripeSubscriptions.filter(s => s.source === 'memberstack').length;
 
         return (
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>Suscripción</th>
-                            <th>Cliente</th>
-                            <th>Estado</th>
-                            <th>Siguiente Cobro</th>
-                            <th>Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stripeSubscriptions.map(s => (
-                            <tr key={s.id}>
-                                <td className={styles.smallText}>{s.id}</td>
-                                <td>{s.customerEmail}</td>
-                                <td>
-                                    <span className={`${styles.statusBadge} ${s.status === 'active' ? styles.statusSucceeded : styles.statusWarning}`}>
-                                        {s.status.toUpperCase()}
-                                    </span>
-                                </td>
-                                <td className={styles.dateText}>{new Date(s.nextBilling).toLocaleDateString()}</td>
-                                <td className={styles.amount}>${s.amount.toFixed(2)}</td>
+            <>
+                <div className={styles.statsSummary}>
+                    <div className={styles.statItem}>
+                        <span>Total</span>
+                        <strong>{stripeSubscriptions.length}</strong>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span>Activas</span>
+                        <strong style={{ color: '#2e7d32' }}>{totalActive}</strong>
+                    </div>
+                    {totalTrialing > 0 && (
+                        <div className={styles.statItem}>
+                            <span>En Prueba</span>
+                            <strong style={{ color: '#1565c0' }}>{totalTrialing}</strong>
+                        </div>
+                    )}
+                    {totalPastDue > 0 && (
+                        <div className={styles.statItem}>
+                            <span>Atrasadas</span>
+                            <strong style={{ color: '#e65100' }}>{totalPastDue}</strong>
+                        </div>
+                    )}
+                    <div className={styles.statItem}>
+                        <span>Stripe</span>
+                        <strong style={{ color: '#635bff' }}>{fromStripe}</strong>
+                    </div>
+                    {fromMs > 0 && (
+                        <div className={styles.statItem}>
+                            <span>Memberstack</span>
+                            <strong style={{ color: '#1565c0' }}>{fromMs}</strong>
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Plan</th>
+                                <th>Estado</th>
+                                <th>Frecuencia</th>
+                                <th>Siguiente Cobro</th>
+                                <th>Monto</th>
+                                <th>Fuente</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {stripeSubscriptions.map(s => {
+                                const statusLabel = SUB_STATUS_LABELS[s.status] || s.status;
+                                const statusClass = s.status === 'active' ? styles.statusSucceeded
+                                    : s.status === 'trialing' ? styles.statusOpen
+                                    : s.status === 'past_due' ? styles.statusPastDue
+                                    : styles.statusWarning;
+                                
+                                return (
+                                    <tr key={s.id}>
+                                        <td>
+                                            <div className={styles.userName}>{s.customerName || 'Cliente'}</div>
+                                            <div className={styles.userEmail}>{s.customerEmail}</div>
+                                        </td>
+                                        <td className={styles.smallText}>{typeof s.plan === 'string' && s.plan.startsWith('prod_') ? 'Plan Membresía' : s.plan}</td>
+                                        <td>
+                                            <span className={`${styles.statusBadge} ${statusClass}`}>
+                                                {statusLabel}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span className={styles.intervalTag}>
+                                                {s.interval === 'year' ? '📅 Anual' : '📆 Mensual'}
+                                            </span>
+                                        </td>
+                                        <td className={styles.dateText}>
+                                            {new Date(s.nextBilling).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        </td>
+                                        <td className={styles.amount}>${s.amount.toFixed(2)}</td>
+                                        <td>
+                                            <span className={`${styles.sourceBadge} ${s.source === 'stripe' ? styles.sourceStripe : styles.sourceMemberstack}`}>
+                                                {s.source === 'stripe' ? '⚡ Stripe' : '🔗 MS'}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </>
         );
     };
 
-    const renderStripeRetries = () => {
-        if (loading) return <div className={styles.loading}>Buscando pagos fallidos...</div>;
-        if (stripeFailed.length === 0) return <div className={styles.empty}>No hay reintentos pendientes de cobro.</div>;
+    // ── Invoices / Auto-Billing ──
+    const renderInvoices = () => {
+        if (loading) return <div className={styles.loading}>Consultando historial de facturas...</div>;
+        if (stripeInvoices.length === 0) return <div className={styles.empty}>No hay facturas recientes en Stripe.</div>;
+
+        // Compute stats
+        const paid = stripeInvoices.filter(i => i.status === 'paid').length;
+        const open = stripeInvoices.filter(i => i.status === 'open').length;
+        const uncollectible = stripeInvoices.filter(i => i.status === 'uncollectible').length;
+        const voided = stripeInvoices.filter(i => i.status === 'void').length;
 
         return (
-            <div className={styles.tableWrapper}>
-                <table className={styles.table}>
-                    <thead>
-                        <tr>
-                            <th>Fecha de Falla</th>
-                            <th>Cliente</th>
-                            <th>Monto Pendiente</th>
-                            <th>Acción</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stripeFailed.map(f => (
-                            <tr key={f.id}>
-                                <td className={styles.dateText}>{new Date(f.date).toLocaleString()}</td>
-                                <td>{f.customerEmail}</td>
-                                <td className={styles.amount} style={{ color: 'var(--color-error)' }}>${f.amount.toFixed(2)}</td>
-                                <td>
-                                    <button className={styles.smallButton}>Notificar Cliente</button>
-                                </td>
+            <>
+                <div className={styles.statsSummary}>
+                    <div className={styles.statItem}>
+                        <span>Facturas</span>
+                        <strong>{stripeInvoices.length}</strong>
+                    </div>
+                    <div className={styles.statItem}>
+                        <span>Pagadas</span>
+                        <strong style={{ color: '#2e7d32' }}>{paid}</strong>
+                    </div>
+                    {open > 0 && (
+                        <div className={styles.statItem}>
+                            <span>Pendientes</span>
+                            <strong style={{ color: '#1565c0' }}>{open}</strong>
+                        </div>
+                    )}
+                    {uncollectible > 0 && (
+                        <div className={styles.statItem}>
+                            <span>Incobrables</span>
+                            <strong style={{ color: '#c62828' }}>{uncollectible}</strong>
+                        </div>
+                    )}
+                    {voided > 0 && (
+                        <div className={styles.statItem}>
+                            <span>Anuladas</span>
+                            <strong style={{ color: '#546e7a' }}>{voided}</strong>
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Cliente</th>
+                                <th>Nº Factura</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Intentos</th>
+                                <th>Factura</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            {stripeInvoices.map(inv => {
+                                const statusLabel = INVOICE_STATUS_LABELS[inv.status] || inv.status;
+                                const statusStyleKey = INVOICE_STATUS_STYLE[inv.status] || 'statusPending';
+                                
+                                return (
+                                    <tr key={inv.id}>
+                                        <td className={styles.dateText}>
+                                            {new Date(inv.date).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                        </td>
+                                        <td>
+                                            <div className={styles.userName}>{inv.customerName !== 'N/A' ? inv.customerName : 'Cliente'}</div>
+                                            <div className={styles.userEmail}>{inv.customerEmail}</div>
+                                        </td>
+                                        <td className={styles.smallText}>{inv.number}</td>
+                                        <td className={styles.amount}>${inv.amount.toFixed(2)} {inv.currency}</td>
+                                        <td>
+                                            <span className={`${styles.statusBadge} ${styles[statusStyleKey]}`}>
+                                                {statusLabel}
+                                            </span>
+                                            {inv.nextAttempt && (
+                                                <div className={styles.dateText} style={{ marginTop: '4px', fontSize: '0.65rem' }}>
+                                                    Reintento: {new Date(inv.nextAttempt).toLocaleDateString('es-MX')}
+                                                </div>
+                                            )}
+                                        </td>
+                                        <td>
+                                            <span className={styles.attemptBadge}>
+                                                🔄 {inv.attemptCount}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {inv.invoicePdf ? (
+                                                <a href={inv.invoicePdf} target="_blank" rel="noopener noreferrer" className={styles.invoiceLink}>
+                                                    📄 PDF
+                                                </a>
+                                            ) : inv.hostedUrl ? (
+                                                <a href={inv.hostedUrl} target="_blank" rel="noopener noreferrer" className={styles.invoiceLink}>
+                                                    🔗 Ver
+                                                </a>
+                                            ) : (
+                                                <span className={styles.dateText}>—</span>
+                                            )}
+                                        </td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
+                </div>
+            </>
         );
     };
 
@@ -253,9 +454,14 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         <div className={styles.ledgerContainer}>
             <div className={styles.ledgerHeader}>
                 <h2 className={styles.ledgerTitle}>{titles[view]}</h2>
-                <div className={styles.syncStatus}>
-                    <span className={styles.syncDot}></span>
-                    Stripe Live API
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <button className={styles.refreshBtn} onClick={handleRefresh} disabled={loading}>
+                        🔄 {loading ? 'Cargando...' : 'Actualizar'}
+                    </button>
+                    <div className={styles.syncStatus}>
+                        <span className={styles.syncDot}></span>
+                        Stripe Live API
+                    </div>
                 </div>
             </div>
 
@@ -275,7 +481,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
             {view === 'billing' && renderBillingTable()}
             {view === 'records' && renderStripePayments()}
             {view === 'status' && renderStripeStatus()}
-            {view === 'retries' && renderStripeRetries()}
+            {view === 'retries' && renderInvoices()}
 
             {view !== 'billing' && (
                 <div style={{ marginTop: '2rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
