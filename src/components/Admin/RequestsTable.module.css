@@ -251,11 +251,56 @@
     color: #92400E;
 }
 
+.statusBadge.action_required {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
 .statusDot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     background: currentColor;
+}
+
+.infoStatusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.infoStatusBadge.complete {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.infoStatusBadge.incomplete {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.infoStatusBadge.requested {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.dropdownDivider {
+    height: 1px;
+    background: var(--gray-200);
+    margin: var(--spacing-xs) 0;
+}
+
+.dropdownSectionTitle {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--gray-50);
 }
 
 .actionButtons {

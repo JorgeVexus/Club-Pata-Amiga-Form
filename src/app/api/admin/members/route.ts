@@ -66,47 +66,83 @@ export async function GET(request: NextRequest) {
         console.log(`[API] Member filter: Total fetched ${result.data?.length}, Admins hidden: ${(result.data?.length || 0) - filteredMembers.length}`);
 
 
-        // ENRICHMENT: Fetch real pet counts from Supabase
-        // 1. Get mapping of Memberstack ID -> Supabase User ID
+        // ENRICHMENT: Fetch real pet counts and info status from Supabase
         const memberstackIds = filteredMembers.map(m => m.id);
-
-        let petCountsMap = new Map<string, number>();
+        const memberDataMap = new Map<string, { petCount: number, infoStatus: string }>();
 
         if (memberstackIds.length > 0) {
-            // Get Supabase User IDs
             const { data: userMappings, error: mappingError } = await supabaseAdmin
                 .from('users')
-                .select('id, memberstack_id')
+                .select('id, memberstack_id, approval_status')
                 .in('memberstack_id', memberstackIds);
 
             if (!mappingError && userMappings) {
                 const supabaseUserIds = userMappings.map(u => u.id);
                 const supabaseIdToMsId = new Map(userMappings.map(u => [u.id, u.memberstack_id]));
+                const msIdToUserStatus = new Map(userMappings.map(u => [u.memberstack_id, u.approval_status]));
 
-                // Get pet counts
-                // Note: verify if .count() works with group by easily in logic or just fetch all pets fields (lightweight)
-                // Fetching just owner_id is lighter
+                // Fetch detailed pet info
                 const { data: petsData, error: petsError } = await supabaseAdmin
                     .from('pets')
-                    .select('owner_id')
+                    .select('owner_id, photo_url, vet_certificate_url, is_senior, status')
                     .in('owner_id', supabaseUserIds);
 
                 if (!petsError && petsData) {
+                    // Group pets by owner
+                    const ownerPetsMap = new Map<string, any[]>();
                     petsData.forEach(pet => {
-                        const msId = supabaseIdToMsId.get(pet.owner_id);
-                        if (msId) {
-                            petCountsMap.set(msId, (petCountsMap.get(msId) || 0) + 1);
+                        const pets = ownerPetsMap.get(pet.owner_id) || [];
+                        pets.push(pet);
+                        ownerPetsMap.set(pet.owner_id, pets);
+                    });
+
+                    // Calculate status for each member
+                    userMappings.forEach(user => {
+                        const msId = user.memberstack_id;
+                        const pets = ownerPetsMap.get(user.id) || [];
+                        
+                        let infoStatus = 'complete';
+                        
+                        if (pets.length > 0) {
+                            const hasActionRequired = pets.some(p => p.status === 'action_required') || user.approval_status === 'action_required';
+                            
+                            if (hasActionRequired) {
+                                infoStatus = 'requested';
+                            } else {
+                                const isIncomplete = pets.some(p => {
+                                    const missingPhoto = !p.photo_url || p.photo_url.trim() === '';
+                                    const missingCert = p.is_senior && (!p.vet_certificate_url || p.vet_certificate_url.trim() === '');
+                                    return missingPhoto || missingCert;
+                                });
+                                
+                                if (isIncomplete) {
+                                    infoStatus = 'incomplete';
+                                }
+                            }
+                        } else {
+                            // If they are members but have 0 pets, we consider it incomplete 
+                            // (they haven't finished registration)
+                            infoStatus = 'incomplete';
                         }
+
+                        memberDataMap.set(msId, {
+                            petCount: pets.length,
+                            infoStatus: infoStatus
+                        });
                     });
                 }
             }
         }
 
-        // Attach pet counts to members
-        const membersWithCounts = filteredMembers.map(member => ({
-            ...member,
-            petCount: petCountsMap.get(member.id) || 0
-        }));
+        // Attach enriched data to members
+        const membersWithCounts = filteredMembers.map(member => {
+            const enriched = memberDataMap.get(member.id);
+            return {
+                ...member,
+                petCount: enriched?.petCount || 0,
+                infoStatus: enriched?.infoStatus || 'complete'
+            };
+        });
 
         return NextResponse.json({
             success: true,

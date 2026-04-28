@@ -8,7 +8,8 @@ interface MemberRequest {
     name: string;
     email: string;
     submittedAt: string;
-    status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended';
+    status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended' | 'action_required';
+    infoStatus?: 'complete' | 'incomplete' | 'requested';
     petCount?: number;
     type: 'member' | 'ambassador';
     roles: ('member' | 'ambassador')[]; // New field for display tags
@@ -61,6 +62,7 @@ export default function RequestsTable({
 
     const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [infoFilter, setInfoFilter] = useState<'all' | 'complete' | 'incomplete' | 'requested'>('all');
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
     
     // Checkbox selection
@@ -68,7 +70,7 @@ export default function RequestsTable({
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter, requestType]);
+    }, [sortFilter, requestType, infoFilter]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -172,6 +174,7 @@ export default function RequestsTable({
                     submittedAt: amb.created_at,
                     status: amb.status,
                     petCount: 0,
+                    infoStatus: 'complete',
                     type: 'ambassador',
                     roles: roles
                 });
@@ -213,6 +216,7 @@ export default function RequestsTable({
                     submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
                     status: member.customFields?.['approval-status'] || 'pending',
                     petCount: petCount,
+                    infoStatus: member.infoStatus || 'complete',
                     type: 'member',
                     roles: roles
                 });
@@ -255,6 +259,10 @@ export default function RequestsTable({
             if (sortFilter === 'rejected') return req.status === 'rejected';
             if (sortFilter === 'recents' || sortFilter === 'oldest') return req.status === 'pending';
             return true;
+        })
+        .filter(req => {
+            if (infoFilter === 'all') return true;
+            return req.infoStatus === infoFilter;
         });
 
     function getInitials(name: string): string {
@@ -280,7 +288,17 @@ export default function RequestsTable({
             approved: 'Aprobado',
             rejected: 'Rechazado',
             appealed: 'Apelado',
-            suspended: 'Suspendido'
+            suspended: 'Suspendido',
+            action_required: 'Acción Requerida'
+        };
+        return labels[status] || status;
+    }
+
+    function getInfoStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            complete: 'Información Completa',
+            incomplete: 'Información Faltante',
+            requested: 'Información Solicitada'
         };
         return labels[status] || status;
     }
@@ -384,6 +402,13 @@ export default function RequestsTable({
                             <button className={`${styles.dropdownOption} ${sortFilter === 'oldest' ? styles.selected : ''}`} onClick={() => { setSortFilter('oldest'); setIsDropdownOpen(false); }}>Antiguos</button>
                             <button className={`${styles.dropdownOption} ${sortFilter === 'approved' ? styles.selected : ''}`} onClick={() => { setSortFilter('approved'); setIsDropdownOpen(false); }}>Aprobados</button>
                             <button className={`${styles.dropdownOption} ${sortFilter === 'rejected' ? styles.selected : ''}`} onClick={() => { setSortFilter('rejected'); setIsDropdownOpen(false); }}>Rechazados</button>
+                            
+                            <div className={styles.dropdownDivider}></div>
+                            <div className={styles.dropdownSectionTitle}>Estado de Información</div>
+                            <button className={`${styles.dropdownOption} ${infoFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIsDropdownOpen(false); }}>📋 Todos los estados</button>
+                            <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIsDropdownOpen(false); }}>✅ Información Completa</button>
+                            <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIsDropdownOpen(false); }}>🟡 Información Faltante</button>
+                            <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIsDropdownOpen(false); }}>🔵 Información Solicitada</button>
                         </div>
                     </div>
                 </div>
@@ -508,7 +533,8 @@ export default function RequestsTable({
                             <th>Usuario / Rol</th>
                             <th>Fecha de Solicitud</th>
                             <th>Info Extra</th>
-                            <th>Estado</th>
+                            <th>Estado Info</th>
+                            <th>Estado Solicitud</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -554,7 +580,12 @@ export default function RequestsTable({
                                         <span>-</span>
                                     )}
                                 </td>
-                                <td data-label="Estado">
+                                <td data-label="Estado Info">
+                                    <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>
+                                        {getInfoStatusLabel(request.infoStatus || 'complete')}
+                                    </span>
+                                </td>
+                                <td data-label="Estado Solicitud">
                                     <span className={`${styles.statusBadge} ${styles[request.status]}`}>
                                         <span className={styles.statusDot}></span>
                                         {getStatusLabel(request.status)}
