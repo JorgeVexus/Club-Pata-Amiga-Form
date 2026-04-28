@@ -49,7 +49,8 @@ export default function AdminDashboard() {
     const [adminName, setAdminName] = useState('Cargando...');
     const [adminRoleLabel, setAdminRoleLabel] = useState('Verificando...');
     const [isAdminSuper, setIsAdminSuper] = useState(false);
-    const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+    const [recentActivityLogs, setRecentActivityLogs] = useState<ActivityLog[]>([]);
+    const [yourActivityLogs, setYourActivityLogs] = useState<ActivityLog[]>([]);
     const [hasMounted, setHasMounted] = useState(false);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
@@ -188,7 +189,7 @@ export default function AdminDashboard() {
                         // Cargar el resto después de verificar el rol
                         loadMetrics();
                         loadPendingCounts(data.isSuperAdmin);
-                        loadActivityLogs();
+                        loadActivityLogs(currentMemberId);
 
                         // Cargar skip payment flag si es super admin
                         if (data.isSuperAdmin) {
@@ -231,47 +232,23 @@ export default function AdminDashboard() {
         }
     }
 
-    async function loadActivityLogs() {
+    async function loadActivityLogs(memberstackId?: string) {
         try {
-            // Fetch all members to derive activity
-            const response = await fetch('/api/admin/members?status=all');
+            const idToUse = memberstackId || adminMemberstackId;
+            if (!idToUse) return;
+
+            const response = await fetch('/api/admin/activity', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ memberstackId: idToUse })
+            });
+
             const data = await response.json();
 
-            if (data.success && data.members) {
-                const logs: any[] = []; // Explicit any to avoid cluttering with ActivityLog interface here
-                data.members.forEach((m: any) => {
-                    const name = `${m.customFields?.['first-name'] || ''} ${m.customFields?.['paternal-last-name'] || ''}`.trim() || 'Usuario';
-
-                    // Approval Log
-                    if (m.customFields?.['approved-at']) {
-                        logs.push({
-                            id: m.id,
-                            type: 'approved',
-                            targetName: name,
-                            adminName: m.customFields?.['approved-by'] || 'Admin',
-                            timestamp: m.customFields?.['approved-at'],
-                            role: 'Miembro'
-                        });
-                    }
-
-                    // Rejection Log
-                    if (m.customFields?.['rejected-at']) {
-                        logs.push({
-                            id: m.id,
-                            type: 'rejected',
-                            targetName: name,
-                            adminName: m.customFields?.['rejected-by'] || 'Admin',
-                            timestamp: m.customFields?.['rejected-at'],
-                            role: 'Miembro'
-                        });
-                    }
-                });
-
-                // Sort newest first
-                logs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-                setActivityLogs(logs);
+            if (data.success) {
+                setRecentActivityLogs(data.recentActivity || []);
+                setYourActivityLogs(data.yourActivity || []);
             }
-
         } catch (error) {
             console.error('Error loading activity:', error);
         }
@@ -539,19 +516,13 @@ export default function AdminDashboard() {
                                 {isAdminSuper && (
                                     <ActivityFeed
                                         title="Actividad reciente"
-                                        logs={activityLogs}
+                                        logs={recentActivityLogs}
                                     />
                                 )}
 
-                                {/* Panel 2: Your Activity (Everyone) */}
                                 <ActivityFeed
                                     title="Tu actividad"
-                                    logs={activityLogs.filter(log =>
-                                        log.adminName === currentAdminId ||
-                                        log.adminName === 'Admin' ||
-                                        log.adminName === 'current-admin-id' ||
-                                        log.adminName === 'Lucero Marvel'
-                                    )}
+                                    logs={yourActivityLogs}
                                 />
                             </div>
                         </>

@@ -5,27 +5,28 @@ import styles from './ActivityFeed.module.css';
 
 export interface ActivityLog {
     id: string;
-    type: 'approved' | 'rejected';
+    type: 'approved' | 'rejected' | 'registration';
     targetName: string;
     adminName: string;
     timestamp: string; // ISO Date
     role: 'Miembro' | 'Embajador';
-    detail?: string; // e.g. "Reembolso #B568" or just "Solicitud #C474"
+    detail?: string; 
 }
 
 interface ActivityFeedProps {
     title: string;
     logs: ActivityLog[];
-    currentAdminView?: boolean; // If true, maybe some specific styling?
 }
 
 export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
-    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved'>('all');
+    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved' | 'registration'>('all');
     const [search, setSearch] = useState('');
 
     // Time Ago Helper
     const timeAgo = (dateData: string) => {
         const date = new Date(dateData);
+        if (isNaN(date.getTime())) return "Fecha inválida";
+        
         const now = new Date();
         const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -75,16 +76,22 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                     Todas
                 </button>
                 <button
+                    className={`${styles.filterButton} ${filter === 'approved' ? styles.active : ''}`}
+                    onClick={() => setFilter('approved')}
+                >
+                    Aprobadas
+                </button>
+                <button
                     className={`${styles.filterButton} ${filter === 'rejected' ? styles.active : ''}`}
                     onClick={() => setFilter('rejected')}
                 >
                     Rechazadas
                 </button>
                 <button
-                    className={`${styles.filterButton} ${filter === 'approved' ? styles.active : ''}`}
-                    onClick={() => setFilter('approved')}
+                    className={`${styles.filterButton} ${filter === 'registration' ? styles.active : ''}`}
+                    onClick={() => setFilter('registration')}
                 >
-                    Resueltas
+                    Registros
                 </button>
             </div>
 
@@ -118,14 +125,16 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                         <div key={log.id} className={styles.activityCard}>
                             <div className={styles.cardHeader}>
                                 <span>
-                                    {log.type === 'approved' ? 'SOLICITUD APROBADA' : 'SOLICITUD RECHAZADA'} #{log.id.slice(-4).toUpperCase()}
+                                    {log.type === 'approved' ? 'SOLICITUD APROBADA' : 
+                                     log.type === 'rejected' ? 'SOLICITUD RECHAZADA' : 
+                                     'NUEVO REGISTRO'} #{log.id.slice(-4).toUpperCase()}
                                 </span>
                                 <span className={styles.timeAgo}>{timeAgo(log.timestamp)}</span>
                             </div>
 
                             <div className={styles.tags}>
-                                <div className={`${styles.tag} ${log.type === 'approved' ? styles.member : styles.rejected}`}>
-                                    {log.type === 'approved' ? (log.role === 'Miembro' ? '👤 Miembro' : '🗣 Embajador') : (log.role === 'Embajador' ? '🗣 Embajador' : '⚠️ Rechazado')}
+                                <div className={`${styles.tag} ${log.type === 'approved' ? styles.member : log.type === 'rejected' ? styles.rejected : ''}`}>
+                                    {log.role === 'Miembro' ? '👤 Miembro' : '🗣 Embajador'}
                                 </div>
                             </div>
 
@@ -138,7 +147,7 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                                     <div className={styles.actorInfo}>
                                         <span className={styles.roleLabel}>Administrador</span>
                                         <span className={styles.nameLabel}>
-                                            {log.adminName === 'current-admin-id' ? 'Lucero Marvel' : log.adminName}
+                                            {log.adminName}
                                         </span>
                                     </div>
                                 </div>

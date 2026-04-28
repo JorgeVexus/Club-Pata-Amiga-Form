@@ -142,6 +142,8 @@ export async function PATCH(
                 updateData.approved_by = body.admin_id || 'admin';
             } else if (body.status === 'rejected') {
                 updateData.rejection_reason = body.rejection_reason || 'Sin motivo especificado';
+                updateData.rejected_at = new Date().toISOString();
+                updateData.rejected_by = body.admin_id || 'admin';
             }
         }
 
