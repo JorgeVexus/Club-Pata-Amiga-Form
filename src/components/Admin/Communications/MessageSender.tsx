@@ -23,9 +23,10 @@ interface Member {
 
 interface MessageSenderProps {
     adminName: string;
+    prefill?: { recipientId?: string; templateSearch?: string; isTermination?: boolean } | null;
 }
 
-export default function MessageSender({ adminName }: MessageSenderProps) {
+export default function MessageSender({ adminName, prefill }: MessageSenderProps) {
     const [members, setMembers] = useState<Member[]>([]);
     const [templates, setTemplates] = useState<CommTemplate[]>([]);
     const [searchTerm, setSearchTerm] = useState('');
@@ -60,6 +61,26 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
             setIsLoading(false);
         }
     }
+
+    // Efecto para manejar el prefill una vez cargados los datos
+    useEffect(() => {
+        if (!isLoading && prefill) {
+            if (prefill.recipientId) {
+                const member = members.find(m => m.id === prefill.recipientId);
+                if (member) {
+                    setSelectedMember(member);
+                    setSearchTerm(`${member.customFields?.['first-name']} ${member.customFields?.['paternal-last-name']}`);
+                }
+            }
+
+            if (prefill.templateSearch) {
+                const template = templates.find(t => 
+                    t.name.toLowerCase().includes(prefill.templateSearch!.toLowerCase())
+                );
+                if (template) setSelectedTemplate(template);
+            }
+        }
+    }, [isLoading, prefill, members, templates]);
 
     // Al seleccionar miembro o plantilla, procesamos los placeholders
     useEffect(() => {
@@ -117,6 +138,31 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
             alert('❌ Error: ' + res.error);
         }
         setIsSending(false);
+    }
+
+    async function handleFinalTermination() {
+        if (!selectedMember) return;
+        if (!window.confirm(`¿Estás seguro de ELIMINAR COMPLETAMENTE a ${selectedMember.customFields['first-name']}? Esta acción no se puede deshacer.`)) {
+            return;
+        }
+
+        setIsSending(true);
+        try {
+            const res = await fetch(`/api/admin/members/${selectedMember.id}/delete`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('✅ Usuario eliminado correctamente de Memberstack y Supabase');
+                window.location.reload(); // Recargar para limpiar estados
+            } else {
+                alert('❌ Error eliminando: ' + data.error);
+            }
+        } catch (e) {
+            alert('❌ Error de conexión');
+        } finally {
+            setIsSending(false);
+        }
     }
 
     async function handleSendCustom() {
@@ -296,6 +342,39 @@ export default function MessageSender({ adminName }: MessageSenderProps) {
                             </button>
                         )}
                     </div>
+
+                    {prefill?.isTermination && selectedMember && (
+                        <div className={styles.terminationWarning} style={{ 
+                            marginTop: '20px', 
+                            padding: '15px', 
+                            background: '#fff5f5', 
+                            border: '1px solid #feb2b2', 
+                            borderRadius: '10px' 
+                        }}>
+                            <h4 style={{ color: '#c53030', marginTop: 0 }}>⚠️ Flujo de Baja</h4>
+                            <p style={{ fontSize: '0.9rem', color: '#742a2a' }}>
+                                Primero envía el aviso de baja al usuario. Una vez notificado, presiona el botón inferior para eliminarlo definitivamente.
+                            </p>
+                            <button
+                                className={styles.deleteBtn}
+                                style={{ 
+                                    width: '100%', 
+                                    padding: '12px', 
+                                    background: '#c53030', 
+                                    color: 'white', 
+                                    border: '2px solid #000', 
+                                    borderRadius: '50px',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer',
+                                    fontFamily: 'Fraiche, sans-serif'
+                                }}
+                                disabled={isSending}
+                                onClick={handleFinalTermination}
+                            >
+                                {isSending ? 'Procesando...' : '🔥 Confirmar Baja Definitiva'}
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {/* Lado Derecho: Preview */}

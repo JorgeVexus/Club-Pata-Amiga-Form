@@ -40,6 +40,8 @@ interface RequestsTableProps {
     onReject: (id: string, type?: 'member' | 'ambassador') => void;
     onDelete?: (id: string) => void;
     onBulkDelete?: (ids: string[]) => void;
+    onTerminate?: (member: MemberRequest) => void;
+    mode?: 'default' | 'termination';
     isSuperAdmin?: boolean;
 }
 
@@ -52,6 +54,8 @@ export default function RequestsTable({
     onReject, 
     onDelete,
     onBulkDelete,
+    onTerminate,
+    mode = 'default',
     isSuperAdmin = false 
 }: RequestsTableProps) {
 
@@ -600,14 +604,23 @@ export default function RequestsTable({
                                             Ver Detalles
                                         </button>
                                         
-                                        {requestType === 'all-members' && (
-                                            <button
-                                                className={styles.rejectButton}
-                                                style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
-                                                onClick={() => onDelete?.(request.id)}
-                                            >
-                                                Eliminar
-                                            </button>
+                                        {(requestType === 'all-members' || mode === 'termination') && (
+                                            <>
+                                                <button
+                                                    className={styles.rejectButton}
+                                                    style={{ border: 'none', background: '#fff3cd', color: '#856404' }}
+                                                    onClick={() => onTerminate?.(request)}
+                                                >
+                                                    🚫 Baja Políticas
+                                                </button>
+                                                <button
+                                                    className={styles.rejectButton}
+                                                    style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
+                                                    onClick={() => onDelete?.(request.id)}
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </>
                                         )}
 
                                         {request.status === 'rejected' && (

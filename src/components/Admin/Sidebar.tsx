@@ -89,6 +89,14 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                     <span className={styles.menuLabel}>Comunicaciones</span>
                 </button>
 
+                <button
+                    className={`${styles.menuItem} ${activeFilter === 'terminate-users' ? styles.active : ''}`}
+                    onClick={() => onFilterChange('terminate-users')}
+                >
+                    <span className={styles.menuIcon}>🚫</span>
+                    <span className={styles.menuLabel}>Baja de Usuarios</span>
+                </button>
+
                 {isSuperAdmin && (
                     <button
                         className={`${styles.menuItem} ${activeFilter === 'appeals' ? styles.active : ''}`}

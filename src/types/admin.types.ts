@@ -3,7 +3,7 @@
  */
 
 // Tipos de solicitudes
-export type RequestType = 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'communications' | 'appeals' | 'all-members';
+export type RequestType = 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'communications' | 'appeals' | 'all-members' | 'terminate-users';
 
 // Estados de solicitud
 export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in-review';
@@ -111,6 +111,7 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'communications': BRAND_COLORS.green,
     'appeals': BRAND_COLORS.yellow,
     'all-members': BRAND_COLORS.green,
+    'terminate-users': BRAND_COLORS.pink,
 };
 
 // Mapeo de colores por estado
@@ -131,6 +132,7 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'communications': 'Comunicaciones',
     'appeals': 'Apelaciones',
     'all-members': 'Todos los miembros',
+    'terminate-users': 'Baja de Usuarios',
 };
 
 export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {

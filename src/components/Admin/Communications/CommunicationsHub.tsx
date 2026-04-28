@@ -9,9 +9,10 @@ import CommHistory from './CommHistory';
 interface CommunicationsHubProps {
     adminName: string;
     isSuperAdmin: boolean;
+    prefill?: { recipientId?: string; templateSearch?: string; isTermination?: boolean } | null;
 }
 
-export default function CommunicationsHub({ adminName, isSuperAdmin }: CommunicationsHubProps) {
+export default function CommunicationsHub({ adminName, isSuperAdmin, prefill }: CommunicationsHubProps) {
     const [activeTab, setActiveTab] = useState<'messaging' | 'templates' | 'history'>('messaging');
 
     return (
@@ -44,7 +45,7 @@ export default function CommunicationsHub({ adminName, isSuperAdmin }: Communica
             {/* Tab Content */}
             <div className={styles.tabContent}>
                 {activeTab === 'messaging' ? (
-                    <MessageSender adminName={adminName} />
+                    <MessageSender adminName={adminName} prefill={prefill} />
                 ) : activeTab === 'templates' ? (
                     <TemplateManager />
                 ) : (

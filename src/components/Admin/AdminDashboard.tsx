@@ -41,6 +41,7 @@ export default function AdminDashboard() {
         'communications': 0,
         'appeals': 0,
         'all-members': 0,
+        'terminate-users': 0,
     });
 
     // Admin Identity & Activity State
@@ -56,6 +57,9 @@ export default function AdminDashboard() {
 
     // Estado para embajadores
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
+
+    // Prefill para comunicaciones
+    const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
     // Helper to fetch single member details
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
@@ -391,6 +395,7 @@ export default function AdminDashboard() {
                         <CommunicationsHub
                             adminName={adminName}
                             isSuperAdmin={isAdminSuper}
+                            prefill={commPrefill}
                         />
                     ) : activeFilter === 'ambassador' ? (
                         <AmbassadorsTable
@@ -404,7 +409,8 @@ export default function AdminDashboard() {
                             <RequestsTable
                                 filter="all"
                                 isSuperAdmin={isAdminSuper}
-                                requestType={activeFilter === 'all' ? 'all' : activeFilter as any}
+                                requestType={activeFilter === 'all' ? 'all' : (activeFilter === 'terminate-users' ? 'all-members' : activeFilter as any)}
+                                mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
                                 onViewDetails={(id, type, petId) => {
                                     if (type === 'ambassador') {
                                         fetchAmbassadorDetails(id);
@@ -507,6 +513,14 @@ export default function AdminDashboard() {
                                             alert(`Error: ${data.error || 'Error desconocido'}`);
                                         }
                                     } catch (e) { alert('Error de conexión'); }
+                                }}
+                                onTerminate={(member) => {
+                                    setCommPrefill({
+                                        recipientId: member.id,
+                                        templateSearch: 'Baja',
+                                        isTermination: true
+                                    });
+                                    setActiveFilter('communications');
                                 }}
                             />
 
