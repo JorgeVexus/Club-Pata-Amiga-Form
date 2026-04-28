@@ -539,28 +539,39 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             <div className={styles.loading}>Cargando mascotas...</div>
                         ) : (
                             <div className={styles.grid}>
-                                {(selectedPetId ? pets.filter(p => p.id === selectedPetId) : pets).map((pet) => (
-                                    <div key={pet.id} className={styles.petCardFull}>
-                                        <div className={styles.petHeader}>
-                                            <div className={styles.petAvatar}>
-                                                {pet.pet_type === 'cat' ? '🐱' : '🐶'}
-                                            </div>
-                                            <div className={styles.petInfo}>
-                                                <h4>{pet.name}</h4>
-                                                <div className={styles.petBreed}>
-                                                    {pet.is_mixed_breed 
-                                                        ? (pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo') 
-                                                        : pet.breed}
+                                 {(selectedPetId ? pets.filter(p => p.id === selectedPetId) : pets).map((pet) => {
+                                    const pIdx = pets.indexOf(pet) + 1;
+                                    const mainPhoto = pet.photo_url || fields[`pet-${pIdx}-photo-1-url`];
 
+                                    return (
+                                        <div key={pet.id} className={styles.petCardFull}>
+                                            <div className={styles.petHeader}>
+                                                <div className={styles.petAvatar}>
+                                                    {mainPhoto && mainPhoto.startsWith('http') ? (
+                                                        <img 
+                                                            src={mainPhoto} 
+                                                            alt={pet.name} 
+                                                            className={styles.petAvatarImage}
+                                                        />
+                                                    ) : (
+                                                        pet.pet_type === 'cat' ? '🐱' : '🐶'
+                                                    )}
+                                                </div>
+                                                <div className={styles.petInfo}>
+                                                    <h4>{pet.name}</h4>
+                                                    <div className={styles.petBreed}>
+                                                        {pet.is_mixed_breed 
+                                                            ? (pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo') 
+                                                            : pet.breed}
+                                                    </div>
+                                                </div>
+                                                <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
+                                                    {pet.status === 'pending' ? 'Pendiente' :
+                                                        pet.status === 'approved' ? 'Aprobada' :
+                                                            pet.status === 'rejected' ? 'Rechazada' :
+                                                                pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
                                                 </div>
                                             </div>
-                                            <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
-                                                {pet.status === 'pending' ? 'Pendiente' :
-                                                    pet.status === 'approved' ? 'Aprobada' :
-                                                        pet.status === 'rejected' ? 'Rechazada' :
-                                                            pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
-                                            </div>
-                                        </div>
 
                                         {/* Pet Badges */}
                                         <div className={styles.petBadges}>
@@ -846,9 +857,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         </div>
                                                     )}
                                             </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         )}
                     </div>
