@@ -287,6 +287,42 @@
     color: #1E40AF;
 }
 
+.paymentStatusBadge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-semibold);
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.paymentStatusBadge.active, .paymentStatusBadge.trialing {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.paymentStatusBadge.past_due, .paymentStatusBadge.unpaid {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.paymentStatusBadge.canceled {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.paymentStatusBadge.incomplete {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.paymentStatusBadge.none {
+    background: #F3F4F6;
+    color: #9CA3AF;
+}
+
 .dropdownDivider {
     height: 1px;
     background: var(--gray-200);

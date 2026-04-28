@@ -11,6 +11,7 @@ interface MemberRequest {
     status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended' | 'action_required';
     infoStatus?: 'complete' | 'incomplete' | 'requested';
     petCount?: number;
+    paymentStatus?: string;
     type: 'member' | 'ambassador' | 'wellness-center';
     roles: ('member' | 'ambassador' | 'wellness-center')[];
 }
@@ -67,6 +68,7 @@ export default function RequestsTable({
     const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [infoFilter, setInfoFilter] = useState<'all' | 'complete' | 'incomplete' | 'requested'>('all');
+    const [paymentFilter, setPaymentFilter] = useState<'all' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'none'>('all');
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
     
     // Checkbox selection
@@ -74,7 +76,7 @@ export default function RequestsTable({
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter, requestType, infoFilter]);
+    }, [sortFilter, requestType, infoFilter, paymentFilter]);
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -186,6 +188,7 @@ export default function RequestsTable({
                     status: amb.status,
                     petCount: 0,
                     infoStatus: 'complete',
+                    paymentStatus: 'none',
                     type: 'ambassador',
                     roles: roles
                 });
@@ -228,6 +231,7 @@ export default function RequestsTable({
                     status: member.customFields?.['approval-status'] || 'pending',
                     petCount: petCount,
                     infoStatus: member.infoStatus || 'complete',
+                    paymentStatus: member.paymentStatus || 'none',
                     type: 'member',
                     roles: roles
                 });
@@ -274,6 +278,12 @@ export default function RequestsTable({
         .filter(req => {
             if (infoFilter === 'all') return true;
             return req.infoStatus === infoFilter;
+        })
+        .filter(req => {
+            if (paymentFilter === 'all') return true;
+            if (paymentFilter === 'active') return req.paymentStatus === 'active' || req.paymentStatus === 'trialing';
+            if (paymentFilter === 'past_due') return req.paymentStatus === 'past_due' || req.paymentStatus === 'unpaid';
+            return req.paymentStatus === paymentFilter;
         });
 
     function getInitials(name: string): string {
@@ -312,6 +322,21 @@ export default function RequestsTable({
             requested: 'Información Solicitada'
         };
         return labels[status] || status;
+    }
+    
+    function getPaymentStatusLabel(status: string, type: string): string {
+        if (type === 'ambassador') return 'N/A';
+        
+        const labels: Record<string, string> = {
+            active: 'Activo',
+            trialing: 'En prueba',
+            past_due: 'Moroso',
+            unpaid: 'Impago',
+            canceled: 'Suspendido',
+            incomplete: 'Pendiente',
+            none: 'Sin Plan'
+        };
+        return labels[status] || 'Sin Plan';
     }
 
     function getFilterLabel(filter: string): string {
@@ -435,6 +460,13 @@ export default function RequestsTable({
                             <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIsDropdownOpen(false); }}>✅ Información Completa</button>
                             <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIsDropdownOpen(false); }}>🟡 Información Faltante</button>
                             <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIsDropdownOpen(false); }}>🔵 Información Solicitada</button>
+
+                            <div className={styles.dropdownDivider}></div>
+                            <div className={styles.dropdownSectionTitle}>Estado de Pago</div>
+                            <button className={`${styles.dropdownOption} ${paymentFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIsDropdownOpen(false); }}>📋 Todos los pagos</button>
+                            <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIsDropdownOpen(false); }}>💳 Activo / En prueba</button>
+                            <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIsDropdownOpen(false); }}>🔴 Moroso / Impago</button>
+                            <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIsDropdownOpen(false); }}>⚪ Suspendido</button>
                         </div>
                     </div>
                 </div>
@@ -559,6 +591,7 @@ export default function RequestsTable({
                             <th>Usuario / Rol</th>
                             <th>Fecha de Solicitud</th>
                             <th>Info Extra</th>
+                            <th>Estado Pago</th>
                             <th>Estado Info</th>
                             <th>Estado Solicitud</th>
                             <th>Acciones</th>
@@ -605,6 +638,11 @@ export default function RequestsTable({
                                     ) : (
                                         <span>-</span>
                                     )}
+                                </td>
+                                <td data-label="Estado Pago">
+                                    <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
+                                        {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
+                                    </span>
                                 </td>
                                 <td data-label="Estado Info">
                                     <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>

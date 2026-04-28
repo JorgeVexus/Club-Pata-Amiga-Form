@@ -137,10 +137,16 @@ export async function GET(request: NextRequest) {
         // Attach enriched data to members
         const membersWithCounts = filteredMembers.map(member => {
             const enriched = memberDataMap.get(member.id);
+            
+            // Extract payment status from the first plan connection
+            const plan = member.planConnections?.[0];
+            const paymentStatus = plan?.status?.toLowerCase() || 'none';
+
             return {
                 ...member,
                 petCount: enriched?.petCount || 0,
-                infoStatus: enriched?.infoStatus || 'complete'
+                infoStatus: enriched?.infoStatus || 'complete',
+                paymentStatus: paymentStatus
             };
         });
 
