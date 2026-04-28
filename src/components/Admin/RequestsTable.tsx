@@ -633,58 +633,60 @@ export default function RequestsTable({
                             <div className={styles.emptySubtext}>Las nuevas apelaciones aparecerán aquí</div>
                         </div>
                     ) : (
-                        <table className={styles.table}>
-                            <thead className={styles.tableHeader}>
-                                <tr>
-                                    <th>Mascota</th>
-                                    <th>Dueño</th>
-                                    <th>Mensaje de Apelación</th>
-                                    <th>Fecha</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody className={styles.tableBody}>
-                                {appealedPets.map((pet) => (
-                                    <tr key={pet.petId}>
-                                        <td data-label="Mascota">
-                                            <div className={styles.memberInfo}>
-                                                <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
-                                                    {pet.petType === 'Gato' ? '🐱' : '🐕'}
-                                                </div>
-                                                <div className={styles.memberDetails}>
-                                                    <div className={styles.memberName}>{pet.petName}</div>
-                                                    <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Dueño">
-                                            <div className={styles.memberDetails}>
-                                                <div className={styles.memberName}>{pet.ownerName}</div>
-                                                <div className={styles.memberEmail}>{pet.ownerEmail}</div>
-                                            </div>
-                                        </td>
-                                        <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
-                                            <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
-                                                "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
-                                            </span>
-                                        </td>
-                                        <td data-label="Fecha">
-                                            {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
-                                        </td>
-                                        <td data-label="Acciones">
-                                            <div className={styles.actionButtons}>
-                                                <button
-                                                    className={styles.viewButton}
-                                                    onClick={() => onViewDetails(pet.ownerId, 'appeal', pet.petId)}
-                                                >
-                                                    Ver Detalles
-                                                </button>
-                                            </div>
-                                        </td>
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead className={styles.tableHeader}>
+                                    <tr>
+                                        <th>Mascota</th>
+                                        <th>Dueño</th>
+                                        <th>Mensaje de Apelación</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody className={styles.tableBody}>
+                                    {appealedPets.map((pet) => (
+                                        <tr key={pet.petId}>
+                                            <td data-label="Mascota">
+                                                <div className={styles.memberInfo}>
+                                                    <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
+                                                        {pet.petType === 'Gato' ? '🐱' : '🐕'}
+                                                    </div>
+                                                    <div className={styles.memberDetails}>
+                                                        <div className={styles.memberName}>{pet.petName}</div>
+                                                        <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td data-label="Dueño">
+                                                <div className={styles.memberDetails}>
+                                                    <div className={styles.memberName}>{pet.ownerName}</div>
+                                                    <div className={styles.memberEmail}>{pet.ownerEmail}</div>
+                                                </div>
+                                            </td>
+                                            <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
+                                                <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                    "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
+                                                </span>
+                                            </td>
+                                            <td data-label="Fecha">
+                                                {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                            </td>
+                                            <td data-label="Acciones">
+                                                <div className={styles.actionButtons}>
+                                                    <button
+                                                        className={styles.viewButton}
+                                                        onClick={() => onViewDetails(pet.ownerId, 'appeal', pet.petId)}
+                                                    >
+                                                        Ver Detalles
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
                     )}
                 </>
             ) : filteredRequests.length === 0 ? (
@@ -696,150 +698,152 @@ export default function RequestsTable({
                     </div>
                 </div>
             ) : (
-                <table className={styles.table}>
-                    <thead className={styles.tableHeader}>
-                        <tr>
-                            {requestType === 'all-members' && (
-                                <th style={{ width: '40px' }}>
-                                    <input 
-                                        type="checkbox" 
-                                        checked={selectedIds.size === filteredRequests.length && filteredRequests.length > 0}
-                                        onChange={(e) => {
-                                            if (e.target.checked) {
-                                                setSelectedIds(new Set(filteredRequests.map(r => r.id)));
-                                            } else {
-                                                setSelectedIds(new Set());
-                                            }
-                                        }}
-                                    />
-                                </th>
-                            )}
-                            <th>Usuario / Rol</th>
-                            <th>Fecha de Solicitud</th>
-                            <th>Info Extra</th>
-                            <th>Estado Pago</th>
-                            <th>Estado Info</th>
-                            <th>Estado Solicitud</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className={styles.tableBody}>
-                        {filteredRequests.map((request) => (
-                            <tr key={request.id}>
+                <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                        <thead className={styles.tableHeader}>
+                            <tr>
                                 {requestType === 'all-members' && (
-                                    <td data-label="Seleccionar">
+                                    <th style={{ width: '40px' }}>
                                         <input 
                                             type="checkbox" 
-                                            checked={selectedIds.has(request.id)}
+                                            checked={selectedIds.size === filteredRequests.length && filteredRequests.length > 0}
                                             onChange={(e) => {
-                                                const newSelected = new Set(selectedIds);
-                                                if (e.target.checked) newSelected.add(request.id);
-                                                else newSelected.delete(request.id);
-                                                setSelectedIds(newSelected);
+                                                if (e.target.checked) {
+                                                    setSelectedIds(new Set(filteredRequests.map(r => r.id)));
+                                                } else {
+                                                    setSelectedIds(new Set());
+                                                }
                                             }}
                                         />
-                                    </td>
+                                    </th>
                                 )}
-                                <td data-label="Usuario">
-                                    <div className={styles.memberInfo}>
-                                        <div className={styles.memberAvatar} style={{
-                                            background: request.type === 'ambassador' ? '#E0F7FA' : '#F3E5F5',
-                                            color: request.type === 'ambassador' ? '#006064' : '#7B1FA2'
-                                        }}>
-                                            {request.type === 'ambassador' ? '🎯' : getInitials(request.name)}
-                                        </div>
-                                        <div className={styles.memberDetails}>
-                                            <div className={styles.memberName}>
-                                                {request.name}
-                                                {renderRoleBadges(request.roles)}
-                                            </div>
-                                            <div className={styles.memberEmail}>{request.email}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
-                                <td data-label="Info Extra">
-                                    {request.type === 'member' ? (
-                                        <span>🐶 {request.petCount || 0} Mascotas</span>
-                                    ) : (
-                                        <span>-</span>
-                                    )}
-                                </td>
-                                <td data-label="Estado Pago">
-                                    <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
-                                        {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
-                                    </span>
-                                </td>
-                                <td data-label="Estado Info">
-                                    <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>
-                                        {getInfoStatusLabel(request.infoStatus || 'complete')}
-                                    </span>
-                                </td>
-                                <td data-label="Estado Solicitud">
-                                    <span className={`${styles.statusBadge} ${styles[request.status]}`}>
-                                        <span className={styles.statusDot}></span>
-                                        {getStatusLabel(request.status)}
-                                    </span>
-                                </td>
-                                <td data-label="Acciones">
-                                    <div className={styles.actionButtons}>
-                                        <button
-                                            className={styles.viewButton}
-                                            onClick={() => onViewDetails(request.id, request.type)}
-                                        >
-                                            Ver Detalles
-                                        </button>
-                                        
-                                        {(requestType === 'all-members' || mode === 'termination') && (
-                                            <>
-                                                <button
-                                                    className={styles.rejectButton}
-                                                    style={{ border: 'none', background: '#fff3cd', color: '#856404' }}
-                                                    onClick={() => onTerminate?.(request)}
-                                                >
-                                                    🚫 Baja Políticas
-                                                </button>
-                                                <button
-                                                    className={styles.rejectButton}
-                                                    style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
-                                                    onClick={() => onDelete?.(request.id, request.type)}
-                                                >
-                                                    Eliminar
-                                                </button>
-                                            </>
-                                        )}
-
-                                        {request.status === 'rejected' && (
-                                            <button
-                                                className={styles.rejectButton}
-                                                onClick={() => onViewRejectionReason?.(request.id)}
-                                                style={{ fontSize: '0.8rem', padding: '4px 8px' }}
-                                            >
-                                                Motivo
-                                            </button>
-                                        )}
-                                        {request.status === 'pending' && requestType !== 'all-members' && (
-                                            <>
-                                                <button
-                                                    className={styles.approveButton}
-                                                    onClick={() => onApprove(request.id, request.type)}
-                                                >
-                                                    Aprobar
-                                                </button>
-                                                <button
-                                                    className={styles.rejectButton}
-                                                    onClick={() => onReject(request.id, request.type)}
-                                                >
-                                                    Rechazar
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </td>
+                                <th>Usuario / Rol</th>
+                                <th>Fecha de Solicitud</th>
+                                <th>Info Extra</th>
+                                <th>Estado Pago</th>
+                                <th>Estado Info</th>
+                                <th>Estado Solicitud</th>
+                                <th>Acciones</th>
                             </tr>
-                        ))}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody className={styles.tableBody}>
+                            {filteredRequests.map((request) => (
+                                <tr key={request.id}>
+                                    {requestType === 'all-members' && (
+                                        <td data-label="Seleccionar">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedIds.has(request.id)}
+                                                onChange={(e) => {
+                                                    const newSelected = new Set(selectedIds);
+                                                    if (e.target.checked) newSelected.add(request.id);
+                                                    else newSelected.delete(request.id);
+                                                    setSelectedIds(newSelected);
+                                                }}
+                                            />
+                                        </td>
+                                    )}
+                                    <td data-label="Usuario">
+                                        <div className={styles.memberInfo}>
+                                            <div className={styles.memberAvatar} style={{
+                                                background: request.type === 'ambassador' ? '#E0F7FA' : '#F3E5F5',
+                                                color: request.type === 'ambassador' ? '#006064' : '#7B1FA2'
+                                            }}>
+                                                {request.type === 'ambassador' ? '🎯' : getInitials(request.name)}
+                                            </div>
+                                            <div className={styles.memberDetails}>
+                                                <div className={styles.memberName}>
+                                                    {request.name}
+                                                    {renderRoleBadges(request.roles)}
+                                                </div>
+                                                <div className={styles.memberEmail}>{request.email}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
+                                    <td data-label="Info Extra">
+                                        {request.type === 'member' ? (
+                                            <span>🐶 {request.petCount || 0} Mascotas</span>
+                                        ) : (
+                                            <span>-</span>
+                                        )}
+                                    </td>
+                                    <td data-label="Estado Pago">
+                                        <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
+                                            {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
+                                        </span>
+                                    </td>
+                                    <td data-label="Estado Info">
+                                        <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>
+                                            {getInfoStatusLabel(request.infoStatus || 'complete')}
+                                        </span>
+                                    </td>
+                                    <td data-label="Estado Solicitud">
+                                        <span className={`${styles.statusBadge} ${styles[request.status]}`}>
+                                            <span className={styles.statusDot}></span>
+                                            {getStatusLabel(request.status)}
+                                        </span>
+                                    </td>
+                                    <td data-label="Acciones">
+                                        <div className={styles.actionButtons}>
+                                            <button
+                                                className={styles.viewButton}
+                                                onClick={() => onViewDetails(request.id, request.type)}
+                                            >
+                                                Ver Detalles
+                                            </button>
+                                            
+                                            {(requestType === 'all-members' || mode === 'termination') && (
+                                                <>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        style={{ border: 'none', background: '#fff3cd', color: '#856404' }}
+                                                        onClick={() => onTerminate?.(request)}
+                                                    >
+                                                        🚫 Baja Políticas
+                                                    </button>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
+                                                        onClick={() => onDelete?.(request.id, request.type)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </>
+                                            )}
+    
+                                            {request.status === 'rejected' && (
+                                                <button
+                                                    className={styles.rejectButton}
+                                                    onClick={() => onViewRejectionReason?.(request.id)}
+                                                    style={{ fontSize: '0.8rem', padding: '4px 8px' }}
+                                                >
+                                                    Motivo
+                                                </button>
+                                            )}
+                                            {request.status === 'pending' && requestType !== 'all-members' && (
+                                                <>
+                                                    <button
+                                                        className={styles.approveButton}
+                                                        onClick={() => onApprove(request.id, request.type)}
+                                                    >
+                                                        Aprobar
+                                                    </button>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        onClick={() => onReject(request.id, request.type)}
+                                                    >
+                                                        Rechazar
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             )}
             </div>
         </div>

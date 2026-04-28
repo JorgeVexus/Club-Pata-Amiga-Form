@@ -39,30 +39,32 @@ export default function AdminsTable() {
 
     return (
         <div className={styles.container}>
-            <table className={styles.table}>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Email</th>
-                        <th>Rol</th>
-                        <th>Fecha de Registro</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {admins.map((admin) => (
-                        <tr key={admin.memberstack_id}>
-                            <td>{admin.full_name || 'Sin nombre'}</td>
-                            <td>{admin.email}</td>
-                            <td>
-                                <span className={admin.role === 'super_admin' ? styles.superAdminBadge : styles.adminBadge}>
-                                    {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}
-                                </span>
-                            </td>
-                            <td>{new Date(admin.created_at).toLocaleDateString('es-MX')}</td>
+            <div className={styles.tableWrapper}>
+                <table className={styles.table}>
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Email</th>
+                            <th>Rol</th>
+                            <th>Fecha de Registro</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {admins.map((admin) => (
+                            <tr key={admin.memberstack_id}>
+                                <td>{admin.full_name || 'Sin nombre'}</td>
+                                <td>{admin.email}</td>
+                                <td>
+                                    <span className={admin.role === 'super_admin' ? styles.superAdminBadge : styles.adminBadge}>
+                                        {admin.role === 'super_admin' ? 'Super Admin' : 'Admin'}
+                                    </span>
+                                </td>
+                                <td>{new Date(admin.created_at).toLocaleDateString('es-MX')}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
             {admins.length === 0 && (
                 <div className={styles.empty}>No hay administradores registrados.</div>
             )}

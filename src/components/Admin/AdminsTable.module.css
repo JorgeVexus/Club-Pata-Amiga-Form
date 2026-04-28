@@ -12,6 +12,13 @@
     color: #6b7280;
 }
 
+.tableWrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+}
+
 .table {
     width: 100%;
     border-collapse: collapse;

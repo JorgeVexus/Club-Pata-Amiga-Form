@@ -265,7 +265,8 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
                         <p>No se encontraron embajadores con los filtros actuales.</p>
                     </div>
                 ) : (
-                    <table className={styles.table}>
+                    <div className={styles.tableWrapper}>
+                        <table className={styles.table}>
                         <thead>
                             <tr>
                                 <th>Embajador</th>
@@ -359,6 +360,7 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 )}
             </div>
 
