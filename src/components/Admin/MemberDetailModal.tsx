@@ -76,12 +76,15 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [selectedRequests, setSelectedRequests] = useState<Record<string, string[]>>({});
     const [requestCustomMsg, setRequestCustomMsg] = useState<Record<string, string>>({});
     const [sendingRequest, setSendingRequest] = useState<Record<string, boolean>>({});
+    const [stripeDetails, setStripeDetails] = useState<any>(null);
+    const [loadingStripe, setLoadingStripe] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
             loadSupabaseUserData();
             loadBillingDetails();
+            loadStripeDetails();
         }
     }, [isOpen, member]);
 
@@ -110,6 +113,21 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             console.error('Error loading billing details:', error);
         } finally {
             setLoadingBilling(false);
+        }
+    }
+
+    async function loadStripeDetails() {
+        setLoadingStripe(true);
+        try {
+            const res = await fetch(`/api/admin/members/${member.id}/stripe-details`);
+            const data = await res.json();
+            if (data.success) {
+                setStripeDetails(data.stripeData);
+            }
+        } catch (error) {
+            console.error('Error loading stripe details:', error);
+        } finally {
+            setLoadingStripe(false);
         }
     }
 
@@ -487,6 +505,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             </span>
                                         </div>
                                         <div className={styles.field}>
+                                            <span className={styles.label}>Frecuencia de Pago</span>
+                                            <span className={styles.value} style={{ textTransform: 'capitalize' }}>
+                                                {stripeDetails?.subscription?.interval || (plan.planName?.toLowerCase().includes('anual') ? 'Anual' : 'Mensual')}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
                                             <span className={styles.label}>Estado de Pago</span>
                                             <span className={`${styles.paymentStatus} ${styles[plan.status?.toLowerCase() || 'none']}`}>
                                                 {plan.status || 'Desconocido'}
@@ -498,12 +522,70 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         </div>
                                         <div className={styles.field}>
                                             <span className={styles.label}>Próxima Renovación</span>
-                                            <span className={styles.value} style={{ fontWeight: 600 }}>{renewalDate}</span>
+                                            <span className={styles.value} style={{ fontWeight: 600 }}>
+                                                {stripeDetails?.subscription?.currentPeriodEnd 
+                                                    ? new Date(stripeDetails.subscription.currentPeriodEnd).toLocaleDateString('es-MX', {
+                                                        day: '2-digit',
+                                                        month: 'long',
+                                                        year: 'numeric'
+                                                    })
+                                                    : renewalDate}
+                                            </span>
                                         </div>
+                                        {stripeDetails?.payments?.length > 0 && (
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>Último Pago</span>
+                                                <span className={styles.value}>
+                                                    {new Date(stripeDetails.payments[0].date).toLocaleDateString('es-MX', {
+                                                        day: '2-digit',
+                                                        month: 'long'
+                                                    })} - ${stripeDetails.payments[0].amount.toFixed(2)} {stripeDetails.payments[0].currency}
+                                                </span>
+                                            </div>
+                                        )}
                                     </>
                                 );
                             })()}
                         </div>
+
+                        {/* Stripe Payment History Table */}
+                        {stripeDetails?.payments?.length > 0 && (
+                            <div className={styles.paymentHistory}>
+                                <h4 className={styles.subSectionTitle}>Historial de Pagos Recientes</h4>
+                                <div className={styles.paymentTableWrapper}>
+                                    <table className={styles.paymentTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Monto</th>
+                                                <th>Estado</th>
+                                                <th>Factura</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {stripeDetails.payments.map((p: any) => (
+                                                <tr key={p.id}>
+                                                    <td>{new Date(p.date).toLocaleDateString('es-MX')}</td>
+                                                    <td style={{ fontWeight: 600 }}>${p.amount.toFixed(2)} {p.currency}</td>
+                                                    <td>
+                                                        <span className={`${styles.statusBadge} ${p.status === 'succeeded' ? styles.statusSucceeded : ''}`}>
+                                                            {p.status === 'succeeded' ? 'Pagado' : p.status}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        {p.pdf ? (
+                                                            <a href={p.pdf} target="_blank" rel="noopener noreferrer" className={styles.pdfLink}>
+                                                                📄 PDF
+                                                            </a>
+                                                        ) : '-'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Address */}

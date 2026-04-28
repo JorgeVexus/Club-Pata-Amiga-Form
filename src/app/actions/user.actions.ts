@@ -1,6 +1,9 @@
 'use server'
-
+ 
 import { createClient } from '@supabase/supabase-js'
+
+import Stripe from 'stripe'
+import { getMemberDetails } from '@/services/memberstack-admin.service'
 import { upsertContact, updateContact, updateContactAsActive, type ContactData } from '@/services/crm.service'
 
 // Inicializar cliente seguro para operaciones de administración
@@ -768,6 +771,88 @@ export async function notifyCheckoutCompletedToCRM(memberstackId: string) {
         return { success: result.success, error: result.error };
     } catch (error: any) {
         console.error('❌ [CRM Sync] Error notificando pago completo:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Obtiene detalles de pagos y suscripción directamente de Stripe para un miembro.
+ */
+export async function getMemberStripeDetails(memberstackId: string) {
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+    
+    try {
+        console.log(`📡 [Stripe] Obteniendo detalles para miembro: ${memberstackId}`);
+        
+        // 1. Obtener datos de Memberstack para el email y subId
+        const msResult = await getMemberDetails(memberstackId);
+        if (!msResult.success || !msResult.data) {
+            return { success: false, error: 'No se pudo obtener datos de Memberstack' };
+        }
+        
+        const member = msResult.data;
+        const email = member.auth.email;
+        const subId = member.planConnections?.[0]?.payment?.stripeSubscriptionId;
+        
+        let stripeData: any = {
+            subscription: null,
+            payments: []
+        };
+        
+        // 2. Si hay subId, obtener detalles de la suscripción
+        if (subId) {
+            console.log(`🔗 [Stripe] Subscription ID encontrado: ${subId}`);
+            const subscription = await stripe.subscriptions.retrieve(subId);
+            const sub = subscription as any;
+            
+            stripeData.subscription = {
+                id: sub.id,
+                status: sub.status,
+                interval: sub.items?.data[0]?.plan?.interval === 'year' ? 'anual' : 'mensual',
+                currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+                currentPeriodStart: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : null,
+                amount: sub.items?.data[0]?.plan?.amount ? sub.items.data[0].plan.amount / 100 : 0,
+                currency: sub.currency?.toUpperCase() || 'MXN'
+            };
+            
+            // 3. Obtener facturas/pagos asociados a esta suscripción
+            const invoices = await stripe.invoices.list({
+                subscription: subId,
+                limit: 10
+            });
+            
+            stripeData.payments = invoices.data.map(invoice => ({
+                id: invoice.id,
+                amount: (invoice.amount_paid || invoice.total) / 100,
+                currency: invoice.currency.toUpperCase(),
+                status: invoice.status === 'paid' ? 'succeeded' : invoice.status,
+                date: new Date(invoice.created * 1000).toISOString(),
+                pdf: invoice.invoice_pdf,
+                number: invoice.number
+            }));
+        } else if (email) {
+            console.log(`📧 [Stripe] No hay subId, buscando por email: ${email}`);
+            // Si no hay subId, intentar buscar por email (pagos únicos o suscripciones antiguas)
+            const customers = await stripe.customers.list({ email, limit: 1 });
+            if (customers.data.length > 0) {
+                const customerId = customers.data[0].id;
+                const payments = await stripe.paymentIntents.list({
+                    customer: customerId,
+                    limit: 10
+                });
+                stripeData.payments = payments.data.map(pi => ({
+                    id: pi.id,
+                    amount: pi.amount / 100,
+                    currency: pi.currency.toUpperCase(),
+                    status: pi.status,
+                    date: new Date(pi.created * 1000).toISOString()
+                }));
+            }
+        }
+        
+        return { success: true, stripeData };
+    } catch (error: any) {
+        console.error('❌ Error obteniendo detalles de Stripe:', error);
         return { success: false, error: error.message };
     }
 }
