@@ -5,6 +5,30 @@
     height: 100%;
 }
 
+.hubHeader {
+    padding: 0 10px;
+}
+
+.hubTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #2D3748;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.audienceTag {
+    background-color: #00BBB4;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
 .tabsHeader {
     display: flex;
     gap: 10px;

@@ -232,11 +232,19 @@ export default function AdminDashboard() {
                     />
                 );
             case 'communications':
+            case 'communications-member':
+            case 'communications-ambassador':
+            case 'communications-wellness':
+                const audience = activeFilter.includes('-') 
+                    ? activeFilter.split('-')[1] as any 
+                    : 'member'; // Default to member for the legacy 'communications' ID
+                
                 return (
                     <CommunicationsHub
                         adminName={adminName}
                         isSuperAdmin={isAdminSuper}
                         prefill={commPrefill}
+                        audience={audience}
                     />
                 );
             case 'ambassador':

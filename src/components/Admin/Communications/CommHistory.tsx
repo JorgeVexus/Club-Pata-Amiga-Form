@@ -7,9 +7,10 @@ import styles from './CommHistory.module.css';
 interface CommHistoryProps {
     adminName: string;
     isSuperAdmin: boolean;
+    audience?: 'member' | 'ambassador' | 'wellness-center' | 'general';
 }
 
-export default function CommHistory({ adminName, isSuperAdmin }: CommHistoryProps) {
+export default function CommHistory({ adminName, isSuperAdmin, audience = 'general' }: CommHistoryProps) {
     const [logs, setLogs] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');

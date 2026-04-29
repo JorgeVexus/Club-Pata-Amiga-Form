@@ -1,11 +1,12 @@
 'use server';
 
 /**
- * ðŸ›°ï¸ Server Actions para Comunicaciones
+ * 🛰️ Server Actions para Comunicaciones
  */
 
 import { resend, DEFAULT_FROM_EMAIL, DEFAULT_FROM_NAME, MEMBERS_FROM_EMAIL, MEMBERS_FROM_NAME, REPLY_TO_EMAIL } from '@/lib/resend';
 import { commService } from '@/services/comm.service';
+import { buildBrandedEmailHtml } from '@/utils/email-builder';
 
 interface SendEmailParams {
     userId: string;
@@ -14,35 +15,45 @@ interface SendEmailParams {
     to: string;
     subject: string;
     content: string; // Texto plano
-    html?: string;   // VersiÃ³n HTML opcional
+    html?: string;   // Versión HTML opcional
+    audience?: 'member' | 'ambassador' | 'wellness-center' | 'general';
+    memberName?: string; // Para el saludo del builder
     metadata?: any;
 }
 
 /**
- * EnvÃ­a un email a travÃ©s de Resend y lo registra en la base de datos
+ * Envía un email a través de Resend y lo registra en la base de datos
  */
 export async function sendAdminEmail(params: SendEmailParams) {
-    const { userId, adminId, templateId, to, subject, content, html, metadata } = params;
+    const { userId, adminId, templateId, to, subject, content, html, audience = 'general', memberName = 'Miembro', metadata } = params;
 
-    console.log(`ðŸ“§ [Server Action] Intentando enviar email a ${to}`);
+    console.log(`📧 [Server Action] Intentando enviar email a ${to}`);
 
     if (!resend) {
-        console.error('âŒ [Server Action] Resend no estÃ¡ configurado (falta RESEND_API_KEY)');
-        return { success: false, error: 'ConfiguraciÃ³n de servidor incompleta (Resend)' };
+        console.error('❌ [Server Action] Resend no está configurado (falta RESEND_API_KEY)');
+        return { success: false, error: 'Configuración de servidor incompleta (Resend)' };
     }
 
     try {
+        // Generar HTML de marca si no se proporciona uno explícito
+        const finalHtml = html || buildBrandedEmailHtml({
+            memberName,
+            subject,
+            content,
+            audience
+        });
+
         // 1. Enviar el email mediante Resend API
         const { data: resendData, error: resendError } = await resend.emails.send({
             from: `${DEFAULT_FROM_NAME} <${DEFAULT_FROM_EMAIL}>`,
             to: [to],
             subject: subject,
-            text: content, // VersiÃ³n texto plano
-            html: html || content.replace(/\n/g, '<br/>'), // HTML o conversiÃ³n bÃ¡sica
+            text: content, // Versión texto plano
+            html: finalHtml,
         });
 
         if (resendError) {
-            console.error('âŒ [Server Action] Error de Resend:', resendError);
+            console.error('❌ [Server Action] Error de Resend:', resendError);
 
             // Loguear el fallo
             await commService.logCommunication({
@@ -505,72 +516,23 @@ export async function sendInfoRequestEmail(params: SendInfoRequestEmailParams) {
  * Construye el HTML para el correo de baja por incumplimiento
  */
 export async function buildTerminationEmailHtml(memberName: string, reason?: string) {
-    const reasonHtml = reason 
-        ? `<div style="background-color: #fff5f5; border-left: 4px solid #e53e3e; padding: 15px; margin: 20px 0; border-radius: 4px;">
-            <p style="margin: 0; color: #c53030; font-weight: bold;">Motivo de la baja:</p>
-            <p style="margin: 5px 0 0 0; color: #2d3748;">${reason}</p>
-           </div>`
-        : '';
+    const subject = 'Aviso de Baja de Membresía';
+    const content = `Hola ${memberName},
+    
+Lamentamos informarte que tu membresía en Club Pata Amiga ha sido dada de baja debido al incumplimiento de nuestras políticas de uso.
 
-    return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-        <style>
-            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap');
-            .email-container {
-                font-family: 'Outfit', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-                max-width: 600px;
-                margin: 0 auto;
-                background-color: #ffffff;
-                border-radius: 12px;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
-            }
-            .header {
-                background-color: #00BBB4;
-                padding: 30px;
-                text-align: center;
-            }
-            .content {
-                padding: 40px 30px;
-                color: #2d3748;
-                line-height: 1.6;
-            }
-            .footer {
-                background-color: #f7fafc;
-                padding: 20px;
-                text-align: center;
-                font-size: 12px;
-                color: #718096;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="email-container">
-            <div class="header">
-                <img src="https://hjvhntxjkuuobgfslzlf.supabase.co/storage/v1/object/public/public-assets/logo-white.png" alt="Pata Amiga" width="150">
-            </div>
-            <div class="content">
-                <h2 style="color: #2d3748; margin-top: 0; font-family: 'Fraiche', sans-serif;">Aviso de Baja de Membresía</h2>
-                <p>Hola <strong>${memberName}</strong>,</p>
-                <p>Lamentamos informarte que tu membresía en <strong>Club Pata Amiga</strong> ha sido dada de baja debido al incumplimiento de nuestras políticas de uso.</p>
-                
-                ${reasonHtml}
-                
-                <p>Esta decisión implica la revocación inmediata de todos tus beneficios, servicios y coberturas asociadas a tu cuenta y a tus mascotas registradas.</p>
-                
-                <p>Si consideras que esto es un error o deseas apelar esta decisión, por favor contáctanos respondiendo a este correo o a través de nuestros canales oficiales.</p>
-                
-                <p>Atentamente,<br><strong>Equipo de Pata Amiga</strong></p>
-            </div>
-            <div class="footer">
-                <p>&copy; ${new Date().getFullYear()} Club Pata Amiga. Todos los derechos reservados.</p>
-            </div>
-        </div>
-    </body>
-    </html>
-    `;
+${reason ? `Motivo de la baja: ${reason}` : ''}
+
+Esta decisión implica la revocación inmediata de todos tus beneficios, servicios y coberturas asociadas a tu cuenta y a tus mascotas registradas.
+
+Si consideras que esto es un error o deseas apelar esta decisión, por favor contáctanos respondiendo a este correo o a través de nuestros canales oficiales.`;
+
+    return buildBrandedEmailHtml({
+        memberName,
+        subject,
+        content,
+        audience: 'general' // O una específica si se prefiere
+    });
 }
 
 

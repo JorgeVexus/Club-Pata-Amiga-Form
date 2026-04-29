@@ -104,9 +104,9 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
             title: 'Comunicaciones',
             icon: '📡',
             items: [
-                { id: 'communications', label: 'Miembros', icon: '👥' },
-                { id: 'communications', label: 'Centros de Bienestar', icon: '🏥' },
-                { id: 'communications', label: 'Embajadores', icon: '🎯' },
+                { id: 'communications-member', label: 'Miembros', icon: '👥' },
+                { id: 'communications-wellness', label: 'Centros de Bienestar', icon: '🏥' },
+                { id: 'communications-ambassador', label: 'Embajadores', icon: '🎯' },
             ]
         },
         {

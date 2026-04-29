@@ -9,6 +9,9 @@ export type RequestType =
     | 'wellness-center' 
     | 'solidarity-fund' 
     | 'communications' 
+    | 'communications-member'
+    | 'communications-ambassador'
+    | 'communications-wellness'
     | 'appeals' 
     | 'all-members' 
     | 'terminate-users'
@@ -127,6 +130,9 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'wellness-center': BRAND_COLORS.orange,
     'solidarity-fund': BRAND_COLORS.pink,
     'communications': BRAND_COLORS.green,
+    'communications-member': BRAND_COLORS.green,
+    'communications-ambassador': BRAND_COLORS.yellow,
+    'communications-wellness': BRAND_COLORS.orange,
     'appeals': BRAND_COLORS.yellow,
     'all-members': BRAND_COLORS.green,
     'terminate-users': BRAND_COLORS.pink,
@@ -158,6 +164,9 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'wellness-center': 'Centros de Bienestar',
     'solidarity-fund': 'Fondo Solidario',
     'communications': 'Comunicaciones',
+    'communications-member': 'Comunicaciones (Miembros)',
+    'communications-ambassador': 'Comunicaciones (Embajadores)',
+    'communications-wellness': 'Comunicaciones (Centros)',
     'appeals': 'Apelaciones',
     'all-members': 'Gestión General',
     'terminate-users': 'Baja de Usuarios',

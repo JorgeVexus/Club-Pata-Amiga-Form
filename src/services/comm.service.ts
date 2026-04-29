@@ -11,6 +11,7 @@ export interface CommTemplate {
     type: 'email' | 'whatsapp';
     subject?: string;
     content: string;
+    audience?: 'member' | 'ambassador' | 'wellness-center' | 'general';
     created_at: string;
     updated_at: string;
 }
