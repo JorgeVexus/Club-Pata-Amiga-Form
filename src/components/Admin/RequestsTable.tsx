@@ -507,7 +507,8 @@ export default function RequestsTable({
                         <h2 className={styles.requestsTitle}>
                             {requestType === 'ambassador' ? 'Gestión de Embajadores' : 
                              requestType === 'wellness-center' ? 'Gestión de Centros de Bienestar' : 
-                             requestType === 'appeals' ? 'Gestión de Apelaciones' : 'Gestión de Miembros'}
+                             requestType === 'appeals' ? 'Gestión de Apelaciones' : 
+                             requestType === 'terminate-users' ? 'Baja de Usuarios' : 'Gestión de Miembros'}
                         </h2>
                         {selectedIds.size > 0 && (
                             <button 

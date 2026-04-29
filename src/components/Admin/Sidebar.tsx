@@ -55,6 +55,7 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                 { id: 'member', label: 'Miembros', icon: '👥', badge: pendingCounts.member },
                 { id: 'ambassador', label: 'Embajadores', icon: '🎯', badge: pendingCounts.ambassador },
                 { id: 'wellness-center', label: 'Centros de bienestar', icon: '🏥', badge: pendingCounts['wellness-center'] },
+                { id: 'terminate-users', label: 'Baja de Usuarios', icon: '🚫' },
             ]
         },
         {
