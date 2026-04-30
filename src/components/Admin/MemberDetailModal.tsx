@@ -332,6 +332,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
     const fields = member.customFields || {};
 
+    const isForeigner = supabaseUser?.nationality === 'extranjero' || 
+                        fields['is-foreigner'] === 'true' || 
+                        fields['is-foreigner'] === true;
+
     // Force download handler
     const handleDownload = async (e: React.MouseEvent, url: string, filename: string) => {
         e.preventDefault();
@@ -432,10 +436,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 <span className={styles.label}>Fecha de Nacimiento</span>
                                 <span className={styles.value}>{fields['birth-date'] || supabaseUser?.birth_date || '-'}</span>
                             </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>CURP</span>
-                                <span className={styles.value}>{fields['curp'] || supabaseUser?.curp || '-'}</span>
-                            </div>
+                            {!isForeigner && (
+                                <div className={styles.field}>
+                                    <span className={styles.label}>CURP</span>
+                                    <span className={styles.value}>{fields['curp'] || supabaseUser?.curp || '-'}</span>
+                                </div>
+                            )}
                             <div className={styles.field}>
                                 <span className={styles.label}>Nacionalidad</span>
                                 <span className={styles.value}>
@@ -690,6 +696,52 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             </div>
                         ) : null}
                     </div>
+
+                    {/* Member Documents (Foreigners Only) */}
+                    {isForeigner && (
+                        <div className={styles.section}>
+                            <h3 className={styles.sectionTitle}>Documentación Oficial 🛂</h3>
+                            <div className={styles.grid}>
+                                {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
+                                    <div className={styles.documentCard} style={{ background: '#F0F9FF', borderColor: '#BAE6FD' }}>
+                                        <span className={styles.documentIcon}>🛂</span>
+                                        <div className={styles.documentInfo}>
+                                            <div className={styles.documentName}>Pasaporte</div>
+                                            <div className={styles.docDesc}>Documento de identidad extranjero</div>
+                                        </div>
+                                        <div className={styles.docActions}>
+                                            <a 
+                                                href={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className={styles.viewDocButton}
+                                            >
+                                                Ver
+                                            </a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => handleDownload(e, fields['ine-front-url'] || supabaseUser?.ine_front_url, `pasaporte-${member.id}`)}
+                                                className={styles.viewDocButton}
+                                            >
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Passport Image Preview */}
+                            {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
+                                <div style={{ marginTop: '1.5rem', borderRadius: '16px', overflow: 'hidden', border: '2px solid #E2E8F0' }}>
+                                    <img 
+                                        src={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
+                                        alt="Pasaporte" 
+                                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f8fafc' }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
 
 
                     {/* Pets */}
