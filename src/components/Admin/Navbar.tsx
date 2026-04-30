@@ -54,7 +54,7 @@ export default function Navbar({ onMobileMenuToggle, onNotificationClick }: Navb
                     data-ms-action="logout"
                     onClick={() => {
                         setTimeout(() => {
-                            window.location.href = '/admin/login?post_logout=true';
+                            window.location.href = 'https://app.pataamiga.mx/admin/login?post_logout=true';
                         }, 500);
                     }}
                     title="Cerrar sesión"

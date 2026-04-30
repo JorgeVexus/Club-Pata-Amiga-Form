@@ -105,29 +105,29 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    background: #FF4D4D;
-    color: white;
-    border: 2px solid #000;
+    background: white;
+    color: var(--gray-800);
+    border: 1px solid var(--gray-300);
     padding: 8px 16px;
     border-radius: 999px;
     cursor: pointer;
-    font-weight: 600;
+    font-weight: 500;
     font-family: inherit;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     transition: all 0.2s ease;
-    box-shadow: 2px 2px 0px #000;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     margin-left: 12px;
 }
 
 .logoutButton:hover {
-    background: #E63939;
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0px #000;
+    background: var(--gray-50);
+    border-color: var(--gray-400);
+    color: var(--color-error, #E53E3E);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
 }
 
 .logoutButton:active {
-    transform: translate(1px, 1px);
-    box-shadow: 1px 1px 0px #000;
+    transform: scale(0.98);
 }
 
 .logoutIcon {
