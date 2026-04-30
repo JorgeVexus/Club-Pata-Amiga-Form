@@ -51,11 +51,15 @@ export default function Navbar({ onMobileMenuToggle, onNotificationClick }: Navb
                 {/* Botón de Cerrar Sesión movido al Navbar */}
                 <button
                     className={styles.logoutButton}
-                    data-ms-action="logout"
-                    onClick={() => {
-                        setTimeout(() => {
-                            window.location.href = 'https://app.pataamiga.mx/admin/login?post_logout=true';
-                        }, 500);
+                    onClick={async () => {
+                        try {
+                            if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
+                                await (window as any).$memberstackDom.logout();
+                            }
+                        } catch (e) {
+                            console.error('Error logging out:', e);
+                        }
+                        window.location.href = 'https://app.pataamiga.mx/admin/login?post_logout=true';
                     }}
                     title="Cerrar sesión"
                 >
