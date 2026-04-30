@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createClient } from '@supabase/supabase-js';
+import Stripe from 'stripe';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,10 +21,10 @@ export async function DELETE(
     try {
         console.log(`🗑️ [BACKEND] Iniciando eliminación total del miembro: ${id}`);
 
-        // 1. Buscar usuario en Supabase para obtener su UUID interno
+        // 1. Buscar usuario en Supabase para obtener su UUID interno y datos de Stripe
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, role')
+            .select('id, role, stripe_customer_id, email')
             .eq('memberstack_id', id)
             .maybeSingle();
 
@@ -106,7 +107,55 @@ export async function DELETE(
             console.log('ℹ️ Usuario no encontrado en Supabase, procediendo solo con Memberstack');
         }
 
-        // 5. Borrar de Memberstack
+        // 5. Cancelar suscripciones activas en Stripe ANTES de borrar el miembro
+        console.log('💳 Cancelando suscripciones en Stripe...');
+        try {
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+            let stripeCustomerId = user?.stripe_customer_id;
+
+            // Si no tenemos el customer_id guardado, buscarlo por email en Stripe
+            if (!stripeCustomerId && user?.email) {
+                const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+                if (customers.data.length > 0) {
+                    stripeCustomerId = customers.data[0].id;
+                }
+            }
+
+            if (stripeCustomerId) {
+                // Buscar todas las suscripciones activas o en prueba
+                const subscriptions = await stripe.subscriptions.list({
+                    customer: stripeCustomerId,
+                    status: 'active',
+                    limit: 10,
+                });
+
+                // También buscar suscripciones con estado 'trialing'
+                const trialingSubscriptions = await stripe.subscriptions.list({
+                    customer: stripeCustomerId,
+                    status: 'trialing',
+                    limit: 10,
+                });
+
+                const allSubs = [...subscriptions.data, ...trialingSubscriptions.data];
+
+                if (allSubs.length > 0) {
+                    console.log(`🔴 Cancelando ${allSubs.length} suscripción(es) activa(s) de Stripe para customer: ${stripeCustomerId}`);
+                    for (const sub of allSubs) {
+                        await stripe.subscriptions.cancel(sub.id);
+                        console.log(`✅ Suscripción ${sub.id} cancelada inmediatamente.`);
+                    }
+                } else {
+                    console.log(`ℹ️ No se encontraron suscripciones activas en Stripe para customer: ${stripeCustomerId}`);
+                }
+            } else {
+                console.log('ℹ️ No se encontró Stripe customer ID, omitiendo cancelación de suscripciones.');
+            }
+        } catch (stripeError: any) {
+            // No bloqueamos el borrado si falla Stripe, pero sí lo logueamos como error crítico
+            console.error('❌ [CRÍTICO] Error cancelando suscripciones en Stripe:', stripeError.message);
+        }
+
+        // 6. Borrar de Memberstack
         console.log('📤 Eliminando de Memberstack...');
         const msResult = await memberstackAdmin.deleteMember(id);
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createClient } from '@supabase/supabase-js';
+import Stripe from 'stripe';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -35,7 +36,7 @@ export async function POST(request: NextRequest) {
                 // 1. Lógica de Supabase
                 const { data: user } = await supabaseAdmin
                     .from('users')
-                    .select('id')
+                    .select('id, stripe_customer_id, email')
                     .eq('memberstack_id', msId)
                     .maybeSingle();
 
@@ -72,6 +73,31 @@ export async function POST(request: NextRequest) {
 
                     await supabaseAdmin.from('pets').delete().eq('owner_id', user.id);
                     await supabaseAdmin.from('users').delete().eq('id', user.id);
+                }
+
+                // Cancelar suscripciones activas en Stripe
+                try {
+                    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+                    let stripeCustomerId = user?.stripe_customer_id;
+
+                    if (!stripeCustomerId && user?.email) {
+                        const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+                        if (customers.data.length > 0) stripeCustomerId = customers.data[0].id;
+                    }
+
+                    if (stripeCustomerId) {
+                        const [activeSubs, trialingSubs] = await Promise.all([
+                            stripe.subscriptions.list({ customer: stripeCustomerId, status: 'active', limit: 10 }),
+                            stripe.subscriptions.list({ customer: stripeCustomerId, status: 'trialing', limit: 10 }),
+                        ]);
+                        const allSubs = [...activeSubs.data, ...trialingSubs.data];
+                        for (const sub of allSubs) {
+                            await stripe.subscriptions.cancel(sub.id);
+                            console.log(`✅ [BULK] Suscripción ${sub.id} cancelada para ${msId}`);
+                        }
+                    }
+                } catch (stripeError: any) {
+                    console.error(`❌ [BULK][CRÍTICO] Error cancelando Stripe para ${msId}:`, stripeError.message);
                 }
 
                 // 2. Memberstack
