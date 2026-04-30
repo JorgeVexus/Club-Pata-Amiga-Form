@@ -332,7 +332,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
     const fields = member.customFields || {};
 
-    const isForeigner = supabaseUser?.nationality === 'extranjero' || 
+    // 🆕 Lógica reforzada para detectar extranjeros
+    const nationalityValue = (supabaseUser?.nationality || fields['nationality'] || '').toLowerCase();
+    const isForeigner = (nationalityValue !== '' && 
+                        nationalityValue !== 'mexicano' && 
+                        nationalityValue !== 'mexicana' && 
+                        nationalityValue !== 'méxico' && 
+                        nationalityValue !== 'mexico') || 
                         fields['is-foreigner'] === 'true' || 
                         fields['is-foreigner'] === true;
 
