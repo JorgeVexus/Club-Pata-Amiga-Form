@@ -151,28 +151,6 @@
     margin: var(--spacing-md) var(--spacing-md);
 }
 
-.logoutButton {
-    margin: var(--spacing-md);
-    padding: var(--spacing-md);
-    border: 1px solid var(--gray-300);
-    border-radius: var(--radius-md);
-    background: white;
-    color: var(--gray-700);
-    font-size: 0.875rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--spacing-sm);
-}
-
-.logoutButton:hover {
-    background: #fff5f5;
-    border-color: #feb2b2;
-    color: #c53030;
-}
-
 /* Mobile Sidebar */
 @media (max-width: 768px) {
     .sidebar {

@@ -198,19 +198,6 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                 )}
             </div>
 
-            {/* Botón de Cerrar Sesión */}
-            <button
-                className={styles.logoutButton}
-                data-ms-action="logout"
-                onClick={() => {
-                    setTimeout(() => {
-                        window.location.href = '/admin/login?post_logout=true';
-                    }, 500);
-                }}
-            >
-                <span>🚪</span>
-                <span>Cerrar sesión</span>
-            </button>
         </aside>
     );
 }

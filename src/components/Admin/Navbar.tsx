@@ -47,6 +47,21 @@ export default function Navbar({ onMobileMenuToggle, onNotificationClick }: Navb
                     />
                     <span className={styles.adminText}>Administrador</span>
                 </div>
+
+                {/* Botón de Cerrar Sesión movido al Navbar */}
+                <button
+                    className={styles.logoutButton}
+                    data-ms-action="logout"
+                    onClick={() => {
+                        setTimeout(() => {
+                            window.location.href = '/admin/login?post_logout=true';
+                        }, 500);
+                    }}
+                    title="Cerrar sesión"
+                >
+                    <span className={styles.logoutIcon}>🚪</span>
+                    <span className={styles.logoutText}>Cerrar sesión</span>
+                </button>
             </div>
         </nav>
     );
