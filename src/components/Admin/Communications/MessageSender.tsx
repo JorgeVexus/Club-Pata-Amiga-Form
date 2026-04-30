@@ -65,15 +65,29 @@ export default function MessageSender({ adminName, prefill, audience = 'general'
             if (audience === 'wellness-center') {
                 setMembers([]); // Placeholder para Fase 2
             } else if (audience === 'ambassador') {
-                // TODO: Endpoint específico para embajadores si es necesario
-                // Por ahora usamos el de miembros filtrando por algún campo si existe
-                const mRes = await fetch('/api/admin/members?status=all');
-                const mData = await mRes.json();
-                if (mData.success) setMembers(mData.members || []);
+                // Fetch from ambassadors API
+                const aRes = await fetch('/api/ambassadors?status=approved&limit=1000');
+                const aData = await aRes.json();
+                if (aData.success) {
+                    // Mapear embajadores a la estructura de Member
+                    const mappedAmbassadors: Member[] = (aData.data || []).map((amb: any) => ({
+                        id: amb.id,
+                        auth: { email: amb.email },
+                        customFields: {
+                            'first-name': amb.first_name,
+                            'paternal-last-name': amb.paternal_surname,
+                            'phone': amb.phone
+                        }
+                    }));
+                    setMembers(mappedAmbassadors);
+                }
             } else {
+                // Fetch members (standard members)
                 const mRes = await fetch('/api/admin/members?status=all');
                 const mData = await mRes.json();
-                if (mData.success) setMembers(mData.members || []);
+                if (mData.success) {
+                    setMembers(mData.members || []);
+                }
             }
         } catch (error) {
             console.error('Error cargando datos:', error);
@@ -273,7 +287,10 @@ export default function MessageSender({ adminName, prefill, audience = 'general'
                     ) : (
                         <>
                             <div className={styles.formGroup}>
-                                <label>1. Buscar Destinatario ({audience === 'ambassador' ? 'Embajador' : 'Miembro'})</label>
+                                <label>1. Buscar Destinatario ({
+                                    audience === 'ambassador' ? 'Embajador' : 
+                                    audience === 'member' ? 'Miembro' : 'General'
+                                })</label>
                                 <input
                                     type="text"
                                     placeholder="Nombre o email..."

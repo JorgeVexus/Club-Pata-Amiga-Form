@@ -231,13 +231,15 @@ export default function AdminDashboard() {
                         }}
                     />
                 );
-            case 'communications':
             case 'communications-member':
             case 'communications-ambassador':
             case 'communications-wellness':
-                const audience = activeFilter.includes('-') 
-                    ? activeFilter.split('-')[1] as any 
-                    : 'member'; // Default to member for the legacy 'communications' ID
+            case 'communications':
+                let audience: 'member' | 'ambassador' | 'wellness-center' | 'general' = 'member';
+                
+                if (activeFilter === 'communications-ambassador') audience = 'ambassador';
+                else if (activeFilter === 'communications-wellness') audience = 'wellness-center';
+                else if (activeFilter === 'communications') audience = 'general';
                 
                 return (
                     <CommunicationsHub

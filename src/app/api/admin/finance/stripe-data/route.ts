@@ -87,11 +87,14 @@ export async function GET(request: NextRequest) {
                             interval = 'year';
                         }
 
+                        const price = sub.items.data[0]?.price;
+                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
+
                         allStripeSubs.push({
                             id: sub.id,
                             status: sub.status,
-                            plan: sub.items.data[0]?.price?.nickname || sub.items.data[0]?.price?.product || 'Plan',
-                            amount: sub.items.data[0]?.price?.unit_amount ? sub.items.data[0].price.unit_amount / 100 : 0,
+                            plan: price?.nickname || (sub as any).plan?.nickname || price?.product || 'Plan',
+                            amount: amount,
                             interval,
                             customerEmail: email,
                             customerName: msName || stripeName || '',
@@ -129,7 +132,7 @@ export async function GET(request: NextRequest) {
                                     id: plan.payment?.stripeSubscriptionId || `ms_${member.id}`,
                                     status: plan.status?.toLowerCase() || 'active',
                                     plan: plan.planName || 'Plan Club Pata Amiga',
-                                    amount: plan.payment?.amount ? plan.payment.amount / 100 : 0,
+                                    amount: plan.payment?.amount || 0,
                                     interval,
                                     customerEmail: member.auth.email,
                                     customerName: `${firstName} ${lastName}`.trim() || '',
