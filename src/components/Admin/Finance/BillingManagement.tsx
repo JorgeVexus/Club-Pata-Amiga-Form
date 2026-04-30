@@ -155,6 +155,15 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         else loadStripeData();
     }
 
+    const formatMXN = (amount: number) => {
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2,
+        }).format(amount);
+    };
+
     // ── Billing Table ──
     const renderBillingTable = () => {
         if (loading) return <div className={styles.loading}>Cargando datos fiscales...</div>;
@@ -223,7 +232,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                     <div className={styles.userEmail}>{p.customerEmail}</div>
                                 </td>
                                 <td className={styles.smallText}>{p.id}</td>
-                                <td className={styles.amount}>${p.amount.toFixed(2)} {p.currency}</td>
+                                <td className={styles.amount}>{formatMXN(p.amount)}</td>
                                 <td>
                                     <span className={`${styles.statusBadge} ${p.status === 'succeeded' ? styles.statusSucceeded : styles.statusPending}`}>
                                         {p.status === 'succeeded' ? 'Completado' : p.status}
@@ -325,7 +334,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                         <td className={styles.dateText}>
                                             {new Date(s.nextBilling).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
                                         </td>
-                                        <td className={styles.amount}>${s.amount.toFixed(2)}</td>
+                                        <td className={styles.amount}>{formatMXN(s.amount)}</td>
                                         <td>
                                             <span className={`${styles.sourceBadge} ${s.source === 'stripe' ? styles.sourceStripe : styles.sourceMemberstack}`}>
                                                 {s.source === 'stripe' ? '⚡ Stripe' : '🔗 MS'}
@@ -411,7 +420,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                             <div className={styles.userEmail}>{inv.customerEmail}</div>
                                         </td>
                                         <td className={styles.smallText}>{inv.number}</td>
-                                        <td className={styles.amount}>${inv.amount.toFixed(2)} {inv.currency}</td>
+                                        <td className={styles.amount}>{formatMXN(inv.amount)}</td>
                                         <td>
                                             <span className={`${styles.statusBadge} ${styles[statusStyleKey]}`}>
                                                 {statusLabel}
@@ -469,11 +478,11 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                 <div className={styles.stripeInfo} style={{ maxWidth: 'none', marginBottom: '2rem' }}>
                     <div className={styles.stripeCard}>
                         <span>Disponible en Stripe</span>
-                        <strong>${metrics.available.toFixed(2)} {metrics.currency}</strong>
+                        <strong>{formatMXN(metrics.available)}</strong>
                     </div>
                     <div className={styles.stripeCard}>
                         <span>Pendiente de Liquidar</span>
-                        <strong style={{ color: '#666' }}>${metrics.pending.toFixed(2)} {metrics.currency}</strong>
+                        <strong style={{ color: '#666' }}>{formatMXN(metrics.pending)}</strong>
                     </div>
                 </div>
             )}
