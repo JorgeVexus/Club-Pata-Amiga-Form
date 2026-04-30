@@ -81,14 +81,22 @@ export async function GET(request: NextRequest) {
                         const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
 
                         // Improved interval detection
+                        // Mejorar detección de intervalo (Soporta nombres de planes personalizados)
                         let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
-                        const planName = sub.items.data[0]?.price?.nickname || '';
-                        if (planName.toLowerCase().includes('anual') || planName.toLowerCase().includes('año')) {
+                        const price = sub.items.data[0]?.price;
+                        const planName = price?.nickname || (sub as any).plan?.nickname || '';
+                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
+                        
+                        const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
+                                              planName.toLowerCase().includes('año') || 
+                                              planName.toLowerCase().includes('year') || 
+                                              planName.toLowerCase().includes('annual');
+                        
+                        // Si tiene keyword anual O el monto es mayor a 1000 (indicador fuerte de plan anual de 1699 vs 159 mensual)
+                        if (isAnnualKeyword || amount > 1000) {
                             interval = 'year';
                         }
 
-                        const price = sub.items.data[0]?.price;
-                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
 
                         allStripeSubs.push({
                             id: sub.id,
@@ -123,7 +131,14 @@ export async function GET(request: NextRequest) {
                             if (!alreadyInStripe) {
                                 // Determine interval from plan name
                                 const planNameLower = (plan.planName || '').toLowerCase();
-                                const interval = planNameLower.includes('anual') || planNameLower.includes('annual') ? 'year' : 'month';
+                                const amount = plan.payment?.amount || 0;
+                        const isAnnualKeyword = planNameLower.includes('anual') || 
+                                              planNameLower.includes('annual') || 
+                                              planNameLower.includes('year') || 
+                                              planNameLower.includes('año');
+                                              
+                        // Fallback de intervalo basado en nombre o monto (>1000 MXN)
+                        const interval = (isAnnualKeyword || amount > 1000) ? 'year' : 'month';
                                 
                                 const firstName = member.customFields?.['first-name'] || '';
                                 const lastName = member.customFields?.['paternal-last-name'] || '';

@@ -808,7 +808,11 @@ export async function getMemberStripeDetails(memberstackId: string) {
             stripeData.subscription = {
                 id: sub.id,
                 status: sub.status,
-                interval: sub.items?.data[0]?.plan?.interval === 'year' ? 'anual' : 'mensual',
+                // Mejorar detección de intervalo
+                interval: (sub.items?.data[0]?.plan?.interval === 'year' || 
+                          sub.items?.data[0]?.plan?.amount > 100000 || // > 1000 MXN (en centavos)
+                          sub.items?.data[0]?.plan?.nickname?.toLowerCase().includes('anual') ||
+                          sub.items?.data[0]?.plan?.nickname?.toLowerCase().includes('año')) ? 'year' : 'month',
                 currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
                 currentPeriodStart: sub.current_period_start ? new Date(sub.current_period_start * 1000).toISOString() : null,
                 startDate: sub.start_date ? new Date(sub.start_date * 1000).toISOString() : null,

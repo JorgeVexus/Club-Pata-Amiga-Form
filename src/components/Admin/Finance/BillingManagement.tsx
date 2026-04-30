@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './Finance.module.css';
+import { formatMXN } from '@/utils/format';
 
 interface StripePayment {
     id: string;
@@ -155,14 +156,6 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         else loadStripeData();
     }
 
-    const formatMXN = (amount: number) => {
-        return new Intl.NumberFormat('es-MX', {
-            style: 'currency',
-            currency: 'MXN',
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 2,
-        }).format(amount);
-    };
 
     // ── Billing Table ──
     const renderBillingTable = () => {

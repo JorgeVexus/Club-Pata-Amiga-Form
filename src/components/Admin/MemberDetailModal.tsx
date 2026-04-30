@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './MemberDetailModal.module.css';
+import { formatMXN } from '@/utils/format';
 import { getPetsByUserId, getBillingDetailsByMemberstackId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 
 interface Pet {
@@ -490,7 +491,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 }) : '-';
 
                                 // 2. Lógica Dinámica de Próxima Renovación
-                                const isAnual = stripeDetails?.subscription?.interval === 'anual' || plan.planName?.toLowerCase().includes('anual');
+                                const isAnual = stripeDetails?.subscription?.interval === 'year' || plan.planName?.toLowerCase().includes('anual');
                                 let finalRenewalDate: Date | null = null;
 
                                 // Prioridad 1: Stripe (Directo del API)
@@ -560,7 +561,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     {new Date(stripeDetails.payments[0].date).toLocaleDateString('es-MX', {
                                                         day: '2-digit',
                                                         month: 'long'
-                                                    })} - ${stripeDetails.payments[0].amount.toFixed(2)} {stripeDetails.payments[0].currency}
+                                                    })} - {formatMXN(stripeDetails.payments[0].amount)} {stripeDetails.payments[0].currency}
                                                 </span>
                                             </div>
                                         )}
@@ -587,7 +588,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             {stripeDetails.payments.map((p: any) => (
                                                 <tr key={p.id}>
                                                     <td>{new Date(p.date).toLocaleDateString('es-MX')}</td>
-                                                    <td style={{ fontWeight: 600 }}>${p.amount.toFixed(2)} {p.currency}</td>
+                                                    <td style={{ fontWeight: 600 }}>{formatMXN(p.amount)} {p.currency}</td>
                                                     <td>
                                                         <span className={`${styles.statusBadge} ${p.status === 'succeeded' ? styles.statusSucceeded : ''}`}>
                                                             {p.status === 'succeeded' ? 'Pagado' : p.status}
