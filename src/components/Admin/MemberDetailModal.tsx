@@ -593,7 +593,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 <th>Fecha</th>
                                                 <th>Monto</th>
                                                 <th>Estado</th>
-                                                <th>Factura</th>
+                                                <th>Recibo</th>
                                             </tr>
                                         </thead>
                                         <tbody>

@@ -102,7 +102,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         records: 'Registros de Pagos (Stripe)',
         billing: 'Datos de Facturación de Miembros',
         status: 'Estado de Pagos Global',
-        retries: 'Cobros Automáticos e Historial de Facturas'
+        retries: 'Cobros Automáticos e Historial de Recibos'
     };
 
     useEffect(() => {
@@ -345,8 +345,8 @@ export default function BillingManagement({ view }: BillingManagementProps) {
 
     // ── Invoices / Auto-Billing ──
     const renderInvoices = () => {
-        if (loading) return <div className={styles.loading}>Consultando historial de facturas...</div>;
-        if (stripeInvoices.length === 0) return <div className={styles.empty}>No hay facturas recientes en Stripe.</div>;
+        if (loading) return <div className={styles.loading}>Consultando historial de recibos...</div>;
+        if (stripeInvoices.length === 0) return <div className={styles.empty}>No hay recibos recientes en Stripe.</div>;
 
         // Compute stats
         const paid = stripeInvoices.filter(i => i.status === 'paid').length;
@@ -358,7 +358,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
             <>
                 <div className={styles.statsSummary}>
                     <div className={styles.statItem}>
-                        <span>Facturas</span>
+                        <span>Recibos</span>
                         <strong>{stripeInvoices.length}</strong>
                     </div>
                     <div className={styles.statItem}>
@@ -391,11 +391,11 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                             <tr>
                                 <th>Fecha</th>
                                 <th>Cliente</th>
-                                <th>Nº Factura</th>
+                                <th>Nº Recibo</th>
                                 <th>Monto</th>
                                 <th>Estado</th>
                                 <th>Intentos</th>
-                                <th>Factura</th>
+                                <th>Recibo</th>
                             </tr>
                         </thead>
                         <tbody>
