@@ -55,6 +55,7 @@ interface BillingRecord {
     taxRegime: string;
     cfdiUse: string;
     updatedAt: string;
+    totalAmount: number;
     user: {
         fullName: string;
         email: string;
@@ -211,33 +212,44 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                             <th>Miembro</th>
                             <th>RFC</th>
                             <th>Razón Social</th>
-                            <th>CP</th>
+                            <th>Empresa (70%)</th>
+                            <th>Asociación (30%)</th>
                             <th>Régimen</th>
                             <th>Uso CFDI</th>
                             <th>Actualizado</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {records.map(record => (
-                            <tr key={record.id}>
-                                <td>
-                                    <div className={styles.userName}>{record.user.fullName}</div>
-                                    <div className={styles.userEmail}>{record.user.email}</div>
-                                </td>
-                                <td className={styles.rfcTag}>{record.rfc}</td>
-                                <td>{record.businessName}</td>
-                                <td>{record.zipCode}</td>
-                                <td className={styles.smallText}>
-                                    {TAX_REGIME_LABELS[record.taxRegime] || record.taxRegime}
-                                </td>
-                                <td className={styles.smallText}>
-                                    {CFDI_USE_LABELS[record.cfdiUse] || record.cfdiUse}
-                                </td>
-                                <td className={styles.dateText}>
-                                    {new Date(record.updatedAt).toLocaleDateString()}
-                                </td>
-                            </tr>
-                        ))}
+                        {records.map(record => {
+                            const companyPart = (record.totalAmount || 0) * 0.7;
+                            const associationPart = (record.totalAmount || 0) * 0.3;
+
+                            return (
+                                <tr key={record.id}>
+                                    <td>
+                                        <div className={styles.userName}>{record.user.fullName}</div>
+                                        <div className={styles.userEmail}>{record.user.email}</div>
+                                    </td>
+                                    <td className={styles.rfcTag}>{record.rfc}</td>
+                                    <td>{record.businessName}</td>
+                                    <td className={styles.amount}>
+                                        {formatMXN(companyPart)}
+                                    </td>
+                                    <td className={styles.amount}>
+                                        {formatMXN(associationPart)}
+                                    </td>
+                                    <td className={styles.smallText}>
+                                        {TAX_REGIME_LABELS[record.taxRegime] || record.taxRegime}
+                                    </td>
+                                    <td className={styles.smallText}>
+                                        {CFDI_USE_LABELS[record.cfdiUse] || record.cfdiUse}
+                                    </td>
+                                    <td className={styles.dateText}>
+                                        {new Date(record.updatedAt).toLocaleDateString()}
+                                    </td>
+                                </tr>
+                            );
+                        })}
                     </tbody>
                 </table>
             </div>
