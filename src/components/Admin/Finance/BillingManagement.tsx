@@ -198,6 +198,33 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         else loadStripeData();
     }
 
+    // ── Copy Helper Component ──
+    const CopyButton = ({ text }: { text: string }) => {
+        const [copied, setCopied] = useState(false);
+
+        const handleCopy = () => {
+            navigator.clipboard.writeText(text);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1000);
+        };
+
+        return (
+            <div className={styles.copyContainer}>
+                <button 
+                    className={styles.copyButton} 
+                    onClick={handleCopy}
+                    title={`Copiar: ${text}`}
+                >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+                {copied && <span className={styles.copyFeedback}>Copiado</span>}
+            </div>
+        );
+    };
+
 
     // ── Billing Table ──
     const renderBillingTable = () => {
@@ -212,6 +239,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                             <th>Miembro</th>
                             <th>RFC</th>
                             <th>Razón Social</th>
+                            <th>C.P.</th>
                             <th>Empresa (70%)</th>
                             <th>Asociación (30%)</th>
                             <th>Régimen</th>
@@ -223,6 +251,8 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                         {records.map(record => {
                             const companyPart = (record.totalAmount || 0) * 0.7;
                             const associationPart = (record.totalAmount || 0) * 0.3;
+                            const regimeLabel = TAX_REGIME_LABELS[record.taxRegime] || record.taxRegime;
+                            const cfdiLabel = CFDI_USE_LABELS[record.cfdiUse] || record.cfdiUse;
 
                             return (
                                 <tr key={record.id}>
@@ -230,19 +260,47 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                         <div className={styles.userName}>{record.user.fullName}</div>
                                         <div className={styles.userEmail}>{record.user.email}</div>
                                     </td>
-                                    <td className={styles.rfcTag}>{record.rfc}</td>
-                                    <td>{record.businessName}</td>
-                                    <td className={styles.amount}>
-                                        {formatMXN(companyPart)}
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.rfcTag}>{record.rfc}</span>
+                                            <CopyButton text={record.rfc} />
+                                        </div>
                                     </td>
-                                    <td className={styles.amount}>
-                                        {formatMXN(associationPart)}
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.smallText} title={record.businessName}>{record.businessName}</span>
+                                            <CopyButton text={record.businessName} />
+                                        </div>
                                     </td>
-                                    <td className={styles.smallText}>
-                                        {TAX_REGIME_LABELS[record.taxRegime] || record.taxRegime}
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span>{record.zipCode}</span>
+                                            <CopyButton text={record.zipCode} />
+                                        </div>
                                     </td>
-                                    <td className={styles.smallText}>
-                                        {CFDI_USE_LABELS[record.cfdiUse] || record.cfdiUse}
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.amount}>{formatMXN(companyPart)}</span>
+                                            <CopyButton text={companyPart.toFixed(2)} />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.amount}>{formatMXN(associationPart)}</span>
+                                            <CopyButton text={associationPart.toFixed(2)} />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.smallText} title={regimeLabel}>{regimeLabel}</span>
+                                            <CopyButton text={record.taxRegime} />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div className={styles.copyContainer}>
+                                            <span className={styles.smallText} title={cfdiLabel}>{cfdiLabel}</span>
+                                            <CopyButton text={record.cfdiUse} />
+                                        </div>
                                     </td>
                                     <td className={styles.dateText}>
                                         {new Date(record.updatedAt).toLocaleDateString()}

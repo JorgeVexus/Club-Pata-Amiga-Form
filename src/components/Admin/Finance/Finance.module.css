@@ -335,3 +335,56 @@
     background: #e3f2fd;
     color: #1565c0;
 }
+
+.copyContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.copyButton {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    transition: all 0.2s;
+    opacity: 0.4;
+    flex-shrink: 0;
+}
+
+.copyButton:hover {
+    background: #f0f0f0;
+    color: #00BBB4;
+    opacity: 1;
+}
+
+.copyButton svg {
+    width: 14px;
+    height: 14px;
+}
+
+.copyFeedback {
+    position: absolute;
+    top: -20px;
+    right: 0;
+    background: #000;
+    color: #fff;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 4px;
+    pointer-events: none;
+    animation: fadeInOut 1s forwards;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(5px); }
+    20% { opacity: 1; transform: translateY(0); }
+    80% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-5px); }
+}
