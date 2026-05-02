@@ -1311,40 +1311,94 @@
 
                         <div style="text-align: center; margin-top: 30px;">
                             <button
-                                onclick="(function(btn) {
-                                    btn.disabled = true;
-                                    btn.textContent = 'Cargando...';
-                                    var email = '';
-                                    try {
-                                        // Obtener email del widget (window.pataWidget es la instancia global)
-                                        if (window.pataWidget && window.pataWidget.member) {
-                                            email = window.pataWidget.member.auth && window.pataWidget.member.auth.email
-                                                ? window.pataWidget.member.auth.email
-                                                : (window.pataWidget.member.customFields && window.pataWidget.member.customFields['email']) || '';
-                                        }
-                                        // Fallback: obtener email directo de Memberstack
-                                        if (!email && window.$memberstackDom) {
-                                            window.$memberstackDom.getCurrentMember().then(function(res) {
-                                                var memberEmail = res && res.data && res.data.auth && res.data.auth.email ? res.data.auth.email : '';
-                                                var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
-                                                if (memberEmail) url += '&email=' + encodeURIComponent(memberEmail);
-                                                window.location.href = url;
-                                            }).catch(function() {
-                                                window.location.href = 'https://app.pataamiga.mx/registro?reason=complete_payment';
-                                            });
-                                            return;
-                                        }
-                                    } catch(e) {}
-                                    var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
-                                    if (email) url += '&email=' + encodeURIComponent(email);
-                                    window.location.href = url;
-                                })(this)"
+                                id="pata-select-plan-btn"
                                 class="pata-btn"
                                 style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-block;"
+                                onclick="(function(btn) {
+                                    btn.disabled = true;
+                                    btn.textContent = 'Preparando...';
+
+                                    // Extraer datos del member activo
+                                    var member = null;
+                                    try {
+                                        if (window.pataWidget && window.pataWidget.member) {
+                                            member = window.pataWidget.member;
+                                        }
+                                    } catch(e) {}
+
+                                    function fallback(email) {
+                                        var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
+                                        if (email) url += '&email=' + encodeURIComponent(email);
+                                        window.location.href = url;
+                                    }
+
+                                    function generateAndRedirect(memberId, email, customFields) {
+                                        fetch('https://app.pataamiga.mx/api/auth/magic-token', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({
+                                                memberstackId: memberId,
+                                                email: email,
+                                                customFields: customFields || {}
+                                            })
+                                        })
+                                        .then(function(res) { return res.json(); })
+                                        .then(function(data) {
+                                            if (data.success && data.token) {
+                                                // 🔮 Magic token generado: redirigir sin fricción
+                                                var url = 'https://app.pataamiga.mx/registro'
+                                                    + '?mt=' + encodeURIComponent(data.token)
+                                                    + '&reason=complete_payment';
+                                                console.log('🔮 Magic token generado, redirigiendo...');
+                                                window.location.href = url;
+                                            } else {
+                                                console.warn('⚠️ API no devolvió token, usando fallback');
+                                                fallback(email);
+                                            }
+                                        })
+                                        .catch(function(err) {
+                                            console.warn('⚠️ Error generando magic token, usando fallback:', err);
+                                            fallback(email);
+                                        });
+                                    }
+
+                                    if (member && member.id) {
+                                        var email = (member.auth && member.auth.email) ? member.auth.email : '';
+                                        var cf = member.customFields || {};
+                                        generateAndRedirect(member.id, email, {
+                                            'registration-step': cf['registration-step'] || '',
+                                            'payment-status': cf['payment-status'] || '',
+                                            'checkout-pending': cf['checkout-pending'] || false,
+                                            'approval-status': cf['approval-status'] || ''
+                                        });
+                                    } else if (window.$memberstackDom) {
+                                        // Fallback: obtener member desde Memberstack directamente
+                                        window.$memberstackDom.getCurrentMember()
+                                            .then(function(res) {
+                                                var m = res && res.data ? res.data : null;
+                                                if (m && m.id) {
+                                                    var email = (m.auth && m.auth.email) ? m.auth.email : '';
+                                                    var cf = m.customFields || {};
+                                                    generateAndRedirect(m.id, email, {
+                                                        'registration-step': cf['registration-step'] || '',
+                                                        'payment-status': cf['payment-status'] || '',
+                                                        'checkout-pending': cf['checkout-pending'] || false,
+                                                        'approval-status': cf['approval-status'] || ''
+                                                    });
+                                                } else {
+                                                    fallback('');
+                                                }
+                                            })
+                                            .catch(function() { fallback(''); });
+                                    } else {
+                                        fallback('');
+                                    }
+                                })(this)"
                             >
                                 Seleccionar Plan
                             </button>
                         </div>
+
 
                         <div style="background: rgba(254, 143, 21, 0.1); border: 2px solid #FE8F15; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
                             <p style="margin:0; font-size: 14px; font-weight: 900; color: #E65100;">✨ Suscríbete con confianza</p>

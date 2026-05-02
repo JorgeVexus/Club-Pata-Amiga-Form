@@ -109,6 +109,44 @@ export default function NewRegistrationFlow() {
     useEffect(() => {
         const loadSavedState = async () => {
             try {
+                // ────────────────────────────────────────────────────────────
+                // 🔮 MAGIC TOKEN: Validar ANTES de esperar Memberstack.
+                // El widget pasa ?mt=TOKEN cuando el usuario tiene sesión en
+                // Webflow. Si el token es válido, tenemos los datos del member
+                // listos para pre-cargar el flujo sin fricción.
+                // ────────────────────────────────────────────────────────────
+                const nativeParams = new URLSearchParams(window.location.search);
+                const magicToken = nativeParams.get('mt');
+                let magicData: {
+                    memberstackId: string;
+                    email: string;
+                    customFields: Record<string, any>;
+                    intent: string;
+                } | null = null;
+
+                if (magicToken) {
+                    try {
+                        console.log('🔮 Magic token detectado, validando...');
+                        const tokenRes = await fetch(
+                            `/api/auth/magic-token?token=${encodeURIComponent(magicToken)}`
+                        );
+                        const tokenJson = await tokenRes.json();
+                        if (tokenJson.success) {
+                            magicData = tokenJson;
+                            console.log('✅ Magic token válido para:', tokenJson.email);
+                            // Limpiar ?mt= de la URL (single-use, previene reutilización con "Atrás")
+                            const cleanUrl = new URL(window.location.href);
+                            cleanUrl.searchParams.delete('mt');
+                            window.history.replaceState({}, '', cleanUrl.toString());
+                        } else {
+                            console.warn('⚠️ Magic token inválido o expirado:', tokenJson.error);
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Error al validar magic token (no bloqueante):', e);
+                    }
+                }
+                // ────────────────────────────────────────────────────────────
+
                 if (!window.$memberstackDom) {
                     // Esperar a que Memberstack cargue
                     await new Promise(resolve => setTimeout(resolve, 1500));
@@ -292,18 +330,25 @@ export default function NewRegistrationFlow() {
                         console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}), Pending(${isCheckoutPending}) -> Paso Actual(${finalStep})`);
                         goToStep(finalStep, true); // replaceState para el paso inicial
                     } else {
-                        // 🍎 iOS FIX: No hay sesión activa (cookie bloqueada por Safari ITP).
-                        // Guardamos el intent en sessionStorage para recuperarlo después del login.
-                        const nativeParams = new URLSearchParams(window.location.search);
-                        const reason = nativeParams.get('reason');
-                        const emailFromUrl = nativeParams.get('email') || '';
-                        if (reason) {
-                            sessionStorage.setItem('pata_login_intent', reason);
-                            console.log('🍎 iOS: sesión perdida, guardando intent en sessionStorage:', reason);
-                        }
-                        if (emailFromUrl) {
-                            setUrlEmail(emailFromUrl);
-                            console.log('🍎 iOS: email pre-llenado desde URL:', emailFromUrl);
+                        // 👤 No hay sesión activa en Memberstack.
+                        // 🔎 PRIORIDAD: magic token > URL params > fallback plano
+                        if (magicData) {
+                            // 🔮 Magic token válido: datos del member pre-cargados desde el servidor
+                            setUrlEmail(magicData.email);
+                            sessionStorage.setItem('pata_login_intent', magicData.intent || 'complete_payment');
+                            console.log('🔮 Magic token: email pre-llenado, activando modo login ->', magicData.email);
+                        } else {
+                            // 🍎 iOS ITP fallback: leer desde URL params
+                            const reason = nativeParams.get('reason');
+                            const emailFromUrl = nativeParams.get('email') || '';
+                            if (reason) {
+                                sessionStorage.setItem('pata_login_intent', reason);
+                                console.log('🍎 iOS: intent guardado en sessionStorage:', reason);
+                            }
+                            if (emailFromUrl) {
+                                setUrlEmail(emailFromUrl);
+                                console.log('🍎 iOS: email pre-llenado desde URL:', emailFromUrl);
+                            }
                         }
                         console.log('👤 No hay sesión activa de Memberstack, iniciando en paso 1');
                         goToStep(1, true);
