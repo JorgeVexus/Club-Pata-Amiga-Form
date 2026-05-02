@@ -168,7 +168,7 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'communications-ambassador': 'Comunicaciones (Embajadores)',
     'communications-wellness': 'Comunicaciones (Centros)',
     'appeals': 'Apelaciones',
-    'all-members': 'Gestión General',
+    'all-members': 'Pruebas / Todos',
     'terminate-users': 'Baja de Usuarios',
     'billing': 'Facturación',
     'payment-records': 'Registros de pagos',

@@ -181,6 +181,13 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                     <nav className={styles.menuSection}>
                         <h3 className={styles.menuTitle}>Ajustes Master</h3>
                         <button
+                            className={`${styles.menuItem} ${activeFilter === 'all-members' ? styles.active : ''}`}
+                            onClick={() => onFilterChange('all-members')}
+                        >
+                            <span className={styles.menuIcon}>🧪</span>
+                            <span className={styles.menuLabel}>Pruebas / Todos</span>
+                        </button>
+                        <button
                             className={`${styles.menuItem} ${activeFilter === 'admins' ? styles.active : ''}`}
                             onClick={() => onFilterChange('admins')}
                         >

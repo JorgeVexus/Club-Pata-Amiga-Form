@@ -133,7 +133,7 @@ export default function AdminDashboard() {
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
             const restricted = ['appeals', 'admins', 'settings', 'all-members'];
-            if (restricted.includes(activeFilter)) setActiveFilter('all-members');
+            if (restricted.includes(activeFilter)) setActiveFilter('member');
         }
     }, [activeFilter, isAdminSuper, hasMounted]);
 
