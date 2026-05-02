@@ -1,0 +1,688 @@
+/* Step1AccountRedesign.module.css */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1850px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+.pageBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777696967/LetraApalo_3_bjsdfo.png');
+    background-size: 50vw;
+    background-repeat: no-repeat;
+    background-position: right center;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
+}
+
+@media (min-width: 1024px) {
+    .container {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 4rem 2rem;
+        gap: 60px;
+    }
+}
+
+/* Entrance Animations - Decisive Deceleration */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes iconPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Left Column: Benefits */
+.benefitsSection {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    max-width: 900px;
+    padding: 0;
+}
+
+/* Badge */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    background: var(--color-primary);
+    border-radius: 9999px;
+    border: 2px solid var(--color-black);
+    margin-bottom: 24px;
+    width: fit-content;
+    animation: slideInDown 0.5s var(--ease-out-expo);
+}
+
+.badgeIcon {
+    width: 19px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+}
+
+.badgeText {
+    color: var(--color-white);
+    font-size: 14px;
+    font-weight: 600;
+    font-family: var(--font-body);
+}
+
+/* Headline */
+.headline {
+    font-family: var(--font-heading);
+    font-size: clamp(40px, 5vw, 60px);
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: 1.2;
+    margin-bottom: 32px;
+    color: var(--color-black);
+    animation: slideInUp 0.6s var(--ease-out-expo) 0.1s both;
+    text-align: left;
+}
+
+/* Price Box */
+.priceBox {
+    background: var(--color-white);
+    border: 2px solid var(--color-black);
+    border-radius: 9999px;
+    padding: 24px;
+    margin-bottom: 40px;
+    animation: slideInUp 0.6s var(--ease-out-expo) 0.2s both;
+}
+
+.priceText {
+    font-size: clamp(18px, 2vw, 24px);
+    font-weight: 500;
+    line-height: 1.4;
+    font-family: var(--font-body);
+    color: var(--color-black);
+}
+
+.priceHighlight {
+    color: var(--color-action-orange);
+    font-weight: 700;
+}
+
+/* Benefits Grid */
+.benefitsGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.benefitCard {
+    padding: 32px;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    color: var(--color-black);
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+    animation: slideInUp 0.6s var(--ease-out-expo) backwards;
+}
+
+.benefitCard:hover {
+    transform: translateY(-6px) rotate(1deg);
+    box-shadow: var(--shadow-lg);
+}
+
+.benefitCard:hover .benefitIcon {
+    animation: iconPulse 0.4s var(--ease-out-expo);
+}
+
+.benefitCard:nth-child(1) { background: var(--color-pink); animation-delay: 0.3s; }
+.benefitCard:nth-child(2) { background: var(--color-action-orange); animation-delay: 0.4s; }
+.benefitCard:nth-child(3) { background: var(--color-primary); animation-delay: 0.5s; }
+.benefitCard:nth-child(4) { background: var(--color-lime); animation-delay: 0.6s; }
+
+.benefitIcon {
+    width: 64px;
+    height: 64px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.3s var(--ease-out-expo);
+}
+
+.benefitTitle {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: lowercase;
+    line-height: 1.3;
+    margin-top: 11px;
+}
+
+.benefitDescription {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    opacity: 0.9;
+    font-family: var(--font-body);
+}
+
+/* Community Card */
+.communityCard {
+    grid-column: 1 / -1;
+    background: var(--color-yellow);
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+    color: var(--color-black);
+    animation: slideInUp 0.6s var(--ease-out-expo) 0.7s both;
+    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
+}
+
+.communityCard:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.communityIcon {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.communityContent {
+    flex: 1;
+}
+
+.communityTitle {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    text-transform: lowercase;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
+
+.communityDescription {
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.6;
+    opacity: 0.8;
+    font-family: var(--font-body);
+}
+
+/* Right Column: Form Column */
+.formColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    align-items: center;
+    width: 100%;
+    max-width: 550px;
+    animation: fadeInScale 0.6s var(--ease-out-expo) 0.4s both;
+}
+
+.formCard {
+    width: 100%;
+    background: var(--color-white);
+    box-shadow: 4px 4px 0px var(--color-black);
+    overflow: hidden;
+    border-radius: 48px;
+    border: 2px solid var(--color-black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 39px;
+    padding-bottom: 40px;
+}
+
+/* Barra superior de progreso técnica */
+.topProgressBar {
+    align-self: stretch;
+    height: 16px;
+    background: #E2E8F0;
+    border-bottom: 2px var(--color-black) solid;
+    position: relative;
+}
+
+.topProgressBarFill {
+    height: 14px;
+    background: var(--color-primary);
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 0.5s var(--ease-out-expo);
+}
+
+/* Badge de paso */
+.stepBadge {
+    width: 100%;
+    max-width: 389px;
+    height: 60px;
+    background: var(--color-primary);
+    border-radius: 32px;
+    border: 2px var(--color-black) solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+}
+
+.stepBadgeLogo {
+    width: 71px;
+    height: 39px;
+    object-fit: contain;
+}
+
+.stepBadgeText {
+    color: var(--color-white);
+    font-size: 14px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+}
+
+.stepBadgeIcon {
+    width: 20px;
+    height: 19px;
+    background: var(--color-white);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+    mask-size: contain;
+}
+
+.formHeader {
+    align-self: stretch;
+    padding: 0 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeInScale 0.4s var(--ease-out-expo);
+}
+
+.formTitle {
+    font-family: var(--font-heading);
+    font-size: 35.2px;
+    color: var(--color-black);
+    text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.formBody {
+    align-self: stretch;
+    padding: 0 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    animation: fadeInScale 0.5s var(--ease-out-expo);
+}
+
+.inputGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.inputLabel {
+    padding-left: 8px;
+    color: rgba(0, 0, 0, 0.60);
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    text-align: left;
+}
+
+.inputWrapper {
+    align-self: stretch;
+    background: var(--color-white);
+    border-radius: 9999px;
+    border: 2px var(--color-black) solid;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 16px 24px;
+    transition: border-color 0.2s var(--ease-out-expo), box-shadow 0.2s var(--ease-out-expo), transform 0.2s var(--ease-out-expo);
+}
+
+.inputWrapper:focus-within {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px rgba(21, 190, 178, 0.15);
+    transform: translateY(-1px);
+}
+
+.inputField {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--color-black);
+    outline: none;
+    width: 100%;
+}
+
+.inputField::placeholder {
+    color: #6B7280;
+}
+
+.passwordToggle {
+    background: none;
+    border: none;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6B7280;
+    cursor: pointer;
+    margin-left: 10px;
+    border-radius: 50%;
+    transition: background-color 0.2s;
+}
+
+.passwordToggle:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.errorText {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-error);
+    margin-top: 4px;
+    padding-left: 16px;
+    text-align: left;
+}
+
+.submitButton {
+    align-self: stretch;
+    background: var(--color-lime) !important;
+    border-radius: 9999px;
+    border: 2px var(--color-black) solid;
+    padding: 22px;
+    color: var(--color-black) !important;
+    font-size: 18px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s var(--ease-out-expo);
+    width: 100%;
+}
+
+.submitButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(159, 212, 6, 0.3);
+}
+
+.submitButton:active:not(:disabled) {
+    transform: scale(0.98) translateY(0);
+}
+
+.submitButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.privacyText {
+    color: #64748B;
+    font-size: 14px;
+    font-family: var(--font-body);
+    text-align: center;
+    line-height: 20px;
+    padding: 0 10px;
+}
+
+.privacyLink {
+    background: none;
+    border: none;
+    padding: 0;
+    text-decoration: underline;
+    cursor: pointer;
+    color: inherit;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.separatorSection {
+    align-self: stretch;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+}
+
+.separator {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.separatorLine {
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, 0.10);
+}
+
+.separatorText {
+    background: var(--color-white);
+    padding: 0 24px;
+    color: var(--color-black);
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+}
+
+.googleButton {
+    align-self: stretch;
+    background: var(--color-white) !important;
+    border-radius: 9999px;
+    border: 2px var(--color-black) solid;
+    padding: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    color: var(--color-black) !important;
+    font-size: 18px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.2s var(--ease-out-expo);
+}
+
+.googleButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.googleButton:active:not(:disabled) {
+    transform: scale(0.98) translateY(0);
+}
+
+.googleIcon {
+    width: 24px;
+    height: 24px;
+}
+
+.footerText {
+    text-align: center;
+    color: #64748B;
+    font-size: 14px;
+    font-family: var(--font-body);
+    margin-top: 10px;
+}
+
+.footerLink {
+    color: var(--color-primary);
+    text-decoration: underline;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.bottomImageWrapper {
+    width: 100%;
+    max-width: 250px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.bottomImage {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 1023px) {
+    .container {
+        padding: 1rem;
+        gap: 3rem;
+    }
+
+    .benefitsSection {
+        order: 2;
+        text-align: center;
+        align-items: center;
+        max-width: 100%;
+    }
+
+    .headline {
+        font-size: 40px;
+        text-align: center;
+    }
+
+    .badge {
+        margin: 0 auto 24px auto;
+    }
+
+    .priceBox {
+        border-radius: 32px;
+    }
+
+    .priceText {
+        font-size: 18px;
+    }
+
+    .benefitsGrid {
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .benefitCard {
+        padding: 24px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .communityCard {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+        text-align: center;
+    }
+
+    .communityIcon {
+        width: 64px;
+        height: 64px;
+    }
+
+    .formColumn {
+        order: 1;
+    }
+    
+    .formCard {
+        gap: 30px;
+        border-radius: 32px;
+    }
+    
+    .stepBadge {
+        gap: 20px;
+        padding: 0 15px;
+        max-width: 90%;
+    }
+}
+
+/* Accessibility: Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .badge, .headline, .priceBox, .benefitCard, .communityCard, .formColumn, .submitButton, .googleButton, .inputWrapper {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+    }
+}

@@ -1,104 +1,66 @@
-/**
- * Paso 1: Crear cuenta o Iniciar Sesión
- * - Modo registro: email + contraseña + confirmar
- * - Modo login: email + contraseña (para usuarios que regresan)
- * - autoLoginMode: se activa cuando viene reason=complete_payment (iOS Safari)
- */
-
-'use client';
-
 import React, { useState, useEffect } from 'react';
-import TextInput from '@/components/FormFields/TextInput';
-import { checkEmailAvailability } from '@/app/actions/user.actions';
-import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
+import BenefitsMarquee from '../BenefitsMarquee';
+import styles from './Step1Account.module.css';
 import TermsModalEnhanced from '../TermsModalEnhanced';
-import styles from './steps.module.css';
+import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
+import { checkEmailAvailability } from '@/app/actions/user.actions';
+import { 
+    BadgeCheckIcon, 
+    MedicalEmergencyIcon, 
+    VaccinationIcon, 
+    DeceasedSupportIcon, 
+    VetChatIcon,
+    CommunityIcon 
+} from '../RegistrationIcons';
 
 interface Step1AccountProps {
     data: any;
-    member: any;
-    onNext: (data: { email: string; password: string; mode: 'register' | 'login' }) => void;
+    onNext: (data: any) => void;
     onBack: () => void;
-    showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
-    /** Email pre-llenado (viene del widget via URL ?email= o magic token) */
+    member: any;
+    showToast: (message: string, type: 'success' | 'error') => void;
     defaultEmail?: string;
-    /** Si es true, inicia en modo login en lugar de registro */
     autoLoginMode?: boolean;
 }
 
 export default function Step1Account({
-    data, member, onNext, showToast, defaultEmail, autoLoginMode
+    data,
+    onNext,
+    member,
+    showToast,
+    defaultEmail,
+    autoLoginMode = false
 }: Step1AccountProps) {
-    // Modo: 'register' | 'login'
-    const [mode, setMode] = useState<'register' | 'login'>(autoLoginMode ? 'login' : 'register');
-
     const [formData, setFormData] = useState({
-        email: defaultEmail || '',
+        email: defaultEmail || data?.account?.email || '',
         password: '',
         confirmPassword: ''
     });
-    const [errors, setErrors] = useState<Record<string, string>>({});
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    const [isLoggingOut, setIsLoggingOut] = useState(false);
-    const [currentMember, setCurrentMember] = useState<any>(null);
-    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
-    const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
+    const [mode, setMode] = useState<'register' | 'login'>(autoLoginMode ? 'login' : 'register');
+    const [isLoading, setIsLoading] = useState(false);
+    const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isTermsOpen, setIsTermsOpen] = useState(false);
 
-    // Modal de términos
-    const [showTermsModal, setShowTermsModal] = useState(false);
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+    const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-    const handleTermsClose = (accepted: boolean, acceptance: any) => {
-        setShowTermsModal(false);
-        if (accepted && acceptance) {
-            localStorage.setItem('registration_terms_acceptance', JSON.stringify({
-                ...acceptance,
-                timestamp: new Date().toISOString()
-            }));
-        }
-    };
-
-    const handleViewTerms = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setShowTermsModal(true);
-    };
-
-    // Cargar datos al montar
     useEffect(() => {
-        if (member) {
-            setCurrentMember(member);
-            if (member.auth?.email) {
-                setFormData(prev => ({ ...prev, email: member.auth.email }));
-            }
-        }
-        // Si viene defaultEmail, pre-llenar
-        if (defaultEmail && !member?.auth?.email) {
+        if (member?.auth?.email) {
+            setFormData(prev => ({ ...prev, email: member.auth.email }));
+        } else if (defaultEmail) {
             setFormData(prev => ({ ...prev, email: defaultEmail }));
         }
     }, [member, defaultEmail]);
 
-    // Sync mode si el prop cambia
-    useEffect(() => {
-        if (autoLoginMode) setMode('login');
-    }, [autoLoginMode]);
-
-    const handleLogout = async () => {
-        setIsLoggingOut(true);
-        try {
-            if (window.$memberstackDom) {
-                await window.$memberstackDom.logout();
-                showToast('Sesión cerrada correctamente', 'success');
-                setCurrentMember(null);
-                setFormData({ email: '', password: '', confirmPassword: '' });
-                window.location.reload();
-            }
-        } catch (error: any) {
-            console.error('Error cerrando sesión:', error);
-            showToast('Error al cerrar sesión', 'error');
-        } finally {
-            setIsLoggingOut(false);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) {
+            setErrors((prev: Record<string, string>) => ({ ...prev, [name]: '' }));
         }
     };
 
@@ -129,340 +91,402 @@ export default function Step1Account({
         }
     };
 
-    const validateForm = (): boolean => {
-        if (isLoggedIn) return true;
-
-        const newErrors: Record<string, string> = {};
-        if (!formData.email.trim()) {
-            newErrors.email = 'El correo es requerido';
-        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-            newErrors.email = 'Ingresa un correo válido';
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            if ((window as any).$memberstackDom) {
+                await (window as any).$memberstackDom.logout();
+                showToast('Sesión cerrada correctamente', 'success');
+                window.location.reload();
+            }
+        } catch (error: any) {
+            console.error('Error cerrando sesión:', error);
+            showToast('Error al cerrar sesión', 'error');
+        } finally {
+            setIsLoggingOut(false);
         }
+    };
+
+    const validate = () => {
+        if (isLoggedIn) return true;
+        const newErrors: any = {};
+        if (!formData.email) newErrors.email = 'Email es requerido';
+        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email inválido';
+
         if (!formData.password) {
-            newErrors.password = 'La contraseña es requerida';
-        } else if (formData.password.length < 8) {
+            newErrors.password = 'Contraseña es requerida';
+        } else if (mode === 'register' && formData.password.length < 8) {
             newErrors.password = 'Mínimo 8 caracteres';
         }
+
         if (mode === 'register' && formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Las contraseñas no coinciden';
         }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!validateForm()) {
-            showToast('Revisa los campos marcados', 'error');
-            return;
-        }
-        setIsSubmitting(true);
-        setErrors({});
+        if (!validate()) return;
+
+        setIsLoading(true);
+        const cleanEmail = formData.email.trim();
         try {
-            if (currentMember?.auth?.email && currentMember.auth.email !== formData.email) {
-                const confirmChange = window.confirm(
-                    `Ya hay una sesión activa con ${currentMember.auth.email}. ` +
-                    `¿Deseas cerrar esa sesión y continuar con ${formData.email}?`
-                );
-                if (confirmChange) {
-                    await handleLogout();
-                    await new Promise(resolve => setTimeout(resolve, 500));
-                    await onNext({ email: formData.email, password: formData.password, mode });
-                } else {
-                    setIsSubmitting(false);
-                    return;
-                }
+            if (isLoggedIn) {
+                onNext({ email: cleanEmail, mode: 'login' });
+                return;
+            }
+            if (mode === 'login') {
+                await onNext({
+                    email: cleanEmail,
+                    password: formData.password,
+                    mode: 'login'
+                });
             } else {
-                await onNext({ email: formData.email, password: formData.password, mode });
+                // Registro
+                await onNext({
+                    email: cleanEmail,
+                    password: formData.password,
+                    mode: 'register'
+                });
+                trackLead({ content_name: 'User Registration', content_category: 'signup' });
             }
         } catch (error: any) {
-            console.error('Error:', error);
-            if (error?.code === 'email-already-in-use' ||
-                error?.message?.includes('already taken') ||
-                error?.message?.includes('email-already-in-use') ||
-                error?.message?.includes('already exists')) {
-                // En modo registro, sugerir cambiar a login
-                setErrors({ email: 'Este correo ya está registrado. Inicia sesión abajo.' });
-                showToast('Este correo ya está registrado', 'error');
+            console.error('Error en auth:', error);
+            if (error?.message?.includes('already registered') || error?.message?.includes('already taken') || error?.code === 'email-already-in-use') {
+                setErrors({ email: 'Este correo ya está registrado. Inicia sesión.' });
                 setMode('login');
-            } else if (error?.message?.includes('Invalid credentials') ||
-                error?.message?.includes('invalid_credentials') ||
-                error?.message?.includes('Invalid email or password') ||
-                error?.code === 'invalid_credentials') {
-                setErrors({ password: 'Contraseña incorrecta. Intenta de nuevo.' });
-                showToast('Contraseña incorrecta', 'error');
             } else {
-                showToast(error.message || 'Error al iniciar sesión', 'error');
+                showToast(error.message || 'Error en la autenticación', 'error');
             }
         } finally {
-            setIsSubmitting(false);
+            setIsLoading(false);
         }
     };
 
-    const [isSocialLoading, setIsSocialLoading] = useState(false);
-
     const handleGoogleLogin = async () => {
-        setIsSocialLoading(true);
+        setIsLoading(true);
         try {
-            if (!window.$memberstackDom) {
-                showToast('Error: Memberstack no cargado', 'error');
-                setIsSocialLoading(false);
-                return;
-            }
-            await window.$memberstackDom.signupWithProvider({
-                provider: 'google',
-                options: { prompt: 'select_account' }
+            await (window as any).$memberstackDom.authenticateWithProvider({
+                provider: 'google'
             });
             trackLead({ content_name: 'User Registration - Google', content_category: 'signup' });
             trackCompleteRegistration({ content_name: 'User Registration - Google', content_category: 'signup' });
-            window.location.reload();
         } catch (error: any) {
-            console.error('❌ Error en login con Google:', error);
-            showToast('Error al iniciar sesión con Google', 'error');
-            setIsSocialLoading(false);
+            showToast('Error con Google Login', 'error');
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const isLoggedIn = !!currentMember?.auth?.email;
-    const isLoginMode = mode === 'login';
-
-    // Título dinámico
-    const title = isLoggedIn
-        ? 'Continuar con tu cuenta'
-        : isLoginMode
-            ? '¡Hola de nuevo! 👋'
-            : 'Crea tu cuenta';
-
-    const subtitle = isLoggedIn
-        ? ''
-        : isLoginMode
-            ? 'Inicia sesión para continuar donde lo dejaste'
-            : 'Solo te tomará 2 minutos proteger a tu mascota';
+    const isLoggedIn = !!member?.auth?.email;
 
     return (
-        <div className={styles.stepCard}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>{title}</h2>
-                {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
-            </div>
+        <>
+            <BenefitsMarquee />
+            <div className={styles.pageBackground} />
+            <div className={styles.container}>
+                {/* Left Column: Benefits */}
+                <div className={styles.benefitsSection}>
+                    {/* Badge */}
+                    <div className={styles.badge}>
+                        <div className={styles.badgeIcon}>
+                            <BadgeCheckIcon />
+                        </div>
+                        <span className={styles.badgeText}>100% Mexicano | Únete a la manada</span>
+                    </div>
 
-            {/* Banner de sesión activa */}
-            {isLoggedIn && (
-                <div className={styles.loggedInBanner}>
-                    <div className={styles.userInfo}>
-                        <div className={styles.userIcon}>👤</div>
-                        <div>
-                            <p className={styles.userLabel}>Sesión activa</p>
-                            <p className={styles.userEmail}>{currentMember.auth.email}</p>
+                    {/* Headline */}
+                    <h1 className={styles.headline}>
+                        Tu tranquilidad<br />empieza aquí
+                    </h1>
+
+                    {/* Price Box */}
+                    <div className={styles.priceBox}>
+                        <p className={styles.priceText}>
+                            Accede a una membresía que respalda hasta 3 mascotas por solo <span className={styles.priceHighlight}>$159/mes</span>.
+                        </p>
+                    </div>
+
+                    {/* Benefits Grid */}
+                    <div className={styles.benefitsGrid}>
+                        {/* Emergencias Médicas */}
+                        <div className={styles.benefitCard}>
+                            <div className={styles.benefitIcon}>
+                                <MedicalEmergencyIcon />
+                            </div>
+                            <h2 className={styles.benefitTitle}>emergencias médicas</h2>
+                            <p className={styles.benefitDescription}>Hasta $3,000 al año, porque los sustos no avisan y tu peludo no puede esperar.</p>
+                        </div>
+
+                        {/* Vacunación Anual */}
+                        <div className={styles.benefitCard}>
+                            <div className={styles.benefitIcon}>
+                                <VaccinationIcon />
+                            </div>
+                            <h2 className={styles.benefitTitle}>vacunación anual</h2>
+                            <p className={styles.benefitDescription}>Hasta $300 al año, cuidamos la prevención para mantener al día sus vacunas.</p>
+                        </div>
+
+                        {/* Apoyo Fallecimiento */}
+                        <div className={styles.benefitCard}>
+                            <div className={styles.benefitIcon}>
+                                <DeceasedSupportIcon />
+                            </div>
+                            <h2 className={styles.benefitTitle}>apoyo fallecimiento</h2>
+                            <p className={styles.benefitDescription}>Hasta $2,000 al año, cubrimos gastos cuando llega el momento de decir adiós.</p>
+                        </div>
+
+                        {/* Chat Veterinario */}
+                        <div className={styles.benefitCard}>
+                            <div className={styles.benefitIcon}>
+                                <VetChatIcon />
+                            </div>
+                            <h2 className={styles.benefitTitle}>chat veterinario</h2>
+                            <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu lomito.</p>
+                        </div>
+
+                        {/* Community Card */}
+                        <div className={styles.communityCard}>
+                            <div className={styles.communityIcon}>
+                                <CommunityIcon />
+                            </div>
+                            <div className={styles.communityContent}>
+                                <h2 className={styles.communityTitle}>comunidad pata amiga</h2>
+                                <p className={styles.communityDescription}>Cada 1000 miembros, destinamos parte del fondo para apoyar refugios y rescates en todo México.</p>
+                            </div>
                         </div>
                     </div>
-                    <div className={styles.bannerActions}>
-                        <button
-                            type="submit"
-                            form="step1-form"
-                            className={styles.primaryButton}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? 'Cargando...' : 'Continuar registro →'}
-                        </button>
-                        <button
-                            type="button"
-                            className={styles.logoutButtonSecondary}
-                            onClick={handleLogout}
-                            disabled={isLoggingOut}
-                        >
-                            {isLoggingOut ? 'Cerrando...' : 'Cerrar sesión'}
-                        </button>
-                    </div>
                 </div>
-            )}
 
-            {/* Botones sociales (solo en modo registro y sin sesión activa) */}
-            {!isLoggedIn && !isLoginMode && (
-                <div className={styles.socialLoginContainer}>
-                    <div className={styles.socialButtonsRow}>
-                        <button
-                            type="button"
-                            className={styles.googleButton}
-                            onClick={handleGoogleLogin}
-                            disabled={isSubmitting || isSocialLoading}
-                        >
+                {/* Right Column: Form Column */}
+                <div className={styles.formColumn}>
+                    <div className={styles.formCard}>
+                        {/* Barra superior de progreso técnica */}
+                        <div className={styles.topProgressBar} role="progressbar" aria-valuenow={33} aria-valuemin={0} aria-valuemax={100}>
+                            <div className={styles.topProgressBarFill} style={{ width: '33.33%' }} />
+                        </div>
+
+                        {/* Badge de paso */}
+                        <div className={styles.stepBadge}>
                             <img
-                                src="https://www.svgrepo.com/show/475656/google-color.svg"
-                                alt="Google"
-                                className={styles.socialIcon}
+                                src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
+                                alt="Club Pata Amiga Logo"
+                                className={styles.stepBadgeLogo}
                             />
-                            {isSocialLoading ? 'Conectando...' : 'Google'}
-                        </button>
-                    </div>
-                    <div className={styles.divider}>
-                        <span>o regístrate con tu correo</span>
-                    </div>
-                </div>
-            )}
-
-            <form id="step1-form" onSubmit={handleSubmit} className={styles.form}>
-                {!isLoggedIn && (
-                    <>
-                        {/* Email */}
-                        <div className={styles.curpRow}>
-                            <TextInput
-                                label="Correo electrónico"
-                                name="email"
-                                type="email"
-                                value={formData.email}
-                                onChange={(value) => {
-                                    setFormData({ ...formData, email: value });
-                                    if (emailAvailable !== null) setEmailAvailable(null);
-                                    if (errors.email) setErrors(prev => { const e = { ...prev }; delete e.email; return e; });
-                                }}
-                                onBlur={handleEmailBlur}
-                                placeholder="tu@email.com"
-                                error={errors.email}
-                                required
-                                disabled={isSubmitting || isCheckingEmail || isSocialLoading}
-                            />
-                            {isCheckingEmail && (
-                                <span className={styles.inputIndicator}>Verificando...</span>
-                            )}
-                            {emailAvailable && formData.email.includes('@') && !isCheckingEmail && !errors.email && mode === 'register' && (
-                                <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
-                            )}
+                            <div className={styles.stepBadgeText}>PASO 1 DE 3</div>
+                            <div className={styles.stepBadgeIcon} aria-hidden="true" />
                         </div>
 
-                        {/* Contraseña */}
-                        <div className={styles.passwordContainer}>
-                            <TextInput
-                                label="Contraseña"
-                                name="password"
-                                type={showPassword ? 'text' : 'password'}
-                                value={formData.password}
-                                onChange={(value) => {
-                                    setFormData({ ...formData, password: value });
-                                    if (errors.password) setErrors(prev => { const e = { ...prev }; delete e.password; return e; });
-                                }}
-                                placeholder={isLoginMode ? 'Tu contraseña' : 'Mínimo 8 caracteres'}
-                                error={errors.password}
-                                required
-                                disabled={isSubmitting || isSocialLoading}
-                            />
-                            <button
-                                type="button"
-                                className={styles.passwordToggle}
-                                onClick={() => setShowPassword(!showPassword)}
-                                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                            >
-                                {showPassword ? (
-                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                        <line x1="1" y1="1" x2="23" y2="23"></line>
-                                    </svg>
-                                ) : (
-                                    <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                )}
-                            </button>
+                        {/* Header */}
+                        <div className={styles.formHeader} key={`header-${mode}`}>
+                            <h2 className={styles.formTitle}>
+                                {isLoggedIn ? 'SESIÓN ACTIVA' : (mode === 'register' ? 'CREA TU CUENTA' : 'INICIA SESIÓN')}
+                            </h2>
                         </div>
 
-                        {/* Confirmar contraseña (solo en registro) */}
-                        {!isLoginMode && (
-                            <div className={styles.passwordContainer}>
-                                <TextInput
-                                    label="Confirma tu contraseña"
-                                    name="confirmPassword"
-                                    type={showConfirmPassword ? 'text' : 'password'}
-                                    value={formData.confirmPassword}
-                                    onChange={(value) => setFormData({ ...formData, confirmPassword: value })}
-                                    placeholder="Repite tu contraseña"
-                                    error={errors.confirmPassword}
-                                    required
-                                    disabled={isSubmitting || isSocialLoading}
-                                />
-                                <button
-                                    type="button"
-                                    className={styles.passwordToggle}
-                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                                >
-                                    {showConfirmPassword ? (
-                                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
-                                            <line x1="1" y1="1" x2="23" y2="23"></line>
-                                        </svg>
-                                    ) : (
-                                        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                    )}
-                                </button>
+                        {/* Banner de sesión activa */}
+                        {isLoggedIn && (
+                            <div className={styles.loggedInBanner}>
+                                <div className={styles.userInfo}>
+                                    <div className={styles.userIcon}>👤</div>
+                                    <div>
+                                        <p className={styles.userLabel}>Has iniciado sesión como:</p>
+                                        <p className={styles.userEmail}>{member.auth.email}</p>
+                                    </div>
+                                </div>
+                                <div className={styles.bannerActions}>
+                                    <button
+                                        type="button"
+                                        className={styles.logoutButtonSecondary}
+                                        onClick={handleLogout}
+                                        disabled={isLoggingOut}
+                                    >
+                                        {isLoggingOut ? 'CERRANDO...' : 'CERRAR SESIÓN'}
+                                    </button>
+                                </div>
                             </div>
                         )}
-                    </>
-                )}
 
-                <div className={styles.securityMessage}>
-                    <p>
-                        🔒 <strong>Tus datos están protegidos.</strong> Al continuar, aceptas nuestros{' '}
-                        <button type="button" onClick={handleViewTerms} className={styles.viewTermsLink}>
-                            Términos y Condiciones
-                        </button>{' '}y{' '}
-                        <button type="button" onClick={handleViewTerms} className={styles.viewTermsLink}>
-                            Aviso de Privacidad
-                        </button>.
-                    </p>
+                        {/* Form Body */}
+                        <form onSubmit={handleSubmit} className={styles.formBody} key={`form-${mode}`}>
+                            {!isLoggedIn && (
+                                <>
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="email" className={styles.inputLabel}>CORREO ELECTRÓNICO</label>
+                                        <div className={styles.inputWrapper}>
+                                            <input
+                                                id="email"
+                                                type="email"
+                                                name="email"
+                                                placeholder="hola@pataamiga.mx"
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                onBlur={handleEmailBlur}
+                                                className={styles.inputField}
+                                                disabled={isLoading}
+                                                required
+                                                autoComplete="email"
+                                            />
+                                            {isCheckingEmail && (
+                                                <span className={styles.inputIndicator}>...</span>
+                                            )}
+                                            {emailAvailable && formData.email.includes('@') && !isCheckingEmail && !errors.email && mode === 'register' && (
+                                                <span className={styles.inputIndicatorSuccess}>✓</span>
+                                            )}
+                                        </div>
+                                        {errors.email && <p className={styles.errorText} role="alert">{errors.email}</p>}
+                                    </div>
+
+                                    <div className={styles.inputGroup}>
+                                        <label htmlFor="password" className={styles.inputLabel}>CONTRASEÑA</label>
+                                        <div className={styles.inputWrapper}>
+                                            <input
+                                                id="password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                name="password"
+                                                placeholder="••••••••"
+                                                value={formData.password}
+                                                onChange={handleChange}
+                                                className={styles.inputField}
+                                                disabled={isLoading}
+                                                required
+                                                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
+                                            />
+                                            <button
+                                                type="button"
+                                                className={styles.passwordToggle}
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                                aria-pressed={showPassword}
+                                            >
+                                                {showPassword ? '👁️‍🗨️' : '👁️'}
+                                            </button>
+                                        </div>
+                                        {errors.password && <p className={styles.errorText} role="alert">{errors.password}</p>}
+                                    </div>
+
+                                    {mode === 'register' && (
+                                        <div className={styles.inputGroup}>
+                                            <label htmlFor="confirmPassword" className={styles.inputLabel}>CONFIRMAR CONTRASEÑA</label>
+                                            <div className={styles.inputWrapper}>
+                                                <input
+                                                    id="confirmPassword"
+                                                    type={showConfirmPassword ? 'text' : 'password'}
+                                                    name="confirmPassword"
+                                                    placeholder="••••••••"
+                                                    value={formData.confirmPassword}
+                                                    onChange={handleChange}
+                                                    className={styles.inputField}
+                                                    disabled={isLoading}
+                                                    required
+                                                    autoComplete="new-password"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className={styles.passwordToggle}
+                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                    aria-label={showConfirmPassword ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'}
+                                                    aria-pressed={showConfirmPassword}
+                                                >
+                                                    {showConfirmPassword ? '👁️‍🗨️' : '👁️'}
+                                                </button>
+                                            </div>
+                                            {errors.confirmPassword && <p className={styles.errorText} role="alert">{errors.confirmPassword}</p>}
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            <button
+                                type="submit"
+                                className={styles.submitButton}
+                                disabled={isLoading}
+                            >
+                                {isLoading ? 'PROCESANDO...' : (isLoggedIn ? 'CONTINUAR REGISTRO 🐾' : (mode === 'register' ? 'REGISTRARSE 🐾' : 'ENTRAR 🐾'))}
+                            </button>
+
+                            <div className={styles.privacyText}>
+                                🔒 Tus datos están protegidos. Al continuar, aceptas nuestros{' '}
+                                <button 
+                                    type="button"
+                                    className={styles.privacyLink} 
+                                    onClick={() => setIsTermsOpen(true)}
+                                >
+                                    Términos y Condiciones y Aviso de Privacidad.
+                                </button>
+                            </div>
+
+                            {!isLoggedIn && (
+                                <div className={styles.separatorSection}>
+                                    <div className={styles.separator}>
+                                        <div className={styles.separatorLine} />
+                                        <div className={styles.separatorText}>O ÚNETE CON</div>
+                                        <div className={styles.separatorLine} />
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={handleGoogleLogin}
+                                        className={styles.googleButton}
+                                        disabled={isLoading}
+                                        aria-label="Registrarse con Google"
+                                    >
+                                        <img
+                                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695353/2000px-Google_G_Logo.svg__wzddgf.webp"
+                                            alt="Google Logo"
+                                            className={styles.googleIcon}
+                                        />
+                                        GOOGLE
+                                    </button>
+
+                                    <div className={styles.footerText}>
+                                        {mode === 'register' ? (
+                                            <>
+                                                ¿Ya tienes cuenta?{' '}
+                                                <button
+                                                    type="button"
+                                                    className={styles.footerLink}
+                                                    onClick={() => setMode('login')}
+                                                >
+                                                    Inicia sesión
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                ¿No tienes cuenta?{' '}
+                                                <button
+                                                    type="button"
+                                                    className={styles.footerLink}
+                                                    onClick={() => setMode('register')}
+                                                >
+                                                    Regístrate
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
+                        </form>
+                    </div>
+
+                    {/* Bottom Image */}
+                    <div className={styles.bottomImageWrapper}>
+                        <img
+                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695595/manada-min_uegzj6.webp"
+                            alt="Ilustración de la manada Pata Amiga"
+                            className={styles.bottomImage}
+                        />
+                    </div>
                 </div>
 
-                {!isLoggedIn && (
-                    <button
-                        type="submit"
-                        className={styles.primaryButton}
-                        disabled={isSubmitting || isSocialLoading}
-                    >
-                        {isSubmitting
-                            ? (isLoginMode ? 'Iniciando sesión...' : 'Creando cuenta...')
-                            : (isLoginMode ? 'Iniciar sesión →' : 'Continuar →')}
-                    </button>
-                )}
-
-                {/* Toggle entre login y registro */}
-                {!isLoggedIn && (
-                    <p className={styles.loginLink}>
-                        {isLoginMode ? (
-                            <>
-                                ¿No tienes cuenta?{' '}
-                                <button
-                                    type="button"
-                                    onClick={() => { setMode('register'); setErrors({}); }}
-                                    style={{ background: 'none', border: 'none', color: '#00BBB4', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', padding: 0, font: 'inherit' }}
-                                >
-                                    Regístrate aquí
-                                </button>
-                            </>
-                        ) : (
-                            <>
-                                ¿Ya tienes cuenta?{' '}
-                                <button
-                                    type="button"
-                                    onClick={() => { setMode('login'); setErrors({}); setFormData(prev => ({ ...prev, confirmPassword: '' })); }}
-                                    style={{ background: 'none', border: 'none', color: '#00BBB4', fontWeight: 700, cursor: 'pointer', textDecoration: 'underline', padding: 0, font: 'inherit' }}
-                                >
-                                    Inicia sesión
-                                </button>
-                            </>
-                        )}
-                    </p>
-                )}
-            </form>
-
-            {/* Modal de términos */}
-            <TermsModalEnhanced
-                isOpen={showTermsModal}
-                onClose={handleTermsClose}
-                documentsOnly={true}
-            />
-        </div>
+                <TermsModalEnhanced
+                    isOpen={isTermsOpen}
+                    onClose={() => setIsTermsOpen(false)}
+                />
+            </div>
+        </>
     );
 }

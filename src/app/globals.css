@@ -1,7 +1,14 @@
 :root {
     /* Colores principales */
-    --color-primary: #7DD8D5;
+    --color-primary: #15BEB2; /* Club Turquoise */
+    --color-primary-light: #7DD8D5;
+    --color-action-orange: #FE8F15;
+    --color-action-orange-deep: #FF8400;
+    --color-lime: #9FD406;
+    --color-yellow: #FEBD01;
+    --color-pink: #FE0063;
     --color-white: #FFFFFF;
+    --color-black: #181C1C;
     --color-text-dark: #2D3748;
     --color-text-light: #718096;
     --color-error: #E53E3E;
@@ -33,6 +40,11 @@
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+
+    /* Animaciones */
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 * {

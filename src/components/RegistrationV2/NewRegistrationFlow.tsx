@@ -15,6 +15,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 // Componentes de pasos
 import Step1Account from './steps/Step1Account';
+// Step1AccountRedesign ya no es necesario ya que se integró en Step1Account
 import Step2PetBasic from './steps/Step2PetBasic';
 import Step3PlanSelection from './steps/Step3PlanSelection';
 import Step3_5PaymentSuccess from './steps/Step3_5PaymentSuccess';
@@ -23,6 +24,7 @@ import Step5CompletePet from './steps/Step5CompletePet';
 import Step6Success from './steps/Step6Success';
 import StepIndicator from './StepIndicator';
 import BenefitsBanner from './BenefitsBanner';
+import NavbarRedesign from './NavbarRedesign';
 import Toast from '@/components/UI/Toast';
 
 // Servicios
@@ -1088,24 +1090,14 @@ export default function NewRegistrationFlow() {
 
     return (
         <div className={styles.container}>
-            {/* Banner de beneficios (visible en pasos pre-pago) */}
-            {currentStep <= 3 && <BenefitsBanner />}
+            <NavbarRedesign onLogout={handleLogout} member={member} />
 
-            <div className={styles.content}>
-                {member && currentStep < 6 && (
-                    <div className={styles.logoutWrapper}>
-                        <button 
-                            type="button" 
-                            className={styles.logoutLink}
-                            onClick={handleLogout}
-                        >
-                            Cerrar sesión
-                        </button>
-                    </div>
-                )}
+            {/* Banner de beneficios (visible en pasos pre-pago, oculto en redesign paso 1) */}
+            {currentStep > 1 && currentStep <= 3 && <BenefitsBanner />}
 
-                {/* Indicador de pasos (Oculto en el paso de éxito y transición) */}
-                {currentStep <= 5 && !isPaymentSuccessTransition && (
+            <div className={`${styles.content} ${currentStep === 1 ? styles.contentWide : ''}`}>
+                {/* Indicador de pasos (Oculto en el paso de éxito, transición y redesign paso 1) */}
+                {currentStep > 1 && currentStep <= 5 && !isPaymentSuccessTransition && (
                     <StepIndicator
                         currentStep={currentStep <= 3 ? currentStep : currentStep - 3}
                         totalSteps={currentStep <= 3 ? 3 : 2}
