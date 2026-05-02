@@ -17,10 +17,10 @@ import styles from './steps.module.css';
 interface Step1AccountProps {
     data: any;
     member: any;
-    onNext: (data: { email: string; password: string }) => void;
+    onNext: (data: { email: string; password: string; mode: 'register' | 'login' }) => void;
     onBack: () => void;
     showToast: (message: string, type?: 'error' | 'success' | 'warning') => void;
-    /** Email pre-llenado (viene del widget via URL ?email=) */
+    /** Email pre-llenado (viene del widget via URL ?email= o magic token) */
     defaultEmail?: string;
     /** Si es true, inicia en modo login en lugar de registro */
     autoLoginMode?: boolean;
@@ -167,13 +167,13 @@ export default function Step1Account({
                 if (confirmChange) {
                     await handleLogout();
                     await new Promise(resolve => setTimeout(resolve, 500));
-                    await onNext({ email: formData.email, password: formData.password });
+                    await onNext({ email: formData.email, password: formData.password, mode });
                 } else {
                     setIsSubmitting(false);
                     return;
                 }
             } else {
-                await onNext({ email: formData.email, password: formData.password });
+                await onNext({ email: formData.email, password: formData.password, mode });
             }
         } catch (error: any) {
             console.error('Error:', error);

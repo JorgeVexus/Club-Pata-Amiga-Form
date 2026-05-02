@@ -486,10 +486,10 @@ export default function NewRegistrationFlow() {
     // ===== HANDLERS DE PASOS =====
 
     // Paso 1: Crear cuenta en Memberstack (o hacer login si el email ya existe)
-    const handleStep1Complete = async (data: { email: string; password: string }) => {
+    const handleStep1Complete = async (data: { email: string; password: string; mode?: 'register' | 'login' }) => {
         setIsLoading(true);
         try {
-            // 🍎 Leer intent guardado en sessionStorage (por iOS ITP)
+            // 🍎 Leer intent guardado en sessionStorage (por iOS ITP o magic token)
             const savedIntent = typeof sessionStorage !== 'undefined'
                 ? sessionStorage.getItem('pata_login_intent')
                 : null;
@@ -515,6 +515,46 @@ export default function NewRegistrationFlow() {
                 goToStep(targetStep);
                 setIsLoading(false);
                 return;
+            }
+
+            // 🔮 MODO LOGIN DIRECTO — viene del magic token fallback o del toggle de login.
+            // Saltamos el signup para ir directo al login y evitar el error innecesario.
+            if (data.mode === 'login') {
+                console.log('🔑 Modo login directo (magic token / toggle)...');
+                const loginResult = await window.$memberstackDom.loginMemberEmailPassword({
+                    email: data.email,
+                    password: data.password,
+                });
+
+                if (loginResult.data) {
+                    const loggedMember = loginResult.data;
+                    setMember(loggedMember);
+                    const msId = loggedMember.id || (loggedMember as any).memberId;
+
+                    const msStep = Number(loggedMember.customFields?.['registration-step'] || 1);
+                    const paymentStatus = loggedMember.customFields?.['payment-status'];
+                    const isCheckoutPending = loggedMember.customFields?.['checkout-pending'] === 'true' ||
+                        loggedMember.customFields?.['checkout-pending'] === true;
+
+                    let loginTargetStep = Math.max(msStep, 2);
+                    if (hasRecoveryIntent || isCheckoutPending) {
+                        if (paymentStatus !== 'completed') loginTargetStep = 3;
+                    }
+                    if (paymentStatus === 'completed' && loginTargetStep < 4) loginTargetStep = 4;
+
+                    if (hasRecoveryIntent) sessionStorage.removeItem('pata_login_intent');
+
+                    console.log(`✅ Login directo exitoso. Paso final: ${loginTargetStep}`);
+
+                    // Sync Supabase para mantener consistencia
+                    await registerUserInSupabase({ email: data.email, registration_step: loginTargetStep }, msId);
+
+                    goToStep(loginTargetStep, true);
+                    showToast('¡Hola de nuevo! 👋', 'success');
+                    return;
+                }
+
+                throw new Error('Login fallido: no se recibieron datos del member');
             }
 
             // Crear usuario en Memberstack
