@@ -197,6 +197,14 @@ export default function Step1Account({
             <div className={styles.container}>
                 {/* Top Section: Headline and Price */}
                 <div className={styles.headerSection}>
+                    {/* Badge - Moved here for desktop layout, hidden on mobile via CSS */}
+                    <div className={styles.badge}>
+                        <div className={styles.badgeIcon}>
+                            <BadgeCheckIcon />
+                        </div>
+                        <span className={styles.badgeText}>100% Mexicano | Únete a la manada</span>
+                    </div>
+
                     <h1 className={styles.headline}>
                         Tu tranquilidad<br />empieza aquí
                     </h1>
@@ -222,14 +230,6 @@ export default function Step1Account({
                 <div className={styles.mainContent}>
                     {/* Left Column: Benefits */}
                     <div className={styles.benefitsSection} ref={benefitsRef}>
-                        {/* Badge - Hidden on mobile via CSS */}
-                        <div className={styles.badge}>
-                            <div className={styles.badgeIcon}>
-                                <BadgeCheckIcon />
-                            </div>
-                            <span className={styles.badgeText}>100% Mexicano | Únete a la manada</span>
-                        </div>
-
                         {/* Benefits Grid */}
                         <div className={styles.benefitsGrid}>
                             {/* Emergencias Médicas */}

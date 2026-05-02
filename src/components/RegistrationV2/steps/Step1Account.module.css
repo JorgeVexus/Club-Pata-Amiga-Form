@@ -117,7 +117,7 @@
     background: var(--color-primary);
     border-radius: 9999px;
     border: 2px solid var(--color-black);
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     width: fit-content;
     animation: slideInDown 0.5s var(--ease-out-expo);
 }
