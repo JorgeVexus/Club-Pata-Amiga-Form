@@ -72,7 +72,9 @@ export default function NewRegistrationFlow() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState<number | null>(null); // null mientras carga inicial
     const searchParams = useSearchParams();
-    const isRecovery = searchParams.get('reason') === 'complete_payment';
+    // isRecovery se setea dentro del useEffect usando window.location.search
+    // para garantizar compatibilidad con iOS Safari (useSearchParams puede ser vacío antes de hidratación)
+    const [isRecovery, setIsRecovery] = useState(false);
     const [member, setMember] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -230,7 +232,14 @@ export default function NewRegistrationFlow() {
                         const isPaymentSuccess = searchParams.get('payment') === 'success';
                         const isCheckoutPending = currentMember.customFields?.['checkout-pending'] === 'true' || currentMember.customFields?.['checkout-pending'] === true;
 
-                        console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, isCheckoutPending, finalStep, msStep, dbStep });
+                        // 🍎 iOS FIX: useSearchParams() puede ser vacío en iOS Safari (pre-hidratación).
+                        // Leemos 'reason' directamente desde window.location.search para garantizar
+                        // que el parámetro sea detectado en TODOS los navegadores (incluyendo iOS Safari).
+                        const nativeParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
+                        const isRecoveryFlag = nativeParams.get('reason') === 'complete_payment';
+                        setIsRecovery(isRecoveryFlag);
+
+                        console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, isCheckoutPending, isRecovery: isRecoveryFlag, finalStep, msStep, dbStep });
 
                         // Si el pago está pendiente de checkout, forzamos que no baje del paso 3
                         if (isCheckoutPending && finalStep < 3 && paymentStatus !== 'completed') {
@@ -238,7 +247,19 @@ export default function NewRegistrationFlow() {
                             finalStep = 3;
                         }
 
-                        if (isRecovery && finalStep < 3) {
+                        // Si viene del widget con reason=complete_payment (cualquier navegador),
+                        // forzar paso 3 aunque el progreso guardado sea menor.
+                        if (isRecoveryFlag && finalStep < 3) {
+                            console.log('🔁 Recovery detectado (reason=complete_payment), forzando paso 3');
+                            finalStep = 3;
+                        }
+
+                        // 🍎 iOS EXTRA: Si el usuario no ha pagado y su step guardado es <= 2,
+                        // pero viene de complete_payment O checkout-pending es true → paso 3.
+                        // Esto cubre el caso donde isRecovery falló por el bug de iOS.
+                        if (finalStep <= 2 && paymentStatus !== 'completed' &&
+                            (isCheckoutPending || isRecoveryFlag)) {
+                            console.log('🍎 iOS fallback: forcing step 3 via checkout-pending/isRecovery guard');
                             finalStep = 3;
                         }
 
