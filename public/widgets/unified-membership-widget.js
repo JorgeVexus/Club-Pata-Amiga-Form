@@ -856,7 +856,7 @@
                     console.log('✨ Unified Widget: Rendering panel...');
                     this.container.classList.add('show');
                     this.render();
-                    
+
                     // 🆕 Magic Link: Auto-open chat if URL has action=chat&petId=X
                     try {
                         const urlParams = new URLSearchParams(window.location.search);
@@ -1006,9 +1006,9 @@
             // 1. Mestizo + Adoptado -> 120 días
             // 2. Raza + Adoptado -> 150 días
             // 3. Estándar (No adoptado) -> 180 días
-            
+
             let totalDays = 180;
-            
+
             // Si el objeto ya trae el campo calculado del backend, usarlo
             if (pet.waiting_period_days) {
                 totalDays = parseInt(pet.waiting_period_days);
@@ -1164,8 +1164,8 @@
                 <div class="pata-external-greeting">
                     <h1 class="pata-welcome-title">¡hola, ${firstName}! bienvenida</h1>
                     <p class="pata-welcome-subtitle">
-                        Tu membresía está activa, pero algunos beneficios estarán disponibles pronto.<br>
-                        Nos encanta tenerte aquí. Mientras termina tu periodo de carencia, sigue explorando lo que Pata Amiga tiene para ti.
+                        Tu membresía ya está activa. <br>
+                        Algunos beneficios están en camino, pero mientras tanto, no estás sola: ya formas parte de una comunidad que cuida contigo.
                     </p>
                 </div>
             `;
@@ -1440,7 +1440,7 @@
                 setTimeout(() => {
                     loader.style.display = 'none';
                 }, 400);
-                
+
                 // Fallback agresivo: display none después de 500ms sin transiciones if it's still there
                 setTimeout(() => {
                     if (loader.style.display !== 'none') loader.style.display = 'none';
@@ -1470,7 +1470,7 @@
 
         renderPetContent(pet) {
             let content = '';
-            
+
             // Si falta el certificado y no estamos ya en acción requerida prevemos banner
             if (pet.status !== 'action_required') {
                 content += this.renderOptionalDocsBanner(pet);
@@ -1592,16 +1592,16 @@
                 ${this.renderWarningBanner(pet)}
                 <div class="pata-approved-grid">
                     <div class="pata-approved-main">
-                        <h2 class="pata-carencia-title">tu periodo de carencia</h2>
-                        <p class="pata-carencia-subtitle">${encouragement}</p>
-                        
+                        <h2 class="pata-carencia-title">Tu camino en la manada</h2>
+                        <p class="pata-carencia-subtitle">¡Qué alegría que ya eres parte de nosotros! ${encouragement}</p>
+
                         <div class="pata-carencia-remaining">
-                            Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo solidario completo
+                            Solo faltan <strong>${carencia.daysRemaining} días</strong> para que el abrazo de nuestra manada proteja por completo a tus peludos.
                         </div>
 
                         <div class="pata-progress-container-v2">
                             <div class="pata-progress-header">
-                                <span>Inicio de membresía</span>
+                                <span>Tu avance:</span>
                                 <span style="color: #00BBB4; font-weight: 900;">${carencia.percentage}% completado</span>
                             </div>
                             <div class="pata-bar-v2">
@@ -1626,23 +1626,23 @@
                                     <li>${pet.type || 'Lomito'}</li>
                                     <li>${pet.breed || 'Mestizo'}</li>
                                 </ul>
-                                <button class="pata-btn-ver-detalles" id="pata-btn-pet-details" data-pet-id="${pet.id}">Ver detalles</button>
+                                <button class="pata-btn-ver-detalles" id="pata-btn-pet-details" data-pet-id="${pet.id}">👉 Ver detalles</button>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="pata-orange-alert">
-                    <div class="pata-orange-alert-icon">🔔</div>
+                    <div class="pata-orange-alert-icon">💡</div>
                     <div class="pata-orange-alert-text">
                         <strong>¿Adoptaste a alguno de tus compañeros?</strong><br>
-                        Puedes acelerar tu acceso al fondo. <a href="https://wa.me/525637545068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Contáctanos aquí</a> para validar tus documentos.
+                        ¡Qué gran corazón! ❤️ No tienes que esperar tanto para su protección completa. <a href="https://wa.me/525637545068?text=Hola!%20Tengo%20una%20duda%20sobre%20mi%20registro%20en%20Pata%20Amiga" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">Escríbenos por aquí</a> para activar su fondo lo antes posible.
                     </div>
                 </div>
 
                 <div style="margin-top: 20px; padding: 15px; background: rgba(255,255,255,0.5); border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); text-align: center;">
                     <p style="margin:0; font-size: 13px; color: #666;">
-                        Tienes control total sobre tu suscripción. Puedes <strong>cancelar en cualquier momento</strong> desde la configuración de tu cuenta.
+                        En Pata Amiga caminamos a tu lado mientras tú quieras.Tienes el control totál para <strong>cancelar tu suscripción en cualquier momento</strong> desde tu perfil. !Tú decides!
                     </p>
                 </div>
             `;
@@ -1728,9 +1728,9 @@
             const isSenior = pet.age_value >= 10;
             const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
             const hasCert = !!pet.vet_certificate_url;
-            
+
             let uploadFields = '';
-            
+
             if (!hasPhoto1) {
                 uploadFields += `
                     <div style="margin-bottom: 20px;">
@@ -1807,11 +1807,11 @@
 
         renderChatInterface(logs, petId, status) {
             const canSend = ['action_required', 'rejected', 'appealed'].includes(status);
-            
+
             const bubbles = logs.map(log => {
                 let bubbleClass = 'system';
                 const type = log.type || '';
-                
+
                 if (type === 'user_response' || type === 'user_appeal' || type === 'user_message' || type === 'user_fulfill') {
                     bubbleClass = 'user';
                 } else if (type === 'admin_request' || type === 'admin_message') {
@@ -1835,7 +1835,7 @@
                     const items = meta.items || [];
                     const requestTypes = meta.request_types || [];
                     const fulfilled = meta.fulfilled === true;
-                    
+
                     // If items are not present but request_types are (fallback for older logs)
                     const displayItems = items.length > 0 ? items : requestTypes.map(rt => {
                         const typeLabels = {
@@ -1845,14 +1845,14 @@
                         };
                         return { type: rt, label: typeLabels[rt]?.label || rt, fulfilled: false };
                     });
-                    
+
                     const actionButtons = displayItems.map(item => {
                         if (item.fulfilled || fulfilled) {
                             return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:4px;">✅ ${item.label} — Completado</div>`;
                         }
                         return `<button class="pata-action-btn" data-request-type="${item.type}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;margin-bottom:4px;box-shadow: 2px 2px 0 rgba(254, 143, 21, 0.2);">${item.label} — Subir/Actualizar</button>`;
                     }).join('');
-                    
+
                     return `
                         <div class="pata-chat-bubble admin" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid #FE8F15;">
                             <div style="font-weight:900;font-size:13px;margin-bottom:8px;color:#FE8F15;">📋 Solicitud de Información</div>
@@ -1875,7 +1875,7 @@
                 }
 
                 let messageContent = log.message || '';
-                
+
                 // Detectar imágenes en formato [Imagen adjunta](url) o links [Archivo adjunto](url)
                 const imageMatch = messageContent.match(/\[Imagen adjunta\]\((.*?)\)/);
                 const fileMatch = messageContent.match(/\[Archivo adjunto\]\((.*?)\)/);
@@ -2085,7 +2085,7 @@
             // Create a hidden file input
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            
+
             // Set accept type based on request
             if (requestType === 'PET_PHOTO_1') {
                 fileInput.accept = 'image/*';
@@ -2094,23 +2094,23 @@
             } else {
                 fileInput.accept = 'image/*,application/pdf';
             }
-            
+
             fileInput.onchange = async () => {
                 const file = fileInput.files[0];
                 if (!file) return;
-                
+
                 // 10MB limit
                 if (file.size > 10 * 1024 * 1024) {
                     alert('El archivo es muy grande. Máximo 10MB.');
                     return;
                 }
-                
+
                 // Show loading state
                 const originalHTML = btnElement.innerHTML;
                 btnElement.disabled = true;
                 btnElement.innerHTML = '⏳ Subiendo...';
                 btnElement.style.opacity = '0.6';
-                
+
                 try {
                     const formData = new FormData();
                     formData.append('file', file);
@@ -2118,27 +2118,27 @@
                     formData.append('userId', this.member.id);
                     formData.append('requestType', requestType);
                     formData.append('logId', logId);
-                    
+
                     const res = await fetch(`${CONFIG.apiUrl}/api/user/fulfill-request`, {
                         method: 'POST',
                         body: formData
                     });
-                    
+
                     const data = await res.json();
-                    
+
                     if (data.success) {
                         // Replace button with success state
                         btnElement.innerHTML = '✅ ¡Completado!';
                         btnElement.style.background = '#E8F5E9';
                         btnElement.style.border = '2px solid #4CAF50';
                         btnElement.style.color = '#2E7D32';
-                        
+
                         // 1. Refresh full data from server to get new URLs and status
                         await this.loadData();
-                        
+
                         // 2. Find the updated pet
                         const updatedPet = this.pets.find(p => p.id === petId);
-                        
+
                         // 3. Update the modal background and info without closing it
                         if (updatedPet) {
                             const modal = document.getElementById('pata-pet-details-modal');
@@ -2148,7 +2148,7 @@
                                     const mainImg = document.getElementById('pata-main-gallery-img');
                                     if (mainImg) mainImg.src = data.url;
                                 }
-                                
+
                                 // Update floating status badge
                                 const statusBadge = modal.querySelector('.pata-status-badge-floating');
                                 if (statusBadge) {
@@ -2156,14 +2156,14 @@
                                     statusBadge.style.background = '#FE8F15';
                                     statusBadge.style.color = '#000';
                                 }
-                                
+
                                 // Refresh benefits/info rows if status changed
                                 const statusValue = modal.querySelector('.pata-editorial-status-value');
                                 if (statusValue) {
                                     statusValue.innerHTML = '<span style="opacity: 0.4;">🛡️</span> En revisión';
                                     statusValue.style.color = '#FE8F15';
                                 }
-                                
+
                                 // Update Fact Sheet top badge
                                 const topBadge = modal.querySelector('.pata-editorial-status-badge');
                                 if (topBadge) {
@@ -2267,7 +2267,7 @@
                                 <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
                                     ${photos.map((url, i) => `
                                         <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: var(--pata-border-thin); overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
-                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" alt="Foto ${i+1}">
+                                            <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" alt="Foto ${i + 1}">
                                         </div>
                                     `).join('')}
                                 </div>
@@ -2336,12 +2336,12 @@
                                 ${this.isSenior(pet) ? `
                                     <div style="background: #E1F5FE; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
                                         <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
-                                        ${pet.vet_certificate_url ? 
-                                            `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
+                                        ${pet.vet_certificate_url ?
+                        `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
                                                 <div style="width: 40px; height: 40px; background: #000; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">📄</div>
                                                 Ver Certificado Médico →
-                                            </a>` : 
-                                            '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
+                                            </a>` :
+                        '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
                                     </div>
                                 ` : ''}
 
@@ -2404,7 +2404,7 @@
             const isSenior = pet.age_value >= 10;
             const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
             const hasCert = !!pet.vet_certificate_url;
-            
+
             const needsPhoto1 = !hasPhoto1;
             const needsCert = isSenior && !hasCert;
 
@@ -2412,7 +2412,7 @@
                 <div class="pata-external-greeting">
                     <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
                     <p class="pata-welcome-subtitle">
-                        Estamos revisando tu perfil, pero necesitamos un último detalle.
+                        Estamos preparando todo para tu llegada, pero nos falta un detalle muy importante.
                     </p>
                 </div>
 
@@ -2422,9 +2422,9 @@
                     <div class="pata-pending-view">
                         <h2 class="pata-title" style="margin-bottom: 8px;">tu registro está en revisión</h2>
                         <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 25px;">
-                            Sin embargo, aún falta que nos envíes información sobre tu mascota <strong>${pet.name}</strong>. 
-                            ${needsCert ? '<br><span style="color: #7B1FA2; font-weight: 900;">Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙</span>' : ''}
-                            Tendrás 15 días para enviarnos esta información y así evitar que tu membresía sea desactivada.
+                            Queremos dar el mejor respaldo a <strong>${pet.name}</strong>. 
+                            ${needsCert ? '<br><span style="color: #7B1FA2; font-weight: 900;">Para terminar su registro, necesitamos conocer cómo se encuentra hoy. Al ser senior (10+ años), esta información nos ayuda a entender sus necesidades y así podremos completar su registro sin que tu membresía se vea afectada. 🐾💙</span>' : ''}
+                            Ayúdanos con este detalle dentro de los próximos 15 días para que nada detenga el respaldo que tenemos preparado para <strong>${pet.name}</strong>.
                         </p>
                         
                         <div class="pata-upload-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 30px;">
@@ -2792,7 +2792,7 @@
 
                     try {
                         const pet = this.pets[this.currentIndex];
-                        
+
                         let photoUrls = [null, null, null, null, null];
                         let vetCertificateUrl = null;
 
