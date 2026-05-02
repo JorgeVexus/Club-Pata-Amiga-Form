@@ -1090,7 +1090,7 @@ export default function NewRegistrationFlow() {
 
     return (
         <div className={styles.container}>
-            <NavbarRedesign onLogout={handleLogout} member={member} />
+            <NavbarRedesign onLogout={handleLogout} member={member} showLogout={currentStep > 1} />
 
             {/* Banner de beneficios (visible en pasos pre-pago, oculto en redesign paso 1) */}
             {currentStep > 1 && currentStep <= 3 && <BenefitsBanner />}

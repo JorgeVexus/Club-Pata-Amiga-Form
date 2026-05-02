@@ -72,15 +72,15 @@
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .navbar {
-        padding: 10px 16px;
+        padding: 6px 16px;
     }
     
     .logo {
-        height: 80px;
+        height: 40px;
     }
     
     .logoWrapper {
-        width: 120px;
+        width: 100px;
     }
     
     .logoutButton {

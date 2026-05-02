@@ -6,9 +6,10 @@ import styles from './NavbarRedesign.module.css';
 interface NavbarRedesignProps {
     onLogout: () => void;
     member: any;
+    showLogout?: boolean;
 }
 
-export default function NavbarRedesign({ onLogout, member }: NavbarRedesignProps) {
+export default function NavbarRedesign({ onLogout, member, showLogout = true }: NavbarRedesignProps) {
     return (
         <nav className={styles.navbar}>
             <div className={styles.content}>
@@ -20,14 +21,16 @@ export default function NavbarRedesign({ onLogout, member }: NavbarRedesignProps
                     />
                 </a>
                 
-                <div className={styles.actions}>
-                    <button 
-                        className={styles.logoutButton}
-                        onClick={onLogout}
-                    >
-                        <span className={styles.logoutText}>Cerrar sesión</span>
-                    </button>
-                </div>
+                {showLogout && (
+                    <div className={styles.actions}>
+                        <button 
+                            className={styles.logoutButton}
+                            onClick={onLogout}
+                        >
+                            <span className={styles.logoutText}>Cerrar sesión</span>
+                        </button>
+                    </div>
+                )}
             </div>
         </nav>
     );
