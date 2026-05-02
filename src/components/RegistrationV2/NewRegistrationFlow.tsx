@@ -290,6 +290,14 @@ export default function NewRegistrationFlow() {
                         console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}), Pending(${isCheckoutPending}) -> Paso Actual(${finalStep})`);
                         goToStep(finalStep, true); // replaceState para el paso inicial
                     } else {
+                        // 🍎 iOS FIX: No hay sesión activa (cookie bloqueada por Safari ITP).
+                        // Guardamos el intent en sessionStorage para recuperarlo después del login.
+                        const nativeParams = new URLSearchParams(window.location.search);
+                        const reason = nativeParams.get('reason');
+                        if (reason) {
+                            sessionStorage.setItem('pata_login_intent', reason);
+                            console.log('🍎 iOS: sesión perdida, guardando intent en sessionStorage:', reason);
+                        }
                         console.log('👤 No hay sesión activa de Memberstack, iniciando en paso 1');
                         goToStep(1, true);
                     }
@@ -425,17 +433,26 @@ export default function NewRegistrationFlow() {
 
     // ===== HANDLERS DE PASOS =====
 
-    // Paso 1: Crear cuenta en Memberstack
+    // Paso 1: Crear cuenta en Memberstack (o hacer login si el email ya existe)
     const handleStep1Complete = async (data: { email: string; password: string }) => {
         setIsLoading(true);
         try {
+            // 🍎 Leer intent guardado en sessionStorage (por iOS ITP)
+            const savedIntent = typeof sessionStorage !== 'undefined'
+                ? sessionStorage.getItem('pata_login_intent')
+                : null;
+            const hasRecoveryIntent = savedIntent === 'complete_payment';
+
             // Si ya hay usuario logueado con ese email, simplemente avanzar
             if (member && member.auth?.email === data.email) {
                 console.log('🔄 Usuario ya logueado, reanudando registro...');
 
-                // Determinar a qué paso ir (usar el estado actual que ya se cargó en loadSavedState)
-                // Si por alguna razón currentStep es 1 (porque falló la carga), ir al 2
-                const targetStep = (currentStep && currentStep > 1) ? currentStep : 2;
+                // Si hay intent de recuperación de pago, ir al paso 3
+                const targetStep = hasRecoveryIntent ? 3 : ((currentStep && currentStep > 1) ? currentStep : 2);
+                if (hasRecoveryIntent) {
+                    sessionStorage.removeItem('pata_login_intent');
+                    console.log('🍎 iOS: intent recuperado, enviando al paso 3');
+                }
 
                 // Asegurarnos de que el paso esté sincronizado
                 await registerUserInSupabase({
@@ -524,19 +541,78 @@ export default function NewRegistrationFlow() {
                 console.error('⚠️ Error sincronizando con CRM (No crítico):', err)
             );
 
+            // 🍎 Intent de recuperación de pago: ir al paso 3 en lugar del 2
+            const finalTargetStep = hasRecoveryIntent ? 3 : 2;
+            if (hasRecoveryIntent) {
+                sessionStorage.removeItem('pata_login_intent');
+                console.log('🍎 iOS: intent recuperado post-signup, enviando al paso 3');
+            }
+
             setRegistrationData(prev => ({ ...prev, account: data }));
-            goToStep(2);
+            goToStep(finalTargetStep);
             showToast('¡Cuenta creada!', 'success');
 
         } catch (error: any) {
             console.error('❌ Error en Step 1:', error);
 
-            // Caso especial: El correo ya existe
+            // Caso especial: El correo ya existe → intentar LOGIN directamente
             const errorMsg = error.message || '';
             if (errorMsg.includes('already taken') ||
                 errorMsg.includes('already exists') ||
                 error?.code === 'email-already-in-use') {
-                throw error; // Propagar para que el UI muestre el aviso de login
+
+                // 🍎 Intentar login con las credenciales proporcionadas
+                console.log('🔑 Email ya existe, intentando login con credenciales...');
+                try {
+                    const loginResult = await window.$memberstackDom.loginMemberEmailPassword({
+                        email: data.email,
+                        password: data.password,
+                    });
+
+                    if (loginResult.data) {
+                        const loggedMember = loginResult.data;
+                        setMember(loggedMember);
+                        const msId = loggedMember.id || (loggedMember as any).memberId;
+
+                        // 🍎 Leer intent guardado + campos de Memberstack para determinar paso
+                        const savedIntent2 = typeof sessionStorage !== 'undefined'
+                            ? sessionStorage.getItem('pata_login_intent')
+                            : null;
+                        const hasRecoveryIntent2 = savedIntent2 === 'complete_payment';
+
+                        const msStep = Number(loggedMember.customFields?.['registration-step'] || 1);
+                        const paymentStatus = loggedMember.customFields?.['payment-status'];
+                        const isCheckoutPending = loggedMember.customFields?.['checkout-pending'] === 'true' ||
+                            loggedMember.customFields?.['checkout-pending'] === true;
+
+                        // Determinar paso destino
+                        let loginTargetStep = Math.max(msStep, 2);
+                        if (hasRecoveryIntent2 || isCheckoutPending) {
+                            if (paymentStatus !== 'completed') {
+                                loginTargetStep = 3;
+                            }
+                        }
+                        if (paymentStatus === 'completed' && loginTargetStep < 4) {
+                            loginTargetStep = 4;
+                        }
+
+                        if (hasRecoveryIntent2) {
+                            sessionStorage.removeItem('pata_login_intent');
+                        }
+
+                        console.log(`🔑 Login exitoso. Intent: ${hasRecoveryIntent2}, paso final: ${loginTargetStep}`);
+                        goToStep(loginTargetStep, true);
+                        showToast('¡Sesión iniciada!', 'success');
+                        return;
+                    }
+                } catch (loginError: any) {
+                    console.error('❌ Error en login:', loginError);
+                    // Si el login falla (contraseña incorrecta), mostrar error en el UI
+                    throw loginError;
+                }
+
+                // Si el login también falló de alguna forma sin lanzar excepción
+                throw error;
             } else {
                 showToast(errorMsg || 'Error al crear cuenta', 'error');
             }
