@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-width: 1850px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 2rem 1rem;
     gap: 2rem;
@@ -30,10 +30,30 @@
 
 @media (min-width: 1024px) {
     .container {
+        padding: 4rem 2rem;
+    }
+}
+
+.headerSection {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    animation: slideInDown 0.6s var(--ease-out-expo);
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .mainContent {
         flex-direction: row;
         align-items: flex-start;
         justify-content: center;
-        padding: 4rem 2rem;
         gap: 60px;
     }
 }
@@ -102,6 +122,12 @@
     animation: slideInDown 0.5s var(--ease-out-expo);
 }
 
+@media (max-width: 1023px) {
+    .badge {
+        display: none;
+    }
+}
+
 .badgeIcon {
     width: 19px;
     height: 18px;
@@ -121,11 +147,11 @@
 /* Headline */
 .headline {
     font-family: var(--font-heading);
-    font-size: clamp(40px, 5vw, 60px);
+    font-size: clamp(32px, 5vw, 60px);
     font-weight: 600;
     text-transform: uppercase;
-    line-height: 1.2;
-    margin-bottom: 32px;
+    line-height: 1.1;
+    margin-bottom: 24px;
     color: var(--color-black);
     animation: slideInUp 0.6s var(--ease-out-expo) 0.1s both;
     text-align: left;
@@ -608,11 +634,15 @@
     object-fit: contain;
 }
 
+.mobileBenefitsLink {
+    display: none;
+}
+
 /* Mobile Adjustments */
 @media (max-width: 1023px) {
     .container {
-        padding: 1rem;
-        gap: 3rem;
+        padding: 0.5rem 1rem;
+        gap: 0.75rem;
     }
 
     .benefitsSection {
@@ -623,59 +653,192 @@
     }
 
     .headline {
-        font-size: 40px;
-        text-align: center;
+        font-size: 32px;
+        text-align: left;
+        margin-bottom: 12px;
     }
 
-    .badge {
-        margin: 0 auto 24px auto;
+    .headerSection {
+        align-items: flex-start;
+        margin-bottom: 0.25rem;
     }
 
     .priceBox {
-        border-radius: 32px;
+        border-radius: 24px;
+        padding: 10px 20px;
+        margin-bottom: 1.5rem;
+        width: 100%;
     }
 
     .priceText {
-        font-size: 18px;
+        font-size: 14px;
+        text-align: left;
     }
 
     .benefitsGrid {
         grid-template-columns: 1fr;
         width: 100%;
+        gap: 12px;
     }
 
     .benefitCard {
-        padding: 24px;
+        padding: 16px 20px;
         align-items: center;
         text-align: center;
+        gap: 8px;
+    }
+
+    .benefitIcon {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+    }
+
+    .benefitTitle {
+        font-size: 20px;
+        margin-top: 4px;
+    }
+
+    .benefitDescription {
+        font-size: 14px;
+        line-height: 1.4;
     }
 
     .communityCard {
         flex-direction: column;
-        gap: 20px;
+        gap: 12px;
         align-items: center;
         text-align: center;
+        padding: 20px;
     }
 
     .communityIcon {
-        width: 64px;
-        height: 64px;
+        width: 48px;
+        height: 48px;
     }
 
     .formColumn {
-        order: 1;
+        display: contents;
     }
     
     .formCard {
-        gap: 30px;
-        border-radius: 32px;
+        order: 1;
+        gap: 20px;
+        padding-bottom: 24px;
+        border-radius: 24px;
+        animation: fadeInScale 0.6s var(--ease-out-expo) 0.4s both;
+    }
+
+    .formBody {
+        padding: 0 20px;
+        gap: 20px;
+    }
+
+    .formTitle {
+        font-size: 24px;
+    }
+
+    .inputGroup {
+        gap: 6px;
+    }
+
+    .inputWrapper {
+        padding: 10px 18px;
+    }
+
+    .inputField {
+        font-size: 15px;
+    }
+
+    .submitButton {
+        padding: 16px;
+        font-size: 16px;
+    }
+
+    .separatorSection {
+        gap: 16px;
+    }
+
+    .googleButton {
+        padding: 14px;
+        font-size: 15px;
     }
     
+    .privacyText {
+        font-size: 12px;
+        margin-top: -0.5rem;
+    }
+    
+    .footerText {
+        font-size: 13px;
+        margin-top: 0.5rem;
+    }
+
+    .formHeader {
+        padding: 0 20px;
+    }
+
     .stepBadge {
-        gap: 20px;
+        height: 50px;
+        gap: 15px;
         padding: 0 15px;
         max-width: 90%;
     }
+
+    .stepBadgeLogo {
+        width: 60px;
+        height: 30px;
+    }
+
+    .topProgressBar {
+        height: 10px;
+    }
+
+    .topProgressBarFill {
+        height: 8px;
+    }
+
+    .bottomImageWrapper {
+        order: 3;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .mobileBenefitsLink {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: none;
+        border: none;
+        color: var(--color-black);
+        font-family: var(--font-body);
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1.2px;
+        cursor: pointer;
+        margin: 0.25rem 0;
+        padding: 4px 0;
+        opacity: 0.85;
+        transition: all 0.2s var(--ease-out-expo);
+        text-decoration: none;
+    }
+    
+    .mobileBenefitsLink:active {
+        opacity: 1;
+        transform: translateY(2px);
+    }
+
+    .mobileBenefitsLink svg {
+        color: var(--color-action-orange);
+        animation: bounceDown 2s infinite;
+    }
+}
+
+@keyframes bounceDown {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(5px); }
+    60% { transform: translateY(3px); }
 }
 
 /* Accessibility: Reduced Motion */

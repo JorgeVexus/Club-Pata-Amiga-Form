@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BenefitsMarquee from '../BenefitsMarquee';
 import styles from './Step1Account.module.css';
 import TermsModalEnhanced from '../TermsModalEnhanced';
@@ -182,84 +182,104 @@ export default function Step1Account({
     };
 
     const isLoggedIn = !!member?.auth?.email;
+    const benefitsRef = useRef<HTMLDivElement>(null);
+
+    const scrollToBenefits = () => {
+        if (benefitsRef.current) {
+            benefitsRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
 
     return (
         <>
             <BenefitsMarquee />
             <div className={styles.pageBackground} />
             <div className={styles.container}>
-                {/* Left Column: Benefits */}
-                <div className={styles.benefitsSection}>
-                    {/* Badge */}
-                    <div className={styles.badge}>
-                        <div className={styles.badgeIcon}>
-                            <BadgeCheckIcon />
-                        </div>
-                        <span className={styles.badgeText}>100% Mexicano | Únete a la manada</span>
-                    </div>
-
-                    {/* Headline */}
+                {/* Top Section: Headline and Price */}
+                <div className={styles.headerSection}>
                     <h1 className={styles.headline}>
                         Tu tranquilidad<br />empieza aquí
                     </h1>
 
-                    {/* Price Box */}
                     <div className={styles.priceBox}>
                         <p className={styles.priceText}>
                             Accede a una membresía que respalda hasta 3 mascotas por solo <span className={styles.priceHighlight}>$159/mes</span>.
                         </p>
                     </div>
 
-                    {/* Benefits Grid */}
-                    <div className={styles.benefitsGrid}>
-                        {/* Emergencias Médicas */}
-                        <div className={styles.benefitCard}>
-                            <div className={styles.benefitIcon}>
-                                <MedicalEmergencyIcon />
+                    <button 
+                        onClick={scrollToBenefits}
+                        className={styles.mobileBenefitsLink}
+                        aria-label="Ver todos los beneficios"
+                    >
+                        Descubre todos los beneficios
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M7 13l5 5 5-5M7 6l5 5 5-5" />
+                        </svg>
+                    </button>
+                </div>
+
+                <div className={styles.mainContent}>
+                    {/* Left Column: Benefits */}
+                    <div className={styles.benefitsSection} ref={benefitsRef}>
+                        {/* Badge - Hidden on mobile via CSS */}
+                        <div className={styles.badge}>
+                            <div className={styles.badgeIcon}>
+                                <BadgeCheckIcon />
                             </div>
-                            <h2 className={styles.benefitTitle}>emergencias médicas</h2>
-                            <p className={styles.benefitDescription}>Hasta $3,000 al año, porque los sustos no avisan y tu peludo no puede esperar.</p>
+                            <span className={styles.badgeText}>100% Mexicano | Únete a la manada</span>
                         </div>
 
-                        {/* Vacunación Anual */}
-                        <div className={styles.benefitCard}>
-                            <div className={styles.benefitIcon}>
-                                <VaccinationIcon />
+                        {/* Benefits Grid */}
+                        <div className={styles.benefitsGrid}>
+                            {/* Emergencias Médicas */}
+                            <div className={styles.benefitCard}>
+                                <div className={styles.benefitIcon}>
+                                    <MedicalEmergencyIcon />
+                                </div>
+                                <h2 className={styles.benefitTitle}>emergencias médicas</h2>
+                                <p className={styles.benefitDescription}>Hasta $3,000 al año, porque los sustos no avisan y tu peludo no puede esperar.</p>
                             </div>
-                            <h2 className={styles.benefitTitle}>vacunación anual</h2>
-                            <p className={styles.benefitDescription}>Hasta $300 al año, cuidamos la prevención para mantener al día sus vacunas.</p>
-                        </div>
 
-                        {/* Apoyo Fallecimiento */}
-                        <div className={styles.benefitCard}>
-                            <div className={styles.benefitIcon}>
-                                <DeceasedSupportIcon />
+                            {/* Vacunación Anual */}
+                            <div className={styles.benefitCard}>
+                                <div className={styles.benefitIcon}>
+                                    <VaccinationIcon />
+                                </div>
+                                <h2 className={styles.benefitTitle}>vacunación anual</h2>
+                                <p className={styles.benefitDescription}>Hasta $300 al año, cuidamos la prevención para mantener al día sus vacunas.</p>
                             </div>
-                            <h2 className={styles.benefitTitle}>apoyo fallecimiento</h2>
-                            <p className={styles.benefitDescription}>Hasta $2,000 al año, cubrimos gastos cuando llega el momento de decir adiós.</p>
-                        </div>
 
-                        {/* Chat Veterinario */}
-                        <div className={styles.benefitCard}>
-                            <div className={styles.benefitIcon}>
-                                <VetChatIcon />
+                            {/* Apoyo Fallecimiento */}
+                            <div className={styles.benefitCard}>
+                                <div className={styles.benefitIcon}>
+                                    <DeceasedSupportIcon />
+                                </div>
+                                <h2 className={styles.benefitTitle}>apoyo fallecimiento</h2>
+                                <p className={styles.benefitDescription}>Hasta $2,000 al año, cubrimos gastos cuando llega el momento de decir adiós.</p>
                             </div>
-                            <h2 className={styles.benefitTitle}>chat veterinario</h2>
-                            <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu lomito.</p>
-                        </div>
 
-                        {/* Community Card */}
-                        <div className={styles.communityCard}>
-                            <div className={styles.communityIcon}>
-                                <CommunityIcon />
+                            {/* Chat Veterinario */}
+                            <div className={styles.benefitCard}>
+                                <div className={styles.benefitIcon}>
+                                    <VetChatIcon />
+                                </div>
+                                <h2 className={styles.benefitTitle}>chat veterinario</h2>
+                                <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu lomito.</p>
                             </div>
-                            <div className={styles.communityContent}>
-                                <h2 className={styles.communityTitle}>comunidad pata amiga</h2>
-                                <p className={styles.communityDescription}>Cada 1000 miembros, destinamos parte del fondo para apoyar refugios y rescates en todo México.</p>
+
+                            {/* Community Card */}
+                            <div className={styles.communityCard}>
+                                <div className={styles.communityIcon}>
+                                    <CommunityIcon />
+                                </div>
+                                <div className={styles.communityContent}>
+                                    <h2 className={styles.communityTitle}>comunidad pata amiga</h2>
+                                    <p className={styles.communityDescription}>Cada 1000 miembros, destinamos parte del fondo para apoyar refugios y rescates en todo México.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
                 {/* Right Column: Form Column */}
                 <div className={styles.formColumn}>
@@ -481,8 +501,9 @@ export default function Step1Account({
                         />
                     </div>
                 </div>
+            </div>
 
-                <TermsModalEnhanced
+            <TermsModalEnhanced
                     isOpen={isTermsOpen}
                     onClose={() => setIsTermsOpen(false)}
                 />

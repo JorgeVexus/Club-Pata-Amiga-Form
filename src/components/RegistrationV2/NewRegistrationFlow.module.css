@@ -12,10 +12,15 @@
 
 .contentWide {
     max-width: 1850px;
+    padding-top: 0;
 }
 
 .stepContainer {
     margin-top: 1.5rem;
+}
+
+.contentWide .stepContainer {
+    margin-top: 0;
 }
 
 .loadingContainer {
