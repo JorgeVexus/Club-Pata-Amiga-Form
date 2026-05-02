@@ -75,6 +75,8 @@ export default function NewRegistrationFlow() {
     // isRecovery se setea dentro del useEffect usando window.location.search
     // para garantizar compatibilidad con iOS Safari (useSearchParams puede ser vacío antes de hidratación)
     const [isRecovery, setIsRecovery] = useState(false);
+    // Email pre-llenado desde URL (?email=) — viene del widget en iOS
+    const [urlEmail, setUrlEmail] = useState('');
     const [member, setMember] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
@@ -294,9 +296,14 @@ export default function NewRegistrationFlow() {
                         // Guardamos el intent en sessionStorage para recuperarlo después del login.
                         const nativeParams = new URLSearchParams(window.location.search);
                         const reason = nativeParams.get('reason');
+                        const emailFromUrl = nativeParams.get('email') || '';
                         if (reason) {
                             sessionStorage.setItem('pata_login_intent', reason);
                             console.log('🍎 iOS: sesión perdida, guardando intent en sessionStorage:', reason);
+                        }
+                        if (emailFromUrl) {
+                            setUrlEmail(emailFromUrl);
+                            console.log('🍎 iOS: email pre-llenado desde URL:', emailFromUrl);
                         }
                         console.log('👤 No hay sesión activa de Memberstack, iniciando en paso 1');
                         goToStep(1, true);
@@ -1044,6 +1051,8 @@ export default function NewRegistrationFlow() {
                                         onNext={handleStep1Complete}
                                         onBack={handleBack}
                                         showToast={showToast}
+                                        defaultEmail={urlEmail || undefined}
+                                        autoLoginMode={isRecovery || !!urlEmail}
                                     />
                                 );
                             case 2:

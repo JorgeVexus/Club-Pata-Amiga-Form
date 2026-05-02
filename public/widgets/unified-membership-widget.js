@@ -1310,9 +1310,40 @@
                         </p>
 
                         <div style="text-align: center; margin-top: 30px;">
-                            <a href="https://app.pataamiga.mx/registro?reason=complete_payment" class="pata-btn" style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
+                            <button
+                                onclick="(function(btn) {
+                                    btn.disabled = true;
+                                    btn.textContent = 'Cargando...';
+                                    var email = '';
+                                    try {
+                                        // Obtener email del widget (window.pataWidget es la instancia global)
+                                        if (window.pataWidget && window.pataWidget.member) {
+                                            email = window.pataWidget.member.auth && window.pataWidget.member.auth.email
+                                                ? window.pataWidget.member.auth.email
+                                                : (window.pataWidget.member.customFields && window.pataWidget.member.customFields['email']) || '';
+                                        }
+                                        // Fallback: obtener email directo de Memberstack
+                                        if (!email && window.$memberstackDom) {
+                                            window.$memberstackDom.getCurrentMember().then(function(res) {
+                                                var memberEmail = res && res.data && res.data.auth && res.data.auth.email ? res.data.auth.email : '';
+                                                var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
+                                                if (memberEmail) url += '&email=' + encodeURIComponent(memberEmail);
+                                                window.location.href = url;
+                                            }).catch(function() {
+                                                window.location.href = 'https://app.pataamiga.mx/registro?reason=complete_payment';
+                                            });
+                                            return;
+                                        }
+                                    } catch(e) {}
+                                    var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
+                                    if (email) url += '&email=' + encodeURIComponent(email);
+                                    window.location.href = url;
+                                })(this)"
+                                class="pata-btn"
+                                style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-block;"
+                            >
                                 Seleccionar Plan
-                            </a>
+                            </button>
                         </div>
 
                         <div style="background: rgba(254, 143, 21, 0.1); border: 2px solid #FE8F15; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
