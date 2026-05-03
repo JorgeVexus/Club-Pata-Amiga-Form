@@ -580,7 +580,7 @@
 }
 
 .separatorText {
-    background: var(--color-white);
+    background: rgba(255, 255, 255, 0.2);
     padding: 0 24px;
     color: var(--color-black);
     font-size: 12px;
