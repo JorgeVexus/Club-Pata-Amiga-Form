@@ -317,6 +317,23 @@
     align-items: center;
     gap: 39px;
     padding-bottom: 40px;
+    position: relative;
+}
+
+.formCard::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695595/manada-min_uegzj6.webp');
+    background-repeat: no-repeat;
+    background-position: bottom right;
+    background-size: clamp(200px, 40%, 300px) auto;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
 }
 
 /* Barra superior de progreso técnica */
@@ -326,6 +343,7 @@
     background: #E2E8F0;
     border-bottom: 2px var(--color-black) solid;
     position: relative;
+    z-index: 1;
 }
 
 .topProgressBarFill {
@@ -349,6 +367,8 @@
     justify-content: center;
     align-items: center;
     gap: 40px;
+    position: relative;
+    z-index: 1;
 }
 
 .stepBadgeLogo {
@@ -381,6 +401,8 @@
     flex-direction: column;
     align-items: center;
     animation: fadeInScale 0.4s var(--ease-out-expo);
+    position: relative;
+    z-index: 1;
 }
 
 .formTitle {
@@ -399,6 +421,8 @@
     flex-direction: column;
     gap: 32px;
     animation: fadeInScale 0.5s var(--ease-out-expo);
+    position: relative;
+    z-index: 1;
 }
 
 .inputGroup {
@@ -569,7 +593,7 @@
 
 .googleButton {
     align-self: stretch;
-    background: var(--color-white) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
     border-radius: 9999px;
     border: 2px var(--color-black) solid;
     padding: 18px;
@@ -620,19 +644,7 @@
     font-size: inherit;
 }
 
-.bottomImageWrapper {
-    width: 100%;
-    max-width: 250px;
-    margin-top: 20px;
-    display: flex;
-    justify-content: center;
-}
 
-.bottomImage {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
-}
 
 .mobileBenefitsLink {
     display: none;
@@ -798,11 +810,7 @@
         height: 8px;
     }
 
-    .bottomImageWrapper {
-        order: 3;
-        margin-top: 2rem;
-        margin-bottom: 2rem;
-    }
+
 
     .mobileBenefitsLink {
         display: flex;

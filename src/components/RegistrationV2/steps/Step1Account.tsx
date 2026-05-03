@@ -492,14 +492,7 @@ export default function Step1Account({
                         </form>
                     </div>
 
-                    {/* Bottom Image */}
-                    <div className={styles.bottomImageWrapper}>
-                        <img
-                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695595/manada-min_uegzj6.webp"
-                            alt="Ilustración de la manada Pata Amiga"
-                            className={styles.bottomImage}
-                        />
-                    </div>
+
                 </div>
             </div>
 
