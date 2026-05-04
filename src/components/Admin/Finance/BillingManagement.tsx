@@ -55,6 +55,7 @@ interface BillingRecord {
     zipCode: string;
     taxRegime: string;
     cfdiUse: string;
+    status: string;
     updatedAt: string;
     totalAmount: number;
     user: {
@@ -251,6 +252,27 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         URL.revokeObjectURL(url);
     };
 
+    const handleMarkAsInvoiced = async (id: string) => {
+        if (!confirm('¿Marcar este registro como facturado? Se ocultará de esta lista.')) return;
+        
+        try {
+            const response = await adminFetch('/api/admin/finance/billing', {
+                method: 'PATCH',
+                body: JSON.stringify({ id, status: 'invoiced' })
+            });
+            
+            const data = await response.json();
+            if (data.success) {
+                setRecords(prev => prev.filter(r => r.id !== id));
+            } else {
+                alert('Error al actualizar: ' + data.error);
+            }
+        } catch (error) {
+            console.error('Error marking as invoiced:', error);
+            alert('Error de conexión');
+        }
+    };
+
     // ── Copy Helper Component ──
     const CopyButton = ({ text }: { text: string }) => {
         const [copied, setCopied] = useState(false);
@@ -297,7 +319,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                             <th>Asociación (30%)</th>
                             <th>Régimen</th>
                             <th>Uso CFDI</th>
-                            <th>Actualizado</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -355,8 +377,14 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                             <CopyButton text={record.cfdiUse} />
                                         </div>
                                     </td>
-                                    <td className={styles.dateText}>
-                                        {new Date(record.updatedAt).toLocaleDateString()}
+                                    <td>
+                                        <button 
+                                            className={styles.successBtn}
+                                            onClick={() => handleMarkAsInvoiced(record.id)}
+                                            title="Marcar como Facturado"
+                                        >
+                                            ✅ Facturado
+                                        </button>
                                     </td>
                                 </tr>
                             );

@@ -56,6 +56,7 @@ export async function GET(request: NextRequest) {
                     memberstack_id
                 )
             `)
+            .neq('status', 'invoiced') // Hide invoiced records by default
             .order('updated_at', { ascending: false });
 
         if (error) {
@@ -75,6 +76,7 @@ export async function GET(request: NextRequest) {
                 zipCode: record.zip_code,
                 taxRegime: record.tax_regime,
                 cfdiUse: record.cfdi_use,
+                status: record.status || 'pending',
                 updatedAt: record.updated_at,
                 totalAmount: totalAmount,
                 user: {
@@ -92,6 +94,39 @@ export async function GET(request: NextRequest) {
 
     } catch (error: any) {
         console.error('Unexpected error in billing API:', error);
+        return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: NextRequest) {
+    const supabase = getServiceRoleClient();
+    
+    if (!supabase) {
+        return NextResponse.json({ error: 'Supabase configuration missing' }, { status: 500 });
+    }
+
+    try {
+        const body = await request.json();
+        const { id, status } = body;
+
+        if (!id || !status) {
+            return NextResponse.json({ error: 'ID and status are required' }, { status: 400 });
+        }
+
+        const { error } = await supabase
+            .from('billing_details')
+            .update({ status })
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error updating billing status:', error);
+            return NextResponse.json({ error: error.message }, { status: 500 });
+        }
+
+        return NextResponse.json({ success: true });
+
+    } catch (error: any) {
+        console.error('Unexpected error in billing PATCH API:', error);
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
