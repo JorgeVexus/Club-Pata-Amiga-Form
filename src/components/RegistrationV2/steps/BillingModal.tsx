@@ -15,6 +15,7 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
         rfc: '',
         razonSocial: '',
         regimenFiscal: '',
+        cfdiUse: 'G03',
         cp: '',
         emailFacturacion: initialEmail || ''
     });
@@ -43,6 +44,7 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
         }
         if (!formData.razonSocial) newErrors.razonSocial = 'Requerido';
         if (!formData.regimenFiscal) newErrors.regimenFiscal = 'Requerido';
+        if (!formData.cfdiUse) newErrors.cfdiUse = 'Requerido';
         if (!formData.cp || formData.cp.length !== 5) newErrors.cp = 'CP inválido';
         if (!formData.emailFacturacion) newErrors.emailFacturacion = 'Requerido';
 
@@ -121,6 +123,22 @@ export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: 
                                 <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
                             </select>
                             {errors.regimenFiscal && <span className={styles.errorText}>{errors.regimenFiscal}</span>}
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <div className={styles.labelRow}><label>Uso de CFDI</label></div>
+                            <select
+                                className={styles.selectField}
+                                value={formData.cfdiUse}
+                                onChange={e => setFormData(prev => ({ ...prev, cfdiUse: e.target.value }))}
+                            >
+                                <option value="G03">G03 - Gastos en general</option>
+                                <option value="S01">S01 - Sin efectos fiscales</option>
+                                <option value="CP01">CP01 - Pagos</option>
+                                <option value="D01">D01 - Honorarios médicos, dentales y gastos hospitalarios</option>
+                                <option value="D02">D02 - Gastos médicos por incapacidad o discapacidad</option>
+                            </select>
+                            {errors.cfdiUse && <span className={styles.errorText}>{errors.cfdiUse}</span>}
                         </div>
 
                         <div className={styles.formGroup}>
