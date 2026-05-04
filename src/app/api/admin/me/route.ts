@@ -13,8 +13,13 @@ export async function POST(request: NextRequest) {
         // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
         const admin = await getAdminUser(request);
         
-        if (!admin) {
-            return unauthorizedResponse();
+        if (!admin || (admin as any).isUnauthorized) {
+            return unauthorizedResponse(
+                (admin as any).reason === 'Role mismatch' 
+                    ? 'No autorizado. Tu cuenta no tiene rol de administrador.' 
+                    : 'No autorizado. Se requiere rol de administrador.',
+                { memberstackId: request.headers.get('x-admin-memberstack-id') }
+            );
         }
 
         return NextResponse.json({

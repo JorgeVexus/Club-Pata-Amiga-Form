@@ -12,10 +12,10 @@ const supabase = createClient(
 );
 
 export async function getAdminUser(req: NextRequest) {
-    // SEGURIDAD: Obtener el ID de Memberstack del header personalizado
     const memberstackId = req.headers.get('x-admin-memberstack-id');
     
     if (!memberstackId) {
+        console.error('❌ AdminAuth: No se proporcionó x-admin-memberstack-id en los headers');
         return null;
     }
 
@@ -33,12 +33,12 @@ export async function getAdminUser(req: NextRequest) {
 
         console.log(`✅ AdminAuth: Usuario encontrado ${user.email} con rol ${user.role}`);
 
-        const role = user.role?.toLowerCase();
+        const role = (user.role || '').toString().trim().toLowerCase();
         const isAdmin = role === 'admin' || role === 'super_admin';
         
         if (!isAdmin) {
             console.warn(`⚠️ AdminAuth Warning: Usuario ${user.email} intentó acceder sin rol admin (${user.role})`);
-            return null;
+            return { ...user, isUnauthorized: true, reason: 'Role mismatch' };
         }
 
         return user;
@@ -51,10 +51,11 @@ export async function getAdminUser(req: NextRequest) {
 /**
  * Respuesta estándar para peticiones no autorizadas
  */
-export function unauthorizedResponse(message: string = 'No autorizado. Se requiere rol de administrador.') {
+export function unauthorizedResponse(message: string = 'No autorizado. Se requiere rol de administrador.', debugInfo?: any) {
     return new Response(JSON.stringify({ 
         error: message,
-        success: false 
+        success: false,
+        debug: process.env.NODE_ENV === 'development' ? debugInfo : undefined
     }), {
         status: 401,
         headers: { 'Content-Type': 'application/json' }

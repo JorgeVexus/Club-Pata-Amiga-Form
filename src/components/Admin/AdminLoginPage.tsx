@@ -74,10 +74,15 @@ export default function AdminLoginPage() {
 
     const verifyAndRedirect = async (memberstackId: string) => {
         try {
+            // Guardar inmediatamente para que adminFetch lo use si es necesario, 
+            // o pasarlo como override explícito
+            localStorage.setItem('admin_memberstack_id', memberstackId);
+            
+            console.log('Verificando ID en backend:', memberstackId);
             const response = await adminFetch('/api/admin/me', {
                 method: 'POST',
                 body: JSON.stringify({ memberstackId })
-            });
+            }, memberstackId);
 
             const data = await response.json();
 
