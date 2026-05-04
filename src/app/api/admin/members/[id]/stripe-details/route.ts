@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getMemberStripeDetails } from '@/app/actions/user.actions';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // TODO: Validar que el usuario sea admin
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         const { id: memberId } = await params;
 
         console.log(`📋 [API] Obteniendo detalles de Stripe para miembro ${memberId}...`);

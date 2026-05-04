@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,6 +18,9 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         const { id } = await params;
 
         const { error } = await supabaseAdmin

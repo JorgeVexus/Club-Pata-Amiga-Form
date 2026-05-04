@@ -1,11 +1,15 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { seedBreeds } from '@/app/actions/breed.actions';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 // Esta ruta permite cargar las razas iniciales o recibir un JSON nuevo
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
+        const adminUser = await getAdminUser(req);
+        if (!adminUser) return unauthorizedResponse();
+
         let dataToSeed;
 
         // 1. Intentar leer del body

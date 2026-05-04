@@ -7,27 +7,18 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
-        const { memberstackId } = body;
-
-        if (!memberstackId) {
-            return NextResponse.json({ error: 'Admin ID required' }, { status: 400 });
+        // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
+        const adminUser = await getAdminUser(request);
+        
+        if (!adminUser) {
+            return unauthorizedResponse();
         }
 
-        // 1. Verificar identidad y rol del admin
-        const { data: adminUser, error: adminError } = await supabase
-            .from('users')
-            .select('role, full_name, email')
-            .eq('memberstack_id', memberstackId)
-            .maybeSingle();
-
-        if (adminError || !adminUser) {
-            console.error('❌ Admin not found:', memberstackId);
-            return NextResponse.json({ error: 'Admin not found' }, { status: 404 });
-        }
-
+        const memberstackId = adminUser.memberstack_id;
         const isSuperAdmin = adminUser.role === 'super_admin';
         const adminName = adminUser.full_name;
 

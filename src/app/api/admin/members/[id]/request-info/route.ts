@@ -16,6 +16,8 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendInfoRequestEmail } from '@/app/actions/comm.actions';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -46,9 +48,13 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         const { id: memberId } = await params;
         const body = await request.json();
-        const { petId, requestTypes, customMessage, adminId } = body;
+        const { petId, requestTypes, customMessage } = body;
+        const adminId = adminUser.memberstack_id;
 
         // --- Validaciones ---
         if (!petId) {

@@ -3,8 +3,9 @@
  * Obtiene las notificaciones para administradores
  */
 
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,8 +13,10 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
         // Obtener notificaciones para admins (user_id = 'admin')
         const { data, error } = await supabaseAdmin
             .from('notifications')

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 /**
  * POST /api/admin/migrate-payment-status
  *
@@ -13,9 +15,8 @@ import { memberstackAdmin } from '@/services/memberstack-admin.service';
  */
 export async function POST(request: NextRequest) {
     try {
-        // Verificar que sea un admin (opcional, puedes agregar validación)
-        // const authHeader = request.headers.get('authorization');
-        // if (!authHeader) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
 
         console.log('🔧 Iniciando migración de payment-status → approval-status...');
 
@@ -109,6 +110,9 @@ export async function POST(request: NextRequest) {
  */
 export async function GET(request: NextRequest) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         console.log('🔍 Analizando miembros para migración (DRY RUN)...');
 
         const result = await memberstackAdmin.listMembers();

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createClient } from '@supabase/supabase-js';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 // Usar Service Role para poder consultar roles de otros usuarios y filtrar admins
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,7 +16,10 @@ const supabaseAdmin = createClient(
  */
 export async function GET(request: NextRequest) {
     try {
-        // TODO: Validar que el usuario sea admin
+        // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
+        const admin = await getAdminUser(request);
+        if (!admin) return unauthorizedResponse();
+
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
 

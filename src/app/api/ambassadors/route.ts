@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import bcrypt from 'bcryptjs';
 import { CreateAmbassadorRequest, Ambassador } from '@/types/ambassador.types';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -38,6 +39,9 @@ export async function OPTIONS() {
 // GET - Listar embajadores (para admin)
 export async function GET(request: NextRequest) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
         const page = parseInt(searchParams.get('page') || '1');

@@ -9,6 +9,8 @@ import { createServerNotification } from '@/app/actions/notification.actions';
 
 import { createClient } from '@supabase/supabase-js';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 // Cliente Supabase para operaciones admin
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,15 +22,13 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // TODO: Validar que el usuario sea admin
-        // const adminId = await validateAdminAuth(request);
-        // if (!adminId) {
-        //     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        // }
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
 
         const { id: memberId } = await params;
         const body = await request.json();
-        const { reason, adminId } = body;
+        const { reason } = body;
+        const adminId = adminUser.memberstack_id;
 
         // Validar que se proporcione una razón
         if (!reason || reason.trim().length === 0) {

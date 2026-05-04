@@ -1,5 +1,6 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -8,10 +9,14 @@ const supabaseAdmin = createClient(
 
 /**
  * GET /api/admin/settings/skip-payment
- * Retorna si el skip payment está habilitado (público)
+ * Retorna si el skip payment está habilitado
  */
-export async function GET() {
+export async function GET(request: NextRequest) {
     try {
+        // 🔒 SEGURIDAD: Solo admins pueden consultar esto desde el dashboard
+        const admin = await getAdminUser(request);
+        if (!admin) return unauthorizedResponse();
+
         const { data, error } = await supabaseAdmin
             .from('app_settings')
             .select('value')
@@ -32,20 +37,16 @@ export async function GET() {
  * PUT /api/admin/settings/skip-payment
  * Actualiza el flag (requiere super_admin)
  */
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
     try {
-        const { enabled, adminId } = await request.json();
-
-        // Verificar que es super_admin
-        const { data: adminUser } = await supabaseAdmin
-            .from('users')
-            .select('role')
-            .eq('memberstack_id', adminId)
-            .single();
-
-        if (adminUser?.role !== 'super_admin') {
-            return NextResponse.json({ error: 'No autorizado' }, { status: 403 });
+        // 🔒 SEGURIDAD: Validar que el usuario es super_admin
+        const admin = await getAdminUser(request);
+        
+        if (!admin || admin.role !== 'super_admin') {
+            return unauthorizedResponse('No autorizado. Se requiere rol de Super Administrador.');
         }
+
+        const { enabled } = await request.json();
 
         const { error } = await supabaseAdmin
             .from('app_settings')

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import '@/styles/admin-globals.css';
+import { useRouter } from 'next/navigation';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import MetricCards from './MetricCards';
@@ -60,6 +60,7 @@ export default function AdminDashboard() {
     const [recentActivityLogs, setRecentActivityLogs] = useState<ActivityLog[]>([]);
     const [yourActivityLogs, setYourActivityLogs] = useState<ActivityLog[]>([]);
     const [hasMounted, setHasMounted] = useState(false);
+    const [isAuthLoading, setIsAuthLoading] = useState(true);
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
@@ -101,34 +102,85 @@ export default function AdminDashboard() {
         const fetchAdminRole = async () => {
             if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                 try {
+                    // 🔒 SEGURIDAD: Cierre de sesión por inactividad de pestaña/navegador
+                    // Si no hay bandera en sessionStorage pero hay sesión en cookies, cerramos sesión
+                    // Esto asegura que si cierran el navegador, al volver tengan que loguearse
+                    const sessionActive = sessionStorage.getItem('admin_session_active');
                     const member = await (window as any).$memberstackDom.getCurrentMember();
-                    if (!member?.data?.id) return;
+
+                    if (member?.data) {
+                        if (!sessionActive) {
+                            console.log('🔄 Sesión nueva detectada (reinicio de navegador). Forzando logout por seguridad.');
+                            await (window as any).$memberstackDom.logout();
+                            window.location.href = '/admin/login?reason=session_expired';
+                            return;
+                        }
+                    } else {
+                        // No hay miembro, redirigir al login
+                        console.log('❌ No hay sesión activa. Redirigiendo...');
+                        window.location.href = '/admin/login';
+                        return;
+                    }
+
                     const currentMemberId = member.data.id;
                     const response = await fetch('/api/admin/me', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ memberstackId: currentMemberId })
                     });
+
                     if (response.ok) {
                         const data = await response.json();
+                        
+                        if (!data.isAdmin) {
+                            console.error('🚫 Usuario no es administrador');
+                            window.location.href = '/admin/login?error=not_admin';
+                            return;
+                        }
+
                         setIsAdminSuper(data.isSuperAdmin);
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminMemberstackId(currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
+                        
+                        // Marcar sesión como activa en esta pestaña/navegador
+                        sessionStorage.setItem('admin_session_active', 'true');
+                        
                         loadMetrics();
                         loadPendingCounts(data.isSuperAdmin);
                         loadActivityLogs(currentMemberId);
                         if (data.isSuperAdmin) {
-                            fetch('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
+                            fetchWithAuth('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
                         }
+                        setIsAuthLoading(false);
+                    } else {
+                        window.location.href = '/admin/login';
                     }
-                } catch (e) { console.error(e); }
+                } catch (e) { 
+                    console.error(e);
+                    window.location.href = '/admin/login';
+                }
+            } else if (hasMounted) {
+                // Si ya montó y no hay $memberstackDom, algo anda mal
+                // Pero damos un segundo por si está cargando
+                setTimeout(() => {
+                    if (!(window as any).$memberstackDom) window.location.href = '/admin/login';
+                }, 2000);
             }
         };
         fetchAdminRole();
         setHasMounted(true);
-    }, []);
+    }, [hasMounted]);
+    
+    // 🔒 Helper para peticiones autenticadas
+    const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
+        const headers = {
+            ...options.headers,
+            'x-admin-memberstack-id': adminMemberstackId || (typeof window !== 'undefined' ? localStorage.getItem('admin_memberstack_id') : '') || ''
+        };
+        return fetch(url, { ...options, headers });
+    };
 
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
@@ -139,7 +191,7 @@ export default function AdminDashboard() {
 
     async function loadMetrics() {
         try {
-            const response = await fetch('/api/admin/metrics');
+            const response = await fetchWithAuth('/api/admin/metrics');
             const data = await response.json();
             if (data.success && data.metrics) setMetrics(data.metrics);
         } catch (error) { console.error(error); }
@@ -149,7 +201,7 @@ export default function AdminDashboard() {
         try {
             const idToUse = memberstackId || adminMemberstackId;
             if (!idToUse) return;
-            const response = await fetch('/api/admin/activity', {
+            const response = await fetchWithAuth('/api/admin/activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ memberstackId: idToUse })
@@ -164,18 +216,18 @@ export default function AdminDashboard() {
 
     async function loadPendingCounts(isSuper: boolean = false) {
         try {
-            const response = await fetch('/api/admin/members?status=pending');
+            const response = await fetchWithAuth('/api/admin/members?status=pending');
             const data = await response.json();
             if (data.success && data.members) {
                 const checkIsPaid = (m: any) => m.planConnections?.some((p: any) => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing');
                 setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m)).length }));
             }
             if (isSuper) {
-                const appealRes = await fetch('/api/admin/pets/appealed');
+                const appealRes = await fetchWithAuth('/api/admin/pets/appealed');
                 const appealData = await appealRes.json();
                 if (appealData.success) setPendingCounts(prev => ({ ...prev, appeals: appealData.count || 0 }));
             }
-            const ambassadorRes = await fetch('/api/ambassadors?status=pending&limit=1');
+            const ambassadorRes = await fetchWithAuth('/api/ambassadors?status=pending&limit=1');
             const ambassadorData = await ambassadorRes.json();
             if (ambassadorData.success) setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
         } catch (error) { console.error(error); }
@@ -220,7 +272,7 @@ export default function AdminDashboard() {
                         skipPaymentEnabled={skipPaymentEnabled}
                         onToggleSkipPayment={async (enabled: boolean) => {
                             try {
-                                const res = await fetch('/api/admin/settings/skip-payment', {
+                                const res = await fetchWithAuth('/api/admin/settings/skip-payment', {
                                     method: 'PUT',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ enabled, adminId: adminMemberstackId })
@@ -333,6 +385,38 @@ export default function AdminDashboard() {
                 );
         }
     };
+
+    if (isAuthLoading) {
+        return (
+            <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column',
+                justifyContent: 'center', 
+                alignItems: 'center', 
+                height: '100vh',
+                background: '#f8f9fa',
+                fontFamily: 'var(--font-body)'
+            }}>
+                <div style={{
+                    width: '40px',
+                    height: '40px',
+                    border: '4px solid #f3f3f3',
+                    borderTop: '4px solid #00BBB4',
+                    borderRadius: '50%',
+                    animation: 'spin 1s linear infinite'
+                }}></div>
+                <style>{`
+                    @keyframes spin {
+                        0% { transform: rotate(0deg); }
+                        100% { transform: rotate(360deg); }
+                    }
+                `}</style>
+                <p style={{ marginTop: '1rem', color: '#666', fontWeight: 500 }}>
+                    Verificando credenciales...
+                </p>
+            </div>
+        );
+    }
 
     return (
         <div className={styles.dashboard}>

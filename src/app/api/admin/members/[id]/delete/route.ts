@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,6 +17,9 @@ export async function DELETE(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const adminUser = await getAdminUser(request);
+    if (!adminUser) return unauthorizedResponse();
+
     const { id } = await params;
 
     try {

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -10,6 +12,9 @@ const supabaseAdmin = createClient(
 
 // POST: Refund a rejected member's payment
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const adminUser = await getAdminUser(request);
+    if (!adminUser) return unauthorizedResponse();
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
     try {
         const { id: memberId } = await params;

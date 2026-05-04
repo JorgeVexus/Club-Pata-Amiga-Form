@@ -5,6 +5,8 @@ import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
 import { updateContactAsActive } from '@/services/crm.service';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 // Cliente Supabase con Service Role para operaciones admin
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,9 +19,13 @@ export async function POST(
     { params }: { params: Promise<{ id: string; petId: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
         const { id: memberId, petId } = await params;
         const body = await request.json();
-        const { status, adminNotes, adminId } = body;
+        const { status, adminNotes } = body;
+        const adminId = adminUser.memberstack_id;
 
         // Permitir también 'appealed' pero solo para leer, no para setear directamente
         const validStatuses = ['pending', 'approved', 'action_required', 'rejected'];

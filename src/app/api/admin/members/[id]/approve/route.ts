@@ -10,6 +10,8 @@ import { registerUserInSupabase } from '@/app/actions/user.actions';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { updateContactAsActive } from '@/services/crm.service';
 
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+
 // Cliente Supabase para obtener crm_contact_id
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,15 +23,12 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        // TODO: Validar que el usuario sea admin
-        // const adminId = await validateAdminAuth(request);
-        // if (!adminId) {
-        //     return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
-        // }
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
 
         const { id: memberId } = await params;
         const body = await request.json();
-        const adminId = body.adminId || 'admin_temp'; // TODO: Obtener del token de sesión
+        const adminId = adminUser.memberstack_id;
 
         console.log(`📝 Aprobando miembro ${memberId}...`);
 
