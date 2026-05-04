@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './Finance.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 import { formatMXN } from '@/utils/format';
 
 interface StripePayment {
@@ -158,7 +159,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
     async function loadBillingData() {
         setLoading(true);
         try {
-            const response = await fetch('/api/admin/finance/billing');
+            const response = await adminFetch('/api/admin/finance/billing');
             const data = await response.json();
             if (data.success) {
                 setRecords(data.data);
@@ -174,7 +175,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         setLoading(true);
         try {
             const queryType = view === 'records' ? 'records' : view === 'status' ? 'status' : 'retries';
-            const response = await fetch(`/api/admin/finance/stripe-data?type=${queryType}`);
+            const response = await adminFetch(`/api/admin/finance/stripe-data?type=${queryType}`);
             const data = await response.json();
             if (data.success) {
                 if (view === 'records') setStripePayments(data.data.payments || []);
@@ -182,7 +183,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                 if (view === 'retries') setStripeInvoices(data.data.invoices || []);
                 
                 // Fetch metrics
-                const metricsRes = await fetch('/api/admin/finance/stripe-data?type=metrics');
+                const metricsRes = await adminFetch('/api/admin/finance/stripe-data?type=metrics');
                 const metricsData = await metricsRes.json();
                 if (metricsData.success) setMetrics(metricsData.data.balance);
             }

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './AmbassadorDetailModal.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 import { Ambassador, Referral, AmbassadorPayout } from '@/types/ambassador.types';
 
 interface AmbassadorDetailModalProps {
@@ -28,7 +29,7 @@ export default function AmbassadorDetailModal({
     const loadDetails = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/ambassadors/${ambassador.id}`);
+            const response = await adminFetch(`/api/ambassadors/${ambassador.id}`);
             const data = await response.json();
             if (data.success) {
                 console.log('🔍 Ambassador data loaded:', data.data);
@@ -49,7 +50,7 @@ export default function AmbassadorDetailModal({
         if (!confirm('¿Aprobar este embajador?')) return;
 
         try {
-            const response = await fetch(`/api/ambassadors/${ambassador.id}`, {
+            const response = await adminFetch(`/api/ambassadors/${ambassador.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'approved' })
@@ -70,7 +71,7 @@ export default function AmbassadorDetailModal({
         if (!reason) return;
 
         try {
-            const response = await fetch(`/api/ambassadors/${ambassador.id}`, {
+            const response = await adminFetch(`/api/ambassadors/${ambassador.id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
@@ -114,7 +115,7 @@ export default function AmbassadorDetailModal({
                 body.commission_status = 'approved';
             }
 
-            const response = await fetch(`/api/referrals/${referralId}`, {
+            const response = await adminFetch(`/api/referrals/${referralId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(body)
@@ -142,7 +143,7 @@ export default function AmbassadorDetailModal({
 
         try {
             setLoading(true);
-            const response = await fetch(`/api/payouts/${payoutId}`, {
+            const response = await adminFetch(`/api/payouts/${payoutId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

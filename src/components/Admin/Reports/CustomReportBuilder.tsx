@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './Reports.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 type MetricType = 'members' | 'pets' | 'finance' | 'approvals';
 type DimensionType = 'date' | 'type' | 'status' | 'plan';
@@ -32,7 +33,7 @@ export default function CustomReportBuilder() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`/api/admin/reports/analytics?metric=${metric}&range=${range}`);
+            const response = await adminFetch(`/api/admin/reports/analytics?metric=${metric}&range=${range}`);
             const result = await response.json();
             
             if (result.success) {

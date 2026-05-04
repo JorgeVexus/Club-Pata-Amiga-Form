@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './AmbassadorsTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 import { Ambassador, AmbassadorStatus } from '@/types/ambassador.types';
 
 interface AmbassadorsTableProps {
@@ -32,7 +33,7 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
             params.append('page', currentPage.toString());
             params.append('limit', '10');
 
-            const response = await fetch(`/api/ambassadors?${params}`);
+            const response = await adminFetch(`/api/ambassadors?${params}`);
             const data = await response.json();
 
             if (data.success) {
@@ -50,15 +51,15 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
     const loadStats = async () => {
         try {
             // Total
-            const totalRes = await fetch('/api/ambassadors?limit=1');
+            const totalRes = await adminFetch('/api/ambassadors?limit=1');
             const totalData = await totalRes.json();
 
             // Pending
-            const pendingRes = await fetch('/api/ambassadors?status=pending&limit=1');
+            const pendingRes = await adminFetch('/api/ambassadors?status=pending&limit=1');
             const pendingData = await pendingRes.json();
 
             // Approved
-            const approvedRes = await fetch('/api/ambassadors?status=approved&limit=1');
+            const approvedRes = await adminFetch('/api/ambassadors?status=approved&limit=1');
             const approvedData = await approvedRes.json();
 
             setStats({
@@ -85,7 +86,7 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
         if (!confirm('¿Aprobar este embajador?')) return;
 
         try {
-            const response = await fetch(`/api/ambassadors/${id}`, {
+            const response = await adminFetch(`/api/ambassadors/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'approved' })
@@ -111,7 +112,7 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
         if (!reason) return;
 
         try {
-            const response = await fetch(`/api/ambassadors/${id}`, {
+            const response = await adminFetch(`/api/ambassadors/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
@@ -136,7 +137,7 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
         if (!confirm('¿Suspender este embajador?')) return;
 
         try {
-            const response = await fetch(`/api/ambassadors/${id}`, {
+            const response = await adminFetch(`/api/ambassadors/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'suspended' })

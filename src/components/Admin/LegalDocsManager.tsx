@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { adminFetch } from '@/utils/admin-fetch';
 
 type TargetAudience = 'members' | 'ambassadors' | 'both';
 
@@ -47,7 +48,7 @@ export default function LegalDocsManager() {
 
     const fetchDocuments = async () => {
         try {
-            const response = await fetch('/api/legal-documents?audience=both');
+            const response = await adminFetch('/api/legal-documents?audience=both');
             const data = await response.json();
             if (data.success) {
                 setDocuments(data.documents || []);
@@ -74,7 +75,7 @@ export default function LegalDocsManager() {
             formData.append('description', newDescription.trim());
             formData.append('target_audience', newAudience);
 
-            const response = await fetch('/api/legal-documents', {
+            const response = await adminFetch('/api/legal-documents', {
                 method: 'POST',
                 body: formData,
             });
@@ -101,7 +102,7 @@ export default function LegalDocsManager() {
 
     const handleToggleActive = async (id: string, currentActive: boolean) => {
         try {
-            const response = await fetch(`/api/legal-documents/${id}`, {
+            const response = await adminFetch(`/api/legal-documents/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ is_active: !currentActive }),
@@ -118,7 +119,7 @@ export default function LegalDocsManager() {
 
     const handleUpdateAudience = async (id: string) => {
         try {
-            const response = await fetch(`/api/legal-documents/${id}`, {
+            const response = await adminFetch(`/api/legal-documents/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ target_audience: editAudience }),
@@ -138,7 +139,7 @@ export default function LegalDocsManager() {
         if (!confirm(`¿Eliminar "${title}"? Esta acción no se puede deshacer.`)) return;
 
         try {
-            const response = await fetch(`/api/legal-documents/${id}`, { method: 'DELETE' });
+            const response = await adminFetch(`/api/legal-documents/${id}`, { method: 'DELETE' });
             if (response.ok) {
                 setDocuments(prev => prev.filter(doc => doc.id !== id));
                 alert('Documento eliminado.');

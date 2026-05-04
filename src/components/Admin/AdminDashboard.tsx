@@ -22,6 +22,7 @@ import FinancialLedger from './Finance/FinancialLedger';
 import BillingManagement from './Finance/BillingManagement';
 import InteractiveReports from './Reports/InteractiveReports';
 import { Ambassador } from '@/types/ambassador.types';
+import { adminFetch } from '@/utils/admin-fetch';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
@@ -69,7 +70,7 @@ export default function AdminDashboard() {
     // Fetch helpers ... (same as before)
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
         try {
-            const response = await fetch(`/api/admin/members/${id}`);
+            const response = await fetchWithAuth(`/api/admin/members/${id}`);
             const data = await response.json();
             if (data.success && data.member) customSetter(data.member);
             else alert('No se pudo cargar la información.');
@@ -78,7 +79,7 @@ export default function AdminDashboard() {
 
     const fetchAmbassadorDetails = async (id: string) => {
         try {
-            const response = await fetch('/api/ambassadors?limit=1000');
+            const response = await adminFetch('/api/ambassadors?limit=1000');
             const data = await response.json();
             if (data.success) {
                 const found = data.data.find((a: any) => a.id === id);
@@ -123,14 +124,16 @@ export default function AdminDashboard() {
                     }
 
                     const currentMemberId = member.data.id;
-                    const response = await fetch('/api/admin/me', {
+                    const response = await adminFetch('/api/admin/me', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ memberstackId: currentMemberId })
                     });
 
+                    console.log(`[AdminAuth] Response from /api/admin/me: ${response.status}`);
+
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('[AdminAuth] Data received:', data);
                         
                         if (!data.isAdmin) {
                             console.error('🚫 Usuario no es administrador');
@@ -141,14 +144,15 @@ export default function AdminDashboard() {
                         setIsAdminSuper(data.isSuperAdmin);
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminMemberstackId(currentMemberId);
+                        localStorage.setItem('admin_memberstack_id', currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
                         
                         // Marcar sesión como activa en esta pestaña/navegador
                         sessionStorage.setItem('admin_session_active', 'true');
                         
-                        loadMetrics();
-                        loadPendingCounts(data.isSuperAdmin);
+                        loadMetrics(currentMemberId);
+                        loadPendingCounts(data.isSuperAdmin, currentMemberId);
                         loadActivityLogs(currentMemberId);
                         if (data.isSuperAdmin) {
                             fetchWithAuth('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
@@ -174,12 +178,8 @@ export default function AdminDashboard() {
     }, [hasMounted]);
     
     // 🔒 Helper para peticiones autenticadas
-    const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
-        const headers = {
-            ...options.headers,
-            'x-admin-memberstack-id': adminMemberstackId || (typeof window !== 'undefined' ? localStorage.getItem('admin_memberstack_id') : '') || ''
-        };
-        return fetch(url, { ...options, headers });
+    const fetchWithAuth = async (url: string, options: RequestInit = {}, overrideId?: string) => {
+        return adminFetch(url, options);
     };
 
     useEffect(() => {
@@ -189,9 +189,9 @@ export default function AdminDashboard() {
         }
     }, [activeFilter, isAdminSuper, hasMounted]);
 
-    async function loadMetrics() {
+    async function loadMetrics(overrideId?: string) {
         try {
-            const response = await fetchWithAuth('/api/admin/metrics');
+            const response = await fetchWithAuth('/api/admin/metrics', {}, overrideId);
             const data = await response.json();
             if (data.success && data.metrics) setMetrics(data.metrics);
         } catch (error) { console.error(error); }
@@ -214,20 +214,20 @@ export default function AdminDashboard() {
         } catch (error) { console.error(error); }
     }
 
-    async function loadPendingCounts(isSuper: boolean = false) {
+    async function loadPendingCounts(isSuper: boolean = false, overrideId?: string) {
         try {
-            const response = await fetchWithAuth('/api/admin/members?status=pending');
+            const response = await fetchWithAuth('/api/admin/members?status=pending', {}, overrideId);
             const data = await response.json();
             if (data.success && data.members) {
                 const checkIsPaid = (m: any) => m.planConnections?.some((p: any) => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing');
                 setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m)).length }));
             }
             if (isSuper) {
-                const appealRes = await fetchWithAuth('/api/admin/pets/appealed');
+                const appealRes = await fetchWithAuth('/api/admin/pets/appealed', {}, overrideId);
                 const appealData = await appealRes.json();
                 if (appealData.success) setPendingCounts(prev => ({ ...prev, appeals: appealData.count || 0 }));
             }
-            const ambassadorRes = await fetchWithAuth('/api/ambassadors?status=pending&limit=1');
+            const ambassadorRes = await fetchWithAuth('/api/ambassadors?status=pending&limit=1', {}, overrideId);
             const ambassadorData = await ambassadorRes.json();
             if (ambassadorData.success) setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
         } catch (error) { console.error(error); }
@@ -326,9 +326,8 @@ export default function AdminDashboard() {
                                 if (type === 'ambassador') {
                                     if (!confirm('¿Aprobar este embajador?')) return;
                                     try {
-                                        const response = await fetch(`/api/ambassadors/${id}`, {
+                                        const response = await adminFetch(`/api/ambassadors/${id}`, {
                                             method: 'PATCH',
-                                            headers: { 'Content-Type': 'application/json' },
                                             body: JSON.stringify({ status: 'approved' })
                                         });
                                         if (response.ok) { alert('Embajador aprobado'); window.location.reload(); }
@@ -337,7 +336,7 @@ export default function AdminDashboard() {
                                 } else {
                                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
                                         try {
-                                            const response = await fetch(`/api/admin/members/${id}/approve`, {
+                                            const response = await fetchWithAuth(`/api/admin/members/${id}/approve`, {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ adminId: currentAdminId })
@@ -352,7 +351,7 @@ export default function AdminDashboard() {
                                 if (type === 'ambassador') {
                                     const reason = prompt('Motivo del rechazo (Embajador):');
                                     if (!reason) return;
-                                    fetch(`/api/ambassadors/${id}`, {
+                                    fetchWithAuth(`/api/ambassadors/${id}`, {
                                         method: 'PATCH',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
@@ -367,7 +366,7 @@ export default function AdminDashboard() {
                                 try {
                                     let url = `/api/admin/members/${id}/delete`;
                                     if (type === 'ambassador') url = `/api/ambassadors/${id}`;
-                                    const res = await fetch(url, { method: 'DELETE' });
+                                    const res = await fetchWithAuth(url, { method: 'DELETE' });
                                     if (res.ok) { alert('Eliminado correctamente'); window.location.reload(); }
                                     else alert('Error al eliminar');
                                 } catch (e) { console.error(e); }
@@ -491,7 +490,7 @@ export default function AdminDashboard() {
                 isSuperAdmin={isAdminSuper}
                 onApprove={async (id) => {
                     if (confirm('¿Aprobar?')) {
-                        const res = await fetch(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
+                        const res = await fetchWithAuth(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
                         if (res.ok) { alert('Aprobado'); window.location.reload(); }
                     }
                 }}
@@ -504,7 +503,7 @@ export default function AdminDashboard() {
                 onClose={() => setMemberToReject(null)}
                 memberName={`${memberToReject?.customFields?.['first-name'] || ''} ${memberToReject?.customFields?.['paternal-last-name'] || ''}`}
                 onConfirm={async (reason) => {
-                    const res = await fetch(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
+                    const res = await fetchWithAuth(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
                     if (res.ok) { alert('Rechazado'); window.location.reload(); }
                 }}
             />

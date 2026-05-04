@@ -27,11 +27,14 @@ export async function getAdminUser(req: NextRequest) {
             .maybeSingle();
 
         if (error || !user) {
-            console.error('❌ AdminAuth Error: Usuario no encontrado o error en Supabase', error);
+            console.error(`❌ AdminAuth Error: Usuario ${memberstackId} no encontrado en Supabase`, error);
             return null;
         }
 
-        const isAdmin = user.role === 'admin' || user.role === 'super_admin';
+        console.log(`✅ AdminAuth: Usuario encontrado ${user.email} con rol ${user.role}`);
+
+        const role = user.role?.toLowerCase();
+        const isAdmin = role === 'admin' || role === 'super_admin';
         
         if (!isAdmin) {
             console.warn(`⚠️ AdminAuth Warning: Usuario ${user.email} intentó acceder sin rol admin (${user.role})`);

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './MemberDetailModal.module.css';
 import { formatMXN } from '@/utils/format';
+import { adminFetch } from '@/utils/admin-fetch';
 import { getPetsByUserId, getBillingDetailsByMemberstackId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 
 interface Pet {
@@ -120,7 +121,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     async function loadStripeDetails() {
         setLoadingStripe(true);
         try {
-            const res = await fetch(`/api/admin/members/${member.id}/stripe-details`);
+            const res = await adminFetch(`/api/admin/members/${member.id}/stripe-details`);
             const data = await res.json();
             if (data.success) {
                 setStripeDetails(data.stripeData);
@@ -164,7 +165,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
         setLoadingLogs(prev => ({ ...prev, [petId]: true }));
         try {
-            const res = await fetch(`/api/admin/members/${member.id}/appeal-logs?petId=${petId}`);
+            const res = await adminFetch(`/api/admin/members/${member.id}/appeal-logs?petId=${petId}`);
             const data = await res.json();
             if (data.success && data.logs) {
                 setPetLogs(prev => ({ ...prev, [petId]: data.logs }));
@@ -192,7 +193,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         }
 
         try {
-            const res = await fetch(`/api/admin/members/${member.id}/appeal-response`, {
+            const res = await adminFetch(`/api/admin/members/${member.id}/appeal-response`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -236,7 +237,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
         setSendingRequest(prev => ({ ...prev, [petId]: true }));
         try {
-            const res = await fetch(`/api/admin/members/${member.id}/request-info`, {
+            const res = await adminFetch(`/api/admin/members/${member.id}/request-info`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -277,7 +278,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
         setUpdatingPetId(petId);
         try {
-            const response = await fetch(`/api/admin/members/${member.id}/pets/${petId}/status`, {
+            const response = await adminFetch(`/api/admin/members/${member.id}/pets/${petId}/status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -309,7 +310,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         if (!confirm('¿Estás seguro de reembolsar el pago de este miembro? Esta acción no se puede deshacer.')) return;
         setIsRefunding(true);
         try {
-            const response = await fetch(`/api/admin/members/${member.id}/refund`, {
+            const response = await adminFetch(`/api/admin/members/${member.id}/refund`, {
                 method: 'POST',
             });
             const data = await response.json();
@@ -346,7 +347,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const handleDownload = async (e: React.MouseEvent, url: string, filename: string) => {
         e.preventDefault();
         try {
-            const response = await fetch(url);
+            const response = await adminFetch(url);
             const blob = await response.blob();
             const blobUrl = window.URL.createObjectURL(blob);
 

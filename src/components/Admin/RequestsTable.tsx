@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './RequestsTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 interface MemberRequest {
     id: string;
@@ -106,13 +107,13 @@ export default function RequestsTable({
                 const results = await Promise.all(statuses.map(async (status) => {
                     let count = 0;
                     if (fetchMember) {
-                        const res = await fetch(`${baseMember}&status=${status}`);
+                        const res = await adminFetch(`${baseMember}&status=${status}`);
                         const data = await res.json();
                         count += (data.count || 0);
                     }
                     if (fetchAmbassador) {
                         const statusParam = status === 'all' ? '' : `&status=${status}`;
-                        const res = await fetch(`/api/ambassadors?limit=1${statusParam}`);
+                        const res = await adminFetch(`/api/ambassadors?limit=1${statusParam}`);
                         const data = await res.json();
                         count += (data.total || 0);
                     }
@@ -154,7 +155,7 @@ export default function RequestsTable({
             setLoading(true);
 
             if (requestType === 'appeals') {
-                const response = await fetch('/api/admin/pets/appealed');
+                const response = await adminFetch('/api/admin/pets/appealed');
                 const data = await response.json();
                 if (data.success && data.pets) {
                     setAppealedPets(data.pets);
@@ -176,7 +177,7 @@ export default function RequestsTable({
             if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'terminate-users') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
                 promises.push(
-                    fetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}`)
+                    adminFetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}`)
                         .then(res => res.json())
                         .then(data => ({ type: 'member', data }))
                 );
@@ -184,7 +185,7 @@ export default function RequestsTable({
 
             if (requestType === 'all' || requestType === 'ambassador' || requestType === 'terminate-users') {
                 promises.push(
-                    fetch(`/api/ambassadors?status=${statusParam}&limit=100`)
+                    adminFetch(`/api/ambassadors?status=${statusParam}&limit=100`)
                         .then(res => res.json())
                         .then(data => ({ type: 'ambassador', data }))
                 );

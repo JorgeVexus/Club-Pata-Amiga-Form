@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './AdminsTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 interface Admin {
     memberstack_id: string;
@@ -21,7 +22,7 @@ export default function AdminsTable() {
 
     const loadAdmins = async () => {
         try {
-            const response = await fetch('/api/admin/admins');
+            const response = await adminFetch('/api/admin/admins');
             const data = await response.json();
             if (data.success) {
                 setAdmins(data.admins);

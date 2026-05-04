@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styles from './Reports.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 import CustomReportBuilder from './CustomReportBuilder';
 
 export default function InteractiveReports() {
@@ -16,7 +17,7 @@ export default function InteractiveReports() {
     const fetchAnalytics = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`/api/admin/reports/analytics?range=${range}`);
+            const response = await adminFetch(`/api/admin/reports/analytics?range=${range}`);
             const result = await response.json();
             if (result.success) {
                 setAnalyticsData(result.data);

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
 import styles from './AdminNotifications.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 // Cliente de Supabase para el cliente (usando la URL pública)
 const supabase = createClient(
@@ -38,7 +39,7 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
     // Cargar notificaciones iniciales
     const loadNotifications = useCallback(async () => {
         try {
-            const res = await fetch('/api/admin/notifications');
+            const res = await adminFetch('/api/admin/notifications');
             const data = await res.json();
             if (data.success) {
                 setNotifications(data.notifications || []);
@@ -179,7 +180,7 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
 
     async function markAsRead(id: string) {
         try {
-            await fetch(`/api/admin/notifications/${id}/read`, { method: 'POST' });
+            await adminFetch(`/api/admin/notifications/${id}/read`, { method: 'POST' });
             setNotifications(prev =>
                 prev.map(n => n.id === id ? { ...n, is_read: true } : n)
             );
@@ -190,7 +191,7 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
 
     async function markAllAsRead() {
         try {
-            await fetch('/api/admin/notifications/mark-all-read', { method: 'POST' });
+            await adminFetch('/api/admin/notifications/mark-all-read', { method: 'POST' });
             setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
         } catch (error) {
             console.error('Error marking all as read:', error);

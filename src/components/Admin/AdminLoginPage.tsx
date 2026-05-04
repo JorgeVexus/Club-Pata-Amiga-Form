@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { adminFetch } from '@/utils/admin-fetch';
 
 export default function AdminLoginPage() {
     const router = useRouter();
@@ -73,9 +74,8 @@ export default function AdminLoginPage() {
 
     const verifyAndRedirect = async (memberstackId: string) => {
         try {
-            const response = await fetch('/api/admin/me', {
+            const response = await adminFetch('/api/admin/me', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ memberstackId })
             });
 

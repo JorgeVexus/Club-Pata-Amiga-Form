@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { commService, CommTemplate } from '@/services/comm.service';
-import { sendAdminEmail, sendCustomNotification } from '@/app/actions/comm.actions';
 import { buildEmailPreview } from '@/utils/email-preview.utils';
+import { adminFetch } from '@/utils/admin-fetch';
+import { sendAdminEmail, sendCustomNotification } from '@/app/actions/comm.actions';
 import styles from './MessageSender.module.css';
 
 interface Member {
@@ -66,7 +67,7 @@ export default function MessageSender({ adminName, prefill, audience = 'general'
                 setMembers([]); // Placeholder para Fase 2
             } else if (audience === 'ambassador') {
                 // Fetch from ambassadors API
-                const aRes = await fetch('/api/ambassadors?status=approved&limit=1000');
+                const aRes = await adminFetch('/api/ambassadors?status=approved&limit=1000');
                 const aData = await aRes.json();
                 if (aData.success) {
                     // Mapear embajadores a la estructura de Member
@@ -83,7 +84,7 @@ export default function MessageSender({ adminName, prefill, audience = 'general'
                 }
             } else {
                 // Fetch members (standard members)
-                const mRes = await fetch('/api/admin/members?status=all');
+                const mRes = await adminFetch('/api/admin/members?status=all');
                 const mData = await mRes.json();
                 if (mData.success) {
                     setMembers(mData.members || []);
@@ -201,7 +202,7 @@ export default function MessageSender({ adminName, prefill, audience = 'general'
 
         setIsSending(true);
         try {
-            const res = await fetch(`/api/admin/members/${selectedMember.id}/delete`, {
+            const res = await adminFetch(`/api/admin/members/${selectedMember.id}/delete`, {
                 method: 'DELETE'
             });
             const data = await res.json();
