@@ -88,6 +88,7 @@ export default function AdminLoginPage() {
 
             if (response.ok) {
                 if (data.isAdmin) {
+                    sessionStorage.setItem('admin_session_active', 'true');
                     router.push('/admin/dashboard');
                 } else {
                     setError('No tienes permisos de administrador. Por favor cierra sesión e intenta con una cuenta admin.');
