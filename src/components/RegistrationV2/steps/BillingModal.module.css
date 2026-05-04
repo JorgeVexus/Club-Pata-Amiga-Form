@@ -1,0 +1,211 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modalContent {
+    background: var(--color-white);
+    border: 2px solid var(--color-black);
+    box-shadow: 8px 8px 0px var(--color-black);
+    border-radius: 32px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalIn 0.4s var(--ease-out-expo);
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modalHeader {
+    padding: 24px 32px;
+    border-bottom: 2px solid var(--color-black);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--color-primary);
+}
+
+.modalTitle {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    color: var(--color-white);
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.modalClose {
+    background: var(--color-white);
+    border: 2px solid var(--color-black);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.modalClose:hover {
+    background: var(--color-error);
+    color: var(--color-white);
+    transform: rotate(90deg);
+}
+
+.modalBody {
+    padding: 32px;
+}
+
+.modalDescription {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: #64748B;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.billingForm {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.labelRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 8px;
+    color: rgba(0, 0, 0, 0.60);
+    font-size: 12px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+}
+
+.typeBadge {
+    font-size: 0.65rem;
+    background-color: #EBF8FF;
+    color: #2B6CB0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: bold;
+    border: 1px solid #BEE3F8;
+}
+
+.typeBadgeMoral {
+    background-color: #F0FFF4;
+    color: #2F855A;
+    border-color: #C6F6D5;
+}
+
+.inputField, .selectField {
+    align-self: stretch;
+    background: var(--color-white);
+    border-radius: 9999px;
+    border: 2px var(--color-black) solid;
+    padding: 14px 20px;
+    font-size: 16px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    color: var(--color-black);
+    outline: none;
+    transition: all 0.2s var(--ease-out-expo);
+}
+
+.inputField:focus, .selectField:focus {
+    border-color: var(--color-primary);
+    box-shadow: 4px 4px 0px rgba(21, 190, 178, 0.15);
+    transform: translateY(-2px);
+}
+
+.errorText {
+    color: var(--color-error);
+    font-size: 0.75rem;
+    padding-left: 12px;
+    font-family: var(--font-body);
+}
+
+.buttonRow {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.cancelButton {
+    flex: 1;
+    background: transparent;
+    color: #64748B;
+    border: 2px solid #CBD5E0;
+    border-radius: 9999px;
+    padding: 14px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.cancelButton:hover {
+    border-color: var(--color-black);
+    color: var(--color-black);
+}
+
+.saveButton {
+    flex: 2;
+    background: var(--color-primary);
+    color: var(--color-white);
+    border: 2px solid var(--color-black);
+    border-radius: 9999px;
+    padding: 14px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.saveButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px var(--color-black);
+}
+
+.saveButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+    .modalContent {
+        border-radius: 24px;
+    }
+    
+    .modalHeader, .modalBody {
+        padding: 20px;
+    }
+    
+    .buttonRow {
+        flex-direction: column-reverse;
+    }
+}

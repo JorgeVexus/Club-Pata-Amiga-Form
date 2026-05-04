@@ -192,7 +192,6 @@ export default function Step1Account({
 
     return (
         <>
-            <BenefitsMarquee />
             <div className={styles.pageBackground} />
             <div className={styles.container}>
                 {/* Top Section: Headline and Price */}
@@ -438,6 +437,12 @@ export default function Step1Account({
                                     Términos y Condiciones y Aviso de Privacidad.
                                 </button>
                             </div>
+
+                            {mode === 'login' && !isLoggedIn && (
+                                <div className={styles.loginSupportText}>
+                                    ¿Problemas para iniciar sesión? Escríbenos a <a href="mailto:miembros@pataamiga.mx" className={styles.supportLink}>miembros@pataamiga.mx</a>
+                                </div>
+                            )}
 
                             {!isLoggedIn && (
                                 <div className={styles.separatorSection}>

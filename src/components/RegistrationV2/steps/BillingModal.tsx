@@ -1,228 +1,158 @@
 'use client';
 
-import React, { useState } from 'react';
-import styles from './steps.module.css';
-import { validateRFC, formatRFC } from '@/utils/rfc-validator';
-
-interface BillingData {
-    rfc: string;
-    businessName: string;
-    zipCode: string;
-    taxRegime: string;
-    cfdiUse: string;
-}
+import React, { useState, useEffect } from 'react';
+import styles from './BillingModal.module.css';
 
 interface BillingModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSave: (details: BillingData) => void;
+    onSave: (details: any) => void;
     initialEmail?: string;
 }
 
 export default function BillingModal({ isOpen, onClose, onSave, initialEmail }: BillingModalProps) {
-    const [details, setDetails] = useState<BillingData>({
+    const [formData, setFormData] = useState({
         rfc: '',
-        businessName: '',
-        zipCode: '',
-        taxRegime: '',
-        cfdiUse: '',
+        razonSocial: '',
+        regimenFiscal: '',
+        cp: '',
+        emailFacturacion: initialEmail || ''
     });
-    const [rfcError, setRfcError] = useState('');
-    const [rfcType, setRfcType] = useState<'physical' | 'moral' | null>(null);
-    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [errors, setErrors] = useState<Record<string, string>>({});
+    const [isMoral, setIsMoral] = useState(false);
+
+    useEffect(() => {
+        if (initialEmail && !formData.emailFacturacion) {
+            setFormData(prev => ({ ...prev, emailFacturacion: initialEmail }));
+        }
+    }, [initialEmail]);
+
+    // Detectar si es persona moral por longitud de RFC
+    useEffect(() => {
+        if (formData.rfc.length === 12) setIsMoral(true);
+        else if (formData.rfc.length === 13) setIsMoral(false);
+    }, [formData.rfc]);
 
     if (!isOpen) return null;
 
-    const validateRFCLocal = (rfc: string) => {
-        const cleanRFC = formatRFC(rfc);
-        if (!cleanRFC) {
-            setRfcError('');
-            setRfcType(null);
-            return;
+    const validate = () => {
+        const newErrors: Record<string, string> = {};
+        if (!formData.rfc || (formData.rfc.length !== 12 && formData.rfc.length !== 13)) {
+            newErrors.rfc = 'RFC debe tener 12 o 13 caracteres';
         }
+        if (!formData.razonSocial) newErrors.razonSocial = 'Requerido';
+        if (!formData.regimenFiscal) newErrors.regimenFiscal = 'Requerido';
+        if (!formData.cp || formData.cp.length !== 5) newErrors.cp = 'CP inválido';
+        if (!formData.emailFacturacion) newErrors.emailFacturacion = 'Requerido';
 
-        const result = validateRFC(cleanRFC);
-        
-        // Always try to detect type based on length for better UX
-        if (cleanRFC.length === 12) setRfcType('moral');
-        else if (cleanRFC.length === 13) setRfcType('physical');
-        else if (cleanRFC.length < 12) setRfcType(null);
-
-        if (result.isValid) {
-            setRfcType(result.type || null);
-            setRfcError('');
-        } else {
-            // Only show error if length is at least the minimum for an RFC
-            if (cleanRFC.length >= 12) {
-                setRfcError(result.error || 'RFC inválido');
-            } else {
-                setRfcError('');
-            }
-        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
-    const handleRFCChange = (val: string) => {
-        const formatted = formatRFC(val);
-        setDetails({ ...details, rfc: formatted, taxRegime: '' }); // Reset regime when RFC changes
-        validateRFCLocal(formatted);
-    };
-
-    const allRegimes = [
-        { id: '601', name: 'General de Ley Personas Morales', type: 'moral' },
-        { id: '603', name: 'Personas Morales con Fines no Lucrativos', type: 'moral' },
-        { id: '605', name: 'Sueldos y Salarios e Ingresos Asimilados a Salarios', type: 'physical' },
-        { id: '606', name: 'Arrendamiento', type: 'physical' },
-        { id: '612', name: 'Personas Físicas con Actividades Empresariales y Profesionales', type: 'physical' },
-        { id: '626', name: 'Régimen Simplificado de Confianza (RESICO)', type: 'physical' },
-    ];
-
-    const filteredRegimes = rfcType 
-        ? allRegimes.filter(r => r.type === rfcType)
-        : allRegimes;
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const result = validateRFC(details.rfc);
-        if (!result.isValid) {
-            setRfcError(result.error || 'RFC inválido');
-            return;
-        }
-        
-        setIsSubmitting(true);
-        try {
-            await onSave(details);
-        } finally {
-            setIsSubmitting(false);
+        if (validate()) {
+            onSave(formData);
         }
     };
 
     return (
-        <div className={styles.modalOverlay} onClick={(e) => e.target === e.currentTarget && onClose()}>
-            <div className={styles.modalContent}>
+        <div className={styles.modalOverlay} onClick={onClose}>
+            <div className={styles.modalContent} onClick={e => e.stopPropagation()}>
                 <div className={styles.modalHeader}>
-                    <h2 className={styles.modalTitle}>Datos de Facturación 📄</h2>
-                    <button className={styles.modalClose} onClick={onClose}>✕</button>
+                    <h3 className={styles.modalTitle}>Datos de Facturación</h3>
+                    <button className={styles.modalClose} onClick={onClose}>×</button>
                 </div>
+
                 <div className={styles.modalBody}>
-                    <p style={{
-                        fontFamily: 'Outfit, sans-serif',
-                        fontSize: '0.95rem',
-                        color: '#718096',
-                        marginBottom: '1.5rem',
-                        lineHeight: '1.5'
-                    }}>
-                        Ingresa tus datos fiscales para generar tus facturas correctamente.
+                    <p className={styles.modalDescription}>
+                        Ingresa los datos fiscales tal como aparecen en tu Constancia de Situación Fiscal.
                     </p>
 
                     <form onSubmit={handleSubmit} className={styles.billingForm}>
                         <div className={styles.formGroup}>
-                            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                RFC *
-                                {rfcType && (
-                                    <span style={{ 
-                                        fontSize: '0.65rem', 
-                                        backgroundColor: rfcType === 'physical' ? '#EBF8FF' : '#F0FFF4',
-                                        color: rfcType === 'physical' ? '#2B6CB0' : '#2F855A',
-                                        padding: '2px 8px',
-                                        borderRadius: '10px',
-                                        fontWeight: 'bold',
-                                        border: `1px solid ${rfcType === 'physical' ? '#BEE3F8' : '#C6F6D5'}`
-                                    }}>
-                                        {rfcType === 'physical' ? 'PERSONA FÍSICA' : 'PERSONA MORAL'}
+                            <div className={styles.labelRow}>
+                                <label>RFC</label>
+                                {formData.rfc.length >= 12 && (
+                                    <span className={`${styles.typeBadge} ${isMoral ? styles.typeBadgeMoral : ''}`}>
+                                        {isMoral ? 'Persona Moral' : 'Persona Física'}
                                     </span>
                                 )}
-                            </label>
+                            </div>
                             <input
                                 type="text"
-                                required
-                                value={details.rfc}
-                                onChange={(e) => handleRFCChange(e.target.value)}
-                                placeholder="ABCD123456XYZ"
+                                placeholder="XAXX010101000"
+                                className={styles.inputField}
+                                value={formData.rfc}
+                                onChange={e => setFormData(prev => ({ ...prev, rfc: e.target.value.toUpperCase().trim() }))}
                                 maxLength={13}
-                                style={{ 
-                                    borderColor: rfcError ? '#E53E3E' : (details.rfc.length >= 12 && !rfcError ? '#38A169' : '#E2E8F0'),
-                                    boxShadow: rfcError ? '0 0 0 1px #E53E3E' : (details.rfc.length >= 12 && !rfcError ? '0 0 0 1px #38A169' : 'none'),
-                                    textTransform: 'uppercase'
-                                }}
                             />
-                            {rfcError && (
-                                <span style={{ color: '#E53E3E', fontSize: '0.75rem', marginTop: '4px', display: 'block' }}>
-                                    {rfcError}
-                                </span>
-                            )}
+                            {errors.rfc && <span className={styles.errorText}>{errors.rfc}</span>}
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label>Nombre o Razón Social *</label>
+                            <div className={styles.labelRow}><label>Nombre o Razón Social</label></div>
                             <input
                                 type="text"
-                                required
-                                value={details.businessName}
-                                onChange={(e) => setDetails({ ...details, businessName: e.target.value })}
-                                placeholder="Nombre completo o Empresa"
+                                placeholder="Como aparece en el SAT"
+                                className={styles.inputField}
+                                value={formData.razonSocial}
+                                onChange={e => setFormData(prev => ({ ...prev, razonSocial: e.target.value.toUpperCase() }))}
                             />
+                            {errors.razonSocial && <span className={styles.errorText}>{errors.razonSocial}</span>}
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label>Código Postal (C.P.) *</label>
+                            <div className={styles.labelRow}><label>Régimen Fiscal</label></div>
+                            <select
+                                className={styles.selectField}
+                                value={formData.regimenFiscal}
+                                onChange={e => setFormData(prev => ({ ...prev, regimenFiscal: e.target.value }))}
+                            >
+                                <option value="">Selecciona una opción</option>
+                                <option value="601">601 - General de Ley Personas Morales</option>
+                                <option value="603">603 - Personas Morales con Fines no Lucrativos</option>
+                                <option value="605">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</option>
+                                <option value="606">606 - Arrendamiento</option>
+                                <option value="612">612 - Personas Físicas con Actividades Empresariales y Profesionales</option>
+                                <option value="621">621 - Incorporación Fiscal</option>
+                                <option value="625">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</option>
+                                <option value="626">626 - Régimen Simplificado de Confianza (RESICO)</option>
+                            </select>
+                            {errors.regimenFiscal && <span className={styles.errorText}>{errors.regimenFiscal}</span>}
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <div className={styles.labelRow}><label>C.P.</label></div>
                             <input
                                 type="text"
-                                required
-                                value={details.zipCode}
-                                onChange={(e) => setDetails({ ...details, zipCode: e.target.value.replace(/\D/g, '').slice(0, 5) })}
-                                placeholder="Ej. 12345"
+                                placeholder="00000"
+                                className={styles.inputField}
+                                value={formData.cp}
+                                onChange={e => setFormData(prev => ({ ...prev, cp: e.target.value.replace(/\D/g, '') }))}
                                 maxLength={5}
                             />
+                            {errors.cp && <span className={styles.errorText}>{errors.cp}</span>}
                         </div>
-
                         <div className={styles.formGroup}>
-                            <label>Régimen Fiscal *</label>
-                            <select
-                                required
-                                value={details.taxRegime}
-                                onChange={(e) => setDetails({ ...details, taxRegime: e.target.value })}
-                                disabled={!rfcType}
-                            >
-                                <option value="">{rfcType ? 'Selecciona un régimen...' : 'Ingresa un RFC válido primero...'}</option>
-                                {filteredRegimes.map(regime => (
-                                    <option key={regime.id} value={regime.id}>{regime.name}</option>
-                                ))}
-                            </select>
+                            <div className={styles.labelRow}><label>Email de envío</label></div>
+                            <input
+                                type="email"
+                                placeholder="correo@ejemplo.com"
+                                className={styles.inputField}
+                                value={formData.emailFacturacion}
+                                onChange={e => setFormData(prev => ({ ...prev, emailFacturacion: e.target.value.toLowerCase() }))}
+                            />
+                            {errors.emailFacturacion && <span className={styles.errorText}>{errors.emailFacturacion}</span>}
                         </div>
 
-                        <div className={styles.formGroup}>
-                            <label>Uso de CFDI *</label>
-                            <select
-                                required
-                                value={details.cfdiUse}
-                                onChange={(e) => setDetails({ ...details, cfdiUse: e.target.value })}
-                            >
-                                <option value="">Selecciona uso...</option>
-                                <option value="G01">Adquisición de mercancías</option>
-                                <option value="G03">Gastos en general</option>
-                                <option value="S01">Sin efectos fiscales</option>
-                                <option value="CP01">Pagos</option>
-                            </select>
-                        </div>
-
-
-
-                        <div style={{ marginTop: '1.5rem', display: 'flex', gap: '1rem' }}>
-                            <button
-                                type="button"
-                                className={styles.secondaryButton}
-                                onClick={onClose}
-                                style={{ flex: 1, padding: '0.875rem' }}
-                            >
+                        <div className={styles.buttonRow}>
+                            <button type="button" className={styles.cancelButton} onClick={onClose}>
                                 Cancelar
                             </button>
-                            <button
-                                type="submit"
-                                className={styles.primaryButton}
-                                disabled={isSubmitting}
-                                style={{ flex: 2, padding: '0.875rem' }}
-                            >
-                                {isSubmitting ? 'Guardando...' : 'Guardar Datos Fiscales'}
+                            <button type="submit" className={styles.saveButton}>
+                                Guardar Datos
                             </button>
                         </div>
                     </form>

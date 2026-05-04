@@ -1,16 +1,31 @@
-/* Step1AccountRedesign.module.css */
+/* Step2PetBasic.module.css */
 
+/* Core Container & Layout - Consistent with Step1Account */
 .container {
-    display: flex;
-    flex-direction: column;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem 1rem;
-    gap: 2rem;
-    min-height: 100vh;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 4rem;
+    min-height: calc(100vh - 100px);
+    align-items: center;
     position: relative;
-    z-index: 1;
+    z-index: 10;
+}
+
+.containerCenter {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 10;
 }
 
 .pageBackground {
@@ -58,38 +73,20 @@
     }
 }
 
-/* Entrance Animations - Decisive Deceleration */
+/* Animations */
 @keyframes slideInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInScale {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
 
 @keyframes iconPulse {
@@ -108,7 +105,6 @@
     padding: 0;
 }
 
-/* Badge */
 .badge {
     display: inline-flex;
     align-items: center;
@@ -123,9 +119,7 @@
 }
 
 @media (max-width: 1023px) {
-    .badge {
-        display: none;
-    }
+    .badge { display: none; }
 }
 
 .badgeIcon {
@@ -144,7 +138,6 @@
     font-family: var(--font-body);
 }
 
-/* Headline */
 .headline {
     font-family: var(--font-heading);
     font-size: clamp(32px, 5vw, 60px);
@@ -157,7 +150,6 @@
     text-align: left;
 }
 
-/* Price Box */
 .priceBox {
     background: var(--color-white);
     border: 2px solid var(--color-black);
@@ -180,7 +172,6 @@
     font-weight: 700;
 }
 
-/* Benefits Grid */
 .benefitsGrid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -204,10 +195,6 @@
     box-shadow: var(--shadow-lg);
 }
 
-.benefitCard:hover .benefitIcon {
-    animation: iconPulse 0.4s var(--ease-out-expo);
-}
-
 .benefitCard:nth-child(1) { background: var(--color-pink); animation-delay: 0.3s; }
 .benefitCard:nth-child(2) { background: var(--color-action-orange); animation-delay: 0.4s; }
 .benefitCard:nth-child(3) { background: var(--color-primary); animation-delay: 0.5s; }
@@ -222,7 +209,6 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    transition: transform 0.3s var(--ease-out-expo);
 }
 
 .benefitTitle {
@@ -231,7 +217,6 @@
     font-weight: 600;
     text-transform: lowercase;
     line-height: 1.3;
-    margin-top: 11px;
 }
 
 .benefitDescription {
@@ -242,7 +227,6 @@
     font-family: var(--font-body);
 }
 
-/* Community Card */
 .communityCard {
     grid-column: 1 / -1;
     background: var(--color-yellow);
@@ -253,12 +237,6 @@
     align-items: flex-start;
     color: var(--color-black);
     animation: slideInUp 0.6s var(--ease-out-expo) 0.7s both;
-    transition: transform 0.4s var(--ease-out-expo), box-shadow 0.4s var(--ease-out-expo);
-}
-
-.communityCard:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
 }
 
 .communityIcon {
@@ -266,15 +244,10 @@
     height: 80px;
     background: rgba(0, 0, 0, 0.05);
     border-radius: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-}
-
-.communityContent {
-    flex: 1;
 }
 
 .communityTitle {
@@ -283,7 +256,6 @@
     font-weight: 600;
     text-transform: lowercase;
     line-height: 1.3;
-    margin-bottom: 8px;
 }
 
 .communityDescription {
@@ -294,7 +266,7 @@
     font-family: var(--font-body);
 }
 
-/* Right Column: Form Column */
+/* Right Column: Form */
 .formColumn {
     display: flex;
     flex-direction: column;
@@ -336,7 +308,6 @@
     z-index: 0;
 }
 
-/* Barra superior de progreso técnica */
 .topProgressBar {
     align-self: stretch;
     height: 16px;
@@ -355,7 +326,6 @@
     transition: width 0.5s var(--ease-out-expo);
 }
 
-/* Badge de paso */
 .stepBadge {
     width: 100%;
     max-width: 389px;
@@ -400,7 +370,6 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    animation: fadeInScale 0.4s var(--ease-out-expo);
     position: relative;
     z-index: 1;
 }
@@ -420,96 +389,23 @@
     display: flex;
     flex-direction: column;
     gap: 32px;
-    animation: fadeInScale 0.5s var(--ease-out-expo);
     position: relative;
     z-index: 1;
 }
 
-.inputGroup {
+/* Button styles */
+.buttonRow {
     display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.inputLabel {
-    padding-left: 8px;
-    color: rgba(0, 0, 0, 0.60);
-    font-size: 12px;
-    font-family: var(--font-body);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1.2px;
-    text-align: left;
-}
-
-.inputWrapper {
-    align-self: stretch;
-    background: var(--color-white);
-    border-radius: 9999px;
-    border: 2px var(--color-black) solid;
-    position: relative;
-    display: flex;
-    align-items: center;
-    padding: 16px 24px;
-    transition: border-color 0.2s var(--ease-out-expo), box-shadow 0.2s var(--ease-out-expo), transform 0.2s var(--ease-out-expo);
-}
-
-.inputWrapper:focus-within {
-    border-color: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(21, 190, 178, 0.15);
-    transform: translateY(-1px);
-}
-
-.inputField {
-    flex: 1;
-    border: none;
-    background: transparent;
-    font-size: 16px;
-    font-family: var(--font-body);
-    font-weight: 500;
-    color: var(--color-black);
-    outline: none;
+    gap: 1rem;
+    margin-top: 1rem;
     width: 100%;
 }
 
-.inputField::placeholder {
-    color: #6B7280;
-}
-
-.passwordToggle {
-    background: none;
-    border: none;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #6B7280;
-    cursor: pointer;
-    margin-left: 10px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-}
-
-.passwordToggle:hover {
-    background-color: rgba(0, 0, 0, 0.05);
-}
-
-.errorText {
-    font-family: var(--font-body);
-    font-size: 0.75rem;
-    color: var(--color-error);
-    margin-top: 4px;
-    padding-left: 16px;
-    text-align: left;
-}
-
-.submitButton {
-    align-self: stretch;
-    background: var(--color-lime) !important;
+.primaryButton, .secondaryButton {
+    flex: 1;
     border-radius: 9999px;
     border: 2px var(--color-black) solid;
     padding: 22px;
-    color: var(--color-black) !important;
     font-size: 18px;
     font-family: var(--font-body);
     font-weight: 700;
@@ -520,314 +416,90 @@
     align-items: center;
     gap: 12px;
     transition: all 0.2s var(--ease-out-expo);
-    width: 100%;
 }
 
-.submitButton:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(159, 212, 6, 0.3);
-}
-
-.submitButton:active:not(:disabled) {
-    transform: scale(0.98) translateY(0);
-}
-
-.submitButton:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-.privacyText {
-    color: #64748B;
-    font-size: 14px;
-    font-family: var(--font-body);
-    text-align: center;
-    line-height: 20px;
-    padding: 0 10px;
-}
-
-.privacyLink {
-    background: none;
-    border: none;
-    padding: 0;
-    text-decoration: underline;
-    cursor: pointer;
-    color: inherit;
-    font-family: inherit;
-    font-size: inherit;
-}
-
-.loginSupportText {
-    color: #64748B;
-    font-size: 14px;
-    font-family: var(--font-body);
-    text-align: center;
-    line-height: 20px;
-    padding: 0 10px;
-    margin-top: 12px;
-}
-
-.supportLink {
-    color: var(--color-primary);
-    text-decoration: underline;
-    font-weight: 500;
-}
-
-.separatorSection {
-    align-self: stretch;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    width: 100%;
-}
-
-.separator {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.separatorLine {
-    flex: 1;
-    height: 1px;
-    background: rgba(0, 0, 0, 0.10);
-}
-
-.separatorText {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 0 24px;
-    color: var(--color-black);
-    font-size: 12px;
-    font-family: var(--font-body);
-    font-weight: 700;
-    text-transform: uppercase;
-    position: relative;
-    z-index: 1;
-}
-
-.googleButton {
-    align-self: stretch;
-    background: rgba(255, 255, 255, 0.2) !important;
-    border-radius: 9999px;
-    border: 2px var(--color-black) solid;
-    padding: 18px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 16px;
+.primaryButton {
+    background: var(--color-lime) !important;
     color: var(--color-black) !important;
-    font-size: 18px;
-    font-family: var(--font-body);
-    font-weight: 600;
-    text-transform: uppercase;
-    cursor: pointer;
-    width: 100%;
-    transition: all 0.2s var(--ease-out-expo);
 }
 
-.googleButton:hover:not(:disabled) {
+.secondaryButton {
+    background: var(--color-primary) !important;
+    color: var(--color-white) !important;
+}
+
+.primaryButton:hover, .secondaryButton:hover {
     transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.googleButton:active:not(:disabled) {
-    transform: scale(0.98) translateY(0);
+.primaryButton:active, .secondaryButton:active {
+    transform: scale(0.98);
 }
 
-.googleIcon {
-    width: 24px;
-    height: 24px;
-}
-
-.footerText {
-    text-align: center;
-    color: #64748B;
-    font-size: 14px;
+/* Info Boxes */
+.infoBox {
+    background: linear-gradient(135deg, #E6FFFA 0%, #B2F5EA 100%);
+    border: 1px solid #7DD8D5;
+    border-radius: 16px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
     font-family: var(--font-body);
-    margin-top: 10px;
+    font-size: 0.9rem;
+    color: #234E52;
 }
 
-.footerLink {
-    color: var(--color-primary);
-    text-decoration: underline;
-    background: none;
-    border: none;
-    padding: 0;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: inherit;
+.infoBox.warning {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-color: #F59E0B;
+    color: #92400E;
 }
 
+.infoBox.error {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    border-color: #EF4444;
+    color: #991B1B;
+}
 
+.infoIcon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
 
-.mobileBenefitsLink {
-    display: none;
+.infoNote {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #718096;
+    margin-top: 1.5rem;
+    font-family: var(--font-body);
+    justify-content: center;
 }
 
 /* Mobile Adjustments */
 @media (max-width: 1023px) {
-    .container {
-        padding: 0.5rem 1rem;
-        gap: 0.75rem;
-    }
-
-    .benefitsSection {
-        order: 2;
-        text-align: center;
-        align-items: center;
-        max-width: 100%;
-    }
-
-    .headline {
-        font-size: 32px;
-        text-align: left;
-        margin-bottom: 12px;
-    }
-
-    .headerSection {
-        align-items: flex-start;
-        margin-bottom: 0.25rem;
-    }
-
-    .priceBox {
-        border-radius: 24px;
-        padding: 10px 20px;
-        margin-bottom: 1.5rem;
-        width: 100%;
-    }
-
-    .priceText {
-        font-size: 14px;
-        text-align: left;
-    }
-
-    .benefitsGrid {
-        grid-template-columns: 1fr;
-        width: 100%;
-        gap: 12px;
-    }
-
-    .benefitCard {
-        padding: 16px 20px;
-        align-items: center;
-        text-align: center;
-        gap: 8px;
-    }
-
-    .benefitIcon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-    }
-
-    .benefitTitle {
-        font-size: 20px;
-        margin-top: 4px;
-    }
-
-    .benefitDescription {
-        font-size: 14px;
-        line-height: 1.4;
-    }
-
-    .communityCard {
-        flex-direction: column;
-        gap: 12px;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-    }
-
-    .communityIcon {
-        width: 48px;
-        height: 48px;
-    }
-
-    .formColumn {
-        display: contents;
-    }
+    .container { padding: 0.5rem 1rem; gap: 0.75rem; }
+    .benefitsSection { order: 2; align-items: center; max-width: 100%; }
+    .headline { font-size: 32px; text-align: left; margin-bottom: 12px; }
+    .headerSection { align-items: flex-start; margin-bottom: 0.25rem; }
+    .priceBox { border-radius: 24px; padding: 10px 20px; margin-bottom: 1.5rem; width: 100%; }
+    .priceText { font-size: 14px; text-align: left; }
+    .benefitsGrid { grid-template-columns: 1fr; width: 100%; gap: 12px; }
+    .benefitCard { padding: 16px 20px; align-items: center; text-align: center; gap: 8px; }
+    .benefitIcon { width: 48px; height: 48px; border-radius: 12px; }
+    .benefitTitle { font-size: 20px; margin-top: 4px; }
+    .benefitDescription { font-size: 14px; line-height: 1.4; }
+    .communityCard { flex-direction: column; gap: 12px; align-items: center; text-align: center; padding: 20px; }
+    .communityIcon { width: 48px; height: 48px; }
+    .formColumn { display: contents; }
+    .formCard { order: 1; gap: 20px; padding-bottom: 24px; border-radius: 24px; }
+    .formBody { padding: 0 20px; gap: 20px; }
+    .formTitle { font-size: 24px; }
+    .primaryButton, .secondaryButton { padding: 16px; font-size: 16px; }
     
-    .formCard {
-        order: 1;
-        gap: 20px;
-        padding-bottom: 24px;
-        border-radius: 24px;
-        animation: fadeInScale 0.6s var(--ease-out-expo) 0.4s both;
-    }
-
-    .formBody {
-        padding: 0 20px;
-        gap: 20px;
-    }
-
-    .formTitle {
-        font-size: 24px;
-    }
-
-    .inputGroup {
-        gap: 6px;
-    }
-
-    .inputWrapper {
-        padding: 10px 18px;
-    }
-
-    .inputField {
-        font-size: 15px;
-    }
-
-    .submitButton {
-        padding: 16px;
-        font-size: 16px;
-    }
-
-    .separatorSection {
-        gap: 16px;
-    }
-
-    .googleButton {
-        padding: 14px;
-        font-size: 15px;
-    }
-    
-    .privacyText {
-        font-size: 12px;
-        margin-top: -0.5rem;
-    }
-    
-    .footerText {
-        font-size: 13px;
-        margin-top: 0.5rem;
-    }
-
-    .formHeader {
-        padding: 0 20px;
-    }
-
-    .stepBadge {
-        height: 50px;
-        gap: 15px;
-        padding: 0 15px;
-        max-width: 90%;
-    }
-
-    .stepBadgeLogo {
-        width: 60px;
-        height: 30px;
-    }
-
-    .topProgressBar {
-        height: 10px;
-    }
-
-    .topProgressBarFill {
-        height: 8px;
-    }
-
-
-
     .mobileBenefitsLink {
         display: flex;
         align-items: center;
@@ -844,19 +516,12 @@
         margin: 0.25rem 0;
         padding: 4px 0;
         opacity: 0.85;
-        transition: all 0.2s var(--ease-out-expo);
-        text-decoration: none;
     }
-    
-    .mobileBenefitsLink:active {
-        opacity: 1;
-        transform: translateY(2px);
-    }
+}
 
-    .mobileBenefitsLink svg {
-        color: var(--color-action-orange);
-        animation: bounceDown 2s infinite;
-    }
+.mobileBenefitsLink svg {
+    color: var(--color-action-orange);
+    animation: bounceDown 2s infinite;
 }
 
 @keyframes bounceDown {
@@ -865,9 +530,8 @@
     60% { transform: translateY(3px); }
 }
 
-/* Accessibility: Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-    .badge, .headline, .priceBox, .benefitCard, .communityCard, .formColumn, .submitButton, .googleButton, .inputWrapper {
+    .badge, .headline, .priceBox, .benefitCard, .communityCard, .formColumn, .primaryButton, .secondaryButton {
         animation: none !important;
         transition: none !important;
         transform: none !important;

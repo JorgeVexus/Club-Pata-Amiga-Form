@@ -1,11 +1,3 @@
-/**
- * Paso 4: Completar perfil del contratante
- * Post-pago: Datos personales completos
- * Carga datos si ya existen en Supabase
- */
-
-'use client';
-
 import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
@@ -14,7 +6,7 @@ import NationalitySelect from '../NationalitySelect';
 import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
 import { checkCurpAvailability } from '@/app/actions/user.actions';
 import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
-import styles from './steps.module.css';
+import styles from './Step4CompleteProfile.module.css';
 import { getCDMXAlcaldia } from '@/utils/postalCodeUtils';
 
 interface Step4CompleteProfileProps {
@@ -54,7 +46,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
     const verifyCurp = async (curp: string) => {
-        // 1. Validar formato básico y dígito verificador
         const formatValidation = validateCURP(curp);
         if (!formatValidation.isValid) {
             setErrors(prev => ({ ...prev, curp: formatValidation.error || 'CURP inválida' }));
@@ -62,7 +53,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             return;
         }
 
-        // 2. Validar consistencia con datos del formulario
         const consistencyValidation = validateCurpMatchesData(curp, {
             firstName: formData.firstName,
             paternalLastName: formData.paternalLastName,
@@ -77,7 +67,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             return;
         }
 
-        // 3. Verificar disponibilidad en base de datos
         setIsCheckingCurp(true);
         try {
             const currentMsId = member?.id || member?.memberId;
@@ -91,8 +80,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
             setCurpAvailable(result.available);
             setCurpCount(result.count || 0);
 
-            // Incluso si no está disponible (ya existe), no bloqueamos el flujo
-            // permitiendo que un usuario tenga múltiples cuentas con el mismo CURP
             setErrors(prev => {
                 const newErrors = { ...prev };
                 delete newErrors.curp;
@@ -128,7 +115,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 let city = '';
                 let colony = '';
 
-                // Primero identificamos el estado
                 result.address_components.forEach((component: any) => {
                     if (component.types.includes('administrative_area_level_1')) {
                         state = component.long_name;
@@ -142,31 +128,22 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
                 if (isCDMXState) state = 'Ciudad de México';
 
-                // Luego buscamos el municipio con prioridades
-                // Prioridad 1: sublocality_level_1 (Alcaldías en CDMX)
-                // Prioridad 2: administrative_area_level_2 (Municipios en el resto de MX)
-                // Prioridad 3: locality
-
                 const components = result.address_components;
                 const sublocality1 = components.find((c: any) => c.types.includes('sublocality_level_1'))?.long_name;
                 const adminArea2 = components.find((c: any) => c.types.includes('administrative_area_level_2'))?.long_name;
                 const locality = components.find((c: any) => c.types.includes('locality'))?.long_name;
 
-                // Lógica de selección de Municipio/Alcaldía
                 if (isCDMXState) {
-                    // En CDMX, buscamos activamente algo que NO sea "Ciudad de México"
                     city = sublocality1 || adminArea2 || locality || '';
                     if (city.toLowerCase().includes('ciudad de méxico') ||
                         city.toLowerCase().includes('mexico city') ||
                         city.toLowerCase().includes('cdmx')) {
-                        city = sublocality1 || adminArea2 || ''; // Intentar algo más específico o dejar vacío para fallback
+                        city = sublocality1 || adminArea2 || '';
                     }
                 } else {
-                    // Resto de México
                     city = adminArea2 || locality || sublocality1 || '';
                 }
 
-                // Colonia
                 colony = components.find((c: any) =>
                     c.types.includes('neighborhood') ||
                     c.types.includes('sublocality') ||
@@ -180,7 +157,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
         return null;
     };
-
 
     const fetchColoniesFromSepomex = async (cp: string) => {
         if (!cp || cp.length !== 5) return null;
@@ -203,8 +179,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         return null;
     };
 
-
-    // Cargar datos guardados al montar
     useEffect(() => {
         if (data?.profile && !isLoaded) {
             const profile = data.profile;
@@ -231,13 +205,11 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 setPassportPreview(profile.ine_front_url);
             }
 
-            // Si ya hay CURP cargada de 18 caracteres, verificarla
             if (profile.curp && profile.curp.length === 18) {
                 verifyCurp(profile.curp);
             }
         }
     }, [data, isLoaded]);
-
 
     const handlePostalCodeQuery = async (cpValue?: string) => {
         const cp = cpValue || formData.postalCode;
@@ -252,20 +224,14 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
             if (googleData || sepomexData) {
                 setFormData(current => {
-                    // Google y SEPOMEX se combinan para obtener la mejor información
                     const finalState = googleData?.state || sepomexData?.state || current.state;
-                    
-                    // 0. Revisar mapeo local (Máxima prioridad para CDMX)
                     const localAlcaldia = getCDMXAlcaldia(cp);
-                    
-                    // Si es CDMX y Google nos da algo genérico, priorizamos SEPOMEX para la Alcaldía
                     const isCDMX = localAlcaldia || 
                                   finalState.toLowerCase().includes('ciudad de méxico') || 
                                   finalState.toLowerCase().includes('mexico city');
                     
                     let finalCity = localAlcaldia || googleData?.city;
                     
-                    // Si localAlcaldia no lo atrapó, o Google dio algo genérico, usar SEPOMEX
                     if (!finalCity || (isCDMX && !localAlcaldia && (
                         finalCity.toLowerCase().includes('ciudad de méxico') || 
                         finalCity.toLowerCase().includes('mexico city')
@@ -323,11 +289,9 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.nationality) newErrors.nationality = 'Requerido';
         if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
 
-        // Validación condicional por nacionalidad
         if (formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico') {
             if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
         } else if (formData.nationality) {
-            // Para extranjeros pedimos pasaporte
             if (!passportFile && !formData.ine_front_url) {
                 newErrors.passport = 'Debes subir tu pasaporte';
             }
@@ -354,7 +318,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         try {
             let passportUrl = formData.ine_front_url;
 
-            // Subir pasaporte si hay un archivo nuevo
             if (passportFile && formData.nationality !== 'Mexicana' && formData.nationality !== 'México' && formData.nationality !== 'Mexico') {
                 const msId = member?.id || member?.memberId;
                 const uploadFormData = new FormData();
@@ -388,255 +351,273 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     };
 
     return (
-        <div className={styles.stepCard}>
-            <div className={styles.header}>
-                <span className={styles.stepBadge}>Paso 1 de 2 post-pago</span>
-                <h2 className={styles.title}>Completa tu perfil</h2>
-                <p className={styles.subtitle}>
-                    Necesitamos estos datos para activar tu membresía
-                </p>
-            </div>
+        <div className={styles.containerCenter}>
+            <div className={styles.pageBackground} />
+            
+            <div className={styles.formCard}>
+                {/* Barra superior de progreso técnica */}
+                <div className={styles.topProgressBar}>
+                    <div className={styles.topProgressBarFill} style={{ width: '50%' }} />
+                </div>
 
-            <form onSubmit={handleSubmit} className={styles.form}>
-                <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Datos personales</h3>
-
-                    <TextInput
-                        label="Nombre"
-                        name="firstName"
-                        value={formData.firstName}
-                        onChange={(value) => setFormData({ ...formData, firstName: value })}
-                        error={errors.firstName}
-                        required
+                {/* Badge de paso */}
+                <div className={styles.stepBadge}>
+                    <img
+                        src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
+                        alt="Club Pata Amiga Logo"
+                        className={styles.stepBadgeLogo}
                     />
+                    <div className={styles.stepBadgeText}>PASO 1 DE 2 (FINALIZA TU REGISTRO)</div>
+                    <div className={styles.stepBadgeIcon} aria-hidden="true" />
+                </div>
 
-                    <TextInput
-                        label="Apellido paterno"
-                        name="paternalLastName"
-                        value={formData.paternalLastName}
-                        onChange={(value) => setFormData({ ...formData, paternalLastName: value })}
-                        error={errors.paternalLastName}
-                        required
-                    />
+                <div className={styles.formHeader}>
+                    <h2 className={styles.formTitle}>Completa tu perfil</h2>
+                    <p className={styles.formSubtitle}>
+                        Necesitamos estos datos para activar tu membresía
+                    </p>
+                </div>
 
-                    <TextInput
-                        label="Apellido materno"
-                        name="maternalLastName"
-                        value={formData.maternalLastName}
-                        onChange={(value) => setFormData({ ...formData, maternalLastName: value })}
-                        error={errors.maternalLastName}
-                        required
-                    />
+                <form onSubmit={handleSubmit} className={styles.formBody}>
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Datos personales</h3>
 
-                    <DatePicker
-                        label="Fecha de nacimiento"
-                        name="birthDate"
-                        value={formData.birthDate}
-                        onChange={(value) => {
-                            setFormData({ ...formData, birthDate: value });
-                            if (value) {
-                                const age = calculateAge(value);
-                                if (age < 18) {
-                                    setErrors(prev => ({ ...prev, birthDate: 'Debes ser mayor de 18 años' }));
-                                    showToast('Debes ser mayor de 18 años para registrarte', 'error');
-                                } else {
-                                    setErrors(prev => {
-                                        const newErrors = { ...prev };
-                                        delete newErrors.birthDate;
-                                        return newErrors;
-                                    });
-                                }
-                            }
-                        }}
-                        error={errors.birthDate}
-                        required
-                    />
+                        <TextInput
+                            label="Nombre"
+                            name="firstName"
+                            value={formData.firstName}
+                            onChange={(value) => setFormData({ ...formData, firstName: value })}
+                            error={errors.firstName}
+                            required
+                        />
 
-                    <NationalitySelect
-                        value={formData.nationality}
-                        onChange={(value, code) => setFormData({
-                            ...formData,
-                            nationality: value,
-                            nationalityCode: code
-                        })}
-                        error={errors.nationality}
-                        required
-                    />
+                        <TextInput
+                            label="Apellido paterno"
+                            name="paternalLastName"
+                            value={formData.paternalLastName}
+                            onChange={(value) => setFormData({ ...formData, paternalLastName: value })}
+                            error={errors.paternalLastName}
+                            required
+                        />
 
-                    {formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico' ? (
-                        <div className={styles.curpRow}>
-                            <TextInput
-                                label="CURP"
-                                name="curp"
-                                value={formData.curp}
-                                onChange={(value) => {
-                                    const sanitized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18);
-                                    setFormData({ ...formData, curp: sanitized });
-                                    if (sanitized.length === 18) {
-                                        verifyCurp(sanitized);
+                        <TextInput
+                            label="Apellido materno"
+                            name="maternalLastName"
+                            value={formData.maternalLastName}
+                            onChange={(value) => setFormData({ ...formData, maternalLastName: value })}
+                            error={errors.maternalLastName}
+                            required
+                        />
+
+                        <DatePicker
+                            label="Fecha de nacimiento"
+                            name="birthDate"
+                            value={formData.birthDate}
+                            onChange={(value) => {
+                                setFormData({ ...formData, birthDate: value });
+                                if (value) {
+                                    const age = calculateAge(value);
+                                    if (age < 18) {
+                                        setErrors(prev => ({ ...prev, birthDate: 'Debes ser mayor de 18 años' }));
+                                        showToast('Debes ser mayor de 18 años para registrarte', 'error');
                                     } else {
-                                        setCurpAvailable(null);
-                                        setCurpCount(0);
-                                        if (errors.curp) {
-                                            setErrors(prev => {
-                                                const newErrors = { ...prev };
-                                                delete newErrors.curp;
-                                                return newErrors;
-                                            });
-                                        }
+                                        setErrors(prev => {
+                                            const newErrors = { ...prev };
+                                            delete newErrors.birthDate;
+                                            return newErrors;
+                                        });
                                     }
-                                }}
-                                onBlur={handleCurpBlur}
-                                placeholder="ABCD123456HDFRNN09"
-                                error={errors.curp}
-                                required
-                                maxLength={18}
-                                disabled={isCheckingCurp}
-                            />
-                            {isCheckingCurp && (
-                                <span className={styles.inputIndicator}>Verificando...</span>
-                            )}
-                            {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
-                                <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
-                            )}
-                            {!curpAvailable && curpCount > 0 && formData.curp.length === 18 && !isCheckingCurp && (
-                                <div className={styles.curpWarningMessage}>
-                                    ⚠️ CURP ya registrada en {curpCount === 1 ? 'otra cuenta' : `${curpCount} cuentas`}. 
-                                    Si es tuya, puedes continuar sin problemas.
-                                </div>
-                            )}
-                        </div>
-                    ) : formData.nationality ? (
-                        <div className={styles.passportUploadSection}>
-                            <label className={styles.fieldLabel}>
-                                Pasaporte (Requerido para extranjeros) <span className={styles.required}>*</span>
-                            </label>
-                            <label className={styles.fileUploadLabel}>
-                                <input
-                                    type="file"
-                                    className={styles.fileInput}
-                                    accept="image/*,application/pdf"
-                                    onChange={(e) => {
-                                        const file = e.target.files?.[0];
-                                        if (file) {
-                                            setPassportFile(file);
-                                            if (file.type.startsWith('image/')) {
-                                                setPassportPreview(URL.createObjectURL(file));
-                                            } else {
-                                                setPassportPreview('');
+                                }
+                            }}
+                            error={errors.birthDate}
+                            required
+                        />
+
+                        <NationalitySelect
+                            value={formData.nationality}
+                            onChange={(value, code) => setFormData({
+                                ...formData,
+                                nationality: value,
+                                nationalityCode: code
+                            })}
+                            error={errors.nationality}
+                            required
+                        />
+
+                        {formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico' ? (
+                            <div className={styles.curpRow}>
+                                <TextInput
+                                    label="CURP"
+                                    name="curp"
+                                    value={formData.curp}
+                                    onChange={(value) => {
+                                        const sanitized = value.replace(/[^A-Za-z0-9]/g, '').toUpperCase().slice(0, 18);
+                                        setFormData({ ...formData, curp: sanitized });
+                                        if (sanitized.length === 18) {
+                                            verifyCurp(sanitized);
+                                        } else {
+                                            setCurpAvailable(null);
+                                            setCurpCount(0);
+                                            if (errors.curp) {
+                                                setErrors(prev => {
+                                                    const newErrors = { ...prev };
+                                                    delete newErrors.curp;
+                                                    return newErrors;
+                                                });
                                             }
                                         }
                                     }}
+                                    onBlur={handleCurpBlur}
+                                    placeholder="ABCD123456HDFRNN09"
+                                    error={errors.curp}
+                                    required
+                                    maxLength={18}
+                                    disabled={isCheckingCurp}
                                 />
-                                <div className={`${styles.fileUploadBox} ${errors.passport ? styles.errorBorder : ''}`}>
-                                    {passportPreview ? (
-                                        <div className={styles.previewContainer}>
-                                            <img src={passportPreview} alt="Passport Preview" className={styles.previewImage} />
-                                            <span className={styles.changeLabel}>Cambiar pasaporte</span>
-                                        </div>
-                                    ) : (
-                                        <>
-                                            <span className={styles.fileIcon}>📄</span>
-                                            <span className={styles.uploadText}>
-                                                {passportFile ? passportFile.name : 'Haz clic para subir tu pasaporte'}
-                                            </span>
-                                            <span className={styles.helpText}>JPG, PNG o PDF (Máx. 5MB)</span>
-                                        </>
-                                    )}
-                                </div>
-                            </label>
-                            {errors.passport && <span className={styles.errorText}>{errors.passport}</span>}
-                        </div>
-                    ) : null}
-                </div>
-
-                <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Contacto</h3>
-
-                    <PhoneInput
-                        label="Teléfono"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={(value) => setFormData({ ...formData, phone: value })}
-                        error={errors.phone}
-                        required
-                    />
-
-                    <TextInput
-                        label="Correo electrónico"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(value) => setFormData({ ...formData, email: value })}
-                        error={errors.email}
-                        required
-                        readOnly
-                    />
-                </div>
-
-                <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Dirección</h3>
-
-                    <div className={styles.postalCodeRow}>
-                        <TextInput
-                            label="Código Postal"
-                            name="postalCode"
-                            value={formData.postalCode}
-                            onChange={(value) => {
-                                const cleaned = value.replace(/\D/g, '').slice(0, 5);
-                                setFormData({ ...formData, postalCode: cleaned });
-                                if (cleaned.length === 5) {
-                                    handlePostalCodeQuery(cleaned);
-                                }
-                            }}
-                            onBlur={() => handlePostalCodeQuery()}
-                            error={errors.postalCode}
-                            required
-                            maxLength={5}
-                            disabled={isLoadingCP}
-                        />
-                        {isLoadingCP && (
-                            <span className={styles.cpLoadingIndicator}>Consultando...</span>
-                        )}
+                                {isCheckingCurp && (
+                                    <span className={styles.inputIndicator}>Verificando...</span>
+                                )}
+                                {curpAvailable && formData.curp.length === 18 && !isCheckingCurp && (
+                                    <span className={styles.inputIndicatorSuccess}>✓ Disponible</span>
+                                )}
+                                {!curpAvailable && curpCount > 0 && formData.curp.length === 18 && !isCheckingCurp && (
+                                    <div className={styles.curpWarningMessage}>
+                                        ⚠️ CURP ya registrada en {curpCount === 1 ? 'otra cuenta' : `${curpCount} cuentas`}. 
+                                        Si es tuya, puedes continuar sin problemas.
+                                    </div>
+                                )}
+                            </div>
+                        ) : formData.nationality ? (
+                            <div className={styles.passportUploadSection}>
+                                <label className={styles.fieldLabel}>
+                                    Pasaporte (Requerido para extranjeros) <span className={styles.required}>*</span>
+                                </label>
+                                <label className={styles.fileUploadLabel}>
+                                    <input
+                                        type="file"
+                                        className={styles.fileInput}
+                                        accept="image/*,application/pdf"
+                                        onChange={(e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                setPassportFile(file);
+                                                if (file.type.startsWith('image/')) {
+                                                    setPassportPreview(URL.createObjectURL(file));
+                                                } else {
+                                                    setPassportPreview('');
+                                                }
+                                            }
+                                        }}
+                                    />
+                                    <div className={`${styles.fileUploadBox} ${errors.passport ? styles.errorBorder : ''}`}>
+                                        {passportPreview ? (
+                                            <div className={styles.previewContainer}>
+                                                <img src={passportPreview} alt="Passport Preview" className={styles.previewImage} />
+                                                <span className={styles.changeLabel}>Cambiar pasaporte</span>
+                                            </div>
+                                        ) : (
+                                            <>
+                                                <span className={styles.fileIcon}>📄</span>
+                                                <span className={styles.uploadText}>
+                                                    {passportFile ? passportFile.name : 'Haz clic para subir tu pasaporte'}
+                                                </span>
+                                                <span className={styles.helpText}>JPG, PNG o PDF (Máx. 5MB)</span>
+                                            </>
+                                        )}
+                                    </div>
+                                </label>
+                                {errors.passport && <span className={styles.errorText}>{errors.passport}</span>}
+                            </div>
+                        ) : null}
                     </div>
 
-                    <TextInput
-                        label="Estado"
-                        name="state"
-                        value={formData.state}
-                        readOnly
-                    />
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Contacto</h3>
 
-                    <TextInput
-                        label="Municipio/Alcaldía"
-                        name="city"
-                        value={formData.city}
-                        onChange={(value) => setFormData({ ...formData, city: value })}
-                        error={errors.city}
-                        required
-                    />
+                        <PhoneInput
+                            label="Teléfono"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={(value) => setFormData({ ...formData, phone: value })}
+                            error={errors.phone}
+                            required
+                        />
 
-                    <ColonyAutocomplete
-                        label="Colonia"
-                        name="colony"
-                        value={formData.colony}
-                        suggestions={colonySuggestions}
-                        onChange={(value) => setFormData({ ...formData, colony: value })}
-                        error={errors.colony}
-                        required
-                        isLoading={isLoadingCP}
-                    />
+                        <TextInput
+                            label="Correo electrónico"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(value) => setFormData({ ...formData, email: value })}
+                            error={errors.email}
+                            required
+                            readOnly
+                        />
+                    </div>
 
-                </div>
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Dirección</h3>
 
-                <button
-                    type="submit"
-                    className={styles.primaryButton}
-                    disabled={isLoading}
-                >
-                    {isLoading ? 'Guardando...' : 'Continuar →'}
-                </button>
-            </form>
+                        <div className={styles.postalCodeRow}>
+                            <TextInput
+                                label="Código Postal"
+                                name="postalCode"
+                                value={formData.postalCode}
+                                onChange={(value) => {
+                                    const cleaned = value.replace(/\D/g, '').slice(0, 5);
+                                    setFormData({ ...formData, postalCode: cleaned });
+                                    if (cleaned.length === 5) {
+                                        handlePostalCodeQuery(cleaned);
+                                    }
+                                }}
+                                onBlur={() => handlePostalCodeQuery()}
+                                error={errors.postalCode}
+                                required
+                                maxLength={5}
+                                disabled={isLoadingCP}
+                            />
+                            {isLoadingCP && (
+                                <span className={styles.cpLoadingIndicator}>Consultando...</span>
+                            )}
+                        </div>
+
+                        <TextInput
+                            label="Estado"
+                            name="state"
+                            value={formData.state}
+                            readOnly
+                        />
+
+                        <TextInput
+                            label="Municipio/Alcaldía"
+                            name="city"
+                            value={formData.city}
+                            onChange={(value) => setFormData({ ...formData, city: value })}
+                            error={errors.city}
+                            required
+                        />
+
+                        <ColonyAutocomplete
+                            label="Colonia"
+                            name="colony"
+                            value={formData.colony}
+                            suggestions={colonySuggestions}
+                            onChange={(value) => setFormData({ ...formData, colony: value })}
+                            error={errors.colony}
+                            required
+                            isLoading={isLoadingCP}
+                        />
+                    </div>
+
+                    <button
+                        type="submit"
+                        className={styles.primaryButton}
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Guardando...' : 'Continuar →'}
+                    </button>
+                </form>
+            </div>
         </div>
     );
 }

@@ -5,9 +5,16 @@
 
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import TermsModalEnhanced from '../TermsModalEnhanced';
-import styles from './steps.module.css';
+import styles from './Step3PlanSelection.module.css';
+
+// Reusable SVG Components for branding
+const CheckIcon = () => (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12" />
+    </svg>
+);
 
 // Planes disponibles
 const PLANS = [
@@ -60,10 +67,6 @@ interface Step3PlanSelectionProps {
     isRecovery?: boolean;
 }
 
-// Add the import dynamically or using top-level if needed. Since this is a client component, 
-// we can just import the Server Action cleanly at the top if we wanted, but let's dynamically import
-// it inside the handler to avoid adding static dependencies if they aren't strictly needed immediately.
-
 export default function Step3PlanSelection({
     data,
     member,
@@ -77,9 +80,9 @@ export default function Step3PlanSelection({
     const [selectedPlan, setSelectedPlan] = useState<string>('');
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
-    const [showValidationHint, setShowValidationHint] = useState(false); // 🔥 Efecto de vibración
+    const [showValidationHint, setShowValidationHint] = useState(false);
 
-    // Estados de aceptación (guardados cuando se cierra el modal)
+    // Estados de aceptación
     const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
 
     // Estados de código de referido
@@ -89,7 +92,7 @@ export default function Step3PlanSelection({
     const [ambassadorName, setAmbassadorName] = useState('');
     const [isCodeValidated, setIsCodeValidated] = useState(false);
 
-    // Mostrar resumen de mascota
+    // Resumen de mascota
     const petName = data?.petBasic?.petName || 'tu mascota';
     const petType = data?.petBasic?.petType === 'gato' ? 'gato' : 'perro';
 
@@ -97,33 +100,27 @@ export default function Step3PlanSelection({
         setSelectedPlan(planId);
     };
 
-    // Aceptar todos los términos automáticamente (sin abrir modal)
     const handleAcceptAllTerms = () => {
-
         const allAccepted: TermsAcceptance = {
             termsAndConditions: true,
             privacyPolicy: true,
             marketingConsent: true,
             clickwrap: true
         };
-
         setTermsAccepted(allAccepted);
         localStorage.setItem('registration_terms_acceptance', JSON.stringify({
             ...allAccepted,
             timestamp: new Date().toISOString()
         }));
-
         showToast('Términos aceptados. Puedes revisarlos haciendo clic en "Ver términos".', 'success');
     };
 
-    // Abrir modal solo para ver términos
     const handleViewTerms = () => {
         setShowTermsModal(true);
     };
 
     const handleTermsClose = (accepted: boolean, acceptance: TermsAcceptance) => {
         setShowTermsModal(false);
-        // Si cerró el modal aceptando (o ya estaba aceptado), mantener/guardar
         if (accepted) {
             setTermsAccepted(acceptance);
             localStorage.setItem('registration_terms_acceptance', JSON.stringify({
@@ -133,40 +130,33 @@ export default function Step3PlanSelection({
         }
     };
 
-    // Cargar código de referido desde Memberstack si existe
+    // Cargar código de referido
     useEffect(() => {
         const savedCode = member?.customFields?.['ambassador-code'];
         if (savedCode && !referralCode) {
-            console.log('🎟️ Cargando código de embajador persistido:', savedCode);
             setReferralCode(savedCode);
-            // La validación se disparará por el useEffect de referralCode
         }
     }, [member]);
 
-    // Validación automática con debounce (estilo CURP)
+    // Validación automática de código
     useEffect(() => {
-        // Efecto para auto-validación de código de referido
         const handler = setTimeout(() => {
             if (referralCode.trim().length >= 3) {
                 validateCode(referralCode.trim());
-            } else if (referralCode.trim().length > 0 && referralCode.trim().length < 3) {
-                // No validamos aún, pero limpiamos estados si estaba validado
+            } else if (referralCode.trim().length > 0) {
                 setIsCodeValidated(false);
                 setReferralError('El código debe tener al menos 3 caracteres');
             } else {
                 setReferralError('');
                 setAmbassadorName('');
                 setIsCodeValidated(false);
-                
-                // Si el usuario borra el código, también lo limpiamos en Memberstack
                 if (member?.customFields?.['ambassador-code']) {
-                    window.$memberstackDom?.updateMember({
+                    (window as any).$memberstackDom?.updateMember({
                         customFields: { 'ambassador-code': '' }
                     });
                 }
             }
-        }, 600); // 600ms de calma antes de validar
-
+        }, 600);
         return () => clearTimeout(handler);
     }, [referralCode]);
 
@@ -175,34 +165,22 @@ export default function Step3PlanSelection({
         setReferralError('');
         setAmbassadorName('');
         setIsCodeValidated(false);
-
         try {
             const response = await fetch(`/api/referrals/validate-code?code=${code.toUpperCase()}`);
             const result = await response.json();
-
             if (result.success && result.valid) {
                 setAmbassadorName(result.ambassador_name);
                 setIsCodeValidated(true);
-                
-                // 🔥 Persistir en Memberstack para que se mantenga si recarga o regresa
-                if (window.$memberstackDom) {
-                    window.$memberstackDom.updateMember({
+                if ((window as any).$memberstackDom) {
+                    (window as any).$memberstackDom.updateMember({
                         customFields: { 'ambassador-code': code.toUpperCase() }
                     });
                 }
             } else {
-                setReferralError(result.message || 'Ese código no es válido/no existe');
+                setReferralError(result.message || 'Ese código no es válido');
                 setIsCodeValidated(false);
-                
-                // Si el código es inválido, asegurarnos de que no esté guardado
-                if (window.$memberstackDom && member?.customFields?.['ambassador-code']) {
-                    window.$memberstackDom.updateMember({
-                        customFields: { 'ambassador-code': '' }
-                    });
-                }
             }
         } catch (error) {
-            console.error('Error validating code:', error);
             setReferralError('Error al validar el código');
         } finally {
             setIsValidating(false);
@@ -210,287 +188,240 @@ export default function Step3PlanSelection({
     };
 
     const handleContinue = async () => {
-        console.log('🔘 Clic en Continuar. Plan:', selectedPlan, 'Términos:', !!termsAccepted);
-
         if (!selectedPlan) {
-            console.warn('❌ Intento de pago sin plan seleccionado');
-            showToast('⚠️ ¡No te quedes sin plan! Elige mensualidad o anualidad para continuar.', 'error');
-            
-            // Activar efecto visual de advertencia
+            showToast('⚠️ ¡No te quedes sin plan! Elige uno para continuar.', 'error');
             setShowValidationHint(true);
             setTimeout(() => setShowValidationHint(false), 800);
             return;
         }
-
         if (!termsAccepted) {
-            console.warn('❌ Intento de pago sin aceptar términos');
-            showToast('⚠️ Debes aceptar los términos y condiciones para continuar.', 'error');
+            showToast('⚠️ Debes aceptar los términos y condiciones.', 'error');
             setShowValidationHint(true);
             setTimeout(() => setShowValidationHint(false), 800);
             return;
         }
 
         setIsProcessing(true);
-
         try {
-            // Notificar CRM (Carrito Abandonado)
             const memberId = data?.member?.id || member?.id || member?.memberId;
             if (memberId) {
-                // Importamos dinámicamente el Server Action
                 const { notifyCheckoutAbandonedToCRM } = await import('@/app/actions/user.actions');
                 const recoveryUrl = `${window.location.origin}/seleccion-plan?recuperar=1`;
-                
-                // Disparamos sin await (fire-and-forget) o con await rápido para no bloquear
-                notifyCheckoutAbandonedToCRM(memberId, recoveryUrl).catch(err => {
-                    console.error('⚠️ [CRM] Error enviando etiqueta de carrito abandonado:', err);
-                });
+                notifyCheckoutAbandonedToCRM(memberId, recoveryUrl).catch(() => {});
             }
-        } catch (e) {
-            console.warn('⚠️ No se pudo notificar carrito abandonado al CRM', e);
-        }
+        } catch (e) {}
 
         await onNext(selectedPlan, termsAccepted, isCodeValidated ? referralCode.toUpperCase() : undefined);
         setIsProcessing(false);
     };
 
-    // Cargar aceptación guardada al montar
     useEffect(() => {
         const saved = localStorage.getItem('registration_terms_acceptance');
         if (saved) {
             try {
                 const parsed = JSON.parse(saved);
-                // Verificar que no sea muy viejo (24 horas)
                 const timestamp = new Date(parsed.timestamp);
                 const hoursDiff = (Date.now() - timestamp.getTime()) / (1000 * 60 * 60);
-
-                if (hoursDiff < 24) {
-                    setTermsAccepted(parsed);
-                }
-            } catch (e) {
-                console.error('Error parsing saved terms:', e);
-            }
+                if (hoursDiff < 24) setTermsAccepted(parsed);
+            } catch (e) {}
         }
     }, []);
 
     return (
-        <div className={styles.stepCard}>
-            <div className={styles.header}>
-                <h2 className={styles.title}>
-                    {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu plan'}
-                </h2>
-                <p className={styles.subtitle}>
-                    Protegiendo a <strong>{petName}</strong> ({petType})
-                </p>
-            </div>
+        <>
+            <div className={styles.pageBackground} />
+            <div className={styles.containerCenter}>
+                <div className={styles.formCard}>
+                    {/* Barra de Progreso Interna */}
+                    <div className={styles.topProgressBar}>
+                        <div className={styles.topProgressBarFill} style={{ width: '100%' }} />
+                    </div>
 
-            {isRecovery && (
-                <div className={styles.recoveryAlert}>
-                    <span style={{ fontSize: '1.5rem' }}>👋</span>
-                    <p className={styles.recoveryAlertText}>
-                        <strong>¡Hola de nuevo!</strong> Vimos que aún no has completado el pago de tu membresía. 
-                        Selecciona un plan para activar todos los beneficios de la manada.
-                    </p>
-                </div>
-            )}
+                    <div className={styles.stepBadge}>
+                        <img 
+                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png" 
+                            alt="Club Pata Amiga Logo" 
+                            className={styles.stepBadgeLogo} 
+                        />
+                        <div className={styles.stepBadgeText}>PASO 3 DE 3</div>
+                        <div className={styles.stepBadgeIcon} aria-hidden="true" />
+                    </div>
 
-            <div className={`${styles.plansContainer} ${showValidationHint && !selectedPlan ? styles.shake : ''}`}>
-                {PLANS.map((plan) => (
-                    <div
-                        key={plan.id}
-                        className={`${styles.planCard} ${selectedPlan === plan.id ? styles.selected : ''} ${plan.popular ? styles.popular : ''}`}
-                        onClick={() => handleSelectPlan(plan.id)}
-                    >
-                        {plan.popular && (
-                            <span className={styles.popularBadge}>Más popular</span>
-                        )}
+                    <div className={styles.formHeader}>
+                        <h2 className={styles.formTitle}>
+                            {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu plan'}
+                        </h2>
+                        <p className={styles.formSubtitle}>
+                            Protegiendo a <strong>{petName}</strong> ({petType})
+                        </p>
+                    </div>
 
-                        <h3 className={styles.planName}>{plan.name}</h3>
-                        <p className={styles.planDescription}>{plan.description}</p>
+                    <div className={styles.formBody}>
+                        <div className={`${styles.plansContainer} ${showValidationHint && !selectedPlan ? styles.shake : ''}`}>
+                            {PLANS.map((plan) => (
+                                <div
+                                    key={plan.id}
+                                    className={`${styles.planCard} ${selectedPlan === plan.id ? styles.selected : ''} ${plan.popular ? styles.popular : ''}`}
+                                    onClick={() => handleSelectPlan(plan.id)}
+                                >
+                                    {plan.popular && (
+                                        <span className={styles.popularBadge}>Más popular</span>
+                                    )}
 
-                        <div className={styles.priceRow}>
-                            <span className={styles.price}>{plan.priceDisplay}</span>
-                            <span className={styles.period}>
-                                {plan.name === 'Mensual' ? '/mes' : '/año'}
-                            </span>
-                        </div>
+                                    <h3 className={styles.planName}>{plan.name}</h3>
+                                    <p className={styles.planDescription}>{plan.description}</p>
 
-                        <ul className={styles.featuresList}>
-                            {plan.features.map((feature, idx) => (
-                                <li key={idx} className={styles.feature}>
-                                    <span className={styles.check}>✓</span>
-                                    {feature}
-                                </li>
+                                    <div className={styles.priceRow}>
+                                        <span className={styles.price}>{plan.priceDisplay}</span>
+                                        <span className={styles.period}>
+                                            {plan.name === 'Mensual' ? '/mes' : '/año'}
+                                        </span>
+                                    </div>
+
+                                    <ul className={styles.featuresList}>
+                                        {plan.features.map((feature, idx) => (
+                                            <li key={idx} className={styles.feature}>
+                                                <span className={styles.check}>✓</span>
+                                                {feature}
+                                            </li>
+                                        ))}
+                                    </ul>
+
+                                    <button
+                                        type="button"
+                                        className={`${styles.selectPlanButton} ${selectedPlan === plan.id ? styles.selectedButton : ''}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleSelectPlan(plan.id);
+                                        }}
+                                    >
+                                        {selectedPlan === plan.id ? 'Seleccionado ✓' : 'Seleccionar'}
+                                    </button>
+                                </div>
                             ))}
-                        </ul>
-
-                        <button
-                            type="button"
-                            className={`${styles.selectPlanButton} ${selectedPlan === plan.id ? styles.selectedButton : ''}`}
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleSelectPlan(plan.id);
-                            }}
-                        >
-                            {selectedPlan === plan.id ? 'Seleccionado ✓' : 'Seleccionar'}
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            {/* Sección de Código de Referido / Embajador */}
-            <div className={styles.referralSection}>
-                <label className={styles.referralLabel}>
-                    🎟️ ¿Tienes un código de Embajador?
-                </label>
-                <div className={styles.referralInputWrapper}>
-                    <input
-                        type="text"
-                        className={`${styles.referralInput} ${isCodeValidated ? styles.inputValid :
-                            referralError ? styles.inputInvalid : ''
-                            }`}
-                        placeholder="INGRESA TU CÓDIGO"
-                        value={referralCode}
-                        onChange={(e) => {
-                            const val = e.target.value.toUpperCase();
-                            setReferralCode(val);
-                            if (referralError) setReferralError('');
-                            if (isCodeValidated) setIsCodeValidated(false);
-                        }}
-                        disabled={isProcessing}
-                    />
-                    {isValidating && (
-                        <div className={styles.referralLoading}>
-                            <div className={styles.spinnerSmall}></div>
                         </div>
-                    )}
-                </div>
 
-                {isCodeValidated && (
-                    <div className={styles.referralSuccess}>
-                        <span>✨</span>
-                        <span>
-                            ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>! 
-                            <br />
-                            <small>Tu beneficio de 90 días de carencia ha sido aplicado.</small>
-                        </span>
+                        {/* Referral Section */}
+                        <div className={styles.referralSection}>
+                            <label className={styles.referralLabel}>
+                                🎟️ ¿Tienes un código de Embajador?
+                            </label>
+                            <div className={styles.referralInputWrapper}>
+                                <input
+                                    type="text"
+                                    className={`${styles.referralInput} ${isCodeValidated ? styles.inputValid : referralError ? styles.inputInvalid : ''}`}
+                                    placeholder="INGRESA TU CÓDIGO"
+                                    value={referralCode}
+                                    onChange={(e) => {
+                                        const val = e.target.value.toUpperCase();
+                                        setReferralCode(val);
+                                        if (referralError) setReferralError('');
+                                        if (isCodeValidated) setIsCodeValidated(false);
+                                    }}
+                                    disabled={isProcessing}
+                                />
+                                {isValidating && (
+                                    <div className={styles.referralLoading}>
+                                        <div className={styles.spinnerSmall}></div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {isCodeValidated && (
+                                <div className={styles.referralSuccess}>
+                                    <span>✨</span>
+                                    <span>
+                                        ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>! 
+                                        <br />
+                                        <small>Tu beneficio de 90 días de carencia ha sido aplicado.</small>
+                                    </span>
+                                </div>
+                            )}
+                            {referralError && (
+                                <span className={styles.referralError}>❌ {referralError}</span>
+                            )}
+                        </div>
+
+                        {/* Checkbox único de términos */}
+                        <div className={styles.termsSection}>
+                            <label className={styles.termsCheckboxLabel}>
+                                <input
+                                    type="checkbox"
+                                    checked={!!termsAccepted}
+                                    onChange={() => {
+                                        if (!termsAccepted) {
+                                            handleAcceptAllTerms();
+                                        } else {
+                                            setTermsAccepted(null);
+                                            localStorage.removeItem('registration_terms_acceptance');
+                                        }
+                                    }}
+                                />
+                                <span className={styles.termsText}>
+                                    <strong>He leído y acepto todos los términos</strong>
+                                    <button
+                                        type="button"
+                                        className={styles.viewTermsLink}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleViewTerms();
+                                        }}
+                                    >
+                                        Ver términos y condiciones
+                                    </button>
+                                </span>
+                            </label>
+                        </div>
+
+                        <div className={styles.buttonRow}>
+                            <button
+                                type="button"
+                                className={styles.secondaryButton}
+                                onClick={onBack}
+                                disabled={isProcessing}
+                            >
+                                ← Atrás
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.primaryButton}
+                                onClick={handleContinue}
+                                disabled={isProcessing}
+                            >
+                                {isProcessing ? 'Procesando...' : 'Continuar al pago →'}
+                            </button>
+                        </div>
+
+                        <p className={styles.securityNote}>
+                            🔒 Pago seguro procesado por Stripe. 🐾
+                        </p>
+
+                        <div className={styles.transparencyBox}>
+                            <p className={styles.transparencyText}>
+                                ✨ Transparencia Total: Cancela tu suscripción cuando quieras sin complicaciones.
+                            </p>
+                        </div>
+
+                        {skipPaymentEnabled && (
+                            <button
+                                type="button"
+                                className={styles.secondaryButton}
+                                style={{ marginTop: '1rem', background: 'transparent !important', color: '#E65100 !important', borderStyle: 'dashed' }}
+                                onClick={() => {
+                                    if (!selectedPlan || !termsAccepted) {
+                                        showToast('Selecciona un plan y acepta los términos primero', 'warning');
+                                        return;
+                                    }
+                                    onSkipPayment?.(selectedPlan, termsAccepted);
+                                }}
+                                disabled={isProcessing}
+                            >
+                                Omitir pago (Test)
+                            </button>
+                        )}
                     </div>
-                )}
-                {referralError && (
-                    <span className={styles.referralError}>❌ {referralError}</span>
-                )}
-            </div>
-
-            {/* Checkbox único de términos */}
-            <div className={styles.termsSection}>
-                <label className={styles.termsCheckboxLabel}>
-                    <input
-                        type="checkbox"
-                        checked={!!termsAccepted}
-                        onChange={() => {
-                            if (!termsAccepted) {
-                                // Click en checkbox: acepta todo automáticamente
-                                handleAcceptAllTerms();
-                            } else {
-                                // Desmarcar: limpia aceptación
-                                setTermsAccepted(null);
-                                localStorage.removeItem('registration_terms_acceptance');
-                            }
-                        }}
-                    />
-                    <span className={styles.checkmark}></span>
-                    <span className={styles.termsText}>
-                        <strong>He leído y acepto todos los términos</strong>
-                        <span className={styles.required}>*</span>
-                        <button
-                            type="button"
-                            className={styles.viewTermsLink}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleViewTerms();
-                            }}
-                        >
-                            Ver términos y condiciones
-                        </button>
-                    </span>
-                </label>
-            </div>
-
-            <div className={styles.buttonRow}>
-                <button
-                    type="button"
-                    className={styles.secondaryButton}
-                    onClick={onBack}
-                    disabled={isProcessing}
-                >
-                    ← Atrás
-                </button>
-                <button
-                    type="button"
-                    className={styles.primaryButton}
-                    onClick={handleContinue}
-                    disabled={isProcessing}
-                >
-                    {isProcessing ? 'Procesando...' : 'Continuar al pago →'}
-                </button>
-            </div>
-
-            <p className={styles.securityNote}>
-                🔒 Pago seguro procesado por Stripe. <strong>Recuerda que puedes cancelar tu membresía en cualquier momento.</strong> 🐾
-            </p>
-
-            <div style={{
-                marginTop: '1.5rem',
-                textAlign: 'center',
-                backgroundColor: '#F7FAFC',
-                padding: '1.5rem',
-                borderRadius: '20px',
-                border: '2px dashed #7DD8D5',
-                marginBottom: '1rem'
-            }}>
-                <p style={{
-                    color: '#2D3748',
-                    fontSize: '1rem',
-                    fontWeight: '700',
-                    margin: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '10px'
-                }}>
-                    <span style={{ fontSize: '1.4rem' }}>✨</span>
-                    Transparencia Total: Cancela tu suscripción cuando quieras sin complicaciones.
-                </p>
-            </div>
-
-            {skipPaymentEnabled && (
-                <div style={{
-                    marginTop: '2rem',
-                    padding: '1.5rem',
-                    background: '#FFF3E0',
-                    borderRadius: 12,
-                    border: '1px solid #FFB74D',
-                    textAlign: 'center'
-                }}>
-                    <p style={{ color: '#E65100', fontWeight: 600, marginBottom: '1rem', fontSize: '0.9rem' }}>
-                        ⚠️ Modo de Prueba Activo
-                    </p>
-                    <button
-                        type="button"
-                        className={styles.secondaryButton}
-                        style={{ width: '100%', borderColor: '#FFB74D', color: '#E65100' }}
-                        onClick={() => {
-                            if (!selectedPlan || !termsAccepted) {
-                                showToast('Selecciona un plan y acepta los términos primero', 'warning');
-                                return;
-                            }
-                            onSkipPayment?.(selectedPlan, termsAccepted);
-                        }}
-                        disabled={isProcessing}
-                    >
-                        Omitir pago y continuar (Solo Test)
-                    </button>
                 </div>
-            )}
+            </div>
 
             {/* Modal de términos mejorado */}
             <TermsModalEnhanced
@@ -498,6 +429,6 @@ export default function Step3PlanSelection({
                 onClose={handleTermsClose}
                 initialAcceptance={termsAccepted || undefined}
             />
-        </div>
+        </>
     );
 }

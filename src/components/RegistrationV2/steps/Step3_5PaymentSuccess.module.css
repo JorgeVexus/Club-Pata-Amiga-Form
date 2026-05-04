@@ -1,0 +1,125 @@
+.containerCenter {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.pageBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777421115/Background_Manada_opac_f3g0p9.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.formCard {
+    width: 100%;
+    max-width: 500px;
+    background: #FFFFFF;
+    border: 3px solid #000000;
+    border-radius: 48px;
+    padding: 3rem 2rem;
+    box-shadow: 12px 12px 0px #000000;
+    position: relative;
+    z-index: 1;
+    animation: fadeInScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    text-align: center;
+}
+
+.successIconContainer {
+    width: 100px;
+    height: 100px;
+    background: #7DD8D5;
+    border: 2px solid #000000;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 2rem;
+    box-shadow: 4px 4px 0px #000000;
+}
+
+.successIconContainer img {
+    width: 60px;
+    height: auto;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.title {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 2.25rem;
+    color: #000000;
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.125rem;
+    color: #4A5568;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+}
+
+.loaderWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(0, 187, 180, 0.1);
+    border-left-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.waitMessage {
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    color: #718096;
+    font-weight: 500;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@media (max-width: 480px) {
+    .formCard {
+        padding: 2.5rem 1.5rem;
+        border-radius: 40px;
+    }
+    
+    .title {
+        font-size: 1.85rem;
+    }
+}

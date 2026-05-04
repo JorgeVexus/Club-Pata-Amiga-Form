@@ -1,0 +1,311 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    gap: 2rem;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1;
+}
+
+@media (min-width: 1024px) {
+    .container {
+        padding: 4rem 2rem;
+    }
+}
+
+.mainContent {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+}
+
+.formCard {
+    width: 100%;
+    max-width: 550px;
+    background: var(--color-white);
+    box-shadow: 4px 4px 0px var(--color-black);
+    overflow: hidden;
+    border-radius: 48px;
+    border: 2px solid var(--color-black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 39px;
+    padding-bottom: 40px;
+    position: relative;
+    animation: fadeInScale 0.6s var(--ease-out-expo) 0.4s both;
+}
+
+.formCard::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695595/manada-min_uegzj6.webp');
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: clamp(200px, 40%, 300px) auto;
+    opacity: 0.2;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.stepBadge {
+    width: 100%;
+    max-width: 389px;
+    height: 60px;
+    background: var(--color-primary);
+    border-radius: 32px;
+    border: 2px var(--color-black) solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    position: relative;
+    z-index: 1;
+}
+
+.stepBadgeLogo {
+    width: 71px;
+    height: 39px;
+    object-fit: contain;
+}
+
+.stepBadgeText {
+    color: var(--color-white);
+    font-size: 14px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+}
+
+.stepBadgeIcon {
+    width: 20px;
+    height: 19px;
+    background: var(--color-white);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M22 11.08V12a10 10 0 1 1-5.93-9.14'%3E%3C/path%3E%3Cpolyline points='22 4 12 14.01 9 11.01'%3E%3C/polyline%3E%3C/svg%3E");
+    mask-size: contain;
+}
+
+.formHeader {
+    align-self: stretch;
+    padding: 0 34px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.successIcon {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.formTitle {
+    font-family: var(--font-heading);
+    font-size: 35.2px;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+}
+
+.formSubtitle {
+    font-size: 1.25rem;
+    color: var(--color-black);
+    font-family: var(--font-body);
+    font-weight: 600;
+    text-align: center;
+}
+
+.formDescription {
+    font-size: 1rem;
+    color: #64748B;
+    font-family: var(--font-body);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.formBody {
+    align-self: stretch;
+    padding: 0 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.noticeBox {
+    padding: 1.5rem;
+    background-color: #E6FFFA;
+    border-radius: 20px;
+    border: 2px solid var(--color-primary);
+    color: #2C7A7B;
+    font-weight: 600;
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    line-height: 1.5;
+}
+
+.billingSection {
+    padding: 1.5rem;
+    background: #F8FAFC;
+    border-radius: 24px;
+    border: 2px solid var(--color-black);
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.billingLabel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--color-black);
+    font-size: 1rem;
+}
+
+.billingCheckbox {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    accent-color: var(--color-primary);
+}
+
+.billingDescription {
+    font-size: 0.85rem;
+    color: #64748B;
+    margin-left: 36px;
+    font-family: var(--font-body);
+}
+
+.buttonColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.primaryButton {
+    background: var(--color-action-orange);
+    color: var(--color-white);
+    border: 2px solid var(--color-black);
+    border-radius: 9999px;
+    padding: 18px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out-expo);
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+}
+
+.primaryButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 4px 4px 0px var(--color-black);
+}
+
+.secondaryButton {
+    background: transparent;
+    color: #64748B;
+    border: 2px solid #CBD5E0;
+    border-radius: 9999px;
+    padding: 14px;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s var(--ease-out-expo);
+    width: 100%;
+}
+
+.secondaryButton:hover {
+    border-color: var(--color-black);
+    color: var(--color-black);
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.whatsappSection {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: #F0FFF4;
+    border-radius: 20px;
+    border: 2px dashed #68D391;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+.whatsappText {
+    margin: 0;
+    font-size: 0.95rem;
+    color: #2F855A;
+    font-family: var(--font-body);
+    font-weight: 500;
+}
+
+.whatsappLink {
+    color: #25D366;
+    font-weight: 700;
+    text-decoration: none;
+    border-bottom: 2px solid #25D366;
+    padding-bottom: 1px;
+    transition: all 0.2s ease;
+}
+
+.whatsappLink:hover {
+    color: #128C7E;
+    border-color: #128C7E;
+}
+
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes bounceIn {
+    0% { transform: scale(0.3); opacity: 0; }
+    50% { transform: scale(1.05); opacity: 1; }
+    70% { transform: scale(0.9); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 640px) {
+    .formCard {
+        border-radius: 24px;
+        gap: 24px;
+    }
+    
+    .formHeader, .formBody {
+        padding: 0 20px;
+    }
+    
+    .formTitle {
+        font-size: 28px;
+    }
+}

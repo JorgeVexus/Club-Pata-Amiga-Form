@@ -1,7 +1,5 @@
-'use client';
-
 import React, { useEffect } from 'react';
-import styles from './steps.module.css';
+import styles from './Step3_5PaymentSuccess.module.css';
 
 interface Step3_5PaymentSuccessProps {
     onNext: () => void;
@@ -11,32 +9,34 @@ export default function Step3_5PaymentSuccess({ onNext }: Step3_5PaymentSuccessP
     useEffect(() => {
         const timer = setTimeout(() => {
             onNext();
-        }, 4500); // Aumentado a 4.5s para mejorar la legibilidad tras el pago
+        }, 5000); // 5 segundos para que disfruten el éxito
 
         return () => clearTimeout(timer);
     }, [onNext]);
 
     return (
-        <div className={styles.successTransitionContainer}>
-            <h2 className={styles.successTitle}>¡Todo salió perfecto!</h2>
-            <p className={styles.successSubtitle}>Tu pago se realizó correctamente.</p>
-
-            <div className={styles.brandLogoContainer}>
-                <div className={styles.petCircleIcon}>
+        <div className={styles.containerCenter}>
+            <div className={styles.pageBackground} />
+            
+            <div className={styles.formCard}>
+                <div className={styles.successIconContainer}>
                     <img
                         src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1773784834/logo_pata_amiga_negro_jalukg.webp"
                         alt="Pata Amiga Logo"
                     />
                 </div>
-            </div>
 
-            <div className={styles.waitMessageContainer}>
-                <h3 className={styles.waitTitle}>
-                    ¡Estamos a un paso de cuidar a tu peludito!
-                </h3>
-                <p className={styles.waitDetail}>
-                    Completa el siguiente formulario para registrar a tu peludo y empezar a darle el cuidado y la atención que merece. 🐶🐱💛
+                <h2 className={styles.title}>¡Todo salió perfecto!</h2>
+                <p className={styles.subtitle}>
+                    Tu suscripción se ha activado correctamente. ¡Estamos muy felices de tenerte en la manada!
                 </p>
+
+                <div className={styles.loaderWrapper}>
+                    <div className={styles.spinner} />
+                    <p className={styles.waitMessage}>
+                        Estamos preparando tu perfil de socio...
+                    </p>
+                </div>
             </div>
         </div>
     );

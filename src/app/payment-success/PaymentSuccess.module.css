@@ -1,0 +1,76 @@
+.containerCenter {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1rem;
+    position: relative;
+    overflow: hidden;
+    background: #f8fafc;
+}
+
+.pageBackground {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777421115/Background_Manada_opac_f3g0p9.png');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.formCard {
+    width: 100%;
+    max-width: 450px;
+    background: #FFFFFF;
+    border: 3px solid #000000;
+    border-radius: 40px;
+    padding: 3.5rem 2rem;
+    box-shadow: 12px 12px 0px #000000;
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    animation: slideUp 0.5s ease-out;
+}
+
+.icon {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    display: block;
+}
+
+.title {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 2rem;
+    color: #000000;
+    margin-bottom: 1rem;
+}
+
+.subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.1rem;
+    color: #4A5568;
+    margin-bottom: 2rem;
+}
+
+.loader {
+    width: 30px;
+    height: 30px;
+    border: 3px solid #E2E8F0;
+    border-top-color: #00BBB4;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}

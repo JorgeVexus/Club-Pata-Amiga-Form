@@ -1,39 +1,30 @@
 'use client';
 
 import { useEffect } from 'react';
+import styles from './PaymentSuccess.module.css';
 
 export default function PaymentSuccessRedirect() {
     useEffect(() => {
-        // Redirigir de vuelta al flujo de registro con el parámetro de éxito
-        // Añadimos un pequeño delay de 1.5s para que el usuario pueda ver el mensaje de éxito
+        // Redirigir de vuelta al flujo de registro con el parÃ¡metro de Ã©xito
         const timer = setTimeout(() => {
             window.location.href = '/registro?payment=success';
-        }, 1500);
+        }, 2000);
 
         return () => clearTimeout(timer);
     }, []);
 
     return (
-        <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            height: '100vh',
-            fontFamily: "'Outfit', sans-serif",
-            background: '#f5f5f5',
-        }}>
-            <div style={{
-                textAlign: 'center',
-                background: 'white',
-                padding: '3rem',
-                borderRadius: '24px',
-                boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            }}>
-                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎉</div>
-                <h1 style={{ fontSize: '1.5rem', color: '#333', marginBottom: '0.5rem' }}>
-                    ¡Pago exitoso!
-                </h1>
-                <p style={{ color: '#888' }}>Redirigiendo para completar tu registro...</p>
+        <div className={styles.containerCenter}>
+            <div className={styles.pageBackground} />
+            
+            <div className={styles.formCard}>
+                <span className={styles.icon}>🎉</span>
+                <h1 className={styles.title}>¡Pago Exitoso!</h1>
+                <p className={styles.subtitle}>
+                    Estamos procesando tu suscripción. En unos segundos volverás para completar tu perfil.
+                </p>
+                
+                <div className={styles.loader} />
             </div>
         </div>
     );

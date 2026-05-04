@@ -1,0 +1,404 @@
+/* Step4CompleteProfile.module.css */
+
+.containerCenter {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 100px);
+    position: relative;
+    z-index: 10;
+}
+
+.pageBackground {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777696967/LetraApalo_3_bjsdfo.png');
+    background-size: 50vw;
+    background-repeat: no-repeat;
+    background-position: right center;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.formCard {
+    width: 100%;
+    background: var(--color-white);
+    box-shadow: 12px 12px 0px var(--color-black);
+    overflow: hidden;
+    border-radius: 48px;
+    border: 3px solid var(--color-black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    padding-bottom: 48px;
+    position: relative;
+    animation: fadeInScale 0.6s var(--ease-out-expo) both;
+}
+
+.formCard::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695595/manada-min_uegzj6.webp');
+    background-repeat: no-repeat;
+    background-position: bottom center;
+    background-size: clamp(200px, 30%, 250px) auto;
+    opacity: 0.1;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.topProgressBar {
+    align-self: stretch;
+    height: 16px;
+    background: #E2E8F0;
+    border-bottom: 3px var(--color-black) solid;
+    position: relative;
+    z-index: 1;
+}
+
+.topProgressBarFill {
+    height: 14px;
+    background: var(--color-primary);
+    position: absolute;
+    left: 0;
+    top: 0;
+    transition: width 0.5s var(--ease-out-expo);
+}
+
+.stepBadge {
+    width: 100%;
+    max-width: 420px;
+    height: 60px;
+    background: var(--color-primary);
+    border-radius: 32px;
+    border: 3px var(--color-black) solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    position: relative;
+    z-index: 1;
+    background-color: #7DD8D5;
+}
+
+.stepBadgeIcon {
+    width: 20px;
+    height: 19px;
+    background: var(--color-white);
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+    mask-size: contain;
+}
+
+.stepBadgeLogo {
+    width: 71px;
+    height: 39px;
+    object-fit: contain;
+}
+
+.stepBadgeText {
+    color: var(--color-white);
+    font-size: 14px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+}
+
+.formHeader {
+    align-self: stretch;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.formTitle {
+    font-family: var(--font-heading);
+    font-size: clamp(24px, 4vw, 32px);
+    color: var(--color-black);
+    text-transform: uppercase;
+    line-height: 1.2;
+    text-align: center;
+    margin: 0;
+}
+
+.formSubtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-top: 0.5rem;
+    text-align: center;
+}
+
+.formBody {
+    align-self: stretch;
+    padding: 0 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    position: relative;
+    z-index: 1;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background: #F8FAFC;
+    padding: 24px;
+    border-radius: 24px;
+    border: 2px solid #E2E8F0;
+}
+
+.sectionTitle {
+    font-family: var(--font-heading);
+    font-size: 1.2rem;
+    color: var(--color-black);
+    text-transform: uppercase;
+    margin: 0 0 8px 0;
+    border-bottom: 2px solid var(--color-primary);
+    display: inline-block;
+    padding-bottom: 4px;
+    width: fit-content;
+}
+
+.curpRow {
+    position: relative;
+}
+
+.inputIndicator {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+    margin-top: 4px;
+    display: block;
+    font-weight: 600;
+}
+
+.inputIndicatorSuccess {
+    font-size: 0.8rem;
+    color: var(--color-success);
+    margin-top: 4px;
+    display: block;
+    font-weight: 700;
+}
+
+.curpWarningMessage {
+    background: #FFFBEB;
+    border: 1px solid #FEF3C7;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    color: #92400E;
+    margin-top: 8px;
+    line-height: 1.4;
+}
+
+/* Passport Upload */
+.passportUploadSection {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fieldLabel {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--color-text-dark);
+}
+
+.required {
+    color: var(--color-error);
+}
+
+.fileUploadLabel {
+    cursor: pointer;
+    width: 100%;
+}
+
+.fileInput {
+    display: none;
+}
+
+.fileUploadBox {
+    border: 3px dashed #CBD5E0;
+    border-radius: 24px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    background: var(--color-white);
+}
+
+.fileUploadBox:hover {
+    border-color: var(--color-primary);
+    background: #F0FDFA;
+}
+
+.errorBorder {
+    border-color: var(--color-error) !important;
+}
+
+.fileIcon {
+    font-size: 2rem;
+}
+
+.uploadText {
+    font-family: var(--font-body);
+    font-weight: 700;
+    color: var(--color-text-dark);
+    text-align: center;
+}
+
+.helpText {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+
+.previewContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.previewImage {
+    max-width: 200px;
+    max-height: 150px;
+    border-radius: 12px;
+    border: 2px solid var(--color-black);
+    object-fit: cover;
+}
+
+.changeLabel {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
+.errorText {
+    color: var(--color-error);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding-left: 12px;
+}
+
+/* Postal Code */
+.postalCodeRow {
+    position: relative;
+}
+
+.cpLoadingIndicator {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* Buttons */
+.primaryButton {
+    width: 100%;
+    border-radius: 999px;
+    border: 3px var(--color-black) solid;
+    padding: 20px;
+    font-size: 18px;
+    font-family: var(--font-body);
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.3s var(--ease-out-expo);
+    background: #FE8F15 !important; /* Orange primary button */
+    color: var(--color-white) !important;
+}
+
+.primaryButton:hover:not(:disabled) {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+}
+
+.primaryButton:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.primaryButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    background: #CBD5E0 !important;
+}
+
+/* Animations */
+@keyframes fadeInScale {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+    .containerCenter {
+        padding: 1rem;
+    }
+    
+    .formCard {
+        border-radius: 32px;
+        padding-bottom: 32px;
+        gap: 24px;
+    }
+    
+    .formHeader {
+        padding: 0 24px;
+    }
+    
+    .formBody {
+        padding: 0 24px;
+        gap: 24px;
+    }
+    
+    .section {
+        padding: 16px;
+        border-radius: 20px;
+    }
+    
+    .formTitle {
+        font-size: 22px;
+    }
+    
+    .primaryButton {
+        padding: 16px;
+        font-size: 16px;
+    }
+
+    .stepBadge {
+        max-width: 90%;
+        gap: 15px;
+    }
+    
+    .stepBadgeText {
+        font-size: 12px;
+    }
+}

@@ -590,11 +590,11 @@ export async function saveBillingDetailsByMemberstackId(memberstackId: string, b
         // 2. Preparar datos para billing_details
         const dataToSave = {
             user_id: userData.id,
-            rfc: billingData.rfc.toUpperCase(),
-            business_name: billingData.businessName,
-            zip_code: billingData.zipCode,
-            tax_regime: billingData.taxRegime,
-            cfdi_use: billingData.cfdiUse,
+            rfc: (billingData.rfc || billingData.RFC)?.toUpperCase(),
+            business_name: billingData.razonSocial || billingData.businessName,
+            zip_code: billingData.cp || billingData.zipCode,
+            tax_regime: billingData.regimenFiscal || billingData.taxRegime,
+            cfdi_use: billingData.cfdiUse || 'G03',
             updated_at: new Date().toISOString()
         };
 

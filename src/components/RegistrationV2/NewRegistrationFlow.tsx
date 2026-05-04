@@ -1092,21 +1092,13 @@ export default function NewRegistrationFlow() {
         <div className={styles.container}>
             <NavbarRedesign onLogout={handleLogout} member={member} showLogout={currentStep > 1} />
 
-            {/* Banner de beneficios (visible en pasos pre-pago, oculto en redesign paso 1) */}
-            {currentStep > 1 && currentStep <= 3 && <BenefitsBanner />}
+            {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
+            {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}
 
             <div className={`${styles.content} ${currentStep === 1 ? styles.contentWide : ''}`}>
-                {/* Indicador de pasos (Oculto en el paso de éxito, transición y redesign paso 1) */}
-                {currentStep > 1 && currentStep <= 5 && !isPaymentSuccessTransition && (
-                    <StepIndicator
-                        currentStep={currentStep <= 3 ? currentStep : currentStep - 3}
-                        totalSteps={currentStep <= 3 ? 3 : 2}
-                        stepLabels={currentStep <= 3
-                            ? ['Cuenta', 'Mascota', 'Plan']
-                            : ['Perfil', 'Mascota']
-                        }
-                    />
-                )}
+                {/* Indicador de pasos (Oculto en pasos 1 y 2 ya que tienen su propio indicador interno, y en éxito/transición) */}
+                {/* Indicador de pasos ya no es necesario arriba pues cada paso tiene su propia barra interna */}
+
 
                 {/* Indicador de guardado */}
                 {isSaving && (
