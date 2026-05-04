@@ -382,6 +382,26 @@
     animation: fadeInOut 1s forwards;
 }
 
+.downloadBtn {
+    background: #000;
+    color: #fff;
+    border: 2px solid #000;
+    border-radius: 50px;
+    padding: 0.5rem 1rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.downloadBtn:hover {
+    background: #333;
+    transform: translateY(-1px);
+}
+
 @keyframes fadeInOut {
     0% { opacity: 0; transform: translateY(5px); }
     20% { opacity: 1; transform: translateY(0); }

@@ -199,6 +199,58 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         else loadStripeData();
     }
 
+    const handleDownloadCSV = () => {
+        if (records.length === 0) return;
+
+        const headers = [
+            'Nombre Miembro',
+            'Email',
+            'Memberstack ID',
+            'RFC',
+            'Razon Social',
+            'Codigo Postal',
+            'Monto Total',
+            'Empresa (70%)',
+            'Asociacion (30%)',
+            'Regimen Fiscal',
+            'Uso CFDI',
+            'Ultima Actualizacion'
+        ];
+
+        const rows = records.map(record => {
+            const companyPart = (record.totalAmount || 0) * 0.7;
+            const associationPart = (record.totalAmount || 0) * 0.3;
+            const regimeLabel = TAX_REGIME_LABELS[record.taxRegime] || record.taxRegime;
+            const cfdiLabel = CFDI_USE_LABELS[record.cfdiUse] || record.cfdiUse;
+
+            return [
+                `"${record.user.fullName}"`,
+                `"${record.user.email}"`,
+                `"${record.user.memberstackId}"`,
+                `"${record.rfc}"`,
+                `"${record.businessName.replace(/"/g, '""')}"`,
+                `"${record.zipCode}"`,
+                (record.totalAmount || 0).toFixed(2),
+                companyPart.toFixed(2),
+                associationPart.toFixed(2),
+                `"${regimeLabel.replace(/"/g, '""')}"`,
+                `"${cfdiLabel.replace(/"/g, '""')}"`,
+                new Date(record.updatedAt).toISOString().split('T')[0]
+            ].join(',');
+        });
+
+        const csvContent = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `facturacion_clientes_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     // ── Copy Helper Component ──
     const CopyButton = ({ text }: { text: string }) => {
         const [copied, setCopied] = useState(false);
@@ -573,6 +625,11 @@ export default function BillingManagement({ view }: BillingManagementProps) {
             <div className={styles.ledgerHeader}>
                 <h2 className={styles.ledgerTitle}>{titles[view]}</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    {view === 'billing' && records.length > 0 && (
+                        <button className={styles.downloadBtn} onClick={handleDownloadCSV}>
+                            📥 Descargar CSV
+                        </button>
+                    )}
                     <button className={styles.refreshBtn} onClick={handleRefresh} disabled={loading}>
                         🔄 {loading ? 'Cargando...' : 'Actualizar'}
                     </button>
