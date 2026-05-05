@@ -1610,191 +1610,273 @@
             margin: 0;
         }
 
-        /* 🏆 APPROVED DASHBOARD STYLES (NEO-BRUTALIST) */
-        .pata-approved-wrapper {
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow-x: hidden;
-            position: relative;
-            padding: 60px 24px;
-            font-family: 'Outfit', sans-serif;
-            width: 100%;
-        }
-
-        .pata-approved-card {
-            background: #FFFFFF;
-            border-radius: 66px;
-            padding: clamp(24px, 5vw, 48px);
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            border: 3px solid #000;
-            box-shadow: 15px 15px 0 rgba(0,0,0,0.1);
-            font-family: 'Outfit', sans-serif;
-            position: relative;
-            z-index: 2;
-            display: flex;
-            flex-direction: column;
-            gap: 32px;
-        }
-
-        .pata-pet-selector {
-            margin-bottom: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .pata-pet-selector-title {
-            font-family: 'Fraiche', sans-serif;
-            font-size: 24px;
-            color: #000;
-            text-transform: lowercase;
-        }
-
-        .pata-tabs {
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            padding: 10px 5px;
-            scrollbar-width: none;
-        }
-        .pata-tabs::-webkit-scrollbar { display: none; }
-
-        .pata-tab {
-            background: #F0F2F5;
-            border: 2px solid #000;
-            border-radius: 25px;
-            padding: 12px 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        .pata-tab.active {
-            background: #15BEB2;
-            transform: scale(1.05);
-            box-shadow: 6px 6px 0 #000;
-        }
-
-        .pata-tab-icon { font-size: 24px; }
-        .pata-tab-name { font-weight: 800; text-transform: lowercase; }
-
-        .pata-approved-grid {
+        /* 🏆 DASHBOARD V3 (APPROVED DUAL CARD) */
+        .pata-approved-grid-new {
             display: grid;
-            grid-template-columns: 1fr 350px;
-            gap: 40px;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 32px;
+            margin-bottom: 32px;
         }
 
-        .pata-carencia-title {
-            font-family: 'Fraiche', sans-serif;
-            font-size: 50px;
-            line-height: 1.1;
-            margin: 0;
-            text-transform: lowercase;
-        }
-
-        .pata-carencia-subtitle {
-            font-size: 20px;
-            color: rgba(0,0,0,0.7);
-            line-height: 1.5;
-        }
-
-        .pata-carencia-remaining {
-            background: #FFBD00;
-            border: 3px solid #000;
-            padding: 24px;
-            border-radius: 30px;
-            font-size: 18px;
-            font-weight: 600;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
-            line-height: 1.4;
-        }
-
-        .pata-carencia-remaining strong {
-            font-weight: 800;
-            font-size: 22px;
-        }
-
-        .pata-progress-container-v2 {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .pata-progress-header {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 800;
-            font-size: 16px;
-        }
-
-        .pata-bar-v2 {
-            height: 24px;
-            background: #F0F2F5;
-            border: 2px solid #000;
-            border-radius: 50px;
-            overflow: hidden;
-        }
-
-        .pata-fill-v2 {
-            height: 100%;
-            background: #15BEB2;
-            border-radius: 50px;
-            transition: width 1s ease-out;
-            background-image: linear-gradient(-45deg, rgba(255, 255, 255, 0.2) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0.2) 75%, transparent 75%, transparent);
-            background-size: 20px 20px;
-        }
-
-        .pata-bar-labels {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 4px;
-            font-size: 14px;
-            opacity: 0.6;
-            font-weight: 600;
-        }
-
-        .pata-pet-profile {
-            background: #F0F2F5;
-            border: 3px solid #000;
-            border-radius: 40px;
-            padding: 30px;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
+        .pata-approved-left-new {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .pata-pet-photo-box {
-            width: 100%;
-            height: 250px;
-            border-radius: 25px;
-            overflow: hidden;
-            border: 3px solid #000;
-            background: #fff;
+        .pata-approved-right-new {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .pata-pet-photo-box img {
+        .pata-carencia-title-new {
+            font-family: 'Fraiche', sans-serif;
+            font-size: clamp(32px, 5vw, 60px);
+            color: var(--pata-primary) !important;
+            margin: 0;
+            text-transform: lowercase;
+            line-height: 1;
+        }
+
+        .pata-carencia-text-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin: 0;
+        }
+
+        .pata-progress-container-new {
+            margin-top: 10px;
+        }
+
+        .pata-progress-header-new {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .pata-bar-track-new {
+            height: 16px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .pata-bar-fill-new {
+            height: 100%;
+            background: var(--pata-primary);
+            border-right: 2px solid #000;
+            transition: width 1s var(--pata-spring);
+        }
+
+        .pata-days-remaining-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #000;
+            margin: 0;
+        }
+
+        .pata-days-remaining-new strong {
+            color: var(--pata-primary);
+            font-size: 22px;
+        }
+
+        /* Card Photo */
+        .pata-pet-card-photo-new {
+            background: var(--pata-primary);
+            border: 3px solid #000;
+            border-radius: 35px;
+            overflow: hidden;
+            aspect-ratio: 1/1;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
+        }
+
+        .pata-pet-card-photo-new img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .pata-pet-info-box h3 {
+        /* Card Info */
+        .pata-pet-card-info-new {
+            background: var(--pata-primary);
+            border: 3px solid #000;
+            border-radius: 35px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #fff;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
+        }
+
+        .pata-pet-name-new {
             font-family: 'Fraiche', sans-serif;
+            font-size: 28px;
+            margin: 0 0 15px 0;
+            text-transform: lowercase;
+            color: white !important;
+        }
+
+        .pata-pet-tags-new {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .pata-pet-tag-item-new {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+        }
+
+        .pata-pet-tag-item-new::before {
+            content: '•';
+            color: #000;
+            font-size: 20px;
+        }
+
+        .pata-btn-details-new {
+            background: var(--pata-action);
+            border: 2px solid #000;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-family: 'Fraiche', sans-serif;
+            font-weight: 900;
+            font-size: 16px;
+            cursor: pointer;
+            color: #000;
+            text-transform: lowercase;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .pata-btn-details-new:hover {
+            transform: scale(1.05);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        }
+
+        /* Banner Yellow */
+        .pata-banner-yellow-new {
+            background: #FFBD00;
+            border: 3px solid #000;
+            border-radius: 25px;
+            padding: 24px 32px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .pata-banner-icon-new {
             font-size: 32px;
+            flex-shrink: 0;
+        }
+
+        .pata-banner-text-new {
+            color: #000;
+            text-align: left;
+        }
+
+        .pata-banner-text-new h4 {
+            margin: 0 0 4px 0;
+            font-size: 18px;
+            font-weight: 900;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .pata-banner-text-new p {
             margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            line-height: 1.4;
+        }
+
+        /* Tabs Updates */
+        .pata-tabs-new {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+            overflow-x: auto;
+            padding: 4px;
+            scrollbar-width: none;
+            justify-content: flex-start;
+        }
+
+        .pata-tab-new {
+            background: #fff;
+            border: 2.5px solid #E2E8F0;
+            border-radius: 50px;
+            padding: 8px 16px 8px 8px;
             display: flex;
             align-items: center;
             gap: 12px;
-            text-transform: lowercase;
-            color: #000;
+            cursor: pointer;
+            transition: all 0.2s var(--pata-spring);
+            min-width: 140px;
+            color: #94A3B8;
+        }
+
+        .pata-tab-new.tab-active {
+            border-color: var(--pata-primary);
+            color: var(--pata-primary);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.05);
+        }
+
+        .pata-tab-icon-new {
+            width: 40px;
+            height: 40px;
+            background: #E2E8F0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 20px;
+        }
+
+        .pata-tab-new.tab-active .pata-tab-icon-new {
+            background: var(--pata-primary);
+            color: #fff;
+        }
+
+        .pata-tab-name-new {
+            font-weight: 900;
+            font-size: 18px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        @media (max-width: 900px) {
+            .pata-approved-grid-new {
+                grid-template-columns: 1fr;
+            }
+            .pata-approved-right-new {
+                grid-template-columns: 1fr;
+            }
+            .pata-pet-card-photo-new {
+                aspect-ratio: auto;
+                height: 300px;
+            }
+            .pata-banner-yellow-new {
+                flex-direction: column;
+                text-align: center;
+                padding: 24px;
+            }
+            .pata-banner-text-new {
+                text-align: center;
+            }
         }
 
         .pata-senior-badge {
@@ -2984,6 +3066,14 @@
             return totalMonths >= 120; // 10+ years
         }
 
+        getPetIcon(pet) {
+            const type = (pet.pet_type || pet.petType || '').toLowerCase();
+            if (type === 'gato' || type === 'cat') {
+                return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.27.6 2.52.34 3.74a6 6 0 0 1-5.81 7.53c-2.67 0-4.98-1.75-5.75-4.17-.24-.04-.46-.09-.69-.15-1.13-.27-2.1-.89-2.82-1.72-.78.75-1.8 1.15-2.81 1.15a4.34 4.34 0 0 1-4.34-4.34c0-2.1 1.5-3.9 3.58-4.24.01-1.32.32-2.63.92-3.83 0 0-1.82-6.42-.42-7 1.39-.58 4.64.26 6.42 2.26.65-.17 1.33-.26 2-.26Z"></path></svg>`;
+            }
+            return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M10 5.172a2 2 0 0 0 5 0"></path><path d="M12 18v4"></path><path d="M4.828 17.172a2 2 0 0 1 0-2.828"></path><path d="M19.172 17.172a2 2 0 0 0 0-2.828"></path><path d="M21 21c-2.436-1.5-6.192-2-9-2s-6.564.5-9 2"></path><path d="M12 5.172a2 2 0 0 0-5 0c-1.104 0-2 .896-2 2v2.172c0 .53.21 1.04.586 1.414l1.414 1.414A2 2 0 0 1 8 15.586V19"></path><path d="M12 5.172a2 2 0 0 1 5 0c1.104 0 2 .896 2 2v2.172c0 .53-.21 1.04-.586 1.414l-1.414 1.414A2 2 0 0 0 16 15.586V19"></path></svg>`;
+        }
+
         checkMissingDocs(pet) {
             if (!pet) return [];
             const missing = [];
@@ -3234,7 +3324,7 @@
                                 <div class="pata-tabs-new">
                                     ${this.pets.map((p, i) => `
                                         <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'}" onclick="window.pataWidget.setIndex(${i})">
-                                            <span class="pata-tab-icon-new">🐾</span>
+                                            <span class="pata-tab-icon-new">${this.getPetIcon(p)}</span>
                                             <span class="pata-tab-name-new">${p.name.toLowerCase()}</span>
                                         </div>
                                     `).join('')}
@@ -3763,43 +3853,65 @@
 
         renderApprovedContent(pet) {
             const carencia = this.calculateCarencia(pet);
+            const petPhoto = pet.photo_url || pet.primary_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+            
+            // Dynamic messaging based on thresholds
+            let statusMessage = "¡Bienvenido a la manada! Haz comenzado tu camino.";
+            if (carencia.percentage >= 75) {
+                statusMessage = "¡Ya casi llegas! Falta muy poco.";
+            } else if (carencia.percentage >= 50) {
+                statusMessage = "¡Ya recorriste más de la mitad del camino!";
+            } else if (carencia.percentage >= 25) {
+                statusMessage = "¡Vas por excelente camino!.";
+            }
 
             return `
-                <div class="pata-approved-view" style="padding: 0;">
-                    <div style="text-align: left; margin-bottom: 30px;">
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">tu periodo de espera</h2>
-                        <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            ¡Ya recorriste más de la mitad del camino! Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo.
-                        </p>
-                    </div>
+                <div class="pata-approved-grid-new">
+                    <!-- Banner superior: Recordatorio de documentación (Solo si falta algo) -->
+                    ${this.checkMissingDocs(pet).length > 0 ? `
+                        <div class="pata-approved-banner-new">
+                            <span class="pata-banner-icon-new">🚀</span>
+                            <div class="pata-banner-content-new">
+                                <strong>¡Ya casi estás listo!</strong> 
+                                Solo nos faltan algunos detalles para que tu membresía esté al 100%.
+                            </div>
+                        </div>
+                    ` : ''}
 
-                    <div style="background: #FFBD12; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05);">
-                        <div style="height: 16px; background: white; border: 2px solid #000; border-radius: 50px; overflow: hidden; margin-bottom: 15px;">
-                            <div style="width: ${carencia.percentage}%; height: 100%; background: #15BEB2; border-right: 2px solid #000;"></div>
+                    <div class="pata-approved-grid-main">
+                        <!-- Card Izquierda: Foto de la mascota -->
+                        <div class="pata-approved-card-new pata-approved-card-left">
+                            <img src="${petPhoto}" alt="${pet.name}" class="pata-approved-pet-img">
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 900; color: #000; font-family: 'Outfit', sans-serif;">
-                            <span>Día 1</span>
-                            <span>Día ${carencia.totalDays}</span>
-                        </div>
-                    </div>
 
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
-                        <div style="background: #fff; border: 2px solid #000; border-radius: 25px; padding: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                            <div style="font-size: 24px; margin-bottom: 10px;">🩺</div>
-                            <div style="font-weight: 900; color: #000; font-size: 16px; margin-bottom: 5px;">Chat con Dra. PATi</div>
-                            <p style="font-size: 13px; color: #444; margin: 0;">Consultas ilimitadas activas.</p>
-                        </div>
-                        <div style="background: #fff; border: 2px solid #000; border-radius: 25px; padding: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                            <div style="font-size: 24px; margin-bottom: 10px;">🎁</div>
-                            <div style="font-weight: 900; color: #000; font-size: 16px; margin-bottom: 5px;">Descuentos</div>
-                            <p style="font-size: 13px; color: #444; margin: 0;">Precios especiales en servicios.</p>
-                        </div>
-                    </div>
+                        <!-- Card Derecha: Información y Progreso -->
+                        <div class="pata-approved-card-new pata-approved-card-right">
+                            <div class="pata-approved-info-box">
+                                <h3 class="pata-approved-pet-name">${pet.name.toLowerCase()}</h3>
+                                <p class="pata-approved-pet-status">Membresía aprobada</p>
+                            </div>
 
-                    <div style="background: #E0F7F6; border: 2px solid #000; padding: 20px; border-radius: 25px; text-align: center;">
-                        <p style="margin:0; font-size: 14px; color: #15BEB2; font-weight: 700; font-family: 'Outfit', sans-serif;">
-                            Tu cobertura total se activa el ${carencia.endDateStr}.
-                        </p>
+                            <div class="pata-approved-progress-section">
+                                <p class="pata-approved-progress-text">
+                                    ${statusMessage} Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo.
+                                </p>
+                                
+                                <div class="pata-approved-progress-container">
+                                    <div class="pata-approved-progress-bar" style="width: ${carencia.percentage}%"></div>
+                                </div>
+                                
+                                <div class="pata-approved-progress-labels">
+                                    <span>Día 1</span>
+                                    <span>Día ${carencia.totalDays}</span>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: auto; padding-top: 20px;">
+                                <button class="pata-approved-btn-details pata-btn-ver-detalles" data-pet-id="${pet.id}">
+                                    ver detalles <span>→</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
