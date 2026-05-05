@@ -1,6 +1,6 @@
 /**
  * Paso 5: Completar datos de mascota
- * Post-pago: Datos complementarios
+ * Post-pago: Datos complementarios para todas las mascotas registradas
  */
 
 'use client';
@@ -28,58 +28,67 @@ interface Step5CompletePetProps {
 }
 
 export default function Step5CompletePet({ data, onNext, showToast }: Step5CompletePetProps) {
-    const petBasic = data?.petBasic;
-    const petType = petBasic?.petType === 'gato' ? 'gato' : 'perro';
-
-    const isSenior = petBasic?.petAgeUnit === 'years'
-        ? petBasic?.petAge >= 10
-        : Math.floor(petBasic?.petAge / 12) >= 10;
-
-    const [breedType, setBreedType] = useState<'mestizo' | 'raza'>('raza');
-
-    const [pets, setPets] = useState<any[]>([{
-        gender: '',
-        breed: '',
-        isMixedBreed: false,
-        coatColor: '',
-        noseColor: '',
-        eyeColor: '',
-        isAdopted: false,
-        adoptionStory: '',
-        primaryPhoto: null as File | null,
-        vetCertificate: null as File | null,
-        // Campos básicos para mascotas extra
-        name: '',
-        petType: 'perro',
-        age: 0,
-        ageUnit: 'years'
-    }]);
-
+    const [pets, setPets] = useState<any[]>([]);
     const [errors, setErrors] = useState<Record<string, Record<string, string>>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
 
+    // Inicializar mascotas basadas en Step 2
     useEffect(() => {
-        if (data?.petComplete && !isLoaded) {
-            const pet = data.petComplete;
-            const isMixed = pet.isMixedBreed || pet.breed === 'Mestizo' || pet.breed === 'Doméstico';
+        if (!isLoaded) {
+            const petBasicArray = Array.isArray(data?.petBasic) 
+                ? data.petBasic 
+                : (data?.petBasic ? [data.petBasic] : []);
 
-            const updatedPets = [...pets];
-            updatedPets[0] = {
-                ...updatedPets[0],
-                gender: pet.gender || '',
-                breed: pet.breed || '',
-                isMixedBreed: isMixed,
-                coatColor: pet.coatColor || '',
-                noseColor: pet.noseColor || '',
-                eyeColor: pet.eyeColor || '',
-                isAdopted: pet.isAdopted || false,
-                adoptionStory: pet.adoptionStory || '',
-            };
-            setPets(updatedPets);
+            if (petBasicArray.length > 0) {
+                const initialPets = petBasicArray.map((basic: any) => {
+                    // Ver si ya hay datos completados para esta mascota (de un guardado previo)
+                    const completedData = data?.petComplete?.find((p: any) => p.name === basic.petName) || {};
+                    
+                    const isMixed = completedData.isMixedBreed || 
+                                   completedData.breed === 'Mestizo' || 
+                                   completedData.breed === 'Doméstico' || 
+                                   (basic.isMixed !== undefined ? basic.isMixed : true);
 
-            setBreedType(isMixed ? 'mestizo' : 'raza');
-            setIsLoaded(true);
+                    return {
+                        name: basic.petName || '',
+                        petType: basic.petType || 'perro',
+                        age: basic.petAge || 0,
+                        ageUnit: basic.petAgeUnit || 'years',
+                        gender: completedData.gender || '',
+                        breed: completedData.breed || (isMixed ? (basic.petType === 'gato' ? 'Doméstico' : 'Mestizo') : ''),
+                        isMixedBreed: isMixed,
+                        coatColor: completedData.coatColor || '',
+                        noseColor: completedData.noseColor || '',
+                        eyeColor: completedData.eyeColor || '',
+                        isAdopted: completedData.isAdopted || false,
+                        adoptionStory: completedData.adoptionStory || '',
+                        primaryPhoto: null as File | null,
+                        vetCertificate: null as File | null,
+                    };
+                });
+                setPets(initialPets);
+                setIsLoaded(true);
+            } else {
+                // Fallback si no hay petBasic (no debería pasar)
+                setPets([{
+                    name: '',
+                    petType: 'perro',
+                    age: 0,
+                    ageUnit: 'years',
+                    gender: '',
+                    breed: '',
+                    isMixedBreed: true,
+                    coatColor: '',
+                    noseColor: '',
+                    eyeColor: '',
+                    isAdopted: false,
+                    adoptionStory: '',
+                    primaryPhoto: null,
+                    vetCertificate: null
+                }]);
+                setIsLoaded(true);
+            }
         }
     }, [data, isLoaded]);
 
@@ -113,49 +122,28 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         const updatedPets = [...pets];
         updatedPets[index] = { ...updatedPets[index], ...newData };
         setPets(updatedPets);
-    };
-
-    const addExtraPet = () => {
-        if (pets.length >= 3) {
-            showToast('Máximo 3 mascotas permitidas', 'warning');
-            return;
-        }
-        setPets([...pets, {
-            name: '',
-            petType: 'perro',
-            age: 0,
-            ageUnit: 'years',
-            gender: '',
-            breed: '',
-            isMixedBreed: false,
-            coatColor: '',
-            noseColor: '',
-            eyeColor: '',
-            isAdopted: false,
-            adoptionStory: '',
-            primaryPhoto: null,
-            vetCertificate: null
-        }]);
-    };
-
-    const removePet = (index: number) => {
-        if (index === 0) return;
-        const updatedPets = pets.filter((_, i) => i !== index);
-        setPets(updatedPets);
         
-        const updatedErrors = { ...errors };
-        delete updatedErrors[index];
-        setErrors(updatedErrors);
+        // Limpiar errores si el campo actualizado tenía error
+        if (errors[index]) {
+            const updatedErrors = { ...errors };
+            const keys = Object.keys(newData);
+            keys.forEach(key => {
+                if (updatedErrors[index][key]) {
+                    delete updatedErrors[index][key];
+                }
+            });
+            if (Object.keys(updatedErrors[index]).length === 0) {
+                delete updatedErrors[index];
+            }
+            setErrors(updatedErrors);
+        }
     };
 
     const handleBreedTypeChange = (index: number, type: 'mestizo' | 'raza') => {
-        if (index === 0) setBreedType(type);
-        
-        const currentPetType = index === 0 ? petType : pets[index].petType;
-        
+        const pet = pets[index];
         const newData = {
             isMixedBreed: type === 'mestizo',
-            breed: type === 'mestizo' ? (currentPetType === 'gato' ? 'Doméstico' : 'Mestizo') : ''
+            breed: type === 'mestizo' ? (pet.petType === 'gato' ? 'Doméstico' : 'Mestizo') : ''
         };
         updatePetData(index, newData);
     };
@@ -167,20 +155,12 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         pets.forEach((pet, index) => {
             const petErrors: Record<string, string> = {};
             
-            // Validaciones para todas las mascotas
             if (!pet.gender) petErrors.gender = 'Selecciona el sexo';
             if (!pet.coatColor) petErrors.coatColor = 'Selecciona el color';
+            if (!pet.isMixedBreed && !pet.breed) petErrors.breed = 'Selecciona la raza';
             
-            // Validaciones específicas para mascotas extra
-            if (index > 0) {
-                if (!pet.name.trim()) petErrors.name = 'El nombre es requerido';
-                if (!pet.age || pet.age <= 0) petErrors.age = 'Ingresa la edad';
-                // Validación de raza para extras si no es mestizo
-                if (!pet.isMixedBreed && !pet.breed) petErrors.breed = 'Selecciona la raza';
-            } else {
-                // Validación de raza para la mascota principal
-                if (breedType === 'raza' && !pet.breed) petErrors.breed = 'Selecciona la raza';
-            }
+            // Si es mascota añadida aquí (no venía de Step 2, aunque ahora todas vienen de Step 2)
+            if (!pet.name.trim()) petErrors.name = 'El nombre es requerido';
 
             if (Object.keys(petErrors).length > 0) {
                 newErrors[index] = petErrors;
@@ -199,7 +179,6 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
             return;
         }
         setIsLoading(true);
-        // Enviamos el arreglo completo de mascotas
         await onNext(pets);
         setIsLoading(false);
     };
@@ -225,438 +204,183 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                 <div className={styles.formHeader}>
                     <h2 className={styles.formTitle}>
-                        {petBasic?.petName
-                            ? <>Completa los datos de {petType === 'gato' ? '🐱' : '🐶'} <em style={{ fontStyle: 'normal', color: '#00BBB4' }}>{petBasic.petName}</em></>
-                            : 'Completa los datos de tu mascota'
-                        }
+                        FINALIZA EL REGISTRO DE TU MANADA 🐾
                     </h2>
                     <p className={styles.formSubtitle}>
-                        Estos datos nos ayudan a identificar a tu peludo amigo
+                        Completa la información complementaria de tus peludos para activar sus beneficios
                     </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className={styles.formBody}>
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Información general</h3>
-
-                        <SelectWithInfo
-                            label="Sexo"
-                            name="gender"
-                            value={pets[0].gender}
-                            onChange={(value) => updatePetData(0, { gender: value })}
-                            options={genderOptions}
-                            infoText=""
-                            error={errors[0]?.gender}
-                            required
-                        />
-
-                        <div className={styles.fieldWrapper}>
-                            <label className={styles.label}>
-                                Tipo
-                                <span className={styles.required}> *</span>
-                            </label>
-                            <div className={styles.breedTypeSwitch}>
-                                <button
-                                    type="button"
-                                    className={`${styles.switchButton} ${pets[0].isMixedBreed ? styles.switchActive : ''}`}
-                                    onClick={() => handleBreedTypeChange(0, 'mestizo')}
-                                >
-                                    {pets[0].isMixedBreed && (
-                                        <span className={styles.switchIcon}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                        </span>
-                                    )}
-                                    {petType === 'gato' ? 'Doméstico' : 'Mestizo'}
-                                </button>
-                                <button
-                                    type="button"
-                                    className={`${styles.switchButton} ${!pets[0].isMixedBreed ? styles.switchActive : ''}`}
-                                    onClick={() => handleBreedTypeChange(0, 'raza')}
-                                >
-                                    {!pets[0].isMixedBreed && (
-                                        <span className={styles.switchIcon}>
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                <polyline points="20 6 9 17 4 12"></polyline>
-                                            </svg>
-                                        </span>
-                                    )}
-                                    Raza
-                                </button>
-                            </div>
-                            <p className={styles.helpText}>
-                                Selecciona si tu mascota es {petType === 'gato' ? 'doméstica' : 'mestiza'} o de raza definida
-                            </p>
-                        </div>
-
-                        {breedType === 'raza' && (
-                            <BreedAutocomplete
-                                label="Raza"
-                                name="breed"
-                                petType={petType}
-                                value={pets[0].breed}
-                                onChange={(value) => {
-                                    updatePetData(0, {
-                                        breed: value,
-                                        isMixedBreed: value === 'Mestizo' || value === 'Doméstico'
-                                    });
-                                }}
-                                error={errors[0]?.breed}
-                                required
-                            />
-                        )}
-
-                        <div className={`${styles.adoptionSection} ${styles.fadeIn}`}>
-                            <div className={styles.adoptionHeader}>
-                                <div className={styles.adoptionIcon}>🏠</div>
-                                <div>
-                                    <h4 className={styles.adoptionTitle}>¿Tu mascota es adoptada?</h4>
-                                    <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
-                                </div>
-                            </div>
-
-                            <div className={styles.adoptionCheckboxWrapper}>
-                                <label className={styles.adoptionCheckbox}>
-                                    <input
-                                        type="checkbox"
-                                        checked={pets[0].isAdopted}
-                                        onChange={(e) => updatePetData(0, { isAdopted: e.target.checked })}
-                                    />
-                                    <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
-                                </label>
-                            </div>
-
-                            <p className={styles.adoptionNotice}>
-                                ⚠️ AVISO: Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.
-                            </p>
-
-                            {pets[0].isAdopted && (
-                                <div className={styles.adoptionStoryWrapper}>
-                                    <label className={styles.adoptionStoryLabel}>
-                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#00BBB4' }}>
-                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                        </svg>
-                                        Cuéntanos su historia
-                                    </label>
-                                    <textarea
-                                        className={styles.adoptionTextarea}
-                                        placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
-                                        value={pets[0].adoptionStory}
-                                        onChange={(e) => updatePetData(0, { adoptionStory: e.target.value })}
-                                        maxLength={500}
-                                    />
-                                    <div className={styles.adoptionCharCount}>
-                                        <strong>{pets[0].adoptionStory.length}</strong> / 500 caracteres
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Características físicas</h3>
-
-                        <div className={styles.row}>
-                            <ColorAutocomplete
-                                label="Color de pelo"
-                                name="coatColor"
-                                category="coat"
-                                petType={petType}
-                                value={pets[0].coatColor}
-                                onChange={(value) => updatePetData(0, { coatColor: value })}
-                                error={errors[0]?.coatColor}
-                                required
-                            />
-
-                            <ColorAutocomplete
-                                label="Color de nariz"
-                                name="noseColor"
-                                category="nose"
-                                petType={petType}
-                                value={pets[0].noseColor}
-                                onChange={(value) => updatePetData(0, { noseColor: value })}
-                            />
-                        </div>
-
-                        <ColorAutocomplete
-                            label="Color de ojos"
-                            name="eyeColor"
-                            category="eye"
-                            petType={petType}
-                            value={pets[0].eyeColor}
-                            onChange={(value) => updatePetData(0, { eyeColor: value })}
-                        />
-                    </div>
-
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Fotografía</h3>
-
-                        <label className={styles.fileUploadLabel}>
-                            <input
-                                type="file"
-                                accept="image/jpeg,image/png"
-                                onChange={(e) => handlePhotoChange(0, e)}
-                                className={styles.fileInput}
-                            />
-                            <div className={styles.fileUploadBox}>
-                                {pets[0].primaryPhoto ? (
-                                    <>
-                                        <span className={styles.fileIcon}>✓</span>
-                                        <span className={styles.uploadText}>{pets[0].primaryPhoto.name}</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <span className={styles.fileIcon}>📷</span>
-                                        <span className={styles.uploadText}>Haz clic para subir foto</span>
-                                        <span className={styles.helpText}>JPG/PNG, máx 5MB</span>
-                                    </>
-                                )}
-                            </div>
-                        </label>
-
-                        <p className={styles.helpText}>
-                            📅 Tienes 15 días para subir la foto desde tu cuenta si no la tienes ahora.
-                        </p>
-                    </div>
-
-                    {isSenior && (
-                        <div className={styles.alertBox}>
-                            <span className={styles.alertIcon}>⚕️</span>
-                            <div>
-                                <strong>Información sobre mascota senior</strong>
-                                <p>
-                                    Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. Puedes subir su certificado médico aquí mismo o después desde tu cuenta. 🐾💙
-                                </p>
-
-                                <label className={styles.fileUploadLabel}>
-                                    <input
-                                        type="file"
-                                        accept=".pdf,image/jpeg,image/png"
-                                        onChange={(e) => handleVetCertificateChange(0, e)}
-                                        className={styles.fileInput}
-                                    />
-                                    <div className={styles.fileUploadBox}>
-                                        {pets[0].vetCertificate ? (
-                                            <>
-                                                <span className={styles.fileIcon}>✓</span>
-                                                <span className={styles.uploadText}>{pets[0].vetCertificate.name}</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <span className={styles.fileIcon}>📄</span>
-                                                <span className={styles.uploadText}>Subir certificado (opcional ahora)</span>
-                                                <span className={styles.helpText}>PDF/JPG/PNG, máx 5MB</span>
-                                            </>
-                                        )}
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Mascotas Extra */}
-                    {pets.slice(1).map((pet, index) => {
-                        const actualIndex = index + 1;
-                        const isExtraPetSenior = pet.ageUnit === 'years' ? pet.age >= 10 : pet.age >= 120;
-
+                    {pets.map((pet, index) => {
+                        const isSenior = pet.ageUnit === 'years' ? pet.age >= 10 : pet.age >= 120;
+                        
                         return (
-                            <div key={actualIndex} className={`${styles.extraPetSection} ${styles.fadeIn}`}>
-                                <div className={styles.extraPetHeader}>
-                                    <h3 className={styles.sectionTitle}>Mascota extra #{actualIndex + 1}</h3>
-                                    <button
-                                        type="button"
-                                        className={styles.removePetButton}
-                                        onClick={() => removePet(actualIndex)}
-                                        title="Eliminar mascota"
-                                    >
-                                        ×
-                                    </button>
-                                </div>
-
-                                <TextInput
-                                    label="Nombre de la mascota"
-                                    name={`pet-name-${actualIndex}`}
-                                    value={pet.name}
-                                    onChange={(val) => updatePetData(actualIndex, { name: val })}
-                                    placeholder="Nombre"
-                                    error={errors[actualIndex]?.name}
-                                    required
-                                />
-
-                                <div className={styles.row}>
-                                    <PetTypeSelector
-                                        value={pet.petType}
-                                        onChange={(val) => updatePetData(actualIndex, { 
-                                            petType: val, 
-                                            breed: val === 'gato' ? 'Doméstico' : 'Mestizo', 
-                                            isMixedBreed: true 
-                                        })}
-                                        error={errors[actualIndex]?.petType}
-                                    />
-                                    <AgeInput
-                                        value={pet.age}
-                                        unit={pet.ageUnit}
-                                        onChange={(val, unit) => updatePetData(actualIndex, { age: val, ageUnit: unit })}
-                                        error={errors[actualIndex]?.age}
-                                    />
-                                    {((pet.ageUnit === 'years' && pet.age >= 10) || 
-                                      (pet.ageUnit === 'months' && pet.age >= 120)) && (
-                                        <div className={`${styles.infoBox} ${styles.warning}`} style={{ marginTop: '-10px', marginBottom: '10px' }}>
-                                            <span className={styles.infoIcon}>⚠️</span>
-                                            <p style={{ fontSize: '0.85rem', margin: 0 }}>
-                                                Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual. Puedes subir su certificado médico aquí mismo o después desde tu cuenta. 🐾💙
-                                            </p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                <SelectWithInfo
-                                    label="Sexo"
-                                    name={`gender-${actualIndex}`}
-                                    value={pet.gender}
-                                    onChange={(val) => updatePetData(actualIndex, { gender: val })}
-                                    options={genderOptions}
-                                    infoText=""
-                                    error={errors[actualIndex]?.gender}
-                                    required
-                                />
-
-                                <div className={styles.fieldWrapper}>
-                                    <label className={styles.label}>
-                                        Tipo de raza
-                                        <span className={styles.required}> *</span>
-                                    </label>
-                                    <div className={styles.breedTypeSwitch}>
-                                        <button
-                                            type="button"
-                                            className={`${styles.switchButton} ${pet.isMixedBreed ? styles.switchActive : ''}`}
-                                            onClick={() => handleBreedTypeChange(actualIndex, 'mestizo')}
-                                        >
-                                            {pet.isMixedBreed && (
-                                                <span className={styles.switchIcon}>
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                                    </svg>
-                                                </span>
-                                            )}
-                                            {pet.petType === 'gato' ? 'Doméstico' : 'Mestizo'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={`${styles.switchButton} ${!pet.isMixedBreed ? styles.switchActive : ''}`}
-                                            onClick={() => handleBreedTypeChange(actualIndex, 'raza')}
-                                        >
-                                            {!pet.isMixedBreed && (
-                                                <span className={styles.switchIcon}>
-                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
-                                                        <polyline points="20 6 9 17 4 12"></polyline>
-                                                    </svg>
-                                                </span>
-                                            )}
-                                            Raza
-                                        </button>
+                            <div key={index} className={`${styles.petSection} ${styles.fadeIn}`}>
+                                <div className={styles.petHeader}>
+                                    <div className={styles.petBadge}>
+                                        {pet.petType === 'gato' ? '🐱' : '🐶'} {pet.name || `Mascota ${index + 1}`}
                                     </div>
                                 </div>
 
-                                {!pet.isMixedBreed && (
-                                    <BreedAutocomplete
-                                        label="Raza"
-                                        name={`breed-${actualIndex}`}
-                                        petType={pet.petType as 'perro' | 'gato'}
-                                        value={pet.breed}
-                                        onChange={(val) => updatePetData(actualIndex, { 
-                                            breed: val,
-                                            isMixedBreed: val === 'Mestizo' || val === 'Doméstico'
-                                        })}
-                                        error={errors[actualIndex]?.breed}
+                                <div className={styles.section}>
+                                    <h3 className={styles.sectionTitle}>Información general</h3>
+
+                                    <SelectWithInfo
+                                        label="Sexo"
+                                        name={`gender-${index}`}
+                                        value={pet.gender}
+                                        onChange={(value) => updatePetData(index, { gender: value })}
+                                        options={genderOptions}
+                                        infoText=""
+                                        error={errors[index]?.gender}
                                         required
                                     />
-                                )}
-                                
-                                <div className={styles.adoptionSection}>
-                                    <div className={styles.adoptionHeader}>
-                                        <div className={styles.adoptionIcon}>🏠</div>
-                                        <div>
-                                            <h4 className={styles.adoptionTitle}>¿Tu mascota es adoptada?</h4>
-                                            <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
+
+                                    <div className={styles.fieldWrapper}>
+                                        <label className={styles.label}>
+                                            Tipo de raza
+                                            <span className={styles.required}> *</span>
+                                        </label>
+                                        <div className={styles.breedTypeSwitch}>
+                                            <button
+                                                type="button"
+                                                className={`${styles.switchButton} ${pet.isMixedBreed ? styles.switchActive : ''}`}
+                                                onClick={() => handleBreedTypeChange(index, 'mestizo')}
+                                            >
+                                                {pet.isMixedBreed && (
+                                                    <span className={styles.switchIcon}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                    </span>
+                                                )}
+                                                {pet.petType === 'gato' ? 'Doméstico' : 'Mestizo'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={`${styles.switchButton} ${!pet.isMixedBreed ? styles.switchActive : ''}`}
+                                                onClick={() => handleBreedTypeChange(index, 'raza')}
+                                            >
+                                                {!pet.isMixedBreed && (
+                                                    <span className={styles.switchIcon}>
+                                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+                                                            <polyline points="20 6 9 17 4 12"></polyline>
+                                                        </svg>
+                                                    </span>
+                                                )}
+                                                Raza
+                                            </button>
                                         </div>
                                     </div>
 
-                                    <div className={styles.adoptionCheckboxWrapper}>
-                                        <label className={styles.adoptionCheckbox}>
-                                            <input
-                                                type="checkbox"
-                                                checked={pet.isAdopted}
-                                                onChange={(e) => updatePetData(actualIndex, { isAdopted: e.target.checked })}
-                                            />
-                                            <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
-                                        </label>
-                                    </div>
+                                    {!pet.isMixedBreed && (
+                                        <BreedAutocomplete
+                                            label="Raza"
+                                            name={`breed-${index}`}
+                                            petType={pet.petType}
+                                            value={pet.breed}
+                                            onChange={(value) => {
+                                                updatePetData(index, {
+                                                    breed: value,
+                                                    isMixedBreed: value === 'Mestizo' || value === 'Doméstico'
+                                                });
+                                            }}
+                                            error={errors[index]?.breed}
+                                            required
+                                        />
+                                    )}
 
-                                    <p className={styles.adoptionNotice}>
-                                        ⚠️ AVISO: Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.
-                                    </p>
-
-                                    {pet.isAdopted && (
-                                        <div className={styles.adoptionStoryWrapper}>
-                                            <label className={styles.adoptionStoryLabel}>
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#00BBB4' }}>
-                                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                                                </svg>
-                                                Cuéntanos su historia
-                                            </label>
-                                            <textarea
-                                                className={styles.adoptionTextarea}
-                                                placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
-                                                value={pet.adoptionStory || ''}
-                                                onChange={(e) => updatePetData(actualIndex, { adoptionStory: e.target.value })}
-                                                maxLength={500}
-                                            />
-                                            <div className={styles.adoptionCharCount}>
-                                                <strong>{(pet.adoptionStory || '').length}</strong> / 500 caracteres
+                                    <div className={styles.adoptionSection}>
+                                        <div className={styles.adoptionHeader}>
+                                            <div className={styles.adoptionIcon}>🏠</div>
+                                            <div>
+                                                <h4 className={styles.adoptionTitle}>¿{pet.name} es adoptado?</h4>
+                                                <p className={styles.adoptionSubtitle}>Nos encantaría conocer su origen</p>
                                             </div>
                                         </div>
-                                    )}
+
+                                        <div className={styles.adoptionCheckboxWrapper}>
+                                            <label className={styles.adoptionCheckbox}>
+                                                <input
+                                                    type="checkbox"
+                                                    checked={pet.isAdopted}
+                                                    onChange={(e) => updatePetData(index, { isAdopted: e.target.checked })}
+                                                />
+                                                <span className={styles.adoptionCheckboxText}>¡Sí, es rescatada / adoptada!</span>
+                                            </label>
+                                        </div>
+
+                                        <p className={styles.adoptionNotice}>
+                                            ⚠️ AVISO: Al llenar la historia nos autorizas a publicarla en nuestras redes para inspirar a otros.
+                                        </p>
+
+                                        {pet.isAdopted && (
+                                            <div className={styles.adoptionStoryWrapper}>
+                                                <label className={styles.adoptionStoryLabel}>
+                                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ color: '#00BBB4' }}>
+                                                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                                    </svg>
+                                                    Cuéntanos su historia
+                                                </label>
+                                                <textarea
+                                                    className={styles.adoptionTextarea}
+                                                    placeholder="Ej: La encontramos en un refugio hace 2 años y desde entonces es la alegría de la casa..."
+                                                    value={pet.adoptionStory}
+                                                    onChange={(e) => updatePetData(index, { adoptionStory: e.target.value })}
+                                                    maxLength={500}
+                                                />
+                                                <div className={styles.adoptionCharCount}>
+                                                    <strong>{pet.adoptionStory.length}</strong> / 500 caracteres
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <div className={styles.row}>
+                                <div className={styles.section}>
+                                    <h3 className={styles.sectionTitle}>Características físicas</h3>
+
+                                    <div className={styles.row}>
+                                        <ColorAutocomplete
+                                            label="Color de pelo"
+                                            name={`coatColor-${index}`}
+                                            category="coat"
+                                            petType={pet.petType}
+                                            value={pet.coatColor}
+                                            onChange={(value) => updatePetData(index, { coatColor: value })}
+                                            error={errors[index]?.coatColor}
+                                            required
+                                        />
+
+                                        <ColorAutocomplete
+                                            label="Color de nariz"
+                                            name={`noseColor-${index}`}
+                                            category="nose"
+                                            petType={pet.petType}
+                                            value={pet.noseColor}
+                                            onChange={(value) => updatePetData(index, { noseColor: value })}
+                                        />
+                                    </div>
+
                                     <ColorAutocomplete
-                                        label="Color de pelo"
-                                        name={`coatColor-${actualIndex}`}
-                                        category="coat"
-                                        petType={pet.petType as 'perro' | 'gato'}
-                                        value={pet.coatColor}
-                                        onChange={(val) => updatePetData(actualIndex, { coatColor: val })}
-                                        error={errors[actualIndex]?.coatColor}
-                                        required
-                                    />
-                                    <ColorAutocomplete
-                                        label="Color de nariz"
-                                        name={`noseColor-${actualIndex}`}
-                                        category="nose"
-                                        petType={pet.petType as 'perro' | 'gato'}
-                                        value={pet.noseColor}
-                                        onChange={(val) => updatePetData(actualIndex, { noseColor: val })}
+                                        label="Color de ojos"
+                                        name={`eyeColor-${index}`}
+                                        category="eye"
+                                        petType={pet.petType}
+                                        value={pet.eyeColor}
+                                        onChange={(value) => updatePetData(index, { eyeColor: value })}
                                     />
                                 </div>
 
-                                <ColorAutocomplete
-                                    label="Color de ojos"
-                                    name={`eyeColor-${actualIndex}`}
-                                    category="eye"
-                                    petType={pet.petType as 'perro' | 'gato'}
-                                    value={pet.eyeColor}
-                                    onChange={(val) => updatePetData(actualIndex, { eyeColor: val })}
-                                />
+                                <div className={styles.section}>
+                                    <h3 className={styles.sectionTitle}>Fotografía</h3>
 
-                                <div className={styles.fileUploadWrapper}>
-                                    <label className={styles.label}>Fotografía</label>
                                     <label className={styles.fileUploadLabel}>
                                         <input
                                             type="file"
                                             accept="image/jpeg,image/png"
-                                            onChange={(e) => handlePhotoChange(actualIndex, e)}
+                                            onChange={(e) => handlePhotoChange(index, e)}
                                             className={styles.fileInput}
                                         />
                                         <div className={styles.fileUploadBox}>
@@ -669,25 +393,34 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                                 <>
                                                     <span className={styles.fileIcon}>📷</span>
                                                     <span className={styles.uploadText}>Haz clic para subir foto</span>
+                                                    <span className={styles.helpText}>JPG/PNG, máx 5MB</span>
                                                 </>
                                             )}
                                         </div>
                                     </label>
+
+                                    <p className={styles.helpText}>
+                                        📅 Tienes 15 días para subir la foto desde tu cuenta si no la tienes ahora.
+                                    </p>
                                 </div>
 
-                                {isExtraPetSenior && (
+                                {isSenior && (
                                     <div className={styles.alertBox}>
                                         <span className={styles.alertIcon}>⚕️</span>
                                         <div>
                                             <strong>Información sobre mascota senior</strong>
                                             <p>
-                                                Como es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. Puedes subir su certificado médico aquí mismo o después desde tu cuenta. 🐾💙
+                                                Como {pet.name} es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙
                                             </p>
+                                            <p className={styles.helpText}>
+                                                Puedes subir su certificado médico vigente (no mayor a 3 meses) aquí mismo o enviarlo más tarde desde tu panel de usuario.
+                                            </p>
+
                                             <label className={styles.fileUploadLabel}>
                                                 <input
                                                     type="file"
                                                     accept=".pdf,image/jpeg,image/png"
-                                                    onChange={(e) => handleVetCertificateChange(actualIndex, e)}
+                                                    onChange={(e) => handleVetCertificateChange(index, e)}
                                                     className={styles.fileInput}
                                                 />
                                                 <div className={styles.fileUploadBox}>
@@ -699,7 +432,8 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                                     ) : (
                                                         <>
                                                             <span className={styles.fileIcon}>📄</span>
-                                                            <span className={styles.uploadText}>Subir certificado</span>
+                                                            <span className={styles.uploadText}>Subir certificado (opcional ahora)</span>
+                                                            <span className={styles.helpText}>PDF/JPG/PNG, máx 5MB</span>
                                                         </>
                                                     )}
                                                 </div>
@@ -707,23 +441,11 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                         </div>
                                     </div>
                                 )}
+                                
+                                {index < pets.length - 1 && <hr className={styles.divider} />}
                             </div>
                         );
                     })}
-
-                    {/* Botón Añadir otra mascota */}
-                    {pets.length < 3 && (
-                        <div className={styles.addPetContainer}>
-                            <button
-                                type="button"
-                                className={styles.addPetButton}
-                                onClick={addExtraPet}
-                            >
-                                +
-                            </button>
-                            <span className={styles.addPetLabel}>Añadir otra mascota</span>
-                        </div>
-                    )}
 
                     <button
                         type="submit"

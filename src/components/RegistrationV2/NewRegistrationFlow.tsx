@@ -52,7 +52,7 @@ interface RegistrationData {
         email: string;
         password?: string;
     };
-    petBasic?: {
+    petBasic?: Array<{
         petType: 'perro' | 'gato';
         petName: string;
         petAge: number;
@@ -61,7 +61,7 @@ interface RegistrationData {
         isMixed?: boolean;
         waitingPeriodDays?: number;
         waitingPeriodEnd?: string;
-    };
+    }>;
     planId?: string;
     paymentCompleted?: boolean;
     profile?: any;
@@ -184,18 +184,36 @@ export default function NewRegistrationFlow() {
                                 },
                                 // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
                                 petBasic: (() => {
-                                    const dbPetName = userData.pet_name || userData.petName;
-                                    const msPetName = currentMember.customFields?.['pet-name'];
-                                    const petName = dbPetName || msPetName;
-                                    if (petName) {
-                                        return {
-                                            petType: (userData.pet_type || userData.petType || currentMember.customFields?.['pet-type'] || 'perro') as 'perro' | 'gato',
-                                            petName: petName,
-                                            petAge: Number(userData.pet_age || userData.petAge || currentMember.customFields?.['pet-age'] || 0),
-                                            petAgeUnit: (userData.pet_age_unit || userData.petAgeUnit || currentMember.customFields?.['pet-age-unit'] || 'years') as 'years' | 'months',
-                                        };
+                                    const pets: any[] = [];
+                                    const cf = currentMember.customFields || {};
+
+                                    for (let i = 1; i <= 3; i++) {
+                                        const name = cf[`pet-${i}-name`];
+                                        if (name) {
+                                            pets.push({
+                                                petName: name,
+                                                petType: (cf[`pet-${i}-type`] || 'perro') as 'perro' | 'gato',
+                                                petAge: Number(cf[`pet-${i}-age`] || 0),
+                                                petAgeUnit: (cf[`pet-${i}-age-unit`] || 'years') as 'years' | 'months'
+                                            });
+                                        }
                                     }
-                                    return undefined;
+
+                                    if (pets.length === 0) {
+                                        const dbPetName = userData?.pet_name || userData?.petName;
+                                        const msPetName = cf['pet-name'];
+                                        const petName = dbPetName || msPetName;
+                                        if (petName) {
+                                            pets.push({
+                                                petType: (userData?.pet_type || userData?.petType || cf['pet-type'] || 'perro') as 'perro' | 'gato',
+                                                petName: petName,
+                                                petAge: Number(userData?.pet_age || userData?.petAge || cf['pet-age'] || 0),
+                                                petAgeUnit: (userData?.pet_age_unit || userData?.petAgeUnit || cf['pet-age-unit'] || 'years') as 'years' | 'months',
+                                            });
+                                        }
+                                    }
+
+                                    return pets.length > 0 ? pets : undefined;
                                 })(),
                                 profile: userData.first_name ? {
                                     firstName: userData.first_name,
@@ -244,8 +262,9 @@ export default function NewRegistrationFlow() {
                             try {
                                 const backup = localStorage.getItem('petBasicBackup');
                                 if (backup) {
-                                    loadedData.petBasic = JSON.parse(backup);
-                                    console.log('💾 [loadSavedState] petBasic recuperado de localStorage:', loadedData.petBasic?.petName);
+                                    const parsedBackup = JSON.parse(backup);
+                                    loadedData.petBasic = Array.isArray(parsedBackup) ? parsedBackup : [parsedBackup];
+                                    console.log('💾 [loadSavedState] petBasic recuperado de localStorage:', loadedData.petBasic.length, 'mascotas');
                                 }
                             } catch (e) { /* localStorage no disponible */ }
                         }
@@ -433,12 +452,13 @@ export default function NewRegistrationFlow() {
                 registration_step: step,
             };
 
-            // Agregar datos de mascota (básicos)
-            if (data.petBasic) {
-                userData.pet_type = data.petBasic.petType;
-                userData.pet_name = data.petBasic.petName;
-                userData.pet_age = data.petBasic.petAge;
-                userData.pet_age_unit = data.petBasic.petAgeUnit;
+            // Agregar datos de mascota (básicos) - Solo la primera para la tabla users principal
+            if (data.petBasic && data.petBasic.length > 0) {
+                const firstPet = data.petBasic[0];
+                userData.pet_type = firstPet.petType;
+                userData.pet_name = firstPet.petName;
+                userData.pet_age = firstPet.petAge;
+                userData.pet_age_unit = firstPet.petAgeUnit;
             }
 
             // Agregar datos de perfil
@@ -469,10 +489,11 @@ export default function NewRegistrationFlow() {
             console.log('📝 [saveProgress] Datos que se enviarán:', {
                 step,
                 hasProfile: !!data.profile,
-                hasPetBasic: !!data.petBasic,
+                hasPetBasic: !!data.petBasic && data.petBasic.length > 0,
+                petBasicCount: data.petBasic?.length || 0,
                 profileFirstName: data.profile?.firstName,
                 profileCurp: data.profile?.curp,
-                petBasicName: data.petBasic?.petName,
+                petBasicName: data.petBasic?.[0]?.petName,
                 userDataKeys: Object.keys(userData).filter(k => userData[k] !== undefined && userData[k] !== null)
             });
 
@@ -715,14 +736,14 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    const handleStep2Complete = async (data: { petType: 'perro' | 'gato'; petName: string; petAge: number; petAgeUnit: 'years' | 'months' }) => {
-        const newData = { ...registrationData, petBasic: data };
+    const handleStep2Complete = async (pets: Array<{ petType: 'perro' | 'gato'; petName: string; petAge: number; petAgeUnit: 'years' | 'months' }>) => {
+        const newData = { ...registrationData, petBasic: pets };
         setRegistrationData(newData);
 
         // Backup inmediato en localStorage (sobrevive redirect de Stripe)
         try {
-            localStorage.setItem('petBasicBackup', JSON.stringify(data));
-            console.log('💾 [Step2] petBasic guardado en localStorage:', data.petName);
+            localStorage.setItem('petBasicBackup', JSON.stringify(pets));
+            console.log('💾 [Step2] petBasic guardado en localStorage:', pets.length, 'mascotas');
         } catch (e) { /* localStorage no disponible */ }
 
         // Guardar en Supabase - Siguiente paso es el 3
@@ -730,14 +751,28 @@ export default function NewRegistrationFlow() {
 
         // Actualizar Memberstack (incluir datos de mascota como backup para sobrevivir el redirect de Stripe)
         if (member && window.$memberstackDom) {
+            const customFields: Record<string, any> = {
+                'registration-step': 3,
+                'total-pets': String(pets.length)
+            };
+
+            // Mapear cada mascota a sus campos indexados
+            pets.forEach((pet, index) => {
+                const i = index + 1;
+                customFields[`pet-${i}-name`] = pet.petName;
+                customFields[`pet-${i}-type`] = pet.petType;
+                customFields[`pet-${i}-age`] = String(pet.petAge);
+                // Si es la primera, también llenar los campos legacy por si acaso
+                if (index === 0) {
+                    customFields['pet-name'] = pet.petName;
+                    customFields['pet-type'] = pet.petType;
+                    customFields['pet-age'] = String(pet.petAge);
+                    customFields['pet-age-unit'] = pet.petAgeUnit;
+                }
+            });
+
             const { data: updatedMember } = await window.$memberstackDom.updateMember({
-                customFields: {
-                    'registration-step': 3,
-                    'pet-name': data.petName,
-                    'pet-type': data.petType,
-                    'pet-age': String(data.petAge),
-                    'pet-age-unit': data.petAgeUnit,
-                },
+                customFields
             });
             if (updatedMember) setMember(updatedMember);
         }
@@ -749,22 +784,24 @@ export default function NewRegistrationFlow() {
     const handleStep3Complete = async (planId: string, termsAcceptance?: any, referralCode?: string) => {
         let updatedPetBasic = registrationData.petBasic;
 
-        // Si hay código de referido, recalcular carencia de la mascota
-        if (referralCode && registrationData.petBasic) {
-            const calculation = calculateWaitingPeriod(
-                true, // isOriginal
-                !!registrationData.petBasic.isAdopted,
-                !!registrationData.petBasic.isMixed,
-                true // hasReferralCode
-            );
+        // Si hay código de referido, recalcular carencia de todas las mascotas
+        if (referralCode && registrationData.petBasic && Array.isArray(registrationData.petBasic)) {
+            updatedPetBasic = registrationData.petBasic.map((pet, index) => {
+                const calculation = calculateWaitingPeriod(
+                    index === 0, // isOriginal solo para la primera
+                    !!pet.isAdopted,
+                    !!pet.isMixed,
+                    true // hasReferralCode
+                );
+                
+                return {
+                    ...pet,
+                    waitingPeriodDays: calculation.days,
+                    waitingPeriodEnd: calculation.endDate
+                };
+            });
 
-            updatedPetBasic = {
-                ...registrationData.petBasic,
-                waitingPeriodDays: calculation.days,
-                waitingPeriodEnd: calculation.endDate
-            };
-
-            console.log('🎁 Beneficio de Embajador aplicado:', referralCode, calculation.days, 'días de carencia');
+            console.log('🎁 Beneficio de Embajador aplicado a todas las mascotas:', referralCode);
         }
 
         const newData = { 
@@ -987,16 +1024,22 @@ export default function NewRegistrationFlow() {
                 // 2. Preparar el objeto completo de la mascota
                 const { primaryPhoto, vetCertificate, ...restPetData } = petData;
 
-                // Recuperar petBasic desde registrationData solo para la primera mascota
+                // Recuperar petBasic desde registrationData para la mascota correspondiente
                 // O intentar recuperarlo de localStorage como backup
-                let petBasicSource: any = i === 0 ? (registrationData.petBasic || {}) : {};
+                let petBasicSource: any = (registrationData.petBasic && registrationData.petBasic[i]) || {};
                 
-                if (i === 0 && !petBasicSource.petName) {
+                if (!petBasicSource.petName) {
                     try {
                         const backup = localStorage.getItem('petBasicBackup');
                         if (backup) {
-                            petBasicSource = JSON.parse(backup);
-                            console.log('💾 [Step5] petBasic recuperado de localStorage:', petBasicSource?.petName);
+                            const parsedBackup = JSON.parse(backup);
+                            if (Array.isArray(parsedBackup) && parsedBackup[i]) {
+                                petBasicSource = parsedBackup[i];
+                                console.log(`💾 [Step5] petBasic[${i}] recuperado de localStorage:`, petBasicSource?.petName);
+                            } else if (i === 0 && !Array.isArray(parsedBackup)) {
+                                // Fallback para backup viejo de una sola mascota
+                                petBasicSource = parsedBackup;
+                            }
                         }
                     } catch (e) { /* localStorage no disponible */ }
                 }
@@ -1183,7 +1226,7 @@ export default function NewRegistrationFlow() {
                             case 6:
                                 return (
                                     <Step6Success
-                                        petName={registrationData.petBasic?.petName || ''}
+                                        petName={Array.isArray(registrationData.petBasic) ? (registrationData.petBasic[0]?.petName || '') : ''}
                                         member={member}
                                         userEmail={registrationData.account?.email}
                                     />

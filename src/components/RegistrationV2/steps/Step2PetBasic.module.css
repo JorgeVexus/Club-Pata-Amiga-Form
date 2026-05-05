@@ -479,6 +479,103 @@
     justify-content: center;
 }
 
+/* Multi-Pet Styles */
+.petCard {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 24px;
+    position: relative;
+    animation: fadeInScale 0.4s var(--ease-out-expo);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.petCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.petBadgeLabel {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--color-black);
+    color: var(--color-white);
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.removePetButton {
+    background: #fee2e2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 18px;
+}
+
+.removePetButton:hover {
+    background: #fecaca;
+    transform: scale(1.1);
+}
+
+.addPetButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: var(--color-white);
+    border: 2px dashed #cbd5e1;
+    border-radius: 24px;
+    padding: 20px;
+    width: 100%;
+    color: #64748b;
+    font-family: var(--font-body);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 32px;
+}
+
+.addPetButton:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+    background: #f0fdfa;
+}
+
+.addPetIcon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+.petBasicFields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+@media (max-width: 1023px) {
+    .petCard {
+        padding: 16px;
+        gap: 16px;
+    }
+}
+
 /* Mobile Adjustments */
 @media (max-width: 1023px) {
     .container { padding: 0.5rem 1rem; gap: 0.75rem; }

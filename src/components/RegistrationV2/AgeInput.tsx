@@ -12,14 +12,20 @@ export default function AgeInput({
     maxYears = 25 
 }: AgeInputProps) {
     const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const numValue = parseInt(e.target.value, 10);
-        if (isNaN(numValue) || numValue < 0) {
+        const val = e.target.value;
+        if (val === '') {
             onChange(0, unit);
-        } else {
-            // Validar máximos
-            const max = unit === 'years' ? maxYears : 300;
-            onChange(Math.min(numValue, max), unit);
+            return;
         }
+        
+        const numValue = parseInt(val, 10);
+        if (isNaN(numValue)) return;
+        
+        // Validar mínimos y máximos
+        const max = unit === 'years' ? maxYears : 300;
+        const clampedValue = Math.min(Math.max(0, numValue), max);
+        
+        onChange(clampedValue, unit);
     };
 
     const handleUnitChange = (newUnit: 'years' | 'months') => {
