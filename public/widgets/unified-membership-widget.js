@@ -1610,273 +1610,324 @@
             margin: 0;
         }
 
-        /* 🏆 DASHBOARD V3 (APPROVED DUAL CARD) */
-        .pata-approved-grid-new {
-            display: grid;
-            grid-template-columns: 1.2fr 0.8fr;
-            gap: 32px;
-            margin-bottom: 32px;
-        }
-
-        .pata-approved-left-new {
+        /* 🏆 DASHBOARD V3 (APPROVED DUAL CARD - NEO-BRUTALIST) */
+        .pata-approved-wrapper-new {
+            width: 100%;
+            min-height: auto !important;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            align-items: center;
+            background: transparent !important;
+            overflow: visible !important;
         }
 
-        .pata-approved-right-new {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .pata-carencia-title-new {
-            font-family: 'Fraiche', sans-serif;
-            font-size: clamp(32px, 5vw, 60px);
-            color: var(--pata-primary) !important;
-            margin: 0;
-            text-transform: lowercase;
-            line-height: 1;
-        }
-
-        .pata-carencia-text-new {
-            font-family: 'Outfit', sans-serif;
-            font-size: 20px;
-            font-weight: 600;
-            color: #000;
-            margin: 0;
-        }
-
-        .pata-progress-container-new {
-            margin-top: 10px;
-        }
-
-        .pata-progress-header-new {
+        .pata-container-new {
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0;
             display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 16px;
+            flex-direction: column;
         }
 
-        .pata-bar-track-new {
-            height: 16px;
-            background: #fff;
-            border: 2px solid #000;
-            border-radius: 50px;
-            overflow: hidden;
-            margin-bottom: 15px;
+        .pata-header-new {
+            text-align: left;
+            margin-bottom: 30px;
+            color: #000;
         }
 
-        .pata-bar-fill-new {
-            height: 100%;
-            background: var(--pata-primary);
-            border-right: 2px solid #000;
-            transition: width 1s var(--pata-spring);
+        .pata-header-new h1 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: clamp(40px, 8vw, 80px);
+            margin: 0;
+            line-height: 0.9;
+            color: #000 !important;
+            text-transform: lowercase;
         }
 
-        .pata-days-remaining-new {
+        .pata-header-sub-new {
             font-family: 'Outfit', sans-serif;
             font-size: 18px;
-            color: #000;
-            margin: 0;
+            margin-top: 12px;
+            font-weight: 500;
+            opacity: 0.8;
         }
 
-        .pata-days-remaining-new strong {
-            color: var(--pata-primary);
-            font-size: 22px;
-        }
-
-        /* Card Photo */
-        .pata-pet-card-photo-new {
-            background: var(--pata-primary);
+        .pata-card-new {
+            background: #FFFFFF;
             border: 3px solid #000;
-            border-radius: 35px;
-            overflow: hidden;
-            aspect-ratio: 1/1;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
-        }
-
-        .pata-pet-card-photo-new img {
+            border-radius: 60px;
+            padding: 50px;
+            box-shadow: 15px 15px 0 rgba(0,0,0,0.03);
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* Card Info */
-        .pata-pet-card-info-new {
-            background: var(--pata-primary);
-            border: 3px solid #000;
-            border-radius: 35px;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: #fff;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
-        }
-
-        .pata-pet-name-new {
-            font-family: 'Fraiche', sans-serif;
-            font-size: 28px;
-            margin: 0 0 15px 0;
-            text-transform: lowercase;
-            color: white !important;
-        }
-
-        .pata-pet-tags-new {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-
-        .pata-pet-tag-item-new {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-weight: 700;
-            font-size: 16px;
-            color: white;
-        }
-
-        .pata-pet-tag-item-new::before {
-            content: '•';
-            color: #000;
-            font-size: 20px;
-        }
-
-        .pata-btn-details-new {
-            background: var(--pata-action);
-            border: 2px solid #000;
-            border-radius: 50px;
-            padding: 10px 20px;
-            font-family: 'Fraiche', sans-serif;
-            font-weight: 900;
-            font-size: 16px;
-            cursor: pointer;
-            color: #000;
-            text-transform: lowercase;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .pata-btn-details-new:hover {
-            transform: scale(1.05);
-            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-        }
-
-        /* Banner Yellow */
-        .pata-banner-yellow-new {
-            background: #FFBD00;
-            border: 3px solid #000;
-            border-radius: 25px;
-            padding: 24px 32px;
-            display: flex;
-            align-items: center;
-            gap: 24px;
-            margin-top: 20px;
-        }
-
-        .pata-banner-icon-new {
-            font-size: 32px;
-            flex-shrink: 0;
-        }
-
-        .pata-banner-text-new {
-            color: #000;
+            box-sizing: border-box;
+            position: relative;
             text-align: left;
         }
 
-        .pata-banner-text-new h4 {
-            margin: 0 0 4px 0;
+        @media (max-width: 768px) {
+            .pata-card-new {
+                padding: 25px;
+                border-radius: 35px;
+            }
+        }
+
+        .pata-approved-grid-new {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .pata-approved-banner-new {
+            background: #FFBD00;
+            border: 3px solid #000;
+            border-radius: 20px;
+            padding: 15px 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .pata-banner-icon-new {
+            font-size: 24px;
+        }
+
+        .pata-banner-content-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .pata-approved-grid-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            width: 100%;
+            align-items: stretch;
+        }
+
+        @media (max-width: 900px) {
+            .pata-approved-grid-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pata-approved-card-new {
+            background: #FFFFFF;
+            border: 3px solid #000;
+            border-radius: 35px;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
+        }
+
+        .pata-approved-card-left {
+            aspect-ratio: 1/1;
+        }
+
+        .pata-approved-pet-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .pata-approved-card-right {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background: #FFFFFF;
+        }
+
+        .pata-approved-info-box {
+            margin-bottom: 30px;
+        }
+
+        .pata-approved-pet-name {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 45px;
+            color: #000 !important;
+            margin: 0;
+            text-transform: lowercase;
+            line-height: 1.1;
+        }
+
+        .pata-approved-pet-status {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            color: #15BEB2;
+            margin: 8px 0 0 0;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pata-approved-progress-section {
+            margin-top: auto;
+        }
+
+        .pata-approved-progress-text {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #000;
+            margin-bottom: 20px;
+        }
+
+        .pata-approved-progress-container {
+            height: 16px;
+            background: #F0F0F0;
+            border: 2px solid #000;
+            border-radius: 50px;
+            overflow: hidden;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .pata-approved-progress-bar {
+            height: 100%;
+            background: #15BEB2;
+            border-right: 2px solid #000;
+            transition: width 1s ease-in-out;
+        }
+
+        .pata-approved-progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            color: #999;
+            text-transform: uppercase;
+        }
+
+        .pata-approved-btn-details {
+            width: 100%;
+            background: #FFBD12;
+            border: 3px solid #000;
+            border-radius: 50px;
+            padding: 18px;
+            font-family: 'Fraiche', sans-serif;
             font-size: 18px;
             font-weight: 900;
-            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            color: #000;
+            text-transform: lowercase;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+            box-shadow: 4px 4px 0 #000;
         }
 
-        .pata-banner-text-new p {
-            margin: 0;
-            font-size: 15px;
-            font-weight: 600;
-            font-family: 'Outfit', sans-serif;
-            line-height: 1.4;
+        .pata-approved-btn-details:hover {
+            transform: translateY(-2px);
+            box-shadow: 6px 6px 0 #000;
         }
 
-        /* Tabs Updates */
+        /* Tabs SVGs fix */
         .pata-tabs-new {
             display: flex;
             gap: 16px;
-            margin-bottom: 32px;
+            margin-bottom: 40px;
             overflow-x: auto;
-            padding: 4px;
+            padding: 10px 5px;
             scrollbar-width: none;
             justify-content: flex-start;
         }
 
         .pata-tab-new {
             background: #fff;
-            border: 2.5px solid #E2E8F0;
+            border: 3px solid #E2E8F0;
             border-radius: 50px;
-            padding: 8px 16px 8px 8px;
+            padding: 10px 24px 10px 10px;
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
-            transition: all 0.2s var(--pata-spring);
-            min-width: 140px;
-            color: #94A3B8;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+            min-width: 160px;
         }
 
         .pata-tab-new.tab-active {
-            border-color: var(--pata-primary);
-            color: var(--pata-primary);
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.05);
+            border-color: #15BEB2;
+            background: #fff;
+            box-shadow: 6px 6px 0 rgba(21, 190, 178, 0.2);
+            transform: translateY(-2px);
         }
 
         .pata-tab-icon-new {
-            width: 40px;
-            height: 40px;
-            background: #E2E8F0;
+            width: 44px;
+            height: 44px;
+            background: #F1F5F9;
+            border: 2px solid #E2E8F0;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-shrink: 0;
-            font-size: 20px;
+            transition: all 0.3s ease;
         }
 
         .pata-tab-new.tab-active .pata-tab-icon-new {
-            background: var(--pata-primary);
-            color: #fff;
+            background: #15BEB2;
+            border-color: #000;
+        }
+
+        .pata-tab-icon-new svg {
+            width: 22px;
+            height: 22px;
         }
 
         .pata-tab-name-new {
-            font-weight: 900;
-            font-size: 18px;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Fraiche', sans-serif;
+            font-weight: 400;
+            font-size: 20px;
+            color: #94A3B8;
+            text-transform: lowercase;
         }
 
-        @media (max-width: 900px) {
-            .pata-approved-grid-new {
-                grid-template-columns: 1fr;
-            }
-            .pata-approved-right-new {
-                grid-template-columns: 1fr;
-            }
-            .pata-pet-card-photo-new {
-                aspect-ratio: auto;
-                height: 300px;
-            }
-            .pata-banner-yellow-new {
-                flex-direction: column;
-                text-align: center;
-                padding: 24px;
-            }
-            .pata-banner-text-new {
-                text-align: center;
-            }
+        .pata-tab-new.tab-active .pata-tab-name-new {
+            color: #15BEB2;
+        }
+
+        /* Footer Banner in Shell */
+        .pata-footer-banner-new {
+            margin-top: 40px;
+            background: #FFBD12;
+            border: 3px solid #000;
+            border-radius: 25px;
+            padding: 25px 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+        }
+
+        .pata-footer-banner-new svg {
+            width: 40px;
+            height: 40px;
+            flex-shrink: 0;
+        }
+
+        .pata-footer-text-new h4 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            margin: 0 0 5px 0;
+            text-transform: lowercase;
+        }
+
+        .pata-footer-text-new p {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            margin: 0;
+            font-weight: 600;
         }
 
         .pata-senior-badge {
@@ -3432,10 +3483,7 @@
 
         renderUserPendingView(firstName) {
             return `
-                <div class="pata-pending-wrapper">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
-                    
-                    <main class="pata-pending-container">
+                <main class="pata-pending-container">
                         <header class="pata-pending-header">
                             <h1>¡hola, ${firstName}!</h1>
                             <div class="pata-pending-header-sub">
