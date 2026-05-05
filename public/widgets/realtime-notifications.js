@@ -1,21 +1,15 @@
 /**
- * 🔔 Club Pata Amiga - Real-Time Notifications Widget
+ * 🔔 Club Pata Amiga - Neo-Brutalist Real-Time Notifications Widget
  * 
- * Widget simple y enfocado solo en notificaciones en tiempo real.
- * Usa Supabase Realtime para recibir notificaciones instantáneamente.
+ * Widget de notificaciones en tiempo real con diseño Neo-Brutalista.
+ * Utiliza polling optimizado contra la API segura para evitar problemas de RLS.
  * 
  * USO EN WEBFLOW:
- * 
  * 1. En el Head Code de Webflow, pega:
- * 
- * <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
  * <script src="https://app.pataamiga.mx/widgets/realtime-notifications.js"></script>
  * 
- * 2. Añade un div donde quieras la campanita:
- * 
+ * 2. Añade un div donde quieras la campanita en el Nav Bar:
  * <div id="realtime-bell"></div>
- * 
- * El widget detecta automáticamente el usuario de Memberstack.
  */
 
 (function () {
@@ -24,9 +18,7 @@
     // ========== CONFIGURACIÓN ==========
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
-        supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
-        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q',
-        // Mapeo de rutas de backend -> rutas de Webflow
+        // Mapeo de rutas de backend -> rutas de Webflow (Smart Linking)
         urls: {
             // Dashboard y Home de usuario
             '/miembros/dashboard': window.PATA_AMIGA_CONFIG?.dashboardUrl || '/pets/pet-waiting-period',
@@ -39,88 +31,104 @@
         }
     };
 
-    // ========== ESTILOS ==========
+    // ========== ESTILOS NEO-BRUTALISTAS ==========
     const STYLES = `
-        /* Container - ahora es inline para el navbar */
+        /* Importar fuente Outfit por si no está cargada */
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
+
+        /* Container - inline para el navbar */
         #realtime-bell-widget {
             position: relative;
             display: inline-block;
             font-family: 'Outfit', -apple-system, sans-serif;
+            color: #000000;
         }
 
         .rtbell-button {
-            width: 44px;
-            height: 44px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: transparent;
-            border: none;
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            box-shadow: 2px 2px 0px #000000;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             position: relative;
             transition: all 0.2s ease;
+            outline: none;
         }
 
         .rtbell-button:hover {
-            background: rgba(0, 187, 180, 0.1);
-            transform: scale(1.05);
+            background: #FE8F15; /* Naranja primario */
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .rtbell-button:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000000;
         }
 
         .rtbell-button.shake {
-            animation: rtShake 0.6s ease-in-out;
+            animation: rtShake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
 
         @keyframes rtShake {
-            0%, 100% { transform: rotate(0deg); }
-            20% { transform: rotate(-20deg); }
-            40% { transform: rotate(20deg); }
-            60% { transform: rotate(-15deg); }
-            80% { transform: rotate(15deg); }
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
         .rtbell-icon {
-            font-size: 24px;
+            font-size: 22px;
+            margin-top: 2px;
         }
 
         .rtbell-badge {
             position: absolute;
-            top: 2px;
-            right: 2px;
-            min-width: 18px;
-            height: 18px;
+            top: -5px;
+            right: -5px;
+            min-width: 22px;
+            height: 22px;
             background: #FF4444;
             color: white;
-            font-size: 10px;
-            font-weight: 700;
-            border-radius: 9px;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0 5px;
-            border: 2px solid white;
+            padding: 0 6px;
+            border: 2px solid #000000;
+            box-shadow: 2px 2px 0px #000000;
             animation: rtPulse 2s infinite;
         }
 
         @keyframes rtPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .rtbell-dropdown {
             position: absolute;
-            top: calc(100% + 10px);
+            top: calc(100% + 15px);
             right: 0;
-            width: 350px;
-            max-height: 400px;
-            background: white;
+            width: 380px;
+            max-height: 450px;
+            background: #FFFFFF;
+            border: 3px solid #000000;
             border-radius: 16px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.2);
-            overflow: hidden;
+            box-shadow: 8px 8px 0px #000000;
+            display: flex;
+            flex-direction: column;
             opacity: 0;
             transform: translateY(-10px);
             pointer-events: none;
-            transition: all 0.2s ease;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10000;
         }
 
@@ -130,11 +138,11 @@
             pointer-events: auto;
         }
 
-
         .rtbell-header {
             padding: 16px 20px;
-            background: linear-gradient(135deg, #00BBB4, #00a09a);
-            color: white;
+            background: #00BBB4; /* Turquesa */
+            border-bottom: 3px solid #000000;
+            border-radius: 13px 13px 0 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -142,61 +150,115 @@
 
         .rtbell-header h3 {
             margin: 0;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 18px;
+            font-weight: 800;
+            color: #000000;
+            letter-spacing: -0.5px;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
         }
 
         .rtbell-mark-all {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            font-size: 11px;
-            padding: 6px 10px;
-            border-radius: 6px;
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            color: #000000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 12px;
+            border-radius: 50px;
             cursor: pointer;
+            box-shadow: 2px 2px 0px #000000;
+            transition: all 0.1s;
         }
 
         .rtbell-mark-all:hover {
-            background: rgba(255,255,255,0.3);
+            background: #FE8F15;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000000;
+        }
+
+        .rtbell-mark-all:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000000;
         }
 
         .rtbell-list {
-            max-height: 300px;
+            max-height: 350px;
             overflow-y: auto;
+            background: #FFF9F2; /* Fondo cálido */
+            border-radius: 0 0 13px 13px;
+        }
+        
+        /* Custom Scrollbar */
+        .rtbell-list::-webkit-scrollbar {
+            width: 8px;
+        }
+        .rtbell-list::-webkit-scrollbar-track {
+            background: #FFF9F2;
+            border-left: 2px solid #000000;
+        }
+        .rtbell-list::-webkit-scrollbar-thumb {
+            background: #00BBB4;
+            border-left: 2px solid #000000;
         }
 
         .rtbell-empty {
-            padding: 40px;
+            padding: 50px 20px;
             text-align: center;
-            color: #999;
+            color: #000000;
         }
 
         .rtbell-empty-icon {
             font-size: 48px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            display: inline-block;
+            transform: rotate(-10deg);
+        }
+
+        .rtbell-empty p {
+            font-weight: 600;
+            font-size: 15px;
+            margin: 0;
         }
 
         .rtbell-item {
             display: flex;
-            gap: 12px;
-            padding: 14px 20px;
-            border-bottom: 1px solid #f0f0f0;
+            gap: 15px;
+            padding: 16px 20px;
+            border-bottom: 2px solid #000000;
             cursor: pointer;
             transition: background 0.2s;
+            background: #FFFFFF;
+        }
+
+        .rtbell-item:last-child {
+            border-bottom: none;
         }
 
         .rtbell-item:hover {
-            background: #f9f9f9;
+            background: #f0f0f0;
         }
 
         .rtbell-item.unread {
-            background: #f0fffe;
-            border-left: 3px solid #00BBB4;
+            background: #E6F8F7; /* Turquesa muy claro */
+        }
+        
+        .rtbell-item.unread:hover {
+            background: #CCF0EE;
         }
 
         .rtbell-item-icon {
-            font-size: 24px;
+            font-size: 28px;
             flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            box-shadow: 2px 2px 0px #000000;
         }
 
         .rtbell-item-content {
@@ -205,53 +267,88 @@
         }
 
         .rtbell-item-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
+            font-size: 15px;
+            font-weight: 700;
+            color: #000000;
             margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rtbell-unread-dot {
+            width: 8px;
+            height: 8px;
+            background: #FF4444;
+            border-radius: 50%;
+            border: 1px solid #000000;
+            display: inline-block;
         }
 
         .rtbell-item-message {
-            font-size: 12px;
-            color: #666;
+            font-size: 13px;
+            color: #333333;
+            line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
+            font-weight: 500;
         }
 
         .rtbell-item-time {
             font-size: 11px;
-            color: #999;
-            margin-top: 4px;
+            color: #666666;
+            margin-top: 6px;
+            font-weight: 700;
+            text-transform: uppercase;
         }
 
-        /* Toast */
+        /* TOAST NEO-BRUTALISTA */
         .rtbell-toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #00BBB4, #00a09a);
-            color: white;
-            padding: 16px 24px;
+            background: #FE8F15;
+            color: #000000;
+            padding: 16px 20px;
             border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 187, 180, 0.5);
+            border: 3px solid #000000;
+            box-shadow: 6px 6px 0px #000000;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 15px;
             z-index: 100000;
-            animation: rtToastIn 0.4s ease;
-            max-width: 320px;
+            animation: rtToastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 350px;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
         }
 
         @keyframes rtToastIn {
-            from { opacity: 0; transform: translateX(100%); }
+            from { opacity: 0; transform: translateX(120%); }
             to { opacity: 1; transform: translateX(0); }
+        }
+
+        .rtbell-toast.fade-out {
+            animation: rtToastOut 0.4s ease forwards;
+        }
+
+        @keyframes rtToastOut {
+            to { opacity: 0; transform: translateX(120%); }
         }
 
         .rtbell-toast-icon {
             font-size: 28px;
             animation: rtRing 0.5s ease;
+            background: #FFFFFF;
+            width: 40px;
+            height: 40px;
+            border: 2px solid #000000;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         @keyframes rtRing {
@@ -263,19 +360,20 @@
 
         .rtbell-toast-text {
             font-size: 14px;
-            font-weight: 600;
+            font-weight: 700;
+            line-height: 1.3;
         }
 
-        /* MODAL DE DETALLES */
+        /* MODAL DE DETALLES NEO-BRUTALISTA */
         .rtbell-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(4px);
-            z-index: 20000;
+            z-index: 200000;
             display: none;
             align-items: center;
             justify-content: center;
@@ -289,16 +387,18 @@
         }
 
         .rtbell-modal {
-            background: white;
+            background: #FFFFFF;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
+            border: 4px solid #000000;
             border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 35px 30px;
+            box-shadow: 10px 10px 0px #000000;
             text-align: center;
             transform: scale(0.9);
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
+            font-family: 'Outfit', sans-serif;
         }
 
         .rtbell-modal-overlay.open .rtbell-modal {
@@ -309,73 +409,92 @@
             position: absolute;
             top: 15px;
             right: 15px;
-            background: #f0f0f0;
-            border: none;
-            width: 30px;
-            height: 30px;
+            background: #FFFFFF;
+            border: 2px solid #000000;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 20px;
+            font-weight: bold;
             cursor: pointer;
-            color: #666;
+            color: #000000;
             display: flex;
             align-items: center;
             justify-content: center;
+            box-shadow: 2px 2px 0px #000000;
+            transition: all 0.1s;
         }
 
         .rtbell-modal-close:hover {
-            background: #e0e0e0;
+            background: #FF4444;
+            color: white;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px #000000;
+        }
+        
+        .rtbell-modal-close:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px #000000;
         }
 
         .rtbell-modal-icon {
-            font-size: 48px;
+            font-size: 56px;
             margin-bottom: 20px;
-            display: block;
+            display: inline-block;
+            filter: drop-shadow(3px 3px 0px #000000);
         }
 
         .rtbell-modal-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 12px;
-            line-height: 1.3;
+            font-size: 22px;
+            font-weight: 800;
+            color: #000000;
+            margin-bottom: 15px;
+            line-height: 1.2;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
         }
 
         .rtbell-modal-message {
-            font-size: 15px;
-            color: #666;
+            font-size: 16px;
+            color: #333333;
             line-height: 1.6;
-            margin-bottom: 25px;
+            margin-bottom: 30px;
+            font-weight: 500;
         }
 
         .rtbell-modal-btn {
             background: #00BBB4;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
+            color: #FFFFFF;
+            border: 3px solid #000000;
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 800;
             cursor: pointer;
             width: 100%;
-            transition: background 0.2s;
+            box-shadow: 4px 4px 0px #000000;
+            transition: all 0.1s;
+            font-family: 'Outfit', sans-serif;
         }
 
         .rtbell-modal-btn:hover {
             background: #00a09a;
+            transform: translate(-2px, -2px);
+            box-shadow: 6px 6px 0px #000000;
         }
-
-        /* Status indicator - oculto para navbar */
-        .rtbell-status {
-            display: none;
+        
+        .rtbell-modal-btn:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #000000;
         }
 
         @media (max-width: 480px) {
             .rtbell-dropdown {
                 position: fixed;
                 bottom: 80px;
-                right: 10px;
-                left: 10px;
+                right: 15px;
+                left: 15px;
                 width: auto;
+                box-shadow: 0px -4px 20px rgba(0,0,0,0.2);
             }
         }
     `;
@@ -384,43 +503,70 @@
     class RealtimeNotifications {
         constructor() {
             this.userId = null;
-            this.supabase = null;
-            this.channel = null;
             this.notifications = [];
             this.isOpen = false;
+            this.pollingStarted = false;
+            this.audioContext = null;
+            this.audioUnlocked = false;
+            this.initialLoadComplete = false; // Bandera para evitar sonidos en el primer load
         }
 
         async init() {
-            console.log('🔔 Notificaciones: Iniciando...');
+            console.log('🔔 [Neo-Brutalist] Notificaciones: Iniciando...');
 
-            // Inyectar estilos
             this.injectStyles();
+            this.setupAudioContext();
 
-            // Esperar Memberstack
             this.userId = await this.getMemberstackUser();
             if (!this.userId) {
-                console.log('🔔 Usuario no logueado, widget deshabilitado');
+                console.log('🔔 Usuario no logueado en Memberstack, widget deshabilitado');
                 return;
             }
 
-            // Renderizar
             this.render();
-
-            // Cargar notificaciones
-            await this.loadNotifications();
-
-            // Iniciar polling
+            await this.loadNotifications(true); // true = es la carga inicial
             this.startPolling();
 
-            console.log('✅ Notificaciones listo para:', this.userId);
+            console.log('✅ Notificaciones listas para:', this.userId);
         }
 
         injectStyles() {
-            if (document.getElementById('rtbell-styles')) return;
+            if (document.getElementById('rtbell-neo-styles')) return;
             const style = document.createElement('style');
-            style.id = 'rtbell-styles';
+            style.id = 'rtbell-neo-styles';
             style.textContent = STYLES;
             document.head.appendChild(style);
+        }
+
+        // Habilitar audio solo después de interacción del usuario para cumplir con las políticas del navegador
+        setupAudioContext() {
+            const unlockAudio = () => {
+                if (!this.audioUnlocked) {
+                    try {
+                        const AudioContext = window.AudioContext || window.webkitAudioContext;
+                        this.audioContext = new AudioContext();
+                        // Crear un oscilador silencioso para desbloquear el contexto en iOS/Chrome
+                        const osc = this.audioContext.createOscillator();
+                        osc.connect(this.audioContext.destination);
+                        osc.start(0);
+                        osc.stop(0);
+                        
+                        if (this.audioContext.state === 'suspended') {
+                            this.audioContext.resume();
+                        }
+                        this.audioUnlocked = true;
+                        
+                        // Remover listeners una vez desbloqueado
+                        document.removeEventListener('click', unlockAudio);
+                        document.removeEventListener('touchstart', unlockAudio);
+                    } catch (e) {
+                        console.log('Audio API no soportada', e);
+                    }
+                }
+            };
+
+            document.addEventListener('click', unlockAudio);
+            document.addEventListener('touchstart', unlockAudio);
         }
 
         async getMemberstackUser() {
@@ -432,7 +578,7 @@
                         if (result?.data?.id) {
                             return result.data.id;
                         }
-                    } catch (e) { }
+                    } catch (e) {}
                 }
                 await new Promise(r => setTimeout(r, 200));
                 attempts++;
@@ -444,89 +590,86 @@
             if (this.pollingStarted) return;
             this.pollingStarted = true;
 
-            // Polling cada 10 segundos
+            // Polling cada 12 segundos para ser amigables con el servidor
             setInterval(async () => {
-                const prevFirstId = this.notifications[0]?.id;
-
-                await this.loadNotifications();
-
-                // Detectar si hay nuevas notificaciones
-                if (this.notifications.length > 0 &&
-                    this.notifications[0]?.id !== prevFirstId &&
-                    prevFirstId !== undefined) {
-                    // Nueva notificación detectada!
-                    const newNotif = this.notifications[0];
-                    if (!newNotif.is_read) {
-                        this.showToast(newNotif.title || 'Nueva notificación');
-                        this.playSound();
-                        this.shakeBell();
-                    }
-                }
-            }, 10000);
+                await this.loadNotifications(false);
+            }, 12000);
         }
 
-
-        handleNewNotification(notif) {
-            // Añadir al inicio
-            this.notifications.unshift(notif);
-
-            // Toast
-            this.showToast(notif.title || 'Nueva notificación');
-
-            // Sonido
-            this.playSound();
-
-            // Shake
-            this.shakeBell();
-
-            // Actualizar UI
-            this.updateUI();
-        }
-
-        handleUpdateNotification(notif) {
-            this.notifications = this.notifications.map(n =>
-                n.id === notif.id ? notif : n
-            );
-            this.updateUI();
-        }
-
-        async loadNotifications() {
+        async loadNotifications(isInitialLoad = false) {
             try {
-                const res = await fetch(CONFIG.apiUrl + '/api/notifications?userId=' + this.userId + '&limit=10');
+                const res = await fetch(`${CONFIG.apiUrl}/api/notifications?userId=${this.userId}&limit=10`);
                 const data = await res.json();
+                
                 if (data.success) {
-                    this.notifications = data.notifications || [];
+                    const newNotifications = data.notifications || [];
+                    
+                    // Si no es la carga inicial, buscar si hay notificaciones "nuevas" comparando con el estado anterior
+                    if (!isInitialLoad && this.initialLoadComplete) {
+                        // Buscar si el ID más reciente es nuevo y no está leído
+                        if (newNotifications.length > 0) {
+                            const latestNew = newNotifications[0];
+                            const latestOld = this.notifications[0];
+                            
+                            if (!latestOld || latestNew.id !== latestOld.id) {
+                                // Es una notificación completamente nueva
+                                if (!latestNew.is_read) {
+                                    this.triggerAlert(latestNew);
+                                }
+                            }
+                        }
+                    }
+                    
+                    this.notifications = newNotifications;
                     this.updateUI();
+                    
+                    if (isInitialLoad) {
+                        this.initialLoadComplete = true;
+                    }
                 }
             } catch (e) {
                 console.error('Error cargando notificaciones:', e);
             }
         }
 
+        triggerAlert(notif) {
+            this.showToast(notif);
+            this.playSound();
+            this.shakeBell();
+        }
+
         async markAsRead(id) {
             try {
-                await fetch(CONFIG.apiUrl + '/api/notifications/' + id + '/read', {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ userId: this.userId })
-                });
+                // Optimistic UI update
                 this.notifications = this.notifications.map(n =>
                     n.id === id ? { ...n, is_read: true } : n
                 );
                 this.updateUI();
-            } catch (e) { }
+
+                // Backend call
+                await fetch(`${CONFIG.apiUrl}/api/notifications/${id}/read`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId: this.userId })
+                });
+            } catch (e) {
+                console.error('Error marcando leída:', e);
+            }
         }
 
         async markAllAsRead() {
             try {
-                await fetch(CONFIG.apiUrl + '/api/notifications/mark-all-read', {
+                this.notifications = this.notifications.map(n => ({ ...n, is_read: true }));
+                this.updateUI();
+
+                await fetch(`${CONFIG.apiUrl}/api/notifications/mark-all-read`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ userId: this.userId })
                 });
-                this.notifications = this.notifications.map(n => ({ ...n, is_read: true }));
-                this.updateUI();
-            } catch (e) { }
+            } catch (e) {
+                console.error('Error marcando todas leídas:', e);
+            }
         }
 
         get unreadCount() {
@@ -536,33 +679,52 @@
         formatTime(dateStr) {
             const diff = Math.floor((Date.now() - new Date(dateStr)) / 60000);
             if (diff < 1) return 'Ahora';
-            if (diff < 60) return diff + 'm';
-            if (diff < 1440) return Math.floor(diff / 60) + 'h';
-            return Math.floor(diff / 1440) + 'd';
+            if (diff < 60) return `${diff}m`;
+            if (diff < 1440) return `${Math.floor(diff / 60)}h`;
+            return `${Math.floor(diff / 1440)}d`;
         }
 
-        showToast(message) {
+        showToast(notif) {
             const existing = document.querySelector('.rtbell-toast');
             if (existing) existing.remove();
 
             const toast = document.createElement('div');
             toast.className = 'rtbell-toast';
             toast.innerHTML = `
-                <span class="rtbell-toast-icon">🔔</span>
-                <span class="rtbell-toast-text">${message}</span>
+                <span class="rtbell-toast-icon">${notif.icon || '🔔'}</span>
+                <div class="rtbell-toast-content">
+                    <div class="rtbell-toast-text">${notif.title || 'Nueva notificación'}</div>
+                </div>
             `;
+            
+            // Clickeable para abrir
+            toast.addEventListener('click', () => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 400);
+                this.handleNotificationClick(notif);
+            });
+
             document.body.appendChild(toast);
 
-            setTimeout(() => toast.remove(), 4000);
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    toast.classList.add('fade-out');
+                    setTimeout(() => toast.remove(), 400);
+                }
+            }, 5000);
         }
 
         playSound() {
+            if (!this.audioUnlocked || !this.audioContext) return;
+
             try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const ctx = this.audioContext;
+                if (ctx.state === 'suspended') ctx.resume();
+                
                 const now = ctx.currentTime;
 
-                // Crear sonido de campanita con múltiples armónicos
-                const frequencies = [1200, 1800, 2400]; // Tonos de campana
+                // Sonido vibrante y claro (Acorde mayor)
+                const frequencies = [880, 1108.73, 1318.51]; // A5, C#6, E6
 
                 frequencies.forEach((freq, i) => {
                     const osc = ctx.createOscillator();
@@ -571,42 +733,39 @@
                     osc.connect(gain);
                     gain.connect(ctx.destination);
 
-                    osc.type = 'sine';
+                    osc.type = 'triangle'; // Un sonido más retro/8-bit que sine
                     osc.frequency.value = freq;
 
-                    // Volumen con decay (fade out natural)
-                    const volume = 0.15 / (i + 1);
-                    gain.gain.setValueAtTime(volume, now);
-                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    const volume = 0.1 / (i + 1);
+                    gain.gain.setValueAtTime(0, now);
+                    gain.gain.linearRampToValueAtTime(volume, now + 0.05);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
 
                     osc.start(now);
-                    osc.stop(now + 0.8);
+                    osc.stop(now + 0.6);
                 });
 
-                // Segundo toque de campana (eco)
+                // Chime secundario para dar "brillo"
                 setTimeout(() => {
                     try {
-                        const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
-                        const now2 = ctx2.currentTime;
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = 'sine';
+                        osc.frequency.value = 1760; // A6
+                        gain.gain.setValueAtTime(0, ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.05, ctx.currentTime + 0.02);
+                        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.4);
+                    } catch(e) {}
+                }, 150);
 
-                        [1200, 1600].forEach((freq, i) => {
-                            const osc = ctx2.createOscillator();
-                            const gain = ctx2.createGain();
-                            osc.connect(gain);
-                            gain.connect(ctx2.destination);
-                            osc.type = 'sine';
-                            osc.frequency.value = freq;
-                            gain.gain.setValueAtTime(0.08 / (i + 1), now2);
-                            gain.gain.exponentialRampToValueAtTime(0.001, now2 + 0.5);
-                            osc.start(now2);
-                            osc.stop(now2 + 0.5);
-                        });
-                    } catch (e) { }
-                }, 200);
-
-            } catch (e) { }
+            } catch (e) {
+                console.error("Error al reproducir sonido", e);
+            }
         }
-
 
         shakeBell() {
             const btn = document.querySelector('.rtbell-button');
@@ -616,38 +775,30 @@
             }
         }
 
-        updateStatus() {
-            const status = document.querySelector('.rtbell-status');
-            if (status) {
-                status.textContent = this.connected ? '● En vivo' : '○ Conectando...';
-                status.className = 'rtbell-status' + (this.connected ? ' connected' : '');
-            }
-        }
-
-        // ================= NUEVA LÓGICA DE CLICK INTELIGENTE =================
+        // ================= LÓGICA DE CLICK INTELIGENTE =================
         handleNotificationClick(notif) {
-            // 1. Marcar como leída
+            // 1. Marcar como leída inmediatamente
             if (!notif.is_read) {
                 this.markAsRead(notif.id);
             }
 
-            // 2. Revisar si hay Link Configurado
+            // 2. Resolver URL
             const incomingLink = notif.link;
 
-            // Si el link coincide con una ruta mapeada en CONFIG.urls, redirigir allí
+            // Si coincide con ruta mapeada internamente
             if (incomingLink && CONFIG.urls[incomingLink]) {
-                console.log(`🔀 Redirigiendo URL interna: ${incomingLink} -> ${CONFIG.urls[incomingLink]}`);
+                console.log(`🔀 Rutéo inteligente: ${incomingLink} -> ${CONFIG.urls[incomingLink]}`);
                 window.location.href = CONFIG.urls[incomingLink];
                 return;
             }
 
-            // Si es un link externo absoluto (http...), abrirlo
+            // Si es absoluta
             if (incomingLink && (incomingLink.startsWith('http') || incomingLink.startsWith('https'))) {
                 window.location.href = incomingLink;
                 return;
             }
 
-            // 3. Fallback: Mostrar Modal de Detalles (Evita 404)
+            // 3. Fallback: Modal
             this.showDetailModal(notif);
         }
 
@@ -666,7 +817,7 @@
 
         closeDetailModal() {
             const overlay = document.querySelector('.rtbell-modal-overlay');
-            overlay.classList.remove('open');
+            if(overlay) overlay.classList.remove('open');
         }
 
         render() {
@@ -685,26 +836,26 @@
                     </button>
                     <div class="rtbell-dropdown">
                         <div class="rtbell-header">
-                            <h3>🔔 Notificaciones</h3>
+                            <h3>NOTIFICACIONES</h3>
                             <button class="rtbell-mark-all" style="display:none;">Marcar leídas</button>
                         </div>
                         <div class="rtbell-list">
                             <div class="rtbell-empty">
                                 <div class="rtbell-empty-icon">📭</div>
-                                <p>No hay notificaciones</p>
+                                <p>No hay notificaciones nuevas</p>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- MODAL DE DETALLES -->
+                <!-- MODAL DE DETALLES NEO-BRUTALISTA -->
                 <div class="rtbell-modal-overlay">
                     <div class="rtbell-modal">
                         <button class="rtbell-modal-close">&times;</button>
                         <span class="rtbell-modal-icon">🔔</span>
                         <div class="rtbell-modal-title">Título</div>
                         <div class="rtbell-modal-message">Mensaje</div>
-                        <button class="rtbell-modal-btn">Entendido</button>
+                        <button class="rtbell-modal-btn">ENTENDIDO</button>
                     </div>
                 </div>
             `;
@@ -717,7 +868,6 @@
             const dropdown = document.querySelector('.rtbell-dropdown');
             const markAllBtn = document.querySelector('.rtbell-mark-all');
 
-            // Eventos del Modal
             const modalOverlay = document.querySelector('.rtbell-modal-overlay');
             const modalCloseBtn = document.querySelector('.rtbell-modal-close');
             const modalActionBtn = document.querySelector('.rtbell-modal-btn');
@@ -734,19 +884,15 @@
             });
 
             document.addEventListener('click', (e) => {
-                // Cerrar dropdown si click fuera
                 if (this.isOpen && !e.target.closest('#realtime-bell-widget')) {
                     this.isOpen = false;
                     dropdown.classList.remove('open');
                 }
-
-                // Cerrar modal si click fuera (overlay)
                 if (e.target === modalOverlay) {
                     this.closeDetailModal();
                 }
             });
 
-            // Cerrar modal
             modalCloseBtn.addEventListener('click', () => this.closeDetailModal());
             modalActionBtn.addEventListener('click', () => this.closeDetailModal());
         }
@@ -756,43 +902,53 @@
             const markAllBtn = document.querySelector('.rtbell-mark-all');
             const list = document.querySelector('.rtbell-list');
 
-            // Badge
+            if (!badge || !list) return;
+
+            // Badge Update
             if (this.unreadCount > 0) {
                 badge.textContent = this.unreadCount > 9 ? '9+' : this.unreadCount;
                 badge.style.display = 'flex';
+                // Añadir animación extra de salto si hay más no leídas
+                badge.style.animation = 'none';
+                badge.offsetHeight; /* trigger reflow */
+                badge.style.animation = 'rtPulse 2s infinite';
             } else {
                 badge.style.display = 'none';
             }
 
-            // Mark all button
-            markAllBtn.style.display = this.unreadCount > 0 ? 'block' : 'none';
+            // Mark All Button
+            if(markAllBtn) {
+                markAllBtn.style.display = this.unreadCount > 0 ? 'block' : 'none';
+            }
 
-            // List
+            // List Update
             if (this.notifications.length === 0) {
                 list.innerHTML = `
                     <div class="rtbell-empty">
                         <div class="rtbell-empty-icon">📭</div>
-                        <p>No hay notificaciones</p>
+                        <p>Bandeja vacía</p>
                     </div>
                 `;
             } else {
-                list.innerHTML = this.notifications.slice(0, 10).map(n => `
+                list.innerHTML = this.notifications.slice(0, 15).map(n => `
                     <div class="rtbell-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}">
-                        <span class="rtbell-item-icon">${n.icon || '📢'}</span>
+                        <div class="rtbell-item-icon">${n.icon || '📢'}</div>
                         <div class="rtbell-item-content">
-                            <div class="rtbell-item-title">${n.title}</div>
+                            <div class="rtbell-item-title">
+                                ${n.title}
+                                ${!n.is_read ? '<span class="rtbell-unread-dot"></span>' : ''}
+                            </div>
                             <div class="rtbell-item-message">${n.message}</div>
                             <div class="rtbell-item-time">${this.formatTime(n.created_at)}</div>
                         </div>
                     </div>
                 `).join('');
 
-                // Click events con nueva lógica
+                // Re-attach click events
                 list.querySelectorAll('.rtbell-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const id = item.dataset.id;
                         const notif = this.notifications.find(n => n.id === id);
-
                         if (notif) {
                             this.handleNotificationClick(notif);
                         }
@@ -802,16 +958,10 @@
         }
     }
 
-    // ========== INICIALIZAR ==========
-    function init() {
-        const widget = new RealtimeNotifications();
-        widget.init();
-    }
-
+    // Inicializar el widget cuando el DOM esté listo
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
+        document.addEventListener('DOMContentLoaded', () => new RealtimeNotifications().init());
     } else {
-        init();
+        new RealtimeNotifications().init();
     }
-
 })();
