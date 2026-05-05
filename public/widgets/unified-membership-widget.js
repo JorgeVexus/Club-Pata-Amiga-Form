@@ -1723,13 +1723,21 @@
         }
 
         .pata-banner-icon-new {
-            font-size: 24px;
+            width: 38px;
+            height: 38px;
+            background-image: url("data:image/svg+xml,%3Csvg width='41' height='41' viewBox='0 0 41 41' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg clip-path='url(%23clip0_2014_45425)'%3E%3Cpath d='M20.3703 6.36C19.5603 6.36 18.9103 5.71 18.9103 4.9V1.46C18.9003 0.65 19.5603 0 20.3703 0C21.1803 0 21.8303 0.65 21.8303 1.46V4.9C21.8303 5.71 21.1803 6.36 20.3703 6.36Z' fill='%23222221'/%3E%3Cpath d='M35.8304 33.86H4.90043C4.09043 33.86 3.44043 33.21 3.44043 32.4C3.44043 31.59 4.09043 30.94 4.90043 30.94H35.8304C36.6404 30.94 37.2904 31.59 37.2904 32.4C37.2904 33.21 36.6404 33.86 35.8304 33.86Z' fill='%23222221'/%3E%3Cpath d='M20.37 40.73C16.72 40.73 13.75 37.76 13.75 34.11C13.75 33.3 14.4 32.65 15.21 32.65C16.02 32.65 16.67 33.3 16.67 34.11C16.67 36.15 18.33 37.8 20.36 37.8C22.39 37.8 24.05 36.14 24.05 34.11C24.05 33.3 24.7 32.65 25.51 32.65C26.32 32.65 26.97 33.3 26.97 34.11C26.97 37.76 24 40.73 20.35 40.73H20.37Z' fill='%23222221'/%3E%3Cpath d='M15.21 35.57C14.4 35.57 13.75 34.92 13.75 34.11V32.39C13.75 31.58 14.4 30.93 15.21 30.93C16.02 30.93 16.67 31.58 16.67 32.39V34.11C16.67 34.92 16.02 35.57 15.21 35.57Z' fill='%23222221'/%3E%3Cpath d='M25.5196 35.57C24.7096 35.57 24.0596 34.92 24.0596 34.11V32.39C24.0596 31.58 24.7096 30.93 25.5196 30.93C26.3296 30.93 26.9796 31.58 26.9796 32.39V34.11C26.9796 34.92 26.3296 35.57 25.5196 35.57Z' fill='%23222221'/%3E%3Cpath d='M4.90043 33.86C4.09043 33.86 3.44043 33.21 3.44043 32.4C3.44043 30.8 4.02043 29.3 4.69043 27.58C5.67043 25.06 6.88043 21.93 6.88043 16.94C6.88043 16.13 7.53043 15.48 8.34043 15.48C9.15043 15.48 9.80043 16.13 9.80043 16.94C9.80043 22.48 8.42043 26.04 7.41043 28.64C6.82043 30.15 6.36043 31.35 6.36043 32.41C6.36043 33.22 5.71043 33.87 4.90043 33.87V33.86Z' fill='%23222221'/%3E%3Cpath d='M35.8297 33.86C35.0197 33.86 34.3697 33.21 34.3697 32.4C34.3697 31.34 33.9097 30.15 33.3197 28.63C32.3097 26.03 30.9297 22.47 30.9297 16.93C30.9297 16.12 31.5797 15.47 32.3897 15.47C33.1997 15.47 33.8497 16.12 33.8497 16.93C33.8497 21.92 35.0597 25.06 36.0397 27.57C36.7097 29.3 37.2897 30.79 37.2897 32.39C37.2897 33.2 36.6397 33.85 35.8297 33.85V33.86Z' fill='%23222221'/%3E%3Cpath d='M32.3999 18.39C31.5899 18.39 30.9399 17.74 30.9399 16.93C30.9399 11.1 26.1999 6.36 20.3699 6.36C14.5399 6.36 9.79988 11.1 9.79988 16.93C9.79988 17.74 9.14988 18.39 8.33988 18.39C7.52988 18.39 6.87988 17.74 6.87988 16.93C6.87988 9.49 12.9299 3.44 20.3699 3.44C27.8099 3.44 33.8599 9.49 33.8599 16.93C33.8599 17.74 33.2099 18.39 32.3999 18.39Z' fill='%23222221'/%3E%3Cpath d='M39.2704 18.39C38.4604 18.39 37.8104 17.74 37.8104 16.93C37.8104 11.26 35.0404 5.93002 30.4004 2.66002C29.7404 2.20002 29.5804 1.28002 30.0504 0.620024C30.5104 -0.0399762 31.4304 -0.199976 32.0904 0.270024C37.5104 4.09002 40.7404 10.31 40.7404 16.93C40.7404 17.74 40.0904 18.39 39.2804 18.39H39.2704Z' fill='%23222221'/%3E%3Cpath d='M1.46 18.39C0.65 18.39 0 17.74 0 16.93C0 10.31 3.23 4.08 8.65 0.270001C9.31 -0.189999 10.22 -0.0399992 10.69 0.620001C11.15 1.28 11 2.19 10.34 2.66C5.7 5.93 2.93 11.26 2.93 16.93C2.93 17.74 2.28 18.39 1.47 18.39H1.46Z' fill='%23222221'/%3E%3C/g%3E%3Cdefs%3E%3CclipPath id='clip0_2014_45425'%3E%3Crect width='40.73' height='40.73' fill='white'/%3E%3C/clipPath%3E%3C/defs%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            flex-shrink: 0;
         }
 
         .pata-banner-content-new {
             font-family: 'Outfit', sans-serif;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 400;
             color: #000;
+            line-height: 1.4;
         }
 
         .pata-approved-grid-main {
@@ -1757,14 +1765,14 @@
         }
 
         .pata-approved-status-badge {
-            font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-            font-weight: 900;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 400;
             color: #15BEB2;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
+            text-transform: lowercase;
+            letter-spacing: 0;
             display: inline-block;
-            margin-bottom: -10px;
+            margin-bottom: 10px;
         }
 
         .pata-approved-progress-box {
@@ -1776,11 +1784,11 @@
 
         .pata-approved-progress-msg {
             font-family: 'Outfit', sans-serif;
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 18px;
+            font-weight: 400;
             color: #000;
             margin: 0;
-            line-height: 1.2;
+            line-height: 1.4;
         }
 
         .pata-approved-progress-container {
@@ -1790,6 +1798,16 @@
             border-radius: 50px;
             overflow: hidden;
             position: relative;
+        }
+
+        .pata-approved-progress-labels-top {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: -12px;
         }
 
         .pata-approved-progress-bar {
@@ -1803,23 +1821,24 @@
             display: flex;
             justify-content: space-between;
             font-family: 'Outfit', sans-serif;
-            font-size: 14px;
-            font-weight: 900;
-            color: #BBB;
-            text-transform: uppercase;
-            margin-top: -10px;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            text-transform: none;
+            margin-top: -12px; /* Pegado a la barra */
         }
 
         .pata-approved-days-left {
-            font-family: 'Outfit', sans-serif;
-            font-size: 17px;
-            color: #444;
-            margin-top: 5px;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 25px;
+            color: #15BEB2;
+            margin: -5px 0 0 0;
+            line-height: 1.2;
         }
 
         .pata-approved-days-left strong {
             color: #000;
-            font-weight: 900;
+            font-weight: 400;
         }
 
         /* Lado Derecho: Resumen Mascota (Cards) */
@@ -4009,10 +4028,10 @@
                     <!-- Banner superior (Opcional) -->
                     ${this.checkMissingDocs(pet).length > 0 ? `
                         <div class="pata-approved-banner-new">
-                            <span class="pata-banner-icon-new">🚀</span>
+                            <span class="pata-banner-icon-new"></span>
                             <div class="pata-banner-content-new">
-                                <strong>¡Ya casi estás listo!</strong> 
-                                Solo nos faltan algunos detalles para que tu membresía esté al 100%.
+                                <strong>¿Adoptaste a alguno de tus compañeros?</strong><br/>
+                                Puedes acelerar tu acceso al fondo. Contáctanos a miembros@pataamiga.mx para validar tus documentos.
                             </div>
                         </div>
                     ` : ''}
@@ -4020,11 +4039,20 @@
                     <div class="pata-approved-grid-main">
                         <!-- Columna Izquierda: Estatus y Progreso -->
                         <div class="pata-approved-column-left">
-                            <span class="pata-approved-status-badge">membresía aprobada</span>
+                            <span class="pata-approved-status-badge">tu periodo de espera</span>
                             
                             <div class="pata-approved-progress-box">
                                 <p class="pata-approved-progress-msg">${statusMessage}</p>
                                 
+                                <p class="pata-approved-days-left">
+                                    faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo
+                                </p>
+                                
+                                <div class="pata-approved-progress-labels-top">
+                                    <span>Inicio de membresía</span>
+                                    <span>${Math.round(carencia.percentage)}% completado</span>
+                                </div>
+
                                 <div class="pata-approved-progress-container">
                                     <div class="pata-approved-progress-bar" style="width: ${carencia.percentage}%"></div>
                                 </div>
@@ -4033,10 +4061,6 @@
                                     <span>Día 1</span>
                                     <span>Día ${carencia.totalDays}</span>
                                 </div>
-                                
-                                <p class="pata-approved-days-left">
-                                    Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo.
-                                </p>
                             </div>
                         </div>
 
