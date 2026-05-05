@@ -4077,7 +4077,7 @@
                                     <h3>${pet.name.toLowerCase()}</h3>
                                     <ul class="pata-pet-info-list">
                                         <li>${pet.age_value || '?'} ${pet.age_unit === 'years' ? 'años' : 'meses'}</li>
-                                        <li>${(pet.pet_type || 'mascota').toLowerCase()}</li>
+                                        <li>${(pet.pet_type || '').toLowerCase() === 'dog' ? 'Peludo' : (pet.pet_type || '').toLowerCase() === 'cat' ? 'Michi' : (pet.pet_type || 'mascota').toLowerCase()}</li>
                                         <li>${(pet.breed || 'mestizo').toLowerCase()}</li>
                                     </ul>
                                 </div>
