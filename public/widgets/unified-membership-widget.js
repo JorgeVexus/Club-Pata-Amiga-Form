@@ -4363,7 +4363,7 @@
                                 </p>
 
                                 <div style="margin-top: 40px; margin-bottom: 50px;">
-                                    <a href="https://app.pataamiga.mx/seleccion-plan" 
+                                    <a href="https://www.pataamiga.mx/miembros/seleccion-plan" 
                                        class="pata-btn" 
                                        style="background: #FE8F15; color: #000; border: 3px solid #000; padding: 20px 60px; font-size: 20px; font-weight: 900; border-radius: 50px; cursor: pointer; font-family: 'Fraiche', sans-serif; box-shadow: 6px 6px 0 #000; text-decoration: none; display: inline-block; text-transform: lowercase;">
                                         renovar ahora →

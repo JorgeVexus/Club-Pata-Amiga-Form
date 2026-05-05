@@ -339,11 +339,111 @@
             to { transform: rotate(360deg); }
         }
 
+        /* Modal Styles */
+        .pata-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            padding: 20px;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+        }
+
+        .pata-modal-content {
+            background: #fff;
+            border: 4px solid #000;
+            border-radius: 35px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 20px 20px 0 rgba(0, 0, 0, 0.3);
+            animation: pataModalFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes pataModalFade {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .pata-modal-header {
+            padding: 30px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pata-modal-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 28px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        .pata-modal-close {
+            background: #000;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+
+        .pata-modal-close:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #FE8F15;
+        }
+
+        .pata-modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .pata-modal-footer {
+            padding: 25px;
+            border-top: 3px solid #000;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pata-modal-legal-text h4 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            margin: 30px 0 15px 0;
+            text-transform: uppercase;
+            color: #00BBB4;
+        }
+
+        .pata-modal-legal-text p {
+            margin: 0 0 15px 0;
+        }
+
         /* Mobile */
         @media (max-width: 600px) {
             .pata-plan-grid { grid-template-columns: 1fr; }
             .pata-plan-title { font-size: 32px; }
             .pata-pay-btn { font-size: 20px; padding: 18px; }
+            .pata-modal-content { max-height: 95vh; }
+            .pata-modal-header { padding: 20px; }
+            .pata-modal-body { padding: 20px; }
         }
     `;
 
@@ -356,6 +456,11 @@
             this.ambassadorName = '';
             this.isProcessing = false;
             this.member = null;
+            
+            // Terms Modal state
+            this.showTermsModal = false;
+            this.termsContent = null;
+            this.isLoadingTerms = false;
 
             this.init();
         }
@@ -433,7 +538,7 @@
                     <div class="pata-terms-box" id="pata-terms-toggle">
                         <div class="pata-checkbox-custom ${this.termsAccepted ? 'checked' : ''}"></div>
                         <span class="pata-terms-text">
-                            He leído y acepto los <a href="#" class="pata-terms-link" onclick="event.preventDefault(); window.open('https://www.pataamiga.mx/terminos', '_blank')">términos y condiciones</a> y el aviso de privacidad.
+                            He leído y acepto los <a href="#" class="pata-terms-link" id="pata-view-terms">términos y condiciones</a> y el aviso de privacidad.
                         </span>
                     </div>
 
@@ -442,6 +547,9 @@
                     </button>
 
                     <p class="pata-security-note">🔒 Pago seguro procesado por Stripe. Cancela cuando quieras.</p>
+
+                    <!-- Terms Modal -->
+                    ${this.showTermsModal ? this.renderTermsModal() : ''}
                 </div>
             `;
 
@@ -468,14 +576,112 @@
             };
 
             // Terms Toggle
-            this.container.querySelector('#pata-terms-toggle').onclick = () => {
+            this.container.querySelector('#pata-terms-toggle').onclick = (e) => {
+                if (e.target.closest('#pata-view-terms')) return;
                 this.termsAccepted = !this.termsAccepted;
                 this.render();
             };
 
+            // View Terms Link
+            const viewTermsLink = this.container.querySelector('#pata-view-terms');
+            if (viewTermsLink) {
+                viewTermsLink.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.openTermsModal();
+                };
+            }
+
             // Pay Button
             const payBtn = this.container.querySelector('#pata-pay-btn');
             payBtn.onclick = () => this.handleCheckout();
+
+            // Modal Events
+            if (this.showTermsModal) {
+                const closeBtn = this.container.querySelector('#pata-modal-close');
+                const understoodBtn = this.container.querySelector('#pata-modal-understood');
+                const overlay = this.container.querySelector('#pata-modal-overlay');
+
+                if (closeBtn) closeBtn.onclick = () => this.closeTermsModal();
+                if (understoodBtn) understoodBtn.onclick = () => this.closeTermsModal();
+                if (overlay) overlay.onclick = (e) => {
+                    if (e.target === overlay) this.closeTermsModal();
+                };
+            }
+        }
+
+        async openTermsModal() {
+            this.showTermsModal = true;
+            this.render();
+            
+            if (!this.termsContent) {
+                await this.fetchTerms();
+            }
+        }
+
+        closeTermsModal() {
+            this.showTermsModal = false;
+            document.body.style.overflow = 'unset';
+            this.render();
+        }
+
+        async fetchTerms() {
+            if (this.isLoadingTerms) return;
+            this.isLoadingTerms = true;
+            
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/legal/terms`);
+                const data = await res.json();
+                if (data.success) {
+                    this.termsContent = data.fullDocument;
+                }
+            } catch (error) {
+                console.error('Error fetching terms:', error);
+                this.termsContent = 'Error al cargar los términos y condiciones. Por favor, intenta de nuevo más tarde.';
+            } finally {
+                this.isLoadingTerms = false;
+                this.render();
+            }
+        }
+
+        renderTermsModal() {
+            document.body.style.overflow = 'hidden';
+            
+            let contentHtml = '';
+            if (this.isLoadingTerms) {
+                contentHtml = '<div style="text-align:center; padding: 50px;"><div class="pata-loading-spinner" style="border-top-color:#00BBB4; margin: 0 auto;"></div><p style="margin-top:20px; font-weight:700;">Cargando términos...</p></div>';
+            } else if (this.termsContent) {
+                contentHtml = `<div class="pata-modal-legal-text">${this.formatLegalText(this.termsContent)}</div>`;
+            }
+
+            return `
+                <div class="pata-modal-overlay" id="pata-modal-overlay">
+                    <div class="pata-modal-content">
+                        <div class="pata-modal-header">
+                            <h2 class="pata-modal-title">📋 Términos y Condiciones</h2>
+                            <button class="pata-modal-close" id="pata-modal-close">✕</button>
+                        </div>
+                        <div class="pata-modal-body">
+                            ${contentHtml}
+                        </div>
+                        <div class="pata-modal-footer">
+                            <button class="pata-select-btn selected" style="max-width: 200px;" id="pata-modal-understood">Entendido ✓</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        formatLegalText(text) {
+            if (!text) return '';
+            return text.split('\n').map(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('## ') || trimmed.startsWith('### ')) {
+                    return `<h4>${trimmed.replace(/^###?\s/, '')}</h4>`;
+                }
+                if (trimmed === '') return '<br/>';
+                return `<p>${line}</p>`;
+            }).join('');
         }
 
         async validateReferral(code) {
