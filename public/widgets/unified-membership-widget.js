@@ -2122,6 +2122,70 @@
             }
         }
 
+        /* Member Pending View New */
+        .pata-member-pending-view-new {
+            padding: 20px 0;
+            text-align: left;
+        }
+
+        .pata-member-pending-title-new {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            color: #000;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: none;
+        }
+
+        .pata-member-pending-subtitle-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .pata-badge-brutalist {
+            margin-top: 50px;
+            background: #CAF5F2;
+            border: 3px solid #000;
+            border-radius: 30px;
+            padding: 25px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            box-shadow: 8px 8px 0 #000;
+        }
+
+        .pata-badge-title-brutalist {
+            display: block;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 22px;
+            text-transform: lowercase;
+            margin-bottom: 4px;
+            color: #000;
+        }
+
+        .pata-badge-text-brutalist {
+            margin: 0;
+            font-size: 15px;
+            font-family: 'Outfit', sans-serif;
+            color: #000;
+            line-height: 1.4;
+        }
+
+        @media (max-width: 768px) {
+            .pata-member-pending-title-new {
+                font-size: 35px;
+            }
+            .pata-badge-brutalist {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+        }
+
         @media (max-width: 768px) {
             .pata-rejected-grid-new {
                 flex-direction: column;
@@ -3270,7 +3334,12 @@
                             this.membershipStatus = 'pending';
                             if (this.pets.length > 0) this.pets[this.currentIndex].status = 'pending';
                             this.render();
-                            console.log('⚪ Debug: Estado PENDIENTE activado');
+                            console.log('⚪ Debug: Estado PENDIENTE (mascota) activado');
+                        },
+                        member_pendiente: () => {
+                            this.membershipStatus = 'waiting_approval';
+                            this.render();
+                            console.log('⚪ Debug: Estado WAITING_APPROVAL (miembro) activado');
                         },
                         reset: () => {
                             location.reload();
@@ -3553,6 +3622,51 @@
             `;
         }
 
+        renderMemberPendingView(firstName) {
+            return `
+                <div class="pata-approved-wrapper-new">
+                    <main class="pata-container-new">
+                        <header class="pata-header-new">
+                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
+                            <div class="pata-header-sub-new">
+                                <p>Estamos preparando todo para darte la bienvenida oficial.</p>
+                            </div>
+                        </header>
+
+                        <section class="pata-card-new">
+                            <div class="pata-member-pending-view-new">
+                                <h2 class="pata-member-pending-title-new">tu membresía está en revisión</h2>
+                                <p class="pata-member-pending-subtitle-new">
+                                    Recibimos tu solicitud y ya estamos revisando la información para poder continuar con tu proceso. 
+                                    En un máximo de 24-48 horas te notificaremos por correo el resultado.
+                                </p>
+                                
+                                <div class="pata-action-required-progress-container" style="margin-bottom: 40px;">
+                                    <div class="pata-action-required-progress-labels">
+                                        <span>Solicitud enviada</span>
+                                        <span>En revisión...</span>
+                                    </div>
+                                    <div class="pata-action-required-progress-track">
+                                        <div class="pata-action-required-progress-fill" style="width: 85%;"></div>
+                                    </div>
+                                </div>
+
+                                ${this.renderInReviewBenefits('mientras tanto, disfruta de estos beneficios:')}
+
+                                <div class="pata-badge-brutalist">
+                                    <div style="font-size: 32px;">🛡️</div>
+                                    <div style="text-align: left;">
+                                        <strong class="pata-badge-title-brutalist">control total de tu cuenta</strong>
+                                        <p class="pata-badge-text-brutalist">Recuerda que puedes cancelar tu membresía en cualquier momento desde tu panel sin complicaciones.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+            `;
+        }
+
         render() {
             if (!this.container) return;
 
@@ -3574,14 +3688,23 @@
                 return;
             }
 
-            // 2. Dashboard View (Active, Approved, or Pending Review with pets)
+            // 2. Member Pending (Waiting Approval)
+            const isWaitingApproval = this.membershipStatus === 'waiting_approval' || this.membershipStatus === 'pending_approval';
+            if (isWaitingApproval) {
+                this.container.innerHTML = this.renderMemberPendingView(firstName);
+                this.container.classList.add('show');
+                this.hideGlobalLoaders();
+                return;
+            }
+
+            // 3. Dashboard View (Active, Approved)
             const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
             const hasPets = this.pets && this.pets.length > 0;
 
             console.log(`📊 Unified Widget: Global Status="${this.membershipStatus}", Current Pet="${pet?.name}", PetsCount=${this.pets.length}`);
 
-            if (isMemberApproved || (hasPets && this.membershipStatus !== 'rejected')) {
-                // If member is approved, or if they have pets and are not globally rejected, show the dashboard
+            if (isMemberApproved || hasPets) {
+                // If member is approved, or if they have pets (and not waiting approval above), show the dashboard
                 this.renderDashboardView(firstName, pet);
             } else if (this.membershipStatus === 'rejected') {
                 // Globally rejected
