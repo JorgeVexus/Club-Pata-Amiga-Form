@@ -3339,6 +3339,15 @@
                             this.render();
                             console.log("⏳ Vista: Revisión de Perfil (Global)");
                         },
+
+                        // 3.5 Estado: Membresía Cancelada
+                        membresiaCancelada: (fecha = '2025-01-01') => {
+                            this.membershipStatus = 'canceled_payment';
+                            this.userExtra = { ...this.userExtra, canceledAt: fecha };
+                            this.pets = [];
+                            this.render();
+                            console.log("❌ Vista: Membresía Cancelada");
+                        },
                         
                         // 4. Estado: Aprobado (Mascota con Carencia)
                         aprobado: (nombre = "Rex", isSenior = false) => {
@@ -3415,6 +3424,7 @@
                                 "pataDebug.pagoPendiente()": "Ver pantalla de cobro",
                                 "pataDebug.pagoProcesando()": "Ver pantalla de Stripe procesando",
                                 "pataDebug.revisionGlobal()": "Ver revisión de cuenta (24h)",
+                                "pataDebug.membresiaCancelada()": "Ver pantalla de renovación",
                                 "pataDebug.aprobado()": "Ver dashboard con carencia",
                                 "pataDebug.rechazado()": "Ver pantalla de rechazo/reembolso",
                                 "pataDebug.accionRequerida()": "Ver pantalla de documentos faltantes",
@@ -3580,6 +3590,14 @@
                     if (roleData.role === 'payment_processing') {
                         console.log('⏳ Unified Widget: Payment is processing');
                         this.membershipStatus = 'payment_processing';
+                        this.pets = [];
+                        return;
+                    }
+
+                    if (roleData.role === 'canceled_payment') {
+                        console.log('❌ Unified Widget: Membership is canceled');
+                        this.membershipStatus = 'canceled_payment';
+                        this.userExtra.canceledAt = roleData.canceledAt;
                         this.pets = [];
                         return;
                     }
@@ -3762,6 +3780,14 @@
 
             if (this.membershipStatus === 'payment_processing') {
                 this.container.innerHTML = this.renderPaymentProcessingView(firstName);
+                this.container.classList.add('show');
+                this.hideGlobalLoaders();
+                return;
+            }
+
+            if (this.membershipStatus === 'canceled_payment') {
+                const canceledAt = this.userExtra?.canceledAt;
+                this.container.innerHTML = this.renderCanceledView(firstName, canceledAt);
                 this.container.classList.add('show');
                 this.hideGlobalLoaders();
                 return;
@@ -4307,6 +4333,64 @@
             `;
         }
 
+        // ❌ NUEVO: Vista cuando la membresía está cancelada
+        renderCanceledView(firstName, canceledAt) {
+            let dateStr = 'recientemente';
+            if (canceledAt) {
+                try {
+                    const date = new Date(canceledAt);
+                    dateStr = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+                } catch (e) {}
+            }
+
+            return `
+                <div class="pata-approved-wrapper-new">
+                    <main class="pata-container-new">
+                        <header class="pata-header-new">
+                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
+                            <div class="pata-header-sub-new">
+                                <p>bienvenid@ de vuelta a la manada.</p>
+                            </div>
+                        </header>
+
+                        <section class="pata-card-new">
+                            <div class="pata-member-pending-view-new" style="text-align: center;">
+                                <div style="font-size: 80px; margin-bottom: 20px;">👋</div>
+                                <h2 class="pata-member-pending-title-new" style="text-align: center;">tu membresía finalizó</h2>
+                                <p class="pata-member-pending-subtitle-new" style="text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                    Tu membresía de Club Pata Amiga terminó el pasado <strong>${dateStr}</strong>. 
+                                    Renuévala ahora para seguir protegiendo a tus mejores amigos.
+                                </p>
+
+                                <div style="margin-top: 40px; margin-bottom: 50px;">
+                                    <a href="https://app.pataamiga.mx/seleccion-plan" 
+                                       class="pata-btn" 
+                                       style="background: #FE8F15; color: #000; border: 3px solid #000; padding: 20px 60px; font-size: 20px; font-weight: 900; border-radius: 50px; cursor: pointer; font-family: 'Fraiche', sans-serif; box-shadow: 6px 6px 0 #000; text-decoration: none; display: inline-block; text-transform: lowercase;">
+                                        renovar ahora →
+                                    </a>
+                                </div>
+
+                                <div class="pata-badge-brutalist" style="max-width: 500px; margin: 0 auto;">
+                                    <div style="font-size: 32px;">🛠️</div>
+                                    <div style="text-align: left;">
+                                        <strong class="pata-badge-title-brutalist">¿quieres ver tus facturas?</strong>
+                                        <p class="pata-badge-text-brutalist">
+                                            Puedes acceder a tu historial de pagos desde el 
+                                            <a href="#" data-ms-action="customer-portal" style="color: #000; font-weight: 900; text-decoration: underline;">portal de gestión</a>.
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <p style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
+                                    ¿Dudas con tu renovación? <a href="mailto:miembros@pataamiga.mx" style="color: #00BBB4; text-decoration: underline;">Escríbenos</a>
+                                </p>
+                            </div>
+                        </section>
+                    </main>
+                </div>
+            `;
+        }
+        
         renderInReviewBenefits(title = "Mientras revisamos tu registro...") {
             return `
                 <div class="pata-benefits-review">

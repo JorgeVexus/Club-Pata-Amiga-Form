@@ -93,7 +93,22 @@ export async function POST(request: NextRequest) {
                 (p: any) => p.status === 'PENDING' || p.status === 'INCOMPLETE'
             );
 
+            // 4. Check for canceled/expired plans (Renewals)
+            const canceledPlan = planConnections.find(
+                (p: any) => p.status === 'CANCELED' || p.status === 'EXPIRED'
+            );
+
             if (!hasActivePlan && !hasPendingPayment) {
+                if (canceledPlan) {
+                    console.log(`❌ [Check-Role] Miembro con membresía cancelada: ${memberstackId}`);
+                    return NextResponse.json({
+                        success: true,
+                        role: 'canceled_payment',
+                        canceledAt: (canceledPlan as any).canceledAt || (canceledPlan as any).updatedAt || null,
+                        planId: (canceledPlan as any).planId || null
+                    });
+                }
+
                 console.log(`⚠️ [Check-Role] Miembro sin plan activo: ${memberstackId}`);
                 return NextResponse.json({
                     success: true,
