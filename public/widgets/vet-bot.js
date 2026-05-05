@@ -73,6 +73,14 @@
                 return log('ℹ️ Sesión no iniciada. El bot no se cargará automáticamente.');
             }
 
+            // 2.1 Verificar plan activo
+            const planConnections = member.data.planConnections || [];
+            const hasActivePlan = planConnections.some(p => p.status === 'ACTIVE');
+
+            if (!hasActivePlan) {
+                return log('ℹ️ El miembro no tiene un plan activo. El bot solo está disponible para miembros activos.');
+            }
+
             const userEmail = member.data.auth?.email;
             const firstName = member.data.customFields?.['first-name'] || userEmail?.split('@')[0] || 'Cliente';
             
