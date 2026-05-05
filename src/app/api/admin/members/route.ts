@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
 
                         memberDataMap.set(msId, {
                             petCount: pets.length,
-                            pendingPetCount: pets.filter(p => p.status === 'pending').length,
+                            pendingPetCount: pets.filter(p => p.status !== 'approved').length,
                             infoStatus: infoStatus
                         });
                     });

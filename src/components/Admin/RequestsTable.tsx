@@ -779,7 +779,7 @@ export default function RequestsTable({
                                                         alignItems: 'center',
                                                         gap: '4px'
                                                     }}>
-                                                        ⚠️ {request.pendingPetCount} por aprobar
+                                                        ⚠️ {request.pendingPetCount} por revisar
                                                     </span>
                                                 )}
                                             </div>
