@@ -815,16 +815,16 @@
         /* ❌ Estilos Vista Rechazada (Nuevo Diseño) */
         .pata-rejected-bg-overlay {
             position: fixed;
-            top: 0;
+            bottom: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5658e469389f4197e75_pata-pattern-a.png');
+            background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png');
             background-repeat: no-repeat;
             background-position: left bottom;
-            background-size: 80% auto;
+            background-size: 50% auto;
             opacity: 1;
-            z-index: -1;
+            z-index: 0;
             pointer-events: none;
         }
 
@@ -846,26 +846,35 @@
         .pata-rejected-card {
             background: #FFFFFF;
             border-radius: 66px;
-            padding: 60px 60px 60px 60px;
+            padding: 50px 60px;
             width: 100%;
             max-width: 1048px;
             margin: 0 auto;
             position: relative;
             z-index: 2;
-            box-shadow: 20px 20px 0 rgba(0,0,0,0.1);
+            box-shadow: 20px 20px 0 rgba(0,0,0,0.08);
             display: flex;
             align-items: center;
             gap: 40px;
             box-sizing: border-box;
             border: none;
-            overflow: hidden;
-            min-height: 430px;
+            overflow: visible; /* Importante para que el perro salga */
+            min-height: 480px;
         }
 
         .pata-rejected-content {
-            flex: 1.2;
+            flex: 1;
+            max-width: 550px;
             text-align: left;
             z-index: 2;
+            padding-right: 40px;
+        }
+        
+        @media (max-width: 1024px) {
+            .pata-rejected-content {
+                max-width: 100%;
+                padding-right: 0;
+            }
         }
 
         .pata-rejected-title {
@@ -889,31 +898,56 @@
 
         .pata-rejected-image-container {
             position: absolute;
-            bottom: -20px;
-            right: -20px;
-            width: 450px;
+            bottom: -5%;
+            right: -8%;
+            width: 55%;
             display: flex;
             justify-content: flex-end;
             align-items: flex-end;
-            z-index: 1;
+            z-index: 3;
+            pointer-events: none;
         }
 
         .pata-rejected-pet-img {
             width: 100%;
             height: auto;
             object-fit: contain;
-            transform: rotate(-3deg);
-            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+            transform: scale(1.1);
+        }
+        
+        .pata-rejected-divider {
+            height: 1px;
+            background: #EEEEEE;
+            width: 100%;
+            margin: 25px 0;
+        }
+        
+        .pata-rejected-reason-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #000;
+            margin-bottom: 12px;
+            font-family: 'Outfit', sans-serif;
+        }
+        
+        .pata-rejected-reason-body {
+            font-size: 15px;
+            font-weight: 600;
+            color: #555;
+            line-height: 1.5;
+            font-family: 'Outfit', sans-serif;
+            max-width: 90%;
         }
 
         .pata-btn-appeal {
-            background: #FE8F15;
+            background: #15BEB2;
             color: #000;
             border: 2px solid #000;
             border-radius: 50px;
-            padding: 20px 50px;
+            padding: 18px 45px;
             font-family: 'Fraiche', sans-serif;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 950;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -921,7 +955,7 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .pata-btn-appeal:hover {
@@ -1420,8 +1454,11 @@
                 this.container.innerHTML = `
                     <div class="pata-rejected-bg-overlay"></div>
                     <div class="pata-rejected-wrapper">
-                        <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 20px;">
-                            <h1 class="pata-welcome-title" style="color: #000;">¡hola, ${firstName}!</h1>
+                        <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 30px;">
+                            <h1 class="pata-welcome-title" style="color: #000; font-size: 80px; margin-bottom: 10px;">¡hola, ${firstName}!</h1>
+                            <p style="color: #000; font-size: 20px; font-weight: 700; max-width: 800px; line-height: 1.3;">
+                                En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga. Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.
+                            </p>
                         </div>
                         
                         ${this.pets.length > 1 ? `
@@ -1994,14 +2031,18 @@
             return `
                 <div class="pata-rejected-card">
                     <div class="pata-rejected-content">
-                        <h2 class="pata-rejected-title">tu solicitud no fue aprobada</h2>
-                        <p class="pata-rejected-description">
-                            En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga. Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.
+                        <h2 class="pata-rejected-title" style="font-size: 48px;">tu solicitud no fue aprobada</h2>
+                        <p class="pata-rejected-description" style="font-size: 18px; margin-bottom: 20px;">
+                            Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.
                         </p>
                         
-                        <div class="pata-rejected-actions">
-                            <!-- Button moved outside -->
-                        </div>
+                        <div class="pata-rejected-divider"></div>
+                        
+                        <div class="pata-rejected-reason-title">Motivo del rechazo:</div>
+                        <p class="pata-rejected-reason-body">
+                            Identificamos un requisito que no está alineado con las reglas de ingreso del club.
+                            Es parte de nuestro compromiso por mantener la comunidad protegida.
+                        </p>
                     </div>
 
                     <div class="pata-rejected-image-container">
@@ -2009,13 +2050,13 @@
                     </div>
                 </div>
 
-                <div class="pata-rejected-external-actions" style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; width: 100%;">
+                <div class="pata-rejected-external-actions" style="margin-top: 50px; display: flex; flex-direction: column; align-items: center; width: 100%;">
                     ${canAppeal ? `
                         <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}">
-                            apelar y ver chat 💬
+                            apelar mi solicitud
                         </button>
-                        <p class="pata-appeal-footer-text" style="margin-top: 15px; color: #000; font-weight: 800;">
-                            Intento de apelación: ${appealCount} / ${maxAppeals}
+                        <p class="pata-appeal-footer-text" style="margin-top: 15px; color: #000; font-weight: 800; font-size: 14px;">
+                            revisaremos tu apelación con gusto ♡
                         </p>
                     ` : `
                         <div style="background: #FEE2E2; color: #DC2626; padding: 20px; border-radius: 30px; font-weight: 800; border: 2px solid #DC2626; margin-bottom: 20px; width: 100%; max-width: 400px; text-align: center;">
