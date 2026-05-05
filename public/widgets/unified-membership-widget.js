@@ -810,7 +810,6 @@
 
         /* 🟠 Temas de Color */
         .pata-theme-orange {
-            background-color: #FE8F15 !important;
             position: relative;
             overflow: hidden;
             min-height: 100vh;
@@ -840,7 +839,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            background-color: #FE8F15;
             overflow: visible;
         }
 
@@ -988,7 +986,6 @@
 
         /* ⏳ PENDING VIEW REDESIGN (NEO-BRUTALIST) */
         .pata-pending-wrapper {
-            background-color: #FE8F15;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -1652,7 +1649,6 @@
 
         /* 🏆 APPROVED DASHBOARD STYLES (NEO-BRUTALIST) */
         .pata-approved-wrapper {
-            background-color: #FFBD00;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -2201,7 +2197,6 @@
         }
 
         .pata-approved-wrapper-new {
-            background-color: #FFBD00;
             min-height: auto;
             display: flex;
             justify-content: center;
@@ -2636,7 +2631,7 @@
                 } else {
                     console.warn('⚠️ Unified Widget: No pets found for this user in Supabase.');
                     this.container.innerHTML = `
-                        <div class="pata-unified-panel show" style="background: rgba(0,0,0,0.4);">
+                        <div class="pata-unified-panel show">
                             <div style="color:white; padding:20px; text-align:center; font-weight:600;">
                                 👋 Hola ${(this.userExtra?.firstName || 'Socio').toLowerCase()}. <br>
                                 <span style="font-size: 14px; font-weight: 400; opacity: 0.8;">No encontramos mascotas registradas o están pendientes de sincronización.</span>
@@ -2915,7 +2910,7 @@
             const petImage = pet?.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
             
             this.container.innerHTML = `
-                <div class="pata-rejected-wrapper" style="background-color: #FE8F15;">
+                <div class="pata-rejected-wrapper">
                     <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
                     
                     <main class="pata-missing-container">
@@ -2957,7 +2952,7 @@
             const petImage = pet?.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
             
             this.container.innerHTML = `
-                <div class="pata-missing-wrapper" style="background-color: #FE8F15;">
+                <div class="pata-missing-wrapper">
                     <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
                     
                     <main class="pata-missing-container">
@@ -3096,7 +3091,7 @@
 
         renderPendingView(firstName, pet) {
             this.container.innerHTML = `
-                <div class="pata-pending-wrapper" style="background-color: #FE8F15;">
+                <div class="pata-pending-wrapper">
                     <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
                     
                     <main class="pata-pending-container">
@@ -3227,7 +3222,7 @@
                     </p>
                 </div>
 
-                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); border: 2px solid #FF9800;">
+                <div class="pata-unified-panel show" style="border: 2px solid #FF9800;">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
                     <div class="pata-pending-view">
@@ -3353,7 +3348,7 @@
                     </p>
                 </div>
 
-                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #E0F7F6 0%, #B8E8E6 100%); border: 2px solid #00BBB4;">
+                <div class="pata-unified-panel show" style="border: 2px solid #00BBB4;">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
                     <div class="pata-pending-view">
@@ -3388,7 +3383,7 @@
                     </p>
                 </div>
 
-                <div class="pata-unified-panel show" style="background: linear-gradient(135deg, #E0F7F6 0%, #B8E8E6 100%); border: 2px solid #00BBB4;">
+                <div class="pata-unified-panel show" style="border: 2px solid #00BBB4;">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
                     
                     <div class="pata-pending-view">
