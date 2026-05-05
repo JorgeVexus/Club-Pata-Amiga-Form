@@ -802,8 +802,8 @@
             .pata-mobile-accordion { display: block; }
             
             .pata-editorial-left { padding: 20px; border-bottom: none; }
-            .pata-editorial-container { border-radius: 40px 40px 0 0; max-height: 100vh; height: 100vh; }
-            .pata-editorial-body { height: 100%; }
+            .pata-editorial-container { border-radius: 40px 40px 0 0; max-height: none !important; height: auto !important; overflow: visible !important; }
+            .pata-editorial-body { height: auto !important; overflow: visible !important; }
         }
 
         /* 🟠 Temas de Color */
@@ -980,16 +980,17 @@
 
         /* ⏳ PENDING VIEW REDESIGN (NEO-BRUTALIST) */
         .pata-pending-wrapper {
-            min-height: auto;
+            min-height: auto !important;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            overflow: visible !important;
             position: relative;
             padding: 40px 0;
             font-family: 'Outfit', sans-serif;
             width: 100%;
             box-sizing: border-box;
+            background: transparent !important;
         }
 
         .pata-pending-bg-letter {
@@ -2147,26 +2148,19 @@
         /* 🆕 NEW APPROVED DESIGN STYLES (Phase 4)                        */
         /* ----------------------------------------------------------------- */
         .pata-approved-bg-letter-new {
-            position: absolute;
-            width: 1000px;
-            max-width: 150%;
-            left: -200px;
-            top: 100px;
-            transform: rotate(-3deg);
-            opacity: 0.6;
-            pointer-events: none;
-            z-index: 0;
+            display: none !important;
         }
 
         .pata-approved-wrapper-new {
-            min-height: auto;
+            min-height: auto !important;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow-x: hidden;
+            overflow: visible !important;
             position: relative;
             border-radius: 35px;
             padding: 40px 0;
+            background: transparent !important;
         }
 
         .pata-container-new {
@@ -2470,15 +2464,31 @@
             /* 🆕 NEW REJECTED DESIGN STYLES (Phase 4)                        */
             /* ----------------------------------------------------------------- */
             .pata-rejected-wrapper-new {
-            position: relative;
-            z-index: 1;
-            width: 100%;
-            margin: 0 auto;
-            box-sizing: border-box;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow: visible;
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                margin: 0 auto;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                overflow: visible !important;
+                background: transparent !important;
+                min-height: auto !important;
+            }
+
+            .pata-missing-wrapper {
+                position: relative;
+                z-index: 1;
+                width: 100%;
+                margin: 0 auto;
+                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                overflow: visible !important;
+                background: transparent !important;
+                min-height: auto !important;
             }
 
             .pata-rejected-container-new {
@@ -3106,7 +3116,6 @@
 
             this.container.innerHTML = `
                 <div class="pata-rejected-wrapper-new">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" alt="Decor" class="pata-approved-bg-letter-new">
                     <main class="pata-rejected-container-new">
                         <header class="pata-rejected-header-new">
                             <h1 data-od-id="greeting">¡hola, ${firstName}!</h1>
@@ -3147,8 +3156,6 @@
             
             this.container.innerHTML = `
                 <div class="pata-missing-wrapper">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
-                    
                     <main class="pata-missing-container">
                         <header class="pata-missing-header">
                             <h1 style="color: white !important;">¡hola, ${firstName}!</h1>
@@ -3208,7 +3215,6 @@
             // Generate the dashboard shell
             this.container.innerHTML = `
                 <div class="pata-approved-wrapper-new">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" alt="Decor" class="pata-approved-bg-letter-new">
                     <main class="pata-container-new">
                         <header class="pata-header-new">
                             <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
@@ -3264,8 +3270,6 @@
         renderPendingView(firstName, pet) {
             this.container.innerHTML = `
                 <div class="pata-pending-wrapper">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
-                    
                     <main class="pata-pending-container">
                         <header class="pata-pending-header">
                             <h1 style="color: white !important;">¡hola, ${firstName}!</h1>
