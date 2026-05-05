@@ -3761,6 +3761,7 @@
             `;
         }
 
+
         // 🆕 Renderizar contenido para mascotas con apelación en revisión
         renderAppealedContent(pet) {
             const appealDate = pet.appealed_at ? new Date(pet.appealed_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Reciente';
@@ -3829,7 +3830,16 @@
                         </div>
                     </div>
 
-                    <div style="background: #E0F7F6; border: 2px solid #000; padding: 20px; border-radi        renderRejectedContent(pet) {
+                    <div style="background: #E0F7F6; border: 2px solid #000; padding: 20px; border-radius: 25px; text-align: center;">
+                        <p style="margin:0; font-size: 14px; color: #15BEB2; font-weight: 700; font-family: 'Outfit', sans-serif;">
+                            Tu cobertura total se activa el ${carencia.endDateStr}.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        renderRejectedContent(pet) {
             const rejectionReason = pet.rejection_reason || 'No se especificó un motivo.';
 
             return `
@@ -3905,6 +3915,7 @@
             const isSenior = pet.age_value >= 10;
             const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
             const hasCert = !!pet.vet_certificate_url;
+            const isComplete = hasPhoto1 && (!isSenior || hasCert);
 
             let uploadFields = '';
 
@@ -3915,7 +3926,7 @@
                         <div style="display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 200px;">
                             <div class="pata-form-group">
                                 <div class="pata-upload-area" id="pata-upload-area-1" style="min-height: 120px; border-radius: 20px;">
-                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;">
+                                    <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;" />
                                     <div class="pata-upload-icon" style="font-size: 24px;">📷</div>
                                     <div class="pata-upload-text" style="font-size: 12px;">Foto Principal</div>
                                 </div>
@@ -3930,7 +3941,7 @@
                     <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
                         <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
                         <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
-                            <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-file-cert" style="display:none;">
+                            <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-file-cert" style="display:none;" />
                             <div class="pata-upload-icon">📄</div>
                             <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
                         </div>
@@ -3938,7 +3949,7 @@
                 `;
             }
 
-            if (hasPhoto1 && (!isSenior || hasCert)) {
+            if (isComplete) {
                 uploadFields = `
                     <div style="padding: 20px; background: #E8F5E9; border: 2px solid #4CAF50; border-radius: 20px; text-align: center; margin-bottom: 25px;">
                         <div style="font-size: 30px; margin-bottom: 10px;">✅</div>
@@ -3948,6 +3959,16 @@
                 `;
             }
 
+            const adminNote = pet.status === 'action_required' ? `
+                <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
+                    <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
+                    <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
+                </div>
+            ` : '';
+
+            const submitDisabled = this.uploading || isComplete ? 'disabled' : '';
+            const submitLabel = this.uploading ? 'Enviando...' : 'Guardar Cambios →';
+
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
                     <div class="pata-modal" style="max-width: 700px;">
@@ -3956,31 +3977,24 @@
                             <button class="pata-modal-close" id="pata-modal-close">&times;</button>
                         </div>
                         <div class="pata-modal-body" style="padding: 30px;">
-                            ${pet.status === 'action_required' ? `
-                                <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
-                                    <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
-                                    <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
-                                </div>
-                            ` : ''}
-
+                            ${adminNote}
                             ${uploadFields}
-
                             <div style="margin-top: 25px;">
                                 <label style="font-weight: 800; margin-bottom: 10px; display: block;">Mensaje adicional:</label>
                                 <textarea id="pata-update-message" class="pata-textarea" placeholder="¿Quieres decirnos algo más?" style="width: 100%; min-height: 100px; padding: 15px; border-radius: 20px; border: 2px solid #F0F0F0; font-family: inherit; font-size: 15px;"></textarea>
                             </div>
-
                         </div>
                         <div class="pata-modal-footer" style="background: #fff; border-top: 2px solid #000; padding: 25px 30px;">
                             <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update" style="border-radius: 50px; padding: 14px 30px;">Cancelar</button>
-                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${this.uploading || (hasPhoto1 && (!isSenior || hasCert)) ? 'disabled' : ''}>
-                                ${this.uploading ? 'Enviando...' : 'Guardar Cambios →'}
+                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${submitDisabled}>
+                                ${submitLabel}
                             </button>
                         </div>
                     </div>
                 </div>
             `;
         }
+
 
         renderChatInterface(logs, petId, status) {
             const canSend = ['action_required', 'rejected', 'appealed'].includes(status);
@@ -3989,14 +4003,12 @@
                 let bubbleClass = 'system';
                 const type = log.type || '';
 
-                if (type === 'user_response' || type === 'user_appeal' || type === 'user_message' || type === 'user_fulfill') {
+                if (['user_response', 'user_appeal', 'user_message', 'user_fulfill'].includes(type)) {
                     bubbleClass = 'user';
-                } else if (type === 'admin_request' || type === 'admin_message') {
+                } else if (['admin_request', 'admin_message'].includes(type)) {
                     bubbleClass = 'admin';
                 } else if (type === 'admin_info_request') {
                     bubbleClass = 'action';
-                } else {
-                    bubbleClass = 'system';
                 }
 
                 const dateStr = log.date || log.created_at;
@@ -4006,14 +4018,12 @@
 
                 const icon = log.icon || '📋';
 
-                // Action bubble for info requests
                 if (bubbleClass === 'action') {
                     const meta = log.metadata || {};
                     const items = meta.items || [];
                     const requestTypes = meta.request_types || [];
                     const fulfilled = meta.fulfilled === true;
 
-                    // If items are not present but request_types are (fallback for older logs)
                     const displayItems = items.length > 0 ? items : requestTypes.map(rt => {
                         const typeLabels = {
                             'PET_PHOTO_1': { label: '📸 Foto Principal' },
@@ -4025,9 +4035,9 @@
 
                     const actionButtons = displayItems.map(item => {
                         if (item.fulfilled || fulfilled) {
-                            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:4px;">✅ ${item.label} — Completado</div>`;
+                            return `<div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:12px;background:#E8F5E9;border:2px solid #4CAF50;font-size:13px;font-weight:700;color:#2E7D32;margin-bottom:4px;">✅ ${item.label} - Completado</div>`;
                         }
-                        return `<button class="pata-action-btn" data-request-type="${item.type}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;margin-bottom:4px;box-shadow: 2px 2px 0 rgba(254, 143, 21, 0.2);">${item.label} — Subir/Actualizar</button>`;
+                        return `<button class="pata-action-btn" data-request-type="${item.type}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;margin-bottom:4px;box-shadow: 2px 2px 0 rgba(254, 143, 21, 0.2);">${item.label} - Subir/Actualizar</button>`;
                     }).join('');
 
                     return `
@@ -4052,18 +4062,15 @@
                 }
 
                 let messageContent = log.message || '';
-
-                // Detectar imágenes en formato [Imagen adjunta](url) o links [Archivo adjunto](url)
                 const imageMatch = messageContent.match(/\[Imagen adjunta\]\((.*?)\)/);
                 const fileMatch = messageContent.match(/\[Archivo adjunto\]\((.*?)\)/);
-                const genericLinkMatch = messageContent.match(/\[(.*?)\]\((.*?)\)/);
 
                 if (imageMatch) {
                     const url = imageMatch[1];
                     messageContent = `
                         <div style="margin-bottom: 8px; font-weight: 700; font-size: 12px; opacity: 0.8;">📸 Imagen adjunta:</div>
                         <a href="${url}" target="_blank">
-                            <img src="${url}" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; display: block; margin-bottom: 5px;">
+                            <img src="${url}" style="max-width: 100%; border-radius: 12px; border: 2px solid #000; display: block; margin-bottom: 5px;" />
                         </a>
                     `;
                 } else if (fileMatch) {
@@ -4077,8 +4084,7 @@
                             </div>
                         </a>
                     `;
-                } else if (genericLinkMatch) {
-                    // Fallback para cualquier link [texto](url)
+                } else {
                     messageContent = messageContent.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" style="color: #00BBB4; font-weight: 700;">$1</a>');
                 }
 
@@ -4092,9 +4098,7 @@
 
             return `
                 <div class="pata-chat-container">
-                    <div class="pata-chat-header">
-                        Historial de Comunicación
-                    </div>
+                    <div class="pata-chat-header">Historial de Comunicación</div>
                     <div class="pata-chat-messages" id="pata-chat-messages-container">
                         ${logs.length === 0 ? `
                             <div class="pata-chat-empty">
@@ -4110,7 +4114,7 @@
                             <button id="pata-chat-attach" class="pata-chat-btn" style="background: #F0F2F5; border: 2px solid #000; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; transition: 0.2s;">
                                 📎
                             </button>
-                            <input type="file" id="pata-chat-file-input" style="display: none;" accept="image/*,application/pdf">
+                            <input type="file" id="pata-chat-file-input" style="display: none;" accept="image/*,application/pdf" />
                             <textarea id="pata-chat-input" placeholder="Escribe un mensaje o adjunta archivos..." class="pata-chat-input" style="border-radius: 20px; min-height: 50px; resize: none; border: 2px solid #000; flex: 1; padding: 12px 15px; font-family: inherit;"></textarea>
                             <button id="pata-chat-send" class="pata-chat-send" data-pet-id="${petId}" style="background: #00BBB4; border: 2px solid #000; color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; cursor: pointer; font-weight: 900;">
                                 ➔
@@ -4124,6 +4128,7 @@
                 </div>
             `;
         }
+
 
         async fetchAndRenderChat(petId) {
             const root = document.getElementById('pata-chat-root');

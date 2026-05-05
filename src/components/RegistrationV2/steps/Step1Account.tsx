@@ -4,13 +4,13 @@ import styles from './Step1Account.module.css';
 import TermsModalEnhanced from '../TermsModalEnhanced';
 import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 import { checkEmailAvailability } from '@/app/actions/user.actions';
-import { 
-    BadgeCheckIcon, 
-    MedicalEmergencyIcon, 
-    VaccinationIcon, 
-    DeceasedSupportIcon, 
+import {
+    BadgeCheckIcon,
+    MedicalEmergencyIcon,
+    VaccinationIcon,
+    DeceasedSupportIcon,
     VetChatIcon,
-    CommunityIcon 
+    CommunityIcon
 } from '../RegistrationIcons';
 
 interface Step1AccountProps {
@@ -214,7 +214,7 @@ export default function Step1Account({
                         </p>
                     </div>
 
-                    <button 
+                    <button
                         onClick={scrollToBenefits}
                         className={styles.mobileBenefitsLink}
                         aria-label="Ver todos los beneficios"
@@ -264,7 +264,7 @@ export default function Step1Account({
                                     <VetChatIcon />
                                 </div>
                                 <h2 className={styles.benefitTitle}>chat veterinario</h2>
-                                <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu lomito.</p>
+                                <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu peludo.</p>
                             </div>
 
                             {/* Community Card */}
@@ -280,228 +280,228 @@ export default function Step1Account({
                         </div>
                     </div>
 
-                {/* Right Column: Form Column */}
-                <div className={styles.formColumn}>
-                    <div className={styles.formCard}>
-                        {/* Barra superior de progreso técnica */}
-                        <div className={styles.topProgressBar} role="progressbar" aria-valuenow={33} aria-valuemin={0} aria-valuemax={100}>
-                            <div className={styles.topProgressBarFill} style={{ width: '33.33%' }} />
-                        </div>
-
-                        {/* Badge de paso */}
-                        <div className={styles.stepBadge}>
-                            <img
-                                src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
-                                alt="Club Pata Amiga Logo"
-                                className={styles.stepBadgeLogo}
-                            />
-                            <div className={styles.stepBadgeText}>PASO 1 DE 3</div>
-                            <div className={styles.stepBadgeIcon} aria-hidden="true" />
-                        </div>
-
-                        {/* Header */}
-                        <div className={styles.formHeader} key={`header-${mode}`}>
-                            <h2 className={styles.formTitle}>
-                                {isLoggedIn ? 'SESIÓN ACTIVA' : (mode === 'register' ? 'CREA TU CUENTA' : 'INICIA SESIÓN')}
-                            </h2>
-                        </div>
-
-                        {/* Banner de sesión activa */}
-                        {isLoggedIn && (
-                            <div className={styles.loggedInBanner}>
-                                <div className={styles.userInfo}>
-                                    <div className={styles.userIcon}>👤</div>
-                                    <div>
-                                        <p className={styles.userLabel}>Has iniciado sesión como:</p>
-                                        <p className={styles.userEmail}>{member.auth.email}</p>
-                                    </div>
-                                </div>
-                                <div className={styles.bannerActions}>
-                                    <button
-                                        type="button"
-                                        className={styles.logoutButtonSecondary}
-                                        onClick={handleLogout}
-                                        disabled={isLoggingOut}
-                                    >
-                                        {isLoggingOut ? 'CERRANDO...' : 'CERRAR SESIÓN'}
-                                    </button>
-                                </div>
+                    {/* Right Column: Form Column */}
+                    <div className={styles.formColumn}>
+                        <div className={styles.formCard}>
+                            {/* Barra superior de progreso técnica */}
+                            <div className={styles.topProgressBar} role="progressbar" aria-valuenow={33} aria-valuemin={0} aria-valuemax={100}>
+                                <div className={styles.topProgressBarFill} style={{ width: '33.33%' }} />
                             </div>
-                        )}
 
-                        {/* Form Body */}
-                        <form onSubmit={handleSubmit} className={styles.formBody} key={`form-${mode}`}>
-                            {!isLoggedIn && (
-                                <>
-                                    <div className={styles.inputGroup}>
-                                        <label htmlFor="email" className={styles.inputLabel}>CORREO ELECTRÓNICO</label>
-                                        <div className={styles.inputWrapper}>
-                                            <input
-                                                id="email"
-                                                type="email"
-                                                name="email"
-                                                placeholder="hola@pataamiga.mx"
-                                                value={formData.email}
-                                                onChange={handleChange}
-                                                onBlur={handleEmailBlur}
-                                                className={styles.inputField}
-                                                disabled={isLoading}
-                                                required
-                                                autoComplete="email"
-                                            />
-                                            {isCheckingEmail && (
-                                                <span className={styles.inputIndicator}>...</span>
-                                            )}
-                                            {emailAvailable && formData.email.includes('@') && !isCheckingEmail && !errors.email && mode === 'register' && (
-                                                <span className={styles.inputIndicatorSuccess}>✓</span>
-                                            )}
+                            {/* Badge de paso */}
+                            <div className={styles.stepBadge}>
+                                <img
+                                    src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
+                                    alt="Club Pata Amiga Logo"
+                                    className={styles.stepBadgeLogo}
+                                />
+                                <div className={styles.stepBadgeText}>PASO 1 DE 3</div>
+                                <div className={styles.stepBadgeIcon} aria-hidden="true" />
+                            </div>
+
+                            {/* Header */}
+                            <div className={styles.formHeader} key={`header-${mode}`}>
+                                <h2 className={styles.formTitle}>
+                                    {isLoggedIn ? 'SESIÓN ACTIVA' : (mode === 'register' ? 'CREA TU CUENTA' : 'INICIA SESIÓN')}
+                                </h2>
+                            </div>
+
+                            {/* Banner de sesión activa */}
+                            {isLoggedIn && (
+                                <div className={styles.loggedInBanner}>
+                                    <div className={styles.userInfo}>
+                                        <div className={styles.userIcon}>👤</div>
+                                        <div>
+                                            <p className={styles.userLabel}>Has iniciado sesión como:</p>
+                                            <p className={styles.userEmail}>{member.auth.email}</p>
                                         </div>
-                                        {errors.email && <p className={styles.errorText} role="alert">{errors.email}</p>}
                                     </div>
-
-                                    <div className={styles.inputGroup}>
-                                        <label htmlFor="password" className={styles.inputLabel}>CONTRASEÑA</label>
-                                        <div className={styles.inputWrapper}>
-                                            <input
-                                                id="password"
-                                                type={showPassword ? 'text' : 'password'}
-                                                name="password"
-                                                placeholder="••••••••"
-                                                value={formData.password}
-                                                onChange={handleChange}
-                                                className={styles.inputField}
-                                                disabled={isLoading}
-                                                required
-                                                autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
-                                            />
-                                            <button
-                                                type="button"
-                                                className={styles.passwordToggle}
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                                                aria-pressed={showPassword}
-                                            >
-                                                {showPassword ? '👁️‍🗨️' : '👁️'}
-                                            </button>
-                                        </div>
-                                        {errors.password && <p className={styles.errorText} role="alert">{errors.password}</p>}
+                                    <div className={styles.bannerActions}>
+                                        <button
+                                            type="button"
+                                            className={styles.logoutButtonSecondary}
+                                            onClick={handleLogout}
+                                            disabled={isLoggingOut}
+                                        >
+                                            {isLoggingOut ? 'CERRANDO...' : 'CERRAR SESIÓN'}
+                                        </button>
                                     </div>
+                                </div>
+                            )}
 
-                                    {mode === 'register' && (
+                            {/* Form Body */}
+                            <form onSubmit={handleSubmit} className={styles.formBody} key={`form-${mode}`}>
+                                {!isLoggedIn && (
+                                    <>
                                         <div className={styles.inputGroup}>
-                                            <label htmlFor="confirmPassword" className={styles.inputLabel}>CONFIRMAR CONTRASEÑA</label>
+                                            <label htmlFor="email" className={styles.inputLabel}>CORREO ELECTRÓNICO</label>
                                             <div className={styles.inputWrapper}>
                                                 <input
-                                                    id="confirmPassword"
-                                                    type={showConfirmPassword ? 'text' : 'password'}
-                                                    name="confirmPassword"
+                                                    id="email"
+                                                    type="email"
+                                                    name="email"
+                                                    placeholder="hola@pataamiga.mx"
+                                                    value={formData.email}
+                                                    onChange={handleChange}
+                                                    onBlur={handleEmailBlur}
+                                                    className={styles.inputField}
+                                                    disabled={isLoading}
+                                                    required
+                                                    autoComplete="email"
+                                                />
+                                                {isCheckingEmail && (
+                                                    <span className={styles.inputIndicator}>...</span>
+                                                )}
+                                                {emailAvailable && formData.email.includes('@') && !isCheckingEmail && !errors.email && mode === 'register' && (
+                                                    <span className={styles.inputIndicatorSuccess}>✓</span>
+                                                )}
+                                            </div>
+                                            {errors.email && <p className={styles.errorText} role="alert">{errors.email}</p>}
+                                        </div>
+
+                                        <div className={styles.inputGroup}>
+                                            <label htmlFor="password" className={styles.inputLabel}>CONTRASEÑA</label>
+                                            <div className={styles.inputWrapper}>
+                                                <input
+                                                    id="password"
+                                                    type={showPassword ? 'text' : 'password'}
+                                                    name="password"
                                                     placeholder="••••••••"
-                                                    value={formData.confirmPassword}
+                                                    value={formData.password}
                                                     onChange={handleChange}
                                                     className={styles.inputField}
                                                     disabled={isLoading}
                                                     required
-                                                    autoComplete="new-password"
+                                                    autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                                                 />
                                                 <button
                                                     type="button"
                                                     className={styles.passwordToggle}
-                                                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                    aria-label={showConfirmPassword ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'}
-                                                    aria-pressed={showConfirmPassword}
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                                    aria-pressed={showPassword}
                                                 >
-                                                    {showConfirmPassword ? '👁️‍🗨️' : '👁️'}
+                                                    {showPassword ? '👁️‍🗨️' : '👁️'}
                                                 </button>
                                             </div>
-                                            {errors.confirmPassword && <p className={styles.errorText} role="alert">{errors.confirmPassword}</p>}
+                                            {errors.password && <p className={styles.errorText} role="alert">{errors.password}</p>}
                                         </div>
-                                    )}
-                                </>
-                            )}
 
-                            <button
-                                type="submit"
-                                className={styles.submitButton}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? 'PROCESANDO...' : (isLoggedIn ? 'CONTINUAR REGISTRO 🐾' : (mode === 'register' ? 'REGISTRARSE 🐾' : 'ENTRAR 🐾'))}
-                            </button>
+                                        {mode === 'register' && (
+                                            <div className={styles.inputGroup}>
+                                                <label htmlFor="confirmPassword" className={styles.inputLabel}>CONFIRMAR CONTRASEÑA</label>
+                                                <div className={styles.inputWrapper}>
+                                                    <input
+                                                        id="confirmPassword"
+                                                        type={showConfirmPassword ? 'text' : 'password'}
+                                                        name="confirmPassword"
+                                                        placeholder="••••••••"
+                                                        value={formData.confirmPassword}
+                                                        onChange={handleChange}
+                                                        className={styles.inputField}
+                                                        disabled={isLoading}
+                                                        required
+                                                        autoComplete="new-password"
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className={styles.passwordToggle}
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                        aria-label={showConfirmPassword ? 'Ocultar confirmación de contraseña' : 'Mostrar confirmación de contraseña'}
+                                                        aria-pressed={showConfirmPassword}
+                                                    >
+                                                        {showConfirmPassword ? '👁️‍🗨️' : '👁️'}
+                                                    </button>
+                                                </div>
+                                                {errors.confirmPassword && <p className={styles.errorText} role="alert">{errors.confirmPassword}</p>}
+                                            </div>
+                                        )}
+                                    </>
+                                )}
 
-                            <div className={styles.privacyText}>
-                                🔒 Tus datos están protegidos. Al continuar, aceptas nuestros{' '}
-                                <button 
-                                    type="button"
-                                    className={styles.privacyLink} 
-                                    onClick={() => setIsTermsOpen(true)}
+                                <button
+                                    type="submit"
+                                    className={styles.submitButton}
+                                    disabled={isLoading}
                                 >
-                                    Términos y Condiciones y Aviso de Privacidad.
+                                    {isLoading ? 'PROCESANDO...' : (isLoggedIn ? 'CONTINUAR REGISTRO 🐾' : (mode === 'register' ? 'REGISTRARSE 🐾' : 'ENTRAR 🐾'))}
                                 </button>
-                            </div>
 
-                            {mode === 'login' && !isLoggedIn && (
-                                <div className={styles.loginSupportText}>
-                                    ¿Problemas para iniciar sesión? Escríbenos a <a href="mailto:miembros@pataamiga.mx" className={styles.supportLink}>miembros@pataamiga.mx</a>
-                                </div>
-                            )}
-
-                            {!isLoggedIn && (
-                                <div className={styles.separatorSection}>
-                                    <div className={styles.separator}>
-                                        <div className={styles.separatorLine} />
-                                        <div className={styles.separatorText}>O ÚNETE CON</div>
-                                        <div className={styles.separatorLine} />
-                                    </div>
-
+                                <div className={styles.privacyText}>
+                                    🔒 Tus datos están protegidos. Al continuar, aceptas nuestros{' '}
                                     <button
                                         type="button"
-                                        onClick={handleGoogleLogin}
-                                        className={styles.googleButton}
-                                        disabled={isLoading}
-                                        aria-label="Registrarse con Google"
+                                        className={styles.privacyLink}
+                                        onClick={() => setIsTermsOpen(true)}
                                     >
-                                        <img
-                                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695353/2000px-Google_G_Logo.svg__wzddgf.webp"
-                                            alt="Google Logo"
-                                            className={styles.googleIcon}
-                                        />
-                                        GOOGLE
+                                        Términos y Condiciones y Aviso de Privacidad.
                                     </button>
-
-                                    <div className={styles.footerText}>
-                                        {mode === 'register' ? (
-                                            <>
-                                                ¿Ya tienes cuenta?{' '}
-                                                <button
-                                                    type="button"
-                                                    className={styles.footerLink}
-                                                    onClick={() => setMode('login')}
-                                                >
-                                                    Inicia sesión
-                                                </button>
-                                            </>
-                                        ) : (
-                                            <>
-                                                ¿No tienes cuenta?{' '}
-                                                <button
-                                                    type="button"
-                                                    className={styles.footerLink}
-                                                    onClick={() => setMode('register')}
-                                                >
-                                                    Regístrate
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
                                 </div>
-                            )}
-                        </form>
+
+                                {mode === 'login' && !isLoggedIn && (
+                                    <div className={styles.loginSupportText}>
+                                        ¿Problemas para iniciar sesión? Escríbenos a <a href="mailto:miembros@pataamiga.mx" className={styles.supportLink}>miembros@pataamiga.mx</a>
+                                    </div>
+                                )}
+
+                                {!isLoggedIn && (
+                                    <div className={styles.separatorSection}>
+                                        <div className={styles.separator}>
+                                            <div className={styles.separatorLine} />
+                                            <div className={styles.separatorText}>O ÚNETE CON</div>
+                                            <div className={styles.separatorLine} />
+                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={handleGoogleLogin}
+                                            className={styles.googleButton}
+                                            disabled={isLoading}
+                                            aria-label="Registrarse con Google"
+                                        >
+                                            <img
+                                                src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695353/2000px-Google_G_Logo.svg__wzddgf.webp"
+                                                alt="Google Logo"
+                                                className={styles.googleIcon}
+                                            />
+                                            GOOGLE
+                                        </button>
+
+                                        <div className={styles.footerText}>
+                                            {mode === 'register' ? (
+                                                <>
+                                                    ¿Ya tienes cuenta?{' '}
+                                                    <button
+                                                        type="button"
+                                                        className={styles.footerLink}
+                                                        onClick={() => setMode('login')}
+                                                    >
+                                                        Inicia sesión
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    ¿No tienes cuenta?{' '}
+                                                    <button
+                                                        type="button"
+                                                        className={styles.footerLink}
+                                                        onClick={() => setMode('register')}
+                                                    >
+                                                        Regístrate
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+                            </form>
+                        </div>
+
+
                     </div>
-
-
                 </div>
-            </div>
 
-            <TermsModalEnhanced
+                <TermsModalEnhanced
                     isOpen={isTermsOpen}
                     onClose={() => setIsTermsOpen(false)}
                 />
