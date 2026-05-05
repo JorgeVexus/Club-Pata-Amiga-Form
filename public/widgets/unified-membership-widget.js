@@ -39,31 +39,31 @@
         }
 
         .pata-unified-panel {
-            background: var(--pata-glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--pata-glass-border);
-            border-radius: 35px;
-            padding: 40px;
+            background: transparent;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            border: none;
+            border-radius: 0;
+            padding: 0;
             width: 100%;
             max-width: 100%;
-            margin: 0 auto 20px auto;
-            box-shadow: var(--pata-shadow-premium);
+            margin: 0;
+            box-shadow: none;
             font-family: 'Outfit', sans-serif;
             color: #1A1A1A;
             display: none;
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             transition: all 0.4s var(--pata-spring);
             box-sizing: border-box;
         }
 
         @media (max-width: 600px) {
             .pata-unified-panel {
-                padding: 35px 20px;
-                border-radius: 35px;
-                width: calc(100% - 40px) !important;
-                margin: 0 auto 20px auto !important;
+                padding: 0;
+                border-radius: 0;
+                width: 100% !important;
+                margin: 0 !important;
                 box-sizing: border-box !important;
             }
             .pata-external-greeting {
@@ -243,8 +243,9 @@
             border: var(--pata-border-thick);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            height: clamp(400px, 50vh, 550px);
+            overflow: visible;
+            height: auto;
+            min-height: 400px;
             box-shadow: 12px 12px 0 rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
@@ -265,14 +266,12 @@
 
         .pata-chat-messages {
             flex: 1;
-            overflow-y: auto;
+            overflow-y: visible;
             padding: 25px;
             display: flex;
             flex-direction: column;
             gap: 18px;
-            background-image: radial-gradient(var(--pata-primary) 1px, transparent 1px);
-            background-size: 24px 24px;
-            background-color: #fafafa;
+            background-color: transparent;
         }
 
         .pata-chat-bubble {
@@ -416,7 +415,7 @@
             max-width: 550px;
             border-radius: 40px;
             border: var(--pata-border-thick);
-            overflow: hidden;
+            overflow: visible;
             box-shadow: 0 30px 60px rgba(0,0,0,0.25);
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
         }
@@ -434,10 +433,9 @@
         .pata-editorial-container {
             max-width: 1080px;
             width: 100%;
-            max-height: 90vh;
             border-radius: 40px;
             border: var(--pata-border-thick);
-            overflow: hidden;
+            overflow: visible;
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -447,8 +445,8 @@
         .pata-editorial-body {
             display: grid;
             grid-template-columns: minmax(320px, 440px) 1fr;
-            height: 100%;
-            overflow: hidden; /* Control internal scrolling on desktop */
+            height: auto;
+            overflow: visible;
         }
 
         .pata-editorial-left {
@@ -458,13 +456,13 @@
             flex-direction: column;
             gap: 25px;
             border-right: var(--pata-border-thick);
-            overflow-y: auto;
+            overflow-y: visible;
         }
 
         .pata-editorial-right {
             padding: 40px 50px;
             background: #fff;
-            overflow-y: auto;
+            overflow-y: visible;
             position: relative;
         }
 
@@ -811,8 +809,8 @@
         /* 🟠 Temas de Color */
         .pata-theme-orange {
             position: relative;
-            overflow: hidden;
-            min-height: 100vh;
+            overflow: visible;
+            min-height: auto;
         }
 
         /* ❌ Estilos Vista Rechazada (Nuevo Diseño) */
@@ -830,12 +828,12 @@
         .pata-rejected-wrapper {
             position: relative;
             z-index: 1;
-            padding: 100px 40px;
+            padding: 40px 0;
             width: 100%;
             max-width: 1400px;
             margin: 0 auto;
             box-sizing: border-box;
-            min-height: 100vh;
+            min-height: auto;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -879,10 +877,6 @@
 
         .pata-rejected-card {
             background: #FFFFFF;
-            background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/pet-rejected_ude216.png');
-            background-position: bottom right;
-            background-repeat: no-repeat;
-            background-size: 300px auto;
             border-radius: 66px;
             padding: 50px 60px;
             width: 100%;
@@ -986,28 +980,20 @@
 
         /* ⏳ PENDING VIEW REDESIGN (NEO-BRUTALIST) */
         .pata-pending-wrapper {
-            min-height: 100vh;
+            min-height: auto;
             display: flex;
             justify-content: center;
             align-items: center;
             overflow-x: hidden;
             position: relative;
-            padding: 60px 24px;
+            padding: 40px 0;
             font-family: 'Outfit', sans-serif;
             width: 100%;
             box-sizing: border-box;
         }
 
         .pata-pending-bg-letter {
-            position: absolute;
-            width: 1000px;
-            max-width: 150%;
-            left: -200px;
-            top: 100px;
-            transform: rotate(-3deg);
-            opacity: 0.8;
-            pointer-events: none;
-            z-index: 0;
+            display: none;
         }
 
         .pata-pending-container {
@@ -1111,17 +1097,6 @@
             background: #15BEB2;
             border-radius: 50px;
             transition: width 1.5s cubic-bezier(0.65, 0, 0.35, 1);
-            background-image: linear-gradient(
-                -45deg, 
-                rgba(255, 255, 255, 0.2) 25%, 
-                transparent 25%, 
-                transparent 50%, 
-                rgba(255, 255, 255, 0.2) 50%, 
-                rgba(255, 255, 255, 0.2) 75%, 
-                transparent 75%, 
-                transparent
-            );
-            background-size: 20px 20px;
         }
 
         .pata-pending-checklist-section {
@@ -1381,15 +1356,7 @@
 
         /* ⚠️ ACTION REQUIRED / MISSING INFO STYLES */
         .pata-bg-letter {
-            position: absolute;
-            width: 1000px;
-            max-width: 150%;
-            left: -200px;
-            top: 100px;
-            transform: rotate(-3deg);
-            opacity: 0.8;
-            pointer-events: none;
-            z-index: 0;
+            display: none;
         }
 
         .pata-missing-header {
@@ -1437,11 +1404,6 @@
             flex-direction: column;
             gap: 32px;
             border: none;
-            /* Mascot background decoration */
-            background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/pet-rejected_ude216.png');
-            background-position: bottom right;
-            background-repeat: no-repeat;
-            background-size: 300px auto;
         }
 
         .pata-missing-card-header {
