@@ -820,10 +820,10 @@
             width: 100%;
             height: 100%;
             background-image: url('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5658e469389f4197e75_pata-pattern-a.png');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.2;
-            z-index: 0;
+            background-repeat: repeat;
+            background-size: 600px;
+            opacity: 0.15;
+            z-index: -1;
             pointer-events: none;
         }
 
@@ -905,11 +905,11 @@
         .pata-btn-appeal {
             background: #FE8F15;
             color: #000;
-            border: 4px solid #000;
+            border: 2px solid #000;
             border-radius: 50px;
-            padding: 22px 50px;
+            padding: 20px 50px;
             font-family: 'Fraiche', sans-serif;
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 950;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -917,7 +917,7 @@
             display: inline-flex;
             align-items: center;
             gap: 12px;
-            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
         }
 
         .pata-btn-appeal:hover {
@@ -1355,7 +1355,7 @@
             } else if (isRejected) {
                 this.container.parentElement?.classList.add('pata-theme-orange');
                 this.container.parentElement?.classList.remove('pata-theme-yellow');
-                // document.body.style.backgroundColor = '#FE8F15'; // Color exacto del mockup
+                document.body.style.backgroundColor = '#FE8F15';
             } else {
                 this.container.parentElement?.classList.remove('pata-theme-yellow', 'pata-theme-orange');
                 document.body.style.backgroundColor = ''; // Reset
@@ -1412,7 +1412,7 @@
                     <div class="pata-rejected-bg-overlay"></div>
                     <div class="pata-rejected-wrapper">
                         <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 20px;">
-                            <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                            <h1 class="pata-welcome-title" style="color: #000;">¡hola, ${firstName}!</h1>
                         </div>
                         
                         ${this.pets.length > 1 ? `
@@ -1977,7 +1977,7 @@
         }
 
         renderRejectedContent(pet) {
-            const dogImage = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d592679e0f396417730e_pet-rejected_ude216.png';
+            const dogImage = 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/pet-rejected_ude216.png';
             const appealCount = pet.appeal_count || 0;
             const maxAppeals = 2;
             const canAppeal = appealCount < maxAppeals;
@@ -1991,27 +1991,31 @@
                         </p>
                         
                         <div class="pata-rejected-actions">
-                            ${canAppeal ? `
-                                <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}">
-                                    apelar y ver chat 💬
-                                </button>
-                                <p class="pata-appeal-footer-text">
-                                    Intento de apelación: ${appealCount} / ${maxAppeals}
-                                </p>
-                            ` : `
-                                <div style="background: #FEE2E2; color: #DC2626; padding: 20px; border-radius: 30px; font-weight: 800; border: 2px solid #DC2626; margin-bottom: 20px;">
-                                    Has alcanzado el límite de apelaciones para esta mascota.
-                                </div>
-                                <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #ccc; border-color: #666; cursor: pointer;">
-                                    ver historial de comunicación
-                                </button>
-                            `}
+                            <!-- Button moved outside -->
                         </div>
                     </div>
 
                     <div class="pata-rejected-image-container">
                         <img src="${dogImage}" class="pata-rejected-pet-img" alt="Pet Rejected">
                     </div>
+                </div>
+
+                <div class="pata-rejected-external-actions" style="margin-top: 40px; display: flex; flex-direction: column; align-items: center; width: 100%;">
+                    ${canAppeal ? `
+                        <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}">
+                            apelar y ver chat 💬
+                        </button>
+                        <p class="pata-appeal-footer-text" style="margin-top: 15px; color: #000; font-weight: 800;">
+                            Intento de apelación: ${appealCount} / ${maxAppeals}
+                        </p>
+                    ` : `
+                        <div style="background: #FEE2E2; color: #DC2626; padding: 20px; border-radius: 30px; font-weight: 800; border: 2px solid #DC2626; margin-bottom: 20px; width: 100%; max-width: 400px; text-align: center;">
+                            Has alcanzado el límite de apelaciones para esta mascota.
+                        </div>
+                        <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #ccc; border-color: #666; cursor: pointer;">
+                            ver historial de comunicación
+                        </button>
+                    `}
                 </div>
             `;
         }
