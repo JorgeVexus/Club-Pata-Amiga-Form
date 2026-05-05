@@ -814,7 +814,7 @@
 
         /* ❌ Estilos Vista Rechazada (Nuevo Diseño) */
         .pata-rejected-bg-overlay {
-            position: absolute; /* Cambiado de fixed a absolute */
+            position: absolute; 
             top: 0;
             left: 0;
             width: 100%;
@@ -823,7 +823,7 @@
             background-repeat: no-repeat;
             background-position: left bottom;
             background-size: 50% auto;
-            opacity: 0.4; /* Opacidad al 40% */
+            opacity: 0.4;
             z-index: 0;
             pointer-events: none;
         }
@@ -898,15 +898,15 @@
 
         .pata-rejected-image-container {
             position: absolute;
-            bottom: 0; /* Pegado abajo */
-            right: 0; /* Pegado a la derecha */
+            bottom: 0;
+            right: 0; /* Pegado totalmente a la derecha */
             width: 50%;
             display: flex;
             justify-content: flex-end;
             align-items: flex-end;
             z-index: 3;
             pointer-events: none;
-            transform: translateY(-15%); /* Solo sobresale por arriba */
+            transform: translateY(-15%);
         }
 
         .pata-rejected-pet-img {
@@ -914,6 +914,7 @@
             height: auto;
             object-fit: contain;
             filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
+            margin-right: -2px; /* Pequeño ajuste para asegurar que toque el borde */
         }
         
         .pata-rejected-divider {
@@ -1452,9 +1453,8 @@
             if (isRejected) {
                 console.log('❌ Unified Widget: Rendering rejected view with premium design.');
                 this.container.innerHTML = `
+                    <div class="pata-rejected-bg-overlay"></div>
                     <div class="pata-rejected-wrapper">
-                        <div class="pata-rejected-bg-overlay"></div>
-                        <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 30px;">
                         <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 30px;">
                             <h1 class="pata-welcome-title" style="color: #000; font-size: 80px; margin-bottom: 10px;">¡hola, ${firstName}!</h1>
                             <p style="color: #000; font-size: 20px; font-weight: 700; max-width: 800px; line-height: 1.3;">
