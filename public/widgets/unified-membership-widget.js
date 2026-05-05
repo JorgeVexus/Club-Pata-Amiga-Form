@@ -1859,14 +1859,120 @@
 
         .pata-pet-photo-card {
             flex: 0 0 180px;
-            aspect-ratio: 1/1;
-            background: #15BEB2;
-            border: 3px solid #000;
-            border-radius: 30px;
+            height: 180px;
+            border-radius: 35px;
             overflow: hidden;
-            box-shadow: 10px 10px 0 rgba(0,0,0,0.05);
+            border: 3px solid #000;
         }
 
+        .pata-pet-photo-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Rejected Pet View New */
+        .pata-rejected-view-new {
+            padding: 20px 0;
+            text-align: left;
+        }
+
+        .pata-rejected-title-new {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            color: #000;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: none;
+        }
+
+        .pata-rejected-subtitle-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 40px;
+            line-height: 1.4;
+        }
+
+        .pata-rejected-grid-new {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .pata-rejected-photo-new {
+            width: 200px;
+            height: 200px;
+            border-radius: 35px;
+            overflow: hidden;
+            border: 3px solid #000;
+            flex-shrink: 0;
+        }
+
+        .pata-rejected-photo-new img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pata-rejected-info-new {
+            flex: 1;
+        }
+
+        .pata-rejected-reason-label-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .pata-rejected-reason-text-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .pata-rejected-actions-new {
+            display: flex;
+            gap: 20px;
+            justify-content: flex-start;
+        }
+
+        .pata-btn-appeal-new, .pata-btn-accept-new {
+            background: #15BEB2;
+            color: #000;
+            border: 3px solid #000;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            cursor: pointer;
+            min-width: 200px;
+            transition: transform 0.2s;
+            text-align: center;
+        }
+
+        .pata-btn-appeal-new:hover, .pata-btn-accept-new:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .pata-rejected-grid-new {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .pata-rejected-actions-new {
+                flex-direction: column;
+            }
+            .pata-rejected-title-new {
+                font-size: 35px;
+            }
+        }
         .pata-pet-photo-card img {
             width: 100%;
             height: 100%;
@@ -4094,33 +4200,30 @@
 
         renderRejectedContent(pet) {
             const rejectionReason = pet.rejection_reason || 'No se especificó un motivo.';
+            const petPhoto = pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
 
             return `
-                <div class="pata-rejected-view" style="padding: 0;">
-                    <div style="text-align: left; margin-bottom: 30px;">
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">tu solicitud fue rechazada</h2>
-                        <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            Lamentablemente tu solicitud para <strong>${pet.name}</strong> no fue aprobada en esta ocasión.
-                        </p>
-                    </div>
-
-                    <div style="background: #FF5E5E; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); color: #000;">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 15px; text-transform: lowercase;">Motivo del rechazo:</h3>
-                        <p style="font-size: 16px; line-height: 1.6; font-family: 'Outfit', sans-serif; font-weight: 500; margin: 0;">
-                            "${rejectionReason}"
-                        </p>
-                    </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 20px; color: #000; text-transform: lowercase;">¿Qué puedes hacer?</h3>
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <button onclick="window.pataWidget.showAppealForm('${pet.id}')" class="pata-button-primary" style="width: 100%; justify-content: center; background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
-                                Apelar decisión
-                            </button>
-                            <button onclick="window.pataWidget.openSupport()" class="pata-button-secondary" style="width: 100%; justify-content: center; background: #15BEB2; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
-                                Hablar con soporte
-                            </button>
+                <div class="pata-rejected-view-new">
+                    <h2 class="pata-rejected-title-new">La solicitud de ${pet.name} no fue aceptada</h2>
+                    <p class="pata-rejected-subtitle-new">Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.</p>
+                    
+                    <div class="pata-rejected-grid-new">
+                        <div class="pata-rejected-photo-new">
+                            <img src="${petPhoto}" alt="${pet.name}">
                         </div>
+                        <div class="pata-rejected-info-new">
+                            <p class="pata-rejected-reason-label-new">Motivo del rechazo:</p>
+                            <p class="pata-rejected-reason-text-new">${rejectionReason}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="pata-rejected-actions-new">
+                        <button class="pata-btn-appeal-new pata-btn-ver-detalles" data-pet-id="${pet.id}">
+                            Apelar mi solicitud
+                        </button>
+                        <button class="pata-btn-accept-new" onclick="window.pataWidget.showPetList()">
+                            Aceptar
+                        </button>
                     </div>
                 </div>
             `;
