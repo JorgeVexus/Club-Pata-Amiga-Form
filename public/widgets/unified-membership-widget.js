@@ -237,25 +237,25 @@
 
         /* 💬 Chat Styles */
         .pata-chat-container {
-            margin-top: 35px;
+            margin-top: 40px;
             background: #fff;
-            border-radius: 30px;
+            border-radius: 35px;
             border: var(--pata-border-thick);
             display: flex;
             flex-direction: column;
-            overflow: visible;
+            overflow: hidden;
             height: auto;
-            min-height: 400px;
-            box-shadow: 12px 12px 0 rgba(0,0,0,0.05);
+            min-height: 380px;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.04);
             transition: all 0.3s ease;
         }
 
         .pata-chat-header {
-            padding: 18px 25px;
+            padding: 16px 25px;
             background: var(--pata-primary);
             color: #fff;
             font-weight: 950;
-            font-size: 14px;
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 0.1em;
             border-bottom: var(--pata-border-thick);
@@ -431,15 +431,32 @@
             max-width: 1400px;
         }
         .pata-editorial-container {
-            max-width: 1080px;
-            width: 100%;
+            max-width: 1100px;
+            width: 95%;
+            max-height: 92vh;
             border-radius: 40px;
             border: var(--pata-border-thick);
-            overflow: visible;
+            overflow: auto;
             background: #fff;
             display: flex;
             flex-direction: column;
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
+            position: relative;
+            scrollbar-width: thin;
+            scrollbar-color: var(--pata-primary) transparent;
+        }
+
+        .pata-editorial-container::-webkit-scrollbar {
+            width: 10px;
+        }
+        .pata-editorial-container::-webkit-scrollbar-track {
+            background: transparent;
+            margin: 30px 0;
+        }
+        .pata-editorial-container::-webkit-scrollbar-thumb {
+            background: var(--pata-primary);
+            border-radius: 10px;
+            border: 3px solid #fff;
         }
 
         .pata-editorial-body {
@@ -460,10 +477,20 @@
         }
 
         .pata-editorial-right {
-            padding: 40px 50px;
+            padding: 50px;
             background: #fff;
             overflow-y: visible;
             position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pata-editorial-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px 30px;
+            margin-bottom: 30px;
+            width: 100%;
         }
 
         .pata-editorial-name {
@@ -492,15 +519,20 @@
         @media (max-width: 900px) {
             .pata-editorial-container {
                 max-height: 95vh;
-                border-radius: 30px;
+                border-radius: 35px;
+                width: 98%;
             }
             .pata-editorial-body {
                 grid-template-columns: 1fr;
-                overflow-y: auto; /* Allow full body scroll on mobile */
+                overflow-y: visible; 
                 height: auto;
             }
+            .pata-editorial-info-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
             .pata-editorial-left, .pata-editorial-right {
-                overflow-y: visible; /* Disable independent column scroll */
+                overflow-y: visible; 
                 height: auto;
             }
             .pata-editorial-left {
@@ -510,7 +542,7 @@
                 gap: 15px;
             }
             .pata-editorial-right {
-                padding: 30px 20px;
+                padding: 35px 25px;
             }
             .pata-editorial-main-img-box {
                 height: 280px;
@@ -518,7 +550,7 @@
                 border-radius: 25px;
             }
             .pata-editorial-name {
-                font-size: 44px;
+                font-size: 40px;
             }
         }
 
@@ -4699,8 +4731,8 @@
 
                                 <!-- 📂 Mobile Accordion -->
                                 <details class="pata-mobile-accordion">
-                                    <summary>Ver datos de la mascota</summary>
-                                    <div class="pata-editorial-info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 20px 0;">
+                                    <summary>Ver todos los detalles</summary>
+                                    <div class="pata-editorial-info-grid" style="gap: 15px; padding: 20px 0;">
                                         ${infoGridHtml}
                                     </div>
                                 </details>
