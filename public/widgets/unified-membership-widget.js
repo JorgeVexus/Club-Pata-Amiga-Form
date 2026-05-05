@@ -803,6 +803,197 @@
             .pata-editorial-container { border-radius: 40px 40px 0 0; max-height: 100vh; height: 100vh; }
             .pata-editorial-body { height: 100%; }
         }
+
+        /* 🟠 Temas de Color */
+        .pata-theme-orange {
+            background-color: #FE8F15 !important;
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        /* ❌ Estilos Vista Rechazada (Nuevo Diseño) */
+        .pata-rejected-bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5658e469389f4197e75_pata-pattern-a.png');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.2;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .pata-rejected-wrapper {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .pata-rejected-card {
+            background: #FFFFFF;
+            border-radius: 66px;
+            padding: 60px;
+            width: 100%;
+            max-width: 1048px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            box-shadow: 20px 20px 0 rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            box-sizing: border-box;
+            border: none;
+            overflow: hidden;
+        }
+
+        .pata-rejected-content {
+            flex: 1.2;
+            text-align: left;
+            z-index: 2;
+        }
+
+        .pata-rejected-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 54px;
+            line-height: 1;
+            color: #1A1A1A;
+            margin: 0 0 20px 0;
+            text-transform: lowercase;
+            font-weight: 950;
+        }
+
+        .pata-rejected-description {
+            font-size: 20px;
+            font-weight: 600;
+            color: #4A4A4A;
+            line-height: 1.4;
+            margin-bottom: 40px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .pata-rejected-image-container {
+            flex: 0.8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .pata-rejected-pet-img {
+            width: 100%;
+            max-width: 450px;
+            height: auto;
+            object-fit: contain;
+            transform: rotate(-3deg);
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.15));
+        }
+
+        .pata-btn-appeal {
+            background: #FE8F15;
+            color: #000;
+            border: 4px solid #000;
+            border-radius: 50px;
+            padding: 22px 50px;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 24px;
+            font-weight: 950;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: lowercase;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+        }
+
+        .pata-btn-appeal:hover {
+            transform: scale(1.05) rotate(-1deg);
+            box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+        }
+
+        .pata-appeal-footer-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: #666;
+            margin-top: 15px;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        @media (max-width: 1024px) {
+            .pata-rejected-card {
+                flex-direction: column-reverse;
+                padding: 40px 30px;
+                border-radius: 40px;
+                text-align: center;
+                gap: 20px;
+            }
+            .pata-rejected-content {
+                text-align: center;
+                flex: none;
+            }
+            .pata-rejected-title {
+                font-size: 40px;
+            }
+            .pata-rejected-description {
+                font-size: 17px;
+                margin-bottom: 30px;
+            }
+            .pata-btn-appeal {
+                width: 100%;
+                justify-content: center;
+                padding: 18px 30px;
+                font-size: 20px;
+            }
+            .pata-rejected-image-container {
+                flex: none;
+                width: 100%;
+            }
+            .pata-rejected-pet-img {
+                max-width: 280px;
+            }
+        }
+
+        /* 🆕 Pet Selector for Rejected View */
+        .pata-rejected-pet-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            overflow-x: auto;
+            padding: 10px 5px;
+            scrollbar-width: none;
+            justify-content: center;
+            width: 100%;
+        }
+        .pata-rejected-pet-selector::-webkit-scrollbar { display: none; }
+        
+        .pata-rejected-pet-selector .pata-tab-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(0, 0, 0, 0.2);
+            color: #000;
+            opacity: 0.8;
+            backdrop-filter: blur(5px);
+        }
+        
+        .pata-rejected-pet-selector .pata-tab-btn.active {
+            background: #FFFFFF;
+            opacity: 1;
+            border-color: #000;
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.1);
+        }
     `;
 
 
@@ -856,6 +1047,31 @@
                     console.log('✨ Unified Widget: Rendering panel...');
                     this.container.classList.add('show');
                     this.render();
+
+                    // 🛠️ Debug Tools for Development
+                    window.pataDebug = {
+                        rechazado: () => {
+                            this.membershipStatus = 'rejected';
+                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'rejected';
+                            this.render();
+                            console.log('🟠 Debug: Estado RECHAZADO activado');
+                        },
+                        aprobado: () => {
+                            this.membershipStatus = 'approved';
+                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'approved';
+                            this.render();
+                            console.log('🟡 Debug: Estado APROBADO activado');
+                        },
+                        pendiente: () => {
+                            this.membershipStatus = 'pending';
+                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'pending';
+                            this.render();
+                            console.log('⚪ Debug: Estado PENDIENTE activado');
+                        },
+                        reset: () => {
+                            location.reload();
+                        }
+                    };
 
                     // 🆕 Magic Link: Auto-open chat if URL has action=chat&petId=X
                     try {
@@ -1139,7 +1355,7 @@
             } else if (isRejected) {
                 this.container.parentElement?.classList.add('pata-theme-orange');
                 this.container.parentElement?.classList.remove('pata-theme-yellow');
-                document.body.style.backgroundColor = '#FFBD12'; // Usaremos el mismo naranja del mockup
+                // document.body.style.backgroundColor = '#FE8F15'; // Color exacto del mockup
             } else {
                 this.container.parentElement?.classList.remove('pata-theme-yellow', 'pata-theme-orange');
                 document.body.style.backgroundColor = ''; // Reset
@@ -1190,8 +1406,35 @@
                 </div>
             `;
 
+            if (isRejected) {
+                console.log('❌ Unified Widget: Rendering rejected view with premium design.');
+                this.container.innerHTML = `
+                    <div class="pata-rejected-bg-overlay"></div>
+                    <div class="pata-rejected-wrapper">
+                        <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 20px;">
+                            <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
+                        </div>
+                        
+                        ${this.pets.length > 1 ? `
+                            <div class="pata-rejected-pet-selector">
+                                ${this.pets.map((p, i) => `
+                                    <button class="pata-tab-btn ${i === this.currentIndex ? 'active' : ''}" data-idx="${i}">
+                                        ${p.type === 'Gato' ? '🐱' : '🐕'} ${p.name}
+                                    </button>
+                                `).join('')}
+                            </div>
+                        ` : ''}
+
+                        ${this.renderPetContent(pet)}
+                    </div>
+                `;
+                this.container.classList.add('show');
+                this.attachEvents();
+                return;
+            }
+
             this.container.innerHTML = `
-                ${isApproved ? activeGreeting : (isRejected ? rejectedGreeting : pendingGreeting)}
+                ${isApproved ? activeGreeting : pendingGreeting}
 
                 <div class="pata-unified-panel show">
                     <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
@@ -1734,53 +1977,40 @@
         }
 
         renderRejectedContent(pet) {
-            const adminMsg = pet.last_admin_response || pet.admin_notes || 'Identificamos un requisito que no está alineado con las reglas de ingreso del club.';
-            const dogImage = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5dd0cf5c9243b55fa43_Recurso%2011%202.png';
+            const dogImage = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d592679e0f396417730e_pet-rejected_ude216.png';
             const appealCount = pet.appeal_count || 0;
             const maxAppeals = 2;
             const canAppeal = appealCount < maxAppeals;
 
             return `
-                <div class="pata-rejected-wrapper">
-                    <img src="${dogImage}" class="pata-rejected-dog-popout" alt="Pata Amiga">
-                    
-                    <div class="pata-rejected-white-card">
-                        <div class="pata-rejected-main-info">
-                            <h2 class="pata-rejected-title-hero">tu solicitud no fue aprobada</h2>
-                            <p class="pata-rejected-text-hero">
-                                Sabemos que este no es el resultado que esperabas. Revisa los detalles en el historial de comunicación para conocer los motivos y, si lo deseas, iniciar una apelación.
-                            </p>
-                        </div>
+                <div class="pata-rejected-card">
+                    <div class="pata-rejected-content">
+                        <h2 class="pata-rejected-title">tu solicitud no fue aprobada</h2>
+                        <p class="pata-rejected-description">
+                            En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga. Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.
+                        </p>
                         
-                        <div class="pata-dog-placeholder"></div>
+                        <div class="pata-rejected-actions">
+                            ${canAppeal ? `
+                                <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}">
+                                    apelar y ver chat 💬
+                                </button>
+                                <p class="pata-appeal-footer-text">
+                                    Intento de apelación: ${appealCount} / ${maxAppeals}
+                                </p>
+                            ` : `
+                                <div style="background: #FEE2E2; color: #DC2626; padding: 20px; border-radius: 30px; font-weight: 800; border: 2px solid #DC2626; margin-bottom: 20px;">
+                                    Has alcanzado el límite de apelaciones para esta mascota.
+                                </div>
+                                <button class="pata-btn-appeal pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #ccc; border-color: #666; cursor: pointer;">
+                                    ver historial de comunicación
+                                </button>
+                            `}
+                        </div>
                     </div>
 
-                    <div id="pata-appeal-section" style="text-align: center; margin-top: 40px; position: relative; z-index: 10;">
-                        ${!canAppeal ? `
-                            <p style="color: #FFFFFF; font-size: 15px; background: rgba(0,0,0,0.2); padding: 18px 30px; border-radius: 50px; display: inline-block; font-weight: 700; border: 1px solid rgba(255,255,255,0.2);">
-                                Has agotado el límite de apelaciones para esta mascota.
-                            </p>
-                            <div style="margin-top: 20px;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FFFFFF; color: #000; border: var(--pata-border-thick); border-radius: 50px; padding: 15px 40px; font-weight: 950; font-size: 16px; box-shadow: 8px 8px 0 rgba(0,0,0,0.1);">
-                                    📜 Ver historial y chat
-                                </button>
-                            </div>
-                        ` : `
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                                <button class="pata-btn pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); padding: 22px 60px; font-weight: 950; font-size: 20px; border-radius: 60px; box-shadow: 10px 10px 0 rgba(0,0,0,0.1); transition: all 0.2s var(--pata-spring);">
-                                    💬 Ver historial y Apelar
-                                </button>
-                                
-                                <div>
-                                    <p style="font-size: 15px; color: #FFFFFF; font-weight: 800; margin: 0; text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                        Puedes apelar tu solicitud directamente desde el chat ♡
-                                    </p>
-                                    <p style="font-size: 13px; color: #FFFFFF; opacity: 0.7; font-weight: 600; margin-top: 4px;">
-                                        Intentos de apelación: ${appealCount} / ${maxAppeals}
-                                    </p>
-                                </div>
-                            </div>
-                        `}
+                    <div class="pata-rejected-image-container">
+                        <img src="${dogImage}" class="pata-rejected-pet-img" alt="Pet Rejected">
                     </div>
                 </div>
             `;
