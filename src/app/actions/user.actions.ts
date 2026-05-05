@@ -409,7 +409,7 @@ export async function getPetsByUserId(memberstackId: string) {
         try {
             const { data, error } = await supabase
                 .from('users')
-                .select('id, last_admin_response, action_required_fields, membership_status')
+                .select('id, first_name, last_name, last_admin_response, action_required_fields, membership_status')
                 .eq('memberstack_id', memberstackId)
                 .maybeSingle();
 
@@ -418,7 +418,7 @@ export async function getPetsByUserId(memberstackId: string) {
                 // Intento fallback solo con ID si falló (por si faltan columnas)
                 const { data: fallbackData } = await supabase
                     .from('users')
-                    .select('id')
+                    .select('id, first_name, last_name')
                     .eq('memberstack_id', memberstackId)
                     .maybeSingle();
                 userData = fallbackData;
@@ -464,6 +464,8 @@ export async function getPetsByUserId(memberstackId: string) {
         return {
             success: true,
             pets,
+            first_name: userData.first_name,
+            last_name: userData.last_name,
             last_admin_response: lastAdminMsg,
             action_required_fields: userData.action_required_fields,
             membership_status: userData.membership_status || 'pending'

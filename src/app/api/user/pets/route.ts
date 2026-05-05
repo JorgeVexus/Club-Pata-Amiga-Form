@@ -21,6 +21,8 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             pets: result.pets,
+            first_name: result.first_name,
+            last_name: result.last_name,
             last_admin_response: result.last_admin_response,
             action_required_fields: result.action_required_fields,
             membership_status: result.membership_status

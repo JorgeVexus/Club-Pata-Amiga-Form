@@ -9,7 +9,7 @@ Bienvenido a la documentación de Club Pata Amiga. Este manual explica de forma 
 El registro ha sido diseñado para ser amigable, rápido y visualmente atractivo, asegurando que el futuro miembro se sienta acompañado en cada etapa del proceso.
 
 ### Paso 1: Creación de Cuenta e Identificación
-*   **Acceso**: El usuario inicia creando sus credenciales (correo y contraseña) o iniciando sesión si ya es parte de la comunidad.
+*   **Acceso**: El usuario inicia creando sus credenciales (correo y contraseña) o iniciando sesión si no completo su registro.
 *   **Seguridad**: La identidad se gestiona de forma segura a través de **Memberstack**, permitiendo un acceso fluido y protegido.
 *   **Modo Recuperación**: Si el usuario inició el proceso anteriormente pero no lo terminó, el sistema detecta su progreso y lo sitúa donde se quedó.
 
@@ -25,15 +25,15 @@ El registro ha sido diseñado para ser amigable, rápido y visualmente atractivo
 ### Paso 4: Perfil Completo del Propietario
 *   **Información Legal**: Se completan los datos del titular, incluyendo CURP y teléfono de contacto.
 *   **Dirección Inteligente**: Al ingresar el Código Postal, el sistema completa automáticamente el Estado, Ciudad y Colonia para ahorrar tiempo.
-*   **Documentación**: El sistema permite subir fotos de la identificación oficial (INE o Pasaporte) para validar la identidad del miembro.
+*   **Documentación**: El sistema permite subir fotos de el pasaporte en caso de que el miembro sea extranjero.
 
 ### Paso 5: Expediente Detallado de la Mascota
 *   **Personalización**: Se sube la foto oficial de la mascota que aparecerá en su carnet digital.
-*   **Salud y Bienestar**: Se registran detalles como raza y peso, además de permitir la carga de certificados veterinarios o cartillas de vacunación.
+*   **Salud y Bienestar**: Se registran detalles como raza, además de permitir la carga de certificados veterinarios en caso de aplicar.
 *   **Cierre de Expediente**: Con esta información, la mascota queda plenamente registrada y lista para su revisión y aprobación.
 
 ### Paso 6: Confirmación de Éxito y Bienvenida
-*   **Resumen Final**: Se presenta una pantalla de éxito confirmando que toda la información ha sido recibida correctamente.
+*   **Resumen Final**: Se presenta una pantalla de éxito confirmando que toda la información ha sido recibida correctamente, se permite solicitar factura y llenar los datos de facturaci´n.
 *   **Próximos Pasos**: El usuario recibe información sobre el estatus de aprobación pendiente por parte del equipo administrativo y cómo acceder a su nuevo dashboard de miembro.
 
 ---
