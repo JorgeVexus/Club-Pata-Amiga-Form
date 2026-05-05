@@ -820,9 +820,10 @@
             width: 100%;
             height: 100%;
             background-image: url('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990d5658e469389f4197e75_pata-pattern-a.png');
-            background-repeat: repeat;
-            background-size: 600px;
-            opacity: 0.15;
+            background-repeat: no-repeat;
+            background-position: left bottom;
+            background-size: 80% auto;
+            opacity: 1;
             z-index: -1;
             pointer-events: none;
         }
@@ -845,7 +846,7 @@
         .pata-rejected-card {
             background: #FFFFFF;
             border-radius: 66px;
-            padding: 60px;
+            padding: 60px 60px 60px 60px;
             width: 100%;
             max-width: 1048px;
             margin: 0 auto;
@@ -858,6 +859,7 @@
             box-sizing: border-box;
             border: none;
             overflow: hidden;
+            min-height: 430px;
         }
 
         .pata-rejected-content {
@@ -886,16 +888,18 @@
         }
 
         .pata-rejected-image-container {
-            flex: 0.8;
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            width: 450px;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            position: relative;
+            justify-content: flex-end;
+            align-items: flex-end;
+            z-index: 1;
         }
 
         .pata-rejected-pet-img {
             width: 100%;
-            max-width: 450px;
             height: auto;
             object-fit: contain;
             transform: rotate(-3deg);
@@ -959,11 +963,16 @@
                 font-size: 20px;
             }
             .pata-rejected-image-container {
-                flex: none;
+                position: relative;
+                bottom: 0;
+                right: 0;
                 width: 100%;
+                max-width: 280px;
+                margin: 0 auto;
             }
             .pata-rejected-pet-img {
-                max-width: 280px;
+                width: 100%;
+                transform: rotate(-3deg);
             }
         }
 
