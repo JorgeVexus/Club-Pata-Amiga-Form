@@ -1642,6 +1642,43 @@
             margin: 0;
         }
 
+        .pata-benefits-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        .pata-pati-message {
+            margin-top: 10px;
+            padding: 12px 20px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 15px;
+            font-size: 13px;
+            font-style: italic;
+            color: #000;
+            position: relative;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .pata-pati-message::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #000;
+        }
+
+        @media (max-width: 900px) {
+            .pata-benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         /* 🏆 DASHBOARD V3 (APPROVED DUAL CARD - NEO-BRUTALIST) */
         .pata-approved-wrapper-new {
             width: 100%;
@@ -3947,22 +3984,24 @@
                         <span>✨</span> ${title}
                     </h3>
                     
-                    <div class="pata-benefit-card">
-                        <div class="pata-benefit-icon-box">🩺</div>
-                        <div class="pata-benefit-info">
-                            <h4>Acceso inmediato al chat con la Dra. PATi</h4>
-                            <p>¡No tienes que esperar! Aclara dudas sobre la salud de tus peludos ahora mismo.</p>
-                            <div class="pata-pati-message">
-                                "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día."
+                    <div class="pata-benefits-grid">
+                        <div class="pata-benefit-card">
+                            <div class="pata-benefit-icon-box">🩺</div>
+                            <div class="pata-benefit-info">
+                                <h4>Acceso inmediato al chat con la Dra. PATi</h4>
+                                <p>¡No tienes que esperar! Aclara dudas sobre la salud de tus peludos ahora mismo.</p>
+                                <div class="pata-pati-message">
+                                    "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día."
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="pata-benefit-card">
-                        <div class="pata-benefit-icon-box">🤝</div>
-                        <div class="pata-benefit-info">
-                            <h4>Donaciones a refugios/ONGs</h4>
-                            <p>Por cada 1,000 miembros que se suman, la manada apoya a quienes más lo necesitan. Juntos protegemos más.</p>
+                        <div class="pata-benefit-card">
+                            <div class="pata-benefit-icon-box">🤝</div>
+                            <div class="pata-benefit-info">
+                                <h4>Donaciones a refugios/ONGs</h4>
+                                <p>Por cada 1,000 miembros que se suman, la manada apoya a quienes más lo necesitan. Juntos protegemos más.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
