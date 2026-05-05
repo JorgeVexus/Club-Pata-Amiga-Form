@@ -12,6 +12,7 @@ interface MemberRequest {
     status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended' | 'action_required';
     infoStatus?: 'complete' | 'incomplete' | 'requested';
     petCount?: number;
+    pendingPetCount?: number;
     paymentStatus?: string;
     type: 'member' | 'ambassador' | 'wellness-center';
     roles: ('member' | 'ambassador' | 'wellness-center')[];
@@ -244,6 +245,7 @@ export default function RequestsTable({
                     submittedAt: amb.created_at,
                     status: amb.status,
                     petCount: 0,
+                    pendingPetCount: 0,
                     infoStatus: 'complete',
                     paymentStatus: 'none',
                     type: 'ambassador',
@@ -287,6 +289,7 @@ export default function RequestsTable({
                     submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
                     status: member.customFields?.['approval-status'] || 'pending',
                     petCount: petCount,
+                    pendingPetCount: member.pendingPetCount || 0,
                     infoStatus: member.infoStatus || 'complete',
                     paymentStatus: member.paymentStatus || 'none',
                     type: 'member',
@@ -765,7 +768,21 @@ export default function RequestsTable({
                                     <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
                                     <td data-label="Info Extra">
                                         {request.type === 'member' ? (
-                                            <span>🐶 {request.petCount || 0} Mascotas</span>
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span>🐶 {request.petCount || 0} Mascotas</span>
+                                                {request.status === 'approved' && request.pendingPetCount! > 0 && (
+                                                    <span style={{ 
+                                                        fontSize: '0.75rem', 
+                                                        color: '#FE8F15', 
+                                                        fontWeight: 600,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}>
+                                                        ⚠️ {request.pendingPetCount} por aprobar
+                                                    </span>
+                                                )}
+                                            </div>
                                         ) : (
                                             <span>-</span>
                                         )}

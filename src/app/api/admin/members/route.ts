@@ -73,7 +73,7 @@ export async function GET(request: NextRequest) {
 
         // ENRICHMENT: Fetch real pet counts and info status from Supabase
         const memberstackIds = filteredMembers.map(m => m.id);
-        const memberDataMap = new Map<string, { petCount: number, infoStatus: string }>();
+        const memberDataMap = new Map<string, { petCount: number, pendingPetCount: number, infoStatus: string }>();
 
         if (memberstackIds.length > 0) {
             const { data: userMappings, error: mappingError } = await supabaseAdmin
@@ -132,6 +132,7 @@ export async function GET(request: NextRequest) {
 
                         memberDataMap.set(msId, {
                             petCount: pets.length,
+                            pendingPetCount: pets.filter(p => p.status === 'pending').length,
                             infoStatus: infoStatus
                         });
                     });
@@ -150,6 +151,7 @@ export async function GET(request: NextRequest) {
             return {
                 ...member,
                 petCount: enriched?.petCount || 0,
+                pendingPetCount: enriched?.pendingPetCount || 0,
                 infoStatus: enriched?.infoStatus || 'complete',
                 paymentStatus: paymentStatus
             };

@@ -2562,7 +2562,7 @@
                     btnElement.style.opacity = '1';
                 }
             };
-            input.click();
+            fileInput.click();
         }
 
         renderPetDetailsModal(pet) {
