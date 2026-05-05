@@ -2502,11 +2502,213 @@
                 flex-direction: column;
                 text-align: center;
             }
-        }
-    `;
+            }
 
+            /* ----------------------------------------------------------------- */
+            /* 🆕 NEW REJECTED DESIGN STYLES (Phase 4)                        */
+            /* ----------------------------------------------------------------- */
+            .pata-rejected-wrapper-new {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: visible;
+            }
 
-    class UnifiedWidget {
+            .pata-rejected-container-new {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px 24px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            animation: pataSlideUpNew 0.8s ease-out forwards;
+            }
+
+            .pata-rejected-header-new {
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+            }
+
+            .pata-rejected-header-new h1 {
+            color: white !important;
+            font-size: clamp(48px, 8vw, 100px);
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            margin: 0;
+            text-transform: lowercase;
+            }
+
+            .pata-rejected-header-sub-new {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: clamp(16px, 2vw, 20px);
+            line-height: 1.4;
+            color: #000;
+            }
+
+            .pata-rejected-card-wrapper-new {
+            position: relative;
+            align-self: flex-start;
+            width: 100%;
+            max-width: 1048px;
+            margin-top: 20px;
+            }
+
+            .pata-rejected-card-new {
+            background: #FFFFFF;
+            border-radius: 66px;
+            padding: clamp(24px, 5vw, 48px);
+            display: flex;
+            flex-direction: column;
+            gap: clamp(20px, 4vw, 32px);
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 2;
+            border: 2px solid #000;
+            }
+
+            .pata-rejected-card-title-new {
+            font-size: clamp(32px, 5vw, 50px);
+            font-weight: 800;
+            line-height: 1.1;
+            max-width: 700px;
+            margin: 0;
+            color: #000;
+            text-align: left;
+            }
+
+            .pata-rejected-card-intro-new {
+            font-size: clamp(16px, 1.5vw, 20px);
+            color: rgba(0, 0, 0, 0.7);
+            max-width: 600px;
+            margin: 0;
+            text-align: left;
+            }
+
+            .pata-rejected-card-details-new {
+            border-top: 1px solid rgba(0, 0, 0, 0.15);
+            padding-top: clamp(20px, 4vw, 32px);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            text-align: left;
+            }
+
+            .pata-rejected-detail-label-new {
+            font-size: 18px;
+            font-weight: 500;
+            color: #000;
+            }
+
+            .pata-rejected-detail-text-new {
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.6);
+            line-height: 1.5;
+            max-width: 540px;
+            margin: 0;
+            }
+
+            .pata-rejected-mascot-new {
+            position: absolute;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-40%);
+            width: 480px;
+            height: auto;
+            z-index: 3;
+            pointer-events: none;
+            animation: pataMascotPopNew 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.5s both;
+            }
+
+            .pata-rejected-footer-new {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+            }
+
+            .pata-rejected-btn-appeal-new {
+            background: #15BEB2;
+            color: #000;
+            padding: 12px 48px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #000;
+            cursor: pointer;
+            box-shadow: 0 8px 16px rgba(21, 190, 178, 0.3);
+            text-align: center;
+            }
+
+            .pata-rejected-btn-appeal-new:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 12px 24px rgba(21, 190, 178, 0.4);
+            background-color: #18d8ca;
+            }
+
+            .pata-rejected-footer-note-new {
+            font-size: 14px;
+            color: #000;
+            opacity: 0.6;
+            }
+
+            @keyframes pataMascotPopNew {
+            from { opacity: 0; transform: translateY(-40%) scale(0.5) rotate(10deg); }
+            to { opacity: 1; transform: translateY(-40%) scale(1) rotate(0deg); }
+            }
+
+            @media (max-width: 1150px) {
+            .pata-rejected-mascot-new {
+                position: relative;
+                right: 0;
+                top: 0;
+                transform: none;
+                width: 320px;
+                margin: 0 auto -60px;
+                display: block;
+                animation: pataSlideUpNew 1s ease-out 0.5s both;
+            }
+            .pata-rejected-card-wrapper-new {
+                display: flex;
+                flex-direction: column-reverse;
+                align-items: center;
+            }
+            .pata-rejected-card-new {
+                border-radius: 40px;
+                text-align: center;
+            }
+            .pata-rejected-card-intro-new, .pata-rejected-detail-text-new {
+                margin: 0 auto;
+                text-align: center;
+            }
+            .pata-rejected-card-details-new {
+                text-align: center;
+            }
+            .pata-rejected-header-new h1, .pata-rejected-header-sub-new {
+                text-align: center;
+            }
+            .pata-rejected-container-new {
+                align-items: center;
+            }
+            }
+            `;
+
+            class UnifiedWidget {
         constructor(containerId) {
             this.container = document.getElementById(containerId);
             this.member = null;
@@ -2906,45 +3108,81 @@
             }
         }
 
-        renderRejectedView(firstName, pet) {
-            const petImage = pet?.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-            
-            this.container.innerHTML = `
-                <div class="pata-rejected-wrapper">
-                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" class="pata-pending-bg-letter">
-                    
+        handleCancelAppeal() {
+            console.log('⚖️ Unified Widget: Cancelling appeal.');
+            this.showAppealForm = false;
+            this.render();
+        }
+
+        renderAppealForm(firstName, pet) {
+            return `
+                <div class="pata-missing-wrapper">
                     <main class="pata-missing-container">
                         <header class="pata-missing-header">
-                            <h1 style="color: white !important;">¡hola, ${firstName}!</h1>
-                            <div class="pata-missing-header-sub">
-                                <p style="color: black; font-family: 'Outfit', sans-serif; font-weight: 400; font-size: 18px;">
-                                    En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga.
-                                    <strong>Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.</strong>
-                                </p>
-                            </div>
+                            <h1 style="color: white !important;">apelar solicitud</h1>
+                            <p style="color: black;">revisaremos tu caso para <strong>${pet.name.toLowerCase()}</strong></p>
                         </header>
 
-                        <section class="pata-missing-card" style="background-image: url('${petImage}'); background-size: cover; background-position: center; border: 3px solid #000;">
-                            <div class="pata-missing-card-inner" style="background: rgba(255, 255, 255, 0.95); padding: 40px; border-radius: 40px; width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; gap: 24px;">
-                                <h2 class="pata-missing-card-title" style="font-size: 32px; font-family: 'Fraiche', sans-serif; text-transform: lowercase;">tu solicitud fue rechazada</h2>
-                                <p class="pata-missing-card-intro" style="font-size: 18px; color: #000; font-family: 'Outfit', sans-serif;">
-                                    Lamentamos los inconvenientes. Si crees que esto es un error o quieres darnos más información, puedes apelar la decisión aquí mismo.
-                                </p>
-                                
-                                <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; width: 100%;">
-                                    <button class="pata-btn pata-btn-appeal" style="width: auto; padding: 16px 40px; font-size: 20px; background: #000; color: #fff !important; border-radius: 50px; border: 2px solid #000; cursor: pointer; font-family: 'Fraiche', sans-serif; text-transform: lowercase;" onclick="window.UnifiedWidgetInstance.handleAppeal()">
-                                        apelar mi solicitud
+                        <section class="pata-missing-card" style="border: 2px solid #000; padding: 40px; border-radius: 40px; background: white;">
+                            <div class="pata-missing-content">
+                                <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 20px; text-transform: lowercase;">cuéntanos más</h3>
+                                <textarea id="pata-textarea-appeal" 
+                                          style="width: 100%; min-height: 150px; border: 2px solid #000; border-radius: 20px; padding: 20px; font-family: 'Outfit', sans-serif; font-size: 16px; margin-bottom: 30px;" 
+                                          placeholder="Describe por qué deberíamos reconsiderar tu solicitud..."></textarea>
+
+                                <div class="pata-btn-group" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                    <button class="pata-btn" style="background: #eee; color: #000; border: 2px solid #000; padding: 15px 40px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif; text-transform: lowercase;" onclick="window.pataWidget.handleCancelAppeal()">
+                                        cancelar
                                     </button>
-                                    <p style="font-family: 'Outfit', sans-serif; font-weight: 400; color: #000; margin-top: 10px; font-size: 16px;">
-                                        revisaremos tu apelación con gusto ♡
-                                    </p>
+                                    <button id="pata-btn-submit-appeal" class="pata-btn" data-pet-id="${pet.id}" style="flex: 1; background: #15BEB2; color: #000; border: 2px solid #000; padding: 15px 40px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif; text-transform: lowercase;">
+                                        enviar apelación
+                                    </button>
                                 </div>
                             </div>
                         </section>
                     </main>
                 </div>
             `;
+        }
+
+        renderRejectedView(firstName, pet) {
+            const rejectionReason = this.userExtra?.lastAdminResponse || pet?.rejection_reason || 'Identificamos un requisito que no está alineado con las reglas de ingreso del club. Es parte de nuestro compromiso por mantener la comunidad protegida.';
+
+            this.container.innerHTML = `
+                <div class="pata-rejected-wrapper-new">
+                    <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" alt="Decor" class="pata-approved-bg-letter-new">
+                    <main class="pata-rejected-container-new">
+                        <header class="pata-rejected-header-new">
+                            <h1 data-od-id="greeting">¡hola, ${firstName}!</h1>
+                            <div class="pata-rejected-header-sub-new">
+                                <p>En esta ocasión no fue posible aprobar tu solicitud para unirte a Club Pata Amiga.</p>
+                                <p><strong>Tu pago ha sido devuelto íntegro. No se realizó ningún cargo a tu cuenta.</strong></p>
+                            </div>
+                        </header>
+                        <div class="pata-rejected-card-wrapper-new">
+                            <div class="pata-rejected-card-new">
+                                <div class="pata-rejected-card-main-new">
+                                    <h2 class="pata-rejected-card-title-new" data-od-id="main-status">tu solicitud no fue aprobada</h2>
+                                    <p class="pata-rejected-card-intro-new">Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.</p>
+                                </div>
+                                <div class="pata-rejected-card-details-new">
+                                    <span class="pata-rejected-detail-label-new">Motivo del rechazo:</span>
+                                    <p class="pata-rejected-detail-text-new" data-od-id="reason">
+                                        "${rejectionReason}"
+                                    </p>
+                                </div>
+                            </div>
+                            <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/pet-rejected_ude216.png" alt="Mascota triste" class="pata-rejected-mascot-new" data-od-id="mascot">
+                        </div>
+                        <footer class="pata-rejected-footer-new">
+                            <a href="javascript:void(0)" class="pata-rejected-btn-appeal-new pata-btn-ver-detalles" data-pet-id="${pet.id}" data-od-id="cta">Apelar mi solicitud</a>
+                            <p class="pata-rejected-footer-note-new">Revisaremos tu apelación con gusto ♡</p>
+                        </footer>
+                    </main>
+                </div>
+            `;
             this.container.classList.add('show');
+            this.attachEvents();
             this.hideGlobalLoaders();
         }
 
