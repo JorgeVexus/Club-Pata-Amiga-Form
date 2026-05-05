@@ -3067,48 +3067,38 @@
             const firstName = (this.userExtra?.firstName || 'Socio').toLowerCase();
             const pet = this.pets[this.currentIndex];
 
-            // 🔴 NUEVO: Verificar primero si no ha pagado
+            // 1. Payment states (Priority)
             if (this.membershipStatus === 'pending_payment') {
-                console.log('💳 Unified Widget: User has not paid. Rendering payment required view.');
                 this.container.innerHTML = this.renderPaymentRequiredView(firstName);
                 this.container.classList.add('show');
                 this.hideGlobalLoaders();
                 return;
             }
 
-            // ⏳ Si el pago está en proceso
             if (this.membershipStatus === 'payment_processing') {
-                console.log('⏳ Unified Widget: Payment processing. Rendering processing view.');
                 this.container.innerHTML = this.renderPaymentProcessingView(firstName);
                 this.container.classList.add('show');
                 this.hideGlobalLoaders();
                 return;
             }
 
-            // Global statuses
-            const allPetsPending = this.pets.length === 0 || this.pets.every(p => p.status === 'pending');
-            const isPending = (this.membershipStatus === 'pending' || this.membershipStatus === 'waiting_approval' || this.membershipStatus === 'pending_approval') && allPetsPending;
-
-            // Use the current pet's status to determine the view if we have pets
-            const status = pet ? (pet.status || 'pending').toLowerCase() : (this.membershipStatus || 'pending').toLowerCase();
+            // 2. Dashboard View (Active, Approved, or Pending Review with pets)
             const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
+            const hasPets = this.pets && this.pets.length > 0;
 
-            console.log(`📊 Unified Widget: Current Pet Status="${status}", Global Status="${this.membershipStatus}"`);
+            console.log(`📊 Unified Widget: Global Status="${this.membershipStatus}", Current Pet="${pet?.name}", PetsCount=${this.pets.length}`);
 
-            // Priorizar la vista aprobada si el miembro ya está activo globalmente
-            if (isMemberApproved) {
-                this.renderApprovedView(firstName, pet);
-            } else if (status === 'rejected' || status === 'denied') {
-                this.renderRejectedView(firstName, pet);
-            } else if (status === 'approved' || status === 'active') {
-                this.renderApprovedView(firstName, pet);
-            } else if (status === 'action_required' || status === 'missing_info') {
-                this.renderActionRequiredView(firstName, pet);
-            } else if (isPending || status === 'pending' || status === 'waiting_approval') {
-                this.renderPendingView(firstName, pet);
+            if (isMemberApproved || (hasPets && this.membershipStatus !== 'rejected')) {
+                // If member is approved, or if they have pets and are not globally rejected, show the dashboard
+                this.renderDashboardView(firstName, pet);
+            } else if (this.membershipStatus === 'rejected') {
+                // Globally rejected
+                this.renderRejectedView(firstName, null);
             } else {
-                // Default to pending if unknown
-                this.renderPendingView(firstName, pet);
+                // Default fallback for pending with no pets
+                this.container.innerHTML = this.renderCompleteRegistrationView(firstName);
+                this.container.classList.add('show');
+                this.hideGlobalLoaders();
             }
         }
 
@@ -3243,7 +3233,7 @@
             this.hideGlobalLoaders();
         }
 
-        renderApprovedView(firstName, pet) {
+        renderDashboardView(firstName, pet) {
             if (!pet) {
                 this.container.innerHTML = this.renderCompleteRegistrationView(firstName);
                 this.container.classList.add('show');
@@ -3251,66 +3241,43 @@
                 return;
             }
 
-            const carencia = this.calculateCarencia(pet);
+            const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
             
+            // Generate the dashboard shell
             this.container.innerHTML = `
                 <div class="pata-approved-wrapper-new">
                     <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777945368/letra_a_orange_vuxixu.png" alt="Decor" class="pata-approved-bg-letter-new">
                     <main class="pata-container-new">
                         <header class="pata-header-new">
-                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!<br>bienvenida</h1>
+                            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+                                <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" alt="Pata Amiga" style="width: 40px; height: auto;">
+                            </div>
+                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
                             <div class="pata-header-sub-new">
-                                <p>Tu membresía está activa, pero algunos beneficios estarán disponibles pronto.</p>
-                                <p>Nos encanta tenerte aquí. Mientras termina tu periodo de espera, sigue explorando lo que Pata Amiga tiene para ti.</p>
+                                ${isMemberApproved 
+                                    ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>' 
+                                    : '<p>Estamos revisando tu información para darte la bienvenida oficial. ¡Falta muy poco!</p>'}
                             </div>
                         </header>
+
                         <section class="pata-card-new">
-                            <!-- Pet Selector -->
+                            <!-- Pet Selector (Tabs) -->
                             <div class="pata-pet-selector-new">
-                                <p class="pata-pet-selector-title-new">Tus mascotas con carencia activa</p>
                                 <div class="pata-tabs-new">
                                     ${this.pets.map((p, i) => `
                                         <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'}" onclick="window.pataWidget.setIndex(${i})">
+                                            <span class="pata-tab-icon-new">🐾</span>
                                             <span class="pata-tab-name-new">${p.name.toLowerCase()}</span>
-                                            <div class="pata-tab-icon-new">
-                                                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                                            </div>
                                         </div>
                                     `).join('')}
                                 </div>
                             </div>
-                            <!-- Content Area -->
-                            <div class="pata-dashboard-content-new">
-                                <div class="pata-progress-container-new">
-                                    <div class="pata-progress-header-new">
-                                        <h2 class="pata-progress-title-new" data-od-id="progress-title">tu periodo de espera</h2>
-                                        <p class="pata-progress-subtitle-new">¡Ya recorriste más de la mitad del camino!</p>
-                                        <p class="pata-progress-counter-new">Faltan <span>${carencia.daysRemaining} días</span> para activar tu fondo completo</p>
-                                    </div>
-                                    <div class="pata-bar-wrapper-new">
-                                        <div class="pata-bar-labels-new">
-                                            <span>Inicio de membresía</span>
-                                            <span>${carencia.percentage}% completado</span>
-                                        </div>
-                                        <div class="pata-bar-track-new">
-                                            <div class="pata-bar-fill-new" style="width: ${carencia.percentage}%"></div>
-                                        </div>
-                                        <div class="pata-bar-labels-new">
-                                            <span>Día 1</span>
-                                            <span>Día ${carencia.totalDays}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="pata-pet-profile-card-new">
-                                    <div class="pata-pet-info-new">
-                                        <h3 class="pata-pet-info-name-new">${pet.name.toLowerCase()}</h3>
-                                        <div class="pata-pet-info-tag-new"><div class="pata-dot-new"></div> ${pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'}</div>
-                                        <div class="pata-pet-info-tag-new"><div class="pata-dot-new"></div> ${pet.type || 'Lomito'}</div>
-                                        <div class="pata-pet-info-tag-new"><div class="pata-dot-new"></div> ${pet.breed || 'Mestizo'}</div>
-                                    </div>
-                                    <a href="javascript:void(0)" class="pata-btn-details-new pata-btn-ver-detalles" data-pet-id="${pet.id}">Ver detalles</a>
-                                </div>
+
+                            <!-- Content Area (Status Specific) -->
+                            <div class="pata-dashboard-content-new pata-slide-animate">
+                                ${this.renderPetContent(pet)}
                             </div>
+
                             <!-- Footer Banner -->
                             <div class="pata-footer-banner-new" data-od-id="bottom-banner">
                                 <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3318,14 +3285,15 @@
                                     <path d="M12 16V12M12 8H12.01" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 </svg>
                                 <div class="pata-footer-text-new">
-                                    <h4>¿Adoptaste a alguno de tus compañeros o tienes RUAC?</h4>
-                                    <p>Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.</p>
+                                    <h4>¿Tienes alguna duda o necesitas ayuda?</h4>
+                                    <p>Nuestro equipo está listo para apoyarte. Escríbenos por el chat o a miembros@pataamiga.mx</p>
                                 </div>
                             </div>
                         </section>
                     </main>
                 </div>
             `;
+            
             this.container.classList.add('show');
             this.attachEvents();
             this.hideGlobalLoaders();
@@ -3743,208 +3711,188 @@
         renderPendingContent(pet) {
             return `
                 <div class="pata-pending-view" style="padding: 0;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <div style="width: 80px; height: 80px; background: #15BEB2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 3px solid #000;">
-                            <span style="color: white; font-size: 40px;">✓</span>
-                        </div>
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 32px; color: #000;">¡Solicitud en revisión!</h2>
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">tu solicitud está en revisión</h2>
                         <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            Estamos validando que todo esté en orden para darte la bienvenida oficial a la manada.
+                            Nuestro equipo la está revisando con calma y cuidado (así como cuidamos a cada miembro de la manada).
                         </p>
                     </div>
 
-                    <div style="background: #F9F9F9; border: 2px solid #000; border-radius: 30px; padding: 24px; margin-bottom: 30px;">
-                        <div style="display: flex; flex-direction: column; gap: 20px;">
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 24px; height: 24px; background: #15BEB2; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000;">
-                                    <span style="color: white; font-size: 12px;">✓</span>
-                                </div>
-                                <span style="font-weight: 700; color: #000;">Registro exitoso</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px;">
-                                <div style="width: 24px; height: 24px; background: #FE8F15; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000;">
-                                    <div style="width: 8px; height: 8px; background: white; border-radius: 50%;"></div>
-                                </div>
-                                <span style="font-weight: 700; color: #000;">Validando documentos</span>
-                            </div>
-                            <div style="display: flex; align-items: center; gap: 12px; opacity: 0.5;">
-                                <div style="width: 24px; height: 24px; background: #DDD; border-radius: 50%; border: 2px solid #000;"></div>
-                                <span style="font-weight: 700; color: #000;">Activación de beneficios</span>
-                            </div>
+                    <div style="margin-bottom: 30px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #666; margin-bottom: 10px;">
+                            <span>Solicitud enviada</span>
+                            <span>En revisión...</span>
+                        </div>
+                        <div style="height: 12px; background: #eee; border: 2px solid #000; border-radius: 50px; overflow: hidden;">
+                            <div style="width: 70%; height: 100%; background: #15BEB2; border-right: 2px solid #000;"></div>
                         </div>
                     </div>
 
-                    ${this.renderInReviewBenefits("Mientras revisamos tu registro...")}
-
-                    <div style="background: #15BEB2; border: 2px solid #000; padding: 15px; border-radius: 50px; margin-top: 25px; text-align: center; color: white;">
-                        <p style="margin:0; font-size: 14px; font-weight: 900;">🛡️ Control total de tu cuenta</p>
+                    <div style="margin-bottom: 40px;">
+                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 20px; color: #000; text-transform: lowercase;">¿Qué estamos revisando?</h3>
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 15px;">
+                            <li style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 24px; height: 24px; background: #15BEB2; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+                                    <span style="color: white; font-size: 12px;">✓</span>
+                                </div>
+                                <span style="font-weight: 700; color: #000; font-family: 'Outfit', sans-serif;">Información de tu mascota</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 24px; height: 24px; background: #15BEB2; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+                                    <span style="color: white; font-size: 12px;">✓</span>
+                                </div>
+                                <span style="font-weight: 700; color: #000; font-family: 'Outfit', sans-serif;">Documentación enviada</span>
+                            </li>
+                            <li style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 24px; height: 24px; background: #15BEB2; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #000; flex-shrink: 0;">
+                                    <span style="color: white; font-size: 12px;">✓</span>
+                                </div>
+                                <span style="font-weight: 700; color: #000; font-family: 'Outfit', sans-serif;">Datos de contacto</span>
+                            </li>
+                        </ul>
                     </div>
-                    
-                    <p style="text-align: center; margin-top: 15px; font-size: 14px; color: #666; font-family: 'Outfit', sans-serif;">
-                        Recuerda que puedes cancelar tu membresía en cualquier momento desde tu panel sin complicaciones.
+
+                    <p style="text-align: center; margin-bottom: 30px; font-size: 13px; color: #888; font-family: 'Outfit', sans-serif; font-style: italic;">
+                        No se hará ningún cargo definitivo hasta que tu solicitud sea aprobada.
                     </p>
+
+                    ${this.renderInReviewBenefits("mientras revisamos tu registro...")}
                 </div>
             `;
         }
 
         // 🆕 Renderizar contenido para mascotas con apelación en revisión
         renderAppealedContent(pet) {
-            const appealDate = pet.appealed_at ? new Date(pet.appealed_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Fecha no disponible';
+            const appealDate = pet.appealed_at ? new Date(pet.appealed_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Reciente';
 
             return `
-                <div class="pata-appealed-view" style="text-align: center;">
-                    <div style="width: 80px; height: 80px; background: #FFBD00; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 3px solid #000;">
-                        <span style="font-size: 40px;">⚖️</span>
-                    </div>
-                    <h2 class="pata-title" style="margin-bottom: 12px; font-size: 32px; color: #000;">Apelación en curso</h2>
-                    <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif; margin-bottom: 30px;">
-                        Estamos revisando tu apelación para <strong>${pet.name}</strong>. Te notificaremos en cuanto tengamos una resolución.
-                    </p>
-
-                    <div style="background: #F9F9F9; border: 2px solid #000; border-radius: 30px; padding: 24px; text-align: left; margin-bottom: 30px;">
-                        <div style="font-weight: 700; color: #666; font-size: 14px; margin-bottom: 8px;">ENVIADA EL:</div>
-                        <div style="font-weight: 900; color: #000; font-size: 16px;">${appealDate}</div>
+                <div class="pata-appealed-view" style="padding: 0;">
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">apelación en revisión</h2>
+                        <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
+                            Estamos revisando cuidadosamente tu apelación para <strong>${pet.name}</strong>. Te notificaremos en cuanto tengamos una respuesta.
+                        </p>
                     </div>
 
-                    <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px 40px; border-radius: 50px; font-size: 18px; font-weight: 900; cursor: pointer;">
-                        Ver historial y chat
-                    </button>
+                    <div style="background: #FFBD12; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); color: #000;">
+                        <div style="font-weight: 900; color: #000; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">Fecha de envío:</div>
+                        <div style="font-weight: 900; color: #000; font-size: 20px; font-family: 'Fraiche', sans-serif;">${appealDate}</div>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="width: 100%; background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-size: 18px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif; display: flex; justify-content: center; align-items: center; gap: 10px;">
+                            Ver historial y chat <span>→</span>
+                        </button>
+                    </div>
+
+                    <div style="background: #F9F9F9; border: 2px solid #000; padding: 20px; border-radius: 25px; text-align: center;">
+                        <p style="margin:0; font-size: 14px; color: #666; font-family: 'Outfit', sans-serif;">
+                            Nuestro equipo legal y veterinario está analizando tu caso.
+                        </p>
+                    </div>
                 </div>
             `;
         }
 
         renderApprovedContent(pet) {
             const carencia = this.calculateCarencia(pet);
-            const firstName = this.member?.['first-name'] || 'Amigo';
 
             return `
                 <div class="pata-approved-view" style="padding: 0;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 32px; color: #000;">¡Bienvenido a la manada, ${firstName}!</h2>
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">tu periodo de espera</h2>
                         <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            Tu registro ha sido aprobado. Ahora tú y tus peludos están protegidos por Club Pata Amiga.
+                            ¡Ya recorriste más de la mitad del camino! Faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo.
                         </p>
                     </div>
 
-                    <div style="background: #FFBD00; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 10px 10px 0 rgba(0,0,0,0.05);">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 15px; color: #000;">Periodo de Carencia</h3>
-                        <p style="font-size: 16px; color: #000; margin-bottom: 20px; font-family: 'Outfit', sans-serif;">
-                            Faltan <strong>${carencia.daysRemaining} días</strong> para que la protección total esté activa.
-                        </p>
-                        
-                        <div style="height: 16px; background: white; border: 2px solid #000; border-radius: 50px; overflow: hidden; margin-bottom: 10px;">
+                    <div style="background: #FFBD12; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05);">
+                        <div style="height: 16px; background: white; border: 2px solid #000; border-radius: 50px; overflow: hidden; margin-bottom: 15px;">
                             <div style="width: ${carencia.percentage}%; height: 100%; background: #15BEB2; border-right: 2px solid #000;"></div>
                         </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 700; color: #000;">
+                        <div style="display: flex; justify-content: space-between; font-size: 14px; font-weight: 900; color: #000; font-family: 'Outfit', sans-serif;">
                             <span>Día 1</span>
                             <span>Día ${carencia.totalDays}</span>
                         </div>
                     </div>
 
-                    <div style="background: #F9F9F9; border: 2px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px;">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 20px; color: #000;">Tus Beneficios Activos</h3>
-                        <div style="display: flex; flex-direction: column; gap: 15px;">
-                            <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px;">🩺</div>
-                                <div>
-                                    <div style="font-weight: 700; color: #000;">Chat con la Dra. PATi</div>
-                                    <p style="font-size: 14px; color: #666; margin: 0;">Consultas ilimitadas para tus mascotas.</p>
-                                </div>
-                            </div>
-                            <div style="display: flex; align-items: flex-start; gap: 12px;">
-                                <div style="font-size: 20px;">🎁</div>
-                                <div>
-                                    <div style="font-weight: 700; color: #000;">Descuentos Exclusivos</div>
-                                    <p style="font-size: 14px; color: #666; margin: 0;">Precios especiales en servicios y productos.</p>
-                                </div>
-                            </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                        <div style="background: #fff; border: 2px solid #000; border-radius: 25px; padding: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🩺</div>
+                            <div style="font-weight: 900; color: #000; font-size: 16px; margin-bottom: 5px;">Chat con Dra. PATi</div>
+                            <p style="font-size: 13px; color: #444; margin: 0;">Consultas ilimitadas activas.</p>
+                        </div>
+                        <div style="background: #fff; border: 2px solid #000; border-radius: 25px; padding: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                            <div style="font-size: 24px; margin-bottom: 10px;">🎁</div>
+                            <div style="font-weight: 900; color: #000; font-size: 16px; margin-bottom: 5px;">Descuentos</div>
+                            <p style="font-size: 13px; color: #444; margin: 0;">Precios especiales en servicios.</p>
                         </div>
                     </div>
 
-                    <div style="background: #15BEB2; border: 2px solid #000; padding: 15px; border-radius: 50px; margin-top: 25px; text-align: center; color: white;">
-                        <p style="margin:0; font-size: 14px; font-weight: 900;">🛡️ Control total de tu cuenta</p>
-                    </div>
-                </div>
-            `;
-        }
-
-        renderRejectedContent(pet) {
-            const appealCount = pet.appeal_count || 0;
-            const maxAppeals = 2;
-            const canAppeal = appealCount < maxAppeals;
+                    <div style="background: #E0F7F6; border: 2px solid #000; padding: 20px; border-radi        renderRejectedContent(pet) {
+            const rejectionReason = pet.rejection_reason || 'No se especificó un motivo.';
 
             return `
-                <div class="pata-rejected-view" style="text-align: center;">
-                    <div style="width: 80px; height: 80px; background: #FF3B30; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; border: 3px solid #000;">
-                        <span style="color: white; font-size: 40px;">✕</span>
-                    </div>
-                    <h2 class="pata-title" style="margin-bottom: 12px; font-size: 32px; color: #000;">Solicitud rechazada</h2>
-                    
-                    <p style="font-family: 'Outfit', sans-serif; font-size: 18px; color: #000; margin-bottom: 30px;">
-                        Tu pago ha sido devuelto íntegro. <strong>No se realizó ningún cargo a tu cuenta.</strong>
-                    </p>
-
-                    <div style="background: #F9F9F9; border: 2px solid #000; border-radius: 30px; padding: 30px; text-align: left; margin-bottom: 30px;">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 20px; margin-bottom: 15px; color: #000;">Motivo del rechazo:</h3>
-                        <p style="font-family: 'Outfit', sans-serif; font-size: 16px; color: #444; line-height: 1.5;">
-                            ${pet.rejection_reason || 'Identificamos un requisito que no está alineado con las reglas de ingreso del club. Esto es parte de nuestro compromiso por mantener la manada segura.'}
+                <div class="pata-rejected-view" style="padding: 0;">
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">tu solicitud fue rechazada</h2>
+                        <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
+                            Lamentablemente tu solicitud para <strong>${pet.name}</strong> no fue aprobada en esta ocasión.
                         </p>
                     </div>
 
-                    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-                        ${canAppeal ? `
-                            <button class="pata-btn-appeal" data-pet-id="${pet.id}" style="background: #15BEB2; color: #000; border: 3px solid #000; padding: 18px 60px; border-radius: 50px; font-size: 18px; font-weight: 900; cursor: pointer; display: block; margin: 0 auto;">
-                                apelar mi solicitud
+                    <div style="background: #FF5E5E; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); color: #000;">
+                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 15px; text-transform: lowercase;">Motivo del rechazo:</h3>
+                        <p style="font-size: 16px; line-height: 1.6; font-family: 'Outfit', sans-serif; font-weight: 500; margin: 0;">
+                            "${rejectionReason}"
+                        </p>
+                    </div>
+
+                    <div style="margin-bottom: 30px;">
+                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 20px; color: #000; text-transform: lowercase;">¿Qué puedes hacer?</h3>
+                        <div style="display: flex; flex-direction: column; gap: 15px;">
+                            <button onclick="window.pataWidget.showAppealForm('${pet.id}')" class="pata-button-primary" style="width: 100%; justify-content: center; background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
+                                Apelar decisión
                             </button>
-                            <p style="font-family: 'Outfit', sans-serif; color: #000; font-size: 16px; margin: 0;">
-                                revisaremos tu apelación con gusto ♡
-                            </p>
-                        ` : `
-                            <div style="background: #FEE2E2; color: #DC2626; padding: 20px 30px; border-radius: 30px; font-weight: 800; border: 2px solid #DC2626; font-size: 14px;">
-                                Límite de apelaciones alcanzado
-                            </div>
-                            <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: transparent; color: #000; border: 2px solid #000; padding: 12px 30px; border-radius: 50px; font-size: 14px; font-weight: 900;">
-                                Ver historial
+                            <button onclick="window.pataWidget.openSupport()" class="pata-button-secondary" style="width: 100%; justify-content: center; background: #15BEB2; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
+                                Hablar con soporte
                             </button>
-                        `}
+                        </div>
                     </div>
                 </div>
             `;
         }
 
         renderActionRequiredContent(pet) {
+            const issues = pet['action-required-details'] || 'Hay algunos detalles que necesitan tu atención.';
+
             return `
                 <div class="pata-action-required-view" style="padding: 0;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 32px; color: #000;">¡Casi listo!</h2>
+                    <div style="text-align: left; margin-bottom: 30px;">
+                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">necesitamos más información</h2>
                         <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            Falta un pequeño detalle para activar tu protección.
+                            Para completar el registro de <strong>${pet.name}</strong>, necesitamos que revises lo siguiente:
                         </p>
                     </div>
 
-                    <div style="background: #F9F9F9; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 10px 10px 0 rgba(0,0,0,0.05);">
-                        <h3 style="font-family: 'Fraiche', sans-serif; font-size: 24px; margin-bottom: 15px; color: #000;">Información faltante</h3>
-                        
-                        <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 25px; background: white; padding: 20px; border: 2px solid #000; border-radius: 20px;">
-                            <div style="width: 60px; height: 60px; background: #15BEB2; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid #000;">
-                                <span style="font-size: 30px;">📸</span>
-                            </div>
-                            <div>
-                                <div style="font-weight: 700; color: #000; font-size: 16px;">Firulais necesita una foto adicional</div>
-                                <p style="font-size: 14px; color: #666; margin: 5px 0 0 0;">Vimos que subiste las fotos, pero falta una selfie contigo y tu perrito.</p>
-                            </div>
-                        </div>
-
-                        <div style="text-align: center;">
-                            <button class="pata-btn-ver-detalles" data-pet-id="${pet.id}" style="background: #15BEB2; color: #000; border: 3px solid #000; padding: 18px 40px; border-radius: 50px; font-size: 18px; font-weight: 900; cursor: pointer; width: 100%;">
-                                Abrir chat y subir info →
-                            </button>
-                        </div>
+                    <div style="background: #15BEB2; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); color: #fff;">
+                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 15px;">
+                            <li style="display: flex; align-items: flex-start; gap: 12px;">
+                                <span style="font-size: 20px;">⚠️</span>
+                                <span style="font-weight: 700; font-family: 'Outfit', sans-serif; line-height: 1.4;">${issues}</span>
+                            </li>
+                        </ul>
                     </div>
 
-                    <div style="text-align: center;">
-                        <p style="font-size: 14px; color: #666; font-family: 'Outfit', sans-serif;">
-                            En el chat encontrarás la lista de documentos o fotos pendientes.
+                    <div style="margin-bottom: 30px;">
+                        <button onclick="window.pataWidget.showEditPetForm('${pet.id}')" class="pata-button-primary" style="width: 100%; justify-content: center; background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
+                            Corregir información
+                        </button>
+                    </div>
+
+                    <div style="background: #F9F9F9; border: 2px solid #000; padding: 20px; border-radius: 25px; text-align: center;">
+                        <p style="margin:0; font-size: 14px; color: #666; font-family: 'Outfit', sans-serif;">
+                            Si tienes dudas, puedes <a href="#" onclick="window.pataWidget.openSupport(); return false;" style="color: #15BEB2; font-weight: 700; text-decoration: underline;">contactar a soporte</a>.
                         </p>
                     </div>
                 </div>
