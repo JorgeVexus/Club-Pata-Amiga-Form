@@ -814,8 +814,8 @@
 
         /* ❌ Estilos Vista Rechazada (Nuevo Diseño) */
         .pata-rejected-bg-overlay {
-            position: fixed;
-            bottom: 0;
+            position: absolute; /* Cambiado de fixed a absolute */
+            top: 0;
             left: 0;
             width: 100%;
             height: 100%;
@@ -823,51 +823,51 @@
             background-repeat: no-repeat;
             background-position: left bottom;
             background-size: 50% auto;
-            opacity: 1;
+            opacity: 0.4; /* Opacidad al 40% */
             z-index: 0;
             pointer-events: none;
         }
-
+        
         .pata-rejected-wrapper {
-            position: relative;
+            position: relative; /* Para el overlay absoluto */
             z-index: 1;
+            padding: 100px 40px;
             width: 100%;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 40px 20px;
             box-sizing: border-box;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            min-height: 100vh;
         }
 
         .pata-rejected-card {
             background: #FFFFFF;
             border-radius: 66px;
-            padding: 50px 60px;
+            padding: 80px 80px; /* Más espacio */
             width: 100%;
-            max-width: 1048px;
+            max-width: 1200px; /* Más larga horizontalmente */
             margin: 0 auto;
             position: relative;
             z-index: 2;
             box-shadow: 20px 20px 0 rgba(0,0,0,0.08);
             display: flex;
             align-items: center;
+            justify-content: flex-start; /* Alineado a la izquierda */
             gap: 40px;
             box-sizing: border-box;
             border: none;
-            overflow: visible; /* Importante para que el perro salga */
-            min-height: 480px;
+            overflow: visible; 
+            min-height: 550px;
         }
 
         .pata-rejected-content {
             flex: 1;
-            max-width: 550px;
+            max-width: 55%; /* Protegemos el texto en el nuevo ancho de 1200px */
             text-align: left;
             z-index: 2;
-            padding-right: 40px;
+            padding-right: 60px;
         }
         
         @media (max-width: 1024px) {
@@ -898,14 +898,15 @@
 
         .pata-rejected-image-container {
             position: absolute;
-            bottom: -5%;
-            right: -8%;
-            width: 55%;
+            bottom: 0; /* Pegado abajo */
+            right: 0; /* Pegado a la derecha */
+            width: 50%;
             display: flex;
             justify-content: flex-end;
             align-items: flex-end;
             z-index: 3;
             pointer-events: none;
+            transform: translateY(-15%); /* Solo sobresale por arriba */
         }
 
         .pata-rejected-pet-img {
@@ -913,7 +914,6 @@
             height: auto;
             object-fit: contain;
             filter: drop-shadow(0 20px 40px rgba(0,0,0,0.2));
-            transform: scale(1.1);
         }
         
         .pata-rejected-divider {
@@ -1452,8 +1452,9 @@
             if (isRejected) {
                 console.log('❌ Unified Widget: Rendering rejected view with premium design.');
                 this.container.innerHTML = `
-                    <div class="pata-rejected-bg-overlay"></div>
                     <div class="pata-rejected-wrapper">
+                        <div class="pata-rejected-bg-overlay"></div>
+                        <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 30px;">
                         <div class="pata-external-greeting" style="margin-top: 0; margin-bottom: 30px;">
                             <h1 class="pata-welcome-title" style="color: #000; font-size: 80px; margin-bottom: 10px;">¡hola, ${firstName}!</h1>
                             <p style="color: #000; font-size: 20px; font-weight: 700; max-width: 800px; line-height: 1.3;">
@@ -2040,8 +2041,8 @@
                         
                         <div class="pata-rejected-reason-title">Motivo del rechazo:</div>
                         <p class="pata-rejected-reason-body">
-                            Identificamos un requisito que no está alineado con las reglas de ingreso del club.
-                            Es parte de nuestro compromiso por mantener la comunidad protegida.
+                            ${pet.rejection_reason || `Identificamos un requisito que no está alineado con las reglas de ingreso del club.
+                            Es parte de nuestro compromiso por mantener la comunidad protegida.`}
                         </p>
                     </div>
 
