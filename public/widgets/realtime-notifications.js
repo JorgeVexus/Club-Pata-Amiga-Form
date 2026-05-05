@@ -37,7 +37,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&display=swap');
 
         /* Container - inline para el navbar */
-        #realtime-bell-widget {
+        .realtime-bell-widget {
             position: relative;
             display: inline-block;
             font-family: 'Outfit', -apple-system, sans-serif;
@@ -768,11 +768,11 @@
         }
 
         shakeBell() {
-            const btn = document.querySelector('.rtbell-button');
-            if (btn) {
+            const buttons = document.querySelectorAll('.rtbell-button');
+            buttons.forEach(btn => {
                 btn.classList.add('shake');
                 setTimeout(() => btn.classList.remove('shake'), 600);
-            }
+            });
         }
 
         // ================= LÓGICA DE CLICK INTELIGENTE =================
@@ -821,33 +821,19 @@
         }
 
         render() {
-            let container = document.getElementById('realtime-bell') || document.getElementById('pata-amiga-notifications');
-            if (!container) {
-                container = document.createElement('div');
-                container.id = 'realtime-bell';
-                document.body.appendChild(container);
+            const containers = document.querySelectorAll('#realtime-bell, .realtime-bell-container, #pata-amiga-notifications');
+            let targetContainers = Array.from(containers);
+
+            if (targetContainers.length === 0) {
+                const defaultContainer = document.createElement('div');
+                defaultContainer.id = 'realtime-bell';
+                document.body.appendChild(defaultContainer);
+                targetContainers = [defaultContainer];
             }
 
-            container.innerHTML = `
-                <div id="realtime-bell-widget">
-                    <button class="rtbell-button">
-                        <span class="rtbell-icon">🔔</span>
-                        <span class="rtbell-badge" style="display:none;">0</span>
-                    </button>
-                    <div class="rtbell-dropdown">
-                        <div class="rtbell-header">
-                            <h3>NOTIFICACIONES</h3>
-                            <button class="rtbell-mark-all" style="display:none;">Marcar leídas</button>
-                        </div>
-                        <div class="rtbell-list">
-                            <div class="rtbell-empty">
-                                <div class="rtbell-empty-icon">📭</div>
-                                <p>No hay notificaciones nuevas</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+            // 1. Renderizar el Modal solo una vez en el body
+            if (!document.querySelector('.rtbell-modal-overlay')) {
+                const modalHtml = `
                 <!-- MODAL DE DETALLES NEO-BRUTALISTA -->
                 <div class="rtbell-modal-overlay">
                     <div class="rtbell-modal">
@@ -857,79 +843,109 @@
                         <div class="rtbell-modal-message">Mensaje</div>
                         <button class="rtbell-modal-btn">ENTENDIDO</button>
                     </div>
-                </div>
-            `;
+                </div>`;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-            this.attachEvents();
-        }
+                const modalOverlay = document.querySelector('.rtbell-modal-overlay');
+                const modalCloseBtn = document.querySelector('.rtbell-modal-close');
+                const modalActionBtn = document.querySelector('.rtbell-modal-btn');
 
-        attachEvents() {
-            const btn = document.querySelector('.rtbell-button');
-            const dropdown = document.querySelector('.rtbell-dropdown');
-            const markAllBtn = document.querySelector('.rtbell-mark-all');
+                modalCloseBtn.addEventListener('click', () => this.closeDetailModal());
+                modalActionBtn.addEventListener('click', () => this.closeDetailModal());
+                document.addEventListener('click', (e) => {
+                    if (e.target === modalOverlay) this.closeDetailModal();
+                });
+            }
 
-            const modalOverlay = document.querySelector('.rtbell-modal-overlay');
-            const modalCloseBtn = document.querySelector('.rtbell-modal-close');
-            const modalActionBtn = document.querySelector('.rtbell-modal-btn');
+            // 2. Renderizar el Widget de campana en cada contenedor encontrado
+            targetContainers.forEach(container => {
+                container.innerHTML = `
+                    <div class="realtime-bell-widget">
+                        <button class="rtbell-button">
+                            <span class="rtbell-icon">🔔</span>
+                            <span class="rtbell-badge" style="display:none;">0</span>
+                        </button>
+                        <div class="rtbell-dropdown">
+                            <div class="rtbell-header">
+                                <h3>NOTIFICACIONES</h3>
+                                <button class="rtbell-mark-all" style="display:none;">Marcar leídas</button>
+                            </div>
+                            <div class="rtbell-list">
+                                <div class="rtbell-empty">
+                                    <div class="rtbell-empty-icon">📭</div>
+                                    <p>No hay notificaciones nuevas</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
 
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.isOpen = !this.isOpen;
-                dropdown.classList.toggle('open', this.isOpen);
+                // 3. Adjuntar eventos para este widget específico
+                const btn = container.querySelector('.rtbell-button');
+                const dropdown = container.querySelector('.rtbell-dropdown');
+                const markAllBtn = container.querySelector('.rtbell-mark-all');
+
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isCurrentlyOpen = dropdown.classList.contains('open');
+                    
+                    // Cerrar todos los demás dropdowns primero (si hay varios en pantalla)
+                    document.querySelectorAll('.rtbell-dropdown').forEach(d => d.classList.remove('open'));
+                    
+                    if (!isCurrentlyOpen) {
+                        dropdown.classList.add('open');
+                    }
+                });
+
+                markAllBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.markAllAsRead();
+                });
+
+                // Cerrar dropdown al hacer click afuera (una sola vez por contenedor)
+                document.addEventListener('click', (e) => {
+                    if (dropdown.classList.contains('open') && !e.target.closest('.realtime-bell-widget')) {
+                        dropdown.classList.remove('open');
+                    }
+                });
             });
-
-            markAllBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                this.markAllAsRead();
-            });
-
-            document.addEventListener('click', (e) => {
-                if (this.isOpen && !e.target.closest('#realtime-bell-widget')) {
-                    this.isOpen = false;
-                    dropdown.classList.remove('open');
-                }
-                if (e.target === modalOverlay) {
-                    this.closeDetailModal();
-                }
-            });
-
-            modalCloseBtn.addEventListener('click', () => this.closeDetailModal());
-            modalActionBtn.addEventListener('click', () => this.closeDetailModal());
         }
 
         updateUI() {
-            const badge = document.querySelector('.rtbell-badge');
-            const markAllBtn = document.querySelector('.rtbell-mark-all');
-            const list = document.querySelector('.rtbell-list');
+            const count = this.unreadCount;
+            const widgets = document.querySelectorAll('.realtime-bell-widget');
 
-            if (!badge || !list) return;
+            widgets.forEach(widget => {
+                const badge = widget.querySelector('.rtbell-badge');
+                const markAllBtn = widget.querySelector('.rtbell-mark-all');
+                const list = widget.querySelector('.rtbell-list');
 
-            // Badge Update
-            if (this.unreadCount > 0) {
-                badge.textContent = this.unreadCount > 9 ? '9+' : this.unreadCount;
-                badge.style.display = 'flex';
-                // Añadir animación extra de salto si hay más no leídas
-                badge.style.animation = 'none';
-                badge.offsetHeight; /* trigger reflow */
-                badge.style.animation = 'rtPulse 2s infinite';
-            } else {
-                badge.style.display = 'none';
-            }
+                if (!badge || !list) return;
 
-            // Mark All Button
-            if(markAllBtn) {
-                markAllBtn.style.display = this.unreadCount > 0 ? 'block' : 'none';
-            }
+                // Badge Update
+                if (count > 0) {
+                    badge.textContent = count > 9 ? '9+' : count;
+                    badge.style.display = 'flex';
+                    badge.style.animation = 'none';
+                    badge.offsetHeight; /* trigger reflow */
+                    badge.style.animation = 'rtPulse 2s infinite';
+                    if (markAllBtn) markAllBtn.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                    if (markAllBtn) markAllBtn.style.display = 'none';
+                }
 
-            // List Update
-            if (this.notifications.length === 0) {
-                list.innerHTML = `
-                    <div class="rtbell-empty">
-                        <div class="rtbell-empty-icon">📭</div>
-                        <p>Bandeja vacía</p>
-                    </div>
-                `;
-            } else {
+                // List Update
+                if (this.notifications.length === 0) {
+                    list.innerHTML = `
+                        <div class="rtbell-empty">
+                            <div class="rtbell-empty-icon">📭</div>
+                            <p>Bandeja vacía</p>
+                        </div>
+                    `;
+                    return;
+                }
+
                 list.innerHTML = this.notifications.slice(0, 15).map(n => `
                     <div class="rtbell-item ${n.is_read ? '' : 'unread'}" data-id="${n.id}">
                         <div class="rtbell-item-icon">${n.icon || '📢'}</div>
@@ -947,6 +963,7 @@
                 // Re-attach click events
                 list.querySelectorAll('.rtbell-item').forEach(item => {
                     item.addEventListener('click', () => {
+                        document.querySelectorAll('.rtbell-dropdown').forEach(d => d.classList.remove('open'));
                         const id = item.dataset.id;
                         const notif = this.notifications.find(n => n.id === id);
                         if (notif) {
@@ -954,7 +971,7 @@
                         }
                     });
                 });
-            }
+            });
         }
     }
 
