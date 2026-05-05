@@ -1998,6 +1998,130 @@
             transform: translateY(-2px);
         }
 
+        /* Action Required View New */
+        .pata-action-required-view-new {
+            padding: 20px 0;
+            text-align: left;
+        }
+
+        .pata-action-required-title-new {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            color: #000;
+            line-height: 1.1;
+            margin-bottom: 20px;
+            text-transform: none;
+        }
+
+        .pata-action-required-subtitle-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .pata-action-required-progress-container {
+            margin-bottom: 40px;
+        }
+
+        .pata-action-required-progress-labels {
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .pata-action-required-progress-track {
+            height: 12px;
+            background: #eee;
+            border: 2px solid #000;
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .pata-action-required-progress-fill {
+            width: 70%;
+            height: 100%;
+            background: #15BEB2;
+            border-right: 2px solid #000;
+        }
+
+        .pata-action-required-grid-new {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .pata-action-required-photo-new {
+            width: 200px;
+            height: 200px;
+            border-radius: 35px;
+            overflow: hidden;
+            border: 3px solid #000;
+            flex-shrink: 0;
+        }
+
+        .pata-action-required-photo-new img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pata-action-required-info-new {
+            flex: 1;
+        }
+
+        .pata-action-required-message-label-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 400;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .pata-action-required-message-text-new {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: #000;
+            line-height: 1.3;
+        }
+
+        .pata-btn-open-chat-new {
+            background: #15BEB2;
+            color: #000;
+            border: 3px solid #000;
+            border-radius: 50px;
+            padding: 15px 40px;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            cursor: pointer;
+            min-width: 250px;
+            transition: transform 0.2s;
+            text-align: center;
+            display: inline-block;
+        }
+
+        .pata-btn-open-chat-new:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .pata-action-required-grid-new {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .pata-action-required-title-new {
+                font-size: 35px;
+            }
+        }
+
         @media (max-width: 768px) {
             .pata-rejected-grid-new {
                 flex-direction: column;
@@ -4269,36 +4393,38 @@
         }
 
         renderActionRequiredContent(pet) {
-            const issues = pet['action-required-details'] || 'Hay algunos detalles que necesitan tu atención.';
+            const adminMsg = pet.last_admin_response || pet['action-required-details'] || 'Por favor revisa la información solicitada en el chat.';
+            const petPhoto = pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
 
             return `
-                <div class="pata-action-required-view" style="padding: 0;">
-                    <div style="text-align: left; margin-bottom: 30px;">
-                        <h2 class="pata-title" style="margin-bottom: 12px; font-size: 40px; color: #000; text-transform: lowercase; font-family: 'Fraiche', sans-serif;">necesitamos más información</h2>
-                        <p style="font-size: 18px; color: #000; line-height: 1.4; font-family: 'Outfit', sans-serif;">
-                            Para completar el registro de <strong>${pet.name}</strong>, necesitamos que revises lo siguiente:
-                        </p>
+                <div class="pata-action-required-view-new">
+                    <h2 class="pata-action-required-title-new">aviso de información faltante</h2>
+                    <p class="pata-action-required-subtitle-new">Recibimos tu solicitud y ya estamos revisando la información para poder continuar con tu proceso.</p>
+                    
+                    <div class="pata-action-required-progress-container">
+                        <div class="pata-action-required-progress-labels">
+                            <span>Solicitud enviada</span>
+                            <span>En revisión...</span>
+                        </div>
+                        <div class="pata-action-required-progress-track">
+                            <div class="pata-action-required-progress-fill"></div>
+                        </div>
                     </div>
 
-                    <div style="background: #15BEB2; border: 3px solid #000; border-radius: 40px; padding: 30px; margin-bottom: 30px; box-shadow: 12px 12px 0 rgba(0,0,0,0.05); color: #fff;">
-                        <ul style="list-style: none; padding: 0; display: flex; flex-direction: column; gap: 15px;">
-                            <li style="display: flex; align-items: flex-start; gap: 12px;">
-                                <span style="font-size: 20px;">⚠️</span>
-                                <span style="font-weight: 700; font-family: 'Outfit', sans-serif; line-height: 1.4;">${issues}</span>
-                            </li>
-                        </ul>
+                    <div class="pata-action-required-grid-new">
+                        <div class="pata-action-required-photo-new">
+                            <img src="${petPhoto}" alt="${pet.name}">
+                        </div>
+                        <div class="pata-action-required-info-new">
+                            <p class="pata-action-required-message-label-new">Último mensaje del administrador:</p>
+                            <p class="pata-action-required-message-text-new">"${adminMsg}"</p>
+                        </div>
                     </div>
-
-                    <div style="margin-bottom: 30px;">
-                        <button onclick="window.pataWidget.showEditPetForm('${pet.id}')" class="pata-button-primary" style="width: 100%; justify-content: center; background: #FE8F15; color: #000; border: 3px solid #000; padding: 18px; border-radius: 50px; font-weight: 900; cursor: pointer; font-family: 'Fraiche', sans-serif;">
-                            Corregir información
+                    
+                    <div style="text-align: center;">
+                        <button class="pata-btn-open-chat-new pata-btn-ver-detalles" data-pet-id="${pet.id}">
+                            Abrir chat y actualizar
                         </button>
-                    </div>
-
-                    <div style="background: #F9F9F9; border: 2px solid #000; padding: 20px; border-radius: 25px; text-align: center;">
-                        <p style="margin:0; font-size: 14px; color: #666; font-family: 'Outfit', sans-serif;">
-                            Si tienes dudas, puedes <a href="#" onclick="window.pataWidget.openSupport(); return false;" style="color: #15BEB2; font-weight: 700; text-decoration: underline;">contactar a soporte</a>.
-                        </p>
                     </div>
                 </div>
             `;
