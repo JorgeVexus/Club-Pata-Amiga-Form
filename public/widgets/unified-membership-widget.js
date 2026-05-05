@@ -4107,125 +4107,122 @@
         // 🔴 NUEVO: Vista cuando no ha pagado
         renderPaymentRequiredView(firstName) {
             return `
-                <div class="pata-external-greeting">
-                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
-                    <p class="pata-welcome-subtitle">
-                        Estás a un paso de unirte a la manada. <br>
-                        Completa tu membresía para activar todos los beneficios de Pata Amiga.
-                    </p>
-                </div>
+                <div class="pata-approved-wrapper-new">
+                    <main class="pata-container-new">
+                        <header class="pata-header-new">
+                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
+                            <div class="pata-header-sub-new">
+                                <p>Estás a un paso de unirte a la manada.</p>
+                            </div>
+                        </header>
 
-                <div class="pata-unified-panel show" style="border: 2px solid #FF9800;">
-                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
-                    
-                    <div class="pata-pending-view">
-                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">💳</div>
-                        <h2 class="pata-title" style="margin-bottom: 8px; color: #E65100; text-align: center;">Completa tu membresía</h2>
-                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
-                            Vimos que aún no has completado el pago de tu membresía.<br>
-                            Selecciona un plan para activar todos los beneficios de la manada.
-                        </p>
+                        <section class="pata-card-new">
+                            <div class="pata-member-pending-view-new" style="text-align: center;">
+                                <div style="font-size: 80px; margin-bottom: 20px;">💳</div>
+                                <h2 class="pata-member-pending-title-new" style="text-align: center;">completa tu membresía</h2>
+                                <p class="pata-member-pending-subtitle-new" style="text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                    Vimos que aún no has completado el pago de tu membresía. 
+                                    Selecciona un plan para activar todos los beneficios de la manada.
+                                </p>
 
-                        <div style="text-align: center; margin-top: 30px;">
-                            <button
-                                id="pata-select-plan-btn"
-                                class="pata-btn"
-                                style="background: #FE8F15; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-block;"
-                                onclick="(function(btn) {
-                                    btn.disabled = true;
-                                    btn.textContent = 'Preparando...';
+                                <div style="margin-top: 40px; margin-bottom: 50px;">
+                                    <button
+                                        id="pata-select-plan-btn"
+                                        class="pata-btn"
+                                        style="background: #FE8F15; color: #000; border: 3px solid #000; padding: 20px 60px; font-size: 20px; font-weight: 900; border-radius: 50px; cursor: pointer; font-family: 'Fraiche', sans-serif; box-shadow: 6px 6px 0 #000; text-transform: lowercase;"
+                                        onclick="(function(btn) {
+                                            btn.disabled = true;
+                                            btn.textContent = 'preparando...';
 
-                                    // Extraer datos del member activo
-                                    var member = null;
-                                    try {
-                                        if (window.pataWidget && window.pataWidget.member) {
-                                            member = window.pataWidget.member;
-                                        }
-                                    } catch(e) {}
-
-                                    function fallback(email) {
-                                        var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
-                                        if (email) url += '&email=' + encodeURIComponent(email);
-                                        window.location.href = url;
-                                    }
-
-                                    function generateAndRedirect(memberId, email, customFields) {
-                                        fetch('https://app.pataamiga.mx/api/auth/magic-token', {
-                                            method: 'POST',
-                                            headers: { 'Content-Type': 'application/json' },
-                                            body: JSON.stringify({
-                                                memberstackId: memberId,
-                                                email: email,
-                                                customFields: customFields || {}
-                                            })
-                                        })
-                                        .then(function(res) { return res.json(); })
-                                        .then(function(data) {
-                                            if (data.success && data.token) {
-                                                // 🔮 Magic token generado: redirigir sin fricción
-                                                var url = 'https://app.pataamiga.mx/registro'
-                                                    + '?mt=' + encodeURIComponent(data.token)
-                                                    + '&reason=complete_payment';
-                                                console.log('🔮 Magic token generado, redirigiendo...');
-                                                window.location.href = url;
-                                            } else {
-                                                console.warn('⚠️ API no devolvió token, usando fallback');
-                                                fallback(email);
-                                            }
-                                        })
-                                        .catch(function(err) {
-                                            console.warn('⚠️ Error generando magic token, usando fallback:', err);
-                                            fallback(email);
-                                        });
-                                    }
-
-                                    if (member && member.id) {
-                                        var email = (member.auth && member.auth.email) ? member.auth.email : '';
-                                        var cf = member.customFields || {};
-                                        generateAndRedirect(member.id, email, {
-                                            'registration-step': cf['registration-step'] || '',
-                                            'payment-status': cf['payment-status'] || '',
-                                            'checkout-pending': cf['checkout-pending'] || false,
-                                            'approval-status': cf['approval-status'] || ''
-                                        });
-                                    } else if (window.$memberstackDom) {
-                                        // Fallback: obtener member desde Memberstack directamente
-                                        window.$memberstackDom.getCurrentMember()
-                                            .then(function(res) {
-                                                var m = res && res.data ? res.data : null;
-                                                if (m && m.id) {
-                                                    var email = (m.auth && m.auth.email) ? m.auth.email : '';
-                                                    var cf = m.customFields || {};
-                                                    generateAndRedirect(m.id, email, {
-                                                        'registration-step': cf['registration-step'] || '',
-                                                        'payment-status': cf['payment-status'] || '',
-                                                        'checkout-pending': cf['checkout-pending'] || false,
-                                                        'approval-status': cf['approval-status'] || ''
-                                                    });
-                                                } else {
-                                                    fallback('');
+                                            var member = null;
+                                            try {
+                                                if (window.pataWidget && window.pataWidget.member) {
+                                                    member = window.pataWidget.member;
                                                 }
-                                            })
-                                            .catch(function() { fallback(''); });
-                                    } else {
-                                        fallback('');
-                                    }
-                                })(this)"
-                            >
-                                Seleccionar Plan
-                            </button>
-                        </div>
+                                            } catch(e) {}
 
+                                            function fallback(email) {
+                                                var url = 'https://app.pataamiga.mx/registro?reason=complete_payment';
+                                                if (email) url += '&email=' + encodeURIComponent(email);
+                                                window.location.href = url;
+                                            }
 
-                        <div style="background: rgba(254, 143, 21, 0.1); border: 2px solid #FE8F15; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
-                            <p style="margin:0; font-size: 14px; font-weight: 900; color: #E65100;">✨ Suscríbete con confianza</p>
-                            <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Sin plazos forzosos. <strong>Cancela cuando quieras</strong> con un solo clic.</p>
-                        </div>
+                                            function generateAndRedirect(memberId, email, customFields) {
+                                                fetch('https://app.pataamiga.mx/api/auth/magic-token', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        memberstackId: memberId,
+                                                        email: email,
+                                                        customFields: customFields || {}
+                                                    })
+                                                })
+                                                .then(function(res) { return res.json(); })
+                                                .then(function(data) {
+                                                    if (data.success && data.token) {
+                                                        var url = 'https://app.pataamiga.mx/registro'
+                                                            + '?mt=' + encodeURIComponent(data.token)
+                                                            + '&reason=complete_payment';
+                                                        window.location.href = url;
+                                                    } else {
+                                                        fallback(email);
+                                                    }
+                                                })
+                                                .catch(function(err) {
+                                                    fallback(email);
+                                                });
+                                            }
 
-                        <p style="font-size: 14px; color: #666; text-align: center; margin-top: 20px;">
-                            ¿Tienes problemas? Escríbenos a <a href="mailto:miembros@pataamiga.mx" style="color: #00BBB4;">miembros@pataamiga.mx</a>
-                        </p>
-                    </div>
+                                            if (member && member.id) {
+                                                var email = (member.auth && member.auth.email) ? member.auth.email : '';
+                                                var cf = member.customFields || {};
+                                                generateAndRedirect(member.id, email, {
+                                                    'registration-step': cf['registration-step'] || '',
+                                                    'payment-status': cf['payment-status'] || '',
+                                                    'checkout-pending': cf['checkout-pending'] || false,
+                                                    'approval-status': cf['approval-status'] || ''
+                                                });
+                                            } else if (window.$memberstackDom) {
+                                                window.$memberstackDom.getCurrentMember()
+                                                    .then(function(res) {
+                                                        var m = res && res.data ? res.data : null;
+                                                        if (m && m.id) {
+                                                            var email = (m.auth && m.auth.email) ? m.auth.email : '';
+                                                            var cf = m.customFields || {};
+                                                            generateAndRedirect(m.id, email, {
+                                                                'registration-step': cf['registration-step'] || '',
+                                                                'payment-status': cf['payment-status'] || '',
+                                                                'checkout-pending': cf['checkout-pending'] || false,
+                                                                'approval-status': cf['approval-status'] || ''
+                                                            });
+                                                        } else {
+                                                            fallback('');
+                                                        }
+                                                    })
+                                                    .catch(function() { fallback(''); });
+                                            } else {
+                                                fallback('');
+                                            }
+                                        })(this)"
+                                    >
+                                        seleccionar plan →
+                                    </button>
+                                </div>
+
+                                <div class="pata-badge-brutalist" style="max-width: 500px; margin: 0 auto;">
+                                    <div style="font-size: 32px;">🛡️</div>
+                                    <div style="text-align: left;">
+                                        <strong class="pata-badge-title-brutalist">membresía flexible</strong>
+                                        <p class="pata-badge-text-brutalist">Recuerda que tienes el control total: cancela en cualquier momento si lo necesitas.</p>
+                                    </div>
+                                </div>
+                                
+                                <p style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
+                                    ¿Tienes problemas? Escríbenos a <a href="mailto:miembros@pataamiga.mx" style="color: #00BBB4; text-decoration: underline;">miembros@pataamiga.mx</a>
+                                </p>
+                            </div>
+                        </section>
+                    </main>
                 </div>
             `;
         }
@@ -4233,34 +4230,36 @@
         // ⏳ NUEVO: Vista cuando el pago está en proceso
         renderPaymentProcessingView(firstName) {
             return `
-                <div class="pata-external-greeting">
-                    <h1 class="pata-welcome-title">¡hola, ${firstName}!</h1>
-                    <p class="pata-welcome-subtitle">
-                        Estamos confirmando tu pago. <br>
-                        Esto puede tomar unos momentos...
-                    </p>
-                </div>
+                <div class="pata-approved-wrapper-new">
+                    <main class="pata-container-new">
+                        <header class="pata-header-new">
+                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
+                            <div class="pata-header-sub-new">
+                                <p>Casi terminamos...</p>
+                            </div>
+                        </header>
 
-                <div class="pata-unified-panel show" style="border: 2px solid #00BBB4;">
-                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
-                    
-                    <div class="pata-pending-view">
-                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">⏳</div>
-                        <h2 class="pata-title" style="margin-bottom: 8px; color: #00695C; text-align: center;">Confirmando tu pago</h2>
-                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
-                            Estamos procesando tu pago con Stripe.<br>
-                            Por favor, no cierres esta ventana.
-                        </p>
+                        <section class="pata-card-new">
+                            <div class="pata-member-pending-view-new" style="text-align: center; padding: 60px 0;">
+                                <div style="font-size: 80px; margin-bottom: 30px; animation: pata-pulse 1.5s infinite; display: inline-block;">⏳</div>
+                                <h2 class="pata-member-pending-title-new" style="text-align: center;">procesando tu pago</h2>
+                                <p class="pata-member-pending-subtitle-new" style="text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                    Estamos confirmando tu transacción con el banco. 
+                                    Esto solo tomará unos segundos. ¡No cierres esta ventana!
+                                </p>
+                                
+                                <div class="pata-action-required-progress-container" style="max-width: 400px; margin: 40px auto;">
+                                    <div class="pata-action-required-progress-track">
+                                        <div class="pata-action-required-progress-fill" style="width: 50%; background: #FE8F15; border-radius: 10px;"></div>
+                                    </div>
+                                </div>
 
-                        <div style="text-align: center; margin: 30px 0;">
-                            <div style="width: 50px; height: 50px; border: 5px solid #E0F7F6; border-top-color: #00BBB4; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
-                            <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
-                        </div>
-
-                        <p style="font-size: 14px; color: #666; text-align: center;">
-                            Se verificará automáticamente en unos segundos...
-                        </p>
-                    </div>
+                                <p style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #666; text-align: center;">
+                                    Se verificará automáticamente en unos segundos...
+                                </p>
+                            </div>
+                        </section>
+                    </main>
                 </div>
             `;
         }
@@ -4268,37 +4267,42 @@
         // 🏁 NUEVO: Vista cuando ya pagó pero no ha terminado su registro (0 mascotas)
         renderCompleteRegistrationView(firstName) {
             return `
-                <div class="pata-external-greeting">
-                    <h1 class="pata-welcome-title">¡hola de nuevo, ${firstName}! 👋</h1>
-                    <p class="pata-welcome-subtitle">
-                        ¡Ya casi eres parte de la manada! 🎉 <br>
-                        Vimos que ya realizaste tu pago, pero aún falta completar la información de tu perfil y de tus peludos.
-                    </p>
-                </div>
+                <div class="pata-approved-wrapper-new">
+                    <main class="pata-container-new">
+                        <header class="pata-header-new">
+                            <h1 data-od-id="dashboard-greeting">¡hola de nuevo, ${firstName}! 👋</h1>
+                            <div class="pata-header-sub-new">
+                                <p>¡Ya casi eres parte de la manada! 🎉</p>
+                            </div>
+                        </header>
 
-                <div class="pata-unified-panel show" style="border: 2px solid #00BBB4;">
-                    <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png" class="pata-decoration-paws">
-                    
-                    <div class="pata-pending-view">
-                        <div style="font-size: 60px; text-align: center; margin-bottom: 20px;">🐶</div>
-                        <h2 class="pata-title" style="margin-bottom: 8px; color: #00695C; text-align: center;">Termina tu registro</h2>
-                        <p style="font-size: 16px; color: #444; line-height: 1.4; margin-bottom: 30px; text-align: center;">
-                            Para activar todos tus beneficios y el respaldo veterinario, <br>
-                            necesitamos conocer un poco más de ti y de tus amigos de cuatro patas.
-                        </p>
+                        <section class="pata-card-new">
+                            <div class="pata-member-pending-view-new" style="text-align: center;">
+                                <div style="font-size: 80px; margin-bottom: 20px;">🐶</div>
+                                <h2 class="pata-member-pending-title-new" style="text-align: center;">termina tu registro</h2>
+                                <p class="pata-member-pending-subtitle-new" style="text-align: center; max-width: 600px; margin-left: auto; margin-right: auto;">
+                                    Para activar todos tus beneficios y el respaldo veterinario, 
+                                    necesitamos conocer un poco más de ti y de tus amigos de cuatro patas.
+                                </p>
 
-                        <div style="text-align: center; margin-top: 30px;">
-                            <a href="https://app.pataamiga.mx/registro?reason=finish_onboarding" class="pata-btn" style="background: #00BBB4; color: #fff; border: 2px solid #000; padding: 18px 40px; font-size: 18px; font-weight: 900; border-radius: 50px; text-decoration: none; display: inline-block;">
-                                Completar mi registro →
-                            </a>
-                        </div>
+                                <div style="margin-top: 40px; margin-bottom: 50px;">
+                                    <a href="https://app.pataamiga.mx/registro?reason=finish_onboarding" 
+                                       class="pata-btn" 
+                                       style="background: #00BBB4; color: #000; border: 3px solid #000; padding: 20px 60px; font-size: 20px; font-weight: 900; border-radius: 50px; cursor: pointer; font-family: 'Fraiche', sans-serif; box-shadow: 6px 6px 0 #000; text-decoration: none; display: inline-block; text-transform: lowercase;">
+                                        completar mi registro →
+                                    </a>
+                                </div>
 
-                        <div style="background: rgba(0, 187, 180, 0.1); border: 2px solid #00BBB4; padding: 15px; border-radius: 25px; margin-top: 25px; text-align: center;">
-                            <p style="margin:0; font-size: 14px; font-weight: 900; color: #008884;">🛡️ Membresía Flexible</p>
-                            <p style="margin:5px 0 0 0; font-size: 13px; color: #444;">Recuerda que tienes el control total: <strong>cancela en cualquier momento</strong> si lo necesitas.</p>
-                        </div>
-
-                    </div>
+                                <div class="pata-badge-brutalist" style="max-width: 500px; margin: 0 auto;">
+                                    <div style="font-size: 32px;">🛡️</div>
+                                    <div style="text-align: left;">
+                                        <strong class="pata-badge-title-brutalist">membresía flexible</strong>
+                                        <p class="pata-badge-text-brutalist">Recuerda que tienes el control total: cancela en cualquier momento si lo necesitas.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </main>
                 </div>
             `;
         }
