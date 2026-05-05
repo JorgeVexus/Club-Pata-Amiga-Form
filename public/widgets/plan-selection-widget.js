@@ -538,8 +538,10 @@
 
                 // Ejecutar compra/update vía Memberstack
                 // Esto abrirá el modal de Stripe de Memberstack automáticamente
-                const result = await window.$memberstackDom.purchasePlan({
-                    priceId: this.selectedPlan
+                const result = await window.$memberstackDom.purchasePlansWithCheckout({
+                    priceId: this.selectedPlan,
+                    successUrl: window.location.origin + '/payment-success',
+                    cancelUrl: window.location.href
                 });
 
                 // Si Memberstack no redirige automáticamente (depende de config),
