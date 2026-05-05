@@ -4370,6 +4370,8 @@
                                     </a>
                                 </div>
 
+                                <!-- Se oculta temporalmente el recuadro de facturas -->
+                                <!--
                                 <div class="pata-badge-brutalist" style="max-width: 500px; margin: 0 auto;">
                                     <div style="font-size: 32px;">🛠️</div>
                                     <div style="text-align: left;">
@@ -4380,6 +4382,7 @@
                                         </p>
                                     </div>
                                 </div>
+                                -->
                                 
                                 <p style="font-family: 'Outfit', sans-serif; font-size: 14px; color: #666; text-align: center; margin-top: 30px;">
                                     ¿Dudas con tu renovación? <a href="mailto:miembros@pataamiga.mx" style="color: #00BBB4; text-decoration: underline;">Escríbenos</a>
