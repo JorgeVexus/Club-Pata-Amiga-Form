@@ -3091,10 +3091,14 @@
 
             // Use the current pet's status to determine the view if we have pets
             const status = pet ? (pet.status || 'pending').toLowerCase() : (this.membershipStatus || 'pending').toLowerCase();
+            const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
 
             console.log(`📊 Unified Widget: Current Pet Status="${status}", Global Status="${this.membershipStatus}"`);
 
-            if (status === 'rejected' || status === 'denied') {
+            // Priorizar la vista aprobada si el miembro ya está activo globalmente
+            if (isMemberApproved) {
+                this.renderApprovedView(firstName, pet);
+            } else if (status === 'rejected' || status === 'denied') {
                 this.renderRejectedView(firstName, pet);
             } else if (status === 'approved' || status === 'active') {
                 this.renderApprovedView(firstName, pet);
