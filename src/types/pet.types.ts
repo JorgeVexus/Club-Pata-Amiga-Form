@@ -21,6 +21,12 @@ export interface PetFormData {
     exceedsMaxAge: boolean;
     vetCertificate?: File | null;
 
+    // Campos adicionales para compatibilidad con Step2PetBasic y Memberstack
+    petName?: string;
+    petAge?: number;
+    petAgeUnit?: 'years' | 'months';
+    primaryPhotoUrl?: string;
+
     // Adopción
     isAdopted: boolean;
     adoptionStory?: string;
@@ -40,6 +46,7 @@ export interface PetFormData {
     registrationDate: string;
     isActive: boolean;
     replacedDate: string;
+    isComplete?: boolean;
 }
 
 // Datos del formulario completo (hasta 3 mascotas)

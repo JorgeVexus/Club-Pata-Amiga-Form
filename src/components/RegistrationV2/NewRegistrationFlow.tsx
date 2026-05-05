@@ -940,119 +940,121 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    // Paso 5: Completar datos de mascota
-    const handleStep5Complete = async (petData: any) => {
+    // Paso 5: Completar datos de mascota (soporta múltiples mascotas)
+    const handleStep5Complete = async (petsData: any[]) => {
         setIsLoading(true);
         try {
-            console.log('🚀 Iniciando guardado final de mascota...');
-            let primaryPhotoUrl = '';
-            let vetCertificateUrl = '';
-
+            console.log(`🚀 Iniciando guardado final de mascotas (total: ${petsData.length})...`);
             const memberId = member?.id || (member as any)?.memberId;
+            const processedPets = [];
 
-            // 1. Subir archivos si existen
-            if (petData.primaryPhoto) {
-                console.log('📸 Subiendo foto principal...');
-                const formData = new FormData();
-                formData.append('file', petData.primaryPhoto);
-                formData.append('userId', memberId);
+            for (let i = 0; i < petsData.length; i++) {
+                const petData = petsData[i];
+                let primaryPhotoUrl = '';
+                let vetCertificateUrl = '';
 
-                const response = await fetch('/api/upload/pet-photo', {
-                    method: 'POST',
-                    body: formData
+                console.log(`🐾 Procesando mascota ${i + 1}: ${petData.name || 'Sin nombre'}`);
+
+                // 1. Subir archivos si existen
+                if (petData.primaryPhoto && petData.primaryPhoto instanceof File) {
+                    console.log(`📸 Subiendo foto principal para ${petData.name}...`);
+                    const formData = new FormData();
+                    formData.append('file', petData.primaryPhoto);
+                    formData.append('userId', memberId);
+
+                    const response = await fetch('/api/upload/pet-photo', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.success) primaryPhotoUrl = result.url;
+                }
+
+                if (petData.vetCertificate && petData.vetCertificate instanceof File) {
+                    console.log(`📄 Subiendo certificado veterinario para ${petData.name}...`);
+                    const formData = new FormData();
+                    formData.append('file', petData.vetCertificate);
+                    formData.append('userId', memberId);
+
+                    const response = await fetch('/api/upload/pet-photo', { // Reusamos el endpoint de fotos
+                        method: 'POST',
+                        body: formData
+                    });
+                    const result = await response.json();
+                    if (result.success) vetCertificateUrl = result.url;
+                }
+
+                // 2. Preparar el objeto completo de la mascota
+                const { primaryPhoto, vetCertificate, ...restPetData } = petData;
+
+                // Recuperar petBasic desde registrationData solo para la primera mascota
+                // O intentar recuperarlo de localStorage como backup
+                let petBasicSource: any = i === 0 ? (registrationData.petBasic || {}) : {};
+                
+                if (i === 0 && !petBasicSource.petName) {
+                    try {
+                        const backup = localStorage.getItem('petBasicBackup');
+                        if (backup) {
+                            petBasicSource = JSON.parse(backup);
+                            console.log('💾 [Step5] petBasic recuperado de localStorage:', petBasicSource?.petName);
+                        }
+                    } catch (e) { /* localStorage no disponible */ }
+                }
+
+                const petName = petData.name || petData.petName || petBasicSource.petName || 'Mascota';
+
+                // 3. Recalcular carencia final
+                const calculation = calculateWaitingPeriod(
+                    i === 0, // isOriginal solo para la primera mascota del plan
+                    !!restPetData.isAdopted,
+                    !!restPetData.isMixedBreed,
+                    !!registrationData.referralCode
+                );
+
+                processedPets.push({
+                    ...petBasicSource,
+                    ...restPetData,
+                    name: petName,
+                    petName: petName,
+                    petAge: petData.age || petBasicSource.petAge,
+                    petAgeUnit: petData.ageUnit || petBasicSource.petAgeUnit || 'years',
+                    petType: petData.petType || petBasicSource.petType || 'perro',
+                    primaryPhotoUrl: primaryPhotoUrl || petData.primaryPhotoUrl,
+                    vetCertificateUrl: vetCertificateUrl || petData.vetCertificateUrl,
+                    waitingPeriodDays: calculation.days,
+                    waitingPeriodEnd: calculation.endDate,
+                    isComplete: true
                 });
-                const result = await response.json();
-                if (result.success) primaryPhotoUrl = result.url;
             }
 
-            if (petData.vetCertificate) {
-                console.log('📄 Subiendo certificado veterinario...');
-                const formData = new FormData();
-                formData.append('file', petData.vetCertificate);
-                formData.append('userId', memberId);
+            console.log(`📦 Enviando ${processedPets.length} mascotas a Supabase...`);
 
-                const response = await fetch('/api/upload/pet-photo', { // Reusamos el endpoint de fotos por ahora
-                    method: 'POST',
-                    body: formData
-                });
-                const result = await response.json();
-                if (result.success) vetCertificateUrl = result.url;
-            }
-
-            // 2. Preparar el objeto completo de la mascota
-            // Extraemos los archivos (Files) para no pasarlos al Server Action y evitar el límite de 1MB
-            const { primaryPhoto, vetCertificate, ...restPetData } = petData;
-
-            // Debug: ver qué datos tenemos disponibles
-            console.log('🐾 [Step5] registrationData.petBasic:', JSON.stringify(registrationData.petBasic));
-            console.log('🐾 [Step5] restPetData keys:', Object.keys(restPetData));
-
-            // Recuperar petBasic desde localStorage como último recurso
-            let petBasicSource = registrationData.petBasic;
-            if (!petBasicSource?.petName) {
-                try {
-                    const backup = localStorage.getItem('petBasicBackup');
-                    if (backup) {
-                        petBasicSource = JSON.parse(backup);
-                        console.log('💾 [Step5] petBasic recuperado de localStorage:', petBasicSource?.petName);
-                    }
-                } catch (e) { /* localStorage no disponible */ }
-            }
-
-            // Resolver el nombre de la mascota desde todas las fuentes posibles
-            const petName = petBasicSource?.petName 
-                || (petBasicSource as any)?.name
-                || restPetData?.petName 
-                || restPetData?.name
-                || 'Mascota';
-
-            console.log('🐾 [Step5] Nombre de mascota resuelto:', petName);
-
-            // 3. Recalcular carencia final con todos los datos disponibles
-            const calculation = calculateWaitingPeriod(
-                true, // isOriginal
-                !!restPetData.isAdopted,
-                !!restPetData.isMixedBreed, // Mapeamos isMixedBreed a isMixed
-                !!registrationData.referralCode
-            );
-
-            const completePet = {
-                ...petBasicSource,
-                ...restPetData,
-                name: petName, // Forzar el campo 'name' explícitamente
-                petName: petName, // También petName por compatibilidad
-                petAge: petBasicSource?.petAge || restPetData?.petAge,
-                petAgeUnit: petBasicSource?.petAgeUnit || restPetData?.petAgeUnit || 'years',
-                petType: petBasicSource?.petType || restPetData?.petType || 'perro',
-                primaryPhotoUrl,
-                vetCertificateUrl,
-                waitingPeriodDays: calculation.days,
-                waitingPeriodEnd: calculation.endDate,
-                isComplete: true
-            };
-
-            // Validación de seguridad: no enviar si no hay nombre
-            if (!completePet.name || completePet.name === '') {
-                throw new Error('No se pudo recuperar el nombre de la mascota. Por favor regresa al paso anterior.');
-            }
-
-            // 3. Guardar en Supabase (Source of Truth)
+            // 3. Guardar en Supabase (Array de mascotas)
             const { registerPetsInSupabase } = await import('@/app/actions/user.actions');
-            const result = await registerPetsInSupabase(memberId, [completePet]);
+            const result = await registerPetsInSupabase(memberId, processedPets);
 
             if (!result.success) throw new Error(result.error);
 
-            // 4. Marcar registro como completo en Memberstack (Solo lo esencial)
+            // 4. Sincronizar con Memberstack (Campos detallados pet-1-name, pet-1-type, etc.)
+            try {
+                const { savePetsToMemberstack } = await import('@/services/pet.service');
+                await savePetsToMemberstack(processedPets as any, registrationData.referralCode);
+                console.log('✅ Mascotas sincronizadas con Memberstack');
+            } catch (msError) {
+                console.error('⚠️ Error sincronizando con Memberstack:', msError);
+            }
+
+            // 5. Marcar registro como completo en Memberstack (Solo lo esencial)
             await window.$memberstackDom.updateMember({
                 customFields: {
                     'registration-step': 6,
                     'registration-completed': true,
-                    'approval-status': 'pending', // Asegura visibilidad en el dashboard de admin
+                    'approval-status': 'pending',
                 },
             });
 
             // 5. Actualizar progreso final en Supabase
-            await saveProgress(6, { ...registrationData, petComplete: completePet });
+            await saveProgress(6, { ...registrationData, petsComplete: processedPets });
 
             // Limpiar backup de localStorage
             try { localStorage.removeItem('petBasicBackup'); } catch (e) { /* */ }

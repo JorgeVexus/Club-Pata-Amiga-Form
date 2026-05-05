@@ -141,9 +141,9 @@ export async function savePetsToMemberstack(
             customFields[`${prefix}-replaced-date`] = pet.replacedDate || '';
 
             // URLs de fotos y certificado (se agregan después de subir a Supabase)
-            customFields[`${prefix}-photo-1-url`] = '';
-            customFields[`${prefix}-photo-2-url`] = '';
-            customFields[`${prefix}-vet-certificate-url`] = '';
+            customFields[`${prefix}-photo-1-url`] = pet.primaryPhotoUrl || '';
+            customFields[`${prefix}-photo-2-url`] = ''; // No se usa en el registro inicial
+            customFields[`${prefix}-vet-certificate-url`] = pet.vetCertificateUrl || '';
         });
 
         // Actualizar Memberstack usando updateMember
