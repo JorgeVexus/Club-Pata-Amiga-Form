@@ -3318,33 +3318,112 @@
 
                     // 🛠️ Debug Tools for Development
                     window.pataDebug = {
-                        rechazado: () => {
-                            this.membershipStatus = 'rejected';
-                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'rejected';
+                        // 1. Estado: Pago Pendiente
+                        pagoPendiente: () => {
+                            this.membershipStatus = 'pending_payment';
                             this.render();
-                            console.log('🟠 Debug: Estado RECHAZADO activado');
+                            console.log("💳 Vista: Pago Requerido");
                         },
-                        aprobado: () => {
-                            this.membershipStatus = 'approved';
-                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'approved';
+                        
+                        // 2. Estado: Pago en Procesamiento (Stripe)
+                        pagoProcesando: () => {
+                            this.membershipStatus = 'payment_processing';
                             this.render();
-                            console.log('🟡 Debug: Estado APROBADO activado');
+                            console.log("⏳ Vista: Pago en Proceso");
                         },
-                        pendiente: () => {
-                            this.membershipStatus = 'pending';
-                            if (this.pets.length > 0) this.pets[this.currentIndex].status = 'pending';
-                            this.render();
-                            console.log('⚪ Debug: Estado PENDIENTE (mascota) activado');
-                        },
-                        member_pendiente: () => {
+                        
+                        // 3. Estado: Membresía en Revisión (Global)
+                        revisionGlobal: () => {
                             this.membershipStatus = 'waiting_approval';
+                            this.pets = []; // Forzamos a que no haya mascotas aprobadas aún
                             this.render();
-                            console.log('⚪ Debug: Estado WAITING_APPROVAL (miembro) activado');
+                            console.log("⏳ Vista: Revisión de Perfil (Global)");
                         },
-                        reset: () => {
-                            location.reload();
+                        
+                        // 4. Estado: Aprobado (Mascota con Carencia)
+                        aprobado: (nombre = "Rex", isSenior = false) => {
+                            this.membershipStatus = 'approved';
+                            this.pets = [{
+                                id: "fake-id",
+                                name: nombre,
+                                status: 'approved',
+                                type: 'Perro',
+                                breed: 'Labrador',
+                                created_at: new Date().toISOString(), // Carencia desde hoy
+                                age_value: isSenior ? 11 : 3,
+                                age_unit: 'years',
+                                photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=200&h=200',
+                                waiting_period_days: 180
+                            }];
+                            this.currentIndex = 0;
+                            this.render();
+                            console.log("✅ Vista: Mascota Aprobada (Carencia activa)");
+                        },
+                        
+                        // 5. Estado: Rechazado (Con perro asomado)
+                        rechazado: () => {
+                            this.membershipStatus = 'approved'; 
+                            this.pets = [{
+                                id: "fake-id",
+                                name: "Tobby",
+                                status: 'rejected',
+                                rejection_reason: "La foto del certificado no es legible.",
+                                type: 'Gato',
+                                created_at: new Date().toISOString(),
+                                photo_url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=200&h=200'
+                            }];
+                            this.currentIndex = 0;
+                            this.render();
+                            console.log("❌ Vista: Mascota Rechazada");
+                        },
+                        
+                        // 6. Estado: Acción Requerida (Subir documentos)
+                        accionRequerida: () => {
+                            this.membershipStatus = 'approved';
+                            this.pets = [{
+                                id: "fake-id",
+                                name: "Luna",
+                                status: 'action_required',
+                                type: 'Perro',
+                                created_at: new Date().toISOString(),
+                                photo_url: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&q=80&w=200&h=200'
+                            }];
+                            this.currentIndex = 0;
+                            this.render();
+                            console.log("⚠️ Vista: Acción Requerida");
+                        },
+                        
+                        // 7. Estado: Apelación Enviada
+                        apelado: () => {
+                            this.membershipStatus = 'approved';
+                            this.pets = [{
+                                id: "fake-id",
+                                name: "Luna",
+                                status: 'appealed',
+                                type: 'Perro',
+                                created_at: new Date().toISOString(),
+                                photo_url: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&q=80&w=200&h=200'
+                            }];
+                            this.currentIndex = 0;
+                            this.render();
+                            console.log("⚖️ Vista: Apelación en curso");
+                        },
+                        
+                        // Ayuda
+                        help: () => {
+                            console.table({
+                                "pataDebug.pagoPendiente()": "Ver pantalla de cobro",
+                                "pataDebug.pagoProcesando()": "Ver pantalla de Stripe procesando",
+                                "pataDebug.revisionGlobal()": "Ver revisión de cuenta (24h)",
+                                "pataDebug.aprobado()": "Ver dashboard con carencia",
+                                "pataDebug.rechazado()": "Ver pantalla de rechazo/reembolso",
+                                "pataDebug.accionRequerida()": "Ver pantalla de documentos faltantes",
+                                "pataDebug.apelado()": "Ver estado de apelación"
+                            });
                         }
                     };
+
+                    window.pataDebug.help();
 
                     // 🆕 Magic Link: Auto-open chat if URL has action=chat&petId=X
                     try {
