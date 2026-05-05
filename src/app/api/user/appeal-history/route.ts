@@ -42,9 +42,12 @@ export async function GET(request: NextRequest) {
             .order('created_at', { ascending: true }) // Cambiado a ascendente para el chat
             .limit(50); // Aumentado para tener más historial
 
-        // Si se especifica petId, filtrar por mascota
-        if (petId) {
+        // Si se especifica petId y es un UUID válido, filtrar por mascota
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+        if (petId && uuidRegex.test(petId)) {
             query = query.eq('pet_id', petId);
+        } else if (petId) {
+            console.warn('⚠️ [API] Invalid petId format ignored:', petId);
         }
 
         const { data: logs, error } = await query;

@@ -411,7 +411,7 @@ export async function getPetsByUserId(memberstackId: string) {
                 .from('users')
                 .select('id, last_admin_response, action_required_fields, membership_status')
                 .eq('memberstack_id', memberstackId)
-                .single();
+                .maybeSingle();
 
             if (error) {
                 console.warn('⚠️ [Server Action] Could not fetch user communication fields:', error.message);
@@ -420,7 +420,7 @@ export async function getPetsByUserId(memberstackId: string) {
                     .from('users')
                     .select('id')
                     .eq('memberstack_id', memberstackId)
-                    .single();
+                    .maybeSingle();
                 userData = fallbackData;
             } else {
                 userData = data;
@@ -522,7 +522,7 @@ export async function getUserDataByMemberstackId(memberstackId: string) {
             .from('users')
             .select('*')
             .eq('memberstack_id', memberstackId)
-            .single();
+            .maybeSingle();
 
         if (error) {
             console.error('❌ [Server Action] Error fetching user data by MS ID:', error);
