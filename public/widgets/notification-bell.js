@@ -75,8 +75,11 @@
     const STYLES = `
         .pata-notification-container {
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
             font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: #FFFFFF;
         }
 
         .pata-notification-bell {
@@ -110,23 +113,24 @@
         }
 
         .pata-notification-bell .bell-icon {
-            width: 24px;
-            height: 24px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #00BBB4;
-            transition: color 0.2s ease;
+            color: #FFFFFF;
+            transition: all 0.2s ease;
         }
 
         .pata-notification-bell:hover .bell-icon {
-            color: #008f8a;
+            color: #FFFFFF;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
         .pata-notification-badge {
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 0;
+            right: 0;
             min-width: 20px;
             height: 20px;
             padding: 0 6px;

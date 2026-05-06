@@ -63,18 +63,20 @@
         /* Container - inline para el navbar */
         .realtime-bell-widget {
             position: relative;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
             font-family: 'Outfit', -apple-system, sans-serif;
-            color: #000000;
+            color: #FFFFFF;
         }
 
         .rtbell-button {
-            width: 48px;
-            height: 48px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: #FFFFFF;
-            border: 2px solid #000000;
-            box-shadow: 2px 2px 0px #000000;
+            background: transparent;
+            border: none;
+            box-shadow: none;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -82,17 +84,16 @@
             position: relative;
             transition: all 0.2s ease;
             outline: none;
+            padding: 0;
         }
 
         .rtbell-button:hover {
-            background: #FE8F15; /* Naranja primario */
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0px #000000;
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
         }
 
         .rtbell-button:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px #000000;
+            transform: scale(0.95);
         }
 
         .rtbell-button.shake {
@@ -107,23 +108,24 @@
         }
 
         .rtbell-icon {
-            width: 26px;
-            height: 26px;
+            width: 32px;
+            height: 32px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #000000;
+            color: #FFFFFF;
             transition: all 0.2s ease;
         }
 
         .rtbell-button:hover .rtbell-icon {
             color: #FFFFFF;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.3));
         }
 
         .rtbell-badge {
             position: absolute;
-            top: -5px;
-            right: -5px;
+            top: 0;
+            right: 0;
             min-width: 22px;
             height: 22px;
             background: #FF4444;
