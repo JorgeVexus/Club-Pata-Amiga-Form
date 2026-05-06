@@ -286,12 +286,34 @@
         createContainer() {
             const div = document.createElement('div');
             div.className = 'pata-settings-widget';
-            div.id = 'pata-settings-widget';
+            div.id = 'pata-settings-widget-inner';
             
-            // Buscar un contenedor específico o añadir al body
-            const target = document.querySelector('[data-pata-widget="settings"]') || document.body;
-            target.appendChild(div);
-            this.container = div;
+            // Intentar encontrar el contenedor por ID (más fiable en Webflow) o atributo
+            const findTarget = () => {
+                return document.getElementById('pata-settings') || 
+                       document.querySelector('[data-pata-widget="settings"]');
+            };
+
+            let target = findTarget();
+
+            if (target) {
+                target.appendChild(div);
+                this.container = div;
+            } else {
+                console.warn('⚠️ [SETTINGS] No se encontró contenedor (#pata-settings). Usando fallback al body.');
+                // Intentar de nuevo tras un pequeño delay por si Webflow es lento cargando el DOM
+                setTimeout(() => {
+                    target = findTarget();
+                    if (target) {
+                        target.appendChild(div);
+                        this.container = div;
+                        if (this.member) this.render();
+                    } else {
+                        document.body.appendChild(div);
+                        this.container = div;
+                    }
+                }, 1000);
+            }
         }
 
         async loadMember() {
