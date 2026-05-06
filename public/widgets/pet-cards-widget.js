@@ -852,10 +852,25 @@
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Cumpleaños</span>
                                             ${pet.birth_month && pet.birth_year ? `
-                                                <span class="pata-info-value">${pet.birth_month.toString().padStart(2, '0')} / ${pet.birth_year}</span>
+                                                <span class="pata-info-value">${['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][pet.birth_month] || pet.birth_month} ${pet.birth_year}</span>
                                             ` : `
                                                 <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
-                                                    <input type="month" id="pata-birth-date-${pet.id}" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:110px;" max="${new Date().toISOString().slice(0,7)}" aria-label="Mes y año de nacimiento">
+                                                    <datalist id="pata-months-list">
+                                                        <option value="Enero">
+                                                        <option value="Febrero">
+                                                        <option value="Marzo">
+                                                        <option value="Abril">
+                                                        <option value="Mayo">
+                                                        <option value="Junio">
+                                                        <option value="Julio">
+                                                        <option value="Agosto">
+                                                        <option value="Septiembre">
+                                                        <option value="Octubre">
+                                                        <option value="Noviembre">
+                                                        <option value="Diciembre">
+                                                    </datalist>
+                                                    <input type="text" id="pata-birth-month-${pet.id}" list="pata-months-list" placeholder="Mes" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:80px;" aria-label="Mes de nacimiento">
+                                                    <input type="number" id="pata-birth-year-${pet.id}" placeholder="Año" max="${new Date().getFullYear()}" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:65px;" aria-label="Año de nacimiento">
                                                     <button id="pata-btn-birthday-${pet.id}" onclick="window.ManadaWidget.saveBirthday('${pet.id}')" style="font-size:10px; padding:4px 10px; border-radius:12px; background:var(--pata-primary); color:#000; border:1.5px solid #000; cursor:pointer; font-weight:800; font-family:var(--font-body); transition:all 0.2s ease;">Guardar</button>
                                                 </div>
                                             `}
@@ -989,20 +1004,32 @@
         }
 
         async saveBirthday(petId) {
-            const dateInput = document.getElementById(`pata-birth-date-${petId}`);
+            const monthInput = document.getElementById(`pata-birth-month-${petId}`);
+            const yearInput = document.getElementById(`pata-birth-year-${petId}`);
             const btn = document.getElementById(`pata-btn-birthday-${petId}`);
-            if (!dateInput || !btn) return;
+            if (!monthInput || !yearInput || !btn) return;
 
-            const dateValue = dateInput.value;
+            const monthVal = monthInput.value.trim().toLowerCase();
+            const yearVal = parseInt(yearInput.value, 10);
             
-            if (!dateValue) {
-                alert('Por favor selecciona el mes y año.');
+            const monthsMap = {
+                'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4, 'mayo': 5, 'junio': 6,
+                'julio': 7, 'agosto': 8, 'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
+            };
+            
+            const birthMonth = monthsMap[monthVal] || parseInt(monthVal, 10);
+            const birthYear = yearVal;
+
+            if (!birthMonth || birthMonth < 1 || birthMonth > 12) {
+                alert('Por favor ingresa un mes válido (ej. "Enero" o "1").');
                 return;
             }
 
-            const [birthYearStr, birthMonthStr] = dateValue.split('-');
-            const birthYear = parseInt(birthYearStr, 10);
-            const birthMonth = parseInt(birthMonthStr, 10);
+            const currentYear = new Date().getFullYear();
+            if (!birthYear || birthYear > currentYear || birthYear < 1990) {
+                alert('Por favor ingresa un año válido y que no sea mayor al actual.');
+                return;
+            }
 
             btn.disabled = true;
             btn.innerText = 'Guardando...';

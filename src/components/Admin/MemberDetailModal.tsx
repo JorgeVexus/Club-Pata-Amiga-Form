@@ -818,7 +818,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <div className={styles.detailRow}>
                                                 <span className={styles.detailLabel}>🎈 Cumpleaños</span>
                                                 <span className={styles.detailValue}>
-                                                    {pet.birth_month && pet.birth_year ? `${String(pet.birth_month).padStart(2, '0')} / ${pet.birth_year}` : 'No especificado'}
+                                                    {pet.birth_month && pet.birth_year ? `${['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][pet.birth_month] || pet.birth_month} ${pet.birth_year}` : 'No especificado'}
                                                 </span>
                                             </div>
                                             <div className={styles.detailRow}>
