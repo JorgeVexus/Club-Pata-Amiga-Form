@@ -583,12 +583,25 @@ export default function NewRegistrationFlow() {
                     let loginTargetStep = Math.max(msStep, 2);
                     
                     // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual)
-                    const activePlansLogin = loggedMember.planConnections?.filter((pc: any) => 
+                    // Forzamos un refresco para obtener planes actualizados
+                    const { data: freshMember } = await window.$memberstackDom.getCurrentMember();
+                    const memberToVerify = freshMember || loggedMember;
+                    
+                    const activePlansLogin = memberToVerify.planConnections?.filter((pc: any) => 
                         pc.status?.toLowerCase() === 'active' || pc.status?.toLowerCase() === 'trialing'
                     ) || [];
-                    const hasActivePlan = activePlansLogin.length > 0;
                     
-                    console.log('🔍 [handleStep1Complete] Login exitoso:', { email: loggedMember.auth?.email, hasActivePlan });
+                    const hasActivePlanIds = (memberToVerify.planIds || []).length > 0;
+                    const paymentStatusField = memberToVerify.customFields?.['payment-status'];
+                    const hasActivePlan = activePlansLogin.length > 0 || hasActivePlanIds || paymentStatusField === 'completed';
+                    
+                    console.log('🔍 [handleStep1Complete] Verificación de pago:', { 
+                        email: memberToVerify.auth?.email, 
+                        hasActivePlan,
+                        plans: activePlansLogin.map((p: any) => ({ id: p.planId, status: p.status })),
+                        planIds: memberToVerify.planIds,
+                        paymentStatusField
+                    });
 
                     if (hasActivePlan) {
                         console.log('💰 Miembro con plan activo detectado tras login, redirigiendo...');
@@ -736,16 +749,28 @@ export default function NewRegistrationFlow() {
                         const isCheckoutPending = loggedMember.customFields?.['checkout-pending'] === 'true' ||
                             loggedMember.customFields?.['checkout-pending'] === true;
 
-                        // Determinar paso destino
                         let loginTargetStep = Math.max(msStep, 2);
 
                         // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual - Email existente)
-                        const activePlansRecovery = loggedMember.planConnections?.filter((pc: any) => 
+                        // Forzamos un refresco para obtener planes actualizados
+                        const { data: freshMember2 } = await window.$memberstackDom.getCurrentMember();
+                        const memberToVerify2 = freshMember2 || loggedMember;
+
+                        const activePlansRecovery = memberToVerify2.planConnections?.filter((pc: any) => 
                             pc.status?.toLowerCase() === 'active' || pc.status?.toLowerCase() === 'trialing'
                         ) || [];
-                        const hasActivePlan = activePlansRecovery.length > 0;
+                        
+                        const hasActivePlanIds2 = (memberToVerify2.planIds || []).length > 0;
+                        const paymentStatusField2 = memberToVerify2.customFields?.['payment-status'];
+                        const hasActivePlan = activePlansRecovery.length > 0 || hasActivePlanIds2 || paymentStatusField2 === 'completed';
 
-                        console.log('🔍 [handleStep1Complete - Recovery] Login exitoso:', { email: loggedMember.auth?.email, hasActivePlan });
+                        console.log('🔍 [handleStep1Complete - Recovery] Verificación de pago:', { 
+                            email: memberToVerify2.auth?.email, 
+                            hasActivePlan,
+                            plans: activePlansRecovery.map((p: any) => ({ id: p.planId, status: p.status })),
+                            planIds: memberToVerify2.planIds,
+                            paymentStatusField2
+                        });
 
                         if (hasActivePlan) {
                             console.log('💰 Miembro con plan activo detectado tras login (recovery), redirigiendo...');
