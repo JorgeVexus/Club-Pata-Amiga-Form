@@ -761,10 +761,52 @@
             }
         }
 
-        handleDeactivate() {
-            if (confirm('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción no se puede deshacer fácilmente.')) {
-                alert('Tu solicitud ha sido enviada al equipo administrativo. Nos pondremos en contacto contigo pronto.');
-                // Aquí se podría llamar a un API de baja
+        async handleDeactivate() {
+            if (confirm('¿Estás seguro de que deseas desactivar tu cuenta? Esta acción cancelará tu suscripción activa y no se puede deshacer fácilmente.')) {
+                
+                const btnDeactivate = this.container.querySelector('#pata-btn-deactivate');
+                const originalText = btnDeactivate.innerHTML;
+                
+                if (btnDeactivate) {
+                    btnDeactivate.innerHTML = 'Desactivando...';
+                    btnDeactivate.disabled = true;
+                    btnDeactivate.style.opacity = '0.7';
+                    btnDeactivate.style.cursor = 'not-allowed';
+                }
+
+                try {
+                    const memberId = this.memberstackUser.id;
+                    const response = await fetch('/api/user/deactivate', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ memberstackId: memberId })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        alert('Tu cuenta ha sido desactivada y tus suscripciones han sido canceladas exitosamente.');
+                        // Cerrar sesión en Memberstack y redirigir
+                        if (window.$memberstackDom) {
+                            await window.$memberstackDom.logout();
+                            window.location.href = '/';
+                        }
+                    } else {
+                        throw new Error(data.error || 'Error desconocido');
+                    }
+                } catch (error) {
+                    console.error('❌ [SETTINGS] Error desactivando cuenta:', error);
+                    alert('Hubo un problema al intentar desactivar tu cuenta: ' + error.message);
+                    
+                    if (btnDeactivate) {
+                        btnDeactivate.innerHTML = originalText;
+                        btnDeactivate.disabled = false;
+                        btnDeactivate.style.opacity = '1';
+                        btnDeactivate.style.cursor = 'pointer';
+                    }
+                }
             }
         }
     }
