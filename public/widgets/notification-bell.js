@@ -35,11 +35,31 @@
     'use strict';
 
     // Configuración
-    const DEFAULT_CONFIG = {
-        apiUrl: 'https://app.pataamiga.mx',
-        notificationsUrl: '/miembros/notificaciones',
-        supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
         supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q'
+    };
+
+    // ========== ICONOS ==========
+    const ICONS = {
+        bell: `<svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+            <g clip-path="url(#clip_bell_simple)">
+                <path d="M25.0001 49.0909C38.3051 49.0909 49.091 38.305 49.091 25C49.091 11.695 38.3051 0.909088 25.0001 0.909088C11.695 0.909088 0.90918 11.695 0.90918 25C0.90918 38.305 11.695 49.0909 25.0001 49.0909Z" stroke="currentColor" stroke-width="2" stroke-miterlimit="10"/>
+                <path d="M25 17.3364C24.5091 17.3364 24.1182 16.9364 24.1182 16.4545V14.3727C24.1182 13.8818 24.5182 13.4909 25 13.4909C25.4818 13.4909 25.8818 13.8909 25.8818 14.3727V16.4545C25.8818 16.9455 25.4818 17.3364 25 17.3364Z" fill="currentColor"/>
+                <path d="M34.3727 34.0091H15.6181C15.1272 34.0091 14.7363 33.6091 14.7363 33.1273C14.7363 32.6455 15.1363 32.2455 15.6181 32.2455H34.3727C34.8636 32.2455 35.2545 32.6455 35.2545 33.1273C35.2545 33.6091 34.8545 34.0091 34.3727 34.0091Z" fill="currentColor"/>
+                <path d="M25.0003 38.1727C22.7912 38.1727 20.9912 36.3727 20.9912 34.1636C20.9912 33.6727 21.3912 33.2818 21.873 33.2818C22.3548 33.2818 22.7548 33.6818 22.7548 34.1636C22.7548 35.4 23.7639 36.4 24.9912 36.4C26.2185 36.4 27.2276 35.3909 27.2276 34.1636C27.2276 33.6727 27.6276 33.2818 28.1094 33.2818C28.5912 33.2818 28.9912 33.6818 28.9912 34.1636C28.9912 36.3727 27.1912 38.1727 24.9821 38.1727H25.0003Z" fill="currentColor"/>
+                <path d="M21.873 35.0454C21.3821 35.0454 20.9912 34.6455 20.9912 34.1636V33.1182C20.9912 32.6273 21.3912 32.2364 21.873 32.2364C22.3548 32.2364 22.7548 32.6364 22.7548 33.1182V34.1636C22.7548 34.6545 22.3548 35.0454 21.873 35.0454Z" fill="currentColor"/>
+                <path d="M28.1279 35.0454C27.637 35.0454 27.2461 34.6455 27.2461 34.1636V33.1182C27.2461 32.6273 27.6461 32.2364 28.1279 32.2364C28.6097 32.2364 29.0097 32.6364 29.0097 33.1182V34.1636C29.0097 34.6545 28.6097 35.0454 28.1279 35.0454Z" fill="currentColor"/>
+                <path d="M15.6279 34.0091C15.137 34.0091 14.7461 33.6091 14.7461 33.1273C14.7461 32.1546 15.1006 31.2546 15.5006 30.2C16.0915 28.6727 16.8279 26.7727 16.8279 23.7455C16.8279 23.2546 17.2279 22.8636 17.7097 22.8636C18.1915 22.8636 18.5915 23.2636 18.5915 23.7455C18.5915 27.1 17.7552 29.2636 17.1461 30.8364C16.7915 31.7546 16.5097 32.4818 16.5097 33.1182C16.5097 33.6091 16.1097 34 15.6279 34V34.0091Z" fill="currentColor"/>
+                <path d="M34.3728 34.0091C33.8819 34.0091 33.491 33.6091 33.491 33.1273C33.491 32.4818 33.2092 31.7637 32.8546 30.8455C32.2455 29.2727 31.4092 27.1091 31.4092 23.7546C31.4092 23.2637 31.8092 22.8727 32.291 22.8727C32.7728 22.8727 33.1728 23.2727 33.1728 23.7546C33.1728 26.7818 33.9092 28.6818 34.5001 30.2091C34.9092 31.2546 35.2546 32.1637 35.2546 33.1364C35.2546 33.6273 34.8546 34.0182 34.3728 34.0182V34.0091Z" fill="currentColor"/>
+                <path d="M32.2918 24.6364C31.8009 24.6364 31.4099 24.2364 31.4099 23.7545C31.4099 20.2182 28.5372 17.3455 25.0009 17.3455C21.4645 17.3455 18.5918 20.2182 18.5918 23.7545C18.5918 24.2455 18.1918 24.6364 17.7099 24.6364C17.2281 24.6364 16.8281 24.2364 16.8281 23.7545C16.8281 19.2455 20.5009 15.5727 25.0099 15.5727C29.519 15.5727 33.1918 19.2455 33.1918 23.7545C33.1918 24.2455 32.7918 24.6364 32.3099 24.6364H32.2918Z" fill="currentColor"/>
+                <path d="M36.4554 24.6364C35.9645 24.6364 35.5736 24.2364 35.5736 23.7545C35.5736 20.3182 33.8918 17.0818 31.0827 15.1C30.6827 14.8182 30.5827 14.2636 30.8645 13.8636C31.1463 13.4636 31.7009 13.3636 32.1009 13.6455C35.3827 15.9546 37.3463 19.7364 37.3463 23.7455C37.3463 24.2364 36.9463 24.6273 36.4645 24.6273L36.4554 24.6364Z" fill="currentColor"/>
+                <path d="M13.5459 24.6364C13.055 24.6364 12.6641 24.2364 12.6641 23.7546C12.6641 19.7455 14.6277 15.9636 17.9095 13.6546C18.3095 13.3727 18.8641 13.4727 19.1459 13.8727C19.4277 14.2727 19.3277 14.8273 18.9277 15.1091C16.1186 17.0909 14.4368 20.3273 14.4368 23.7636C14.4368 24.2546 14.0368 24.6455 13.555 24.6455L13.5459 24.6364Z" fill="currentColor"/>
+            </g>
+            <defs>
+                <clipPath id="clip_bell_simple">
+                    <rect width="50" height="50" fill="white"/>
+                </clipPath>
+            </defs>
+        </svg>`
     };
 
     // Mezclar configuración personalizada con valores por defecto
@@ -90,7 +110,17 @@
         }
 
         .pata-notification-bell .bell-icon {
-            font-size: 1.5rem;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #00BBB4;
+            transition: color 0.2s ease;
+        }
+
+        .pata-notification-bell:hover .bell-icon {
+            color: #008f8a;
         }
 
         .pata-notification-badge {
@@ -484,7 +514,7 @@
 
             const toast = document.createElement('div');
             toast.className = 'pata-realtime-toast';
-            toast.innerHTML = '<span class="pata-realtime-toast-icon">🔔</span>' +
+            toast.innerHTML = `<span class="pata-realtime-toast-icon">${ICONS.bell}</span>` +
                 '<span class="pata-realtime-toast-text">' + message + '</span>';
             document.body.appendChild(toast);
 
@@ -584,7 +614,7 @@
             this.container.innerHTML =
                 '<div class="pata-notification-container">' +
                 '<button class="pata-notification-bell" aria-label="Notificaciones">' +
-                '<span class="bell-icon">🔔</span>' +
+                '<span class="bell-icon">' + ICONS.bell + '</span>' +
                 '<span class="pata-notification-badge" style="display: none;">0</span>' +
                 '</button>' +
                 '<div class="pata-notification-dropdown">' +
