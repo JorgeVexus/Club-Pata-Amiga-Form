@@ -303,6 +303,31 @@
         .pata-input:focus {
             border-color: #7DD8D5;
         }
+        .pata-pwd-wrapper {
+            position: relative;
+            display: block;
+        }
+        .pata-pwd-wrapper .pata-input {
+            padding-right: 45px;
+        }
+        .pata-pwd-toggle {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #A0AEC0;
+            cursor: pointer;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+        .pata-pwd-toggle:hover {
+            color: #2D3748;
+        }
         .pata-btn-submit {
             width: 100%;
             background: #FE8F15;
@@ -349,7 +374,9 @@
         house: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
         image: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
         chevron: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`,
-        xCircle: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`
+        xCircle: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>`,
+        eye: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`,
+        eyeOff: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`
     };
 
     class UserSettingsWidget {
@@ -528,11 +555,17 @@
                         <form id="pata-password-form">
                             <div class="pata-form-group">
                                 <label class="pata-label">Contraseña Actual</label>
-                                <input type="password" id="pata-current-pwd" required class="pata-input" placeholder="••••••••">
+                                <div class="pata-pwd-wrapper">
+                                    <input type="password" id="pata-current-pwd" required class="pata-input" placeholder="••••••••">
+                                    <button type="button" class="pata-pwd-toggle" title="Mostrar/Ocultar contraseña">${ICONS.eye}</button>
+                                </div>
                             </div>
                             <div class="pata-form-group">
                                 <label class="pata-label">Nueva Contraseña</label>
-                                <input type="password" id="pata-new-pwd" required class="pata-input" placeholder="••••••••">
+                                <div class="pata-pwd-wrapper">
+                                    <input type="password" id="pata-new-pwd" required class="pata-input" placeholder="••••••••">
+                                    <button type="button" class="pata-pwd-toggle" title="Mostrar/Ocultar contraseña">${ICONS.eye}</button>
+                                </div>
                             </div>
                             <button type="submit" class="pata-btn-submit" id="pata-btn-pwd">Guardar Cambios</button>
                             <div id="pata-pwd-error" style="color: #E53E3E; margin-top: 15px; font-size: 14px; display: none; text-align: center;"></div>
@@ -633,6 +666,11 @@
                     if(pwdForm) pwdForm.reset();
                     if(pwdError) pwdError.style.display = 'none';
                     if(pwdSuccess) pwdSuccess.style.display = 'none';
+                    // Resetear iconos de ojito
+                    this.container.querySelectorAll('.pata-pwd-toggle').forEach(btn => {
+                        btn.previousElementSibling.type = 'password';
+                        btn.innerHTML = ICONS.eye;
+                    });
                 });
             }
 
@@ -644,9 +682,28 @@
                         if(pwdForm) pwdForm.reset();
                         if(pwdError) pwdError.style.display = 'none';
                         if(pwdSuccess) pwdSuccess.style.display = 'none';
+                        // Resetear iconos de ojito a oculto por defecto
+                        this.container.querySelectorAll('.pata-pwd-toggle').forEach(btn => {
+                            btn.previousElementSibling.type = 'password';
+                            btn.innerHTML = ICONS.eye;
+                        });
                     }
                 });
             }
+
+            // Toggle Password Visibility
+            this.container.querySelectorAll('.pata-pwd-toggle').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const input = btn.previousElementSibling;
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        btn.innerHTML = ICONS.eyeOff;
+                    } else {
+                        input.type = 'password';
+                        btn.innerHTML = ICONS.eye;
+                    }
+                });
+            });
 
             if (pwdForm) {
                 pwdForm.addEventListener('submit', async (e) => {
@@ -669,6 +726,11 @@
                         setTimeout(() => {
                             pwdModal.classList.remove('show');
                             pwdSuccess.style.display = 'none';
+                            // Resetear iconos de ojito
+                            this.container.querySelectorAll('.pata-pwd-toggle').forEach(btn => {
+                                btn.previousElementSibling.type = 'password';
+                                btn.innerHTML = ICONS.eye;
+                            });
                         }, 2000);
                     } catch (error) {
                         pwdError.textContent = error.message || 'Ocurrió un error al actualizar la contraseña.';
