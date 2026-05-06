@@ -13,6 +13,8 @@ interface Pet {
     gender?: string;
     age_value?: string | number;
     age_unit?: string;
+    birth_month?: number;
+    birth_year?: number;
     pet_type?: string;
     status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
     admin_notes?: string;
@@ -811,6 +813,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 <span className={styles.detailLabel}>🎂 Edad</span>
                                                 <span className={styles.detailValue}>
                                                     {pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : 'No especificada'}
+                                                </span>
+                                            </div>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>🎈 Cumpleaños</span>
+                                                <span className={styles.detailValue}>
+                                                    {pet.birth_month && pet.birth_year ? `${String(pet.birth_month).padStart(2, '0')} / ${pet.birth_year}` : 'No especificado'}
                                                 </span>
                                             </div>
                                             <div className={styles.detailRow}>

@@ -848,6 +848,28 @@
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
+                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">cake</span></div>
+                                        <div class="pata-info-texts">
+                                            <span class="pata-info-label">Cumpleaños</span>
+                                            ${pet.birth_month && pet.birth_year ? `
+                                                <span class="pata-info-value">${pet.birth_month.toString().padStart(2, '0')} / ${pet.birth_year}</span>
+                                            ` : `
+                                                <div style="display:flex; gap:4px; align-items:center; margin-top:4px;">
+                                                    <select id="pata-birth-month-${pet.id}" style="font-size:12px; padding:2px; border-radius:4px; border:1px solid #ccc; width:50px;">
+                                                        <option value="">Mes</option>
+                                                        ${Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
+                                                    </select>
+                                                    <span style="font-size:12px;">/</span>
+                                                    <select id="pata-birth-year-${pet.id}" style="font-size:12px; padding:2px; border-radius:4px; border:1px solid #ccc; width:60px;">
+                                                        <option value="">Año</option>
+                                                        ${Array.from({length: 30}, (_, i) => { const y = new Date().getFullYear() - i; return `<option value="${y}">${y}</option>`; }).join('')}
+                                                    </select>
+                                                    <button id="pata-btn-birthday-${pet.id}" onclick="window.ManadaWidget.saveBirthday('${pet.id}')" style="font-size:10px; padding:4px 8px; border-radius:4px; background:var(--pata-primary); color:white; border:none; cursor:pointer; font-weight:bold;">Guardar</button>
+                                                </div>
+                                            `}
+                                        </div>
+                                    </div>
+                                    <div class="pata-info-item">
                                         <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">${genderIcon}</span></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Género</span>
@@ -899,26 +921,23 @@
                                 </div>
                             ` : ''}
 
+                            ${(pet.is_senior && !pet.vet_certificate_url) ? `
                             <div class="pata-vet-banner">
                                 <div class="pata-vet-banner-left">
                                     <div class="pata-vet-icon-main"><span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1">medical_services</span></div>
                                     <div class="pata-vet-texts">
                                         <h4>INFORMACIÓN VETERINARIA</h4>
-                                        <p>Historial médico completo y vacunas.</p>
+                                        <p>Por favor, sube el certificado médico de tu mascota senior.</p>
                                     </div>
                                 </div>
-                                ${pet.vet_certificate_url ? 
-                                    `<a href="${pet.vet_certificate_url}" target="_blank" class="pata-vet-btn">
-                                        Ver Certificado <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
-                                    </a>` : 
-                                    `<div class="pata-vet-btn" style="position:relative; overflow:hidden; cursor:pointer;">
-                                        <input type="file" accept=".pdf,image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2" 
-                                            onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-upload-placeholder')" aria-label="Subir certificado veterinario">
-                                        <span id="modal-vet-upload-placeholder">Subir Certificado</span>
-                                        <span class="material-symbols-outlined" style="font-size:16px">upload</span>
-                                    </div>`
-                                }
+                                <div class="pata-vet-btn" style="position:relative; overflow:hidden; cursor:pointer;">
+                                    <input type="file" accept=".pdf,image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2" 
+                                        onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'vet', this.files[0], 'modal-vet-upload-placeholder')" aria-label="Subir certificado veterinario">
+                                    <span id="modal-vet-upload-placeholder">Subir Certificado</span>
+                                    <span class="material-symbols-outlined" style="font-size:16px">upload</span>
+                                </div>
                             </div>
+                            ` : ''}
                         </section>
                     </main>
                 </div>
@@ -973,6 +992,54 @@
             } finally {
                 btn.disabled = false;
                 btn.innerText = 'Guardar historia';
+                btn.style.opacity = '1';
+            }
+        }
+
+        async saveBirthday(petId) {
+            const monthSelect = document.getElementById(`pata-birth-month-${petId}`);
+            const yearSelect = document.getElementById(`pata-birth-year-${petId}`);
+            const btn = document.getElementById(`pata-btn-birthday-${petId}`);
+            if (!monthSelect || !yearSelect || !btn) return;
+
+            const birthMonth = monthSelect.value;
+            const birthYear = yearSelect.value;
+            
+            if (!birthMonth || !birthYear) {
+                alert('Por favor selecciona mes y año.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.member.id,
+                        birthMonth,
+                        birthYear
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('¡Cumpleaños guardado exitosamente!');
+                    const modal = btn.closest('.pata-modal-overlay');
+                    if (modal) modal.remove();
+                    this.init();
+                } else {
+                    alert('Error al guardar: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ocurrió un error inesperado al guardar el cumpleaños.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Guardar';
                 btn.style.opacity = '1';
             }
         }

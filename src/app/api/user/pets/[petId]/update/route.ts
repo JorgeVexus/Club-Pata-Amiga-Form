@@ -32,7 +32,7 @@ export async function POST(
     try {
         const { petId } = await params;
         const body = await request.json();
-        const { userId, photo1Url, photo2Url, photo3Url, photo4Url, photo5Url, vetCertificateUrl, message, adoptionStory } = body;
+        const { userId, photo1Url, photo2Url, photo3Url, photo4Url, photo5Url, vetCertificateUrl, message, adoptionStory, birthMonth, birthYear } = body;
 
         console.log(`📝 [PetUpdate] Inicio: Usuario=${userId}, Pet=${petId}`);
         console.log('📦 Body:', JSON.stringify(body, null, 2));
@@ -74,10 +74,10 @@ export async function POST(
         }
 
         // Verificar que está en un status que permite actualización
-        const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval'];
-        const isOnlyAdoptionStory = adoptionStory && !photo1Url && !photo2Url && !vetCertificateUrl;
+        const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval', 'approved'];
+        const isOnlyAdoptionStoryOrBirthday = (adoptionStory || birthMonth || birthYear) && !photo1Url && !photo2Url && !vetCertificateUrl;
         
-        if (!allowedStatuses.includes(pet.status) && !isOnlyAdoptionStory) {
+        if (!allowedStatuses.includes(pet.status) && !isOnlyAdoptionStoryOrBirthday) {
             return NextResponse.json({
                 error: 'Solo puedes actualizar información cuando el equipo lo haya solicitado o cuando tu mascota esté bajo revisión.'
             }, { status: 400, headers: corsHeaders });
@@ -87,7 +87,7 @@ export async function POST(
         const updateData: Record<string, any> = {};
 
         // Determinar el nuevo status
-        if ((pet.status === 'action_required' || pet.status === 'rejected') && !isOnlyAdoptionStory) {
+        if ((pet.status === 'action_required' || pet.status === 'rejected') && !isOnlyAdoptionStoryOrBirthday) {
             updateData.status = 'pending';
         }
 
@@ -122,10 +122,14 @@ export async function POST(
         if (adoptionStory && typeof adoptionStory === 'string') {
             updateData.adoption_story = adoptionStory;
             console.log('📖 Historia de Adopción:', adoptionStory);
-            
-            // También deberíamos sincronizarlo con el perfil del usuario si fuera posible, 
-            // pero ya que es algo directo en la tabla pets, por ahora con la tabla pets es suficiente, 
-            // o lo guardamos en users si sabemos el slot. Como no es trivial aquí, dejemos solo en pets.
+        }
+
+        // Actualizar Cumpleaños
+        if (birthMonth !== undefined && birthMonth !== null) {
+            updateData.birth_month = parseInt(birthMonth, 10) || null;
+        }
+        if (birthYear !== undefined && birthYear !== null) {
+            updateData.birth_year = parseInt(birthYear, 10) || null;
         }
 
         if (Object.keys(updateData).length === 0 && !message) {
