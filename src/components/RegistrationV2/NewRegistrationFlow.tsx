@@ -28,7 +28,7 @@ import NavbarRedesign from './NavbarRedesign';
 import Toast from '@/components/UI/Toast';
 
 // Servicios
-import { registerUserInSupabase, getUserDataByMemberstackId } from '@/app/actions/user.actions';
+import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
 import { calculateWaitingPeriod } from '@/services/pet.service';
 
@@ -196,7 +196,16 @@ export default function NewRegistrationFlow() {
                         setMember(currentMember);
                         const msId = currentMember.id || (currentMember as any).memberId;
                         console.log('📥 Cargando datos desde Supabase para ID:', msId);
-                        const result = await getUserDataByMemberstackId(msId);
+
+                        // 🐾 Consultar datos de usuario Y mascotas en paralelo para no añadir latencia
+                        const [result, petsResult] = await Promise.all([
+                            getUserDataByMemberstackId(msId),
+                            getPetsByUserId(msId)
+                        ]);
+
+                        const hasPetsInDB = petsResult.success && Array.isArray((petsResult as any).pets) && (petsResult as any).pets.length > 0;
+                        const petsCount = hasPetsInDB ? (petsResult as any).pets.length : 0;
+                        console.log('🐾 [loadSavedState] Mascotas en DB:', petsCount);
 
                         let userData: any = null;
                         let loadedData: RegistrationData = {
@@ -314,9 +323,10 @@ export default function NewRegistrationFlow() {
                             finalStep = 2;
                         }
 
-                        // 🐾 NUEVO: Si ya tiene mascotas pero el step guardado es 2, saltamos directo al 3 (Selección de Plan)
-                        if (loadedData.petBasic && loadedData.petBasic.length > 0 && finalStep === 2) {
-                            console.log('🐾 [loadSavedState] Mascotas detectadas, saltando al paso 3');
+                        // 🐾 ROBUSTO: Si ya tiene mascotas en la DB, saltamos directo al Paso 3 (Selección de Plan)
+                        // Usamos la tabla 'pets' (fuente de verdad) en lugar de campos del usuario
+                        if (hasPetsInDB && finalStep < 3) {
+                            console.log(`🐾 [loadSavedState] ${petsCount} mascota(s) detectada(s) en DB, saltando al paso 3`);
                             finalStep = 3;
                         }
 
@@ -603,14 +613,14 @@ export default function NewRegistrationFlow() {
 
                     let loginTargetStep = Math.max(msStep, 2);
 
-                    // 🐾 NUEVO: Consultar DB para ver si ya tiene mascotas guardadas y saltar al paso 3
-                    const dbResult = await getUserDataByMemberstackId(msId);
-                    if (dbResult.success && dbResult.userData) {
-                        const hasPets = dbResult.userData.pet_name || dbResult.userData.pet_type || dbResult.userData.registration_step >= 3;
-                        if (hasPets && loginTargetStep === 2) {
-                            console.log('🐾 [handleStep1Complete] Mascotas detectadas en DB, saltando al paso 3');
-                            loginTargetStep = 3;
-                        }
+                    // 🐾 ROBUSTO: Consultar tabla 'pets' directamente (fuente de verdad)
+                    // No dependemos de campos del usuario que pueden estar vacíos
+                    const petsCheckResult = await getPetsByUserId(msId);
+                    const userHasPets = petsCheckResult.success && Array.isArray((petsCheckResult as any).pets) && (petsCheckResult as any).pets.length > 0;
+                    if (userHasPets && loginTargetStep < 3) {
+                        const count = (petsCheckResult as any).pets.length;
+                        console.log(`🐾 [handleStep1Complete] ${count} mascota(s) en DB, saltando al paso 3`);
+                        loginTargetStep = 3;
                     }
                     
                     // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual)
