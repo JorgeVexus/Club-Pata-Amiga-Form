@@ -375,7 +375,7 @@
                     <h2 class="pata-section-title">Seguridad y acceso</h2>
                     <p class="pata-section-subtitle">Mantén protegida tu cuenta administrando tus accesos</p>
                     <div class="pata-settings-list">
-                        ${this.renderItem('Cambiar contraseña', 'key', () => this.openPasswordModal())}
+                        ${this.renderItem('Cambiar contraseña', 'key', () => this.handleSecurityChange())}
                         ${this.renderItem('Actividad de inicio de sesión', 'activity', null, true)}
                         ${this.renderItem('Cerrar sesión en otros dispositivos', 'devices', null, true)}
                     </div>
@@ -471,7 +471,7 @@
             this.container.querySelectorAll('.pata-settings-item:not(.no-click)').forEach(item => {
                 item.addEventListener('click', () => {
                     const actionKey = item.getAttribute('data-action');
-                    if (actionKey === 'key') this.openPasswordModal();
+                    if (actionKey === 'key') this.handleSecurityChange();
                     if (actionKey === 'shield') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61adc0bfbb17c833501_AVISO%20DE%20PRIVACIDAD%20INTEGRAL.pdf', '_blank');
                     if (actionKey === 'doc') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b14873e67fb7f89b1_Terminosycondiciones%20girbaz.pdf', '_blank');
                     if (actionKey === 'house') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b8bccea76df450705_REGLAMENTO%20DEL%20FONDO%20SOLIDARIO%20CLUB%20PATA%20AMIGA.zip', '_blank');
@@ -494,9 +494,12 @@
             }
         }
 
-        openPasswordModal() {
+        handleSecurityChange() {
             if (window.$memberstackDom) {
-                window.$memberstackDom.openModal("profile");
+                // Abrir directamente en la pestaña de seguridad
+                window.$memberstackDom.openModal("PROFILE", { defaultTab: "security" });
+            } else {
+                console.error('[SETTINGS] Memberstack no está disponible para cambiar credenciales');
             }
         }
 
