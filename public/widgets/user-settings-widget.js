@@ -228,9 +228,110 @@
             font-weight: 800;
         }
 
+        /* Modal Custom */
+        .pata-custom-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .pata-custom-modal.show {
+            display: flex;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .pata-modal-content {
+            background: #FFFFFF;
+            border-radius: 30px;
+            padding: 40px;
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            animation: modalSlideIn 0.3s ease-out;
+            box-sizing: border-box;
+        }
+        @keyframes modalSlideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pata-modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #A0AEC0;
+            transition: color 0.2s;
+        }
+        .pata-modal-close:hover {
+            color: #2D3748;
+        }
+        .pata-modal-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 28px;
+            margin: 0 0 25px 0;
+            color: #1A202C;
+            line-height: 1.1;
+        }
+        .pata-form-group {
+            margin-bottom: 20px;
+        }
+        .pata-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4A5568;
+        }
+        .pata-input {
+            width: 100%;
+            padding: 14px 20px;
+            border-radius: 50px;
+            border: 2px solid #EDF2F7;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.2s;
+            box-sizing: border-box;
+        }
+        .pata-input:focus {
+            border-color: #7DD8D5;
+        }
+        .pata-btn-submit {
+            width: 100%;
+            background: #FE8F15;
+            color: #FFFFFF;
+            padding: 16px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 16px;
+            border: 2px solid #000;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Fraiche', sans-serif;
+            margin-top: 10px;
+        }
+        .pata-btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0px #000;
+        }
+        .pata-btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
         @media (max-width: 600px) {
             .pata-settings-title { font-size: 36px; }
             .pata-settings-subtitle { font-size: 16px; }
+            .pata-modal-content { padding: 30px; }
         }
     `;
 
@@ -408,12 +509,36 @@
 
                 <!-- Cuenta -->
                 <div class="pata-settings-section">
-                    <h2 class="pata-section-title">Cuenta</h2>
-                    <p class="pata-section-subtitle">Esta acción afecta permanentemente tu acceso a la plataforma.</p>
+                    <h2 class="pata-section-title">Cuenta y suscripción</h2>
+                    <p class="pata-section-subtitle">Administra tu suscripción o solicita la baja de la plataforma.</p>
+                    <div class="pata-settings-list" style="margin-bottom: 20px;">
+                        ${this.renderItem('Administrar suscripción', 'payment', null)}
+                    </div>
                     <button class="pata-btn-deactivate" id="pata-btn-deactivate">
                         ${ICONS.xCircle}
                         Desactivar cuenta
                     </button>
+                </div>
+
+                <!-- Modal Custom para Contraseña -->
+                <div class="pata-custom-modal" id="pata-password-modal">
+                    <div class="pata-modal-content">
+                        <button class="pata-modal-close" id="pata-close-password">×</button>
+                        <h3 class="pata-modal-title">Cambiar contraseña</h3>
+                        <form id="pata-password-form">
+                            <div class="pata-form-group">
+                                <label class="pata-label">Contraseña Actual</label>
+                                <input type="password" id="pata-current-pwd" required class="pata-input" placeholder="••••••••">
+                            </div>
+                            <div class="pata-form-group">
+                                <label class="pata-label">Nueva Contraseña</label>
+                                <input type="password" id="pata-new-pwd" required class="pata-input" placeholder="••••••••">
+                            </div>
+                            <button type="submit" class="pata-btn-submit" id="pata-btn-pwd">Guardar Cambios</button>
+                            <div id="pata-pwd-error" style="color: #E53E3E; margin-top: 15px; font-size: 14px; display: none; text-align: center;"></div>
+                            <div id="pata-pwd-success" style="color: #38A169; margin-top: 15px; font-size: 14px; display: none; text-align: center; font-weight: bold;">¡Contraseña actualizada con éxito!</div>
+                        </form>
+                    </div>
                 </div>
             `;
 
@@ -472,6 +597,7 @@
                 item.addEventListener('click', () => {
                     const actionKey = item.getAttribute('data-action');
                     if (actionKey === 'key') this.handleSecurityChange();
+                    if (actionKey === 'payment') this.handleManagePlan();
                     if (actionKey === 'shield') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61adc0bfbb17c833501_AVISO%20DE%20PRIVACIDAD%20INTEGRAL.pdf', '_blank');
                     if (actionKey === 'doc') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b14873e67fb7f89b1_Terminosycondiciones%20girbaz.pdf', '_blank');
                     if (actionKey === 'house') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b8bccea76df450705_REGLAMENTO%20DEL%20FONDO%20SOLIDARIO%20CLUB%20PATA%20AMIGA.zip', '_blank');
@@ -492,14 +618,84 @@
             if (btnDeactivate) {
                 btnDeactivate.addEventListener('click', () => this.handleDeactivate());
             }
+
+            // Password Modal Events
+            const pwdModal = this.container.querySelector('#pata-password-modal');
+            const closePwdBtn = this.container.querySelector('#pata-close-password');
+            const pwdForm = this.container.querySelector('#pata-password-form');
+            const pwdError = this.container.querySelector('#pata-pwd-error');
+            const pwdSuccess = this.container.querySelector('#pata-pwd-success');
+            const pwdBtn = this.container.querySelector('#pata-btn-pwd');
+
+            if (closePwdBtn && pwdModal) {
+                closePwdBtn.addEventListener('click', () => {
+                    pwdModal.classList.remove('show');
+                    if(pwdForm) pwdForm.reset();
+                    if(pwdError) pwdError.style.display = 'none';
+                    if(pwdSuccess) pwdSuccess.style.display = 'none';
+                });
+            }
+
+            // Cerrar si hace clic fuera del modal
+            if (pwdModal) {
+                pwdModal.addEventListener('click', (e) => {
+                    if (e.target === pwdModal) {
+                        pwdModal.classList.remove('show');
+                        if(pwdForm) pwdForm.reset();
+                        if(pwdError) pwdError.style.display = 'none';
+                        if(pwdSuccess) pwdSuccess.style.display = 'none';
+                    }
+                });
+            }
+
+            if (pwdForm) {
+                pwdForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const currentPwd = this.container.querySelector('#pata-current-pwd').value;
+                    const newPwd = this.container.querySelector('#pata-new-pwd').value;
+                    
+                    pwdBtn.textContent = 'Guardando...';
+                    pwdBtn.disabled = true;
+                    pwdError.style.display = 'none';
+                    pwdSuccess.style.display = 'none';
+
+                    try {
+                        await window.$memberstackDom.updateMemberAuth({
+                            oldPassword: currentPwd,
+                            newPassword: newPwd
+                        });
+                        pwdSuccess.style.display = 'block';
+                        pwdForm.reset();
+                        setTimeout(() => {
+                            pwdModal.classList.remove('show');
+                            pwdSuccess.style.display = 'none';
+                        }, 2000);
+                    } catch (error) {
+                        pwdError.textContent = error.message || 'Ocurrió un error al actualizar la contraseña.';
+                        pwdError.style.display = 'block';
+                    } finally {
+                        pwdBtn.textContent = 'Guardar Cambios';
+                        pwdBtn.disabled = false;
+                    }
+                });
+            }
         }
 
         handleSecurityChange() {
+            const pwdModal = this.container.querySelector('#pata-password-modal');
+            if (pwdModal) {
+                pwdModal.classList.add('show');
+            }
+        }
+
+        handleManagePlan() {
             if (window.$memberstackDom) {
-                // Abrir directamente en la pestaña de seguridad
-                window.$memberstackDom.openModal("PROFILE", { defaultTab: "security" });
+                window.$memberstackDom.launchStripeCustomerPortal().catch(err => {
+                    console.error('❌ [SETTINGS] Error abriendo el portal de Stripe:', err);
+                    alert('No pudimos abrir el portal de suscripción en este momento. Por favor, intenta de nuevo más tarde.');
+                });
             } else {
-                console.error('[SETTINGS] Memberstack no está disponible para cambiar credenciales');
+                console.error('❌ [SETTINGS] Memberstack no está disponible');
             }
         }
 
