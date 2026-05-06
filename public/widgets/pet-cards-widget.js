@@ -854,17 +854,9 @@
                                             ${pet.birth_month && pet.birth_year ? `
                                                 <span class="pata-info-value">${pet.birth_month.toString().padStart(2, '0')} / ${pet.birth_year}</span>
                                             ` : `
-                                                <div style="display:flex; gap:4px; align-items:center; margin-top:4px;">
-                                                    <select id="pata-birth-month-${pet.id}" style="font-size:12px; padding:2px; border-radius:4px; border:1px solid #ccc; width:50px;">
-                                                        <option value="">Mes</option>
-                                                        ${Array.from({length: 12}, (_, i) => `<option value="${i+1}">${i+1}</option>`).join('')}
-                                                    </select>
-                                                    <span style="font-size:12px;">/</span>
-                                                    <select id="pata-birth-year-${pet.id}" style="font-size:12px; padding:2px; border-radius:4px; border:1px solid #ccc; width:60px;">
-                                                        <option value="">Año</option>
-                                                        ${Array.from({length: 30}, (_, i) => { const y = new Date().getFullYear() - i; return `<option value="${y}">${y}</option>`; }).join('')}
-                                                    </select>
-                                                    <button id="pata-btn-birthday-${pet.id}" onclick="window.ManadaWidget.saveBirthday('${pet.id}')" style="font-size:10px; padding:4px 8px; border-radius:4px; background:var(--pata-primary); color:white; border:none; cursor:pointer; font-weight:bold;">Guardar</button>
+                                                <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+                                                    <input type="month" id="pata-birth-date-${pet.id}" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:110px;" max="${new Date().toISOString().slice(0,7)}" aria-label="Mes y año de nacimiento">
+                                                    <button id="pata-btn-birthday-${pet.id}" onclick="window.ManadaWidget.saveBirthday('${pet.id}')" style="font-size:10px; padding:4px 10px; border-radius:12px; background:var(--pata-primary); color:#000; border:1.5px solid #000; cursor:pointer; font-weight:800; font-family:var(--font-body); transition:all 0.2s ease;">Guardar</button>
                                                 </div>
                                             `}
                                         </div>
@@ -997,18 +989,20 @@
         }
 
         async saveBirthday(petId) {
-            const monthSelect = document.getElementById(`pata-birth-month-${petId}`);
-            const yearSelect = document.getElementById(`pata-birth-year-${petId}`);
+            const dateInput = document.getElementById(`pata-birth-date-${petId}`);
             const btn = document.getElementById(`pata-btn-birthday-${petId}`);
-            if (!monthSelect || !yearSelect || !btn) return;
+            if (!dateInput || !btn) return;
 
-            const birthMonth = monthSelect.value;
-            const birthYear = yearSelect.value;
+            const dateValue = dateInput.value;
             
-            if (!birthMonth || !birthYear) {
-                alert('Por favor selecciona mes y año.');
+            if (!dateValue) {
+                alert('Por favor selecciona el mes y año.');
                 return;
             }
+
+            const [birthYearStr, birthMonthStr] = dateValue.split('-');
+            const birthYear = parseInt(birthYearStr, 10);
+            const birthMonth = parseInt(birthMonthStr, 10);
 
             btn.disabled = true;
             btn.innerText = 'Guardando...';
