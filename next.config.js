@@ -21,6 +21,11 @@ const nextConfig = {
             },
         ]
     },
+
+    // Ignorar ESLint en build por incompatibilidad de versión 9 con Next.js core
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 }
 
 module.exports = nextConfig
