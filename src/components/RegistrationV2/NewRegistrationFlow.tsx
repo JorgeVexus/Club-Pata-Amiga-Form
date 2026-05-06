@@ -1255,7 +1255,7 @@ export default function NewRegistrationFlow() {
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
             {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}
 
-            <div className={currentStep && currentStep >= 4 ? styles.contentWide : styles.content}>
+            <div className={(currentStep === 1 || currentStep >= 4) ? styles.contentWide : styles.content}>
                 {/* Botón de Logout si hay sesión (para testing) */}
                 {member && !isRedirecting && (
                     <div className={styles.logoutWrapper}>
