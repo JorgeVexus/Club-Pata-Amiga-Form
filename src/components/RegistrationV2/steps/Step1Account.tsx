@@ -302,7 +302,7 @@ export default function Step1Account({
                             {/* Header */}
                             <div className={styles.formHeader} key={`header-${mode}`}>
                                 <h2 className={styles.formTitle}>
-                                    {isLoggedIn ? 'SESIÓN ACTIVA' : (mode === 'register' ? 'CREA TU CUENTA' : 'INICIA SESIÓN')}
+                                    {isLoggedIn ? 'SESIÓN ACTIVA' : (mode === 'register' ? 'CREA TU CUENTA' : 'CONTINÚA TU REGISTRO')}
                                 </h2>
                             </div>
 
@@ -424,7 +424,7 @@ export default function Step1Account({
                                     className={styles.submitButton}
                                     disabled={isLoading}
                                 >
-                                    {isLoading ? 'PROCESANDO...' : (isLoggedIn ? 'CONTINUAR REGISTRO 🐾' : (mode === 'register' ? 'REGISTRARSE 🐾' : 'ENTRAR 🐾'))}
+                                    {isLoading ? 'PROCESANDO...' : (isLoggedIn ? 'CONTINUAR REGISTRO 🐾' : (mode === 'register' ? 'REGISTRARSE 🐾' : 'ENTRAR Y CONTINUAR 🐾'))}
                                 </button>
 
                                 <div className={styles.privacyText}>
@@ -440,7 +440,7 @@ export default function Step1Account({
 
                                 {mode === 'login' && !isLoggedIn && (
                                     <div className={styles.loginSupportText}>
-                                        ¿Problemas para iniciar sesión? Escríbenos a <a href="mailto:miembros@pataamiga.mx" className={styles.supportLink}>miembros@pataamiga.mx</a>
+                                        ¿Problemas para registrarte? Escríbenos a <a href="mailto:miembros@pataamiga.mx" className={styles.supportLink}>miembros@pataamiga.mx</a>
                                     </div>
                                 )}
 
@@ -470,13 +470,13 @@ export default function Step1Account({
                                         <div className={styles.footerText}>
                                             {mode === 'register' ? (
                                                 <>
-                                                    ¿Ya tienes cuenta?{' '}
+                                                    ¿No completaste tu registro?{' '}
                                                     <button
                                                         type="button"
                                                         className={styles.footerLink}
                                                         onClick={() => setMode('login')}
                                                     >
-                                                        Inicia sesión
+                                                        Termínalo aquí
                                                     </button>
                                                 </>
                                             ) : (

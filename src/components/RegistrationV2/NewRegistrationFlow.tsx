@@ -159,10 +159,20 @@ export default function NewRegistrationFlow() {
                     const { data: currentMember } = await window.$memberstackDom.getCurrentMember();
 
                     if (currentMember) {
+                        // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS
+                        // Si el usuario ya tiene un plan activo y NO viene de un éxito de pago reciente,
+                        // lo mandamos al inicio de sesión oficial para evitar errores en el flujo de registro.
+                        const hasActivePlan = currentMember.planConnections?.some((pc: any) => pc.status === 'active');
+                        const isPaymentSuccess = searchParams.get('payment') === 'success';
+                        
+                        if (hasActivePlan && !isPaymentSuccess) {
+                            console.log('💰 Miembro con plan activo detectado, redirigiendo a login oficial...');
+                            window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                            return;
+                        }
+
                         setMember(currentMember);
                         const msId = currentMember.id || (currentMember as any).memberId;
-
-                        // Cargar datos de Supabase
                         console.log('📥 Cargando datos desde Supabase para ID:', msId);
                         const result = await getUserDataByMemberstackId(msId);
 
@@ -290,7 +300,7 @@ export default function NewRegistrationFlow() {
 
                         // Caso especial: Recuperación de pago (desde email o Stripe back)
                         const paymentStatus = currentMember.customFields?.['payment-status'];
-                        const isPaymentSuccess = searchParams.get('payment') === 'success';
+                        // isPaymentSuccess ya está definido arriba
                         const isCheckoutPending = currentMember.customFields?.['checkout-pending'] === 'true' || currentMember.customFields?.['checkout-pending'] === true;
 
                         // 🍎 iOS FIX: useSearchParams() puede ser vacío en iOS Safari (pre-hidratación).
@@ -560,6 +570,15 @@ export default function NewRegistrationFlow() {
                         loggedMember.customFields?.['checkout-pending'] === true;
 
                     let loginTargetStep = Math.max(msStep, 2);
+                    
+                    // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual)
+                    const hasActivePlan = loggedMember.planConnections?.some((pc: any) => pc.status === 'active');
+                    if (hasActivePlan) {
+                        console.log('💰 Miembro con plan activo detectado tras login, redirigiendo...');
+                        window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                        return;
+                    }
+
                     if (hasRecoveryIntent || isCheckoutPending) {
                         if (paymentStatus !== 'completed') loginTargetStep = 3;
                     }
@@ -702,6 +721,15 @@ export default function NewRegistrationFlow() {
 
                         // Determinar paso destino
                         let loginTargetStep = Math.max(msStep, 2);
+
+                        // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual - Email existente)
+                        const hasActivePlan = loggedMember.planConnections?.some((pc: any) => pc.status === 'active');
+                        if (hasActivePlan) {
+                            console.log('💰 Miembro con plan activo detectado tras login (recovery), redirigiendo...');
+                            window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                            return;
+                        }
+
                         if (hasRecoveryIntent2 || isCheckoutPending) {
                             if (paymentStatus !== 'completed') {
                                 loginTargetStep = 3;
