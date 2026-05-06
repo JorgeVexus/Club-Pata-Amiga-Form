@@ -48,8 +48,7 @@ export async function POST(request: NextRequest) {
                 notif_whatsapp: preferences.notif_whatsapp,
                 notif_alerts: preferences.notif_alerts,
                 notif_payments: preferences.notif_payments,
-                notif_news: preferences.notif_news,
-                updated_at: new Date().toISOString()
+                notif_news: preferences.notif_news
             })
             .eq('memberstack_id', memberstackId);
 
