@@ -1266,21 +1266,12 @@ export default function NewRegistrationFlow() {
 
     return (
         <div className={styles.container}>
-            <NavbarRedesign onLogout={handleLogout} member={member} showLogout={currentStep > 1} />
+            <NavbarRedesign onLogout={handleLogout} member={member} showLogout={true} />
 
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
             {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}
 
             <div className={(currentStep === 1 || currentStep >= 4) ? styles.contentWide : styles.content}>
-                {/* Botón de Logout si hay sesión (para testing) */}
-                {member && !isRedirecting && (
-                    <div className={styles.logoutWrapper}>
-                        <button onClick={handleLogout} className={styles.logoutLink}>
-                            🚪 Cerrar sesión ({member.auth?.email})
-                        </button>
-                    </div>
-                )}
-
                 {/* Indicador de pasos (Oculto en pasos 1 y 2 ya que tienen su propio indicador interno, y en éxito/transición) */}
                 {/* Indicador de pasos ya no es necesario arriba pues cada paso tiene su propia barra interna */}
 
