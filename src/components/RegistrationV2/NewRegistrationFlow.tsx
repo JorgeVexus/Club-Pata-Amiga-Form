@@ -314,6 +314,12 @@ export default function NewRegistrationFlow() {
                             finalStep = 2;
                         }
 
+                        // 🐾 NUEVO: Si ya tiene mascotas pero el step guardado es 2, saltamos directo al 3 (Selección de Plan)
+                        if (loadedData.petBasic && loadedData.petBasic.length > 0 && finalStep === 2) {
+                            console.log('🐾 [loadSavedState] Mascotas detectadas, saltando al paso 3');
+                            finalStep = 3;
+                        }
+
                         // Si la URL especifica un paso, lo respetamos siempre que no sea superior al progreso real
                         // o si es una recuperación de pago
                         if (urlStep > 0 && urlStep <= 5) {
@@ -596,6 +602,16 @@ export default function NewRegistrationFlow() {
                         loggedMember.customFields?.['checkout-pending'] === true;
 
                     let loginTargetStep = Math.max(msStep, 2);
+
+                    // 🐾 NUEVO: Consultar DB para ver si ya tiene mascotas guardadas y saltar al paso 3
+                    const dbResult = await getUserDataByMemberstackId(msId);
+                    if (dbResult.success && dbResult.userData) {
+                        const hasPets = dbResult.userData.pet_name || dbResult.userData.pet_type || dbResult.userData.registration_step >= 3;
+                        if (hasPets && loginTargetStep === 2) {
+                            console.log('🐾 [handleStep1Complete] Mascotas detectadas en DB, saltando al paso 3');
+                            loginTargetStep = 3;
+                        }
+                    }
                     
                     // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual)
                     // Forzamos un refresco para obtener planes actualizados
