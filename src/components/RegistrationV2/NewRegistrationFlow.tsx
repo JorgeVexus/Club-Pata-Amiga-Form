@@ -162,9 +162,20 @@ export default function NewRegistrationFlow() {
                         // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS
                         // Si el usuario ya tiene un plan activo y NO viene de un éxito de pago reciente,
                         // lo mandamos al inicio de sesión oficial para evitar errores en el flujo de registro.
-                        const hasActivePlan = currentMember.planConnections?.some((pc: any) => pc.status === 'active');
+                        const activePlans = currentMember.planConnections?.filter((pc: any) => 
+                            pc.status?.toLowerCase() === 'active' || pc.status?.toLowerCase() === 'trialing'
+                        ) || [];
+                        
+                        const hasActivePlan = activePlans.length > 0;
                         const isPaymentSuccess = searchParams.get('payment') === 'success';
                         
+                        console.log('🔍 [loadSavedState] Miembro logueado:', { 
+                            email: currentMember.auth?.email, 
+                            hasActivePlan, 
+                            plans: activePlans.map((p: any) => ({ id: p.planId, status: p.status })),
+                            isPaymentSuccess 
+                        });
+
                         if (hasActivePlan && !isPaymentSuccess) {
                             console.log('💰 Miembro con plan activo detectado, redirigiendo a login oficial...');
                             window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
@@ -572,7 +583,13 @@ export default function NewRegistrationFlow() {
                     let loginTargetStep = Math.max(msStep, 2);
                     
                     // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual)
-                    const hasActivePlan = loggedMember.planConnections?.some((pc: any) => pc.status === 'active');
+                    const activePlansLogin = loggedMember.planConnections?.filter((pc: any) => 
+                        pc.status?.toLowerCase() === 'active' || pc.status?.toLowerCase() === 'trialing'
+                    ) || [];
+                    const hasActivePlan = activePlansLogin.length > 0;
+                    
+                    console.log('🔍 [handleStep1Complete] Login exitoso:', { email: loggedMember.auth?.email, hasActivePlan });
+
                     if (hasActivePlan) {
                         console.log('💰 Miembro con plan activo detectado tras login, redirigiendo...');
                         window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
@@ -723,7 +740,13 @@ export default function NewRegistrationFlow() {
                         let loginTargetStep = Math.max(msStep, 2);
 
                         // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual - Email existente)
-                        const hasActivePlan = loggedMember.planConnections?.some((pc: any) => pc.status === 'active');
+                        const activePlansRecovery = loggedMember.planConnections?.filter((pc: any) => 
+                            pc.status?.toLowerCase() === 'active' || pc.status?.toLowerCase() === 'trialing'
+                        ) || [];
+                        const hasActivePlan = activePlansRecovery.length > 0;
+
+                        console.log('🔍 [handleStep1Complete - Recovery] Login exitoso:', { email: loggedMember.auth?.email, hasActivePlan });
+
                         if (hasActivePlan) {
                             console.log('💰 Miembro con plan activo detectado tras login (recovery), redirigiendo...');
                             window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
