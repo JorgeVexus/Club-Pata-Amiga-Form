@@ -80,9 +80,12 @@ export default function NewRegistrationFlow() {
     // Email pre-llenado desde URL (?email=) — viene del widget en iOS
     const [urlEmail, setUrlEmail] = useState('');
     const [member, setMember] = useState<any>(null);
+    const [registrationData, setRegistrationData] = useState<RegistrationData>({});
     const [isLoading, setIsLoading] = useState(true);
+    const [isRedirecting, setIsRedirecting] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [isPaymentSuccessTransition, setIsPaymentSuccessTransition] = useState(false);
+    const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     // Función para cambiar de paso sincronizando con la URL
     const goToStep = (step: number, replace: boolean = false) => {
@@ -98,11 +101,19 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    // Datos del registro
-    const [registrationData, setRegistrationData] = useState<RegistrationData>({});
-
-    // Configuración
-    const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
+    /**
+     * Maneja la redirección de miembros que ya tienen un plan pagado
+     */
+    const handlePaidMemberRedirect = () => {
+        console.log('💰 Redirigiendo a miembro pagado...');
+        setIsRedirecting(true);
+        setTimeout(() => {
+            // Verificamos si aún estamos redirigiendo (por si el usuario canceló dándole a logout)
+            if (document.getElementById('redirect-screen')) {
+                window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+            }
+        }, 4500); // Un poco más de tiempo para que alcancen a ver el botón de logout si quieren
+    };
 
     // Toast
     const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'warning'; isVisible: boolean }>({ message: '', type: 'error', isVisible: false });
@@ -177,8 +188,8 @@ export default function NewRegistrationFlow() {
                         });
 
                         if (hasActivePlan && !isPaymentSuccess) {
-                            console.log('💰 Miembro con plan activo detectado, redirigiendo a login oficial...');
-                            window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                            console.log('🔍 [loadSavedState] Miembro con plan activo detectado, redirigiendo...');
+                            handlePaidMemberRedirect();
                             return;
                         }
 
@@ -423,10 +434,14 @@ export default function NewRegistrationFlow() {
     const handleLogout = async () => {
         try {
             if (window.$memberstackDom) {
+                console.log('🚪 Cerrando sesión...');
                 await window.$memberstackDom.logout();
                 // Limpiar cualquier backup local si existe
                 localStorage.removeItem('petBasicBackup');
-                window.location.reload();
+                showToast('Sesión cerrada correctamente', 'success');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
             }
         } catch (error) {
             console.error('❌ Error logging out:', error);
@@ -604,8 +619,7 @@ export default function NewRegistrationFlow() {
                     });
 
                     if (hasActivePlan) {
-                        console.log('💰 Miembro con plan activo detectado tras login, redirigiendo...');
-                        window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                        handlePaidMemberRedirect();
                         return;
                     }
 
@@ -773,8 +787,7 @@ export default function NewRegistrationFlow() {
                         });
 
                         if (hasActivePlan) {
-                            console.log('💰 Miembro con plan activo detectado tras login (recovery), redirigiendo...');
-                            window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion';
+                            handlePaidMemberRedirect();
                             return;
                         }
 
@@ -1197,8 +1210,34 @@ export default function NewRegistrationFlow() {
         }
     };
 
-    // Renderizar paso actual
-    const CurrentStepComponent = (currentStep !== null && STEPS[currentStep - 1]) ? STEPS[currentStep - 1].component : null;
+    // Pantalla de redirección para miembros pagados
+    if (isRedirecting) {
+        return (
+            <div id="redirect-screen" className={styles.redirectContainer}>
+                <div className={styles.redirectCard}>
+                    <div className={styles.redirectIcon}>🐾</div>
+                    <h2 className={styles.redirectTitle}>¡YA ERES PARTE DE LA FAMILIA!</h2>
+                    <p className={styles.redirectText}>
+                        Detectamos que ya cuentas con un plan activo. <br />
+                        Te estamos llevando a tu portal de socio para que <br />
+                        puedas gestionar tus beneficios.
+                    </p>
+                    <div className={styles.redirectLoader}>
+                        <div className={styles.dot}></div>
+                        <div className={styles.dot}></div>
+                        <div className={styles.dot}></div>
+                    </div>
+
+                    <button 
+                        onClick={handleLogout}
+                        className={styles.logoutLinkInCard}
+                    >
+                        ¿No eres tú? Cerrar sesión
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     if (isLoading || currentStep === null) {
         return (
@@ -1216,7 +1255,16 @@ export default function NewRegistrationFlow() {
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
             {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}
 
-            <div className={`${styles.content} ${currentStep === 1 ? styles.contentWide : ''}`}>
+            <div className={currentStep && currentStep >= 4 ? styles.contentWide : styles.content}>
+                {/* Botón de Logout si hay sesión (para testing) */}
+                {member && !isRedirecting && (
+                    <div className={styles.logoutWrapper}>
+                        <button onClick={handleLogout} className={styles.logoutLink}>
+                            🚪 Cerrar sesión ({member.auth?.email})
+                        </button>
+                    </div>
+                )}
+
                 {/* Indicador de pasos (Oculto en pasos 1 y 2 ya que tienen su propio indicador interno, y en éxito/transición) */}
                 {/* Indicador de pasos ya no es necesario arriba pues cada paso tiene su propia barra interna */}
 
