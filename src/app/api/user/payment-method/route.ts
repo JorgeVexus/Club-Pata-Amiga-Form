@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
 
         // 3. Buscar la suscripción activa para obtener detalles de la membresía
         try {
-            // Buscamos suscripciones de cualquier estado para diagnosticar
+            // Buscamos suscripciones activas o en trial
             const subscriptions = await stripe.subscriptions.list({
                 customer: stripeCustomerId,
                 status: 'all',
@@ -129,22 +129,66 @@ export async function GET(request: NextRequest) {
                 // Recuperar el objeto completo para asegurar que todas las propiedades están presentes
                 const subId = relevantSubs[0].id;
                 const sub = await stripe.subscriptions.retrieve(subId) as any;
-                
+
                 console.log(`[PAYMENT-METHOD] Recuperada Sub: ${sub.id}, Status: ${sub.status}`);
-                
-                // Stripe usa segundos (Unix timestamp). current_period_end es estándar.
-                const periodEnd = sub.current_period_end;
-                
+
+                const firstItem = sub.items?.data?.[0];
+
+                // Estrategia de extracción de current_period_end (en orden de confiabilidad):
+                // 1. Desde el item (fuente canónica en API Stripe reciente)
+                // 2. Desde el top-level (presente en versiones antiguas de la API)
+                // 3. trial_end si aplica
+                // 4. billing_cycle_anchor como último recurso de referencia
+                let periodEnd: number | null =
+                    firstItem?.current_period_end ??
+                    sub.current_period_end ??
+                    (sub.trial_end ? sub.trial_end : null) ??
+                    null;
+
+                // Último recurso: billing_cycle_anchor (indica el inicio del ciclo, no el fin,
+                // pero podemos calcular el siguiente ciclo si conocemos el intervalo)
+                if (!periodEnd && sub.billing_cycle_anchor && firstItem?.price?.recurring?.interval) {
+                    const anchor: number = sub.billing_cycle_anchor;
+                    const interval: string = firstItem.price.recurring.interval;
+                    const intervalCount: number = firstItem.price.recurring.interval_count || 1;
+                    const now = Math.floor(Date.now() / 1000);
+                    let next = anchor;
+                    // Avanzar el anchor hasta que sea futuro
+                    while (next <= now) {
+                        if (interval === 'month') {
+                            const d = new Date(next * 1000);
+                            d.setMonth(d.getMonth() + intervalCount);
+                            next = Math.floor(d.getTime() / 1000);
+                        } else if (interval === 'year') {
+                            const d = new Date(next * 1000);
+                            d.setFullYear(d.getFullYear() + intervalCount);
+                            next = Math.floor(d.getTime() / 1000);
+                        } else if (interval === 'week') {
+                            next += 7 * 24 * 3600 * intervalCount;
+                        } else {
+                            next += 30 * 24 * 3600 * intervalCount; // fallback 30 días
+                        }
+                    }
+                    periodEnd = next;
+                    console.log(`[PAYMENT-METHOD] periodEnd calculado desde billing_cycle_anchor: ${new Date(periodEnd * 1000).toISOString()}`);
+                }
+
                 if (periodEnd) {
                     safePaymentInfo.next_payment_date = new Date(periodEnd * 1000).toISOString();
+                    console.log(`[PAYMENT-METHOD] next_payment_date: ${safePaymentInfo.next_payment_date}`);
+                } else {
+                    console.warn('[PAYMENT-METHOD] No se pudo determinar next_payment_date');
                 }
 
                 safePaymentInfo._debug_sub = {
                     id: sub.id,
                     status: sub.status,
-                    period_end_raw: periodEnd,
-                    has_period_end: !!sub.current_period_end,
-                    all_keys: Object.keys(sub).slice(0, 30)
+                    billing_cycle_anchor: sub.billing_cycle_anchor,
+                    top_level_period_end: sub.current_period_end ?? 'N/A',
+                    item_period_end: firstItem?.current_period_end ?? 'N/A',
+                    trial_end: sub.trial_end ?? 'N/A',
+                    resolved_period_end: periodEnd,
+                    all_keys: Object.keys(sub).slice(0, 40)
                 };
 
                 // Obtener detalles del plan
