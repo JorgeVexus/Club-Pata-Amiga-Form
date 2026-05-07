@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dev Preview - User Profile Widget</title>
+    <style>
+        body { background: #15BEB2; margin: 0; padding: 40px 20px; font-family: 'Outfit', sans-serif; }
+        .dev-bar { background: #fff; border-radius: 20px; padding: 20px 30px; margin-bottom: 30px; max-width: 900px; margin-left: auto; margin-right: auto; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; border: 2px solid #000; }
+        .dev-bar h3 { margin: 0; font-size: 16px; color: #000; }
+        .dev-btn { padding: 8px 16px; border: 2px solid #000; border-radius: 50px; background: #fff; cursor: pointer; font-weight: 700; font-size: 12px; font-family: inherit; transition: all 0.2s; }
+        .dev-btn:hover { background: #f0f0f0; transform: translateY(-1px); }
+        .dev-btn.green { background: #9fd406; color: #000; }
+        .dev-btn.teal { background: #15BEB2; color: #fff; }
+        .dev-btn.orange { background: #FE8F15; color: #fff; }
+        #pata-profile { max-width: 900px; margin: 0 auto; }
+    </style>
+</head>
+<body>
+    <div class="dev-bar">
+        <h3>🛠️ Dev Preview — Perfil de Usuario</h3>
+        <button class="dev-btn green" onclick="mockRole('member')">👤 Miembro</button>
+        <button class="dev-btn teal" onclick="mockRole('ambassador')">⭐ Embajador</button>
+        <button class="dev-btn orange" onclick="location.reload()">🔄 Reset</button>
+        <span style="margin-left:auto; font-size:12px; color:#666;">API: <code id="api-url">http://localhost:3000</code></span>
+    </div>
+
+    <div id="pata-profile"></div>
+
+    <script>
+        window.PATA_AMIGA_CONFIG = { apiUrl: 'http://localhost:3000' };
+
+        // Mock Memberstack con datos de prueba
+        window.$memberstackDom = {
+            getCurrentMember: async () => ({
+                data: {
+                    id: 'mem_dev_profile_001',
+                    auth: { email: 'azalia@pataamiga.mx' },
+                    customFields: { 'approval-status': 'approved' },
+                    planConnections: [{
+                        planId: 'pln_monthly',
+                        active: true,
+                        payment: { amount: 15900, currency: 'mxn' }
+                    }]
+                }
+            }),
+            launchStripeCustomerPortal: async () => {
+                alert('🔗 [MOCK] Abriendo Customer Portal de Stripe...\n\nEn producción esto redirige a stripe.com/billing/portal');
+            },
+            logout: async () => { alert('[MOCK] Cerrando sesión...'); }
+        };
+
+        // Mock APIs del backend
+        const origFetch = window.fetch;
+        window.fetch = function(url, opts) {
+            const u = url.toString();
+
+            if (u.includes('/api/user/profile')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({
+                    success: true,
+                    user: {
+                        memberstack_id: 'mem_dev_profile_001',
+                        first_name: 'Azalia',
+                        paternal_last_name: 'Peña',
+                        maternal_last_name: 'García',
+                        email: 'azalia@pataamiga.mx',
+                        phone: '+52 55 4123 4567',
+                        street: 'Av. Paseo de los Peludos',
+                        ext_number: '328',
+                        int_number: '',
+                        colony: 'Colonia Patitas Felices',
+                        city: 'Guadalajara',
+                        state: 'Jalisco',
+                        postal_code: '44190',
+                        birth_date: '1999-02-14',
+                        profile_photo_url: null,
+                        approval_status: 'approved',
+                        registration_date: '2025-01-15T10:00:00Z',
+                        plan_name: 'Plan mensual',
+                        plan_type: 'monthly',
+                        next_payment_date: '2026-12-01T00:00:00Z',
+                        ambassador_code: null
+                    }
+                })});
+            }
+
+            if (u.includes('/api/user/payment-method')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({
+                    success: true,
+                    paymentMethod: {
+                        brand: 'mastercard',
+                        last4: '8832',
+                        expMonth: 11,
+                        expYear: 2027,
+                        funding: 'debit'
+                    }
+                })});
+            }
+
+            if (u.includes('/api/user/pets')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({
+                    success: true,
+                    pets: [
+                        {
+                            id: 'pet_spike_001',
+                            name: 'Spike',
+                            type: 'perro',
+                            breed: 'Schnauzer',
+                            age_value: '3',
+                            age_unit: 'years',
+                            gender: 'macho',
+                            status: 'approved',
+                            primary_photo_url: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300',
+                            waiting_period_end: '2025-06-01T00:00:00Z',
+                            is_active: true
+                        },
+                        {
+                            id: 'pet_mila_002',
+                            name: 'Mila',
+                            type: 'gato',
+                            breed: 'Doméstico',
+                            age_value: '2',
+                            age_unit: 'years',
+                            gender: 'hembra',
+                            status: 'pending',
+                            primary_photo_url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=300',
+                            waiting_period_end: '2025-09-01T00:00:00Z',
+                            is_active: true
+                        }
+                    ]
+                })});
+            }
+
+            if (u.includes('/api/ambassadors/profile')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({
+                    success: true,
+                    ambassador: {
+                        referral_code: 'AZALIA2025',
+                        status: 'active',
+                        total_referrals: 7,
+                        active_referrals: 5,
+                        joined_at: '2025-03-01T00:00:00Z'
+                    }
+                })});
+            }
+
+            if (u.includes('/api/user/update-profile')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true, message: 'Perfil actualizado' }) });
+            }
+
+            if (u.includes('/api/upload/profile-photo')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true, url: 'https://via.placeholder.com/150' }) });
+            }
+
+            return origFetch.apply(this, arguments);
+        };
+
+        function mockRole(role) {
+            if (window.PataProfileWidget) {
+                window.PataProfileWidget.devSetRole(role);
+            }
+        }
+    </script>
+
+    <script src="/widgets/user-profile-widget.js"></script>
+</body>
+</html>
