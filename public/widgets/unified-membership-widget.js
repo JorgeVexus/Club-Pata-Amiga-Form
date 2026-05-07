@@ -1670,6 +1670,7 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             width: 100%;
+            margin: 0 auto;
         }
 
         .pata-pati-message {
@@ -1698,7 +1699,37 @@
 
         @media (max-width: 900px) {
             .pata-benefits-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            .pata-benefit-card {
+                padding: 12px !important;
+                border-radius: 20px !important;
+                gap: 8px !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+            }
+            .pata-benefit-icon-box {
+                width: 20px !important;
+                height: 20px !important;
+                font-size: 11px !important;
+                border-radius: 6px !important;
+                border-width: 1.5px !important;
+                box-shadow: 2px 2px 0 rgba(0,0,0,0.1) !important;
+            }
+            .pata-benefit-info h4 {
+                font-size: 13px !important;
+                line-height: 1.2 !important;
+            }
+            .pata-benefit-info p {
+                font-size: 11px !important;
+                line-height: 1.3 !important;
+            }
+            .pata-pati-message {
+                padding: 6px 10px !important;
+                font-size: 10px !important;
+                margin-top: 6px !important;
+                border-radius: 10px !important;
             }
         }
 
@@ -4461,19 +4492,19 @@
                         <div class="pata-benefit-card">
                             <div class="pata-benefit-icon-box">🩺</div>
                             <div class="pata-benefit-info">
-                                <h4>Acceso inmediato al chat con la Dra. PATi</h4>
-                                <p>¡No tienes que esperar! Aclara dudas sobre la salud de tus peludos ahora mismo.</p>
+                                <h4>Chat Dra. PATi</h4>
+                                <p>Dudas de salud al instante.</p>
                                 <div class="pata-pati-message">
-                                    "A partir de ahora cuentas con acceso al chat con la Dra. PATi para cualquier duda sobre su salud, comportamiento o cuidados del día a día."
+                                    "¡Ya tienes acceso ilimitado!"
                                 </div>
                             </div>
                         </div>
-
+        
                         <div class="pata-benefit-card">
                             <div class="pata-benefit-icon-box">🤝</div>
                             <div class="pata-benefit-info">
-                                <h4>Donaciones a refugios/ONGs</h4>
-                                <p>Por cada 1,000 miembros que se suman, la manada apoya a quienes más lo necesitan. Juntos protegemos más.</p>
+                                <h4>Impacto Social</h4>
+                                <p>Apoyamos refugios por cada miembro.</p>
                             </div>
                         </div>
                     </div>
