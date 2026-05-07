@@ -592,13 +592,13 @@
         @keyframes pataSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         @media (max-width: 900px) {
-            .pata-modal-overlay { padding: 10px; }
+            .pata-modal-overlay { padding: 15px; }
             .pata-modal-box { 
                 max-width: 98%; 
                 width: 650px; 
-                max-height: 95vh;
+                max-height: 90vh; /* Reduced to avoid clipping */
                 margin: 0 auto;
-                overflow-y: auto; /* Enable scroll on the box itself */
+                overflow-y: auto;
                 display: flex;
                 flex-direction: column;
             }
@@ -622,17 +622,17 @@
         }
 
         @media (max-width: 600px) {
-            .pata-modal-overlay { padding: 8px; }
+            .pata-modal-overlay { padding: 12px; }
             .pata-modal-box { 
                 border-radius: 24px;
-                max-height: 94vh;
+                max-height: 88vh; /* Further reduced for small devices */
             }
             .pata-modal-gallery { 
                 padding: 12px; 
                 gap: 8px; 
             }
             .pata-gallery-main { 
-                aspect-ratio: 16/9; /* Smaller photo */
+                aspect-ratio: 16/9; 
                 border-radius: 12px;
             }
             .pata-gallery-grid { 

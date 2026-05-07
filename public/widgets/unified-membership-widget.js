@@ -1787,7 +1787,8 @@
 
         @media (max-width: 1000px) {
             .pata-approved-grid-main {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 40px;
             }
         }
@@ -1803,7 +1804,7 @@
 
         .pata-approved-status-badge {
             font-family: 'Fraiche', sans-serif;
-            font-size: 50px;
+            font-size: clamp(32px, 6vw, 50px);
             font-weight: 400;
             color: #15BEB2;
             text-transform: lowercase;
@@ -1891,6 +1892,16 @@
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
+                width: 100%;
+                gap: 15px;
+            }
+            .pata-pet-photo-card, .pata-pet-info-card-teal {
+                width: 100%;
+                max-width: none;
+                flex: 1;
+            }
+            .pata-pet-photo-card {
+                height: 250px;
             }
         }
 
