@@ -97,66 +97,61 @@ export async function GET(request: NextRequest) {
 
         const pm = await stripe.paymentMethods.retrieve(defaultPaymentMethodId);
 
-        // 3. Buscar la suscripción activa para obtener detalles de la membresía
-        let next_payment_date: string | null = null;
-        let plan_name: string | null = null;
-        let plan_cost: number | null = null;
-        let interval: string | null = null;
-
-        try {
-            // Buscamos suscripciones activas o en periodo de prueba
-            const subscriptions = await stripe.subscriptions.list({
-                customer: stripeCustomerId,
-                status: 'active',
-                limit: 5, // Aumentamos el límite para ver si hay más de una
-            });
-
-            console.log(`[PAYMENT-METHOD] Suscripciones encontradas: ${subscriptions.data.length}`);
-
-            if (subscriptions.data.length > 0) {
-                // Tomar la primera suscripción activa
-                const sub = subscriptions.data[0];
-                
-                // Intentar obtener la fecha de próximo cobro
-                // current_period_end es el final del ciclo actual (próximo pago)
-                const periodEnd = (sub as any).current_period_end;
-                
-                if (periodEnd) {
-                    next_payment_date = new Date(periodEnd * 1000).toISOString();
-                    console.log(`[PAYMENT-METHOD] Sub ID: ${sub.id}, Raw PeriodEnd: ${periodEnd}, ISO: ${next_payment_date}`);
-                } else {
-                    console.warn(`[PAYMENT-METHOD] Sub ID: ${sub.id} no tiene current_period_end`);
-                }
-
-                // Obtener detalles del plan
-                const item = sub.items.data[0];
-                if (item && item.price) {
-                    plan_cost = (item.price.unit_amount || 0) / 100;
-                    const intervalRaw = item.price.recurring?.interval;
-                    interval = intervalRaw === 'year' ? 'Anual' : 'Mensual';
-                    plan_name = interval;
-                    
-                    console.log(`[PAYMENT-METHOD] Detalles Plan: ${plan_name}, Costo: ${plan_cost}`);
-                }
-            } else {
-                console.log('[PAYMENT-METHOD] No se encontraron suscripciones activas.');
-            }
-        } catch (subErr) {
-            console.error('[PAYMENT-METHOD] Error obteniendo suscripción de Stripe:', subErr);
-        }
-
-        // 4. Devolver información enriquecida y segura
-        const safePaymentInfo = {
+        // 4. Preparar respuesta segura
+        const safePaymentInfo: any = {
             brand: pm.card?.brand || 'unknown',
             last4: pm.card?.last4 || '****',
             expMonth: pm.card?.exp_month,
             expYear: pm.card?.exp_year,
             funding: pm.card?.funding || 'credit',
-            next_payment_date,
-            plan_name,
-            plan_cost,
-            interval
+            next_payment_date: null,
+            plan_name: null,
+            plan_cost: null,
+            interval: null,
+            _debug_sub: null
         };
+
+        // 3. Buscar la suscripción activa para obtener detalles de la membresía
+        try {
+            // Buscamos suscripciones de cualquier estado para diagnosticar
+            const subscriptions = await stripe.subscriptions.list({
+                customer: stripeCustomerId,
+                status: 'all',
+                limit: 10,
+            });
+
+            console.log(`[PAYMENT-METHOD] Suscripciones encontradas (all): ${subscriptions.data.length}`);
+
+            // Filtrar las que sean active o trialing
+            const relevantSubs = subscriptions.data.filter(s => s.status === 'active' || s.status === 'trialing');
+
+            if (relevantSubs.length > 0) {
+                const sub = relevantSubs[0];
+                console.log(`[PAYMENT-METHOD] Sub ID: ${sub.id}, PeriodEnd: ${(sub as any).current_period_end}`);
+                
+                const periodEnd = (sub as any).current_period_end;
+                if (periodEnd) {
+                    safePaymentInfo.next_payment_date = new Date(periodEnd * 1000).toISOString();
+                }
+
+                safePaymentInfo._debug_sub = {
+                    id: sub.id,
+                    status: sub.status,
+                    raw_period_end: (sub as any).current_period_end,
+                };
+
+                // Obtener detalles del plan
+                const item = sub.items.data[0];
+                if (item && item.price) {
+                    safePaymentInfo.plan_cost = (item.price.unit_amount || 0) / 100;
+                    const intervalRaw = item.price.recurring?.interval;
+                    safePaymentInfo.interval = intervalRaw === 'year' ? 'Anual' : 'Mensual';
+                    safePaymentInfo.plan_name = safePaymentInfo.interval;
+                }
+            }
+        } catch (subErr) {
+            console.error('[PAYMENT-METHOD] Error Stripe Sub:', subErr);
+        }
 
         console.log(`[PAYMENT-METHOD] Método de pago encontrado: ${safePaymentInfo.brand} ****${safePaymentInfo.last4}`);
 

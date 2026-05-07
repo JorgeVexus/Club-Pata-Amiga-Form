@@ -267,7 +267,8 @@
             console.log('[DEBUG] PaymentMethod Info:', {
                 next_date: pm?.next_payment_date,
                 plan: pm?.plan_name,
-                cost: pm?.plan_cost
+                cost: pm?.plan_cost,
+                debug: pm?._debug_sub
             });
             const planName = pm?.interval || u.plan_name || (pm ? 'Plan activo' : 'Sin plan');
             const planCost = pm?.plan_cost ? '$' + pm.plan_cost.toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
