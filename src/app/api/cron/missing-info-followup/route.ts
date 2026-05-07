@@ -50,13 +50,21 @@ export async function GET(req: NextRequest) {
     const targetDay = searchParams.get('day');
     const force = searchParams.get('force') === 'true';
 
-    // 1. Verificar autorización del cron (Vercel envía el header automáticamente en producción)
+    // 1. Verificar autorización del cron
     const authHeader = req.headers.get('authorization');
+    const urlSecret = searchParams.get('secret');
     const cronSecret = process.env.CRON_SECRET;
+    
     const expectedSecret = `Bearer ${cronSecret}`;
 
-    // Permitir ejecución si es desarrollo o si el secret coincide
-    const isAuthorized = process.env.NODE_ENV === 'development' || authHeader === expectedSecret;
+    // Permitir ejecución si:
+    // - Es desarrollo
+    // - El header Authorization coincide
+    // - El parámetro ?secret= coincide con el CRON_SECRET
+    const isAuthorized = 
+        process.env.NODE_ENV === 'development' || 
+        authHeader === expectedSecret || 
+        (cronSecret && urlSecret === cronSecret);
 
     if (!isAuthorized) {
         console.warn('🚫 [Cron] Acceso no autorizado');
