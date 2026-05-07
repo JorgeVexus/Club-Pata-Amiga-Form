@@ -104,32 +104,45 @@ export async function GET(request: NextRequest) {
         let interval: string | null = null;
 
         try {
+            // Buscamos suscripciones activas o en periodo de prueba
             const subscriptions = await stripe.subscriptions.list({
                 customer: stripeCustomerId,
                 status: 'active',
-                limit: 1,
+                limit: 5, // Aumentamos el límite para ver si hay más de una
             });
 
+            console.log(`[PAYMENT-METHOD] Suscripciones encontradas: ${subscriptions.data.length}`);
+
             if (subscriptions.data.length > 0) {
+                // Tomar la primera suscripción activa
                 const sub = subscriptions.data[0];
-                // Cast to any to avoid property access error in some SDK versions
-                const periodEnd = (sub as any).current_period_end as number | undefined;
-                next_payment_date = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
+                
+                // Intentar obtener la fecha de próximo cobro
+                // current_period_end es el final del ciclo actual (próximo pago)
+                const periodEnd = (sub as any).current_period_end;
+                
+                if (periodEnd) {
+                    next_payment_date = new Date(periodEnd * 1000).toISOString();
+                    console.log(`[PAYMENT-METHOD] Sub ID: ${sub.id}, Raw PeriodEnd: ${periodEnd}, ISO: ${next_payment_date}`);
+                } else {
+                    console.warn(`[PAYMENT-METHOD] Sub ID: ${sub.id} no tiene current_period_end`);
+                }
 
                 // Obtener detalles del plan
                 const item = sub.items.data[0];
                 if (item && item.price) {
                     plan_cost = (item.price.unit_amount || 0) / 100;
-                    interval = item.price.recurring?.interval === 'year' ? 'Anual' : 'Mensual';
-                    
-                    // Si el precio tiene un apodo o nombre, lo usamos
+                    const intervalRaw = item.price.recurring?.interval;
+                    interval = intervalRaw === 'year' ? 'Anual' : 'Mensual';
                     plan_name = interval;
+                    
+                    console.log(`[PAYMENT-METHOD] Detalles Plan: ${plan_name}, Costo: ${plan_cost}`);
                 }
-
-                console.log(`[PAYMENT-METHOD] Membresía: ${interval}, Costo: ${plan_cost}, Próximo: ${next_payment_date}`);
+            } else {
+                console.log('[PAYMENT-METHOD] No se encontraron suscripciones activas.');
             }
         } catch (subErr) {
-            console.warn('[PAYMENT-METHOD] No se pudo obtener suscripción:', subErr);
+            console.error('[PAYMENT-METHOD] Error obteniendo suscripción de Stripe:', subErr);
         }
 
         // 4. Devolver información enriquecida y segura

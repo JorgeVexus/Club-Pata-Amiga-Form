@@ -11,8 +11,13 @@
     };
 
     const MONTHS = ['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const fmtDate = d => { if(!d) return '—'; const x=new Date(d); return x.getDate()+' de '+MONTHS[x.getMonth()+1]+' '+x.getFullYear(); };
-    const fmtBirth = d => { if(!d) return '—'; const [y,m,day]=d.split('-'); return +day+' de '+MONTHS[+m]+', '+y; };
+    const fmtDate = d => { 
+        if(!d || d === 'null' || d === 'undefined') return '—'; 
+        const x = new Date(d); 
+        if (isNaN(x.getTime())) return '—';
+        return x.getDate() + ' de ' + MONTHS[x.getMonth() + 1] + ' ' + x.getFullYear(); 
+    };
+    const fmtBirth = d => { if(!d) return '—'; const parts = d.split('-'); if(parts.length < 3) return d; const [y,m,day]=parts; return +day+' de '+MONTHS[+m]+', '+y; };
     const cap = s => s ? s.charAt(0).toUpperCase()+s.slice(1) : '';
     const BRAND_SVGS = {
         mastercard: '<svg viewBox="0 0 50 32" width="50" height="32" xmlns="http://www.w3.org/2000/svg"><rect width="50" height="32" rx="4" fill="#252525"/><circle cx="19" cy="16" r="10" fill="#EB001B"/><circle cx="31" cy="16" r="10" fill="#F79E1B"/><path d="M25 8.3a10 10 0 0 1 0 15.4A10 10 0 0 1 25 8.3z" fill="#FF5F00"/></svg>',
@@ -259,6 +264,11 @@
         renderSection2() {
             const u = this.user || {};
             const pm = this.paymentMethod;
+            console.log('[DEBUG] PaymentMethod Info:', {
+                next_date: pm?.next_payment_date,
+                plan: pm?.plan_name,
+                cost: pm?.plan_cost
+            });
             const planName = pm?.interval || u.plan_name || (pm ? 'Plan activo' : 'Sin plan');
             const planCost = pm?.plan_cost ? '$' + pm.plan_cost.toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
             const nextPay = fmtDate(pm?.next_payment_date);
