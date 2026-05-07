@@ -101,13 +101,39 @@ export async function GET(request: NextRequest) {
 
         const pm = await stripe.paymentMethods.retrieve(defaultPaymentMethodId);
 
-        // 3. Devolver solo información no sensible
+        // 3. Buscar la suscripción activa para obtener la fecha de próximo pago
+        let nextPaymentDate: string | null = null;
+        try {
+            const subscriptions = await stripe.subscriptions.list({
+                customer: stripeCustomerId,
+                status: 'active',
+                limit: 1,
+            });
+            if (subscriptions.data.length > 0) {
+                const sub = subscriptions.data[0];
+                // current_period_end es timestamp Unix (accedido via cast por diferencias entre versiones del SDK)
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const periodEnd = (sub as any).current_period_end as number | undefined;
+                nextPaymentDate = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
+                // Guardar en Supabase para uso sin conexión
+                await supabaseAdmin
+                    .from('users')
+                    .update({ next_payment_date: nextPaymentDate })
+                    .eq('memberstack_id', memberstackId);
+                console.log(`[PAYMENT-METHOD] Próximo pago: ${nextPaymentDate}`);
+            }
+        } catch (subErr) {
+            console.warn('[PAYMENT-METHOD] No se pudo obtener suscripción:', subErr);
+        }
+
+        // 4. Devolver solo información no sensible
         const safePaymentInfo = {
-            brand: pm.card?.brand || 'unknown',           // 'mastercard', 'visa', etc.
-            last4: pm.card?.last4 || '****',              // Últimos 4 dígitos
+            brand: pm.card?.brand || 'unknown',
+            last4: pm.card?.last4 || '****',
             expMonth: pm.card?.exp_month,
             expYear: pm.card?.exp_year,
-            funding: pm.card?.funding || 'credit',        // 'credit', 'debit', 'prepaid'
+            funding: pm.card?.funding || 'credit',
+            nextPaymentDate,                              // ISO string o null
         };
 
         console.log(`[PAYMENT-METHOD] Método de pago encontrado: ${safePaymentInfo.brand} ****${safePaymentInfo.last4}`);

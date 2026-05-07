@@ -204,7 +204,7 @@
 
         renderSection1() {
             const u = this.user || {};
-            const name = [u.first_name, u.paternal_last_name, u.maternal_last_name].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario';
+            const name = [u.first_name, u.last_name, u.mother_last_name].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario';
             const since = u.registration_date ? 'Miembro desde ' + this.getMonthYear(u.registration_date) : 'Bienvenido';
             const email = this.member?.auth?.email || u.email || '—';
             const phone = u.phone || '—';
@@ -246,8 +246,8 @@
         }
 
         buildAddress(u) {
-            const parts = [u.street, u.ext_number ? '#'+u.ext_number : null, u.int_number ? 'Int.'+u.int_number : null, u.colony, u.city, u.state, u.postal_code ? 'C.P. '+u.postal_code : null, 'México'].filter(Boolean);
-            return parts.length > 1 ? parts.join(', ') : '—';
+            const parts = [u.colony, u.city, u.state, u.postal_code ? 'C.P. '+u.postal_code : null].filter(Boolean);
+            return parts.length > 0 ? parts.join(', ') : '—';
         }
 
         getMonthYear(iso) {
@@ -262,7 +262,7 @@
             const plan = plans[0];
             const planName = u.plan_name || (plan ? 'Plan activo' : 'Sin plan');
             const planCost = plan?.payment?.amount ? '$' + (plan.payment.amount/100).toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
-            const nextPay = fmtDate(u.next_payment_date);
+            const nextPay = fmtDate(this.paymentMethod?.nextPaymentDate || u.next_payment_date);
             const pm = this.paymentMethod;
             const pmHtml = pm ? `
                 <div class="ppa-payment-top">
@@ -466,8 +466,8 @@
                     <button class="ppa-modal-x" id="ppa-modal-close">✕</button>
                     <h2 class="ppa-modal-title">editar información</h2>
                     <div class="ppa-fg"><label class="ppa-fl">Nombre(s)</label><input class="ppa-fi" id="ef-fname" value="${u.first_name||''}" placeholder="Tu nombre" /></div>
-                    <div class="ppa-fg"><label class="ppa-fl">Apellido paterno</label><input class="ppa-fi" id="ef-plast" value="${u.paternal_last_name||''}" placeholder="Apellido paterno" /></div>
-                    <div class="ppa-fg"><label class="ppa-fl">Apellido materno</label><input class="ppa-fi" id="ef-mlast" value="${u.maternal_last_name||''}" placeholder="Apellido materno" /></div>
+                    <div class="ppa-fg"><label class="ppa-fl">Apellido paterno</label><input class="ppa-fi" id="ef-plast" value="${u.last_name||''}" placeholder="Apellido paterno" /></div>
+                    <div class="ppa-fg"><label class="ppa-fl">Apellido materno</label><input class="ppa-fi" id="ef-mlast" value="${u.mother_last_name||''}" placeholder="Apellido materno" /></div>
                     <div class="ppa-fg"><label class="ppa-fl">Correo electrónico (no editable)</label><input class="ppa-fi" value="${this.member?.auth?.email||''}" disabled /></div>
                     <div class="ppa-fg"><label class="ppa-fl">Teléfono celular</label><input class="ppa-fi" id="ef-phone" value="${u.phone||''}" placeholder="+52 55 1234 5678" /></div>
                     <div class="ppa-fg"><label class="ppa-fl">Estado</label><input class="ppa-fi" id="ef-state" value="${u.state||''}" placeholder="Jalisco" /></div>
@@ -500,8 +500,8 @@
             const payload = {
                 memberstackId: this.member.id,
                 first_name: document.getElementById('ef-fname')?.value?.trim(),
-                paternal_last_name: document.getElementById('ef-plast')?.value?.trim(),
-                maternal_last_name: document.getElementById('ef-mlast')?.value?.trim(),
+                last_name: document.getElementById('ef-plast')?.value?.trim(),
+                mother_last_name: document.getElementById('ef-mlast')?.value?.trim(),
                 phone: document.getElementById('ef-phone')?.value?.trim(),
                 state: document.getElementById('ef-state')?.value?.trim(),
                 city: document.getElementById('ef-city')?.value?.trim(),

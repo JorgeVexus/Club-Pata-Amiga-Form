@@ -21,8 +21,8 @@ export async function POST(request: NextRequest) {
         const {
             memberstackId,
             first_name,
-            paternal_last_name,
-            maternal_last_name,
+            last_name,
+            mother_last_name,
             phone,
             street,
             ext_number,
@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
         };
 
         if (first_name !== undefined) updatePayload.first_name = first_name.trim();
-        if (paternal_last_name !== undefined) updatePayload.paternal_last_name = paternal_last_name.trim();
-        if (maternal_last_name !== undefined) updatePayload.maternal_last_name = maternal_last_name.trim();
+        if (last_name !== undefined) updatePayload.last_name = last_name.trim();
+        if (mother_last_name !== undefined) updatePayload.mother_last_name = mother_last_name.trim();
         if (phone !== undefined) updatePayload.phone = phone.trim();
         if (street !== undefined) updatePayload.street = street.trim();
         if (ext_number !== undefined) updatePayload.ext_number = ext_number.trim();
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
             .from('users')
             .update(updatePayload)
             .eq('memberstack_id', memberstackId)
-            .select('id, first_name, paternal_last_name, maternal_last_name, phone, street, colony, city, state, postal_code, birth_date, profile_photo_url')
+            .select('id, first_name, last_name, mother_last_name, phone, street, colony, city, state, postal_code, birth_date, profile_photo_url')
             .single();
 
         if (error) {
