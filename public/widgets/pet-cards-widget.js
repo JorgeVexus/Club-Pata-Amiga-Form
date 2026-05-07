@@ -214,9 +214,9 @@
 
         /* Left Section: Gallery */
         .pata-modal-gallery {
-            width: 40%;
+            width: 35%;
             background: var(--pata-primary-light);
-            padding: 24px;
+            padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
@@ -226,7 +226,7 @@
         .pata-gallery-main {
             aspect-ratio: 1;
             width: 100%;
-            border-radius: 24px;
+            border-radius: 20px;
             overflow: hidden;
             background: #fff;
             position: relative;
@@ -279,16 +279,16 @@
         .pata-gallery-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            gap: 10px;
         }
 
         /* Right Section: Info */
         .pata-modal-info {
-            width: 60%;
+            width: 65%;
             padding: 32px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             overflow-y: auto;
             position: relative;
         }
@@ -300,7 +300,7 @@
         }
 
         .pata-pet-name {
-            font-family: 'Fraiche', sans-serif;
+            font-family: \'Fraiche\', sans-serif;
             font-size: 40px;
             color: #000;
             margin: 0;
@@ -338,6 +338,60 @@
         .pata-badge {
             padding: 6px 12px; border-radius: 20px; font-size: 10px; font-weight: 800;
             text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+        }
+
+        /* Progress Bar (Carencia) */
+        .pata-progress-container-v2 {
+            margin: 10px 0 20px 0;
+        }
+        .pata-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            color: #1A1A1A;
+        }
+        .pata-bar-v2 {
+            height: 22px;
+            background: #F0F2F5;
+            border-radius: 50px;
+            border: var(--pata-border-thin);
+            padding: 4px;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+
+        .pata-fill-v2 {
+            height: 100%;
+            background: linear-gradient(90deg, var(--pata-primary) 0%, var(--pata-primary-light) 100%);
+            border-radius: 50px;
+            transition: width 1.5s var(--pata-spring);
+            position: relative;
+            overflow: hidden;
+        }
+        .pata-fill-v2::after {
+            content: \'\';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            animation: pataShine 2s infinite;
+        }
+        @keyframes pataShine {
+            from { transform: translateX(-100%); }
+            to { transform: translateX(100%); }
+        }
+
+        .pata-bar-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #666;
+            padding: 0 5px;
         }
 
         /* Info Card */
@@ -607,6 +661,26 @@
             });
         }
 
+        calculateCarencia(pet) {
+            const now = new Date();
+            const start = new Date(pet.created_at);
+
+            let totalDays = 180;
+            if (pet.waiting_period_days) {
+                totalDays = parseInt(pet.waiting_period_days);
+            } else if (pet.is_adopted) {
+                const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+                totalDays = isMixed ? 120 : 150;
+            }
+
+            const diffTime = Math.abs(now - start);
+            const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+            const daysRemaining = Math.max(0, totalDays - daysPassed);
+            const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+
+            return { daysRemaining, percentage, totalDays };
+        }
+
         async loadData() {
             const res = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`);
             const data = await res.json();
@@ -822,13 +896,32 @@
                                 ${badges.map(b => `
                                     <span class="pata-badge" style="background:${b.bg}; color:${b.color}; border: 1.5px solid ${b.color}44">
                                         ${b.dot ? `<span style="width:6px; height:6px; border-radius:50%; background:${b.color}"></span>` : ''}
-                                        ${b.icon ? `<span class="material-symbols-outlined" style="font-size:14px; font-variation-settings:'FILL' 1">${b.icon}</span>` : ''}
+                                        ${b.icon ? `<span class="material-symbols-outlined" style="font-size:14px; font-variation-settings:\'FILL\' 1">${b.icon}</span>` : ''}
                                         ${b.text}
                                     </span>
                                 `).join('')}
                             </div>
 
                             ${alertHtml}
+
+                            ${pet.status === 'approved' ? (() => {
+                                const carencia = this.calculateCarencia(pet);
+                                return `
+                                    <div class="pata-progress-container-v2">
+                                        <div class="pata-progress-header">
+                                            <span>Periodo de Carencia</span>
+                                            <span>${carencia.percentage}%</span>
+                                        </div>
+                                        <div class="pata-bar-v2">
+                                            <div class="pata-fill-v2" style="width: ${carencia.percentage}%"></div>
+                                        </div>
+                                        <div class="pata-bar-labels">
+                                            <span>${carencia.daysRemaining} días restantes</span>
+                                            <span>Objetivo: ${carencia.totalDays} días</span>
+                                        </div>
+                                    </div>
+                                `;
+                            })() : ''}
 
                             <div class="pata-info-card">
                                 <h3 class="pata-info-card-title">Información General</h3>

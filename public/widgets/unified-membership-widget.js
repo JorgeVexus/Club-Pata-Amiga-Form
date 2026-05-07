@@ -3970,7 +3970,7 @@
                             <div class="pata-header-sub-new">
                                 ${isMemberApproved
                     ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>'
-                    : '<p>Gracias por tu paciencia. <br> En un máximo de 24-48 horas te notificaremos por correo el resultado.Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>'}
+                    : '<p>Gracias por tu paciencia. <br> En un máximo de 24-48 horas te notificaremos por correo el resultado.<br> Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>'}
                             </div>
                         </header>
 
