@@ -592,11 +592,90 @@
         @keyframes pataSpin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         @media (max-width: 900px) {
-            .pata-modal-box { max-width: 90%; width: 600px; }
-            .pata-pet-name { font-size: 36px; }
-            .pata-modal-main { flex-direction: column; }
-            .pata-modal-gallery { width: 100%; border-right: none !important; border-bottom: var(--pata-border-thick); }
-            .pata-modal-info { width: 100%; }
+            .pata-modal-overlay { padding: 10px; }
+            .pata-modal-box { 
+                max-width: 98%; 
+                width: 650px; 
+                max-height: 95vh;
+                margin: 0 auto;
+            }
+            .pata-modal-main { 
+                flex-direction: column; 
+                overflow-y: auto; 
+                height: 100%;
+                display: block;
+            }
+            .pata-modal-gallery { 
+                width: 100%; 
+                border-right: none !important; 
+                border-bottom: var(--pata-border-thick); 
+                overflow: visible;
+                padding: 15px;
+            }
+            .pata-modal-info { 
+                width: 100%; 
+                overflow: visible;
+                padding: 24px 20px;
+            }
+            .pata-pet-name { font-size: 32px; }
+            .pata-info-grid { gap: 15px; }
+            .pata-modal-story { margin-top: 24px; padding-top: 20px; }
+        }
+
+        @media (max-width: 600px) {
+            .pata-modal-overlay { padding: 5px; }
+            .pata-modal-box { 
+                border-radius: 24px;
+                max-height: 98vh;
+            }
+            .pata-modal-gallery { 
+                padding: 12px; 
+                gap: 8px; 
+            }
+            .pata-gallery-main { 
+                aspect-ratio: 4/3; 
+                border-radius: 12px;
+            }
+            .pata-gallery-grid { 
+                grid-template-columns: repeat(4, 1fr); 
+                gap: 6px; 
+            }
+            .pata-modal-info { 
+                padding: 20px 15px; 
+            }
+            .pata-info-grid { 
+                grid-template-columns: 1fr; 
+                gap: 10px; 
+            }
+            .pata-pet-header { 
+                display: flex;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 8px;
+                margin-bottom: 16px;
+            }
+            .pata-header-left { flex: 1; }
+            .pata-pet-name { font-size: 26px; line-height: 1.1; margin-bottom: 2px; }
+            .pata-pet-breed { font-size: 13px; }
+            .pata-close-modal { 
+                width: 38px; 
+                height: 38px; 
+            }
+            .pata-close-modal svg { width: 18px; height: 18px; }
+            
+            .pata-progress-container-v2 {
+                padding: 12px;
+                margin-top: 10px;
+                border-radius: 20px;
+            }
+            .pata-progress-header .pata-progress-percentage {
+                font-size: 15px;
+            }
+            .pata-progress-bar-bg { height: 10px; }
+            .pata-progress-meta {
+                font-size: 10px;
+                gap: 4px;
+            }
         }
 
         @media (max-width: 750px) {
