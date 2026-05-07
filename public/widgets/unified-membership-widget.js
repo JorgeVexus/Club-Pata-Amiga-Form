@@ -1698,6 +1698,9 @@
         }
 
         @media (max-width: 900px) {
+            .test-widget-user {
+                padding: 0 !important;
+            }
             .pata-benefits-grid {
                 grid-template-columns: 1fr 1fr;
                 gap: 10px;
