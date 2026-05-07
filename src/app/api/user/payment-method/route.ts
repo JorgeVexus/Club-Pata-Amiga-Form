@@ -97,35 +97,52 @@ export async function GET(request: NextRequest) {
 
         const pm = await stripe.paymentMethods.retrieve(defaultPaymentMethodId);
 
-        // 3. Buscar la suscripción activa para obtener la fecha de próximo pago
-        let nextPaymentDate: string | null = null;
+        // 3. Buscar la suscripción activa para obtener detalles de la membresía
+        let next_payment_date: string | null = null;
+        let plan_name: string | null = null;
+        let plan_cost: number | null = null;
+        let interval: string | null = null;
+
         try {
             const subscriptions = await stripe.subscriptions.list({
                 customer: stripeCustomerId,
                 status: 'active',
                 limit: 1,
             });
+
             if (subscriptions.data.length > 0) {
                 const sub = subscriptions.data[0];
-                // current_period_end es timestamp Unix (accedido via cast por diferencias entre versiones del SDK)
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                // Cast to any to avoid property access error in some SDK versions
                 const periodEnd = (sub as any).current_period_end as number | undefined;
-                nextPaymentDate = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
-                // No lo guardamos en Supabase ya que la columna no existe
-                console.log(`[PAYMENT-METHOD] Próximo pago: ${nextPaymentDate}`);
+                next_payment_date = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
+
+                // Obtener detalles del plan
+                const item = sub.items.data[0];
+                if (item && item.price) {
+                    plan_cost = (item.price.unit_amount || 0) / 100;
+                    interval = item.price.recurring?.interval === 'year' ? 'Anual' : 'Mensual';
+                    
+                    // Si el precio tiene un apodo o nombre, lo usamos
+                    plan_name = interval;
+                }
+
+                console.log(`[PAYMENT-METHOD] Membresía: ${interval}, Costo: ${plan_cost}, Próximo: ${next_payment_date}`);
             }
         } catch (subErr) {
             console.warn('[PAYMENT-METHOD] No se pudo obtener suscripción:', subErr);
         }
 
-        // 4. Devolver solo información no sensible
+        // 4. Devolver información enriquecida y segura
         const safePaymentInfo = {
             brand: pm.card?.brand || 'unknown',
             last4: pm.card?.last4 || '****',
             expMonth: pm.card?.exp_month,
             expYear: pm.card?.exp_year,
             funding: pm.card?.funding || 'credit',
-            nextPaymentDate,                              // ISO string o null
+            next_payment_date,
+            plan_name,
+            plan_cost,
+            interval
         };
 
         console.log(`[PAYMENT-METHOD] Método de pago encontrado: ${safePaymentInfo.brand} ****${safePaymentInfo.last4}`);
