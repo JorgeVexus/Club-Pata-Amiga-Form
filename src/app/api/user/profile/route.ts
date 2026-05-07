@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
             .from('users')
             .select([
                 'memberstack_id', 'first_name', 'last_name', 'mother_last_name',
-                'email', 'phone', 'street', 'ext_number', 'int_number', 'colony',
+                'email', 'phone', 'address', 'colony',
                 'city', 'state', 'postal_code', 'birth_date', 'profile_photo_url',
                 'approval_status', 'registration_date', 'plan_name', 'plan_type',
                 'next_payment_date', 'plan_cost', 'stripe_customer_id'

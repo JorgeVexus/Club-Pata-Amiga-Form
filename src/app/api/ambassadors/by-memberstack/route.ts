@@ -39,8 +39,8 @@ export async function GET(request: NextRequest) {
         // Buscar embajador por memberstack_id
         const { data: ambassador, error } = await supabase
             .from('ambassadors')
-            .select('id, full_name, email, referral_code, status, total_earnings, pending_payout, commission_percentage, created_at')
-            .eq('memberstack_id', memberstackId)
+            .select('id, first_name, paternal_surname, email, referral_code, status, total_earnings, pending_payout, commission_percentage, created_at')
+            .eq('linked_memberstack_id', memberstackId)
             .maybeSingle();
 
         if (error) {

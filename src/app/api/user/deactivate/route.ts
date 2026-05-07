@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
             .update({
                 approval_status: 'cancelled',
                 rejection_reason: 'Cancelado por el usuario desde configuración',
-                cancelled_at: new Date().toISOString()
+                updated_at: new Date().toISOString()
             })
             .eq('id', user.id);
 

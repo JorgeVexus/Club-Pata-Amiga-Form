@@ -24,9 +24,6 @@ export async function POST(request: NextRequest) {
             last_name,
             mother_last_name,
             phone,
-            street,
-            ext_number,
-            int_number,
             colony,
             city,
             state,
@@ -53,9 +50,6 @@ export async function POST(request: NextRequest) {
         if (last_name !== undefined) updatePayload.last_name = last_name.trim();
         if (mother_last_name !== undefined) updatePayload.mother_last_name = mother_last_name.trim();
         if (phone !== undefined) updatePayload.phone = phone.trim();
-        if (street !== undefined) updatePayload.street = street.trim();
-        if (ext_number !== undefined) updatePayload.ext_number = ext_number.trim();
-        if (int_number !== undefined) updatePayload.int_number = int_number?.trim() || '';
         if (colony !== undefined) updatePayload.colony = colony.trim();
         if (city !== undefined) updatePayload.city = city.trim();
         if (state !== undefined) updatePayload.state = state.trim();
@@ -67,7 +61,7 @@ export async function POST(request: NextRequest) {
             .from('users')
             .update(updatePayload)
             .eq('memberstack_id', memberstackId)
-            .select('id, first_name, last_name, mother_last_name, phone, street, colony, city, state, postal_code, birth_date, profile_photo_url')
+            .select('id, first_name, last_name, mother_last_name, phone, colony, city, state, postal_code, birth_date, profile_photo_url')
             .single();
 
         if (error) {
