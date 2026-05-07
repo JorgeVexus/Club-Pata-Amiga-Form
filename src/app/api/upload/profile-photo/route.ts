@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         // Guardar URL en tabla users
         await supabaseAdmin
             .from('users')
-            .update({ profile_photo_url: publicUrl, updated_at: new Date().toISOString() })
+            .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
             .eq('memberstack_id', memberstackId);
 
         console.log(`[UPLOAD-PROFILE] Foto subida para ${memberstackId}: ${publicUrl}`);
