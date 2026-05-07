@@ -3256,7 +3256,7 @@
             }
             `;
 
-            class UnifiedWidget {
+    class UnifiedWidget {
         constructor(containerId) {
             this.container = document.getElementById(containerId);
             this.member = null;
@@ -3324,14 +3324,14 @@
                             this.render();
                             console.log("💳 Vista: Pago Requerido");
                         },
-                        
+
                         // 2. Estado: Pago en Procesamiento (Stripe)
                         pagoProcesando: () => {
                             this.membershipStatus = 'payment_processing';
                             this.render();
                             console.log("⏳ Vista: Pago en Proceso");
                         },
-                        
+
                         // 3. Estado: Membresía en Revisión (Global)
                         revisionGlobal: () => {
                             this.membershipStatus = 'waiting_approval';
@@ -3348,7 +3348,7 @@
                             this.render();
                             console.log("❌ Vista: Membresía Cancelada");
                         },
-                        
+
                         // 4. Estado: Aprobado (Mascota con Carencia)
                         aprobado: (nombre = "Rex", isSenior = false) => {
                             this.membershipStatus = 'approved';
@@ -3368,10 +3368,10 @@
                             this.render();
                             console.log("✅ Vista: Mascota Aprobada (Carencia activa)");
                         },
-                        
+
                         // 5. Estado: Rechazado (Con perro asomado)
                         rechazado: () => {
-                            this.membershipStatus = 'approved'; 
+                            this.membershipStatus = 'approved';
                             this.pets = [{
                                 id: "fake-id",
                                 name: "Tobby",
@@ -3385,7 +3385,7 @@
                             this.render();
                             console.log("❌ Vista: Mascota Rechazada");
                         },
-                        
+
                         // 6. Estado: Acción Requerida (Subir documentos)
                         accionRequerida: () => {
                             this.membershipStatus = 'approved';
@@ -3401,7 +3401,7 @@
                             this.render();
                             console.log("⚠️ Vista: Acción Requerida");
                         },
-                        
+
                         // 7. Estado: Apelación Enviada
                         apelado: () => {
                             this.membershipStatus = 'approved';
@@ -3417,7 +3417,7 @@
                             this.render();
                             console.log("⚖️ Vista: Apelación en curso");
                         },
-                        
+
                         // Ayuda
                         help: () => {
                             console.table({
@@ -3529,30 +3529,30 @@
                 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                     console.log('🧪 Unified Widget: Local environment detected, injecting test pets...');
                     this.pets = [
-                        { 
-                            id: 'test-approved', 
-                            name: 'Simba', 
-                            type: 'Perro', 
-                            breed: 'Golden Retriever', 
-                            status: 'approved', 
+                        {
+                            id: 'test-approved',
+                            name: 'Simba',
+                            type: 'Perro',
+                            breed: 'Golden Retriever',
+                            status: 'approved',
                             photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=200&h=200',
                             created_at: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(), // 45 days ago
                             waiting_period_days: 180
                         },
-                        { 
-                            id: 'test-rejected', 
-                            name: 'Luna', 
-                            type: 'Gato', 
-                            breed: 'Persa', 
-                            status: 'rejected', 
+                        {
+                            id: 'test-rejected',
+                            name: 'Luna',
+                            type: 'Gato',
+                            breed: 'Persa',
+                            status: 'rejected',
                             rejection_reason: 'La documentación proporcionada no coincide con los datos del registro.',
                             photo_url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&q=80&w=200&h=200'
                         },
-                        { 
-                            id: 'test-action', 
-                            name: 'Rex', 
-                            type: 'Perro', 
-                            breed: 'Pastor Alemán', 
+                        {
+                            id: 'test-action',
+                            name: 'Rex',
+                            type: 'Perro',
+                            breed: 'Pastor Alemán',
                             status: 'action_required',
                             photo_url: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&q=80&w=200&h=200'
                         }
@@ -3901,7 +3901,7 @@
 
         renderActionRequiredView(firstName, pet) {
             const petImage = pet?.photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-            
+
             this.container.innerHTML = `
                 <div class="pata-missing-wrapper">
                     <main class="pata-missing-container">
@@ -3959,7 +3959,7 @@
             }
 
             const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
-            
+
             // Generate the dashboard shell
             this.container.innerHTML = `
                 <div class="pata-approved-wrapper-new">
@@ -3968,9 +3968,9 @@
 
                             <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
                             <div class="pata-header-sub-new">
-                                ${isMemberApproved 
-                                    ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>' 
-                                    : '<p>Estamos revisando tu información para darte la bienvenida oficial. ¡Falta muy poco!</p>'}
+                                ${isMemberApproved
+                    ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>'
+                    : '<p>Estamos revisando tu información para darte la bienvenida oficial. ¡Falta muy poco!</p>'}
                             </div>
                         </header>
 
@@ -4007,7 +4007,7 @@
                     </main>
                 </div>
             `;
-            
+
             this.container.classList.add('show');
             this.attachEvents();
             this.hideGlobalLoaders();
@@ -4073,9 +4073,9 @@
                     </main>
                 </div>
             `;
-            
+
             this.container.classList.add('show');
-            
+
             // Animate progress bar
             setTimeout(() => {
                 const bar = document.getElementById('pataProgressBar');
@@ -4340,7 +4340,7 @@
                 try {
                     const date = new Date(canceledAt);
                     dateStr = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
-                } catch (e) {}
+                } catch (e) { }
             }
 
             return `
@@ -4393,7 +4393,7 @@
                 </div>
             `;
         }
-        
+
         renderInReviewBenefits(title = "Mientras revisamos tu registro...") {
             return `
                 <div class="pata-benefits-review">
@@ -4574,7 +4574,7 @@
         renderApprovedContent(pet) {
             const carencia = this.calculateCarencia(pet);
             const petPhoto = pet.photo_url || pet.primary_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
-            
+
             // Dynamic messaging based on thresholds
             let statusMessage = "¡Bienvenido a la manada! Haz comenzado tu camino.";
             if (carencia.percentage >= 75) {
@@ -5270,7 +5270,7 @@
 
                                 ${pet.status === 'approved' ? `
                                 <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
-                                    <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de Cobertura</div>
+                                    <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
                                     <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
                                         <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
                                     </div>
@@ -5495,14 +5495,14 @@
             const isSenior = pet.age_value >= 10;
             const needsPhoto1 = !(pet.photo_url || pet.primary_photo_url);
             const needsCert = isSenior && !pet.vet_certificate_url;
-            
+
             let ready = true;
             if (needsPhoto1 && !this.missingPhotosFiles.photo1) ready = false;
             if (needsCert && !this.missingPhotosFiles.cert) ready = false;
-            
+
             const submitBtn = document.getElementById('pata-btn-submit-missing');
             const statusText = document.getElementById('pata-upload-status');
-            
+
             if (submitBtn) {
                 submitBtn.disabled = !ready;
                 if (ready) {
@@ -5582,14 +5582,14 @@
                         this.missingPhotosFiles[key] = file;
                         area.classList.add('has-file');
                         const isImage = file.type.startsWith('image/');
-                        
+
                         // Neo-Brutalist update for area
                         area.innerHTML = `
                             <div style="font-size: 32px; margin-bottom: 10px;">${isImage ? '✅' : '📎'}</div>
                             <div style="font-weight: 800; font-size: 14px; color: #1A1A1A;">${file.name.substring(0, 20)}${file.name.length > 20 ? '...' : ''}</div>
                             <div style="font-size: 12px; color: #15BEB2; font-weight: 700; margin-top: 5px;">¡listo para enviar!</div>
                         `;
-                        
+
                         this.checkMissingPhotosReady(pet);
                     }
                 };
