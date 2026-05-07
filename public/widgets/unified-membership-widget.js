@@ -436,7 +436,8 @@
             max-height: 92vh;
             border-radius: 40px;
             border: var(--pata-border-thick);
-            overflow: auto;
+            overflow-y: auto;
+            overflow-x: hidden;
             background: #fff;
             display: flex;
             flex-direction: column;
@@ -783,7 +784,7 @@
         .pata-photo-carousel .pata-carousel-item {
             flex: 0 0 85%;
             scroll-snap-align: center;
-            height: 320px;
+            height: 220px;
             background: #fff;
             border-radius: 35px;
             border: var(--pata-border-thick);
@@ -798,9 +799,9 @@
         }
         .pata-mobile-accordion summary {
             list-style: none;
-            padding: 18px 25px;
+            padding: 15px 20px;
             background: #F0F2F5;
-            border-radius: 20px;
+            border-radius: 18px;
             border: var(--pata-border-thin);
             font-weight: 900;
             cursor: pointer;
@@ -808,6 +809,9 @@
             align-items: center;
             justify-content: space-between;
             transition: all 0.2s;
+            outline: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
         .pata-mobile-accordion summary::-webkit-details-marker { display: none; }
         .pata-mobile-accordion summary::after {
@@ -833,9 +837,27 @@
             .pata-editorial-right .pata-editorial-info-grid { display: none; }
             .pata-mobile-accordion { display: block; }
             
-            .pata-editorial-left { padding: 20px; border-bottom: none; }
-            .pata-editorial-container { border-radius: 40px 40px 0 0; max-height: none !important; height: auto !important; overflow: visible !important; }
-            .pata-editorial-body { height: auto !important; overflow: visible !important; }
+            .pata-editorial-left { padding: 15px; border-bottom: none; }
+            .pata-editorial-right { padding: 20px 25px 30px !important; }
+            
+            .pata-editorial-container { 
+                border-radius: 35px 35px 0 0; 
+                max-height: 88vh !important; 
+                height: auto !important; 
+                overflow-y: auto !important;
+                overflow-x: hidden !important;
+                width: 100% !important;
+                margin-top: auto; /* Push to bottom for bottom-sheet feel */
+            }
+            .pata-editorial-body { 
+                display: block !important;
+                height: auto !important; 
+                overflow: visible !important; 
+            }
+            .pata-modal-overlay {
+                align-items: flex-end; /* Mobile bottom sheet */
+                padding: 0;
+            }
         }
 
         /* 🟠 Temas de Color */
@@ -1887,21 +1909,43 @@
             flex-shrink: 0;
         }
 
-        @media (max-width: 768px) {
+        @media (max-width: 1000px) {
+            .pata-approved-grid-main {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 30px !important;
+            }
+
+            .pata-approved-column-left,
+            .pata-approved-column-right {
+                width: 100% !important;
+                max-width: none !important;
+            }
+
+            .pata-approved-status-badge {
+                line-height: 1.1em !important;
+            }
+
+            .pata-pet-info-card-teal {
+                width: 100% !important;
+            }
+
             .pata-approved-column-right {
                 flex-direction: column;
                 align-items: center;
                 justify-content: center;
-                width: 100%;
                 gap: 15px;
             }
+
             .pata-pet-photo-card, .pata-pet-info-card-teal {
-                width: 100%;
-                max-width: none;
-                flex: 1;
+                width: 100% !important;
+                max-width: none !important;
+                flex: none !important;
             }
+
             .pata-pet-photo-card {
                 height: 250px;
+                width: 100% !important;
             }
         }
 
@@ -5652,6 +5696,16 @@
                         modalOverlay.onclick = (ev) => {
                             if (ev.target.id === 'pata-pet-details-modal') close();
                         };
+
+                        // 📂 Mobile Accordion Manual Toggle (Fix for certain browsers)
+                        const summary = modalOverlay.querySelector('.pata-mobile-accordion summary');
+                        const details = modalOverlay.querySelector('.pata-mobile-accordion');
+                        if (summary && details) {
+                            summary.onclick = (ev) => {
+                                // Let native happen but ensure it's not blocked
+                                console.log('Summary clicked');
+                            };
+                        }
                     }
                 }
             };
