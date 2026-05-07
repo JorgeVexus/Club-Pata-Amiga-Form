@@ -168,7 +168,7 @@
                 const [profRes, pmRes, ambRes] = await Promise.allSettled([
                     fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${id}`).then(r=>r.json()),
                     fetch(`${CONFIG.apiUrl}/api/user/payment-method?memberstackId=${id}`).then(r=>r.json()),
-                    fetch(`${CONFIG.apiUrl}/api/ambassadors/profile?memberstackId=${id}`).then(r=>r.json())
+                    fetch(`${CONFIG.apiUrl}/api/ambassadors/by-memberstack?memberstackId=${id}`).then(r=>r.json())
                 ]);
 
                 if (profRes.status==='fulfilled' && profRes.value.success) {
@@ -303,6 +303,8 @@
             const petCount = this.pets.length;
             const ambSection = isAmbassador ? this.renderAmbassadorView() : '';
 
+            // El id 'pata-amiga-manada-widget' es el que busca pet-cards-widget.js
+            // Se expone directamente para que el retry loop lo encuentre inmediatamente
             return `<div class="ppa-card">
                 <div class="ppa-pata-float">🐾</div>
                 <h2 class="ppa-section-title">roles en pata amiga</h2>
@@ -311,42 +313,11 @@
                     <p class="ppa-role-type">Miembro del club</p>
                     <p class="ppa-role-count">${petCount} peludo${petCount !== 1 ? 's' : ''} registrado${petCount !== 1 ? 's' : ''}</p>
                 </div>
-                <div id="ppa-manada-container"></div>
+                <div id="pata-amiga-manada-widget"></div>
             </div>`;
         }
 
-        initManadaWidget() {
-            // Reutiliza ManadaWidget (pet-cards-widget.js) si está disponible
-            const container = document.getElementById('ppa-manada-container');
-            if (!container) return;
 
-            if (window.ManadaWidget) {
-                // ManadaWidget ya cargado — inicializar directamente
-                container.id = 'pata-amiga-manada-widget';
-                const mw = new window.ManadaWidget();
-                mw.init();
-            } else {
-                // Cargar pet-cards-widget.js dinámicamente
-                const script = document.createElement('script');
-                script.src = (window.PATA_AMIGA_CONFIG?.widgetsUrl || '') + '/widgets/pet-cards-widget.js';
-                script.onload = () => {
-                    container.id = 'pata-amiga-manada-widget';
-                    if (window.ManadaWidget) {
-                        const mw = new window.ManadaWidget();
-                        mw.init();
-                    }
-                };
-                script.onerror = () => {
-                    // Fallback: renderizar cards básicos si no carga el widget
-                    if (this.pets.length > 0) {
-                        container.innerHTML = this.pets.map(p => this.renderPetCard(p)).join('');
-                    } else {
-                        container.innerHTML = '<p style="color:#9b9b9b;font-size:15px;padding:20px 0">Aún no tienes mascotas registradas.</p>';
-                    }
-                };
-                document.head.appendChild(script);
-            }
-        }
 
         renderAmbassadorView() {
             const a = this.ambassador;
@@ -422,9 +393,6 @@
                     }
                 });
             }
-
-            // Inicializar ManadaWidget en sección 3
-            this.initManadaWidget();
         }
 
         async openStripePortal() {
