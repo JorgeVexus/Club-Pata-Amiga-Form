@@ -43,6 +43,13 @@ function buildUploadUrl(memberId: string, petIndex: number): string {
 }
 
 export async function GET(req: NextRequest) {
+    // 0. Parámetros para disparo manual
+    const { searchParams } = new URL(req.url);
+    const targetMemberId = searchParams.get('memberId');
+    const targetPetIndex = searchParams.get('petIndex'); // 1, 2 o 3
+    const targetDay = searchParams.get('day');
+    const force = searchParams.get('force') === 'true';
+
     // 1. Verificar autorización del cron (Vercel envía el header automáticamente en producción)
     const authHeader = req.headers.get('authorization');
     const cronSecret = process.env.CRON_SECRET;
@@ -56,7 +63,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    console.log('🕐 [Cron] Iniciando revisión de documentación faltante...');
+    console.log(`🕐 [Cron] Iniciando revisión de documentación faltante... ${force ? '(FORCE MODE)' : ''}`);
     const startTime = Date.now();
 
     const results = {
@@ -68,39 +75,42 @@ export async function GET(req: NextRequest) {
     };
 
     try {
-        // 2. Obtener miembros de Memberstack (para verificar quién tiene plan pagado)
-        const membersRes = await memberstackAdmin.listMembers(undefined, { paidOnly: false });
+        let membersToProcess = [];
 
-        if (!membersRes.success || !membersRes.data) {
-            console.error('❌ [Cron] Error obteniendo miembros de Memberstack:', membersRes.error);
-            return NextResponse.json({ error: 'No se pudo obtener miembros' }, { status: 500 });
+        // 2. Obtener miembros a procesar (uno solo si se especifica memberId, o todos)
+        if (targetMemberId) {
+            console.log(`🎯 [Cron] Procesando miembro específico: ${targetMemberId}`);
+            const memberRes = await memberstackAdmin.getMember(targetMemberId);
+            if (memberRes.success && memberRes.data) {
+                membersToProcess = [memberRes.data];
+            } else {
+                return NextResponse.json({ error: `Miembro ${targetMemberId} no encontrado` }, { status: 404 });
+            }
+        } else {
+            const membersRes = await memberstackAdmin.listMembers(undefined, { paidOnly: false });
+
+            if (!membersRes.success || !membersRes.data) {
+                console.error('❌ [Cron] Error obteniendo miembros de Memberstack:', membersRes.error);
+                return NextResponse.json({ error: 'No se pudo obtener miembros' }, { status: 500 });
+            }
+
+            const allMembers = membersRes.data;
+            console.log(`📊 [Cron] Total miembros Memberstack: ${allMembers.length}`);
+
+            // Filtrar solo los que tienen plan pagado
+            membersToProcess = allMembers.filter(m => {
+                const approvalStatus = m.customFields?.['approval-status'];
+                const hasActivePlan = m.planConnections?.some(pc => 
+                    pc.active === true && pc.payment?.status === 'PAID'
+                );
+                return (approvalStatus && approvalStatus !== 'pending') || hasActivePlan;
+            });
         }
 
-        const allMembers = membersRes.data;
-        console.log(`📊 [Cron] Total miembros Memberstack: ${allMembers.length}`);
+        console.log(`💳 [Cron] Miembros considerados para seguimiento: ${membersToProcess.length}`);
 
-        // Filtrar solo los que tienen plan pagado
-        // Mejorado: Incluimos a los que tienen un plan activo en Memberstack, 
-        // aunque su status custom siga en 'pending' o esté vacío.
-        const paidMembers = allMembers.filter(m => {
-            const approvalStatus = m.customFields?.['approval-status'];
-            const hasActivePlan = m.planConnections?.some(pc => 
-                pc.active === true && pc.payment?.status === 'PAID'
-            );
-
-            const isPaid = (approvalStatus && approvalStatus !== 'pending') || hasActivePlan;
-            
-            if (!isPaid) {
-                // console.log(`⏩ [Cron] Saltando ${m.auth?.email}: status=${approvalStatus}, plans=${m.planConnections?.length || 0}`);
-            }
-            
-            return isPaid;
-        });
-
-        console.log(`💳 [Cron] Miembros considerados para seguimiento: ${paidMembers.length}`);
-
-        // 3. Para cada miembro pagado, buscar su data en Supabase
-        for (const member of paidMembers) {
+        // 3. Para cada miembro, buscar su data y mascotas en Supabase
+        for (const member of membersToProcess) {
             results.checked++;
 
             const userEmail = member.auth?.email;
@@ -121,7 +131,6 @@ export async function GET(req: NextRequest) {
                 continue;
             }
 
-            // Calcular días desde registro del usuario (eliminado para hacerlo por mascota)
             const userName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Miembro';
 
             // 4. Buscar mascotas del usuario en Supabase
@@ -136,28 +145,46 @@ export async function GET(req: NextRequest) {
                 continue;
             }
 
-            let userHadAnyValidPet = false;
-
             // Revisar cada mascota independientemente
             for (let petIdx = 0; petIdx < pets.length; petIdx++) {
                 const pet = pets[petIdx];
                 const petIndexOneBased = petIdx + 1;
+
+                // Si se especificó un petIndex (trigger manual), saltar los demás
+                if (targetPetIndex && parseInt(targetPetIndex) !== petIndexOneBased) {
+                    continue;
+                }
 
                 // Calcular días desde registro de la MASCOTA
                 const petRegDate = pet.created_at;
                 if (!petRegDate) continue;
 
                 const daysSincePetReg = daysSince(petRegDate);
-                const isFollowupDay = FOLLOWUP_DAYS.includes(daysSincePetReg as FollowupDay);
+                
+                // Usar día forzado si se proporciona, de lo contrario los días reales
+                const evalDay = targetDay ? parseInt(targetDay) : daysSincePetReg;
+                const isFollowupDay = FOLLOWUP_DAYS.includes(evalDay as FollowupDay);
 
-                console.log(`🔍 [Cron] Revisando ${userEmail} | Mascota: ${pet.name} | Días: ${daysSincePetReg} | ¿Toca hoy?: ${isFollowupDay}`);
+                console.log(`🔍 [Cron] Revisando ${userEmail} | Mascota ${petIndexOneBased}: ${pet.name} | Días Reales: ${daysSincePetReg} | Día Evaluación: ${evalDay} | ¿Toca hoy?: ${isFollowupDay || force}`);
 
-                if (!isFollowupDay) {
+                // Solo enviar si es el día que toca o si se está forzando el envío
+                if (!isFollowupDay && !force) {
                     continue;
                 }
 
-                userHadAnyValidPet = true;
-                const followupDay = daysSincePetReg as FollowupDay;
+                // Asegurar que followupDay sea un valor válido para los templates
+                let followupDay: FollowupDay = 15; // Default al último día
+                if (FOLLOWUP_DAYS.includes(evalDay as FollowupDay)) {
+                    followupDay = evalDay as FollowupDay;
+                } else if (evalDay < 10) {
+                    followupDay = 0;
+                } else if (evalDay < 13) {
+                    followupDay = 10;
+                } else if (evalDay < 14) {
+                    followupDay = 13;
+                } else if (evalDay < 15) {
+                    followupDay = 14;
+                }
 
                 // Determinar docs faltantes
                 const hasPhoto = !!(pet.photo_url?.trim());
@@ -169,7 +196,10 @@ export async function GET(req: NextRequest) {
                 else if (!hasPhoto) missingDocs = 'photo';
                 else if (isSenior && !hasCert) missingDocs = 'certificate';
 
-                if (!missingDocs) continue; // Todo completo
+                if (!missingDocs) {
+                    console.log(`✅ [Cron] Mascota ${pet.name} tiene documentación completa.`);
+                    continue; 
+                }
 
                 // Enviar email de seguimiento
                 const uploadUrl = buildUploadUrl(member.id, petIndexOneBased);
@@ -177,7 +207,7 @@ export async function GET(req: NextRequest) {
 
                 try {
                     const result = await sendMissingPetDocsEmail({
-                        userId: user.id, // Usar UUID de Supabase para logs de comunicación
+                        userId: user.id,
                         userEmail,
                         userName,
                         petName: pet.name,
@@ -193,6 +223,7 @@ export async function GET(req: NextRequest) {
                             memberId: member.id,
                             email: userEmail,
                             petName: pet.name,
+                            petIndex: petIndexOneBased,
                             missingDocs,
                             followupDay,
                             resendId: result.id,
@@ -203,7 +234,7 @@ export async function GET(req: NextRequest) {
                     }
                 } catch (emailErr: any) {
                     results.errors++;
-                    console.error(`❌ [Cron] Excepcion enviando email:`, emailErr.message);
+                    console.error(`❌ [Cron] Excepción enviando email:`, emailErr.message);
                 }
             }
         }
