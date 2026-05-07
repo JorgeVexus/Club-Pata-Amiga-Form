@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+export const dynamic = 'force-dynamic';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -33,9 +34,11 @@ export async function GET(request: NextRequest) {
         }
 
         if (!data) {
+            console.warn(`[PROFILE GET] Usuario no encontrado: ${memberstackId}`);
             return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
         }
 
+        console.log(`[PROFILE GET] Datos recuperados para ${memberstackId}. avatar_url: ${(data as any).avatar_url || 'null'}`);
         return NextResponse.json({ success: true, user: data });
 
     } catch (e: any) {

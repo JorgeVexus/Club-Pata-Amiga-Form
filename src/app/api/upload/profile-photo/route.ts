@@ -13,7 +13,8 @@ export async function POST(request: NextRequest) {
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File | null;
-        const memberstackId = formData.get('memberstackId') as string | null;
+        const memberstackIdRaw = formData.get('memberstackId') as string | null;
+        const memberstackId = memberstackIdRaw?.trim();
 
         if (!file || !memberstackId) {
             return NextResponse.json({ success: false, error: 'file y memberstackId son requeridos' }, { status: 400 });
@@ -49,10 +50,20 @@ export async function POST(request: NextRequest) {
         const publicUrl = urlData.publicUrl;
 
         // Guardar URL en tabla users
-        await supabaseAdmin
+        const { data: updatedUser, error: dbError } = await supabaseAdmin
             .from('users')
-            .update({ avatar_url: publicUrl, updated_at: new Date().toISOString() })
-            .eq('memberstack_id', memberstackId);
+            .update({ avatar_url: publicUrl })
+            .eq('memberstack_id', memberstackId)
+            .select()
+            .maybeSingle();
+
+        if (dbError) {
+            console.error('[UPLOAD-PROFILE] DB Update error:', dbError);
+        } else if (!updatedUser) {
+            console.warn(`[UPLOAD-PROFILE] No se encontró usuario para actualizar: ${memberstackId}`);
+        } else {
+            console.log(`[UPLOAD-PROFILE] DB actualizada para ${memberstackId}. avatar_url ahora es: ${updatedUser.avatar_url}`);
+        }
 
         console.log(`[UPLOAD-PROFILE] Foto subida para ${memberstackId}: ${publicUrl}`);
 

@@ -215,7 +215,8 @@
             const phone = u.phone || '—';
             const addr = this.buildAddress(u);
             const birth = fmtBirth(u.birth_date);
-            const photo = u.avatar_url || CONFIG.placeholderAvatar;
+            const photoBase = u.avatar_url || CONFIG.placeholderAvatar;
+            const photo = photoBase.includes('supabase.co') ? `${photoBase}?t=${new Date().getTime()}` : photoBase;
 
             return `<div class="ppa-card">
                 <div class="ppa-header-row">

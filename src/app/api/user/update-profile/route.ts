@@ -24,6 +24,7 @@ export async function POST(request: NextRequest) {
             last_name,
             mother_last_name,
             phone,
+            address,
             colony,
             city,
             state,
@@ -42,14 +43,13 @@ export async function POST(request: NextRequest) {
         console.log(`[UPDATE-PROFILE] Actualizando perfil para: ${memberstackId}`);
 
         // Construir solo los campos que vienen en el body (no sobreescribir con undefined)
-        const updatePayload: Record<string, unknown> = {
-            updated_at: new Date().toISOString(),
-        };
+        const updatePayload: Record<string, unknown> = {};
 
         if (first_name !== undefined) updatePayload.first_name = first_name.trim();
         if (last_name !== undefined) updatePayload.last_name = last_name.trim();
         if (mother_last_name !== undefined) updatePayload.mother_last_name = mother_last_name.trim();
         if (phone !== undefined) updatePayload.phone = phone.trim();
+        if (address !== undefined) updatePayload.address = address.trim();
         if (colony !== undefined) updatePayload.colony = colony.trim();
         if (city !== undefined) updatePayload.city = city.trim();
         if (state !== undefined) updatePayload.state = state.trim();
@@ -61,7 +61,7 @@ export async function POST(request: NextRequest) {
             .from('users')
             .update(updatePayload)
             .eq('memberstack_id', memberstackId)
-            .select('id, first_name, last_name, mother_last_name, phone, colony, city, state, postal_code, birth_date, avatar_url')
+            .select('id, first_name, last_name, mother_last_name, phone, address, colony, city, state, postal_code, birth_date, avatar_url')
             .single();
 
         if (error) {

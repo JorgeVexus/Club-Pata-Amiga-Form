@@ -55,8 +55,7 @@ export async function POST(request: NextRequest) {
                 mother_last_name: '',
                 phone: phone || '',
                 membership_status: 'pending', // Estado por defecto
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
+                created_at: new Date().toISOString()
             })
             .select()
             .single();
