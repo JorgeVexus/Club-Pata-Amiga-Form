@@ -836,6 +836,7 @@
             
             .pata-editorial-right .pata-editorial-info-grid { display: none; }
             .pata-mobile-accordion { display: block; }
+            .pata-mobile-accordion .pata-editorial-info-grid { display: grid !important; }
             
             .pata-editorial-left { padding: 15px; border-bottom: none; }
             .pata-editorial-right { padding: 20px 25px 30px !important; }
