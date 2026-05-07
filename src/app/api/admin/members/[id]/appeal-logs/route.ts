@@ -50,12 +50,12 @@ export async function GET(
             if (log.admin_id && log.admin_id !== 'admin' && log.admin_id !== 'current_admin') {
                 const { data: adminData } = await supabaseAdmin
                     .from('users')
-                    .select('first_name, last_name, full_name')
+                    .select('first_name, last_name')
                     .eq('memberstack_id', log.admin_id)
                     .single();
 
                 if (adminData) {
-                    adminName = adminData.full_name || `${adminData.first_name || ''} ${adminData.last_name || ''}`.trim() || 'Administrador';
+                    adminName = `${adminData.first_name || ''} ${adminData.last_name || ''}`.trim() || 'Administrador';
                 } else {
                     adminName = 'Administrador';
                 }

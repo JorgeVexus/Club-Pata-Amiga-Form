@@ -19,11 +19,10 @@ export async function GET(request: NextRequest) {
         const { data, error } = await supabaseAdmin
             .from('users')
             .select([
-                'memberstack_id', 'first_name', 'last_name', 'mother_last_name',
+                'id', 'memberstack_id', 'first_name', 'last_name', 'mother_last_name',
                 'email', 'phone', 'address', 'colony',
-                'city', 'state', 'postal_code', 'birth_date', 'profile_photo_url',
-                'approval_status', 'registration_date', 'plan_name', 'plan_type',
-                'next_payment_date', 'plan_cost', 'stripe_customer_id'
+                'city', 'state', 'postal_code', 'birth_date', 'avatar_url',
+                'membership_status', 'approval_status', 'created_at', 'is_foreigner', 'role'
             ].join(','))
             .eq('memberstack_id', memberstackId)
             .maybeSingle();

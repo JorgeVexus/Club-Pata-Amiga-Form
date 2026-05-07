@@ -58,11 +58,7 @@ export async function GET(request: NextRequest) {
             const customers = await stripe.customers.list({ email: user.email, limit: 1 });
             if (customers.data.length > 0) {
                 stripeCustomerId = customers.data[0].id;
-                // Guardarlo para futuras consultas
-                await supabaseAdmin
-                    .from('users')
-                    .update({ stripe_customer_id: stripeCustomerId })
-                    .eq('memberstack_id', memberstackId);
+                // No lo guardamos en Supabase ya que la columna no existe o es volátil
             }
         }
 
@@ -115,11 +111,7 @@ export async function GET(request: NextRequest) {
                 // eslint-disable-next-line @typescript-eslint/no-explicit-any
                 const periodEnd = (sub as any).current_period_end as number | undefined;
                 nextPaymentDate = periodEnd ? new Date(periodEnd * 1000).toISOString() : null;
-                // Guardar en Supabase para uso sin conexión
-                await supabaseAdmin
-                    .from('users')
-                    .update({ next_payment_date: nextPaymentDate })
-                    .eq('memberstack_id', memberstackId);
+                // No lo guardamos en Supabase ya que la columna no existe
                 console.log(`[PAYMENT-METHOD] Próximo pago: ${nextPaymentDate}`);
             }
         } catch (subErr) {

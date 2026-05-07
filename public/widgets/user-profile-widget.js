@@ -210,7 +210,7 @@
             const phone = u.phone || '—';
             const addr = this.buildAddress(u);
             const birth = fmtBirth(u.birth_date);
-            const photo = u.profile_photo_url || CONFIG.placeholderAvatar;
+            const photo = u.avatar_url || CONFIG.placeholderAvatar;
 
             return `<div class="ppa-card">
                 <div class="ppa-header-row">
@@ -258,12 +258,10 @@
 
         renderSection2() {
             const u = this.user || {};
-            const plans = this.member?.planConnections || [];
-            const plan = plans[0];
-            const planName = u.plan_name || (plan ? 'Plan activo' : 'Sin plan');
-            const planCost = plan?.payment?.amount ? '$' + (plan.payment.amount/100).toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
-            const nextPay = fmtDate(this.paymentMethod?.nextPaymentDate || u.next_payment_date);
             const pm = this.paymentMethod;
+            const planName = pm?.interval || u.plan_name || (pm ? 'Plan activo' : 'Sin plan');
+            const planCost = pm?.plan_cost ? '$' + pm.plan_cost.toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
+            const nextPay = fmtDate(pm?.next_payment_date);
             const pmHtml = pm ? `
                 <div class="ppa-payment-top">
                     <div class="ppa-payment-left">
@@ -444,7 +442,7 @@
                 const res = await fetch(`${CONFIG.apiUrl}/api/upload/profile-photo`, { method:'POST', body: formData }).then(r=>r.json());
                 if (res.success && res.url) {
                     if (img) img.src = res.url;
-                    if (this.user) this.user.profile_photo_url = res.url;
+                    if (this.user) this.user.avatar_url = res.url;
                 }
             } catch(e) {
                 console.error('[ProfileWidget] Error subiendo foto:', e);

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
             state,
             postal_code,
             birth_date,
-            profile_photo_url,
+            avatar_url,
         } = body;
 
         if (!memberstackId) {
@@ -55,13 +55,13 @@ export async function POST(request: NextRequest) {
         if (state !== undefined) updatePayload.state = state.trim();
         if (postal_code !== undefined) updatePayload.postal_code = postal_code.trim();
         if (birth_date !== undefined) updatePayload.birth_date = birth_date;
-        if (profile_photo_url !== undefined) updatePayload.profile_photo_url = profile_photo_url;
+        if (avatar_url !== undefined) updatePayload.avatar_url = avatar_url;
 
         const { data, error } = await supabaseAdmin
             .from('users')
             .update(updatePayload)
             .eq('memberstack_id', memberstackId)
-            .select('id, first_name, last_name, mother_last_name, phone, colony, city, state, postal_code, birth_date, profile_photo_url')
+            .select('id, first_name, last_name, mother_last_name, phone, colony, city, state, postal_code, birth_date, avatar_url')
             .single();
 
         if (error) {
