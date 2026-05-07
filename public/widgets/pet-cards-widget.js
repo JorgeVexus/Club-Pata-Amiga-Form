@@ -598,42 +598,41 @@
                 width: 650px; 
                 max-height: 95vh;
                 margin: 0 auto;
+                overflow-y: auto; /* Enable scroll on the box itself */
+                display: flex;
+                flex-direction: column;
             }
             .pata-modal-main { 
-                flex-direction: column; 
-                overflow-y: auto; 
-                height: 100%;
                 display: block;
+                height: auto;
+                flex: 1;
             }
             .pata-modal-gallery { 
                 width: 100%; 
                 border-right: none !important; 
                 border-bottom: var(--pata-border-thick); 
-                overflow: visible;
                 padding: 15px;
             }
             .pata-modal-info { 
                 width: 100%; 
-                overflow: visible;
                 padding: 24px 20px;
             }
             .pata-pet-name { font-size: 32px; }
-            .pata-info-grid { gap: 15px; }
             .pata-modal-story { margin-top: 24px; padding-top: 20px; }
         }
 
         @media (max-width: 600px) {
-            .pata-modal-overlay { padding: 5px; }
+            .pata-modal-overlay { padding: 8px; }
             .pata-modal-box { 
                 border-radius: 24px;
-                max-height: 98vh;
+                max-height: 94vh;
             }
             .pata-modal-gallery { 
                 padding: 12px; 
                 gap: 8px; 
             }
             .pata-gallery-main { 
-                aspect-ratio: 4/3; 
+                aspect-ratio: 16/9; /* Smaller photo */
                 border-radius: 12px;
             }
             .pata-gallery-grid { 
@@ -641,41 +640,50 @@
                 gap: 6px; 
             }
             .pata-modal-info { 
-                padding: 20px 15px; 
+                padding: 16px 12px; 
             }
             .pata-info-grid { 
                 grid-template-columns: 1fr; 
-                gap: 10px; 
+                gap: 8px; 
+            }
+            .pata-info-item {
+                padding: 12px;
+                border-radius: 16px;
             }
             .pata-pet-header { 
-                display: flex;
-                align-items: flex-start;
-                justify-content: space-between;
-                gap: 8px;
-                margin-bottom: 16px;
+                margin-bottom: 12px;
+                gap: 6px;
             }
-            .pata-header-left { flex: 1; }
-            .pata-pet-name { font-size: 26px; line-height: 1.1; margin-bottom: 2px; }
-            .pata-pet-breed { font-size: 13px; }
+            .pata-pet-name { font-size: 24px; margin-bottom: 0; }
+            .pata-pet-breed { font-size: 12px; margin-bottom: 4px; }
             .pata-close-modal { 
-                width: 38px; 
-                height: 38px; 
+                width: 36px; 
+                height: 36px; 
             }
-            .pata-close-modal svg { width: 18px; height: 18px; }
+            .pata-close-modal svg { width: 16px; height: 16px; }
             
             .pata-progress-container-v2 {
-                padding: 12px;
-                margin-top: 10px;
-                border-radius: 20px;
+                padding: 10px;
+                margin-top: 8px;
+                border-radius: 16px;
             }
+            .pata-progress-header { margin-bottom: 8px; }
+            .pata-progress-header .pata-progress-title { font-size: 13px; }
             .pata-progress-header .pata-progress-percentage {
-                font-size: 15px;
+                font-size: 14px;
             }
-            .pata-progress-bar-bg { height: 10px; }
+            .pata-progress-bar-bg { height: 8px; margin-bottom: 8px; }
             .pata-progress-meta {
-                font-size: 10px;
+                font-size: 9px;
                 gap: 4px;
             }
+            
+            .pata-modal-story {
+                margin-top: 16px;
+                padding-top: 16px;
+            }
+            .pata-modal-story h3 { font-size: 16px; margin-bottom: 8px; }
+            .pata-modal-story p { font-size: 13px; line-height: 1.4; }
         }
 
         @media (max-width: 750px) {
