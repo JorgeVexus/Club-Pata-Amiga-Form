@@ -126,10 +126,15 @@ export async function GET(request: NextRequest) {
             const relevantSubs = subscriptions.data.filter(s => s.status === 'active' || s.status === 'trialing');
 
             if (relevantSubs.length > 0) {
-                const sub = relevantSubs[0];
-                console.log(`[PAYMENT-METHOD] Sub ID: ${sub.id}, PeriodEnd: ${(sub as any).current_period_end}`);
+                // Recuperar el objeto completo para asegurar que todas las propiedades están presentes
+                const subId = relevantSubs[0].id;
+                const sub = await stripe.subscriptions.retrieve(subId) as any;
                 
-                const periodEnd = (sub as any).current_period_end;
+                console.log(`[PAYMENT-METHOD] Recuperada Sub: ${sub.id}, Status: ${sub.status}`);
+                
+                // Stripe usa segundos (Unix timestamp). current_period_end es estándar.
+                const periodEnd = sub.current_period_end;
+                
                 if (periodEnd) {
                     safePaymentInfo.next_payment_date = new Date(periodEnd * 1000).toISOString();
                 }
@@ -137,7 +142,9 @@ export async function GET(request: NextRequest) {
                 safePaymentInfo._debug_sub = {
                     id: sub.id,
                     status: sub.status,
-                    raw_period_end: (sub as any).current_period_end,
+                    period_end_raw: periodEnd,
+                    has_period_end: !!sub.current_period_end,
+                    all_keys: Object.keys(sub).slice(0, 30)
                 };
 
                 // Obtener detalles del plan
