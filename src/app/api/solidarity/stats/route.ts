@@ -70,8 +70,8 @@ export async function GET(request: NextRequest) {
                     pendingPets++;
                 }
             } else if (isApproved && !pet.waiting_period_end) {
-                // If approved but no date (legacy), assume active
-                activePets++;
+                // Si está aprobado pero no tiene fecha (nuevo o error), se considera pendiente
+                pendingPets++;
             } else {
                 // Not approved or other status
                 pendingPets++;

@@ -16,7 +16,10 @@ class SolidarityDashboard {
             pets: [],
             requests: [],
             filteredRequests: [],
-            stats: { active: 0, pending: 0, total: 0, processed: 0 }
+            stats: { active: 0, pending: 0, total: 0, processed: 0 },
+            placeholders: {
+                pet: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png'
+            }
         };
 
         this.useMock = options.useMock || false;
@@ -135,7 +138,7 @@ class SolidarityDashboard {
 
     calculateCarencia(pet) {
         const now = new Date();
-        const start = new Date(pet.created_at);
+        const start = pet.created_at ? new Date(pet.created_at) : now;
 
         let totalDays = 180;
         if (pet.waiting_period_days) {
@@ -143,6 +146,11 @@ class SolidarityDashboard {
         } else if (pet.is_adopted) {
             const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
             totalDays = isMixed ? 120 : 150;
+        }
+
+        // Safety check for invalid dates
+        if (isNaN(start.getTime())) {
+            return { daysRemaining: totalDays, percentage: 0, totalDays, isWaiting: true };
         }
 
         const diffTime = Math.abs(now - start);
@@ -807,7 +815,7 @@ class SolidarityDashboard {
         const petCards = this.data.pets.map((pet, index) => {
             const carencia = this.calculateCarencia(pet);
             const statusContext = this.getPetStatusContext(pet);
-            const imageUrl = pet.primary_photo_url || pet.photo_url || 'https://via.placeholder.com/150';
+            const imageUrl = pet.primary_photo_url || pet.photo_url || this.data.placeholders.pet;
             const isApproved = pet.status === 'approved';
             const isEligible = isApproved && !carencia.isWaiting;
             
@@ -820,7 +828,7 @@ class SolidarityDashboard {
                     <img src="${imageUrl}" 
                          class="pata-pet-photo" 
                          alt="Foto de ${pet.name}"
-                         onerror="this.src='https://via.placeholder.com/150';">
+                         onerror="this.src='${this.data.placeholders.pet}';">
                          
                     <div class="pata-pet-info">
                         <h3 class="pata-pet-name">${pet.name}</h3>
@@ -859,15 +867,15 @@ class SolidarityDashboard {
     renderHistory() {
         return `
             <div class="pata-history-header" style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <input type="text" id="pata-history-search" placeholder="Buscar..." 
-                       style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; flex: 1; min-width: 200px; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black); font-weight: 600; font-size: 16px; outline: none;">
+                <input type="text" id="pata-history-search" placeholder="Buscar en historial..." 
+                       style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; flex: 1; min-width: 200px; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black) !important; font-weight: 600; font-size: 16px; outline: none; transition: all 0.2s;">
                 
                 <select id="pata-history-filter" 
-                        style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; min-width: 180px; cursor: pointer; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black); font-weight: 700; font-size: 16px; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A1A1A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%2020px%20top%2050%25; background-size: 12px%20auto;">
-                    <option value="all">Filtro: Todos</option>
-                    <option value="medical_emergency">🏥 Emergencias</option>
-                    <option value="annual_vaccination">💉 Vacunación</option>
-                    <option value="death">🕊️ Fallecimiento</option>
+                        style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; min-width: 180px; cursor: pointer; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black) !important; font-weight: 700; font-size: 16px; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A1A1A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%2020px%20top%2050%25; background-size: 12px%20auto; transition: all 0.2s;">
+                    <option value="all" style="color: black;">Filtro: Todos</option>
+                    <option value="medical_emergency" style="color: black;">🏥 Emergencias</option>
+                    <option value="annual_vaccination" style="color: black;">💉 Vacunación</option>
+                    <option value="death" style="color: black;">🕊️ Fallecimiento</option>
                 </select>
             </div>
             <ul class="pata-history-list" id="pata-history-items-container" style="list-style: none; padding: 0;">
