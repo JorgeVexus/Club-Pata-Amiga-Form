@@ -353,10 +353,117 @@
             box-shadow: none;
         }
 
+
+        /* Modal Legal (Términos y Condiciones) */
+        .pata-legal-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000;
+            padding: 20px;
+            box-sizing: border-box;
+            backdrop-filter: blur(5px);
+        }
+        .pata-legal-modal-overlay.show {
+            display: flex;
+        }
+        .pata-legal-modal-content {
+            background: #fff;
+            border: 4px solid #000;
+            border-radius: 35px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 20px 20px 0 rgba(0, 0, 0, 0.3);
+            animation: pataModalFade 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        @keyframes pataModalFade {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .pata-legal-modal-header {
+            padding: 25px 30px;
+            border-bottom: 3px solid #000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+        .pata-legal-modal-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 28px;
+            margin: 0;
+            text-transform: uppercase;
+        }
+        .pata-legal-modal-close {
+            background: #000;
+            color: #fff;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s;
+        }
+        .pata-legal-modal-close:hover {
+            transform: scale(1.1) rotate(90deg);
+            background: #FE8F15;
+        }
+        .pata-legal-modal-body {
+            padding: 30px;
+            overflow-y: auto;
+            font-size: 16px;
+            line-height: 1.6;
+            flex: 1;
+        }
+        .pata-legal-modal-footer {
+            padding: 20px;
+            border-top: 3px solid #000;
+            display: flex;
+            justify-content: center;
+            background: #fff;
+        }
+        .pata-modal-legal-text h4 {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 20px;
+            margin: 30px 0 15px 0;
+            text-transform: uppercase;
+            color: #00BBB4;
+        }
+        .pata-modal-legal-text p {
+            margin: 0 0 15px 0;
+        }
+        .pata-loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(0, 187, 180, 0.2);
+            border-top-color: #00BBB4;
+            border-radius: 50%;
+            animation: pataSpin 0.8s linear infinite;
+        }
+        @keyframes pataSpin {
+            to { transform: rotate(360deg); }
+        }
+
         @media (max-width: 600px) {
             .pata-settings-title { font-size: 36px; }
             .pata-settings-subtitle { font-size: 16px; }
             .pata-modal-content { padding: 30px; }
+            .pata-legal-modal-content { max-height: 95vh; }
+            .pata-legal-modal-header { padding: 20px; }
+            .pata-legal-modal-body { padding: 20px; }
         }
     `;
 
@@ -390,6 +497,9 @@
                 notif_payments: true,
                 notif_news: true
             };
+            this.showLegalModal = false;
+            this.legalContent = null;
+            this.isLoadingLegal = false;
             this.init();
         }
 
@@ -525,12 +635,9 @@
                 <!-- Legal -->
                 <div class="pata-settings-section">
                     <h2 class="pata-section-title">Legal</h2>
-                    <p class="pata-section-subtitle">Última actualización visible en cada documento.</p>
+                    <p class="pata-section-subtitle">Consulta nuestros documentos legales actualizados.</p>
                     <div class="pata-settings-list">
-                        ${this.renderItem('Aviso de privacidad', 'shield', () => window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61adc0bfbb17c833501_AVISO%20DE%20PRIVACIDAD%20INTEGRAL.pdf', '_blank'))}
-                        ${this.renderItem('Términos y condiciones', 'doc', () => window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b14873e67fb7f89b1_Terminosycondiciones%20girbaz.pdf', '_blank'))}
-                        ${this.renderItem('Políticas del fondo solidario', 'house', () => window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b8bccea76df450705_REGLAMENTO%20DEL%20FONDO%20SOLIDARIO%20CLUB%20PATA%20AMIGA.zip', '_blank'))}
-                        ${this.renderItem('Condiciones de membresía', 'image', () => window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b1b8d0a6dc9f79e5c_Conveio%20asociado%20.pdf', '_blank'))}
+                        ${this.renderItem('Ver términos y condiciones', 'doc', null)}
                     </div>
                 </div>
 
@@ -573,6 +680,9 @@
                         </form>
                     </div>
                 </div>
+
+                <!-- Modal Legal (Términos y Condiciones) -->
+                ${this.renderLegalModal()}
             `;
 
             this.container.classList.add('show');
@@ -631,10 +741,7 @@
                     const actionKey = item.getAttribute('data-action');
                     if (actionKey === 'key') this.handleSecurityChange();
                     if (actionKey === 'payment') this.handleManagePlan();
-                    if (actionKey === 'shield') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61adc0bfbb17c833501_AVISO%20DE%20PRIVACIDAD%20INTEGRAL.pdf', '_blank');
-                    if (actionKey === 'doc') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b14873e67fb7f89b1_Terminosycondiciones%20girbaz.pdf', '_blank');
-                    if (actionKey === 'house') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b8bccea76df450705_REGLAMENTO%20DEL%20FONDO%20SOLIDARIO%20CLUB%20PATA%20AMIGA.zip', '_blank');
-                    if (actionKey === 'image') window.open('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990f61b1b8d0a6dc9f79e5c_Conveio%20asociado%20.pdf', '_blank');
+                    if (actionKey === 'doc') this.openLegalModal();
                 });
             });
 
@@ -659,6 +766,19 @@
             const pwdError = this.container.querySelector('#pata-pwd-error');
             const pwdSuccess = this.container.querySelector('#pata-pwd-success');
             const pwdBtn = this.container.querySelector('#pata-btn-pwd');
+
+            // Legal Modal Events
+            const legalModal = this.container.querySelector('#pata-legal-modal-overlay');
+            if (legalModal) {
+                const closeLegalBtn = legalModal.querySelector('#pata-legal-modal-close');
+                const understoodBtn = legalModal.querySelector('#pata-legal-modal-understood');
+
+                if (closeLegalBtn) closeLegalBtn.addEventListener('click', () => this.closeLegalModal());
+                if (understoodBtn) understoodBtn.addEventListener('click', () => this.closeLegalModal());
+                legalModal.addEventListener('click', (e) => {
+                    if (e.target === legalModal) this.closeLegalModal();
+                });
+            }
 
             if (closePwdBtn && pwdModal) {
                 closePwdBtn.addEventListener('click', () => {
@@ -775,7 +895,7 @@
                 }
 
                 try {
-                    const memberId = this.memberstackUser.id;
+                    const memberId = this.member.id;
                     const response = await fetch('/api/user/deactivate', {
                         method: 'POST',
                         headers: {
@@ -808,6 +928,93 @@
                     }
                 }
             }
+        }
+
+        async openLegalModal() {
+            this.showLegalModal = true;
+            const modal = this.container.querySelector('#pata-legal-modal-overlay');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+            
+            if (!this.legalContent) {
+                await this.fetchLegalTerms();
+            }
+        }
+
+        closeLegalModal() {
+            this.showLegalModal = false;
+            const modal = this.container.querySelector('#pata-legal-modal-overlay');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = 'unset';
+            }
+        }
+
+        async fetchLegalTerms() {
+            if (this.isLoadingLegal) return;
+            this.isLoadingLegal = true;
+            this.updateLegalModalBody();
+            
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/legal/terms`);
+                const data = await res.json();
+                if (data.success) {
+                    this.legalContent = data.fullDocument;
+                }
+            } catch (error) {
+                console.error('Error fetching terms:', error);
+                this.legalContent = 'Error al cargar los términos y condiciones. Por favor, intenta de nuevo más tarde.';
+            } finally {
+                this.isLoadingLegal = false;
+                this.updateLegalModalBody();
+            }
+        }
+
+        updateLegalModalBody() {
+            const body = this.container.querySelector('#pata-legal-modal-body');
+            if (!body) return;
+
+            if (this.isLoadingLegal) {
+                body.innerHTML = '<div style="text-align:center; padding: 50px;"><div class="pata-loading-spinner" style="margin: 0 auto;"></div><p style="margin-top:20px; font-weight:700;">Cargando documentos legales...</p></div>';
+            } else if (this.legalContent) {
+                body.innerHTML = `<div class="pata-modal-legal-text">${this.formatLegalText(this.legalContent)}</div>`;
+            }
+        }
+
+        renderLegalModal() {
+            return `
+                <div class="pata-legal-modal-overlay" id="pata-legal-modal-overlay">
+                    <div class="pata-legal-modal-content">
+                        <div class="pata-legal-modal-header">
+                            <h2 class="pata-legal-modal-title">📋 Documentación Legal</h2>
+                            <button class="pata-legal-modal-close" id="pata-legal-modal-close">✕</button>
+                        </div>
+                        <div class="pata-legal-modal-body" id="pata-legal-modal-body">
+                            <div style="text-align:center; padding: 50px;">
+                                <div class="pata-loading-spinner" style="margin: 0 auto;"></div>
+                                <p style="margin-top:20px; font-weight:700;">Preparando documentos...</p>
+                            </div>
+                        </div>
+                        <div class="pata-legal-modal-footer">
+                            <button class="pata-btn-submit" style="max-width: 200px; margin: 0;" id="pata-legal-modal-understood">Entendido ✓</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        formatLegalText(text) {
+            if (!text) return '';
+            return text.split('\n').map(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('## ') || trimmed.startsWith('### ')) {
+                    return `<h4>${trimmed.replace(/^###?\s/, '')}</h4>`;
+                }
+                if (trimmed === '') return '<br/>';
+                return `<p>${line}</p>`;
+            }).join('');
         }
     }
 
