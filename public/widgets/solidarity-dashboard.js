@@ -859,12 +859,15 @@ class SolidarityDashboard {
     renderHistory() {
         return `
             <div class="pata-history-header" style="display: flex; gap: 15px; flex-wrap: wrap;">
-                <input type="text" id="pata-history-search" placeholder="Buscar..." style="background: white; border: 2px solid var(--pata-black); padding: 10px 20px; border-radius: 50px; font-family: inherit; flex: 1; min-width: 200px; box-shadow: 4px 4px 0px var(--pata-black);">
-                <select id="pata-history-filter" style="background: white; border: 2px solid var(--pata-black); padding: 10px 20px; border-radius: 50px; font-family: inherit; min-width: 150px; cursor: pointer; box-shadow: 4px 4px 0px var(--pata-black);">
-                    <option value="all">Filtro</option>
-                    <option value="medical_emergency">Emergencias</option>
-                    <option value="annual_vaccination">Vacuna</option>
-                    <option value="death">Fallecimiento</option>
+                <input type="text" id="pata-history-search" placeholder="Buscar..." 
+                       style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; flex: 1; min-width: 200px; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black); font-weight: 600; font-size: 16px; outline: none;">
+                
+                <select id="pata-history-filter" 
+                        style="background: white; border: 2px solid var(--pata-black); padding: 12px 24px; border-radius: 50px; font-family: inherit; min-width: 180px; cursor: pointer; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black); font-weight: 700; font-size: 16px; outline: none; appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A1A1A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right%2020px%20top%2050%25; background-size: 12px%20auto;">
+                    <option value="all">Filtro: Todos</option>
+                    <option value="medical_emergency">🏥 Emergencias</option>
+                    <option value="annual_vaccination">💉 Vacunación</option>
+                    <option value="death">🕊️ Fallecimiento</option>
                 </select>
             </div>
             <ul class="pata-history-list" id="pata-history-items-container" style="list-style: none; padding: 0;">
