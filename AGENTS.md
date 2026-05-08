@@ -371,10 +371,18 @@ try {
 2. Configurar variables de entorno
 3. Deploy automático en cada push
 
-### Integración Webflow
-- El formulario se embebe en Webflow via iframe
-- Dashboard de usuario implementado en Webflow directamente
-- Comunicación via postMessage y Memberstack DOM API
+---
+
+## Arquitectura de Widgets Externos
+
+### Regla de Oro de Seguridad (MANDATORY)
+
+Todos los widgets públicos (`public/widgets/*.js`) destinados a integrarse en Webflow u otros sitios externos **JAMÁS deben inicializar clientes de base de datos directamente en el navegador** (ej. `supabase-js`).
+
+1. **API-First**: Todo acceso a datos debe realizarse mediante `fetch()` hacia las API Routes de Next.js (`/api/*`).
+2. **Protección de Keys**: Las variables de entorno (`SUPABASE_KEY`, etc.) deben permanecer exclusivamente en el servidor (Vercel).
+3. **Configuración Dinámica**: Usar `window.PATA_AMIGA_CONFIG` para definir la URL base de la API, permitiendo flexibilidad entre entornos.
+4. **Auto-inicialización**: El widget debe buscar su contenedor (ej. `id="pata-solidarity-dashboard"`) e inyectarse automáticamente al cargar el script.
 
 ---
 

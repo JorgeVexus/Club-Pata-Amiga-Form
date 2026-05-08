@@ -5,23 +5,18 @@
 
 class SolidarityDashboard {
     constructor(containerId, options = {}) {
-        this.containerId = containerId || 'solidarity-dashboard-root';
+        this.containerId = containerId || 'pata-solidarity-dashboard';
         this.container = document.getElementById(this.containerId);
         
-        // Environment Config (Passed from Webflow)
-        this.supabaseUrl = options.supabaseUrl || window.PATA_CONFIG?.supabaseUrl;
-        this.supabaseKey = options.supabaseKey || window.PATA_CONFIG?.supabaseKey;
+        // Environment Config
+        this.apiUrl = options.apiUrl || window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx';
         
         this.data = {
             user: null,
             pets: [],
             requests: [],
             filteredRequests: [],
-            stats: {
-                active: 0,
-                pending: 0,
-                processed: 0
-            }
+            stats: { active: 0, pending: 0, total: 0, processed: 0 }
         };
 
         this.useMock = options.useMock || false;
@@ -49,13 +44,9 @@ class SolidarityDashboard {
     }
 
     async loadDependencies() {
-        if (!window.supabase) {
-            await this.loadScript('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2');
-        }
-        
+        // No longer need Supabase client in the browser
         if (!window.$memberstackDom) {
             await this.loadScript('https://static.memberstack.com/scripts/v1/memberstack.js');
-            // Give MS a moment to initialize if we just loaded it
             await new Promise(resolve => setTimeout(resolve, 500));
         }
     }
@@ -83,39 +74,30 @@ class SolidarityDashboard {
             throw new Error('Debes iniciar sesión para ver tu manada.');
         }
 
-        const email = member.auth.email;
-        const supabase = window.supabase.createClient(this.supabaseUrl, this.supabaseKey);
+        const memberstackId = member.id;
 
-        const { data: userData, error: userError } = await supabase
-            .from('users')
-            .select('*')
-            .eq('email', email)
-            .single();
+        // Fetch everything from our API
+        const [statsRes, historyRes] = await Promise.all([
+            fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}`).then(r => r.json()),
+            fetch(`${this.apiUrl}/api/solidarity/history?memberstackId=${memberstackId}`).then(r => r.json())
+        ]);
 
-        if (userError || !userData) {
-            throw new Error('No se encontró información del usuario en el sistema.');
+        if (statsRes.success) {
+            this.data.user = statsRes.user;
+            this.data.pets = statsRes.pets || [];
+            this.data.stats = {
+                active: statsRes.stats.activePets,
+                pending: statsRes.stats.pendingPets,
+                total: statsRes.stats.totalRequests,
+                processed: statsRes.stats.pendingRequests // Using pendingRequests as "en proceso"
+            };
         }
 
-        this.data.user = userData;
+        if (historyRes.success) {
+            this.data.requests = historyRes.requests || [];
+        }
 
-        const { data: petsData, error: petsError } = await supabase
-            .from('pets')
-            .select('*')
-            .eq('user_id', userData.id);
-
-        if (petsError) throw petsError;
-        this.data.pets = petsData || [];
-
-        const { data: requestsData, error: requestsError } = await supabase
-            .from('solidarity_requests')
-            .select('*')
-            .eq('user_id', userData.id)
-            .order('created_at', { ascending: false });
-
-        if (requestsError) throw requestsError;
-        this.data.requests = requestsData || [];
-
-        this.calculateStats();
+        this.data.filteredRequests = [...this.data.requests];
     }
 
     loadMockData() {
@@ -697,17 +679,21 @@ class SolidarityDashboard {
                         </p>
 
                         <div class="pata-stats-grid">
-                            <div class="pata-stat-box">
+                            <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.1s;">
                                 <span class="pata-stat-number">${this.data.stats.active}</span>
                                 <span class="pata-stat-label">Mascotas con acceso al Fondo Solidario.</span>
                             </div>
-                            <div class="pata-stat-box">
+                            <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.2s;">
                                 <span class="pata-stat-number">${this.data.stats.pending}</span>
                                 <span class="pata-stat-label">En proceso de activar su apoyo.</span>
                             </div>
-                            <div class="pata-stat-box">
+                            <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.3s;">
+                                <span class="pata-stat-number">${this.data.stats.total || 0}</span>
+                                <span class="pata-stat-label">Solicitudes realizadas.</span>
+                            </div>
+                            <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.4s;">
                                 <span class="pata-stat-number">${this.data.stats.processed}</span>
-                                <span class="pata-stat-label">Apoyos tramitados</span>
+                                <span class="pata-stat-label">Solicitudes en proceso.</span>
                             </div>
                         </div>
 
@@ -906,3 +892,17 @@ class SolidarityDashboard {
 
 // Global exposure
 window.SolidarityDashboard = SolidarityDashboard;
+
+    // Self-initialize if container exists
+    const autoInit = () => {
+        const container = document.getElementById('pata-solidarity-dashboard');
+        if (container && !window.PataSolidarityDashboard) {
+            window.PataSolidarityDashboard = new SolidarityDashboard('pata-solidarity-dashboard');
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', autoInit);
+    } else {
+        autoInit();
+    }
