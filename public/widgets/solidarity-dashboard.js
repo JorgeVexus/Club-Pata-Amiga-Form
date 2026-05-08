@@ -118,18 +118,52 @@ class SolidarityDashboard {
     calculateStats() {
         const now = new Date();
         this.data.stats.active = this.data.pets.filter(p => {
-            if (!p.waiting_period_end) return false;
-            return new Date(p.waiting_period_end) <= now;
+            if (p.status !== 'approved') return false;
+            const carencia = this.calculateCarencia(p);
+            return !carencia.isWaiting;
         }).length;
 
         this.data.stats.pending = this.data.pets.filter(p => {
-            if (!p.waiting_period_end) return true;
-            return new Date(p.waiting_period_end) > now;
+            if (p.status !== 'approved') return true;
+            const carencia = this.calculateCarencia(p);
+            return carencia.isWaiting;
         }).length;
 
         this.data.stats.processed = this.data.requests.filter(r => 
             ['paid', 'completed'].includes(r.status)
         ).length;
+    }
+
+    calculateCarencia(pet) {
+        const now = new Date();
+        const start = new Date(pet.created_at);
+
+        let totalDays = 180;
+        if (pet.waiting_period_days) {
+            totalDays = parseInt(pet.waiting_period_days);
+        } else if (pet.is_adopted) {
+            const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+            totalDays = isMixed ? 120 : 150;
+        }
+
+        const diffTime = Math.abs(now - start);
+        const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(0, totalDays - daysPassed);
+        const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+        const isWaiting = daysRemaining > 0;
+
+        return { daysRemaining, percentage, totalDays, isWaiting };
+    }
+
+    getPetStatusContext(pet) {
+        const primaryPhotoUrl = pet.photo_url || pet.primary_photo_url;
+        const hasPrimaryPhoto = primaryPhotoUrl && primaryPhotoUrl.startsWith('http');
+        
+        if (pet.status === 'rejected') return { label: 'RECHAZADA', color: '#FF0066', icon: '❌' };
+        if (pet.status === 'pending') return { label: 'EN REVISIÓN', color: '#FE8F15', icon: '⏳' };
+        if (!hasPrimaryPhoto) return { label: 'SIN FOTO', color: '#718096', icon: '📷' };
+        
+        return { label: 'APROBADA', color: '#10B981', icon: '✅' };
     }
 
     attachEventListeners() {
@@ -759,40 +793,68 @@ class SolidarityDashboard {
     }
 
     renderPets() {
-        if (this.data.pets.length === 0) return '<p>No tienes mascotas registradas.</p>';
-        const now = new Date();
-        return this.data.pets.map((pet, index) => {
-            const isWaiting = new Date(pet.waiting_period_end) > now;
-            const daysLeft = Math.ceil((new Date(pet.waiting_period_end) - now) / (1000 * 60 * 60 * 24));
-            
-            return `
-                <div class="pata-pet-card pata-animate-entry" style="animation-delay: ${index * 0.1}s">
-                    ${isWaiting ? `<div class="pata-pet-badge-new">En carencia</div>` : ''}
-                    <img src="${pet.primary_photo_url || 'https://via.placeholder.com/150'}" 
-                         class="pata-pet-photo" 
-                         alt="Foto de ${pet.name}">
-                    <div class="pata-pet-info">
-                        <h3 class="pata-pet-name">${pet.name}</h3>
-                        <p style="font-size: 14px; margin: 5px 0;">${pet.breed || 'Mestizo'}</p>
-                        <div style="margin-top: 10px;">
-                            ${isWaiting ? `
-                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ ${daysLeft} días restantes</p>
-                            ` : `
-                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ Fondo disponible</p>
-                            `}
-                        </div>
-                        <button class="pata-btn" style="margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise);" onclick="window.location.href='/mi-mascota?id=${pet.id}'">Ver detalles</button>
-                    </div>
-                </div>
-            `;
-        }).join('') + `
-            <div class="pata-pet-card" style="border: 2px dashed var(--pata-gray); background: transparent; cursor: pointer; justify-content: center;" id="add-pet-trigger">
+        if (this.data.pets.length === 0) return `
+            <div style="padding: 30px; text-align: center; background: rgba(255,255,255,0.05); border-radius: 30px; border: 2px dashed rgba(255,255,255,0.2);">
+                <p style="color: white; font-weight: 600;">No tienes mascotas registradas.</p>
+            </div>
+            <div class="pata-pet-card" style="border: 2px dashed var(--pata-gray); background: transparent; cursor: pointer; justify-content: center; margin-top: 20px;" id="add-pet-trigger" onclick="window.location.href='/registrar-mascotas'">
                 <div style="text-align: center; padding: 20px;">
                     <div style="font-size: 32px; color: var(--pata-red);">+</div>
                     <p style="font-weight: 800;">Añadir peludo</p>
                 </div>
             </div>
         `;
+
+        const petCards = this.data.pets.map((pet, index) => {
+            const carencia = this.calculateCarencia(pet);
+            const statusContext = this.getPetStatusContext(pet);
+            const imageUrl = pet.primary_photo_url || pet.photo_url || 'https://via.placeholder.com/150';
+            const isApproved = pet.status === 'approved';
+            const isEligible = isApproved && !carencia.isWaiting;
+            
+            return `
+                <div class="pata-pet-card pata-animate-entry" style="animation-delay: ${index * 0.1}s">
+                    ${!isEligible ? `<div class="pata-pet-badge-new" style="background: ${isApproved ? '#FEF9C3' : '#FEE2E2'}; color: ${isApproved ? '#854D0E' : '#991B1B'}; border-color: ${isApproved ? '#854D0E' : '#991B1B'};">
+                        ${!isApproved ? statusContext.label : 'En carencia'}
+                    </div>` : ''}
+                    
+                    <img src="${imageUrl}" 
+                         class="pata-pet-photo" 
+                         alt="Foto de ${pet.name}"
+                         onerror="this.src='https://via.placeholder.com/150';">
+                         
+                    <div class="pata-pet-info">
+                        <h3 class="pata-pet-name">${pet.name}</h3>
+                        <p style="font-size: 14px; margin: 5px 0; color: var(--pata-gray); font-weight: 600;">${pet.breed || 'Mestizo'}</p>
+                        <div style="margin-top: 10px;">
+                            ${!isApproved ? `
+                                <p style="color: #6B7280; font-weight: 700; font-size: 13px;">${statusContext.icon} Esperando aprobación</p>
+                            ` : carencia.isWaiting ? `
+                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ ${carencia.daysRemaining} días de carencia</p>
+                            ` : `
+                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ Fondo disponible</p>
+                            `}
+                        </div>
+                        <button class="pata-btn" 
+                                style="margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise);" 
+                                onclick="window.location.href='/mi-mascota?id=${pet.id}'">
+                            Ver expediente
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const addCard = this.data.pets.length < 3 ? `
+            <div class="pata-pet-card" style="border: 2px dashed var(--pata-gray); background: transparent; cursor: pointer; justify-content: center;" id="add-pet-trigger" onclick="window.location.href='/registrar-mascotas'">
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 32px; color: var(--pata-red);">+</div>
+                    <p style="font-weight: 800;">Añadir peludo</p>
+                </div>
+            </div>
+        ` : '';
+
+        return petCards + addCard;
     }
 
     renderHistory() {
