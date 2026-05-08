@@ -3768,8 +3768,8 @@
 
             const type = (pet.pet_type || pet.petType || '').toLowerCase();
             const iconName = (type === 'gato' || type === 'cat') ? 'cat-icon.svg' : 'dog-icon.svg';
-            // IMPORTANTE: Para assets en /public, siempre usar el dominio de producción app.pataamiga.mx
-            return `<img src="https://app.pataamiga.mx/icons/${iconName}" alt="${type}" style="width: 24px; height: 24px; opacity: 0.8;" />`;
+            // IMPORTANTE: Para assets en /public, siempre usar el dominio de producción app.pataamiga.mx y respetar las mayúsculas (Icons)
+            return `<img src="https://app.pataamiga.mx/Icons/${iconName}" alt="${type}" style="width: 24px; height: 24px; opacity: 0.8;" />`;
         }
 
         checkMissingDocs(pet) {
