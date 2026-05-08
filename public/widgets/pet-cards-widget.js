@@ -421,6 +421,12 @@
             border: 2px solid #000;
         }
 
+        .pata-info-icon-wrap img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
         .pata-info-texts {
             display: flex; flex-direction: column;
         }
@@ -1014,21 +1020,21 @@
                                 <h3 class="pata-info-card-title">Información General</h3>
                                 <div class="pata-info-grid">
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">category</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/especie.png" alt="Especie"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Especie</span>
                                             <span class="pata-info-value">${petTypeDisplay}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">event</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/edad.png" alt="Edad"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Edad</span>
                                             <span class="pata-info-value">${ageValue} ${ageUnit}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">cake</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/cumpleanos.png" alt="Cumpleaños"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Cumpleaños</span>
                                             ${pet.birth_month && pet.birth_year ? `
@@ -1057,42 +1063,42 @@
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">${genderIcon}</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/sexo.png" alt="Género"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Género</span>
                                             <span class="pata-info-value">${genderDisplay}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">palette</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/color-pelo.png" alt="Color Pelo"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Pelo</span>
                                             <span class="pata-info-value">${pet.coat_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">visibility</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/color-ojos.png" alt="Color Ojos"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Ojos</span>
                                             <span class="pata-info-value">${pet.eye_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">fiber_manual_record</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/color-nariz.png" alt="Color Nariz"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Color Nariz</span>
                                             <span class="pata-info-value">${pet.nose_color || '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">login</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/ingreso.png" alt="Ingreso"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Ingreso</span>
                                             <span class="pata-info-value">${registrationDate}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><span class="material-symbols-outlined">rocket_launch</span></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Activación"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Activación</span>
                                             <span class="pata-info-value">${activationDate}</span>
