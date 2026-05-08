@@ -3768,7 +3768,8 @@
 
             const type = (pet.pet_type || pet.petType || '').toLowerCase();
             const iconName = (type === 'gato' || type === 'cat') ? 'cat-icon.svg' : 'dog-icon.svg';
-            return `<img src="/icons/${iconName}" alt="${type}" style="width: 24px; height: 24px; opacity: 0.8;" />`;
+            // Usar CONFIG.apiUrl para asegurar que la ruta sea absoluta y funcione desde cualquier dominio (Webflow, etc.)
+            return `<img src="${CONFIG.apiUrl}/icons/${iconName}" alt="${type}" style="width: 24px; height: 24px; opacity: 0.8;" />`;
         }
 
         checkMissingDocs(pet) {
