@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
             .select('*')
-            .eq('user_id', internalUserId);
+            .eq('owner_id', internalUserId);
 
         if (petsError) throw petsError;
 

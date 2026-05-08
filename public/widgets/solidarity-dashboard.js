@@ -208,10 +208,10 @@ class SolidarityDashboard {
                 }
 
                 .pata-header {
-                    padding: 60px 40px;
+                    padding: 60px 40px 120px 40px;
                     border-radius: 0 0 50px 50px;
                     text-align: left;
-                    margin-bottom: -100px;
+                    margin-bottom: -80px;
                 }
 
                 .pata-header h1 {
@@ -628,8 +628,9 @@ class SolidarityDashboard {
                     .pata-pet-name { font-size: 24px; }
                     
                     .pata-history-panel { padding: 20px; border-radius: 30px; }
-                    .pata-history-header { flex-direction: column; align-items: stretch; }
-                    .pata-history-header input { width: 100% !important; }
+                    .pata-history-header { flex-direction: column; align-items: stretch; gap: 15px; }
+                    .pata-history-header input { width: 100% !important; margin: 0 !important; }
+                    .pata-history-header select { width: 100% !important; margin: 0 !important; }
                     
                     .pata-history-item { 
                         display: flex;
@@ -796,12 +797,13 @@ class SolidarityDashboard {
 
     renderHistory() {
         return `
-            <div class="pata-history-header">
-                <input type="text" id="pata-history-search" placeholder="Buscar..." style="background: white; border: 2px solid var(--pata-black); padding: 8px 15px; border-radius: 20px; font-family: inherit; width: 60%;">
-                <select id="pata-history-filter" style="background: white; border: 2px solid var(--pata-black); padding: 8px 15px; border-radius: 20px; font-family: inherit;">
+            <div class="pata-history-header" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                <input type="text" id="pata-history-search" placeholder="Buscar..." style="background: white; border: 2px solid var(--pata-black); padding: 10px 20px; border-radius: 50px; font-family: inherit; flex: 1; min-width: 200px; box-shadow: 4px 4px 0px var(--pata-black);">
+                <select id="pata-history-filter" style="background: white; border: 2px solid var(--pata-black); padding: 10px 20px; border-radius: 50px; font-family: inherit; min-width: 150px; cursor: pointer; box-shadow: 4px 4px 0px var(--pata-black);">
                     <option value="all">Filtro</option>
                     <option value="medical_emergency">Emergencias</option>
                     <option value="annual_vaccination">Vacuna</option>
+                    <option value="death">Fallecimiento</option>
                 </select>
             </div>
             <ul class="pata-history-list" id="pata-history-items-container" style="list-style: none; padding: 0;">
@@ -846,8 +848,8 @@ class SolidarityDashboard {
                 </div>
                 
                 <div style="flex: 1; padding: 0 20px;">
-                    <div class="pata-badge-type" style="border-color: ${type.color};">
-                        <div class="pata-badge-type-icon" style="background: ${type.color};">
+                    <div class="pata-badge-type" style="border: 2px solid ${type.color};">
+                        <div class="pata-badge-type-icon" style="background: ${type.color}; border: 2px solid ${type.color};">
                             <img src="${type.icon}" alt="">
                         </div>
                         ${type.label}
