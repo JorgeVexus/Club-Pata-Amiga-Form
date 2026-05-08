@@ -2408,11 +2408,19 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            overflow: hidden;
         }
 
         .pata-tab-new.tab-active .pata-tab-icon-new {
             background: #15BEB2;
             border-color: #000;
+        }
+
+        .pata-tab-icon-new img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .pata-tab-icon-new svg {
@@ -3753,11 +3761,14 @@
         }
 
         getPetIcon(pet) {
-            const type = (pet.pet_type || pet.petType || '').toLowerCase();
-            if (type === 'gato' || type === 'cat') {
-                return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 5.03-2.84 6.42-2.26 1.4.58-.42 7-.42 7 .57 1.27.6 2.52.34 3.74a6 6 0 0 1-5.81 7.53c-2.67 0-4.98-1.75-5.75-4.17-.24-.04-.46-.09-.69-.15-1.13-.27-2.1-.89-2.82-1.72-.78.75-1.8 1.15-2.81 1.15a4.34 4.34 0 0 1-4.34-4.34c0-2.1 1.5-3.9 3.58-4.24.01-1.32.32-2.63.92-3.83 0 0-1.82-6.42-.42-7 1.39-.58 4.64.26 6.42 2.26.65-.17 1.33-.26 2-.26Z"></path></svg>`;
+            const photoUrl = pet.photo_url || pet.primary_photo_url;
+            if (photoUrl) {
+                return `<img src="${photoUrl}" alt="${pet.name || 'Mascota'}" />`;
             }
-            return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><path d="M10 5.172a2 2 0 0 0 5 0"></path><path d="M12 18v4"></path><path d="M4.828 17.172a2 2 0 0 1 0-2.828"></path><path d="M19.172 17.172a2 2 0 0 0 0-2.828"></path><path d="M21 21c-2.436-1.5-6.192-2-9-2s-6.564.5-9 2"></path><path d="M12 5.172a2 2 0 0 0-5 0c-1.104 0-2 .896-2 2v2.172c0 .53.21 1.04.586 1.414l1.414 1.414A2 2 0 0 1 8 15.586V19"></path><path d="M12 5.172a2 2 0 0 1 5 0c1.104 0 2 .896 2 2v2.172c0 .53-.21 1.04-.586 1.414l-1.414 1.414A2 2 0 0 0 16 15.586V19"></path></svg>`;
+
+            const type = (pet.pet_type || pet.petType || '').toLowerCase();
+            const iconName = (type === 'gato' || type === 'cat') ? 'cat-icon.svg' : 'dog-icon.svg';
+            return `<img src="/icons/${iconName}" alt="${type}" style="width: 24px; height: 24px; opacity: 0.8;" />`;
         }
 
         checkMissingDocs(pet) {

@@ -524,12 +524,32 @@
 
         @media (max-width: 480px) {
             .rtbell-dropdown {
-                position: fixed;
-                bottom: 80px;
-                right: 15px;
-                left: 15px;
-                width: auto;
-                box-shadow: 0px -4px 20px rgba(0,0,0,0.2);
+                position: fixed !important;
+                top: auto !important;
+                bottom: 0 !important;
+                right: 0 !important;
+                left: 0 !important;
+                width: 100% !important;
+                border-radius: 20px 20px 0 0 !important;
+                box-shadow: 0px -10px 30px rgba(0,0,0,0.3) !important;
+                max-height: 80vh !important;
+                transform: translateY(100%) !important;
+                z-index: 2147483647 !important;
+                opacity: 1 !important;
+                display: block !important;
+                pointer-events: none !important;
+                visibility: hidden !important;
+            }
+            
+            .rtbell-dropdown.open {
+                transform: translateY(0) !important;
+                pointer-events: auto !important;
+                visibility: visible !important;
+            }
+
+            .rtbell-header {
+                padding: 20px;
+                border-radius: 20px 20px 0 0;
             }
         }
     `;
@@ -920,7 +940,8 @@
                 const dropdown = container.querySelector('.rtbell-dropdown');
                 const markAllBtn = container.querySelector('.rtbell-mark-all');
 
-                btn.addEventListener('click', (e) => {
+                const handleToggle = (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     const isCurrentlyOpen = dropdown.classList.contains('open');
                     
@@ -930,7 +951,13 @@
                     if (!isCurrentlyOpen) {
                         dropdown.classList.add('open');
                     }
-                });
+                };
+
+                btn.addEventListener('click', handleToggle);
+                btn.addEventListener('touchstart', (e) => {
+                    // Evitar que el click se dispare después del touch
+                    handleToggle(e);
+                }, { passive: false });
 
                 markAllBtn.addEventListener('click', (e) => {
                     e.stopPropagation();

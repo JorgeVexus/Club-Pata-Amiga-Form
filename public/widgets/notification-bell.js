@@ -638,7 +638,16 @@
 
             // Event listeners
             var bell = this.container.querySelector('.pata-notification-bell');
-            bell.addEventListener('click', function () { self.toggleDropdown(); });
+            const handleToggle = function(e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                self.toggleDropdown();
+            };
+
+            bell.addEventListener('click', handleToggle);
+            bell.addEventListener('touchstart', handleToggle, { passive: false });
 
             var markAllBtn = this.container.querySelector('.pata-mark-all-btn');
             markAllBtn.addEventListener('click', function () { self.markAllAsRead(); });
