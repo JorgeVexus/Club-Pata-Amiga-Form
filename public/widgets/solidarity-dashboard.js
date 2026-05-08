@@ -85,12 +85,11 @@ class SolidarityDashboard {
         if (statsRes.success) {
             this.data.user = statsRes.user;
             this.data.pets = statsRes.pets || [];
-            this.data.stats = {
-                active: statsRes.stats.active || 0,
-                pending: statsRes.stats.pending || 0,
-                total: statsRes.stats.total || 0,
-                processed: statsRes.stats.processed || 0
-            };
+            // Recalculate stats on frontend to ensure consistency with complex carencia rules
+            this.calculateStats();
+            // Preserve total and processed requests from API
+            this.data.stats.total = statsRes.stats.total || 0;
+            this.data.stats.processed = statsRes.stats.processed || 0;
         }
 
         if (historyRes.success) {

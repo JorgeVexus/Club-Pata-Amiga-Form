@@ -60,17 +60,21 @@ export async function GET(request: NextRequest) {
         let pendingPets = 0;
 
         pets?.forEach(pet => {
-            if (pet.waiting_period_end) {
+            const isApproved = pet.status === 'approved';
+            
+            if (isApproved && pet.waiting_period_end) {
                 const waitDate = new Date(pet.waiting_period_end);
                 if (waitDate <= now) {
                     activePets++;
                 } else {
                     pendingPets++;
                 }
-            } else {
-                // Si no tiene fecha, asumimos que está activo o pendiente según lógica de negocio
-                // En este caso, si no hay fecha de carencia, está activo
+            } else if (isApproved && !pet.waiting_period_end) {
+                // If approved but no date (legacy), assume active
                 activePets++;
+            } else {
+                // Not approved or other status
+                pendingPets++;
             }
         });
 
