@@ -1,3 +1,5 @@
+import { SolidarityRequest } from './solidarity.types';
+
 /**
  * Tipos y constantes para el Dashboard de Admin
  */
@@ -49,7 +51,7 @@ export interface Request {
     memberData?: MemberRequestData;
     ambassadorData?: any; // Para futuro
     wellnessCenterData?: any; // Para futuro
-    solidarityFundData?: any; // Para futuro
+    solidarityFundData?: SolidarityRequest;
 }
 
 // Datos específicos de solicitud de miembro
