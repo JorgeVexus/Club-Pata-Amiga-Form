@@ -86,10 +86,10 @@ class SolidarityDashboard {
             this.data.user = statsRes.user;
             this.data.pets = statsRes.pets || [];
             this.data.stats = {
-                active: statsRes.stats.activePets,
-                pending: statsRes.stats.pendingPets,
-                total: statsRes.stats.totalRequests,
-                processed: statsRes.stats.pendingRequests // Using pendingRequests as "en proceso"
+                active: statsRes.stats.active || 0,
+                pending: statsRes.stats.pending || 0,
+                total: statsRes.stats.total || 0,
+                processed: statsRes.stats.processed || 0
             };
         }
 

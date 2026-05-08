@@ -20,12 +20,26 @@ export async function OPTIONS() {
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
-        const memberId = searchParams.get('memberId');
+        const memberstackId = searchParams.get('memberstackId');
         const petId = searchParams.get('petId');
 
-        if (!memberId) {
-            return NextResponse.json({ error: 'memberId es requerido' }, { status: 400, headers: corsHeaders });
+        if (!memberstackId) {
+            return NextResponse.json({ error: 'memberstackId es requerido' }, { status: 400, headers: corsHeaders });
         }
+
+        // Resolver el ID interno de Supabase a partir del ID de Memberstack
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !user) {
+            console.error('❌ Error resolviendo usuario:', userError);
+            return NextResponse.json({ error: 'Usuario no encontrado en Supabase' }, { status: 404, headers: corsHeaders });
+        }
+
+        const internalUserId = user.id;
 
         // Construir query para solicitudes
         let query = supabaseAdmin
@@ -35,7 +49,7 @@ export async function GET(request: NextRequest) {
                 pet:pets(name),
                 documents:solidarity_documents(*)
             `)
-            .eq('user_id', memberId)
+            .eq('user_id', internalUserId)
             .order('created_at', { ascending: false });
 
         if (petId) {
