@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { createClient, RealtimeChannel } from '@supabase/supabase-js';
+import { useRouter } from 'next/navigation';
 import styles from './AdminNotifications.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
 
@@ -31,6 +32,7 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
     const [isOpen, setIsOpen] = useState(false);
     const [showToast, setShowToast] = useState(false);
     const [toastMessage, setToastMessage] = useState('');
+    const router = useRouter();
     const dropdownRef = useRef<HTMLDivElement>(null);
     const channelRef = useRef<RealtimeChannel | null>(null);
 
@@ -224,7 +226,11 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
 
         // 🆕 Navegar al link si existe
         if (notif.link) {
-            window.location.href = notif.link;
+            if (notif.link.startsWith('/')) {
+                router.push(notif.link);
+            } else {
+                window.location.href = notif.link;
+            }
         }
     }
 

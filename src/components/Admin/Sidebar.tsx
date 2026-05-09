@@ -6,6 +6,7 @@ import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
     activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members';
+    activeSubStatus?: string | null;
     onFilterChange: (filter: any) => void;
     pendingCounts: Record<string, number>;
     isMobileOpen?: boolean;
@@ -29,7 +30,15 @@ interface MenuSection {
     isCollapsible?: boolean;
 }
 
-export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, isMobileOpen, onClose, isSuperAdmin = false }: SidebarProps) {
+export default function Sidebar({ 
+    activeFilter, 
+    activeSubStatus,
+    onFilterChange, 
+    pendingCounts, 
+    isMobileOpen, 
+    onClose, 
+    isSuperAdmin = false 
+}: SidebarProps) {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         'gestion': true,
         'fondo': true,
@@ -63,10 +72,10 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
             title: 'Fondo Solidario',
             icon: '💰',
             items: [
-                { id: 'solidarity-fund', label: 'Nuevas solicitudes', icon: '📩', subStatus: 'pending' },
+                { id: 'solidarity-fund', label: 'Nuevas solicitudes', icon: '📩', subStatus: 'new' },
                 { id: 'solidarity-fund', label: 'Aprobadas', icon: '✅', subStatus: 'approved' },
                 { id: 'solidarity-fund', label: 'Rechazadas', icon: '❌', subStatus: 'rejected' },
-                { id: 'solidarity-fund', label: 'En proceso', icon: '⏳', subStatus: 'in-review' },
+                { id: 'solidarity-fund', label: 'En proceso', icon: '⏳', subStatus: 'in_review' },
             ]
         },
         {
@@ -149,7 +158,11 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                                 {section.items.map((item, idx) => (
                                     <button
                                         key={`${item.id}-${idx}`}
-                                        className={`${styles.menuItem} ${activeFilter === item.id ? styles.active : ''}`}
+                                        className={`${styles.menuItem} ${
+                                            activeFilter === item.id && (!item.subStatus || activeSubStatus === item.subStatus) 
+                                            ? styles.active 
+                                            : ''
+                                        }`}
                                         onClick={() => {
                                             if (item.subStatus) {
                                                 onFilterChange({ id: item.id, subStatus: item.subStatus });

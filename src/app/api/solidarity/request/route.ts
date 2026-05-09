@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
         // 2. Resolver Usuario (Memberstack ID -> Supabase UUID)
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id')
+            .select('id, first_name, last_name')
             .eq('memberstack_id', memberstackId)
             .single();
 
@@ -137,6 +137,29 @@ export async function POST(request: NextRequest) {
                 .insert(docsToInsert);
 
             if (docsError) console.error('Error vinculando documentos:', docsError);
+        }
+
+        // 7. Notificar al Admin
+        try {
+            const { data: adminNotif, error: notifError } = await supabaseAdmin
+                .from('notifications')
+                .insert({
+                    user_id: 'admin',
+                    type: 'solidarity-fund',
+                    title: 'Nueva Solicitud de Apoyo',
+                    message: `${body.caseTitle || 'Sin título'} - Mascota: ${pet.name}`,
+                    icon: '🐾',
+                    link: `/admin/dashboard?tab=solidarity-fund&requestId=${solidarityRequest.id}`,
+                    metadata: {
+                        requestId: solidarityRequest.id,
+                        petName: pet.name,
+                        userName: `${user.first_name || ''} ${user.last_name || ''}`.trim()
+                    }
+                });
+
+            if (notifError) console.error('Error creando notificación para admin:', notifError);
+        } catch (e) {
+            console.error('Error silenciado en notificación admin:', e);
         }
 
         return NextResponse.json({

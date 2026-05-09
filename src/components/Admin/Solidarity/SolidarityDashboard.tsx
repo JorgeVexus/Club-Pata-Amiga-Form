@@ -22,16 +22,46 @@ interface SolidarityRequest {
 
 interface SolidarityDashboardProps {
     onViewDetail: (id: string) => void;
+    initialFilter?: string | null;
 }
 
-export default function SolidarityDashboard({ onViewDetail }: SolidarityDashboardProps) {
+export default function SolidarityDashboard({ onViewDetail, initialFilter }: SolidarityDashboardProps) {
     const [requests, setRequests] = useState<SolidarityRequest[]>([]);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState('all');
+    const [filter, setFilter] = useState(initialFilter || 'all');
+    const [stats, setStats] = useState({
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
+    });
+
+    useEffect(() => {
+        if (initialFilter) setFilter(initialFilter);
+    }, [initialFilter]);
 
     useEffect(() => {
         loadRequests();
+        loadStats();
     }, [filter]);
+
+    async function loadStats() {
+        try {
+            const response = await adminFetch(`/api/admin/solidarity/list?status=all`);
+            const data = await response.json();
+            if (data.success) {
+                const allRequests = data.requests || [];
+                setStats({
+                    total: allRequests.length,
+                    pending: allRequests.filter((r: any) => r.status === 'pending' || r.status === 'new').length,
+                    approved: allRequests.filter((r: any) => r.status === 'approved' || r.status === 'paid' || r.status === 'completed').length,
+                    rejected: allRequests.filter((r: any) => r.status === 'rejected').length
+                });
+            }
+        } catch (error) {
+            console.error('Error loading solidarity stats:', error);
+        }
+    }
 
     async function loadRequests() {
         setLoading(true);
@@ -75,6 +105,38 @@ export default function SolidarityDashboard({ onViewDetail }: SolidarityDashboar
 
     return (
         <div className={styles.container}>
+            {/* Stats Grid - Premium Brutalist */}
+            <div className={styles.statsGrid}>
+                <div className={styles.statCard}>
+                    <div className={styles.statIcon}>📊</div>
+                    <div className={styles.statInfo}>
+                        <div className={styles.statValue}>{stats.total}</div>
+                        <div className={styles.statLabel}>Total Solicitudes</div>
+                    </div>
+                </div>
+                <div className={`${styles.statCard} ${styles.statPending}`}>
+                    <div className={styles.statIcon}>⏳</div>
+                    <div className={styles.statInfo}>
+                        <div className={styles.statValue}>{stats.pending}</div>
+                        <div className={styles.statLabel}>Solicitudes Pendientes</div>
+                    </div>
+                </div>
+                <div className={`${styles.statCard} ${styles.statApproved}`}>
+                    <div className={styles.statIcon}>✅</div>
+                    <div className={styles.statInfo}>
+                        <div className={styles.statValue}>{stats.approved}</div>
+                        <div className={styles.statLabel}>Solicitudes Activas</div>
+                    </div>
+                </div>
+                <div className={`${styles.statCard} ${styles.statRejected}`}>
+                    <div className={styles.statIcon}>❌</div>
+                    <div className={styles.statInfo}>
+                        <div className={styles.statValue}>{stats.rejected}</div>
+                        <div className={styles.statLabel}>Solicitudes Rechazadas</div>
+                    </div>
+                </div>
+            </div>
+
             <div className={styles.header}>
                 <h2 className={styles.title}>Fondo Solidario</h2>
                 <div className={styles.filters}>

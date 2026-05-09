@@ -29,7 +29,7 @@ export type RequestType =
     | 'registered-centers';
 
 // Estados de solicitud
-export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in-review';
+export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in_review' | 'new';
 
 // Nivel de urgencia (para solicitudes de fondo solidario)
 export type UrgencyLevel = 'normal' | 'high';
@@ -156,7 +156,8 @@ export const REQUEST_STATUS_COLORS: Record<RequestStatus, string> = {
     'approved': BRAND_COLORS.green,
     'rejected': BRAND_COLORS.pink,
     'appealed': BRAND_COLORS.yellow,
-    'in-review': BRAND_COLORS.orange,
+    'in_review': BRAND_COLORS.orange,
+    'new': '#9CA3AF',
 };
 
 // Labels en español
@@ -189,7 +190,8 @@ export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {
     'approved': 'Aprobado',
     'rejected': 'Rechazado',
     'appealed': 'Apelado',
-    'in-review': 'En revisión',
+    'in_review': 'En revisión',
+    'new': 'Nuevo',
 };
 
 export const URGENCY_LABELS: Record<UrgencyLevel, string> = {

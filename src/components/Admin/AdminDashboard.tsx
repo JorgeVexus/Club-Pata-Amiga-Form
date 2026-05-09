@@ -30,6 +30,18 @@ export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
+    const handleFilterChange = (filter: any) => {
+        if (typeof filter === 'object') {
+            setActiveFilter(filter.id);
+            setSubFilter(filter.subStatus);
+        } else {
+            setActiveFilter(filter);
+            setSubFilter(null);
+        }
+        setIsMobileMenuOpen(false);
+        setSelectedMember(null);
+        setSelectedSolidarityRequestId(null);
+    };
     // ... rest of state stays the same
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -96,9 +108,16 @@ export default function AdminDashboard() {
             const params = new URLSearchParams(window.location.search);
             const tabParam = params.get('tab');
             if (tabParam) setActiveFilter(tabParam as any);
+            
             const memberId = params.get('member');
             if (memberId) fetchMemberDetails(memberId, setSelectedMember);
-            if (tabParam || memberId) window.history.replaceState({}, '', '/admin/dashboard');
+
+            const requestId = params.get('requestId');
+            if (requestId) setSelectedSolidarityRequestId(requestId);
+
+            if (tabParam || memberId || requestId) {
+                window.history.replaceState({}, '', '/admin/dashboard');
+            }
         }
     }, []);
 
@@ -106,9 +125,6 @@ export default function AdminDashboard() {
         const fetchAdminRole = async () => {
             if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                 try {
-                    // 🔒 SEGURIDAD: Cierre de sesión por inactividad de pestaña/navegador
-                    // Si no hay bandera en sessionStorage pero hay sesión en cookies, cerramos sesión
-                    // Esto asegura que si cierran el navegador, al volver tengan que loguearse
                     const sessionActive = sessionStorage.getItem('admin_session_active');
                     const member = await (window as any).$memberstackDom.getCurrentMember();
 
@@ -120,7 +136,6 @@ export default function AdminDashboard() {
                             return;
                         }
                     } else {
-                        // No hay miembro, redirigir al login
                         console.log('❌ No hay sesión activa. Redirigiendo...');
                         window.location.href = '/admin/login';
                         return;
@@ -132,14 +147,10 @@ export default function AdminDashboard() {
                         body: JSON.stringify({ memberstackId: currentMemberId })
                     });
 
-                    console.log(`[AdminAuth] Response from /api/admin/me: ${response.status}`);
-
                     if (response.ok) {
                         const data = await response.json();
-                        console.log('[AdminAuth] Data received:', data);
                         
                         if (!data.isAdmin) {
-                            console.error('🚫 Usuario no es administrador');
                             window.location.href = '/admin/login?error=not_admin';
                             return;
                         }
@@ -151,7 +162,6 @@ export default function AdminDashboard() {
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
                         
-                        // Marcar sesión como activa en esta pestaña/navegador
                         sessionStorage.setItem('admin_session_active', 'true');
                         
                         loadMetrics(currentMemberId);
@@ -169,8 +179,6 @@ export default function AdminDashboard() {
                     window.location.href = '/admin/login';
                 }
             } else if (hasMounted) {
-                // Si ya montó y no hay $memberstackDom, algo anda mal
-                // Pero damos un segundo por si está cargando
                 setTimeout(() => {
                     if (!(window as any).$memberstackDom) window.location.href = '/admin/login';
                 }, 2000);
@@ -180,7 +188,6 @@ export default function AdminDashboard() {
         setHasMounted(true);
     }, [hasMounted]);
     
-    // 🔒 Helper para peticiones autenticadas
     const fetchWithAuth = async (url: string, options: RequestInit = {}, overrideId?: string) => {
         return adminFetch(url, options);
     };
@@ -239,17 +246,20 @@ export default function AdminDashboard() {
     function handleNotificationClick(notification: any) {
         const userId = notification.metadata?.userId;
         if (userId) fetchMemberDetails(userId, setSelectedMember);
+
+        const requestId = notification.metadata?.requestId;
+        if (requestId) {
+            setActiveFilter('solidarity-fund');
+            setSelectedSolidarityRequestId(requestId);
+        }
     }
 
-    // Renderizado condicional del contenido principal
     const renderContent = () => {
-        // Secciones de Finanzas
         if (activeFilter.startsWith('finance-')) {
             const type = activeFilter.replace('finance-', '') as any;
             return <FinancialLedger type={type} />;
         }
 
-        // Secciones de Pagos y Facturación
         const billingViews = ['payment-records', 'billing', 'payment-status', 'auto-retries'];
         if (billingViews.includes(activeFilter)) {
             const view = activeFilter.replace('payment-', '') as any;
@@ -260,12 +270,10 @@ export default function AdminDashboard() {
             return <BillingManagement view="billing" />;
         }
 
-        // Reporteo
         if (activeFilter === 'reports-interactive') {
             return <InteractiveReports />;
         }
 
-        // Secciones Estándar
         switch (activeFilter) {
             case 'admins':
                 return <AdminsTable />;
@@ -309,7 +317,6 @@ export default function AdminDashboard() {
             case 'legal-docs':
                 return <LegalDocsManager />;
             default:
-                // RequestsTable para Miembros, Centros, Fondo Solidario, etc.
                 return (
                     <>
                         <RequestsTable
@@ -389,6 +396,7 @@ export default function AdminDashboard() {
                 return (
                     <SolidarityDashboard 
                         onViewDetail={(id) => setSelectedSolidarityRequestId(id)} 
+                        initialFilter={subFilter}
                     />
                 );
         }
@@ -440,18 +448,9 @@ export default function AdminDashboard() {
                 />
 
                 <Sidebar
-                    activeFilter={activeFilter as any}
-                    onFilterChange={(filter: any) => {
-                        // Soporte para sub-filtros de Fondo Solidario
-                        if (typeof filter === 'object' && filter.id === 'solidarity-fund') {
-                            setActiveFilter('solidarity-fund');
-                            setSubFilter(filter.subStatus);
-                        } else {
-                            setActiveFilter(filter);
-                            setSubFilter(null);
-                        }
-                        setIsMobileMenuOpen(false);
-                    }}
+                    activeFilter={activeFilter}
+                    activeSubStatus={subFilter}
+                    onFilterChange={handleFilterChange}
                     pendingCounts={pendingCounts}
                     isMobileOpen={isMobileMenuOpen}
                     onClose={() => setIsMobileMenuOpen(false)}
@@ -483,7 +482,7 @@ export default function AdminDashboard() {
                         </div>
                     </header>
 
-                    {activeFilter !== 'admins' && <MetricCards metrics={metrics} />}
+                    {activeFilter !== 'admins' && <MetricCards metrics={metrics} activeFilter={activeFilter} />}
 
                     {renderContent()}
                 </main>

@@ -6,9 +6,10 @@ import type { DashboardMetrics } from '@/types/admin.types';
 
 interface MetricCardsProps {
     metrics: DashboardMetrics;
+    activeFilter?: string;
 }
 
-export default function MetricCards({ metrics }: MetricCardsProps) {
+export default function MetricCards({ metrics, activeFilter }: MetricCardsProps) {
     return (
         <div className={styles.metricCards}>
             {/* Fondo Solidario */}
@@ -49,10 +50,10 @@ export default function MetricCards({ metrics }: MetricCardsProps) {
                     </div>
                 </div>
                 <div className={styles.metricValue}>
-                    {metrics.totalMembers}
+                    {activeFilter === 'solidarity-fund' ? metrics.totalRefunds : metrics.totalMembers}
                 </div>
                 <div className={styles.metricLabel}>
-                    Miembros
+                    {activeFilter === 'solidarity-fund' ? 'Total Solicitudes' : 'Miembros'}
                 </div>
             </div>
 
