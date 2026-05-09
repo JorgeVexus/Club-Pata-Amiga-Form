@@ -16,6 +16,8 @@ class SolidarityRequestDetail {
         const urlParams = new URLSearchParams(window.location.search);
         this.requestId = urlParams.get('id');
         
+        this.useMock = options.useMock || (this.requestId === 'mock');
+
         this.state = {
             loading: true,
             error: null,
@@ -31,11 +33,6 @@ class SolidarityRequestDetail {
 
         if (!this.container) {
             console.error('❌ SolidarityRequestDetail: Container not found:', this.containerId);
-            return;
-        }
-
-        if (!this.requestId) {
-            this.renderError('ID de solicitud no encontrado en la URL.');
             return;
         }
 
@@ -74,6 +71,11 @@ class SolidarityRequestDetail {
     }
 
     async fetchData() {
+        if (this.useMock) {
+            this.loadMockData();
+            return;
+        }
+
         const memberstack = window.$memberstackDom;
         const { data: member } = await memberstack.getCurrentMember();
         
@@ -82,11 +84,6 @@ class SolidarityRequestDetail {
         }
         this.state.member = member;
 
-        // Fetch Request + Messages
-        // We use a specific endpoint that returns request + pet + messages in one go if possible
-        // For now, let's fetch sequentially or from existing history if we had it, 
-        // but it's better to fetch fresh.
-        
         const [requestRes, messagesRes] = await Promise.all([
             fetch(`${this.apiUrl}/api/solidarity/requests/${this.requestId}?memberstackId=${member.id}`).then(r => r.json()),
             fetch(`${this.apiUrl}/api/solidarity/requests/${this.requestId}/messages?memberstackId=${member.id}`).then(r => r.json())
@@ -100,10 +97,49 @@ class SolidarityRequestDetail {
         this.state.loading = false;
     }
 
+    loadMockData() {
+        this.state.member = { first_name: 'Jorge', last_name: 'Cerna', id: 'mock-user' };
+        this.state.request = {
+            id: 'mock-A345',
+            request_number: 'A345',
+            clinic_name: 'Clínica Salud Animal',
+            created_at: '2025-06-20T10:00:00Z',
+            status: 'new',
+            benefit_type: 'medical_emergency',
+            type: 'clinic',
+            incident_date: '2025-06-18',
+            case_title: 'Fractura de pata trasera',
+            case_description: 'Spike tuvo un accidente mientras jugaba en el parque y presenta cojera en la pata trasera derecha. Se observa inflamación y no apoya la pata al caminar.',
+            requested_amount: 3000,
+            total_paid_amount: 4500,
+            evidence: [
+                { name: 'cartilla_vacunacion.pdf', url: '#', type: 'application/pdf', docType: 'prescription' },
+                { name: 'spike_lastimado.jpg', url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=300', type: 'image/jpeg', docType: 'evidence_photo' },
+                { name: 'recibo_pago.jpg', url: '#', type: 'image/jpeg', docType: 'receipt' }
+            ],
+            history: [
+                { status: 'new', created_at: '2025-06-20T10:00:00Z' }
+            ]
+        };
+        this.state.pet = {
+            name: 'Spike',
+            breed: 'Mestizo',
+            pet_type: 'dog',
+            gender: 'macho',
+            coat_color: 'Negro con blanco',
+            registration_date: '2025-03-12',
+            age: '1 año',
+            primary_photo_url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&q=80&w=300'
+        };
+        this.state.messages = [
+            { sender_role: 'admin', message: 'Hola Jorge, hemos recibido tu solicitud. Un integrante de nuestro comité la revisará pronto.', created_at: '2025-06-20T10:05:00Z' }
+        ];
+        this.state.loading = false;
+    }
+
     attachEventListeners() {
         if (this.state.loading || this.state.error) return;
 
-        // Message input
         const textarea = this.container.querySelector('#pata-msg-input');
         if (textarea) {
             textarea.addEventListener('input', (e) => {
@@ -112,13 +148,11 @@ class SolidarityRequestDetail {
             });
         }
 
-        // Send button
         const sendBtn = this.container.querySelector('#pata-send-btn');
         if (sendBtn) {
             sendBtn.addEventListener('click', () => this.handleSendMessage());
         }
 
-        // File box trigger
         const fileBox = this.container.querySelector('.pata-msg-file-trigger');
         if (fileBox) {
             fileBox.addEventListener('click', () => {
@@ -126,7 +160,6 @@ class SolidarityRequestDetail {
             });
         }
 
-        // File input change
         const fileInput = this.container.querySelector('#pata-msg-file');
         if (fileInput) {
             fileInput.addEventListener('change', (e) => this.handleFileChange(e));
@@ -160,9 +193,26 @@ class SolidarityRequestDetail {
         this.render();
 
         try {
+            if (this.useMock) {
+                // Mock behavior
+                const data = {
+                    sender_role: 'user',
+                    message: this.state.newMessage,
+                    created_at: new Date().toISOString(),
+                    attachments: []
+                };
+                this.state.messages.push(data);
+                this.state.newMessage = '';
+                this.state.files.attachment = null;
+                this.state.previews.attachment = null;
+                this.state.sending = false;
+                this.render();
+                this.attachEventListeners();
+                this.scrollToBottom();
+                return;
+            }
+
             let attachments = [];
-            
-            // Upload file if exists
             if (this.state.files.attachment) {
                 const formData = new FormData();
                 formData.append('file', this.state.files.attachment);
@@ -199,7 +249,6 @@ class SolidarityRequestDetail {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            // Reset state
             this.state.messages.push(data);
             this.state.newMessage = '';
             this.state.files.attachment = null;
@@ -225,16 +274,74 @@ class SolidarityRequestDetail {
         }
     }
 
-    getStatusUI(status) {
-        const map = {
-            new: { label: 'Enviada', color: '#9b9b9b', icon: '📩' },
-            in_review: { label: 'En Revisión', color: '#FE8F15', icon: '⏳' },
-            needs_info: { label: 'Acción Requerida', color: '#FF0066', icon: '⚠️' },
-            approved: { label: 'Aprobada', color: '#10B981', icon: '✅' },
-            rejected: { label: 'Rechazada', color: '#ff0063', icon: '❌' },
-            completed: { label: 'Completada', color: '#00BBB4', icon: '✨' }
+    getStatusConfig(status) {
+        const configs = {
+            new: {
+                label: 'solicitud enviada',
+                badge: 'solicitud enviada',
+                icon: `${this.baseUrl}/Icons/enviada.png`,
+                color: '#A3E635',
+                msg: `Estamos revisando tu información con cariño y cuidado. \n\nEn un máximo de 24 horas te avisaremos por correo y WhatsApp en cuanto tengamos una respuesta.\n\nMientras tanto, puedes revisar el estatus en cualquier momento desde tu panel o en el centro de notificaciones.\n\nSi necesitas algo urgente, aquí seguimos contigo.`
+            },
+            in_review: {
+                label: 'en revisión',
+                badge: 'en revisión',
+                icon: `${this.baseUrl}/Icons/confirmacion.svg`,
+                color: '#FE8F15',
+                msg: `Tu caso ya está siendo analizado por nuestro comité médico. \n\nEstamos validando los detalles para asegurarnos de brindarte el apoyo correcto. Te notificaremos en cuanto haya una actualización.\n\nGracias por tu paciencia, estamos trabajando para ti.`
+            },
+            approved: {
+                label: 'solicitud aprobada',
+                badge: 'aprobada',
+                icon: `${this.baseUrl}/Icons/aprovada.png`,
+                color: '#10B981',
+                msg: `¡Tu solicitud ha sido aprobada! \n\nYa puedes acudir al centro aliado para la atención de tu mascota. Presenta tu identificación oficial y el folio de esta solicitud.\n\nEstamos felices de poder acompañarte en este proceso.`
+            },
+            rejected: {
+                label: 'solicitud rechazada',
+                badge: 'rechazada',
+                icon: `${this.baseUrl}/Icons/rechazada.png`,
+                color: '#FF0066',
+                msg: `Lamentablemente, tu solicitud no cumple con todos los requisitos del fondo en esta ocasión.\n\nRevisa el historial de mensajes para conocer los detalles del rechazo. Si crees que hay un error, puedes iniciar un proceso de apelación.`
+            },
+            needs_info: {
+                label: 'acción requerida',
+                badge: 'necesita info',
+                icon: `${this.baseUrl}/Icons/confirmacion.svg`,
+                color: '#FF0066',
+                msg: `Necesitamos un poco más de información para continuar con tu solicitud.\n\nPor favor, responde a los mensajes del administrador en la sección de historial y adjunta los documentos o aclaraciones solicitadas lo antes posible.`
+            },
+            paid: {
+                label: 'reembolso pagado',
+                badge: 'pagado',
+                icon: `${this.baseUrl}/Icons/aprovada.png`,
+                color: '#10B981',
+                msg: `¡El pago ha sido realizado con éxito! \n\nEl monto solicitado ha sido transferido a tu cuenta. Deberías verlo reflejado en las próximas horas dependiendo de tu banco.\n\nGracias por confiar en Pata Amiga.`
+            },
+            completed: {
+                label: 'proceso completado',
+                badge: 'completado',
+                icon: `${this.baseUrl}/Icons/aprovada.png`,
+                color: '#00BBB4',
+                msg: `Este proceso ha finalizado correctamente. \n\nEsperamos que tu mascota se encuentre mucho mejor. Recuerda que siempre puedes consultar el historial de este caso aquí mismo.`
+            }
         };
-        return map[status] || map.new;
+        return configs[status] || configs.new;
+    }
+
+    getTypeConfig(type) {
+        return type === 'clinic' 
+            ? { label: 'solicitud en centro aliado', icon: `${this.baseUrl}/Icons/clinica.png` }
+            : { label: 'reembolso', icon: `${this.baseUrl}/Icons/reembolso.svg` };
+    }
+
+    getBenefitConfig(benefit) {
+        const map = {
+            medical_emergency: { label: 'emergencia médica', icon: `${this.baseUrl}/Icons/emergencias.svg` },
+            annual_vaccination: { label: 'vacunación anual', icon: `${this.baseUrl}/Icons/vacuna.svg` },
+            death: { label: 'apoyo fallecimiento', icon: `${this.baseUrl}/Icons/fallecimiento.svg` }
+        };
+        return map[benefit] || map.medical_emergency;
     }
 
     render() {
@@ -242,336 +349,559 @@ class SolidarityRequestDetail {
         
         const req = this.state.request;
         const pet = this.state.pet;
-        const statusUI = this.getStatusUI(req.status);
+        const statusConfig = this.getStatusConfig(req.status);
+        const typeConfig = this.getTypeConfig(req.type);
+        const benefitConfig = this.getBenefitConfig(req.benefit_type);
 
         this.container.innerHTML = `
             <style>
-                .pata-detail-wrapper {
+                @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+
+                .pata-detail-container {
                     font-family: 'Outfit', sans-serif;
-                    max-width: 900px;
+                    max-width: 800px;
                     margin: 0 auto;
-                    background: white;
-                    border-radius: 40px;
-                    overflow: hidden;
-                    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+                    padding: 40px 20px;
+                    color: #1A1A1A;
+                }
+
+                /* Badges Top */
+                .pata-top-badges {
+                    display: flex;
+                    gap: 15px;
+                    margin-bottom: 30px;
+                    flex-wrap: wrap;
+                }
+
+                .pata-badge {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    height: 34px;
+                    padding: 0 14px 0 37px;
+                    border-radius: 50px;
                     border: 2px solid #000;
-                    display: grid;
-                    grid-template-columns: 1fr;
-                }
-
-                .pata-detail-header {
-                    background: var(--pata-turquoise, #00BBB4);
-                    padding: 40px;
-                    color: white;
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    border-bottom: 2px solid #000;
-                }
-
-                .pata-detail-back {
-                    color: white;
-                    text-decoration: none;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                    font-weight: 700;
-                    margin-bottom: 15px;
-                }
-
-                .pata-detail-title {
                     font-family: 'Fraiche', sans-serif;
-                    font-size: 32px;
-                    margin: 0;
+                    font-size: 14px;
+                    position: relative;
+                    background: white;
                     text-transform: uppercase;
                 }
 
-                .pata-status-tag {
-                    padding: 8px 16px;
-                    border-radius: 50px;
-                    background: white;
-                    color: black;
-                    font-weight: 800;
-                    font-family: 'Fraiche', sans-serif;
-                    font-size: 14px;
+                .pata-badge-icon {
+                    position: absolute;
+                    left: -2px;
+                    top: -2px;
+                    width: 34px;
+                    height: 34px;
+                    border-radius: 50%;
+                    border: 2px solid #000;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    justify-content: center;
+                    background: white;
+                }
+
+                .pata-badge-icon img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: cover;
+                    border-radius: 50%;
+                }
+
+                /* Header Title */
+                .pata-request-id {
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 32px;
+                    margin: 0 0 40px 0;
+                    text-transform: uppercase;
+                }
+
+                /* White Cards */
+                .pata-card {
+                    background: white;
+                    border-radius: 40px;
                     border: 2px solid #000;
+                    padding: 40px;
+                    margin-bottom: 30px;
+                    box-shadow: 6px 6px 0px rgba(0,0,0,1);
                 }
 
-                .pata-detail-body {
-                    display: grid;
-                    grid-template-columns: 300px 1fr;
-                    min-height: 600px;
+                /* Card 1: Main Status */
+                .pata-meta-info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 10px;
+                    margin-bottom: 25px;
                 }
 
-                @media (max-width: 768px) {
-                    .pata-detail-body { grid-template-columns: 1fr; }
-                    .pata-detail-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+                .pata-meta-row {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    color: rgba(155, 155, 155, 1);
+                    font-size: 18px;
+                    font-weight: 500;
                 }
 
-                /* Sidebar Info */
-                .pata-detail-sidebar {
-                    padding: 30px;
-                    background: #f8fbfb;
-                    border-right: 2px solid #000;
-                }
+                .pata-meta-row img { width: 24px; }
 
-                .pata-pet-mini-card {
+                .pata-status-title {
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 35px;
+                    margin: 15px 0;
                     display: flex;
                     align-items: center;
                     gap: 15px;
+                }
+
+                .pata-status-title img { width: 40px; }
+
+                .pata-status-msg {
+                    color: rgba(155, 155, 155, 1);
+                    font-size: 16px;
+                    line-height: 1.6;
+                    white-space: pre-line;
+                }
+
+                /* Card 2: Technical Details */
+                .pata-section-title {
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 28px;
+                    margin: 0 0 10px 0;
+                    text-transform: uppercase;
+                }
+
+                .pata-section-subtitle {
+                    color: rgba(155, 155, 155, 1);
+                    font-size: 14px;
                     margin-bottom: 30px;
                 }
 
-                .pata-pet-mini-photo {
-                    width: 60px;
-                    height: 60px;
-                    border-radius: 15px;
-                    object-fit: cover;
-                    border: 2px solid #000;
+                .pata-details-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: 30px;
+                    margin-bottom: 30px;
                 }
 
-                .pata-info-item {
-                    margin-bottom: 20px;
+                .pata-detail-item label {
+                    display: block;
+                    font-size: 14px;
+                    color: rgba(155, 155, 155, 1);
+                    margin-bottom: 10px;
                 }
 
-                .pata-info-label {
-                    font-size: 12px;
-                    color: #718096;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    margin-bottom: 4px;
+                .pata-detail-item .pata-badge { margin: 0; }
+
+                .pata-incident-date {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 18px;
                 }
 
-                .pata-info-value {
-                    font-weight: 600;
+                .pata-case-desc {
+                    margin-top: 30px;
+                }
+
+                .pata-case-desc p {
                     font-size: 16px;
+                    line-height: 1.6;
+                    color: #333;
                 }
 
-                /* Chat Area */
-                .pata-chat-container {
+                .pata-evidence-gallery {
+                    display: flex;
+                    gap: 15px;
+                    margin-top: 30px;
+                    overflow-x: auto;
+                    padding-bottom: 10px;
+                }
+
+                .pata-evidence-card {
+                    min-width: 150px;
+                    height: 180px;
+                    border-radius: 25px;
+                    background: #FEFA15; /* Default yellow */
+                    border: 2px solid #000;
                     display: flex;
                     flex-direction: column;
-                    background: white;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 15px;
+                    text-align: center;
+                    text-decoration: none;
+                    color: black;
                 }
 
-                .pata-chat-history {
-                    flex: 1;
-                    padding: 30px;
-                    overflow-y: auto;
+                .pata-evidence-card img { width: 60px; height: 60px; margin-bottom: 15px; }
+                .pata-evidence-card span { font-size: 10px; font-weight: 600; word-break: break-all; }
+
+                /* Card 3: Pet Info */
+                .pata-pet-card-content {
+                    display: flex;
+                    gap: 30px;
+                    align-items: center;
+                }
+
+                .pata-pet-big-photo {
+                    width: 200px;
+                    height: 200px;
+                    border-radius: 40px;
+                    border: 2px solid #000;
+                    background-size: cover;
+                    background-position: center;
+                    background-color: #00BBB4;
+                }
+
+                .pata-pet-details-right { flex: 1; }
+                .pata-pet-details-right h3 {
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 40px;
+                    color: #FF0066;
+                    margin: 0 0 20px 0;
+                }
+
+                .pata-pet-grid-mini {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr;
+                    gap: 15px;
+                }
+
+                .pata-pet-stat label { font-size: 12px; color: rgba(155, 155, 155, 1); display: block; }
+                .pata-pet-stat span { font-family: 'Fraiche', sans-serif; font-size: 18px; }
+
+                /* Card 4: History & Chat */
+                .pata-history-list {
+                    margin-top: 30px;
                     display: flex;
                     flex-direction: column;
                     gap: 20px;
-                    max-height: 500px;
                 }
 
-                .pata-chat-bubble {
-                    max-width: 80%;
-                    padding: 15px 20px;
-                    border-radius: 25px;
-                    font-size: 15px;
-                    line-height: 1.5;
-                    position: relative;
-                    border: 2px solid #000;
+                .pata-history-entry {
+                    display: flex;
+                    gap: 20px;
+                    align-items: center;
                 }
 
-                .pata-chat-bubble.admin {
-                    align-self: flex-start;
-                    background: #F3F4F6;
-                    border-bottom-left-radius: 4px;
+                .pata-history-time {
+                    font-size: 14px;
+                    color: rgba(155, 155, 155, 1);
+                    min-width: 80px;
                 }
 
-                .pata-chat-bubble.user {
-                    align-self: flex-end;
-                    background: var(--pata-turquoise);
-                    color: white;
-                    border-bottom-right-radius: 4px;
-                }
-
-                .pata-chat-meta {
-                    font-size: 10px;
-                    margin-top: 8px;
-                    opacity: 0.7;
-                    display: block;
-                }
-
-                .pata-chat-attachment {
+                .pata-history-badge-wrapper {
+                    flex: 1;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
-                    margin-top: 10px;
-                    padding: 8px;
-                    background: rgba(0,0,0,0.05);
-                    border-radius: 10px;
-                    text-decoration: none;
-                    color: inherit;
-                    font-size: 13px;
-                }
-
-                .pata-chat-input-area {
-                    padding: 20px 30px;
-                    border-top: 2px solid #000;
-                    background: #fff;
-                }
-
-                .pata-chat-input-box {
-                    display: flex;
                     gap: 15px;
-                    align-items: flex-end;
                 }
 
-                .pata-chat-textarea {
+                .pata-history-line {
+                    height: 1px;
+                    border-top: 1px dashed rgba(155, 155, 155, 0.5);
+                    flex: 1;
+                }
+
+                /* Chat Integration */
+                .pata-chat-section {
+                    margin-top: 40px;
+                    border-top: 2px solid #000;
+                    padding-top: 30px;
+                }
+
+                .pata-chat-messages {
+                    max-height: 400px;
+                    overflow-y: auto;
+                    margin-bottom: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 15px;
+                    padding-right: 10px;
+                }
+
+                .pata-bubble {
+                    max-width: 85%;
+                    padding: 15px 20px;
+                    border-radius: 25px;
+                    border: 2px solid #000;
+                    font-size: 14px;
+                    line-height: 1.5;
+                }
+
+                .pata-bubble.admin { align-self: flex-start; background: #F3F4F6; }
+                .pata-bubble.user { align-self: flex-end; background: #00BBB4; color: white; }
+
+                .pata-chat-input-row {
+                    display: flex;
+                    gap: 10px;
+                    align-items: center;
+                }
+
+                .pata-chat-input {
                     flex: 1;
                     border: 2px solid #000;
-                    border-radius: 20px;
-                    padding: 12px 18px;
-                    font-family: inherit;
-                    resize: none;
+                    border-radius: 50px;
+                    padding: 12px 25px;
                     outline: none;
-                    min-height: 50px;
-                    max-height: 150px;
+                    font-family: inherit;
                 }
 
-                .pata-btn-icon {
+                .pata-btn-circle {
                     width: 45px;
                     height: 45px;
                     border-radius: 50%;
-                    background: var(--pata-turquoise);
+                    background: #00BBB4;
                     border: 2px solid #000;
                     display: flex;
                     align-items: center;
                     justify-content: center;
                     cursor: pointer;
                     color: white;
-                    box-shadow: 2px 2px 0px #000;
                 }
 
-                .pata-btn-icon:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
-
-                .pata-file-preview-mini {
-                    margin-bottom: 10px;
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    background: #F3F4F6;
-                    padding: 8px 15px;
+                .pata-btn-cancel {
+                    display: block;
+                    width: 100%;
+                    max-width: 300px;
+                    margin: 40px auto 0 auto;
+                    background: #00BBB4;
+                    color: white;
+                    border: 2px solid #000;
+                    padding: 15px;
                     border-radius: 50px;
-                    font-size: 12px;
-                    font-weight: 600;
-                    border: 1px solid #000;
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 20px;
+                    cursor: pointer;
+                    text-align: center;
+                    box-shadow: 4px 4px 0px #000;
                 }
 
-                .pata-action-box {
-                    background: #FFF5F7;
-                    border: 2px solid var(--pata-red);
-                    padding: 20px;
-                    border-radius: 20px;
-                    margin-bottom: 20px;
+                @media (max-width: 600px) {
+                    .pata-details-grid { grid-template-columns: 1fr; }
+                    .pata-pet-card-content { flex-direction: column; }
+                    .pata-pet-big-photo { width: 100%; height: 250px; }
+                    .pata-pet-grid-mini { grid-template-columns: 1fr 1fr; }
                 }
-
-                .pata-action-box h4 { margin: 0 0 10px 0; color: var(--pata-red); font-weight: 800; }
-                .pata-action-box p { margin: 0; font-size: 14px; color: #4A5568; }
             </style>
 
-            <div class="pata-detail-wrapper">
-                <header class="pata-detail-header">
-                    <div>
-                        <a href="/miembros/fondo-solidario" class="pata-detail-back">
-                            <img src="${this.baseUrl}/Icons/back-white.svg" style="width: 20px">
-                            Volver al dashboard
-                        </a>
-                        <h1 class="pata-detail-title">${req.case_title || 'Detalle de Solicitud'}</h1>
+            <div class="pata-detail-container">
+                <!-- Top Badges -->
+                <div class="pata-top-badges">
+                    <div class="pata-badge">
+                        <div class="pata-badge-icon"><img src="${typeConfig.icon}"></div>
+                        ${typeConfig.label}
                     </div>
-                    <div class="pata-status-tag">
-                        <span>${statusUI.icon}</span>
-                        ${statusUI.label}
+                    <div class="pata-badge">
+                        <div class="pata-badge-icon"><img src="${benefitConfig.icon}"></div>
+                        ${benefitConfig.label}
                     </div>
-                </header>
+                    <div class="pata-badge">
+                        <div class="pata-badge-icon"><img src="${statusConfig.icon}"></div>
+                        ${statusConfig.badge}
+                    </div>
+                </div>
 
-                <div class="pata-detail-body">
-                    <aside class="pata-detail-sidebar">
-                        <div class="pata-pet-mini-card">
-                            <img src="${pet.primary_photo_url || pet.photo_url || ''}" class="pata-pet-mini-photo" onerror="this.src='https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png'">
-                            <div>
-                                <div class="pata-info-value">${pet.name}</div>
-                                <div class="pata-info-label">${pet.breed || 'Mestizo'}</div>
+                <h1 class="pata-request-id">${req.case_title || `Solicitud #${req.request_number || req.id.substring(0,6)}`}</h1>
+
+                <!-- Card 1: Main Status -->
+                <div class="pata-card">
+                    <div class="pata-meta-info">
+                        <div class="pata-meta-row">
+                            <img src="${this.baseUrl}/Icons/solicitud-clinica.svg">
+                            ${req.clinic_name || 'Centro Pata Amiga'}
+                        </div>
+                        <div class="pata-meta-row">
+                            <img src="${this.baseUrl}/Icons/solicitud-fecha.svg">
+                            ${new Date(req.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </div>
+                    </div>
+
+                    <h2 class="pata-status-title">
+                        <img src="${statusConfig.icon}">
+                        ${statusConfig.label}
+                    </h2>
+
+                    <div class="pata-status-msg">
+                        ${statusConfig.msg}
+                    </div>
+                </div>
+
+                <!-- Card 2: Application Details -->
+                <div class="pata-card">
+                    <h3 class="pata-section-title">detalles de la solicitud</h3>
+                    <p class="pata-section-subtitle">Motivo y contexto de la atención</p>
+
+                    <div class="pata-details-grid">
+                        <div class="pata-detail-item">
+                            <label>Tipo de solicitud</label>
+                            <div class="pata-badge">
+                                <div class="pata-badge-icon"><img src="${typeConfig.icon}"></div>
+                                ${typeConfig.label}
                             </div>
                         </div>
-
-                        <div class="pata-info-item">
-                            <div class="pata-info-label">Tipo de Apoyo</div>
-                            <div class="pata-info-value">${req.benefit_type === 'medical_emergency' ? '🏥 Emergencia Médica' : req.benefit_type === 'annual_vaccination' ? '💉 Vacunación' : '🕊️ Fallecimiento'}</div>
-                        </div>
-
-                        <div class="pata-info-item">
-                            <div class="pata-info-label">Monto Solicitado</div>
-                            <div class="pata-info-value">$${req.requested_amount}</div>
-                        </div>
-
-                        <div class="pata-info-item">
-                            <div class="pata-info-label">Fecha de Solicitud</div>
-                            <div class="pata-info-value">${new Date(req.created_at).toLocaleDateString()}</div>
-                        </div>
-                        
-                        ${req.clinic_name ? `
-                            <div class="pata-info-item">
-                                <div class="pata-info-label">Clínica</div>
-                                <div class="pata-info-value">${req.clinic_name}</div>
+                        <div class="pata-detail-item">
+                            <label>Tipo de gasto</label>
+                            <div class="pata-badge">
+                                <div class="pata-badge-icon"><img src="${benefitConfig.icon}"></div>
+                                ${benefitConfig.label}
                             </div>
+                        </div>
+                        <div class="pata-detail-item">
+                            <label>Fecha del incidente</label>
+                            <div class="pata-incident-date">
+                                <img src="${this.baseUrl}/Icons/calendar-black.svg" style="width: 24px; margin-right: 10px;">
+                                ${new Date(req.incident_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pata-case-desc">
+                        <label style="font-size: 14px; color: rgba(155, 155, 155, 1);">Descripción del caso</label>
+                        <p>${req.case_description || 'Sin descripción'}</p>
+                    </div>
+
+                    ${req.requested_amount ? `
+                    <div class="pata-financial-details" style="margin-top: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px dashed #eee; padding-top: 25px;">
+                        <div class="pata-detail-item">
+                            <label>Monto solicitado</label>
+                            <span style="font-family: 'Fraiche', sans-serif; font-size: 24px;">$${Number(req.requested_amount).toLocaleString()} MXN</span>
+                        </div>
+                        ${req.total_paid_amount ? `
+                        <div class="pata-detail-item">
+                            <label>Monto total pagado</label>
+                            <span style="font-family: 'Fraiche', sans-serif; font-size: 24px; color: #718096;">$${Number(req.total_paid_amount).toLocaleString()} MXN</span>
+                        </div>
                         ` : ''}
-                    </aside>
+                    </div>
+                    ` : ''}
 
-                    <div class="pata-chat-container">
-                        <div class="pata-chat-history" id="pata-chat-history">
-                            <!-- Mensaje Original -->
-                            <div class="pata-chat-bubble admin">
-                                <strong>Pata Amiga:</strong><br>
-                                Hola ${this.state.member.first_name}, hemos recibido tu solicitud. Un integrante de nuestro comité la revisará pronto.
-                                <span class="pata-chat-meta">${new Date(req.created_at).toLocaleTimeString()}</span>
-                            </div>
+                    <div class="pata-evidence-section" style="margin-top: 40px;">
+                        <label style="font-size: 14px; color: rgba(155, 155, 155, 1);">Evidencia y documentos</label>
+                        <div class="pata-evidence-gallery">
+                            ${(req.evidence || []).map(file => {
+                                let color = '#FEFA15'; // Default yellow
+                                if (file.name.endsWith('.pdf')) color = '#FEFA15';
+                                if (file.name.match(/\.(jpg|jpeg|png)$/i)) color = '#FE8F15';
+                                if (file.name.endsWith('.mp4')) color = '#A3E635';
 
-                            ${this.state.messages.map(m => `
-                                <div class="pata-chat-bubble ${m.sender_role}">
-                                    ${m.message}
-                                    ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => `
-                                        <a href="${a.url}" target="_blank" class="pata-chat-attachment">
-                                            <span>📄</span> ${a.name}
+                                const docLabels = {
+                                    evidence_photo: 'Foto Evidencia',
+                                    prescription: 'Informe / Receta',
+                                    receipt: 'Comprobante / Ticket',
+                                    senior_certificate: 'Certificado Senior',
+                                    chat_attachment: 'Adjunto de Chat'
+                                };
+                                const label = docLabels[file.docType] || 'Documento';
+
+                                return `
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <a href="${file.url}" target="_blank" class="pata-evidence-card" style="background: ${color}">
+                                            <img src="${file.name.match(/\.(jpg|jpeg|png)$/i) ? file.url : 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-file_f6xv6l.svg'}">
+                                            <span>${file.name}</span>
                                         </a>
-                                    `).join('') : ''}
-                                    <span class="pata-chat-meta">${new Date(m.created_at).toLocaleTimeString()}</span>
-                                </div>
-                            `).join('')}
+                                        <span style="font-size: 11px; font-weight: 700; text-align: center; text-transform: uppercase;">${label}</span>
+                                    </div>
+                                `;
+                            }).join('')}
                         </div>
+                    </div>
+                </div>
 
-                        ${req.status === 'needs_info' ? `
-                            <div class="pata-action-box" style="margin: 0 30px 10px 30px;">
-                                <h4>⚠️ Acción Requerida</h4>
-                                <p>Por favor, revisa los mensajes anteriores y adjunta la información solicitada para continuar.</p>
-                            </div>
-                        ` : ''}
-
-                        <div class="pata-chat-input-area">
-                            ${this.state.previews.attachment ? `
-                                <div class="pata-file-preview-mini">
-                                    <span>📄</span> ${this.state.files.attachment.name}
-                                    <button onclick="window.PataSolidarityDetail.clearFile()" style="border:none; background:none; cursor:pointer; font-size:16px;">✕</button>
+                <!-- Card 3: Pet Info -->
+                <div class="pata-card">
+                    <label style="font-size: 14px; color: rgba(155, 155, 155, 1); margin-bottom: 20px; display: block;">Información general</label>
+                    <div class="pata-pet-card-content">
+                        <div class="pata-pet-photo-wrapper">
+                            <div class="pata-pet-big-photo" style="background-image: url('${pet.primary_photo_url || ''}')"></div>
+                        </div>
+                        <div class="pata-pet-details-right">
+                            <h3>${pet.name}</h3>
+                            <div class="pata-pet-grid-mini">
+                                <div class="pata-pet-stat">
+                                    <label>Raza</label>
+                                    <span>${pet.breed}</span>
                                 </div>
-                            ` : ''}
-                            <div class="pata-chat-input-box">
-                                <button class="pata-btn-icon pata-msg-file-trigger" title="Adjuntar archivo">
-                                    <img src="${this.baseUrl}/Icons/upload.svg" style="width: 20px; filter: invert(1);">
-                                </button>
-                                <textarea id="pata-msg-input" class="pata-chat-textarea" placeholder="Escribe un mensaje o sube un archivo...">${this.state.newMessage}</textarea>
-                                <button id="pata-send-btn" class="pata-btn-icon" ${!this.state.newMessage.trim() && !this.state.files.attachment ? 'disabled' : ''}>
-                                    ${this.state.sending ? '...' : '➤'}
-                                </button>
-                                <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf">
+                                <div class="pata-pet-stat">
+                                    <label>Especie</label>
+                                    <span>${pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : (pet.pet_type || 'Perro')}</span>
+                                </div>
+                                <div class="pata-pet-stat">
+                                    <label>Sexo</label>
+                                    <span>${pet.gender || 'No especificado'}</span>
+                                </div>
+                                <div class="pata-pet-stat">
+                                    <label>Color</label>
+                                    <span>${pet.coat_color || 'No especificado'}</span>
+                                </div>
+                                <div class="pata-pet-stat">
+                                    <label>Edad</label>
+                                    <span>${pet.age}</span>
+                                </div>
+                                <div class="pata-pet-stat">
+                                    <label>Registro</label>
+                                    <span>${new Date(pet.registration_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Card 4: History & Chat -->
+                <div class="pata-card">
+                    <h3 class="pata-section-title">historial de la solicitud</h3>
+                    <p class="pata-section-subtitle">Estamos revisando tu solicitud</p>
+
+                    <div class="pata-history-list">
+                        ${(req.history || []).map(h => `
+                            <div class="pata-history-entry">
+                                <div class="pata-history-time">${new Date(h.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                <div class="pata-history-badge-wrapper">
+                                    <div class="pata-history-line"></div>
+                                    <div class="pata-badge">
+                                        <div class="pata-badge-icon"><img src="${this.getStatusConfig(h.status).icon}"></div>
+                                        ${this.getStatusConfig(h.status).badge}
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <!-- Chat Section -->
+                    <div class="pata-chat-section">
+                        <div class="pata-chat-messages" id="pata-chat-history">
+                            ${this.state.messages.map(m => `
+                                <div class="pata-bubble ${m.sender_role}">
+                                    ${m.message}
+                                    ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => `
+                                        <div style="margin-top: 10px; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                            <span>📄</span> <a href="${a.url}" target="_blank" style="color: inherit;">${a.name}</a>
+                                        </div>
+                                    `).join('') : ''}
+                                    <div style="font-size: 10px; margin-top: 5px; opacity: 0.6; text-align: right;">
+                                        ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="pata-chat-input-row">
+                            <button class="pata-btn-circle pata-msg-file-trigger">
+                                <img src="${this.baseUrl}/Icons/upload.svg" style="width: 20px; filter: invert(1);">
+                            </button>
+                            <input type="text" id="pata-msg-input" class="pata-chat-input" placeholder="Escribe un mensaje..." value="${this.state.newMessage}">
+                            <button id="pata-send-btn" class="pata-btn-circle" ${!this.state.newMessage.trim() && !this.state.files.attachment ? 'disabled' : ''}>
+                                ${this.state.sending ? '...' : '➤'}
+                            </button>
+                            <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf">
+                        </div>
+                    </div>
+                </div>
+
+                <button class="pata-btn-cancel">Cancelar solicitud</button>
             </div>
         `;
     }
@@ -588,7 +918,7 @@ class SolidarityRequestDetail {
     }
 
     renderError(msg) {
-        this.container.innerHTML = `<div style="padding: 100px; text-align: center; color: var(--pata-red);">❌ Error: ${msg}</div>`;
+        this.container.innerHTML = `<div style="padding: 100px; text-align: center; color: #FF0066;">❌ Error: ${msg}</div>`;
     }
 }
 

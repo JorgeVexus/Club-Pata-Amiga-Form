@@ -35,7 +35,8 @@ export async function GET(
             .from('solidarity_requests')
             .select(`
                 *,
-                pet:pets(*)
+                pet:pets(*),
+                documents:solidarity_documents(*)
             `)
             .eq('id', id)
             .single();
@@ -55,9 +56,20 @@ export async function GET(
             return NextResponse.json({ error: 'No tienes permiso para ver esta solicitud' }, { status: 403, headers: corsHeaders });
         }
 
+        // 3. Mapear documentos para el widget (que espera .evidence con .name y .url)
+        const evidence = (solidarityRequest.documents || []).map((doc: any) => ({
+            name: doc.file_name,
+            url: doc.file_path,
+            type: doc.mime_type,
+            docType: doc.document_type
+        }));
+
         return NextResponse.json({
             success: true,
-            request: solidarityRequest,
+            request: {
+                ...solidarityRequest,
+                evidence
+            },
             pet: solidarityRequest.pet
         }, { headers: corsHeaders });
 

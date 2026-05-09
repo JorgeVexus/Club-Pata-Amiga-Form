@@ -109,22 +109,36 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     requestId,
                     status: newStatus,
                     adminId: adminMemberstackId,
-                    adminName: 'Administrador' // TODO: Get actual name
+                    adminName: 'Administrador'
                 })
             });
             const data = await res.json();
             if (data.success) {
                 setRequest(prev => prev ? { ...prev, status: newStatus } : null);
-                // Reload messages to see the system notification message
-                const msgRes = await adminFetch(`/api/solidarity/requests/${requestId}/messages`);
-                const msgData = await msgRes.json();
-                if (Array.isArray(msgData)) setMessages(msgData);
+                loadMessages();
             }
         } catch (error) {
             console.error('Error updating status:', error);
         } finally {
             setUpdatingStatus(false);
         }
+    }
+
+    async function loadMessages() {
+        const msgRes = await adminFetch(`/api/solidarity/requests/${requestId}/messages`);
+        const msgData = await msgRes.json();
+        if (Array.isArray(msgData)) setMessages(msgData);
+    }
+
+    async function handleRequestMoreInfo() {
+        if (updatingStatus) return;
+        
+        const confirmMsg = confirm('¿Deseas marcar esta solicitud como "Acción Requerida" y solicitar más información al usuario?');
+        if (!confirmMsg) return;
+
+        await handleUpdateStatus('needs_info');
+        setNewMessage('Hola, hemos revisado tu solicitud y necesitamos que nos proporciones un poco más de información sobre: ');
+        // Focus textarea
     }
 
     if (loading) return <div className={styles.loading}>Cargando detalle...</div>;
@@ -137,11 +151,18 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     <div className={styles.headerLeft}>
                         <button onClick={onClose} className={styles.backBtn}>←</button>
                         <div>
-                            <h2 className={styles.title}>{request.case_title}</h2>
-                            <span className={styles.subtitle}>ID: {request.id.slice(0, 8)}</span>
+                            <h2 className={styles.title}>{request.case_title || `Solicitud #${request.id.slice(0,8)}`}</h2>
+                            <span className={styles.subtitle}>ID: {request.id}</span>
                         </div>
                     </div>
                     <div className={styles.statusActions}>
+                        <button 
+                            onClick={handleRequestMoreInfo}
+                            className={styles.infoBtn}
+                            disabled={updatingStatus}
+                        >
+                            Solicitar Información
+                        </button>
                         <select 
                             value={request.status} 
                             onChange={(e) => handleUpdateStatus(e.target.value)}

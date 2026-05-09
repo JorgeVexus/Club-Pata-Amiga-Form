@@ -86,6 +86,22 @@ export async function POST(
                 .eq('id', id);
         }
 
+        // Si hay adjuntos, guardarlos también como documentos de la solicitud
+        if (attachments && attachments.length > 0) {
+            const docsToInsert = attachments.map((a: any) => ({
+                request_id: id,
+                user_id: senderRole === 'user' ? senderId : null,
+                document_type: 'chat_attachment',
+                file_name: a.name,
+                file_url: a.url,
+                mime_type: a.type || 'application/octet-stream'
+            }));
+
+            await supabaseAdmin
+                .from('solidarity_documents')
+                .insert(docsToInsert);
+        }
+
         return NextResponse.json(newMessage, { headers: corsHeaders });
     } catch (error: any) {
         console.error('Error sending message:', error);
