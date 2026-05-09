@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
                 title: `Actualización de Fondo Solidario`,
                 message: `Tu solicitud ${statusText}.`,
                 icon: '💰',
-                link: `/dashboard/fondo-solidario/detalle?id=${requestId}`,
+                link: `/miembros/detalle-solicitud?id=${requestId}`,
                 is_read: false,
                 created_at: new Date().toISOString()
             });

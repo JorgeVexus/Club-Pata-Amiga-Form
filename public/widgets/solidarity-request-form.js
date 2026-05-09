@@ -875,7 +875,7 @@ class SolidarityRequestForm {
         const closeSuccess = this.container.querySelector('#pata-close-success');
         if (closeSuccess) {
             closeSuccess.onclick = () => { 
-                window.location.href = '/dashboard/fondo-solidario';
+                window.location.href = '/miembros/fondo-solidario';
             };
             closeSuccess.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeSuccess.click(); } };
         }

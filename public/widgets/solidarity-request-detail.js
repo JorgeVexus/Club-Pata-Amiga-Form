@@ -478,7 +478,7 @@ class SolidarityRequestDetail {
             <div class="pata-detail-wrapper">
                 <header class="pata-detail-header">
                     <div>
-                        <a href="/dashboard/fondo-solidario" class="pata-detail-back">
+                        <a href="/miembros/fondo-solidario" class="pata-detail-back">
                             <img src="${this.baseUrl}/Icons/back-white.svg" style="width: 20px">
                             Volver al dashboard
                         </a>
