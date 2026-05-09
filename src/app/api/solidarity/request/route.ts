@@ -22,26 +22,47 @@ export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
         const {
-            userId,
+            memberstackId,
             petId,
-            type,
+            requestType,
             benefitType,
             caseTitle,
             caseDescription,
             incidentDate,
             requestedAmount,
-            preferredAppointmentDate,
+            totalPaidAmount,
             alliedCenterId,
-            documents // Array de { path, fileName, docType, fileSize, mimeType }
+            preferredAppointmentTime,
+            clinicName,
+            clinicPostalCode,
+            clinicState,
+            clinicAddress,
+            clinicCity,
+            vetName,
+            vetLicense,
+            evidencePhotoUrl,
+            prescriptionUrl,
+            receiptUrl
         } = body;
 
         // 1. Validaciones básicas
-        if (!userId || !petId || !type || !benefitType || !caseDescription) {
+        if (!memberstackId || !petId || !requestType || !benefitType || !caseDescription) {
             return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400, headers: corsHeaders });
         }
 
-        // 2. Validar Monto Máximo
-        if (type === 'reimbursement' && requestedAmount) {
+        // 2. Resolver Usuario (Memberstack ID -> Supabase UUID)
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberstackId)
+            .single();
+
+        if (userError || !user) {
+            return NextResponse.json({ error: 'Usuario no encontrado en la base de datos' }, { status: 404, headers: corsHeaders });
+        }
+
+        // 3. Validar Monto Máximo (solo para reembolsos)
+        if (requestType === 'reimbursement' && requestedAmount) {
             const limit = SOLIDARITY_LIMITS[benefitType as keyof typeof SOLIDARITY_LIMITS];
             if (requestedAmount > limit) {
                 return NextResponse.json({ 
@@ -50,7 +71,7 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // 3. Validar Período de Carencia de la Mascota
+        // 4. Validar Período de Carencia de la Mascota
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
             .select('waiting_period_end, name')
@@ -71,33 +92,41 @@ export async function POST(request: NextRequest) {
             }, { status: 403, headers: corsHeaders });
         }
 
-        // 4. Crear Solicitud
+        // 5. Crear Solicitud
         const { data: solidarityRequest, error: requestError } = await supabaseAdmin
             .from('solidarity_requests')
             .insert({
-                user_id: userId,
+                user_id: user.id,
                 pet_id: petId,
-                type,
+                type: requestType,
                 benefit_type: benefitType,
                 status: 'new',
                 requested_amount: requestedAmount,
+                total_paid_amount: totalPaidAmount,
                 case_title: caseTitle,
                 case_description: caseDescription,
                 incident_date: incidentDate,
-                preferred_appointment_date: preferredAppointmentDate,
-                allied_center_id: alliedCenterId
+                allied_center_id: alliedCenterId,
+                preferred_appointment_time: preferredAppointmentTime,
+                clinic_name: clinicName,
+                clinic_postal_code: clinicPostalCode,
+                clinic_state: clinicState,
+                clinic_address: clinicAddress,
+                clinic_city: clinicCity,
+                vet_name: vetName,
+                vet_license: vetLicense
             })
             .select()
             .single();
 
         if (requestError) throw requestError;
 
-        // 5. Vincular Documentos
-        if (documents && Array.isArray(documents) && documents.length > 0) {
-            const docsToInsert = documents.map(doc => ({
+        // 6. Vincular Documentos
+        if (body.documents && Array.isArray(body.documents) && body.documents.length > 0) {
+            const docsToInsert = body.documents.map((doc: any) => ({
                 request_id: solidarityRequest.id,
                 document_type: doc.docType,
-                file_name: doc.fileName,
+                file_name: doc.fileName || 'document',
                 file_path: doc.path,
                 file_size: doc.fileSize,
                 mime_type: doc.mimeType
@@ -110,11 +139,10 @@ export async function POST(request: NextRequest) {
             if (docsError) console.error('Error vinculando documentos:', docsError);
         }
 
-        // 6. Notificar al Admin (Opcional, se puede integrar con el sistema de notificaciones existente)
-        // Por ahora, devolvemos éxito
         return NextResponse.json({
             success: true,
             requestId: solidarityRequest.id,
+            request: solidarityRequest,
             message: 'Solicitud creada exitosamente'
         }, { headers: corsHeaders });
 

@@ -27,6 +27,7 @@ export const STORAGE_BUCKETS = {
     PROOF_OF_ADDRESS: 'proof-of-address',
     PET_PHOTO: 'pet-photos',
     VET_CERTIFICATE: 'vet-certificates',
+    SOLIDARITY: 'solidarity-documents',
 } as const;
 
 /**
