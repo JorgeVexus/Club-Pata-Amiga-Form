@@ -107,7 +107,7 @@ class SolidarityRequestForm {
             #${this.containerId} { max-width: 900px; margin: 0 auto; width: 100%; position: relative; min-height: 400px; }
             @media (max-width: 768px) {
                 #${this.containerId} { margin: 0; padding: 0; width: 100%; min-height: 100px; display: flex; flex-direction: column; align-items: center; }
-                .pata-form-page { display: flex; flex-direction: column; align-items: center; padding: 15px; width: 100%; }
+                .pata-form-page { display: flex; flex-direction: column; align-items: center; padding: 10px; width: 100%; }
                 .pata-section-header { text-align: center; }
                 .pata-section-header h2 { font-size: 26px; }
                 .pata-section-header p { font-size: 16px; margin: 0 auto; max-width: 90%; }
@@ -124,7 +124,7 @@ class SolidarityRequestForm {
             .pata-reveal.visible { opacity: 1; transform: translateY(0); pointer-events: auto; height: auto; margin-bottom: 40px; padding-bottom: 30px; transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1), height 0s; }
 
             @media (max-width: 768px) {
-                .pata-reveal { padding: 0 10px; display: flex; flex-direction: column; align-items: center; }
+                .pata-reveal { padding: 0; display: flex; flex-direction: column; align-items: center; }
                 .pata-section-header { margin: 40px 0 25px 0; }
             }
 
@@ -219,7 +219,7 @@ class SolidarityRequestForm {
             .pata-form-container { background: var(--pata-turquoise); border-radius: 60px; padding: 50px; margin-top: 20px; border: var(--pata-border); box-shadow: 6px 6px 0px var(--pata-black); width: 100%; }
             .pata-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
             @media (max-width: 768px) {
-                .pata-form-container { padding: 30px 20px; border-radius: 40px; }
+                .pata-form-container { padding: 20px 15px; border-radius: 40px; }
                 .pata-form-grid { grid-template-columns: 1fr; gap: 20px; }
                 .pata-label { text-align: center; }
                 .pata-input, .pata-textarea, .pata-select { text-align: center; padding: 18px 20px; }
@@ -439,23 +439,44 @@ class SolidarityRequestForm {
                     </div>
                     <div class="pata-pet-grid">
                         ${this.state.pets.map(pet => {
-                            const isWaiting = new Date(pet.waiting_period_end) > new Date();
+                            const now = new Date();
+                            const isApproved = pet.status === 'approved';
+                            const hasFinishedWaiting = pet.waiting_period_end && new Date(pet.waiting_period_end) <= now;
+                            
+                            // Only eligible if approved AND finished waiting period
+                            const isEligible = isApproved && hasFinishedWaiting;
                             const isSelected = this.state.selection.petId === pet.id;
+                            
+                            // Photo logic from pet-cards-widget.js
+                            const photoUrl = pet.photo_url || pet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
+
+                            // Determine status label and class
+                            let statusLabel = 'Fondo activo';
+                            let statusClass = '';
+                            if (!isApproved) {
+                                statusLabel = 'Pendiente aprobación';
+                                statusClass = 'waiting';
+                            } else if (!hasFinishedWaiting) {
+                                statusLabel = 'En carencia';
+                                statusClass = 'waiting';
+                            }
+
                             return `
-                                <div class="pata-pet-card ${isSelected ? 'selected' : ''} ${isWaiting ? 'disabled' : ''}" 
+                                <div class="pata-pet-card ${isSelected ? 'selected' : ''} ${!isEligible ? 'disabled' : ''}" 
                                      data-id="${pet.id}" 
                                      role="button" 
-                                     tabindex="${isWaiting ? '-1' : '0'}" 
-                                     aria-pressed="${isSelected}">
+                                     tabindex="${!isEligible ? '-1' : '0'}" 
+                                     aria-pressed="${isSelected}"
+                                     style="${!isEligible ? 'opacity: 0.7; cursor: not-allowed;' : ''}">
                                     <div class="pata-pet-img-wrap">
-                                        <img src="${pet.primary_photo_url || 'https://via.placeholder.com/300?text=Pet'}" alt="${pet.name}">
+                                        <img src="${photoUrl}" alt="${pet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
                                     </div>
                                     <h4>${pet.name}</h4>
-                                    <div class="pata-pet-badge-pill ${isWaiting ? 'waiting' : ''}">
-                                        <div class="check-icon">
+                                    <div class="pata-pet-badge-pill ${statusClass}">
+                                        <div class="check-icon" style="${!isEligible ? 'background: #718096;' : ''}">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                         </div>
-                                        ${isWaiting ? 'En carencia' : 'Fondo activo'}
+                                        ${statusLabel}
                                     </div>
                                 </div>
                             `;
@@ -630,15 +651,15 @@ class SolidarityRequestForm {
                     <textarea class="pata-textarea" id="pata-case-desc" placeholder="Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...">${this.state.formData.caseDescription}</textarea>
                 </div>
 
-                <div class="pata-file-grid">
+                <div class="pata-file-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                     <div class="pata-file-box ${this.state.files.evidencePhoto ? 'has-file' : ''}" data-field="evidencePhoto" role="button" tabindex="0">
                         ${this.state.previews.evidencePhoto ? (this.state.files.evidencePhoto.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.evidencePhoto}" class="pata-preview">`) : ''}
                         <div class="icon-up">
                             <img src="${this.baseUrl}/Icons/upload.svg">
                         </div>
                         <div>
-                            <p>Adjunta evidencia (Foto de tu peludo)</p>
-                            <span>PDF, JPG o PNG - Máx. 10MB</span>
+                            <p>Evidencia (Foto)</p>
+                            <span>PDF, JPG o PNG</span>
                         </div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
@@ -648,11 +669,24 @@ class SolidarityRequestForm {
                             <img src="${this.baseUrl}/Icons/upload.svg">
                         </div>
                         <div>
-                            <p>Informe veterinario o receta</p>
-                            <span>PDF, JPG o PNG - Máx. 10MB</span>
+                            <p>Informe/Receta</p>
+                            <span>PDF, JPG o PNG</span>
                         </div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
+                    ${!isAppointment ? `
+                        <div class="pata-file-box ${this.state.files.receipt ? 'has-file' : ''}" data-field="receipt" role="button" tabindex="0">
+                            ${this.state.previews.receipt ? (this.state.files.receipt.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.receipt}" class="pata-preview">`) : ''}
+                            <div class="icon-up">
+                                <img src="${this.baseUrl}/Icons/upload.svg">
+                            </div>
+                            <div>
+                                <p>Comprobante/Factura</p>
+                                <span>PDF, JPG o PNG</span>
+                            </div>
+                            <input type="file" hidden accept="image/*,application/pdf">
+                        </div>
+                    ` : ''}
                 </div>
 
                 <div class="pata-form-grid">
@@ -680,7 +714,7 @@ class SolidarityRequestForm {
                         ${!isEmergency ? `
                             <div class="pata-field">
                                 <label class="pata-label" for="pata-amount">Monto solicitado al fondo</label>
-                                <input type="number" class="pata-input" id="pata-amount" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
+                                <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
                             </div>
                         ` : ''}
                         <div class="pata-field">
@@ -688,11 +722,22 @@ class SolidarityRequestForm {
                             <input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}">
                         </div>
                         ${isEmergency ? `
+                            <div class="pata-field">
+                                <label class="pata-label" for="pata-total-paid">Monto total pagado</label>
+                                <input type="number" class="pata-input" id="pata-total-paid" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.totalPaidAmount}">
+                            </div>
+                            <div class="pata-field">
+                                <label class="pata-label" for="pata-amount">Monto solicitado al fondo</label>
+                                <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
+                            </div>
                             <div class="pata-field full">
                                 <label class="pata-label" for="pata-clinic-name">Escribe el nombre del consultorio o veterinaria</label>
                                 <input type="text" class="pata-input" id="pata-clinic-name" placeholder="¿Dónde fue atendido tu peludo?" value="${this.state.formData.clinicName}">
                             </div>
-                            <div class="pata-field"><label class="pata-label" for="pata-cp">Código postal</label><input type="text" class="pata-input" id="pata-cp" value="${this.state.formData.clinicPostalCode}"></div>
+                            <div class="pata-field">
+                                <label class="pata-label" for="pata-cp">Código postal</label>
+                                <input type="text" class="pata-input" id="pata-cp" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="5 dígitos" value="${this.state.formData.clinicPostalCode}">
+                            </div>
                             <div class="pata-field"><label class="pata-label" for="pata-state">Estado</label><input type="text" class="pata-input" id="pata-state" value="${this.state.formData.clinicState}"></div>
                             <div class="pata-field full"><label class="pata-label" for="pata-address">Dirección</label><input type="text" class="pata-input" id="pata-address" value="${this.state.formData.clinicAddress}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-city">Ciudad</label><input type="text" class="pata-input" id="pata-city" value="${this.state.formData.clinicCity}"></div>
@@ -756,9 +801,35 @@ class SolidarityRequestForm {
             const el = this.container.querySelector(`#pata-${id}`);
             if (el) {
                 el.oninput = () => {
-                    const field = id.replace(/-([a-z])/g, (g) => g[1].toUpperCase());
-                    const stateKey = field === 'cp' ? 'clinicPostalCode' : (field === 'prefTime' ? 'preferredAppointmentTime' : field);
-                    this.state.formData[stateKey] = el.value;
+                    let value = el.value;
+                    
+                    // Specific numeric filters
+                    if (id === 'cp') value = value.replace(/[^0-9]/g, '').substring(0, 5);
+                    if (id === 'amount' || id === 'total-paid') value = value.replace(/[^0-9.]/g, '');
+
+                    // Map UI IDs to state keys
+                    const mapping = {
+                        'case-desc': 'caseDescription',
+                        'case-title': 'caseTitle',
+                        'incident-date': 'incidentDate',
+                        'pref-time': 'preferredAppointmentTime',
+                        'amount': 'requestedAmount',
+                        'total-paid': 'totalPaidAmount',
+                        'clinic-name': 'clinicName',
+                        'cp': 'clinicPostalCode',
+                        'state': 'clinicState',
+                        'city': 'clinicCity',
+                        'address': 'clinicAddress',
+                        'vet-name': 'vetName',
+                        'vet-license': 'vetLicense',
+                        'center': 'alliedCenterId'
+                    };
+
+                    const stateKey = mapping[id];
+                    if (stateKey) {
+                        this.state.formData[stateKey] = value;
+                        if (id === 'cp') el.value = value; // Force clean value in UI for CP
+                    }
                     this.updateSubmitStatus();
                 };
             }
