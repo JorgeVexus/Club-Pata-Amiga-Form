@@ -410,6 +410,11 @@ class SolidarityRequestForm {
             return !!(d.incidentDate && d.preferredAppointmentTime && d.caseTitle);
         } else {
             if (!d.requestedAmount || !f.receipt || !f.prescription) return false;
+            
+            // Validación Senior
+            const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
+            if (selectedPet?.needsSeniorCertificate && !f.seniorCertificate) return false;
+
             if (this.state.selection.benefitType === 'medical_emergency') {
                 return !!(d.totalPaidAmount && d.clinicName && d.clinicPostalCode && d.clinicAddress && d.vetName);
             }
@@ -428,6 +433,8 @@ class SolidarityRequestForm {
             document.body.style.overflow = '';
             document.body.style.paddingRight = '';
         }
+
+        const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
 
         this.container.innerHTML = `
             <div class="pata-form-page">
@@ -687,6 +694,19 @@ class SolidarityRequestForm {
                             <input type="file" hidden accept="image/*,application/pdf">
                         </div>
                     ` : ''}
+                    ${selectedPet?.needsSeniorCertificate ? `
+                        <div class="pata-file-box ${this.state.files.seniorCertificate ? 'has-file' : ''}" data-field="seniorCertificate" role="button" tabindex="0" style="border-color: #FE8F15;">
+                            ${this.state.previews.seniorCertificate ? (this.state.files.seniorCertificate.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.seniorCertificate}" class="pata-preview">`) : ''}
+                            <div class="icon-up" style="background: #FE8F15;">
+                                <img src="${this.baseUrl}/Icons/upload.svg">
+                            </div>
+                            <div>
+                                <p>Certificado Senior *</p>
+                                <span style="color: #FE8F15; font-weight: 800;">Requerido por edad</span>
+                            </div>
+                            <input type="file" hidden accept="image/*,application/pdf">
+                        </div>
+                    ` : ''}
                 </div>
 
                 <div class="pata-form-grid">
@@ -912,7 +932,11 @@ class SolidarityRequestForm {
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('userId', memberstackId);
-                    formData.append('docType', key === 'evidencePhoto' ? 'evidence_photo' : key);
+                    const mapping = {
+                        evidencePhoto: 'evidence_photo',
+                        seniorCertificate: 'senior_certificate'
+                    };
+                    formData.append('docType', mapping[key] || key);
 
                     const uploadRes = await fetch(`${this.apiUrl}/api/upload/solidarity-document`, {
                         method: 'POST',
@@ -921,8 +945,12 @@ class SolidarityRequestForm {
                     const uploadData = await uploadRes.json();
                     if (!uploadData.success) throw new Error(`Error al subir ${key}: ${uploadData.error}`);
                     
+                    const mapping = {
+                        evidencePhoto: 'evidence_photo',
+                        seniorCertificate: 'senior_certificate'
+                    };
                     documents.push({
-                        docType: key === 'evidencePhoto' ? 'evidence_photo' : key,
+                        docType: mapping[key] || key,
                         path: uploadData.path,
                         fileName: uploadData.fileName,
                         fileSize: uploadData.fileSize,

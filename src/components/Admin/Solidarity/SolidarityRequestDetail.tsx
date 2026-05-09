@@ -188,6 +188,32 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                             <label>Descripción del caso</label>
                             <p>{request.case_description}</p>
                         </div>
+
+                        {(request as any).documents && (request as any).documents.length > 0 && (
+                            <div className={styles.documentsBox}>
+                                <label>Documentos Adjuntos</label>
+                                <div className={styles.docGrid}>
+                                    {(request as any).documents.map((doc: any) => (
+                                        <a key={doc.id} href={doc.file_url} target="_blank" className={styles.docItem}>
+                                            <div className={styles.docIcon}>
+                                                {doc.document_type === 'senior_certificate' ? '📜' : 
+                                                 doc.document_type === 'evidence_photo' ? '📸' : 
+                                                 doc.document_type === 'prescription' ? '💊' : '📄'}
+                                            </div>
+                                            <div className={styles.docInfo}>
+                                                <div className={styles.docType}>
+                                                    {doc.document_type === 'senior_certificate' ? 'Certificado Senior' : 
+                                                     doc.document_type === 'evidence_photo' ? 'Evidencia' : 
+                                                     doc.document_type === 'prescription' ? 'Receta' : 
+                                                     doc.document_type === 'receipt' ? 'Comprobante' : 'Documento'}
+                                                </div>
+                                                <div className={styles.docName}>{doc.file_name || 'Ver archivo'}</div>
+                                            </div>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </section>
 
                     <section className={styles.chatSection}>

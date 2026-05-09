@@ -138,19 +138,29 @@ class SolidarityDashboard {
 
     calculateCarencia(pet) {
         const now = new Date();
-        const start = pet.created_at ? new Date(pet.created_at) : now;
+        
+        // Priorizar fecha calculada por el backend si existe
+        if (pet.waiting_period_end) {
+            const endDate = new Date(pet.waiting_period_end);
+            const isWaiting = endDate > now;
+            const diffTime = endDate - now;
+            const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+            
+            // Estimar porcentaje (asumiendo 180 días base si no se sabe el inicio)
+            const totalDays = pet.waiting_period_days ? parseInt(pet.waiting_period_days) : 180;
+            const daysPassed = Math.max(0, totalDays - daysRemaining);
+            const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
+            return { daysRemaining, percentage, totalDays, isWaiting };
+        }
+
+        const start = pet.created_at ? new Date(pet.created_at) : now;
         let totalDays = 180;
         if (pet.waiting_period_days) {
             totalDays = parseInt(pet.waiting_period_days);
         } else if (pet.is_adopted) {
             const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
             totalDays = isMixed ? 120 : 150;
-        }
-
-        // Safety check for invalid dates
-        if (isNaN(start.getTime())) {
-            return { daysRemaining: totalDays, percentage: 0, totalDays, isWaiting: true };
         }
 
         const diffTime = Math.abs(now - start);

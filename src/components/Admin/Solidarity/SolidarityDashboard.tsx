@@ -39,7 +39,7 @@ export default function SolidarityDashboard({ onViewDetail }: SolidarityDashboar
             const response = await adminFetch(`/api/admin/solidarity/list?status=${filter}`);
             const data = await response.json();
             if (data.success) {
-                setRequests(data.data);
+                setRequests(data.requests || []);
             }
         } catch (error) {
             console.error('Error loading solidarity requests:', error);

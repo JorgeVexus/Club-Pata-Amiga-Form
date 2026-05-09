@@ -19,7 +19,8 @@ export async function GET(
             .select(`
                 *,
                 pet:pets(*),
-                user:users(*)
+                user:users(*),
+                documents:solidarity_documents(*)
             `)
             .eq('id', id)
             .single();

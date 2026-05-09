@@ -59,23 +59,27 @@ export async function GET(request: NextRequest) {
         let activePets = 0;
         let pendingPets = 0;
 
-        pets?.forEach(pet => {
+        const petsWithExtraData = pets?.map(pet => {
             const isApproved = pet.status === 'approved';
+            const hasFinishedWaiting = pet.waiting_period_end && new Date(pet.waiting_period_end) <= now;
+            const isEligible = isApproved && hasFinishedWaiting;
             
-            if (isApproved && pet.waiting_period_end) {
-                const waitDate = new Date(pet.waiting_period_end);
-                if (waitDate <= now) {
-                    activePets++;
-                } else {
-                    pendingPets++;
-                }
-            } else if (isApproved && !pet.waiting_period_end) {
-                // Si está aprobado pero no tiene fecha (nuevo o error), se considera pendiente
-                pendingPets++;
+            if (isEligible) {
+                activePets++;
             } else {
-                // Not approved or other status
                 pendingPets++;
             }
+
+            // Lógica Senior
+            const isSenior = pet.is_senior || false;
+            const hasCertificate = !!pet.vet_certificate_url;
+            const needsSeniorCertificate = isSenior && !hasCertificate;
+
+            return {
+                ...pet,
+                isEligible,
+                needsSeniorCertificate
+            };
         });
 
         // 2. Obtener estadísticas de solicitudes
@@ -94,7 +98,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             success: true,
             user: userData,
-            pets: pets || [],
+            pets: petsWithExtraData || [],
             stats: {
                 active: activePets,
                 pending: pendingPets,

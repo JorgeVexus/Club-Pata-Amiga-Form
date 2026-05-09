@@ -158,6 +158,77 @@
     border-radius: 12px;
 }
 
+.documentsBox {
+    margin-top: 30px;
+}
+
+.documentsBox label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.docGrid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.docItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    text-decoration: none;
+    color: inherit;
+    transition: all 0.2s;
+}
+
+.docItem:hover {
+    border-color: #00BBB4;
+    transform: translateX(4px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.docIcon {
+    width: 40px;
+    height: 40px;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.docInfo {
+    flex: 1;
+    overflow: hidden;
+}
+
+.docType {
+    font-size: 10px;
+    font-weight: 800;
+    color: #00BBB4;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+}
+
+.docName {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
 .chatSection {
     display: flex;
     flex-direction: column;
