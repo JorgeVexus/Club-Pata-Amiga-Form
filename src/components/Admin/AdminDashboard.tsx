@@ -23,10 +23,13 @@ import BillingManagement from './Finance/BillingManagement';
 import InteractiveReports from './Reports/InteractiveReports';
 import { Ambassador } from '@/types/ambassador.types';
 import { adminFetch } from '@/utils/admin-fetch';
+import SolidarityDashboard from './Solidarity/SolidarityDashboard';
+import SolidarityRequestDetail from './Solidarity/SolidarityRequestDetail';
 
 export default function AdminDashboard() {
     const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
     // ... rest of state stays the same
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -382,6 +385,12 @@ export default function AdminDashboard() {
                         </div>
                     </>
                 );
+            case 'solidarity-fund':
+                return (
+                    <SolidarityDashboard 
+                        onViewDetail={(id) => setSelectedSolidarityRequestId(id)} 
+                    />
+                );
         }
     };
 
@@ -522,6 +531,14 @@ export default function AdminDashboard() {
                     ambassador={selectedAmbassador}
                     onClose={() => setSelectedAmbassador(null)}
                     onRefresh={() => window.location.reload()}
+                />
+            )}
+
+            {selectedSolidarityRequestId && adminMemberstackId && (
+                <SolidarityRequestDetail 
+                    requestId={selectedSolidarityRequestId}
+                    adminMemberstackId={adminMemberstackId}
+                    onClose={() => setSelectedSolidarityRequestId(null)}
                 />
             )}
         </div>

@@ -912,8 +912,8 @@ class SolidarityDashboard {
                 role="button" 
                 tabindex="0"
                 aria-label="Ver detalles de solicitud ${req.reason} para ${pet ? pet.name : 'mascota'}"
-                onclick="window.location.href='/solicitud?id=${req.id}'"
-                onkeydown="if(event.key==='Enter'||event.key===' ') window.location.href='/solicitud?id=${req.id}'">
+                onclick="window.location.href='/dashboard/fondo-solidario/detalle?id=${req.id}'"
+                onkeydown="if(event.key==='Enter'||event.key===' ') window.location.href='/dashboard/fondo-solidario/detalle?id=${req.id}'">
                 <div style="width: 220px; flex-shrink: 0;">
                     <h4 class="pata-history-id">${req.reason || 'Solicitud'}</h4>
                     <p class="pata-history-pet">${pet ? pet.name : 'Mascota'}</p>

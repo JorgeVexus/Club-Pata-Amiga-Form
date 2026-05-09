@@ -54,21 +54,15 @@ export async function POST(request: NextRequest) {
 
         if (updateError) throw updateError;
 
-        // 3. Si hay mensaje, insertarlo en appeal_logs
+        // 3. Si hay mensaje, insertarlo en solidarity_messages
         if (message) {
             await supabaseAdmin
-                .from('appeal_logs')
+                .from('solidarity_messages')
                 .insert({
-                    user_id: currentRequest.user_id,
-                    pet_id: currentRequest.pet_id,
-                    type: 'admin_message', // O 'solidarity_chat' con flag de admin
+                    request_id: requestId,
+                    sender_role: 'admin',
+                    sender_id: admin.memberstack_id,
                     message: message,
-                    admin_id: admin.memberstack_id,
-                    metadata: { 
-                        requestId: requestId,
-                        source: 'admin_solidarity_panel',
-                        newStatus: status
-                    },
                     created_at: new Date().toISOString()
                 });
         }
@@ -92,7 +86,7 @@ export async function POST(request: NextRequest) {
                 title: `Actualización de Fondo Solidario`,
                 message: `Tu solicitud ${statusText}.`,
                 icon: '💰',
-                link: `/solicitud?id=${requestId}`,
+                link: `/dashboard/fondo-solidario/detalle?id=${requestId}`,
                 is_read: false,
                 created_at: new Date().toISOString()
             });

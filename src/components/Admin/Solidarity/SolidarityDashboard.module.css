@@ -1,0 +1,105 @@
+.container {
+    padding: 20px;
+    background: white;
+    border-radius: 20px;
+    border: 2px solid #000;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.title {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 24px;
+    margin: 0;
+}
+
+.select {
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 2px solid #000;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    outline: none;
+}
+
+.tableWrapper {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Outfit', sans-serif;
+}
+
+.table th {
+    text-align: left;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border-bottom: 2px solid #e2e8f0;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.table td {
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    vertical-align: middle;
+}
+
+.userName {
+    font-weight: 700;
+    color: #1a202c;
+}
+
+.userEmail {
+    font-size: 12px;
+    color: #718096;
+}
+
+.amount {
+    font-weight: 800;
+    color: #2d3748;
+}
+
+.benefitType {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.viewBtn {
+    background: #00BBB4;
+    color: white;
+    border: 2px solid #000;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000;
+    transition: transform 0.1s;
+}
+
+.viewBtn:hover {
+    transform: translate(-1px, -1px);
+    box-shadow: 3px 3px 0px #000;
+}
+
+.viewBtn:active {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #000;
+}
+
+.loading, .empty {
+    padding: 40px;
+    text-align: center;
+    color: #718096;
+    font-weight: 600;
+}

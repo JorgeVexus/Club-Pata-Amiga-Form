@@ -150,7 +150,13 @@ export default function Sidebar({ activeFilter, onFilterChange, pendingCounts, i
                                     <button
                                         key={`${item.id}-${idx}`}
                                         className={`${styles.menuItem} ${activeFilter === item.id ? styles.active : ''}`}
-                                        onClick={() => onFilterChange(item.id)}
+                                        onClick={() => {
+                                            if (item.subStatus) {
+                                                onFilterChange({ id: item.id, subStatus: item.subStatus });
+                                            } else {
+                                                onFilterChange(item.id);
+                                            }
+                                        }}
                                     >
                                         {item.icon && <span className={styles.menuIcon}>{item.icon}</span>}
                                         <span className={styles.menuLabel}>{item.label}</span>
