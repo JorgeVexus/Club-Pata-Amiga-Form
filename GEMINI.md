@@ -210,7 +210,7 @@ Variables defined in `src/app/globals.css`:
 - NEVER execute `git commit` or `git push` without explicit user authorization
 - **MANDATORY**: ALWAYS run `npm run build` or `npm run type-check` BEFORE committing to identify errors.
 - **MANDATORY**: ALWAYS update or create the daily changelog in `changelogs/YYYY-MM-DD.md` after every `git push`, detailing all changes and their impact.
-- **MANDATORY**: After completing ANY task, ALWAYS run this command in the terminal:
+- **MANDATORY**: After completing ANY task (including before commit/push authorization to notify the user that work is ready for review), ALWAYS run this command in the terminal:
   `curl.exe -s -X POST "https://api.telegram.org/bot8770328522:AAEPbCO0BW44QYGKnjWYe9obSnI1pWC8rRY/sendMessage" -d chat_id="5626898593" -d text="✅ Agent done: [1-line summary of what was completed]"`
 
 ### Common API Routes

@@ -18,7 +18,7 @@
     - This acts as a mandatory QA gate to ensure deployment stability.
 
 11. **TELEGRAM NOTIFICATIONS**:
-    - After completing ANY task, ALWAYS run this command in the terminal:
+    - After completing ANY task (including before commit/push authorization to notify the user that work is ready for review), ALWAYS run this command in the terminal:
       `curl.exe -s -X POST "https://api.telegram.org/bot8770328522:AAEPbCO0BW44QYGKnjWYe9obSnI1pWC8rRY/sendMessage" -d chat_id="5626898593" -d text="✅ Agent done: [1-line summary of what was completed]"`
 
 ## Visión General del Proyecto
