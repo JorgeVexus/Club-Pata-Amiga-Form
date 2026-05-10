@@ -138,23 +138,8 @@ class SolidarityDashboard {
 
     calculateCarencia(pet) {
         const now = new Date();
+        const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : (pet.created_at ? new Date(pet.created_at) : now);
         
-        // Priorizar fecha calculada por el backend si existe
-        if (pet.waiting_period_end) {
-            const endDate = new Date(pet.waiting_period_end);
-            const isWaiting = endDate > now;
-            const diffTime = endDate - now;
-            const daysRemaining = Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
-            
-            // Estimar porcentaje (asumiendo 180 días base si no se sabe el inicio)
-            const totalDays = pet.waiting_period_days ? parseInt(pet.waiting_period_days) : 180;
-            const daysPassed = Math.max(0, totalDays - daysRemaining);
-            const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
-
-            return { daysRemaining, percentage, totalDays, isWaiting };
-        }
-
-        const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : pet.created_at ? new Date(pet.created_at) : now;
         let totalDays = 180;
         if (pet.waiting_period_days) {
             totalDays = parseInt(pet.waiting_period_days);
@@ -169,7 +154,10 @@ class SolidarityDashboard {
         const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
         const isWaiting = daysRemaining > 0;
 
-        return { daysRemaining, percentage, totalDays, isWaiting };
+        const endDate = new Date(start);
+        endDate.setDate(endDate.getDate() + totalDays);
+
+        return { daysRemaining, percentage, totalDays, isWaiting, endDate };
     }
 
     getPetStatusContext(pet) {

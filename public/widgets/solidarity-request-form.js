@@ -398,6 +398,30 @@ class SolidarityRequestForm {
         `;
     }
 
+    calculateCarencia(pet) {
+        const now = new Date();
+        const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : (pet.created_at ? new Date(pet.created_at) : now);
+        
+        let totalDays = 180;
+        if (pet.waiting_period_days) {
+            totalDays = parseInt(pet.waiting_period_days);
+        } else if (pet.is_adopted) {
+            const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+            totalDays = isMixed ? 120 : 150;
+        }
+
+        const diffTime = Math.abs(now - start);
+        const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const daysRemaining = Math.max(0, totalDays - daysPassed);
+        const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+        const isWaiting = daysRemaining > 0;
+
+        const endDate = new Date(start);
+        endDate.setDate(endDate.getDate() + totalDays);
+
+        return { daysRemaining, percentage, totalDays, isWaiting, endDate };
+    }
+
     validateForm() {
         const d = this.state.formData;
         const f = this.state.files;
@@ -448,7 +472,8 @@ class SolidarityRequestForm {
                         ${this.state.pets.map(pet => {
                             const now = new Date();
                             const isApproved = pet.status === 'approved';
-                            const hasFinishedWaiting = pet.waiting_period_end && new Date(pet.waiting_period_end) <= now;
+                            const carencia = this.calculateCarencia(pet);
+                            const hasFinishedWaiting = !carencia.isWaiting;
                             
                             // Only eligible if approved AND finished waiting period
                             const isEligible = isApproved && hasFinishedWaiting;

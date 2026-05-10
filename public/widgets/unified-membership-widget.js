@@ -3751,7 +3751,10 @@
             const daysRemaining = Math.max(0, totalDays - daysPassed);
             const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
-            return { daysRemaining, percentage, totalDays };
+            const endDate = new Date(start);
+            endDate.setDate(endDate.getDate() + totalDays);
+
+            return { daysRemaining, percentage, totalDays, endDate };
         }
 
         isSenior(pet) {
@@ -4703,28 +4706,34 @@
                     <div class="pata-approved-grid-main">
                         <!-- Columna Izquierda: Estatus y Progreso -->
                         <div class="pata-approved-column-left">
-                            <span class="pata-approved-status-badge">tu periodo de espera</span>
+                            <span class="pata-approved-status-badge">${carencia.daysRemaining <= 0 ? '¡Felicidades!' : 'tu periodo de espera'}</span>
                             
                             <div class="pata-approved-progress-box">
-                                <p class="pata-approved-progress-msg">${statusMessage}</p>
-                                
-                                <p class="pata-approved-days-left">
-                                    faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo
-                                </p>
-                                
-                                <div class="pata-approved-progress-labels-top">
-                                    <span>Inicio de membresía</span>
-                                    <span>${Math.round(carencia.percentage)}% completado</span>
-                                </div>
-
-                                <div class="pata-approved-progress-container">
-                                    <div class="pata-approved-progress-bar" style="width: ${carencia.percentage}%"></div>
-                                </div>
-                                
-                                <div class="pata-approved-progress-labels">
-                                    <span>Día 1</span>
-                                    <span>Día ${carencia.totalDays}</span>
-                                </div>
+                                ${carencia.daysRemaining <= 0 ? `
+                                    <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Fondo Activado</h3>
+                                    <p style="margin-bottom: 20px; font-family: var(--font-body); color: var(--pata-text-dark);"><strong>${pet.name}</strong> ya puede acceder al fondo solidario y utilizar todos sus beneficios.</p>
+                                    <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-accent); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 16px; font-weight: bold; padding: 12px 20px; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
+                                ` : `
+                                    <p class="pata-approved-progress-msg">${statusMessage}</p>
+                                    
+                                    <p class="pata-approved-days-left">
+                                        faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo
+                                    </p>
+                                    
+                                    <div class="pata-approved-progress-labels-top">
+                                        <span>Inicio de membresía</span>
+                                        <span>${Math.round(carencia.percentage)}% completado</span>
+                                    </div>
+    
+                                    <div class="pata-approved-progress-container">
+                                        <div class="pata-approved-progress-bar" style="width: ${carencia.percentage}%"></div>
+                                    </div>
+                                    
+                                    <div class="pata-approved-progress-labels">
+                                        <span>Día 1</span>
+                                        <span>Día ${carencia.totalDays}</span>
+                                    </div>
+                                `}
                             </div>
                         </div>
 
@@ -5311,7 +5320,7 @@
                 day: 'numeric', month: 'long', year: 'numeric'
             }) : 'No disponible';
 
-            const activationDate = pet.waiting_period_end ? new Date(pet.waiting_period_end).toLocaleDateString('es-MX', {
+            const activationDate = carencia.endDate ? carencia.endDate.toLocaleDateString('es-MX', {
                 day: 'numeric', month: 'long', year: 'numeric'
             }) : '---';
 
@@ -5370,18 +5379,29 @@
                                     `).join('')}
                                 </div>
 
-                                ${pet.status === 'approved' ? `
-                                <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
-                                    <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
-                                    <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
-                                        <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
+                                ${pet.status === 'approved' ? (() => {
+                                    if (carencia.daysRemaining <= 0) {
+                                        return `
+                                        <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg); text-align: center;">
+                                            <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Fondo Activado</h3>
+                                            <p style="margin-bottom: 15px; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px;"><strong>${pet.name}</strong> ya puede acceder al fondo solidario.</p>
+                                            <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-btn-primary, #FE8F15); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 14px; font-weight: bold; padding: 12px 0; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
+                                        </div>
+                                        `;
+                                    }
+                                    return `
+                                    <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
+                                        <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
+                                        <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
+                                            <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
+                                            <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
+                                            <span style="color: var(--pata-primary);">Faltan ${carencia.daysRemaining} días</span>
+                                        </div>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
-                                        <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
-                                        <span style="color: var(--pata-primary);">Faltan ${carencia.daysRemaining} días</span>
-                                    </div>
-                                </div>
-                                ` : ''}
+                                    `;
+                                })() : ''}
                             </div>
 
                             <!-- Right Section: Fact Sheet -->

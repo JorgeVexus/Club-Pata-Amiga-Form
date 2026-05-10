@@ -770,8 +770,11 @@
             const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const daysRemaining = Math.max(0, totalDays - daysPassed);
             const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+            
+            const endDate = new Date(start);
+            endDate.setDate(endDate.getDate() + totalDays);
 
-            return { daysRemaining, percentage, totalDays };
+            return { daysRemaining, percentage, totalDays, endDate };
         }
 
         async loadData() {
@@ -862,7 +865,8 @@
                 day: 'numeric', month: 'short', year: 'numeric'
             }) : 'No disponible';
 
-            const activationDate = pet.waiting_period_end ? new Date(pet.waiting_period_end).toLocaleDateString('es-MX', {
+            const carencia = this.calculateCarencia(pet);
+            const activationDate = carencia.endDate ? carencia.endDate.toLocaleDateString('es-MX', {
                 day: 'numeric', month: 'short', year: 'numeric'
             }) : '---';
 
@@ -1000,6 +1004,14 @@
 
                             ${pet.status === 'approved' ? (() => {
                                 const carencia = this.calculateCarencia(pet);
+                                if (carencia.daysRemaining <= 0) {
+                                    return `
+                                        <div class="pata-progress-container-v2" style="text-align: center; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
+                                            <p style="margin: 0; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px; text-align: center;"><strong>${pet.name}</strong> ya puede acceder al fondo solidario.</p>
+                                            <a href="https://www.pataamiga.mx/miembros/tu-manada" class="pata-btn" style="background: var(--pata-btn-primary); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); width: 100%; text-align: center; font-size: 14px; box-shadow: 4px 4px 0 rgba(0,0,0,1); display: inline-block; padding: 12px 0;">Utiliza tus beneficios</a>
+                                        </div>
+                                    `;
+                                }
                                 return `
                                     <div class="pata-progress-container-v2">
                                         <div class="pata-progress-header">
