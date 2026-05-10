@@ -32,7 +32,25 @@ export async function GET(
 
         if (error) throw error;
 
-        return NextResponse.json(messages, { headers: corsHeaders });
+        // Generar URLs firmadas para los adjuntos si existen
+        const messagesWithSignedUrls = await Promise.all((messages || []).map(async (msg: any) => {
+            if (msg.attachments && Array.isArray(msg.attachments) && msg.attachments.length > 0) {
+                const signedAttachments = await Promise.all(msg.attachments.map(async (att: any) => {
+                    // Si la URL no es ya una URL completa (http), intentamos firmarla
+                    if (att.url && !att.url.startsWith('http')) {
+                        const { data } = await supabaseAdmin.storage
+                            .from('solidarity-documents')
+                            .createSignedUrl(att.url, 3600);
+                        return { ...att, url: data?.signedUrl || att.url };
+                    }
+                    return att;
+                }));
+                return { ...msg, attachments: signedAttachments };
+            }
+            return msg;
+        }));
+
+        return NextResponse.json(messagesWithSignedUrls, { headers: corsHeaders });
     } catch (error: any) {
         console.error('Error fetching messages:', error);
         return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });

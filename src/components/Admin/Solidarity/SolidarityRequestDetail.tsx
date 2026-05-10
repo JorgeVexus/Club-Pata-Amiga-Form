@@ -305,7 +305,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     </div>
                     <div className={styles.viewerContent}>
                         {(() => {
-                            const url = selectedDocument.file_url || selectedDocument.url || '';
+                            const url = selectedDocument.file_url || selectedDocument.url || selectedDocument.file_path || '';
                             const name = selectedDocument.file_name || selectedDocument.name || '';
                             const isImage = /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(url) || /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
                             const isPDF = url.toLowerCase().includes('.pdf') || name.toLowerCase().endsWith('.pdf');

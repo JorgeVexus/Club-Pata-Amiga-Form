@@ -29,6 +29,20 @@ export async function GET(
             return NextResponse.json({ error: 'Solicitud no encontrada' }, { status: 404 });
         }
 
+        // 2. Generar URLs firmadas para los documentos (bucket privado)
+        if (solidarityRequest.documents && solidarityRequest.documents.length > 0) {
+            solidarityRequest.documents = await Promise.all(solidarityRequest.documents.map(async (doc: any) => {
+                const { data } = await supabaseAdmin.storage
+                    .from('solidarity-documents')
+                    .createSignedUrl(doc.file_path, 3600); // URL válida por 1 hora
+                
+                return {
+                    ...doc,
+                    file_url: data?.signedUrl || doc.file_url
+                };
+            }));
+        }
+
         return NextResponse.json({
             success: true,
             request: solidarityRequest
