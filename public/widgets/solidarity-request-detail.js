@@ -36,6 +36,7 @@ class SolidarityRequestDetail {
             return;
         }
 
+        window.PataSolidarityDetail = this;
         this.init();
     }
 
@@ -47,6 +48,7 @@ class SolidarityRequestDetail {
             this.render();
             this.attachEventListeners();
             this.scrollToBottom();
+            this.startPolling();
         } catch (error) {
             console.error('❌ Init Error:', error);
             this.renderError(error.message);
@@ -971,11 +973,22 @@ class SolidarityRequestDetail {
                             ${this.state.messages.map(m => `
                                 <div class="pata-bubble ${m.sender_role}">
                                     ${m.message}
-                                    ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => `
-                                        <div style="margin-top: 10px; font-size: 12px; display: flex; align-items: center; gap: 5px;">
-                                            <span>📄</span> <a href="${a.url}" target="_blank" style="color: inherit;">${a.name}</a>
-                                        </div>
-                                    `).join('') : ''}
+                                    ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => {
+                                        const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.name) || /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.url);
+                                        return `
+                                            <div onclick="window.PataSolidarityDetail.openDocument('${a.url}', '${a.name}')" style="margin-top: 10px; cursor: pointer; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;">
+                                                ${isImage ? `
+                                                    <img src="${a.url}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #000;">
+                                                ` : `
+                                                    <div style="width: 40px; height: 40px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid #000;">${a.name.endsWith('.pdf') ? '📕' : '📄'}</div>
+                                                `}
+                                                <div style="flex: 1; min-width: 0;">
+                                                    <div style="font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit;">${a.name}</div>
+                                                    <div style="font-size: 9px; opacity: 0.7; color: inherit;">Clic para ver</div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('') : ''}
                                     <div style="font-size: 10px; margin-top: 5px; opacity: 0.6; text-align: right;">
                                         ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                     </div>
@@ -991,8 +1004,15 @@ class SolidarityRequestDetail {
                             <button id="pata-send-btn" class="pata-btn-circle" ${!this.state.newMessage.trim() && !this.state.files.attachment ? 'disabled' : ''}>
                                 ${this.state.sending ? '...' : '➤'}
                             </button>
-                            <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf">
+                            <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf,video/*">
                         </div>
+                        ${this.state.files.attachment ? `
+                            <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; background: #f0f0f0; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd;">
+                                <span style="font-size: 16px;">📎</span>
+                                <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.state.files.attachment.name}</span>
+                                <span onclick="window.PataSolidarityDetail.clearFile()" style="cursor: pointer; font-weight: 700; color: #FF0066; padding: 0 5px;">&times;</span>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
 
@@ -1032,6 +1052,28 @@ class SolidarityRequestDetail {
         this.container.innerHTML = `<div style="padding: 100px; text-align: center; color: #FF0066;">❌ Error: ${msg}</div>`;
     }
 
+    startPolling() {
+        if (this.pollingInterval) clearInterval(this.pollingInterval);
+        this.pollingInterval = setInterval(async () => {
+            try {
+                const member = this.state.member;
+                if (!member) return;
+
+                const messagesRes = await fetch(`${this.apiUrl}/api/solidarity/requests/${this.requestId}/messages?memberstackId=${member.id}`).then(r => r.json());
+                
+                if (Array.isArray(messagesRes) && messagesRes.length > this.state.messages.length) {
+                    console.log('📬 Nuevos mensajes recibidos');
+                    this.state.messages = messagesRes;
+                    this.render();
+                    this.attachEventListeners();
+                    this.scrollToBottom();
+                }
+            } catch (error) {
+                console.error('❌ Polling Error:', error);
+            }
+        }, 5000);
+    }
+
     // Modal Methods
     openDocument(url, filename) {
         const modal = document.getElementById('pata-doc-modal');
@@ -1045,13 +1087,21 @@ class SolidarityRequestDetail {
         downloadBtn.href = url;
         downloadBtn.setAttribute('download', filename);
 
-        const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(filename);
-        const isPdf = /\.pdf$/i.test(filename);
+        const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(filename) || /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(url);
+        const isPdf = /\.pdf(\?.*)?$/i.test(filename) || /\.pdf(\?.*)?$/i.test(url);
+        const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(filename) || /\.(mp4|webm|mov)(\?.*)?$/i.test(url);
 
         if (isImage) {
-            body.innerHTML = `<img src="${url}" alt="${filename}">`;
+            body.innerHTML = `<img src="${url}" alt="${filename}" style="max-width: 100%; height: auto;">`;
         } else if (isPdf) {
-            body.innerHTML = `<iframe src="${url}#toolbar=0" type="application/pdf"></iframe>`;
+            body.innerHTML = `<iframe src="${url}#toolbar=0" type="application/pdf" style="width: 100%; height: 70vh; min-width: 600px;"></iframe>`;
+        } else if (isVideo) {
+            body.innerHTML = `
+                <video controls autoplay style="max-width: 100%; max-height: 70vh;">
+                    <source src="${url}" type="video/mp4">
+                    Tu navegador no soporta la reproducción de video.
+                </video>
+            `;
         } else {
             body.innerHTML = `
                 <div style="padding: 40px; text-align: center;">

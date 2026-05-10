@@ -35,9 +35,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'El archivo es muy grande. Máximo 10MB.' }, { status: 400, headers: corsHeaders });
         }
 
-        const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'application/pdf'];
+        const validTypes = [
+            'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 
+            'application/pdf', 
+            'video/mp4', 'video/quicktime', 'video/webm', 'video/x-msvideo'
+        ];
         if (!validTypes.includes(file.type)) {
-            return NextResponse.json({ error: 'Tipo de archivo no válido.' }, { status: 400, headers: corsHeaders });
+            return NextResponse.json({ error: 'Tipo de archivo no válido. Solo imágenes, PDFs y videos.' }, { status: 400, headers: corsHeaders });
         }
 
         const fileExt = file.name.split('.').pop();

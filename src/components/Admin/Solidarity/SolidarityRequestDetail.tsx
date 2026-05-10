@@ -50,6 +50,15 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
     }, [requestId]);
 
     useEffect(() => {
+        const interval = setInterval(() => {
+            if (!loading && !sending) {
+                loadMessages();
+            }
+        }, 5000);
+        return () => clearInterval(interval);
+    }, [requestId, loading, sending, messages.length]);
+
+    useEffect(() => {
         if (chatRef.current) {
             chatRef.current.scrollTop = chatRef.current.scrollHeight;
         }
@@ -336,12 +345,21 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                             const name = selectedDocument.file_name || selectedDocument.name || '';
                             const isImage = /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(url) || /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
                             const isPDF = url.toLowerCase().includes('.pdf') || name.toLowerCase().endsWith('.pdf');
+                            const isVideo = /\.(mp4|webm|mov)(\?.*)?$/i.test(url) || /\.(mp4|webm|mov)(\?.*)?$/i.test(name);
 
                             if (isImage) {
                                 return <img src={url} alt="Vista previa" className={styles.viewerImage} />;
                             }
                             if (isPDF) {
                                 return <iframe src={url} className={styles.pdfFrame} title="PDF Viewer" />;
+                            }
+                            if (isVideo) {
+                                return (
+                                    <video controls autoPlay className={styles.viewerVideo} style={{ maxWidth: '100%', maxHeight: '70vh' }}>
+                                        <source src={url} />
+                                        Tu navegador no soporta la reproducción de video.
+                                    </video>
+                                );
                             }
                             return (
                                 <div style={{ padding: '40px', textAlign: 'center' }}>
