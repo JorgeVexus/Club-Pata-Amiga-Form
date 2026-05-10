@@ -296,7 +296,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
             {selectedDocument && (
                 <div className={styles.viewerOverlay}>
                     <div className={styles.viewerHeader}>
-                        <a href={selectedDocument.file_url || selectedDocument.url} download={selectedDocument.file_name || selectedDocument.name} className={styles.downloadBtn}>
+                        <a href={selectedDocument.file_url || selectedDocument.url} download={selectedDocument.file_name || selectedDocument.name} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn}>
                             Descargar
                         </a>
                         <button onClick={() => setSelectedDocument(null)} className={styles.closeViewerBtn}>
@@ -304,18 +304,27 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         </button>
                     </div>
                     <div className={styles.viewerContent}>
-                        {((selectedDocument.file_url || selectedDocument.url || '') as string).toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
-                            <img src={selectedDocument.file_url || selectedDocument.url} alt="Vista previa" className={styles.viewerImage} />
-                        ) : ((selectedDocument.file_url || selectedDocument.url || '') as string).toLowerCase().includes('.pdf') ? (
-                            <iframe src={selectedDocument.file_url || selectedDocument.url} className={styles.pdfFrame} title="PDF Viewer" />
-                        ) : (
-                            <div style={{ padding: '40px', textAlign: 'center' }}>
-                                <p>Este archivo no tiene vista previa disponible.</p>
-                                <a href={selectedDocument.file_url || selectedDocument.url} download className={styles.downloadBtn} style={{ marginTop: '20px', display: 'inline-block' }}>
-                                    Descargar para ver
-                                </a>
-                            </div>
-                        )}
+                        {(() => {
+                            const url = selectedDocument.file_url || selectedDocument.url || '';
+                            const name = selectedDocument.file_name || selectedDocument.name || '';
+                            const isImage = /\.(jpg|jpeg|png|gif|webp)(\?.*)?$/i.test(url) || /\.(jpg|jpeg|png|gif|webp)$/i.test(name);
+                            const isPDF = url.toLowerCase().includes('.pdf') || name.toLowerCase().endsWith('.pdf');
+
+                            if (isImage) {
+                                return <img src={url} alt="Vista previa" className={styles.viewerImage} />;
+                            }
+                            if (isPDF) {
+                                return <iframe src={url} className={styles.pdfFrame} title="PDF Viewer" />;
+                            }
+                            return (
+                                <div style={{ padding: '40px', textAlign: 'center' }}>
+                                    <p>Este archivo no tiene vista previa disponible.</p>
+                                    <a href={url} download={name} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn} style={{ marginTop: '20px', display: 'inline-block' }}>
+                                        Descargar para ver
+                                    </a>
+                                </div>
+                            );
+                        })()}
                     </div>
                 </div>
             )}
