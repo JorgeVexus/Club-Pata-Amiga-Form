@@ -66,8 +66,8 @@ export async function POST(
         const body = await request.json();
         const { message, senderRole, senderId, attachments } = body;
 
-        if (!message || !senderRole) {
-            return NextResponse.json({ error: 'Mensaje y rol son obligatorios' }, { status: 400, headers: corsHeaders });
+        if (!senderRole || (!message && (!attachments || attachments.length === 0))) {
+            return NextResponse.json({ error: 'El mensaje o un archivo adjunto son obligatorios' }, { status: 400, headers: corsHeaders });
         }
 
         // Validar si senderId es un UUID válido (necesario si la columna es UUID)

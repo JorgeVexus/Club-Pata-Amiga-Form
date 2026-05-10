@@ -86,7 +86,13 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
     }
 
     async function handleSendMessage() {
-        if (!newMessage.trim() || sending) return;
+        if (sending) return;
+        // Si no hay mensaje ni adjuntos (cuando se implementen), no enviamos nada.
+        // Por ahora permitimos enviar mensaje vacío si el backend lo permite.
+        if (!newMessage.trim() && messages.length > 0) {
+            // Podríamos dejarlo pasar si confiamos en el backend o si hay adjuntos
+        }
+        
         setSending(true);
 
         try {
