@@ -546,6 +546,10 @@ class SolidarityRequestDetail {
                     align-items: center;
                 }
 
+                .pata-pet-photo-wrapper {
+                    flex-shrink: 0;
+                }
+
                 .pata-pet-big-photo {
                     width: 200px;
                     height: 200px;
@@ -683,6 +687,7 @@ class SolidarityRequestDetail {
                 @media (max-width: 600px) {
                     .pata-details-grid { grid-template-columns: 1fr; }
                     .pata-pet-card-content { flex-direction: column; }
+                    .pata-pet-photo-wrapper { width: 100%; }
                     .pata-pet-big-photo { width: 100%; height: 250px; }
                     .pata-pet-grid-mini { grid-template-columns: 1fr 1fr; }
                 }
@@ -906,7 +911,7 @@ class SolidarityRequestDetail {
                     <label style="font-size: 14px; color: rgba(155, 155, 155, 1); margin-bottom: 20px; display: block;">Información general</label>
                     <div class="pata-pet-card-content">
                         <div class="pata-pet-photo-wrapper">
-                            <div class="pata-pet-big-photo" style="background-image: url('${pet.primary_photo_url || ''}')"></div>
+                            <div class="pata-pet-big-photo" style="background-image: url('${pet.primary_photo_url || pet.photo_url || pet.photo1_url || 'https://app.pataamiga.mx/Icons/dog-placeholder.png'}')"></div>
                         </div>
                         <div class="pata-pet-details-right">
                             <h3>${pet.name}</h3>
@@ -933,7 +938,7 @@ class SolidarityRequestDetail {
                                 </div>
                                 <div class="pata-pet-stat">
                                     <label>Registro</label>
-                                    <span>${new Date(pet.registration_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                    <span>${new Date(pet.created_at || pet.registration_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
                                 </div>
                             </div>
                         </div>
