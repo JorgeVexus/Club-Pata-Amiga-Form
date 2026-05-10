@@ -263,6 +263,19 @@
     display: flex;
     flex-direction: column;
     background: white;
+    min-height: 0; /* Fix for flexbox scrolling */
+}
+
+.chatHeader {
+    padding: 15px 30px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.chatTitle {
+    font-family: 'Fraiche', sans-serif;
+    margin: 0;
+    font-size: 20px;
+    color: #1a202c;
 }
 
 .chatHistory {
@@ -272,6 +285,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-height: 0; /* Fix for flexbox scrolling */
 }
 
 .message {
@@ -332,11 +346,13 @@
 }
 
 .inputArea {
-    padding: 20px 30px;
+    padding: 15px 30px;
     border-top: 2px solid #000;
     display: flex;
     gap: 15px;
     align-items: flex-end;
+    background: #fff;
+    z-index: 10;
 }
 
 .textarea {
@@ -366,6 +382,39 @@
     background: #ccc;
     box-shadow: none;
     cursor: not-allowed;
+}
+
+.attachBtn {
+    background: #f1f5f9;
+    border: 2px solid #000;
+    width: 50px;
+    height: 50px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 2px 2px 0px #000;
+    transition: all 0.2s;
+}
+
+.attachBtn:hover {
+    background: #e2e8f0;
+}
+
+.attachBtn.hasFile {
+    background: #D1FAE5;
+    border-color: #059669;
+    color: #059669;
+}
+
+.fileIndicator {
+    font-size: 11px;
+    font-weight: 700;
+    color: #059669;
+    margin-top: 5px;
+    display: block;
 }
 
 

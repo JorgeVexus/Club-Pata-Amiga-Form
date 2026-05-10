@@ -42,8 +42,11 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
     const [sending, setSending] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [selectedDocument, setSelectedDocument] = useState<any>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
     
     const chatRef = useRef<HTMLDivElement>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         loadData();
@@ -85,43 +88,73 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         }
     }
 
-    async function handleSendMessage() {
-        if (sending) return;
-        // Si no hay mensaje ni adjuntos (cuando se implementen), no enviamos nada.
-        // Por ahora permitimos enviar mensaje vacío si el backend lo permite.
-        if (!newMessage.trim() && messages.length > 0) {
-            // Podríamos dejarlo pasar si confiamos en el backend o si hay adjuntos
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+        if (e.target.files && e.target.files[0]) {
+            const file = e.target.files[0];
+            if (file.size > 15 * 1024 * 1024) {
+                alert('El archivo es muy grande. Máximo 15MB.');
+                return;
+            }
+            setSelectedFile(file);
         }
+    }
+
+    async function handleSendMessage() {
+        if (sending || uploading) return;
+        
+        const hasText = newMessage.trim();
+        const hasFile = !!selectedFile;
+
+        if (!hasText && !hasFile) return;
         
         setSending(true);
 
         try {
+            let attachments = [];
+
+            if (selectedFile) {
+                setUploading(true);
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('requestId', requestId);
+                
+                const uploadRes = await adminFetch('/api/upload/solidarity-attachment', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadData = await uploadRes.json();
+                if (uploadData.success) {
+                    attachments.push({
+                        name: selectedFile.name,
+                        url: uploadData.url,
+                        type: selectedFile.type
+                    });
+                }
+                setUploading(false);
+            }
+
             const res = await adminFetch(`/api/solidarity/requests/${requestId}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
+                body: JSON.stringify({ 
                     message: newMessage,
-                    senderRole: 'admin',
-                    senderId: adminMemberstackId
+                    sender_role: 'admin',
+                    attachments
                 })
             });
-            
-            if (!res.ok) {
-                const errorData = await res.json();
-                throw new Error(errorData.error || 'Error al enviar mensaje');
-            }
 
-            const data = await res.json();
-            if (data.id) {
-                setMessages([...messages, data]);
+            if (res.ok) {
                 setNewMessage('');
+                setSelectedFile(null);
+                loadMessages();
                 
                 // Scroll to bottom
                 setTimeout(() => {
                     if (chatRef.current) {
                         chatRef.current.scrollTop = chatRef.current.scrollHeight;
                     }
-                }, 100);
+                }, 150);
             }
         } catch (error: any) {
             console.error('Error sending message:', error);
@@ -291,6 +324,9 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     </section>
 
                     <section className={styles.chatSection}>
+                        <div className={styles.chatHeader}>
+                            <h3 className={styles.chatTitle}>Chat</h3>
+                        </div>
                         <div className={styles.chatHistory} ref={chatRef}>
                             {messages.map(m => (
                                 <div key={m.id} className={`${styles.message} ${styles[m.sender_role]}`}>
@@ -310,18 +346,41 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         </div>
 
                         <div className={styles.inputArea}>
-                            <textarea 
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                                placeholder="Escribe un mensaje al usuario..."
-                                className={styles.textarea}
+                            <input 
+                                type="file" 
+                                ref={fileInputRef} 
+                                style={{ display: 'none' }} 
+                                onChange={handleFileChange}
                             />
                             <button 
+                                className={`${styles.attachBtn} ${selectedFile ? styles.hasFile : ''}`}
+                                onClick={() => fileInputRef.current?.click()}
+                                title="Adjuntar archivo"
+                                disabled={sending || uploading}
+                            >
+                                📎
+                            </button>
+
+                            <div style={{ flex: 1 }}>
+                                <textarea 
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    placeholder="Escribe un mensaje al usuario..."
+                                    className={styles.textarea}
+                                />
+                                {selectedFile && (
+                                    <span className={styles.fileIndicator}>
+                                        📄 {selectedFile.name} (Listo para enviar)
+                                    </span>
+                                )}
+                            </div>
+
+                            <button 
                                 onClick={handleSendMessage}
-                                disabled={!newMessage.trim() || sending}
+                                disabled={(!newMessage.trim() && !selectedFile) || sending || uploading}
                                 className={styles.sendBtn}
                             >
-                                {sending ? '...' : 'Enviar'}
+                                {sending || uploading ? '...' : 'Enviar'}
                             </button>
                         </div>
                     </section>
