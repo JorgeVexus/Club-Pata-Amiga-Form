@@ -786,7 +786,7 @@ class SolidarityDashboard {
                             <div class="pata-cta-row" style="text-align: center;">
                                 <button class="pata-btn pata-btn-orange pata-animate-entry" 
                                         style="animation-delay: 0.4s;"
-                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/tu-manada'">
+                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/fondo-solidario'">
                                     SOLICITAR APOYO
                                 </button>
                             </div>
@@ -859,7 +859,7 @@ class SolidarityDashboard {
                                 <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ ${pet.name} ya puede acceder al fondo</p>
                                 <button class="pata-btn" 
                                         style="margin-top: 10px; font-size: 12px; padding: 10px 20px; background: var(--pata-turquoise); color: white; border: 2px solid var(--pata-black); border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase;" 
-                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/tu-manada'">
+                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/fondo-solidario'">
                                     UTILIZA TUS BENEFICIOS
                                 </button>
                             `}
