@@ -141,14 +141,18 @@ class SolidarityDashboard {
         const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : (pet.created_at ? new Date(pet.created_at) : now);
         
         let totalDays = 180;
+        // Check for all possible property naming conventions (Supabase, Memberstack, camelCase)
+        const isAdopted = pet.is_adopted === true || pet['is-adopted'] === 'true' || pet['is-adopted'] === true || pet.isAdopted === true;
+        const isMixed = pet.is_mixed_breed === true || pet['is-mixed-breed'] === 'true' || pet['is-mixed-breed'] === true || pet.is_mixed === true || pet.isMixed === true;
+
         if (pet.waiting_period_days) {
             totalDays = parseInt(pet.waiting_period_days);
-        } else if (pet.is_adopted) {
-            const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+        } else if (isAdopted) {
             totalDays = isMixed ? 120 : 150;
         }
 
-        const diffTime = Math.abs(now - start);
+        // Fix: Use Math.max(0, ...) instead of Math.abs to handle future dates correctly
+        const diffTime = Math.max(0, now - start);
         const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const daysRemaining = Math.max(0, totalDays - daysPassed);
         const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
@@ -770,7 +774,7 @@ class SolidarityDashboard {
                             <div class="pata-cta-row" style="text-align: center;">
                                 <button class="pata-btn pata-btn-orange pata-animate-entry" 
                                         style="animation-delay: 0.4s;"
-                                        onclick="window.location.href='/solicitar-apoyo'">
+                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/tu-manada'">
                                     SOLICITAR APOYO
                                 </button>
                             </div>
@@ -835,9 +839,17 @@ class SolidarityDashboard {
                             ${!isApproved ? `
                                 <p style="color: #6B7280; font-weight: 700; font-size: 13px;">${statusContext.icon} Esperando aprobación</p>
                             ` : carencia.isWaiting ? `
-                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ ${carencia.daysRemaining} días de carencia</p>
+                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ Faltan ${carencia.daysRemaining} días de carencia</p>
+                                <div style="width: 100%; height: 6px; background: #E2E8F0; border-radius: 10px; margin-top: 8px; overflow: hidden;">
+                                    <div style="width: ${carencia.percentage}%; height: 100%; background: #FE8F15; border-radius: 10px;"></div>
+                                </div>
                             ` : `
-                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ Fondo disponible</p>
+                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ ${pet.name} ya puede acceder al fondo</p>
+                                <button class="pata-btn" 
+                                        style="margin-top: 10px; font-size: 12px; padding: 10px 20px; background: var(--pata-turquoise); color: white; border: 2px solid var(--pata-black); border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase;" 
+                                        onclick="window.location.href='https://www.pataamiga.mx/miembros/tu-manada'">
+                                    UTILIZA TUS BENEFICIOS
+                                </button>
                             `}
                         </div>
                         <button class="pata-btn" 
@@ -954,11 +966,11 @@ class SolidarityDashboard {
     }
 
     renderError(msg) {
-        this.container.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--pata-red);">❌ Error: ${msg}</div>`;
+        this.container.innerHTML = \`<div style="padding: 40px; text-align: center; color: var(--pata-red);">❌ Error: \${msg}</div>\`;
     }
 
     renderLoading() {
-        this.container.innerHTML = `<div style="padding: 100px; text-align: center;"><div class="pata-spinner"></div><p style="margin-top: 20px;">Cargando manada...</p></div>`;
+        this.container.innerHTML = \`<div style="padding: 100px; text-align: center;"><div class="pata-spinner"></div><p style="margin-top: 20px;">Cargando manada...</p></div>\`;
     }
 }
 
@@ -978,3 +990,4 @@ window.SolidarityDashboard = SolidarityDashboard;
     } else {
         autoInit();
     }
+

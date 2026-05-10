@@ -759,22 +759,25 @@
             const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : new Date(pet.created_at);
 
             let totalDays = 180;
+            const isAdopted = pet.is_adopted === true || pet['is-adopted'] === 'true' || pet['is-adopted'] === true || pet.isAdopted === true;
+            const isMixed = pet.is_mixed_breed === true || pet['is-mixed-breed'] === 'true' || pet['is-mixed-breed'] === true || pet.is_mixed === true || pet.isMixed === true;
+
             if (pet.waiting_period_days) {
                 totalDays = parseInt(pet.waiting_period_days);
-            } else if (pet.is_adopted) {
-                const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+            } else if (isAdopted) {
                 totalDays = isMixed ? 120 : 150;
             }
 
-            const diffTime = Math.abs(now - start);
+            const diffTime = Math.max(0, now - start);
             const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const daysRemaining = Math.max(0, totalDays - daysPassed);
             const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+            const isWaiting = daysRemaining > 0;
             
             const endDate = new Date(start);
             endDate.setDate(endDate.getDate() + totalDays);
 
-            return { daysRemaining, percentage, totalDays, endDate };
+            return { daysRemaining, percentage, totalDays, isWaiting, endDate };
         }
 
         async loadData() {
