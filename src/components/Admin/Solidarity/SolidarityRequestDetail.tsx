@@ -163,6 +163,26 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         setSelectedDocument(doc);
     };
 
+    const handleDownload = async (url: string, filename: string) => {
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Network response was not ok');
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error('❌ Error downloading file:', error);
+            // Fallback: abrir en pestaña nueva si falla el fetch (CORS u otros)
+            window.open(url, '_blank');
+        }
+    };
+
     if (loading) return <div className={styles.loading}>Cargando detalle...</div>;
     if (!request) return <div className={styles.error}>No se encontró la solicitud.</div>;
 
@@ -296,7 +316,14 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
             {selectedDocument && (
                 <div className={styles.viewerOverlay}>
                     <div className={styles.viewerHeader}>
-                        <a href={selectedDocument.file_url || selectedDocument.url} download={selectedDocument.file_name || selectedDocument.name} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn}>
+                        <a 
+                            href={selectedDocument.file_url || selectedDocument.url} 
+                            onClick={(e) => {
+                                e.preventDefault();
+                                handleDownload(selectedDocument.file_url || selectedDocument.url, selectedDocument.file_name || selectedDocument.name);
+                            }}
+                            className={styles.downloadBtn}
+                        >
                             Descargar
                         </a>
                         <button onClick={() => setSelectedDocument(null)} className={styles.closeViewerBtn}>
@@ -319,7 +346,15 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                             return (
                                 <div style={{ padding: '40px', textAlign: 'center' }}>
                                     <p>Este archivo no tiene vista previa disponible.</p>
-                                    <a href={url} download={name} target="_blank" rel="noopener noreferrer" className={styles.downloadBtn} style={{ marginTop: '20px', display: 'inline-block' }}>
+                                    <a 
+                                        href={url} 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleDownload(url, name);
+                                        }}
+                                        className={styles.downloadBtn} 
+                                        style={{ marginTop: '20px', display: 'inline-block' }}
+                                    >
                                         Descargar para ver
                                     </a>
                                 </div>
