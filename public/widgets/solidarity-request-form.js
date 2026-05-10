@@ -696,6 +696,10 @@ class SolidarityRequestForm {
         return `
             <div class="pata-form-container">
                 <div class="pata-field full">
+                    <label class="pata-label" for="pata-case-title">¿Cómo te gustaría identificar este caso?</label>
+                    <input type="text" class="pata-input" id="pata-case-title" placeholder="Ejem. Fractura de patita" value="${this.state.formData.caseTitle}">
+                </div>
+                <div class="pata-field full">
                     <label for="pata-case-desc" class="pata-label">Descripción del evento o situación *</label>
                     <textarea class="pata-textarea" id="pata-case-desc" placeholder="Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...">${this.state.formData.caseDescription}</textarea>
                 </div>
@@ -753,10 +757,6 @@ class SolidarityRequestForm {
 
                 <div class="pata-form-grid">
                     ${isAppointment ? `
-                        <div class="pata-field">
-                            <label class="pata-label" for="pata-case-title">¿Cómo te gustaría identificar este caso?</label>
-                            <input type="text" class="pata-input" id="pata-case-title" placeholder="Ejem. Fractura de patita" value="${this.state.formData.caseTitle}">
-                        </div>
                         <div class="pata-field">
                             <label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label>
                             <input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}">

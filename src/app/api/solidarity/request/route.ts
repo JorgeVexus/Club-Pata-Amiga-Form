@@ -74,19 +74,42 @@ export async function POST(request: NextRequest) {
         // 4. Validar Período de Carencia de la Mascota
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('waiting_period_end, name')
+            .select('waiting_period_end, waiting_period_start, created_at, is_adopted, is_mixed_breed, name, status')
             .eq('id', petId)
             .single();
-
+        
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
         }
 
-        const waitingPeriodEnd = new Date(pet.waiting_period_end);
+        // Si no está aprobada, no es elegible
+        if (pet.status !== 'approved') {
+            return NextResponse.json({ error: `La mascota ${pet.name} aún no ha sido aprobada por el comité.` }, { status: 403, headers: corsHeaders });
+        }
+
+        // Lógica robusta de carencia (espejo del frontend)
+        const getCarenciaDate = () => {
+            const start = new Date(pet.waiting_period_start || pet.created_at || new Date());
+            if (isNaN(start.getTime())) return new Date();
+
+            const isAdopted = String(pet.is_adopted) === 'true' || pet.is_adopted === true;
+            const isMixed = String(pet.is_mixed_breed) === 'true' || pet.is_mixed_breed === true;
+
+            let days = 180; // Default
+            if (isAdopted) days = 90;
+            else if (isMixed) days = 120;
+
+            const end = new Date(start);
+            end.setDate(end.getDate() + days);
+            return end;
+        };
+
+        const waitingPeriodEnd = getCarenciaDate();
         const today = new Date();
 
         if (waitingPeriodEnd > today) {
-            const daysLeft = Math.ceil((waitingPeriodEnd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+            const diffTime = waitingPeriodEnd.getTime() - today.getTime();
+            const daysLeft = Math.ceil(Math.max(0, diffTime) / (1000 * 60 * 60 * 24));
             return NextResponse.json({ 
                 error: `La mascota ${pet.name} aún está en período de carencia. Faltan ${daysLeft} días.` 
             }, { status: 403, headers: corsHeaders });

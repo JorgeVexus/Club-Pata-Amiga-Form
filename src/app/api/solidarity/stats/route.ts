@@ -61,7 +61,26 @@ export async function GET(request: NextRequest) {
 
         const petsWithExtraData = pets?.map(pet => {
             const isApproved = pet.status === 'approved';
-            const hasFinishedWaiting = pet.waiting_period_end && new Date(pet.waiting_period_end) <= now;
+            
+            // Lógica robusta de carencia (espejo del frontend y request API)
+            const getCarenciaDate = () => {
+                const start = new Date(pet.waiting_period_start || pet.created_at || new Date());
+                if (isNaN(start.getTime())) return new Date();
+
+                const isAdopted = String(pet.is_adopted) === 'true' || pet.is_adopted === true;
+                const isMixed = String(pet.is_mixed_breed) === 'true' || pet.is_mixed_breed === true;
+
+                let days = 180; // Default
+                if (isAdopted) days = 90;
+                else if (isMixed) days = 120;
+
+                const end = new Date(start);
+                end.setDate(end.getDate() + days);
+                return end;
+            };
+
+            const waitingPeriodEnd = getCarenciaDate();
+            const hasFinishedWaiting = waitingPeriodEnd <= now;
             const isEligible = isApproved && hasFinishedWaiting;
             
             if (isEligible) {
