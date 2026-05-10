@@ -127,7 +127,7 @@ export async function POST(
         // --- NOTIFICACIONES ---
         try {
             // Obtener información de la solicitud para la notificación
-            const { data: requestData } = await supabaseAdmin
+            const { data: requestData, error: requestError } = await supabaseAdmin
                 .from('solidarity_requests')
                 .select(`
                     id,
@@ -138,30 +138,36 @@ export async function POST(
                 .eq('id', id)
                 .single();
 
-            if (requestData) {
-                const petName = (requestData.pets as any)?.name || 'su mascota';
+            if (requestError) {
+                console.error('Error fetching request data for notification:', requestError);
+            } else if (requestData) {
                 const memberstackId = (requestData.users as any)?.memberstack_id;
+                const petName = (requestData.pets as any)?.name || 'tu mascota';
                 
-                const notificationTitle = senderRole === 'user' 
-                    ? `Mensaje sobre ${petName}` 
-                    : `Respuesta de Pata Amiga`;
+                // Determinar el receptor y el mensaje
+                const isFromAdmin = senderRole === 'admin';
+                const targetUserId = isFromAdmin ? memberstackId : 'admin';
                 
-                const notificationMessage = senderRole === 'user'
-                    ? `Hay un nuevo mensaje en la solicitud para ${petName}.`
-                    : `Hemos respondido a tu solicitud para ${petName}.`;
+                const notificationTitle = isFromAdmin 
+                    ? `💬 Nuevo mensaje de Soporte (Fondo Solidario)`
+                    : `💬 Nuevo mensaje de ${petName}`;
+                
+                const notificationMessage = message 
+                    ? (message.length > 50 ? message.substring(0, 47) + '...' : message)
+                    : '📎 Se adjuntó un archivo';
 
-                const notificationLink = senderRole === 'user'
-                    ? `/admin/dashboard?tab=solidarity-fund&requestId=${id}`
-                    : `/miembros/detalle-solicitud?id=${id}`;
+                const notificationLink = isFromAdmin
+                    ? `/miembros/dashboard?section=solidarity&requestId=${id}` // Ajustar según URL del portal
+                    : `/admin/dashboard?section=solidarity&requestId=${id}`;
 
-                const targetUserId = senderRole === 'user' ? 'admin' : memberstackId;
+                console.log(`🔔 Intentando enviar notificación a ${targetUserId} (Role: ${senderRole})`);
 
                 if (targetUserId) {
-                    await supabaseAdmin
+                    const { error: notifInsertError } = await supabaseAdmin
                         .from('notifications')
                         .insert({
                             user_id: targetUserId,
-                            type: 'solidarity',
+                            type: 'account', // Debe ser un tipo permitido por la restricción CHECK (account, system, etc)
                             title: notificationTitle,
                             message: notificationMessage,
                             icon: '💬',
@@ -172,6 +178,12 @@ export async function POST(
                                 senderRole: senderRole
                             }
                         });
+                    
+                    if (notifInsertError) {
+                        console.error('❌ Error al insertar notificación en BD:', notifInsertError);
+                    } else {
+                        console.log('✅ Notificación insertada correctamente');
+                    }
                 }
             }
         } catch (notifError) {
