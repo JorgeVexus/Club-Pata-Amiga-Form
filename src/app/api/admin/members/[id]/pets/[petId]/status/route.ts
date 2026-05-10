@@ -46,7 +46,7 @@ export async function POST(
         // 0. Obtener estado ANTERIOR de la mascota para detectar si viene de 'appealed'
         const { data: previousPet } = await supabaseAdmin
             .from('pets')
-            .select('status, name')
+            .select('status, name, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
             .eq('id', petId)
             .single();
 
@@ -59,10 +59,29 @@ export async function POST(
             last_admin_response: adminNotes || null
         };
 
-        // Si se aprueba una mascota apelada, limpiar los campos de apelación
+        // Si se aprueba una mascota
         if (status === 'approved') {
             updateData.appeal_message = null;
             updateData.appealed_at = null;
+            
+            // Establecer el inicio de carencia al momento de la aprobación si no existe
+            if (!previousPet?.waiting_period_start) {
+                const now = new Date();
+                updateData.waiting_period_start = now.toISOString();
+
+                // Calcular el total de días
+                let totalDays = 180;
+                if (previousPet?.waiting_period_days) {
+                    totalDays = parseInt(previousPet.waiting_period_days);
+                } else if (previousPet?.is_adopted) {
+                    const isMixed = previousPet.is_mixed_breed || previousPet.is_mixed || false;
+                    totalDays = isMixed ? 120 : 150;
+                }
+
+                const endDate = new Date(now);
+                endDate.setDate(now.getDate() + totalDays);
+                updateData.waiting_period_end = endDate.toISOString();
+            }
         }
 
         const { data: pet, error: petError } = await supabaseAdmin

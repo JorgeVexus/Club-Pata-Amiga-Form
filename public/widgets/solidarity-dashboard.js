@@ -154,7 +154,7 @@ class SolidarityDashboard {
             return { daysRemaining, percentage, totalDays, isWaiting };
         }
 
-        const start = pet.created_at ? new Date(pet.created_at) : now;
+        const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : pet.created_at ? new Date(pet.created_at) : now;
         let totalDays = 180;
         if (pet.waiting_period_days) {
             totalDays = parseInt(pet.waiting_period_days);

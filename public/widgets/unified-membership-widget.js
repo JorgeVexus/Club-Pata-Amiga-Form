@@ -3728,7 +3728,7 @@
 
         calculateCarencia(pet) {
             const now = new Date();
-            const start = new Date(pet.created_at);
+            const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : new Date(pet.created_at);
 
             // Lógica de carencia refinada:
             // 1. Mestizo + Adoptado -> 120 días

@@ -756,7 +756,7 @@
 
         calculateCarencia(pet) {
             const now = new Date();
-            const start = new Date(pet.created_at);
+            const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : new Date(pet.created_at);
 
             let totalDays = 180;
             if (pet.waiting_period_days) {
