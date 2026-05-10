@@ -673,6 +673,7 @@ class SolidarityRequestForm {
     }
 
     renderForm() {
+        const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
         const isAppointment = this.state.selection.requestType === 'allied_center_appointment';
         const isEmergency = this.state.selection.benefitType === 'medical_emergency';
 
