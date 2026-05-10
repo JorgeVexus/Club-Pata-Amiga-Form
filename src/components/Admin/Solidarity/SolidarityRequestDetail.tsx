@@ -346,6 +346,15 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         </div>
 
                         <div className={styles.inputArea}>
+                            {selectedFile && (
+                                <div className={styles.fileIndicatorRow}>
+                                    <span className={styles.fileIndicator}>
+                                        📄 {selectedFile.name} (Listo para enviar)
+                                    </span>
+                                    <button onClick={() => setSelectedFile(null)} className={styles.removeFileBtn}>✕</button>
+                                </div>
+                            )}
+                            <div className={styles.inputRow}>
                             <input 
                                 type="file" 
                                 ref={fileInputRef} 
@@ -361,19 +370,18 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 📎
                             </button>
 
-                            <div style={{ flex: 1 }}>
-                                <textarea 
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    placeholder="Escribe un mensaje al usuario..."
-                                    className={styles.textarea}
-                                />
-                                {selectedFile && (
-                                    <span className={styles.fileIndicator}>
-                                        📄 {selectedFile.name} (Listo para enviar)
-                                    </span>
-                                )}
-                            </div>
+                            <textarea 
+                                value={newMessage}
+                                onChange={(e) => setNewMessage(e.target.value)}
+                                placeholder="Escribe un mensaje al usuario..."
+                                className={styles.textarea}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        e.preventDefault();
+                                        handleSendMessage();
+                                    }
+                                }}
+                            />
 
                             <button 
                                 onClick={handleSendMessage}
@@ -383,7 +391,8 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 {sending || uploading ? '...' : 'Enviar'}
                             </button>
                         </div>
-                    </section>
+                    </div>
+                </section>
                 </div>
             </div>
 

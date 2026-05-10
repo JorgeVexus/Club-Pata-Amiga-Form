@@ -349,22 +349,53 @@
     padding: 15px 30px;
     border-top: 2px solid #000;
     display: flex;
-    gap: 15px;
-    align-items: flex-end;
+    flex-direction: column;
+    gap: 10px;
     background: #fff;
     z-index: 10;
+}
+
+.inputRow {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    width: 100%;
+}
+
+.fileIndicatorRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f0fdfa;
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid #99f6e4;
+}
+
+.removeFileBtn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 16px;
 }
 
 .textarea {
     flex: 1;
     border: 2px solid #000;
     border-radius: 15px;
-    padding: 12px;
+    padding: 12px 15px;
     font-family: inherit;
     font-size: 14px;
     resize: none;
     outline: none;
-    height: 50px;
+    min-height: 80px;
+    min-width: 0;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.textarea:focus {
+    border-color: #00BBB4;
 }
 
 .sendBtn {

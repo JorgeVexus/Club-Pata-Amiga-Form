@@ -141,12 +141,24 @@ export async function POST(
             if (requestError) {
                 console.error('Error fetching request data for notification:', requestError);
             } else if (requestData) {
-                const memberstackId = (requestData.users as any)?.memberstack_id;
+                // Robustly extract memberstackId (Supabase join can return object or array)
+                let memberstackId = null;
+                if (requestData.users) {
+                    if (Array.isArray(requestData.users)) {
+                        memberstackId = requestData.users[0]?.memberstack_id;
+                    } else {
+                        memberstackId = (requestData.users as any).memberstack_id;
+                    }
+                }
+
                 const petName = (requestData.pets as any)?.name || 'tu mascota';
                 
                 // Determinar el receptor y el mensaje
                 const isFromAdmin = senderRole === 'admin';
                 const targetUserId = isFromAdmin ? memberstackId : 'admin';
+
+                console.log(`[SolidarityMessage] Sending notification to ${targetUserId}. isFromAdmin: ${isFromAdmin}, msId: ${memberstackId}`);
+
                 
                 const notificationTitle = isFromAdmin 
                     ? `💬 Nuevo mensaje de Soporte (Fondo Solidario)`
