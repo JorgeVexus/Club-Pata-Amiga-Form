@@ -64,7 +64,9 @@ export async function POST(
     try {
         const { id } = await params;
         const body = await request.json();
-        const { message, senderRole, senderId, attachments } = body;
+        const senderRole = body.senderRole || body.sender_role;
+        const senderId = body.senderId || body.sender_id;
+        const { message, attachments } = body;
 
         if (!senderRole || (!message && (!attachments || attachments.length === 0))) {
             return NextResponse.json({ error: 'El mensaje o un archivo adjunto son obligatorios' }, { status: 400, headers: corsHeaders });

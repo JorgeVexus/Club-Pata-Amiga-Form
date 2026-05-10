@@ -139,7 +139,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
                     message: newMessage,
-                    sender_role: 'admin',
+                    senderRole: 'admin',
                     attachments
                 })
             });
