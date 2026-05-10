@@ -30,7 +30,11 @@ export async function GET(request: NextRequest) {
             .limit(limit);
 
         if (status && status !== 'all') {
-            query = query.eq('status', status);
+            if (status === 'in_process') {
+                query = query.in('status', ['in_review', 'needs_info']);
+            } else {
+                query = query.eq('status', status);
+            }
         }
 
         if (petId) {

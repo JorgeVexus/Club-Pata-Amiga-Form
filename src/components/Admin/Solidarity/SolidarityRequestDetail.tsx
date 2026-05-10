@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './SolidarityRequestDetail.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
+import { SOLIDARITY_BENEFIT_LABELS, SOLIDARITY_STATUS_LABELS } from '@/types/solidarity.types';
 
 interface Message {
     id: string;
@@ -40,6 +41,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
     const [newMessage, setNewMessage] = useState('');
     const [sending, setSending] = useState(false);
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [selectedDocument, setSelectedDocument] = useState<any>(null);
     
     const chatRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +81,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         setSending(true);
 
         try {
-            const res = await fetch(`/api/solidarity/requests/${requestId}/messages`, {
+            const res = await adminFetch(`/api/solidarity/requests/${requestId}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -88,19 +90,34 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     senderId: adminMemberstackId
                 })
             });
+            
+            if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || 'Error al enviar mensaje');
+            }
+
             const data = await res.json();
             if (data.id) {
                 setMessages([...messages, data]);
                 setNewMessage('');
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    const chatHistory = document.getElementById('chat-history');
+                    if (chatHistory) {
+                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    }
+                }, 100);
             }
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error sending message:', error);
+            alert('Error al enviar el mensaje: ' + error.message);
         } finally {
             setSending(false);
         }
     }
 
-    async function handleUpdateStatus(newStatus: string) {
+    async function handleUpdateStatus(newStatus: string, message?: string) {
         setUpdatingStatus(true);
         try {
             const res = await adminFetch(`/api/admin/solidarity/update`, {
@@ -109,16 +126,20 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     requestId,
                     status: newStatus,
                     adminId: adminMemberstackId,
-                    adminName: 'Administrador'
+                    adminName: 'Administrador',
+                    message: message // Pass optional message
                 })
             });
             const data = await res.json();
             if (data.success) {
                 setRequest(prev => prev ? { ...prev, status: newStatus } : null);
                 loadMessages();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
             }
         } catch (error) {
             console.error('Error updating status:', error);
+            alert('Error de conexión al actualizar el estado');
         } finally {
             setUpdatingStatus(false);
         }
@@ -133,13 +154,15 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
     async function handleRequestMoreInfo() {
         if (updatingStatus) return;
         
-        const confirmMsg = confirm('¿Deseas marcar esta solicitud como "Acción Requerida" y solicitar más información al usuario?');
-        if (!confirmMsg) return;
+        const infoMessage = prompt('Especifica qué información adicional necesitas del usuario:', 'Hola, hemos revisado tu solicitud y necesitamos que nos proporciones un poco más de información sobre: ');
+        if (infoMessage === null) return; // Cancelled
 
-        await handleUpdateStatus('needs_info');
-        setNewMessage('Hola, hemos revisado tu solicitud y necesitamos que nos proporciones un poco más de información sobre: ');
-        // Focus textarea
+        await handleUpdateStatus('needs_info', infoMessage);
     }
+
+    const openDocument = (doc: any) => {
+        setSelectedDocument(doc);
+    };
 
     if (loading) return <div className={styles.loading}>Cargando detalle...</div>;
     if (!request) return <div className={styles.error}>No se encontró la solicitud.</div>;
@@ -169,13 +192,9 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                             disabled={updatingStatus}
                             className={styles.statusSelect}
                         >
-                            <option value="new">Nuevo</option>
-                            <option value="in_review">En Revisión</option>
-                            <option value="needs_info">Acción Requerida</option>
-                            <option value="approved">Aprobado</option>
-                            <option value="rejected">Rechazado</option>
-                            <option value="paid">Pagado</option>
-                            <option value="completed">Completado</option>
+                            {Object.entries(SOLIDARITY_STATUS_LABELS).map(([value, label]) => (
+                                <option key={value} value={value}>{label}</option>
+                            ))}
                         </select>
                     </div>
                 </header>
@@ -193,7 +212,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         <div className={styles.detailsList}>
                             <div className={styles.detailItem}>
                                 <label>Tipo de Apoyo</label>
-                                <span>{request.benefit_type}</span>
+                                <span>{(SOLIDARITY_BENEFIT_LABELS as any)[request.benefit_type] || request.benefit_type}</span>
                             </div>
                             <div className={styles.detailItem}>
                                 <label>Monto</label>
@@ -215,7 +234,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 <label>Documentos Adjuntos</label>
                                 <div className={styles.docGrid}>
                                     {(request as any).documents.map((doc: any) => (
-                                        <a key={doc.id} href={doc.file_url} target="_blank" className={styles.docItem}>
+                                        <div key={doc.id} onClick={() => openDocument(doc)} className={styles.docItem} style={{ cursor: 'pointer' }}>
                                             <div className={styles.docIcon}>
                                                 {doc.document_type === 'senior_certificate' ? '📜' : 
                                                  doc.document_type === 'evidence_photo' ? '📸' : 
@@ -230,7 +249,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                                 </div>
                                                 <div className={styles.docName}>{doc.file_name || 'Ver archivo'}</div>
                                             </div>
-                                        </a>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -244,9 +263,9 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                     <div className={styles.messageContent}>
                                         {m.message}
                                         {m.attachments?.map((a, i) => (
-                                            <a key={i} href={a.url} target="_blank" className={styles.attachment}>
+                                            <div key={i} onClick={() => openDocument(a)} className={styles.attachment} style={{ cursor: 'pointer' }}>
                                                 📄 {a.name}
-                                            </a>
+                                            </div>
                                         ))}
                                     </div>
                                     <span className={styles.timestamp}>
@@ -274,6 +293,33 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     </section>
                 </div>
             </div>
+
+            {selectedDocument && (
+                <div className={styles.viewerOverlay}>
+                    <div className={styles.viewerHeader}>
+                        <a href={selectedDocument.file_url || selectedDocument.url} download={selectedDocument.file_name || selectedDocument.name} className={styles.downloadBtn}>
+                            Descargar
+                        </a>
+                        <button onClick={() => setSelectedDocument(null)} className={styles.closeViewerBtn}>
+                            Cerrar
+                        </button>
+                    </div>
+                    <div className={styles.viewerContent}>
+                        {(selectedDocument.file_url || selectedDocument.url).toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
+                            <img src={selectedDocument.file_url || selectedDocument.url} alt="Vista previa" className={styles.viewerImage} />
+                        ) : (selectedDocument.file_url || selectedDocument.url).toLowerCase().includes('.pdf') ? (
+                            <iframe src={selectedDocument.file_url || selectedDocument.url} className={styles.pdfFrame} title="PDF Viewer" />
+                        ) : (
+                            <div style={{ padding: '40px', textAlign: 'center' }}>
+                                <p>Este archivo no tiene vista previa disponible.</p>
+                                <a href={selectedDocument.file_url || selectedDocument.url} download className={styles.downloadBtn} style={{ marginTop: '20px', display: 'inline-block' }}>
+                                    Descargar para ver
+                                </a>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

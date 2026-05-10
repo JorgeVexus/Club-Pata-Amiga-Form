@@ -75,7 +75,7 @@ export default function Sidebar({
                 { id: 'solidarity-fund', label: 'Nuevas solicitudes', icon: '📩', subStatus: 'new', badge: pendingCounts['solidarity-fund'] },
                 { id: 'solidarity-fund', label: 'Aprobadas', icon: '✅', subStatus: 'approved' },
                 { id: 'solidarity-fund', label: 'Rechazadas', icon: '❌', subStatus: 'rejected' },
-                { id: 'solidarity-fund', label: 'En proceso', icon: '⏳', subStatus: 'in_review' },
+                { id: 'solidarity-fund', label: 'En proceso', icon: '⏳', subStatus: 'in_process' },
             ]
         },
         {

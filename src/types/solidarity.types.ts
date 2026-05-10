@@ -83,6 +83,7 @@ export interface SolidarityRequestFormData {
     receipt?: File | null;
 }
 
+
 /**
  * Límites de montos por tipo de beneficio
  */
@@ -91,3 +92,27 @@ export const SOLIDARITY_LIMITS = {
     annual_vaccination: 300,
     death: 2000
 };
+
+/**
+ * Labels en español para beneficios
+ */
+export const SOLIDARITY_BENEFIT_LABELS: Record<SolidarityBenefitType, string> = {
+    medical_emergency: 'Emergencia Médica',
+    annual_vaccination: 'Vacunación Anual',
+    death: 'Fallecimiento',
+};
+
+/**
+ * Labels en español para estados de solicitud
+ */
+export const SOLIDARITY_STATUS_LABELS: Record<SolidarityRequestStatus, string> = {
+    new: 'Nuevo',
+    in_review: 'En revisión',
+    needs_info: 'Acción Requerida',
+    approved: 'Aprobado',
+    rejected: 'Rechazado',
+    paid: 'Pagado',
+    scheduled: 'Agendado',
+    completed: 'Completado',
+};
+

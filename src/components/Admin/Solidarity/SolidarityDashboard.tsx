@@ -118,21 +118,21 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
                     <div className={styles.statIcon}>⏳</div>
                     <div className={styles.statInfo}>
                         <div className={styles.statValue}>{stats.pending}</div>
-                        <div className={styles.statLabel}>Solicitudes Pendientes</div>
+                        <div className={styles.statLabel}>Nuevas</div>
                     </div>
                 </div>
                 <div className={`${styles.statCard} ${styles.statApproved}`}>
                     <div className={styles.statIcon}>✅</div>
                     <div className={styles.statInfo}>
                         <div className={styles.statValue}>{stats.approved}</div>
-                        <div className={styles.statLabel}>Solicitudes Activas</div>
+                        <div className={styles.statLabel}>Finalizadas</div>
                     </div>
                 </div>
                 <div className={`${styles.statCard} ${styles.statRejected}`}>
                     <div className={styles.statIcon}>❌</div>
                     <div className={styles.statInfo}>
                         <div className={styles.statValue}>{stats.rejected}</div>
-                        <div className={styles.statLabel}>Solicitudes Rechazadas</div>
+                        <div className={styles.statLabel}>Rechazadas</div>
                     </div>
                 </div>
             </div>
@@ -147,9 +147,9 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
                     >
                         <option value="all">Todos los estados</option>
                         <option value="new">Nuevos</option>
-                        <option value="in_review">En Revisión</option>
-                        <option value="needs_info">Acción Requerida</option>
-                        <option value="approved">Aprobados</option>
+                        <option value="in_process">En Proceso</option>
+                        <option value="approved">Aprobados / Pagados</option>
+                        <option value="rejected">Rechazados</option>
                     </select>
                 </div>
             </div>
