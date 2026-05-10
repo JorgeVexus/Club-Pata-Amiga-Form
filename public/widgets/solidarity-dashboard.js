@@ -138,27 +138,39 @@ class SolidarityDashboard {
 
     calculateCarencia(pet) {
         const now = new Date();
-        const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : (pet.created_at ? new Date(pet.created_at) : now);
+        
+        // Handle potentially invalid or missing dates
+        let start = now;
+        if (pet.waiting_period_start) {
+            const parsed = new Date(pet.waiting_period_start);
+            if (!isNaN(parsed.getTime())) start = parsed;
+        } else if (pet.created_at) {
+            const parsed = new Date(pet.created_at);
+            if (!isNaN(parsed.getTime())) start = parsed;
+        }
         
         let totalDays = 180;
-        // Check for all possible property naming conventions (Supabase, Memberstack, camelCase)
-        const isAdopted = pet.is_adopted === true || pet['is-adopted'] === 'true' || pet['is-adopted'] === true || pet.isAdopted === true;
-        const isMixed = pet.is_mixed_breed === true || pet['is-mixed-breed'] === 'true' || pet['is-mixed-breed'] === true || pet.is_mixed === true || pet.isMixed === true;
+        
+        // Robust check for boolean-ish properties (Supabase, Memberstack, etc.)
+        const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
+        
+        const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
+        const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
 
         if (pet.waiting_period_days) {
-            totalDays = parseInt(pet.waiting_period_days);
+            const customDays = parseInt(pet.waiting_period_days);
+            if (!isNaN(customDays)) totalDays = customDays;
         } else if (isAdopted) {
             totalDays = isMixed ? 120 : 150;
         }
 
-        // Fix: Use Math.max(0, ...) instead of Math.abs to handle future dates correctly
-        const diffTime = Math.max(0, now - start);
+        const diffTime = Math.max(0, now.getTime() - start.getTime());
         const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
         const daysRemaining = Math.max(0, totalDays - daysPassed);
         const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
         const isWaiting = daysRemaining > 0;
 
-        const endDate = new Date(start);
+        const endDate = new Date(start.getTime());
         endDate.setDate(endDate.getDate() + totalDays);
 
         return { daysRemaining, percentage, totalDays, isWaiting, endDate };
@@ -966,28 +978,44 @@ class SolidarityDashboard {
     }
 
     renderError(msg) {
-        this.container.innerHTML = \`<div style="padding: 40px; text-align: center; color: var(--pata-red);">❌ Error: \${msg}</div>\`;
+        if (!this.container) return;
+        console.error('❌ SolidarityDashboard Error:', msg);
+        this.container.innerHTML = '<div style="padding: 40px; text-align: center; color: #FF0066; font-family: sans-serif; font-weight: 600;">Error: ' + msg + '</div>';
     }
 
     renderLoading() {
-        this.container.innerHTML = \`<div style="padding: 100px; text-align: center;"><div class="pata-spinner"></div><p style="margin-top: 20px;">Cargando manada...</p></div>\`;
+        if (!this.container) return;
+        this.container.innerHTML = '<div style="padding: 100px; text-align: center;"><div class="pata-spinner"></div><p style="margin-top: 20px; font-family: sans-serif; color: #718096;">Cargando tu manada...</p></div>';
     }
 }
 
-// Global exposure
+// Global error boundary for script execution
+window.addEventListener('error', function(e) {
+    if (e.filename && e.filename.indexOf('solidarity-dashboard.js') !== -1) {
+        const container = document.getElementById('pata-solidarity-dashboard');
+        if (container) {
+            container.innerHTML = '<div style="padding: 40px; text-align: center; color: #FF0066;">Error crítico al cargar el dashboard.</div>';
+        }
+    }
+});
+
 window.SolidarityDashboard = SolidarityDashboard;
 
-    // Self-initialize if container exists
-    const autoInit = () => {
+const autoInitSolidarity = () => {
+    try {
         const container = document.getElementById('pata-solidarity-dashboard');
         if (container && !window.PataSolidarityDashboard) {
             window.PataSolidarityDashboard = new SolidarityDashboard('pata-solidarity-dashboard');
         }
-    };
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', autoInit);
-    } else {
-        autoInit();
+    } catch (err) {
+        console.error('❌ Error during SolidarityDashboard auto-init:', err);
     }
+};
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', autoInitSolidarity);
+} else {
+    autoInitSolidarity();
+}
+
 
