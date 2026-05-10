@@ -775,7 +775,8 @@
         }
 
         async loadData() {
-            const res = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`);
+            // Agregar cache buster para evitar problemas con datos cacheados
+            const res = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}&t=${Date.now()}`);
             const data = await res.json();
             if (data.success) {
                 this.pets = data.pets || [];

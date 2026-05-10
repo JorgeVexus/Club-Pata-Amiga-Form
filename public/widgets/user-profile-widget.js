@@ -186,8 +186,8 @@
                     this.ambassador = ambRes.value.ambassador;
                 }
 
-                // Cargar mascotas del usuario
-                const petsRes = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${id}`).then(r=>r.json()).catch(()=>null);
+                // Cargar mascotas del usuario con cache buster
+                const petsRes = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${id}&t=${Date.now()}`).then(r=>r.json()).catch(()=>null);
                 if (petsRes?.success) this.pets = petsRes.pets || [];
 
             } catch(e) {

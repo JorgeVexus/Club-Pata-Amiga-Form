@@ -3702,7 +3702,7 @@
                 }
 
                 // ✅ Si tiene plan, cargar mascotas normalmente
-                const url = `${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`;
+                const url = `${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}&t=${Date.now()}`;
                 console.log('📡 Unified Widget: Fetching pets from:', url);
                 const res = await fetch(url);
                 const data = await res.json();
