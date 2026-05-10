@@ -124,6 +124,61 @@ export async function POST(
                 .insert(docsToInsert);
         }
 
+        // --- NOTIFICACIONES ---
+        try {
+            // Obtener información de la solicitud para la notificación
+            const { data: requestData } = await supabaseAdmin
+                .from('solidarity_requests')
+                .select(`
+                    id,
+                    user_id,
+                    users (memberstack_id),
+                    pets (name)
+                `)
+                .eq('id', id)
+                .single();
+
+            if (requestData) {
+                const petName = (requestData.pets as any)?.name || 'su mascota';
+                const memberstackId = (requestData.users as any)?.memberstack_id;
+                
+                const notificationTitle = senderRole === 'user' 
+                    ? `Mensaje sobre ${petName}` 
+                    : `Respuesta de Pata Amiga`;
+                
+                const notificationMessage = senderRole === 'user'
+                    ? `Hay un nuevo mensaje en la solicitud para ${petName}.`
+                    : `Hemos respondido a tu solicitud para ${petName}.`;
+
+                const notificationLink = senderRole === 'user'
+                    ? `/admin/dashboard?tab=solidarity-fund&requestId=${id}`
+                    : `/miembros/detalle-solicitud?id=${id}`;
+
+                const targetUserId = senderRole === 'user' ? 'admin' : memberstackId;
+
+                if (targetUserId) {
+                    await supabaseAdmin
+                        .from('notifications')
+                        .insert({
+                            user_id: targetUserId,
+                            type: 'solidarity',
+                            title: notificationTitle,
+                            message: notificationMessage,
+                            icon: '💬',
+                            link: notificationLink,
+                            metadata: {
+                                requestId: id,
+                                petName: petName,
+                                senderRole: senderRole
+                            }
+                        });
+                }
+            }
+        } catch (notifError) {
+            console.error('Error sending message notification:', notifError);
+            // No fallamos la respuesta principal por error en notificación
+        }
+
         return NextResponse.json(newMessage, { headers: corsHeaders });
     } catch (error: any) {
         console.error('Error sending message:', error);
