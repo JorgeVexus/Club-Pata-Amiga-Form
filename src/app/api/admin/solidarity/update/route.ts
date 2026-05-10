@@ -56,12 +56,15 @@ export async function POST(request: NextRequest) {
 
         // 3. Si hay mensaje, insertarlo en solidarity_messages
         if (message) {
+            const isUUID = (uuid: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+            const validSenderId = admin.memberstack_id && isUUID(admin.memberstack_id) ? admin.memberstack_id : null;
+
             await supabaseAdmin
                 .from('solidarity_messages')
                 .insert({
                     request_id: requestId,
                     sender_role: 'admin',
-                    sender_id: admin.memberstack_id,
+                    sender_id: validSenderId,
                     message: message,
                     created_at: new Date().toISOString()
                 });

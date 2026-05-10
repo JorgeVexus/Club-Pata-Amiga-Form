@@ -52,12 +52,16 @@ export async function POST(
             return NextResponse.json({ error: 'Mensaje y rol son obligatorios' }, { status: 400, headers: corsHeaders });
         }
 
+        // Validar si senderId es un UUID válido (necesario si la columna es UUID)
+        const isUUID = (uuid: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(uuid);
+        const validSenderId = senderId && isUUID(senderId) ? senderId : null;
+
         const { data: newMessage, error } = await supabaseAdmin
             .from('solidarity_messages')
             .insert({
                 request_id: id,
                 sender_role: senderRole,
-                sender_id: senderId,
+                sender_id: validSenderId,
                 message,
                 attachments: attachments || []
             })

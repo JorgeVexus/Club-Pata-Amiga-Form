@@ -103,9 +103,8 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                 
                 // Scroll to bottom
                 setTimeout(() => {
-                    const chatHistory = document.getElementById('chat-history');
-                    if (chatHistory) {
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
+                    if (chatRef.current) {
+                        chatRef.current.scrollTop = chatRef.current.scrollHeight;
                     }
                 }, 100);
             }
@@ -305,9 +304,9 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         </button>
                     </div>
                     <div className={styles.viewerContent}>
-                        {(selectedDocument.file_url || selectedDocument.url).toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
+                        {((selectedDocument.file_url || selectedDocument.url || '') as string).toLowerCase().match(/\.(jpg|jpeg|png|gif|webp)$/) ? (
                             <img src={selectedDocument.file_url || selectedDocument.url} alt="Vista previa" className={styles.viewerImage} />
-                        ) : (selectedDocument.file_url || selectedDocument.url).toLowerCase().includes('.pdf') ? (
+                        ) : ((selectedDocument.file_url || selectedDocument.url || '') as string).toLowerCase().includes('.pdf') ? (
                             <iframe src={selectedDocument.file_url || selectedDocument.url} className={styles.pdfFrame} title="PDF Viewer" />
                         ) : (
                             <div style={{ padding: '40px', textAlign: 'center' }}>
