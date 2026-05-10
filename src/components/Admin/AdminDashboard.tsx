@@ -240,6 +240,11 @@ export default function AdminDashboard() {
             const ambassadorRes = await fetchWithAuth('/api/ambassadors?status=pending&limit=1', {}, overrideId);
             const ambassadorData = await ambassadorRes.json();
             if (ambassadorData.success) setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
+
+            // 📩 NUEVO: Cargar conteo de nuevas solicitudes de solidaridad
+            const solidarityRes = await fetchWithAuth('/api/admin/solidarity/list?status=new', {}, overrideId);
+            const solidarityData = await solidarityRes.json();
+            if (solidarityData.success) setPendingCounts(prev => ({ ...prev, 'solidarity-fund': solidarityData.count || 0 }));
         } catch (error) { console.error(error); }
     }
 

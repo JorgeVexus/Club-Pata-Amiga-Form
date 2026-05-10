@@ -41,10 +41,18 @@ export async function GET(request: NextRequest) {
 
         if (error) throw error;
 
+        // Mapear los datos para aplanar la estructura y que el frontend los consuma correctamente
+        const mappedRequests = (requests || []).map((req: any) => ({
+            ...req,
+            user_name: req.user ? `${req.user.first_name} ${req.user.last_name || ''}`.trim() : 'Usuario no encontrado',
+            user_email: req.user?.email || '',
+            pet_name: req.pet?.name || 'Mascota no encontrada'
+        }));
+
         return NextResponse.json({
             success: true,
-            requests: requests || [],
-            count: (requests || []).length
+            requests: mappedRequests,
+            count: mappedRequests.length
         });
 
     } catch (error: any) {

@@ -183,7 +183,8 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
                                     <td>{req.pet_name}</td>
                                     <td>
                                         <span className={styles.benefitType}>
-                                            {req.benefit_type === 'medical_emergency' ? '🏥 Emergencia' : '💉 Vacuna'}
+                                            {req.benefit_type === 'medical_emergency' ? '🏥 Emergencia' : 
+                                             req.benefit_type === 'death' ? '🕊️ Fallecimiento' : '💉 Vacuna'}
                                         </span>
                                     </td>
                                     <td className={styles.amount}>${req.requested_amount}</td>
