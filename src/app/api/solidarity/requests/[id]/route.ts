@@ -56,12 +56,18 @@ export async function GET(
             return NextResponse.json({ error: 'No tienes permiso para ver esta solicitud' }, { status: 403, headers: corsHeaders });
         }
 
-        // 3. Mapear documentos para el widget (que espera .evidence con .name y .url)
-        const evidence = (solidarityRequest.documents || []).map((doc: any) => ({
-            name: doc.file_name,
-            url: doc.file_path,
-            type: doc.mime_type,
-            docType: doc.document_type
+        // 3. Mapear documentos para el widget (generando URLs firmadas ya que el bucket es privado)
+        const evidence = await Promise.all((solidarityRequest.documents || []).map(async (doc: any) => {
+            const { data: signedData } = await supabaseAdmin.storage
+                .from('solidarity-documents')
+                .createSignedUrl(doc.file_path, 3600); // URL válida por 1 hora
+
+            return {
+                name: doc.file_name,
+                url: signedData?.signedUrl || doc.file_path,
+                type: doc.mime_type,
+                docType: doc.document_type
+            };
         }));
 
         return NextResponse.json({

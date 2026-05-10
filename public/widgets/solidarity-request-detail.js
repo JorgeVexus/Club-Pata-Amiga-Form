@@ -686,6 +686,96 @@ class SolidarityRequestDetail {
                     .pata-pet-big-photo { width: 100%; height: 250px; }
                     .pata-pet-grid-mini { grid-template-columns: 1fr 1fr; }
                 }
+
+                /* Modal Viewer Styles */
+                .pata-modal-overlay {
+                    position: fixed;
+                    top: 0; left: 0; right: 0; bottom: 0;
+                    background: rgba(0,0,0,0.85);
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 10000;
+                    padding: 20px;
+                    backdrop-filter: blur(5px);
+                }
+                .pata-modal-overlay.active { display: flex; }
+                .pata-modal-content {
+                    background: white;
+                    border-radius: 40px;
+                    border: 3px solid #000;
+                    max-width: 90%;
+                    max-height: 90vh;
+                    position: relative;
+                    overflow: hidden;
+                    display: flex;
+                    flex-direction: column;
+                    box-shadow: 10px 10px 0px #000;
+                }
+                .pata-modal-header {
+                    padding: 20px 30px;
+                    border-bottom: 2px solid #000;
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    background: #FEFA15;
+                }
+                .pata-modal-title {
+                    font-family: 'Fraiche', sans-serif;
+                    font-size: 24px;
+                    margin: 0;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    max-width: 80%;
+                }
+                .pata-modal-close {
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 50%;
+                    background: white;
+                    border: 2px solid #000;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                    font-size: 20px;
+                    font-weight: 900;
+                    transition: all 0.2s;
+                }
+                .pata-modal-close:hover { transform: rotate(90deg); background: #FF0066; color: white; }
+                .pata-modal-body {
+                    padding: 0;
+                    overflow: auto;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    background: #f9f9f9;
+                    min-height: 300px;
+                    min-width: 300px;
+                    max-height: 70vh;
+                }
+                .pata-modal-body img {
+                    max-width: 100%;
+                    height: auto;
+                    display: block;
+                }
+                .pata-modal-body iframe {
+                    width: 100%;
+                    height: 70vh;
+                    min-width: 600px;
+                    border: none;
+                }
+                @media (max-width: 768px) {
+                    .pata-modal-body iframe { min-width: 100%; }
+                }
+                .pata-modal-footer {
+                    padding: 20px;
+                    border-top: 2px solid #000;
+                    display: flex;
+                    justify-content: center;
+                    background: white;
+                }
             </style>
 
             <div class="pata-detail-container">
@@ -753,7 +843,7 @@ class SolidarityRequestDetail {
                         <div class="pata-detail-item">
                             <label>Fecha del incidente</label>
                             <div class="pata-incident-date">
-                                <img src="${this.baseUrl}/Icons/calendar-black.svg" style="width: 24px; margin-right: 10px;">
+                                <img src="${this.baseUrl}/Icons/calendario.svg" style="width: 24px; margin-right: 10px;">
                                 ${new Date(req.incident_date).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
                             </div>
                         </div>
@@ -799,10 +889,10 @@ class SolidarityRequestDetail {
 
                                 return `
                                     <div style="display: flex; flex-direction: column; gap: 8px;">
-                                        <a href="${file.url}" target="_blank" class="pata-evidence-card" style="background: ${color}">
-                                            <img src="${file.name.match(/\.(jpg|jpeg|png)$/i) ? file.url : 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-file_f6xv6l.svg'}">
+                                        <div onclick="window.PataSolidarityDetail.openDocument('${file.url}', '${file.name}')" class="pata-evidence-card" style="background: ${color}; cursor: pointer;">
+                                            <img src="${file.name.match(/\.(jpg|jpeg|png|webp)$/i) ? file.url : 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-file_f6xv6l.svg'}">
                                             <span>${file.name}</span>
-                                        </a>
+                                        </div>
                                         <span style="font-size: 11px; font-weight: 700; text-align: center; text-transform: uppercase;">${label}</span>
                                     </div>
                                 `;
@@ -903,6 +993,22 @@ class SolidarityRequestDetail {
 
                 <button class="pata-btn-cancel">Cancelar solicitud</button>
             </div>
+
+            <!-- Modal Viewer -->
+            <div id="pata-doc-modal" class="pata-modal-overlay">
+                <div class="pata-modal-content">
+                    <div class="pata-modal-header">
+                        <h3 class="pata-modal-title" id="pata-modal-filename">Documento</h3>
+                        <div class="pata-modal-close" onclick="window.PataSolidarityDetail.closeModal()">&times;</div>
+                    </div>
+                    <div class="pata-modal-body" id="pata-modal-body">
+                        <!-- Content injected here -->
+                    </div>
+                    <div class="pata-modal-footer">
+                        <a id="pata-modal-download" href="#" download class="pata-btn-cancel" style="margin: 0; max-width: 220px; font-size: 16px; padding: 12px 25px;">Descargar Archivo</a>
+                    </div>
+                </div>
+            </div>
         `;
     }
 
@@ -919,6 +1025,54 @@ class SolidarityRequestDetail {
 
     renderError(msg) {
         this.container.innerHTML = `<div style="padding: 100px; text-align: center; color: #FF0066;">❌ Error: ${msg}</div>`;
+    }
+
+    // Modal Methods
+    openDocument(url, filename) {
+        const modal = document.getElementById('pata-doc-modal');
+        const body = document.getElementById('pata-modal-body');
+        const title = document.getElementById('pata-modal-filename');
+        const downloadBtn = document.getElementById('pata-modal-download');
+
+        if (!modal || !body) return;
+
+        title.textContent = filename;
+        downloadBtn.href = url;
+        downloadBtn.setAttribute('download', filename);
+
+        const isImage = /\.(jpg|jpeg|png|webp|gif)$/i.test(filename);
+        const isPdf = /\.pdf$/i.test(filename);
+
+        if (isImage) {
+            body.innerHTML = `<img src="${url}" alt="${filename}">`;
+        } else if (isPdf) {
+            body.innerHTML = `<iframe src="${url}#toolbar=0" type="application/pdf"></iframe>`;
+        } else {
+            body.innerHTML = `
+                <div style="padding: 40px; text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">📄</div>
+                    <p style="font-weight: 600;">Este tipo de archivo no puede previsualizarse.</p>
+                    <p style="color: #666; font-size: 14px;">Usa el botón de abajo para descargarlo.</p>
+                </div>
+            `;
+        }
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden'; // Block background scroll
+        
+        // Close on click outside content
+        modal.onclick = (e) => {
+            if (e.target === modal) this.closeModal();
+        };
+    }
+
+    closeModal() {
+        const modal = document.getElementById('pata-doc-modal');
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+            document.getElementById('pata-modal-body').innerHTML = '';
+        }
     }
 }
 
