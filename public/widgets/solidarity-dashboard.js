@@ -10,6 +10,7 @@ class SolidarityDashboard {
         
         // Environment Config
         this.apiUrl = options.apiUrl || window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx';
+        this.baseUrl = options.baseUrl || window.PATA_AMIGA_CONFIG?.baseUrl || 'https://app.pataamiga.mx';
         
         this.data = {
             user: null,
@@ -912,19 +913,19 @@ class SolidarityDashboard {
         
         // Configuración de Tipo de Apoyo
         const types = {
-            medical_emergency: { label: 'emergencia médica', color: '#ff0063', icon: '/Icons/emergencias.svg' },
-            annual_vaccination: { label: 'vacunación', color: '#fe8f15', icon: '/Icons/vacuna.svg' },
-            death: { label: 'fallecimiento', color: '#00BBB4', icon: '/Icons/fallecimiento.svg' }
+            medical_emergency: { label: 'emergencia médica', color: '#ff0063', icon: `${this.baseUrl}/Icons/emergencias.svg` },
+            annual_vaccination: { label: 'vacunación', color: '#fe8f15', icon: `${this.baseUrl}/Icons/vacuna.svg` },
+            death: { label: 'fallecimiento', color: '#00BBB4', icon: `${this.baseUrl}/Icons/fallecimiento.svg` }
         };
         const type = types[req.benefit_type] || types.medical_emergency;
 
         // Configuración de Estado
         const statuses = {
-            new: { label: 'solicitud enviada', color: '#9b9b9b', icon: '/Icons/enviada.png' },
-            in_review: { label: 'cita agendada', color: '#fefa15', icon: '/Icons/calendario.svg' },
-            approved: { label: 'aprobada', color: '#10B981', icon: '/Icons/aprovada.png' },
-            paid: { label: 'reembolso aprobado', color: '#FEF9C3', icon: '/Icons/aprovada.png' },
-            rejected: { label: 'rechazada', color: '#ff0063', icon: '/Icons/rechazada.png' }
+            new: { label: 'solicitud enviada', color: '#9b9b9b', icon: `${this.baseUrl}/Icons/enviada.png` },
+            in_review: { label: 'cita agendada', color: '#fefa15', icon: `${this.baseUrl}/Icons/calendario.svg` },
+            approved: { label: 'aprobada', color: '#10B981', icon: `${this.baseUrl}/Icons/aprovada.png` },
+            paid: { label: 'reembolso aprobado', color: '#FEF9C3', icon: `${this.baseUrl}/Icons/aprovada.png` },
+            rejected: { label: 'rechazada', color: '#ff0063', icon: `${this.baseUrl}/Icons/rechazada.png` }
         };
         const status = statuses[req.status] || statuses.new;
 
@@ -950,19 +951,19 @@ class SolidarityDashboard {
                     </div>
                     
                     <div class="pata-history-row">
-                        <div class="pata-row-icon"><img src="/Icons/clinica.png" alt=""></div>
+                        <div class="pata-row-icon"><img src="${this.baseUrl}/Icons/clinica.png" alt=""></div>
                         <span class="pata-row-text">${req.clinic_name || 'Clínica Aliada'}</span>
                     </div>
                     
                     <div class="pata-history-row">
-                        <div class="pata-row-icon"><img src="/Icons/calendario.svg" alt=""></div>
+                        <div class="pata-row-icon"><img src="${this.baseUrl}/Icons/calendario.svg" alt=""></div>
                         <span class="pata-row-text">${new Date(req.created_at).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
                     </div>
                 </div>
 
                 <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-end; width: 220px; flex-shrink: 0;">
                     <div class="pata-history-row" style="margin-top: 0;">
-                        <div class="pata-row-icon"><img src="${req.type === 'reimbursement' ? '/Icons/reembolso.svg' : '/Icons/centros.png'}" alt=""></div>
+                        <div class="pata-row-icon"><img src="${req.type === 'reimbursement' ? this.baseUrl + '/Icons/reembolso.svg' : this.baseUrl + '/Icons/centros.png'}" alt=""></div>
                         <span class="pata-row-text">${req.type === 'reimbursement' ? 'Solicitud de reembolso' : 'Solicitud en centro aliado'}</span>
                     </div>
                     

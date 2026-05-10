@@ -10,7 +10,7 @@ class SolidarityRequestDetail {
         
         // Environment Config
         this.apiUrl = options.apiUrl || window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx';
-        this.baseUrl = options.baseUrl || 'https://app.pataamiga.mx';
+        this.baseUrl = options.baseUrl || window.PATA_AMIGA_CONFIG?.baseUrl || 'https://app.pataamiga.mx';
         
         // Get ID from URL
         const urlParams = new URLSearchParams(window.location.search);
