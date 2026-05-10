@@ -970,10 +970,6 @@ class SolidarityRequestForm {
                     const uploadData = await uploadRes.json();
                     if (!uploadData.success) throw new Error(`Error al subir ${key}: ${uploadData.error}`);
                     
-                    const mapping = {
-                        evidencePhoto: 'evidence_photo',
-                        seniorCertificate: 'senior_certificate'
-                    };
                     documents.push({
                         docType: mapping[key] || key,
                         path: uploadData.path,
