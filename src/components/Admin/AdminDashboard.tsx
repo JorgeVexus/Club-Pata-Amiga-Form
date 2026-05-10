@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
 import MetricCards from './MetricCards';
 import RequestsTable from './RequestsTable';
 import styles from './AdminDashboard.module.css';
 import type { RequestType, DashboardMetrics } from '@/types/admin.types';
+import { REQUEST_TYPE_LABELS, REQUEST_STATUS_LABELS, RequestStatus } from '@/types/admin.types';
 import MemberDetailModal from './MemberDetailModal';
 import RejectionModal from './RejectionModal';
 import RejectionReasonModal from './RejectionReasonModal';
@@ -26,23 +28,14 @@ import { adminFetch } from '@/utils/admin-fetch';
 import SolidarityDashboard from './Solidarity/SolidarityDashboard';
 import SolidarityRequestDetail from './Solidarity/SolidarityRequestDetail';
 
-export default function AdminDashboard() {
+function DashboardContent() {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    
     const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
-    const handleFilterChange = (filter: any) => {
-        if (typeof filter === 'object') {
-            setActiveFilter(filter.id);
-            setSubFilter(filter.subStatus);
-        } else {
-            setActiveFilter(filter);
-            setSubFilter(null);
-        }
-        setIsMobileMenuOpen(false);
-        setSelectedMember(null);
-        setSelectedSolidarityRequestId(null);
-    };
-    // ... rest of state stays the same
+
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
     const [memberToReject, setMemberToReject] = useState<any>(null);
@@ -64,10 +57,7 @@ export default function AdminDashboard() {
         'terminate-users': 0,
     });
 
-    // Sub-estado para filtros específicos (Fondo Solidario)
     const [subFilter, setSubFilter] = useState<string | null>(null);
-
-    // ... (rest of auth and load logic) ...
     const [currentAdminId, setCurrentAdminId] = useState('Admin');
     const [adminMemberstackId, setAdminMemberstackId] = useState<string | null>(null);
     const [adminName, setAdminName] = useState('Cargando...');
@@ -82,10 +72,10 @@ export default function AdminDashboard() {
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
     const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
-    // Fetch helpers ... (same as before)
+    // Fetch helpers
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
         try {
-            const response = await fetchWithAuth(`/api/admin/members/${id}`);
+            const response = await adminFetch(`/api/admin/members/${id}`);
             const data = await response.json();
             if (data.success && data.member) customSetter(data.member);
             else alert('No se pudo cargar la información.');
@@ -94,32 +84,51 @@ export default function AdminDashboard() {
 
     const fetchAmbassadorDetails = async (id: string) => {
         try {
-            const response = await adminFetch('/api/ambassadors?limit=1000');
+            const response = await adminFetch(`/api/ambassadors/${id}`);
             const data = await response.json();
             if (data.success) {
-                const found = data.data.find((a: any) => a.id === id);
-                if (found) setSelectedAmbassador(found);
+                setSelectedAmbassador(data.data);
             }
         } catch (error) { console.error(error); }
     };
 
+    // Escuchar cambios en los parámetros de la URL para navegación profunda (notificaciones, links directos)
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search);
-            const tabParam = params.get('tab');
-            if (tabParam) setActiveFilter(tabParam as any);
-            
-            const memberId = params.get('member');
-            if (memberId) fetchMemberDetails(memberId, setSelectedMember);
+        const tabParam = searchParams.get('tab');
+        if (tabParam) setActiveFilter(tabParam as any);
+        
+        const memberId = searchParams.get('member');
+        if (memberId) fetchMemberDetails(memberId, setSelectedMember);
 
-            const requestId = params.get('requestId');
-            if (requestId) setSelectedSolidarityRequestId(requestId);
-
-            if (tabParam || memberId || requestId) {
-                window.history.replaceState({}, '', '/admin/dashboard');
-            }
+        const requestId = searchParams.get('requestId');
+        if (requestId) {
+            setActiveFilter('solidarity-fund');
+            setSelectedSolidarityRequestId(requestId);
         }
-    }, []);
+
+        const ambId = searchParams.get('ambassadorId');
+        if (ambId) {
+            setActiveFilter('ambassadors' as any);
+            fetchAmbassadorDetails(ambId);
+        }
+    }, [searchParams]);
+
+    const handleFilterChange = (filter: any) => {
+        if (typeof filter === 'object') {
+            setActiveFilter(filter.id);
+            setSubFilter(filter.subStatus);
+        } else {
+            setActiveFilter(filter);
+            setSubFilter(null);
+        }
+        setIsMobileMenuOpen(false);
+        setSelectedMember(null);
+        setSelectedSolidarityRequestId(null);
+        setSelectedAmbassador(null);
+        
+        // Limpiar URL al cambiar de pestaña manualmente
+        router.push('/admin/dashboard');
+    };
 
     useEffect(() => {
         const fetchAdminRole = async () => {
@@ -168,7 +177,7 @@ export default function AdminDashboard() {
                         loadPendingCounts(data.isSuperAdmin, currentMemberId);
                         loadActivityLogs(currentMemberId);
                         if (data.isSuperAdmin) {
-                            fetchWithAuth('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
+                            adminFetch('/api/admin/settings/skip-payment').then(r => r.json()).then(d => setSkipPaymentEnabled(d.enabled)).catch(() => { });
                         }
                         setIsAuthLoading(false);
                     } else {
@@ -187,10 +196,6 @@ export default function AdminDashboard() {
         fetchAdminRole();
         setHasMounted(true);
     }, [hasMounted]);
-    
-    const fetchWithAuth = async (url: string, options: RequestInit = {}, overrideId?: string) => {
-        return adminFetch(url, options);
-    };
 
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
@@ -201,7 +206,7 @@ export default function AdminDashboard() {
 
     async function loadMetrics(overrideId?: string) {
         try {
-            const response = await fetchWithAuth('/api/admin/metrics', {}, overrideId);
+            const response = await adminFetch('/api/admin/metrics');
             const data = await response.json();
             if (data.success && data.metrics) setMetrics(data.metrics);
         } catch (error) { console.error(error); }
@@ -211,7 +216,7 @@ export default function AdminDashboard() {
         try {
             const idToUse = memberstackId || adminMemberstackId;
             if (!idToUse) return;
-            const response = await fetchWithAuth('/api/admin/activity', {
+            const response = await adminFetch('/api/admin/activity', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ memberstackId: idToUse })
@@ -226,23 +231,22 @@ export default function AdminDashboard() {
 
     async function loadPendingCounts(isSuper: boolean = false, overrideId?: string) {
         try {
-            const response = await fetchWithAuth('/api/admin/members?status=pending', {}, overrideId);
+            const response = await adminFetch('/api/admin/members?status=pending');
             const data = await response.json();
             if (data.success && data.members) {
                 const checkIsPaid = (m: any) => m.planConnections?.some((p: any) => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing');
                 setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m)).length }));
             }
             if (isSuper) {
-                const appealRes = await fetchWithAuth('/api/admin/pets/appealed', {}, overrideId);
+                const appealRes = await adminFetch('/api/admin/pets/appealed');
                 const appealData = await appealRes.json();
                 if (appealData.success) setPendingCounts(prev => ({ ...prev, appeals: appealData.count || 0 }));
             }
-            const ambassadorRes = await fetchWithAuth('/api/ambassadors?status=pending&limit=1', {}, overrideId);
+            const ambassadorRes = await adminFetch('/api/ambassadors?status=pending&limit=1');
             const ambassadorData = await ambassadorRes.json();
             if (ambassadorData.success) setPendingCounts(prev => ({ ...prev, ambassador: ambassadorData.total || 0 }));
 
-            // 📩 NUEVO: Cargar conteo de nuevas solicitudes de solidaridad
-            const solidarityRes = await fetchWithAuth('/api/admin/solidarity/list?status=new', {}, overrideId);
+            const solidarityRes = await adminFetch('/api/admin/solidarity/list?status=new');
             const solidarityData = await solidarityRes.json();
             if (solidarityData.success) setPendingCounts(prev => ({ ...prev, 'solidarity-fund': solidarityData.count || 0 }));
         } catch (error) { console.error(error); }
@@ -253,9 +257,18 @@ export default function AdminDashboard() {
         if (userId) fetchMemberDetails(userId, setSelectedMember);
 
         const requestId = notification.metadata?.requestId;
+        const ambassadorId = notification.metadata?.ambassador_id || notification.metadata?.ambassadorId;
+
         if (requestId) {
             setActiveFilter('solidarity-fund');
             setSelectedSolidarityRequestId(requestId);
+            router.push(`/admin/dashboard?tab=solidarity-fund&requestId=${requestId}`);
+        } else if (ambassadorId) {
+            setActiveFilter('ambassadors' as any);
+            fetchAmbassadorDetails(ambassadorId);
+            router.push(`/admin/dashboard?tab=ambassadors&ambassadorId=${ambassadorId}`);
+        } else if (userId) {
+            router.push(`/admin/dashboard?tab=member&member=${userId}`);
         }
     }
 
@@ -288,7 +301,7 @@ export default function AdminDashboard() {
                         skipPaymentEnabled={skipPaymentEnabled}
                         onToggleSkipPayment={async (enabled: boolean) => {
                             try {
-                                const res = await fetchWithAuth('/api/admin/settings/skip-payment', {
+                                const res = await adminFetch('/api/admin/settings/skip-payment', {
                                     method: 'PUT',
                                     headers: { 'Content-Type': 'application/json' },
                                     body: JSON.stringify({ enabled, adminId: adminMemberstackId })
@@ -318,6 +331,7 @@ export default function AdminDashboard() {
                     />
                 );
             case 'ambassador':
+            case 'ambassadors' as any:
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
@@ -351,7 +365,7 @@ export default function AdminDashboard() {
                                 } else {
                                     if (confirm('¿Estás seguro de aprobar este miembro?')) {
                                         try {
-                                            const response = await fetchWithAuth(`/api/admin/members/${id}/approve`, {
+                                            const response = await adminFetch(`/api/admin/members/${id}/approve`, {
                                                 method: 'POST',
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ adminId: currentAdminId })
@@ -366,7 +380,7 @@ export default function AdminDashboard() {
                                 if (type === 'ambassador') {
                                     const reason = prompt('Motivo del rechazo (Embajador):');
                                     if (!reason) return;
-                                    fetchWithAuth(`/api/ambassadors/${id}`, {
+                                    adminFetch(`/api/ambassadors/${id}`, {
                                         method: 'PATCH',
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
@@ -381,7 +395,7 @@ export default function AdminDashboard() {
                                 try {
                                     let url = `/api/admin/members/${id}/delete`;
                                     if (type === 'ambassador') url = `/api/ambassadors/${id}`;
-                                    const res = await fetchWithAuth(url, { method: 'DELETE' });
+                                    const res = await adminFetch(url, { method: 'DELETE' });
                                     if (res.ok) { alert('Eliminado correctamente'); window.location.reload(); }
                                     else alert('Error al eliminar');
                                 } catch (e) { console.error(e); }
@@ -493,7 +507,6 @@ export default function AdminDashboard() {
                 </main>
             </div>
 
-            {/* Modals ... (MemberDetailModal, RejectionModal, etc. - stay the same) */}
             <MemberDetailModal
                 isOpen={!!selectedMember}
                 onClose={() => { setSelectedMember(null); setSelectedPetId(null); }}
@@ -503,7 +516,7 @@ export default function AdminDashboard() {
                 isSuperAdmin={isAdminSuper}
                 onApprove={async (id) => {
                     if (confirm('¿Aprobar?')) {
-                        const res = await fetchWithAuth(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
+                        const res = await adminFetch(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
                         if (res.ok) { alert('Aprobado'); window.location.reload(); }
                     }
                 }}
@@ -516,7 +529,7 @@ export default function AdminDashboard() {
                 onClose={() => setMemberToReject(null)}
                 memberName={`${memberToReject?.customFields?.['first-name'] || ''} ${memberToReject?.customFields?.['paternal-last-name'] || ''}`}
                 onConfirm={async (reason) => {
-                    const res = await fetchWithAuth(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
+                    const res = await adminFetch(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
                     if (res.ok) { alert('Rechazado'); window.location.reload(); }
                 }}
             />
@@ -549,4 +562,10 @@ export default function AdminDashboard() {
     );
 }
 
-import { REQUEST_TYPE_LABELS, REQUEST_STATUS_LABELS, RequestStatus } from '@/types/admin.types';
+export default function AdminDashboard() {
+    return (
+        <Suspense fallback={<div>Cargando dashboard...</div>}>
+            <DashboardContent />
+        </Suspense>
+    );
+}
