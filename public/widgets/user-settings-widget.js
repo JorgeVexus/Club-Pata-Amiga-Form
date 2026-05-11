@@ -17,6 +17,14 @@
         bgLight: '#F7FAFC'
     };
 
+    const MONTHS = ['', 'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const fmtDate = d => {
+        if (!d || d === 'null' || d === 'undefined') return '—';
+        const x = new Date(d);
+        if (isNaN(x.getTime())) return '—';
+        return x.getDate() + ' de ' + MONTHS[x.getMonth() + 1] + ' ' + x.getFullYear();
+    };
+
     const STYLES = `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
         @font-face {
@@ -566,6 +574,7 @@
                 notif_payments: true,
                 notif_news: true
             };
+            this.paymentMethod = null;
             this.showLegalModal = false;
             this.legalContent = null;
             this.isLoadingLegal = false;
@@ -577,7 +586,11 @@
             this.createContainer();
             await this.loadMember();
             if (this.member) {
-                await this.loadPreferences();
+                // Cargar datos en paralelo para mejor performance
+                await Promise.all([
+                    this.loadPreferences(),
+                    this.loadPaymentMethod()
+                ]);
                 this.render();
             } else {
                 this.renderNoSession();
@@ -651,6 +664,20 @@
                 }
             } catch (error) {
                 console.error('❌ [SETTINGS] Error cargando preferencias:', error);
+            }
+        }
+        
+        async loadPaymentMethod() {
+            try {
+                console.log('💳 [SETTINGS] Cargando método de pago...');
+                const response = await fetch(`${CONFIG.apiUrl}/api/user/payment-method?memberstackId=${this.member.id}`);
+                const data = await response.json();
+                if (data.success && data.paymentMethod) {
+                    this.paymentMethod = data.paymentMethod;
+                    console.log('💳 [SETTINGS] Método de pago cargado:', data.paymentMethod.plan_name);
+                }
+            } catch (error) {
+                console.error('❌ [SETTINGS] Error cargando método de pago:', error);
             }
         }
 
@@ -804,6 +831,17 @@
         }
 
         getActivePlanInfo() {
+            // Prioridad 1: Datos frescos desde la API custom de Stripe (vía backend)
+            if (this.paymentMethod) {
+                return {
+                    name: this.paymentMethod.plan_name || 'Plan Club Pata Amiga',
+                    amount: this.paymentMethod.plan_cost ? this.paymentMethod.plan_cost.toFixed(2) : '0.00',
+                    currency: 'MXN',
+                    nextPayment: fmtDate(this.paymentMethod.next_payment_date)
+                };
+            }
+
+            // Prioridad 2: Fallback a Memberstack (lo que teníamos antes)
             if (!this.member || !this.member.planConnections || this.member.planConnections.length === 0) return null;
             
             const activePlan = this.member.planConnections.find(p => p.status === 'ACTIVE' || p.status === 'TRIALING') 
@@ -811,16 +849,17 @@
             
             if (!activePlan) return null;
 
-            // Extraer info de pago si existe
             const amount = activePlan.payment?.amount ? (activePlan.payment.amount / 100).toFixed(2) : '0.00';
             const currency = activePlan.payment?.currency?.toUpperCase() || 'MXN';
             
-            // Formatear fecha de siguiente pago
             let nextPayment = 'No disponible';
             if (activePlan.currentPeriodEnd) {
                 try {
-                    const date = new Date(activePlan.currentPeriodEnd * (typeof activePlan.currentPeriodEnd === 'number' && activePlan.currentPeriodEnd < 10000000000 ? 1000 : 1));
-                    nextPayment = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+                    // Normalizar timestamp (segundos vs milisegundos)
+                    const ts = typeof activePlan.currentPeriodEnd === 'number' && activePlan.currentPeriodEnd < 10000000000 
+                               ? activePlan.currentPeriodEnd * 1000 
+                               : activePlan.currentPeriodEnd;
+                    nextPayment = fmtDate(ts);
                 } catch (e) {
                     console.warn('⚠️ [SETTINGS] Error formateando fecha:', e);
                 }
