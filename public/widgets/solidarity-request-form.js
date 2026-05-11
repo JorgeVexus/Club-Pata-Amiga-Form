@@ -4,6 +4,14 @@
 * Optimized: Frontend Design Refinement (Spacing, Layout, Rhythm).
 */
 
+const MEXICAN_BANKS = {
+    "002": "BANAMEX", "012": "BBVA", "014": "SANTANDER", "021": "HSBC", "030": "BAJIO",
+    "036": "INBURSA", "042": "MIFEL", "044": "SCOTIABANK", "058": "BANREGIO", "059": "INVEX",
+    "062": "AFIRME", "072": "BANORTE", "106": "ACTINVER", "110": "BASE", "112": "MONEX",
+    "127": "BANCO AZTECA", "128": "AUTOFIN", "138": "ABC CAPITAL", "147": "COMPARTAMOS",
+    "148": "BANCO MULTIVA", "166": "BANCO DEL BIENESTAR", "601": "COPPEL", "638": "STP"
+};
+
 class SolidarityRequestForm {
     constructor(containerId, options = {}) {
         this.containerId = containerId || 'pata-solidarity-form';
@@ -891,7 +899,19 @@ class SolidarityRequestForm {
                     // Specific numeric filters
                     if (id === 'cp' || id === 'bank-clabe') value = value.replace(/[^0-9]/g, '');
                     if (id === 'cp') value = value.substring(0, 5);
-                    if (id === 'bank-clabe') value = value.substring(0, 18);
+                    if (id === 'bank-clabe') {
+                        value = value.substring(0, 18);
+                        // Autocomplete Bank Name from CLABE (First 3 digits)
+                        if (value.length >= 3) {
+                            const bankCode = value.substring(0, 3);
+                            const bankName = MEXICAN_BANKS[bankCode];
+                            if (bankName) {
+                                this.state.formData.bankName = bankName;
+                                const bankInput = this.container.querySelector('#pata-bank-name');
+                                if (bankInput) bankInput.value = bankName;
+                            }
+                        }
+                    }
                     if (id === 'amount' || id === 'total-paid') value = value.replace(/[^0-9.]/g, '');
 
                     // Map UI IDs to state keys
