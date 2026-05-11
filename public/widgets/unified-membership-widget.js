@@ -4510,10 +4510,10 @@
                         <div class="pata-benefit-card">
                             <div class="pata-benefit-icon-box">🩺</div>
                             <div class="pata-benefit-info">
-                                <h4>Chat Dra. PATi</h4>
-                                <p>Dudas de salud al instante.</p>
+                                <h4>Chat Dra. PATI</h4>
+                                <p>¡No tienes que esperar! Aclara dudas sobre la salud de tus peludos ahora mismo.</p>
                                 <div class="pata-pati-message">
-                                    "¡Ya tienes acceso ilimitado!"
+                                    A partir de ahora cuentas con acceso al chat con la Dra. PATI para cualquier duda sobre su salud, comportamiento o cuidados del día a día.
                                 </div>
                             </div>
                         </div>
@@ -5382,7 +5382,7 @@
                                 ${pet.status === 'approved' ? (() => {
                                     if (carencia.daysRemaining <= 0) {
                                         return `
-                                        <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg); text-align: center;">
+                                        <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); text-align: center;">
                                             <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Fondo Activado</h3>
                                             <p style="margin-bottom: 15px; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px;"><strong>${pet.name}</strong> ya puede acceder al fondo solidario.</p>
                                             <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-btn-primary, #FE8F15); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 14px; font-weight: bold; padding: 12px 0; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
@@ -5390,7 +5390,7 @@
                                         `;
                                     }
                                     return `
-                                    <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: auto; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); transform: rotate(1deg);">
+                                    <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
                                         <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
                                         <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
                                             <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
