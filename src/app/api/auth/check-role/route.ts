@@ -9,13 +9,26 @@ const supabase = createClient(
 
 import { AdminAuthService } from '@/services/admin-auth.service';
 
+// CORS headers
+function corsHeaders() {
+    return {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    };
+}
+
+export async function OPTIONS() {
+    return NextResponse.json({}, { headers: corsHeaders() });
+}
+
 export async function POST(request: NextRequest) {
     const start = Date.now();
     try {
         const { memberstackId } = await request.json();
 
         if (!memberstackId) {
-            return NextResponse.json({ success: false, error: 'ID requerido' }, { status: 400 });
+            return NextResponse.json({ success: false, error: 'ID requerido' }, { status: 400, headers: corsHeaders() });
         }
 
         console.log(`🔍 [Check-Role] Request for: ${memberstackId}`);
@@ -36,7 +49,7 @@ export async function POST(request: NextRequest) {
                 success: true,
                 role: 'admin',
                 adminType: adminRole
-            });
+            }, { headers: corsHeaders() });
         }
 
         // 2. Check if user is an Ambassador
@@ -54,7 +67,7 @@ export async function POST(request: NextRequest) {
                 success: true,
                 role: 'ambassador',
                 status: ambassador.status
-            });
+            }, { headers: corsHeaders() });
         }
 
         // 3. Optional: Check if global skip_payment_enabled is active
@@ -85,7 +98,7 @@ export async function POST(request: NextRequest) {
                 return NextResponse.json({
                     success: true,
                     role: 'member'
-                });
+                }, { headers: corsHeaders() });
             }
             
             // Also check for pending/succeeded payments in Stripe
@@ -106,7 +119,7 @@ export async function POST(request: NextRequest) {
                         role: 'canceled_payment',
                         canceledAt: (canceledPlan as any).canceledAt || (canceledPlan as any).updatedAt || null,
                         planId: (canceledPlan as any).planId || null
-                    });
+                    }, { headers: corsHeaders() });
                 }
 
                 console.log(`⚠️ [Check-Role] Miembro sin plan activo: ${memberstackId}`);
@@ -114,7 +127,7 @@ export async function POST(request: NextRequest) {
                     success: true,
                     role: 'pending_payment',
                     message: 'Debes completar el pago de tu membresía para continuar'
-                });
+                }, { headers: corsHeaders() });
             }
 
             if (hasPendingPayment && !hasActivePlan) {
@@ -123,7 +136,7 @@ export async function POST(request: NextRequest) {
                     success: true,
                     role: 'payment_processing',
                     message: 'Tu pago está siendo procesado'
-                });
+                }, { headers: corsHeaders() });
             }
         }
 
@@ -132,10 +145,10 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             role: 'member'
-        });
+        }, { headers: corsHeaders() });
 
     } catch (error) {
         console.error('Check Role Error:', error);
-        return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500 });
+        return NextResponse.json({ success: false, error: 'Server Error' }, { status: 500, headers: corsHeaders() });
     }
 }

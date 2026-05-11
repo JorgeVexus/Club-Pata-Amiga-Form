@@ -71,11 +71,24 @@ interface ConsultationHistory {
     petName: string | null;
 }
 
+interface SolidarityRequestHistory {
+    id: string;
+    type: string;
+    benefitType: string;
+    status: string;
+    requestedAmount: number;
+    approvedAmount: number | null;
+    createdAt: string;
+    petName: string | null;
+    caseTitle: string | null;
+}
+
 interface VetBotContextResponse {
     success: boolean;
     user: UserContext;
     pets: PetContext[];
     consultationHistory: ConsultationHistory[];
+    solidarityRequests: SolidarityRequestHistory[];
     session?: {
         validUntil: string;
         minutesRemaining: number;
@@ -284,6 +297,29 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             // No fallamos por esto, solo una advertencia
         }
 
+        // 6b. Buscar solicitudes del fondo solidario
+        console.log('💰 [VET_BOT] Consultando solicitudes del fondo solidario...');
+        const { data: solidarityRequests, error: solidarityError } = await supabaseAdmin
+            .from('solidarity_requests')
+            .select(`
+                id,
+                type,
+                benefit_type,
+                status,
+                requested_amount,
+                approved_amount,
+                created_at,
+                case_title,
+                pets (name)
+            `)
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(10);
+
+        if (solidarityError) {
+            console.warn('⚠️ [VET_BOT] Error fetching solidarity requests:', solidarityError);
+        }
+
         // 7. Formatear respuesta
         console.log('🎁 [VET_BOT] Formateando payload final...');
         const now = new Date();
@@ -333,6 +369,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             petName: Array.isArray(cons.pets) ? cons.pets[0]?.name : (cons.pets as any)?.name || null
         }));
 
+        const solidarityRequestsHistory: SolidarityRequestHistory[] = (solidarityRequests || []).map(req => ({
+            id: req.id,
+            type: req.type,
+            benefitType: req.benefit_type,
+            status: req.status,
+            requestedAmount: Number(req.requested_amount),
+            approvedAmount: req.approved_amount ? Number(req.approved_amount) : null,
+            createdAt: req.created_at,
+            petName: Array.isArray(req.pets) ? req.pets[0]?.name : (req.pets as any)?.name || null,
+            caseTitle: req.case_title
+        }));
+
         // Calcular tiempo restante de sesión si aplica
         let sessionInfo = undefined;
         if (sessionExpiresAt && identifiedVia === 'session_token') {
@@ -349,6 +397,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             user: userContext,
             pets: petsContext,
             consultationHistory,
+            solidarityRequests: solidarityRequestsHistory,
             session: sessionInfo,
             identifiedVia,
             timestamp: now.toISOString()
