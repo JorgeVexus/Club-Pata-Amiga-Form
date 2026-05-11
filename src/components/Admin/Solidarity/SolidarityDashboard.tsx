@@ -78,6 +78,42 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
         }
     }
 
+    const exportToCSV = () => {
+        // Filtrar solicitudes que tengan datos bancarios
+        const reimbursementRequests = requests.filter(r => r.type === 'reimbursement' && (r as any).bank_clabe);
+
+        if (reimbursementRequests.length === 0) {
+            alert('No hay solicitudes de reembolso con datos bancarios para exportar.');
+            return;
+        }
+
+        const headers = ['ID', 'Fecha', 'Usuario', 'Email', 'Monto', 'Banco', 'CLABE', 'Titular', 'Estado'];
+        const csvContent = [
+            headers.join(','),
+            ...reimbursementRequests.map(r => [
+                r.id,
+                new Date(r.created_at).toLocaleDateString(),
+                `"${r.user_name}"`,
+                r.user_email,
+                r.requested_amount,
+                `"${(r as any).bank_name || ''}"`,
+                `'${(r as any).bank_clabe || ''}`,
+                `"${(r as any).bank_holder || ''}"`,
+                r.status
+            ].join(','))
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `reembolsos_solidarios_${new Date().toISOString().split('T')[0]}.csv`);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     const getStatusBadge = (status: string) => {
         const styles_map: any = {
             new: { bg: '#E5E7EB', color: '#374151', label: 'Nuevo' },
@@ -139,18 +175,23 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
 
             <div className={styles.header}>
                 <h2 className={styles.title}>Fondo Solidario</h2>
-                <div className={styles.filters}>
-                    <select 
-                        value={filter} 
-                        onChange={(e) => setFilter(e.target.value)}
-                        className={styles.select}
-                    >
-                        <option value="all">Todos los estados</option>
-                        <option value="new">Nuevos</option>
-                        <option value="in_process">En Proceso</option>
-                        <option value="approved">Aprobados / Pagados</option>
-                        <option value="rejected">Rechazados</option>
-                    </select>
+                <div className={styles.headerActions}>
+                    <button onClick={exportToCSV} className={styles.exportBtn}>
+                        📥 Exportar Reembolsos
+                    </button>
+                    <div className={styles.filters}>
+                        <select 
+                            value={filter} 
+                            onChange={(e) => setFilter(e.target.value)}
+                            className={styles.select}
+                        >
+                            <option value="all">Todos los estados</option>
+                            <option value="new">Nuevos</option>
+                            <option value="in_process">En Proceso</option>
+                            <option value="approved">Aprobados / Pagados</option>
+                            <option value="rejected">Rechazados</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 

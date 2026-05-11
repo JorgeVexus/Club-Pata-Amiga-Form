@@ -23,6 +23,9 @@ interface SolidarityRequest {
     clinic_name?: string;
     case_title: string;
     case_description: string;
+    bank_name?: string;
+    bank_clabe?: string;
+    bank_holder?: string;
     created_at: string;
     pet?: any;
     user?: any;
@@ -290,6 +293,37 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 <span>{request.clinic_name || 'N/A'}</span>
                             </div>
                         </div>
+                        
+                        {request.bank_clabe && (
+                            <div className={styles.bankInfoBox}>
+                                <label>Información Bancaria (Reembolso)</label>
+                                <div className={styles.bankGrid}>
+                                    <div className={styles.bankItem}>
+                                        <label>Banco</label>
+                                        <span>{request.bank_name}</span>
+                                    </div>
+                                    <div className={styles.bankItem}>
+                                        <label>Titular</label>
+                                        <span>{request.bank_holder}</span>
+                                    </div>
+                                    <div className={styles.bankItem}>
+                                        <label>CLABE</label>
+                                        <div className={styles.clabeWrap}>
+                                            <span style={{ fontFamily: 'monospace', fontSize: '15px' }}>{request.bank_clabe}</span>
+                                            <button 
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(request.bank_clabe!);
+                                                    alert('CLABE copiada al portapapeles');
+                                                }}
+                                                className={styles.copyBtn}
+                                            >
+                                                Copiar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <div className={styles.descriptionBox}>
                             <label>Descripción del caso</label>

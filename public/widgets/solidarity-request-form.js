@@ -39,7 +39,10 @@ class SolidarityRequestForm {
                 clinicCity: '',
                 clinicAddress: '',
                 vetName: '',
-                vetLicense: ''
+                vetLicense: '',
+                bankName: '',
+                bankClabe: '',
+                bankHolder: ''
             },
             files: {
                 evidencePhoto: null,
@@ -449,11 +452,10 @@ class SolidarityRequestForm {
         if (this.state.selection.requestType === 'allied_center_appointment') {
             return !!(d.incidentDate && d.preferredAppointmentTime && d.caseTitle);
         } else {
-            if (!d.requestedAmount || !f.receipt || !f.prescription) return false;
-            
-            // Validación Senior
-            const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
-            if (selectedPet?.needsSeniorCertificate && !f.seniorCertificate) return false;
+            if (this.state.selection.requestType === 'reimbursement') {
+                if (!d.bankName || !d.bankClabe || !d.bankHolder) return false;
+                if (d.bankClabe.length !== 18) return false;
+            }
 
             if (this.state.selection.benefitType === 'medical_emergency') {
                 return !!(d.totalPaidAmount && d.clinicName && d.clinicPostalCode && d.clinicAddress && d.vetName);
@@ -811,6 +813,27 @@ class SolidarityRequestForm {
                                 </div>
                             </div>
                         ` : ''}
+
+                        ${!isAppointment ? `
+                            <div class="pata-field full" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 30px;">
+                                <label class="pata-label" style="font-size: 20px; margin-bottom: 20px; color: var(--pata-black); background: var(--pata-white); display: inline-block; padding: 5px 20px; border-radius: 20px; border: 2px solid var(--pata-black);">Datos para tu reembolso</label>
+                                <div class="pata-form-grid">
+                                    <div class="pata-field">
+                                        <label class="pata-label" for="pata-bank-name">Banco</label>
+                                        <input type="text" class="pata-input" id="pata-bank-name" placeholder="Nombre del banco" value="${this.state.formData.bankName}">
+                                    </div>
+                                    <div class="pata-field">
+                                        <label class="pata-label" for="pata-bank-holder">Titular de la cuenta</label>
+                                        <input type="text" class="pata-input" id="pata-bank-holder" placeholder="Nombre completo" value="${this.state.formData.bankHolder}">
+                                    </div>
+                                    <div class="pata-field full">
+                                        <label class="pata-label" for="pata-bank-clabe">CLABE Interbancaria (18 dígitos)</label>
+                                        <input type="text" class="pata-input" id="pata-bank-clabe" inputmode="numeric" maxlength="18" placeholder="000000000000000000" value="${this.state.formData.bankClabe}">
+                                        <p style="color: white; font-size: 12px; margin-top: 8px; font-weight: 700; opacity: 0.8;">Asegúrate de que los 18 dígitos sean correctos para evitar retrasos.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : ''}
                     `}
                 </div>
 
@@ -858,7 +881,7 @@ class SolidarityRequestForm {
         });
 
         // Form fields
-        const inputIds = ['case-desc', 'case-title', 'incident-date', 'pref-time', 'amount', 'total-paid', 'clinic-name', 'cp', 'state', 'city', 'address', 'vet-name', 'vet-license', 'center'];
+        const inputIds = ['case-desc', 'case-title', 'incident-date', 'pref-time', 'amount', 'total-paid', 'clinic-name', 'cp', 'state', 'city', 'address', 'vet-name', 'vet-license', 'center', 'bank-name', 'bank-clabe', 'bank-holder'];
         inputIds.forEach(id => {
             const el = this.container.querySelector(`#pata-${id}`);
             if (el) {
@@ -866,7 +889,9 @@ class SolidarityRequestForm {
                     let value = el.value;
                     
                     // Specific numeric filters
-                    if (id === 'cp') value = value.replace(/[^0-9]/g, '').substring(0, 5);
+                    if (id === 'cp' || id === 'bank-clabe') value = value.replace(/[^0-9]/g, '');
+                    if (id === 'cp') value = value.substring(0, 5);
+                    if (id === 'bank-clabe') value = value.substring(0, 18);
                     if (id === 'amount' || id === 'total-paid') value = value.replace(/[^0-9.]/g, '');
 
                     // Map UI IDs to state keys
@@ -884,13 +909,16 @@ class SolidarityRequestForm {
                         'address': 'clinicAddress',
                         'vet-name': 'vetName',
                         'vet-license': 'vetLicense',
-                        'center': 'alliedCenterId'
+                        'center': 'alliedCenterId',
+                        'bank-name': 'bankName',
+                        'bank-clabe': 'bankClabe',
+                        'bank-holder': 'bankHolder'
                     };
 
                     const stateKey = mapping[id];
                     if (stateKey) {
                         this.state.formData[stateKey] = value;
-                        if (id === 'cp') el.value = value; // Force clean value in UI for CP
+                        if (id === 'cp' || id === 'bank-clabe') el.value = value; // Force clean value in UI
                     }
                     this.updateSubmitStatus();
                 };

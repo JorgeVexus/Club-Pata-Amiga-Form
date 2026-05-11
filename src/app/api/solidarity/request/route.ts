@@ -40,9 +40,13 @@ export async function POST(request: NextRequest) {
             clinicCity,
             vetName,
             vetLicense,
+            bankName,
+            bankClabe,
+            bankHolder,
             evidencePhotoUrl,
             prescriptionUrl,
-            receiptUrl
+            receiptUrl,
+            documents
         } = body;
 
         // 1. Validaciones básicas
@@ -137,7 +141,10 @@ export async function POST(request: NextRequest) {
                 clinic_address: clinicAddress,
                 clinic_city: clinicCity,
                 vet_name: vetName,
-                vet_license: vetLicense
+                vet_license: vetLicense,
+                bank_name: bankName,
+                bank_clabe: bankClabe,
+                bank_holder: bankHolder
             })
             .select()
             .single();
