@@ -170,9 +170,10 @@ export async function POST(
                     ? (message.length > 50 ? message.substring(0, 47) + '...' : message)
                     : '📎 Se adjuntó un archivo';
 
+                const siteUrl = 'https://www.pataamiga.mx';
                 const notificationLink = isFromAdmin
-                    ? `/miembros/detalle-solicitud?id=${id}#chat`
-                    : `/admin/dashboard?section=solidarity&requestId=${id}`;
+                    ? `${siteUrl}/miembros/detalle-solicitud?id=${id}#chat`
+                    : `${siteUrl}/admin/dashboard?section=solidarity&requestId=${id}`;
 
                 console.log(`🔔 Intentando enviar notificación a ${targetUserId} (Role: ${senderRole})`);
 

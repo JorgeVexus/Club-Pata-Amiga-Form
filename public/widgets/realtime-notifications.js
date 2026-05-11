@@ -28,6 +28,9 @@
             // Perfil y Edición
             '/perfil': window.PATA_AMIGA_CONFIG?.profileUrl || '/perfil',
             '/completar-perfil': window.PATA_AMIGA_CONFIG?.profileUrl || '/perfil',
+
+            // Solicitudes de Solidaridad
+            '/miembros/detalle-solicitud': '/miembros/detalle-solicitud',
         }
     };
 
@@ -840,20 +843,26 @@
             // 2. Resolver URL
             const incomingLink = notif.link;
 
-            // Si coincide con ruta mapeada internamente
-            if (incomingLink && CONFIG.urls[incomingLink]) {
-                console.log(`🔀 Rutéo inteligente: ${incomingLink} -> ${CONFIG.urls[incomingLink]}`);
-                window.location.href = CONFIG.urls[incomingLink];
-                return;
+            if (incomingLink) {
+                // Smart Mapping (con soporte para query params)
+                const pathOnly = incomingLink.split('?')[0].split('#')[0];
+                if (CONFIG.urls[pathOnly]) {
+                    const targetBase = CONFIG.urls[pathOnly];
+                    const suffix = incomingLink.substring(pathOnly.length);
+                    console.log(`🔀 Rutéo inteligente: ${pathOnly} -> ${targetBase}`);
+                    window.location.href = targetBase + suffix;
+                    return;
+                }
+
+                // Si es absoluta o relativa directa (empieza con /)
+                if (incomingLink.startsWith('http') || incomingLink.startsWith('/')) {
+                    console.log(`🔗 Redirección directa: ${incomingLink}`);
+                    window.location.href = incomingLink;
+                    return;
+                }
             }
 
-            // Si es absoluta
-            if (incomingLink && (incomingLink.startsWith('http') || incomingLink.startsWith('https'))) {
-                window.location.href = incomingLink;
-                return;
-            }
-
-            // 3. Fallback: Modal
+            // 3. Fallback: Modal (si no hay link o no se pudo resolver)
             this.showDetailModal(notif);
         }
 
