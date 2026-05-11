@@ -194,6 +194,75 @@
             transform: translateX(20px);
         }
 
+        /* Subscription Card */
+        .pata-subscription-card {
+            background: #F8FAFC;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #E2E8F0;
+        }
+        .pata-sub-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .pata-sub-icon {
+            width: 44px;
+            height: 44px;
+            background: #7DD8D5;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+        }
+        .pata-sub-details {
+            display: flex;
+            flex-direction: column;
+        }
+        .pata-sub-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A202C;
+            line-height: 1.2;
+        }
+        .pata-sub-cost {
+            font-size: 14px;
+            color: #718096;
+            margin-top: 2px;
+        }
+        .pata-sub-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px dashed #CBD5E0;
+            margin-top: 5px;
+        }
+        .pata-sub-next {
+            font-size: 13px;
+            color: #4A5568;
+        }
+        .pata-sub-manage {
+            background: none;
+            border: none;
+            color: #00BBB4;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 0;
+            transition: all 0.2s;
+            font-family: 'Outfit', sans-serif;
+        }
+        .pata-sub-manage:hover {
+            color: #000;
+            transform: translateX(3px);
+        }
+
         /* Account Section */
         .pata-btn-deactivate {
             width: 100%;
@@ -625,7 +694,7 @@
                     <p class="pata-section-subtitle">Elige cómo quieres que te avisemos</p>
                     <div class="pata-settings-list">
                         ${this.renderToggle('Recibir correo electrónicos', 'mail', 'notif_email')}
-                        ${this.renderToggle('Notificaciones por WhatsApp', 'whatsapp', 'notif_whatsapp')}
+                        <div style="display: none;">${this.renderToggle('Notificaciones por WhatsApp', 'whatsapp', 'notif_whatsapp')}</div>
                         ${this.renderToggle('Alertas de tus solicitudes', 'bell', 'notif_alerts')}
                         ${this.renderToggle('Recordatorio de pagos', 'payment', 'notif_payments')}
                         ${this.renderToggle('Noticias del club', 'news', 'notif_news')}
@@ -646,7 +715,7 @@
                     <h2 class="pata-section-title">Cuenta y suscripción</h2>
                     <p class="pata-section-subtitle">Administra tu suscripción o solicita la baja de la plataforma.</p>
                     <div class="pata-settings-list" style="margin-bottom: 20px;">
-                        ${this.renderItem('Administrar suscripción', 'payment', null)}
+                        ${this.renderSubscriptionInfo()}
                     </div>
                     <button class="pata-btn-deactivate" id="pata-btn-deactivate">
                         ${ICONS.xCircle}
@@ -734,9 +803,63 @@
             `;
         }
 
+        getActivePlanInfo() {
+            if (!this.member || !this.member.planConnections || this.member.planConnections.length === 0) return null;
+            
+            const activePlan = this.member.planConnections.find(p => p.status === 'ACTIVE' || p.status === 'TRIALING') 
+                             || this.member.planConnections[0];
+            
+            if (!activePlan) return null;
+
+            // Extraer info de pago si existe
+            const amount = activePlan.payment?.amount ? (activePlan.payment.amount / 100).toFixed(2) : '0.00';
+            const currency = activePlan.payment?.currency?.toUpperCase() || 'MXN';
+            
+            // Formatear fecha de siguiente pago
+            let nextPayment = 'No disponible';
+            if (activePlan.currentPeriodEnd) {
+                try {
+                    const date = new Date(activePlan.currentPeriodEnd * (typeof activePlan.currentPeriodEnd === 'number' && activePlan.currentPeriodEnd < 10000000000 ? 1000 : 1));
+                    nextPayment = date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+                } catch (e) {
+                    console.warn('⚠️ [SETTINGS] Error formateando fecha:', e);
+                }
+            }
+
+            return {
+                name: activePlan.planName || 'Plan Club Pata Amiga',
+                amount,
+                currency,
+                nextPayment
+            };
+        }
+
+        renderSubscriptionInfo() {
+            const plan = this.getActivePlanInfo();
+            if (!plan) {
+                return this.renderItem('Administrar suscripción', 'payment', 'payment');
+            }
+
+            return `
+                <div class="pata-subscription-card">
+                    <div class="pata-sub-header">
+                        <div class="pata-sub-icon">${ICONS.payment}</div>
+                        <div class="pata-sub-details">
+                            <span class="pata-sub-name">${plan.name}</span>
+                            <span class="pata-sub-cost">$${plan.amount} ${plan.currency} / mes</span>
+                        </div>
+                    </div>
+                    <div class="pata-sub-footer">
+                        <span class="pata-sub-next">Siguiente pago: <strong>${plan.nextPayment}</strong></span>
+                        <button class="pata-sub-manage" data-action="payment">Administrar suscripción ${ICONS.chevron}</button>
+                    </div>
+                </div>
+            `;
+        }
+
         bindEvents() {
-            // Click en items normales
-            this.container.querySelectorAll('.pata-settings-item:not(.no-click)').forEach(item => {
+            // Click en items normales y botón de administrar suscripción
+            this.container.querySelectorAll('.pata-settings-item:not(.no-click), .pata-sub-manage').forEach(item => {
                 item.addEventListener('click', () => {
                     const actionKey = item.getAttribute('data-action');
                     if (actionKey === 'key') this.handleSecurityChange();
