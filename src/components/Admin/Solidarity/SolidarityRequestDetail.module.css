@@ -389,7 +389,8 @@
     font-size: 14px;
     resize: none;
     outline: none;
-    min-height: 80px;
+    min-height: 120px;
+    width: 100%;
     min-width: 0;
     transition: border-color 0.2s, box-shadow 0.2s;
 }

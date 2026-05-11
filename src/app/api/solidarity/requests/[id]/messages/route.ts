@@ -171,7 +171,7 @@ export async function POST(
                     : '📎 Se adjuntó un archivo';
 
                 const notificationLink = isFromAdmin
-                    ? `/miembros/dashboard?section=solidarity&requestId=${id}` // Ajustar según URL del portal
+                    ? `/miembros/detalle-solicitud?id=${id}#chat`
                     : `/admin/dashboard?section=solidarity&requestId=${id}`;
 
                 console.log(`🔔 Intentando enviar notificación a ${targetUserId} (Role: ${senderRole})`);

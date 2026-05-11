@@ -648,7 +648,7 @@
             // Polling cada 12 segundos para ser amigables con el servidor
             setInterval(async () => {
                 await this.loadNotifications(false);
-            }, 12000);
+            }, 5000);
         }
 
         async loadNotifications(isInitialLoad = false) {

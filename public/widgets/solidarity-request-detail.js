@@ -49,6 +49,16 @@ class SolidarityRequestDetail {
             this.attachEventListeners();
             this.scrollToBottom();
             this.startPolling();
+
+            // Auto-scroll logic if hash is #chat
+            if (window.location.hash === '#chat') {
+                setTimeout(() => {
+                    const chatSection = this.container.querySelector('.pata-chat-section');
+                    if (chatSection) {
+                        chatSection.scrollIntoView({ behavior: 'smooth' });
+                    }
+                }, 800);
+            }
         } catch (error) {
             console.error('❌ Init Error:', error);
             this.renderError(error.message);
