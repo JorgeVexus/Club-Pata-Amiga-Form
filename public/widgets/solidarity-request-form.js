@@ -28,6 +28,7 @@ class SolidarityRequestForm {
             member: null,
             pets: [],
             alliedCenters: [],
+            balances: null,
             selection: {
                 petId: null,
                 requestType: null, // 'reimbursement' | 'allied_center_appointment'
@@ -449,6 +450,20 @@ class SolidarityRequestForm {
         return { daysRemaining, percentage, totalDays, isWaiting, endDate };
     }
 
+    async fetchBalances(petId) {
+        if (!petId || this.useMock) return;
+        try {
+            const res = await fetch(`${this.apiUrl}/api/solidarity/balance?petId=${petId}`);
+            const data = await res.json();
+            if (data.success) {
+                this.state.balances = data.balances;
+                this.render();
+            }
+        } catch (err) {
+            console.error('❌ Error fetching balances:', err);
+        }
+    }
+
     validateForm() {
         const d = this.state.formData;
         const f = this.state.files;
@@ -460,6 +475,13 @@ class SolidarityRequestForm {
         if (this.state.selection.requestType === 'allied_center_appointment') {
             return !!(d.incidentDate && d.preferredAppointmentTime && d.caseTitle);
         } else {
+            // Check balance limits
+            if (this.state.balances && this.state.selection.benefitType) {
+                const balance = this.state.balances[this.state.selection.benefitType];
+                const requested = parseFloat(d.requestedAmount || 0);
+                if (requested > balance.available || requested <= 0) return false;
+            }
+
             if (this.state.selection.requestType === 'reimbursement') {
                 if (!d.bankName || !d.bankClabe || !d.bankHolder) return false;
                 if (d.bankClabe.length !== 18) return false;
@@ -641,21 +663,28 @@ class SolidarityRequestForm {
         return benefits.map(b => {
             const isSelected = this.state.selection.benefitType === b.id;
             const isEmergency = b.id === 'medical_emergency';
+            
+            const balance = this.state.balances ? this.state.balances[b.id] : null;
+            const available = balance ? balance.available : b.amount;
+            const isExhausted = balance && balance.available <= 0;
+            const requested = parseFloat(this.state.formData.requestedAmount || 0);
+            const isExceeding = balance && requested > balance.available;
 
             return `
-                <div class="pata-benefit-card ${isSelected ? 'selected' : ''}" 
+                <div class="pata-benefit-card ${isSelected ? 'selected' : ''} ${isExhausted ? 'exhausted' : ''}" 
                      data-id="${b.id}" 
                      role="button" 
-                     tabindex="0"
-                     aria-pressed="${isSelected}">
+                     tabindex="${isExhausted ? '-1' : '0'}"
+                     aria-pressed="${isSelected}"
+                     style="${isExhausted ? 'opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8);' : ''}">
                     <div class="pata-benefit-icon"><img src="${b.icon}"></div>
                     <div class="pata-benefit-info">
                         <h3>${b.title}</h3>
-                        <p>${b.desc}</p>
+                        <p>${isExhausted ? '<span style="color:#FFD2A1; font-weight:800;">Límite anual alcanzado</span>' : b.desc}</p>
                     </div>
                     <div class="pata-benefit-amount">
-                        <span class="val">$${b.amount.toLocaleString()} MXN</span>
-                        <span class="sub">Por año</span>
+                        <span class="val">$${available.toLocaleString()} MXN</span>
+                        <span class="sub">${this.state.balances ? 'Disponible' : 'Por año'}</span>
                     </div>
 
                     ${(isSelected && isEmergency) ? `
@@ -674,7 +703,9 @@ class SolidarityRequestForm {
                                         <input type="number" id="pata-amount" placeholder="$0.00" value="${this.state.formData.requestedAmount}">
                                         <span class="suffix">MXN</span>
                                     </div>
-                                    <p class="pata-exp-sub">$3,000 disponibles</p>
+                                    <p class="pata-exp-sub" style="${isExceeding ? 'color:#FE8F15; font-weight:800;' : ''}">
+                                        ${isExceeding ? `⚠️ Excede el disponible ($${available.toLocaleString()})` : `$${available.toLocaleString()} disponibles`}
+                                    </p>
                                 </div>
                             </div>
                             <div class="pata-exp-field" style="margin-top:30px">
@@ -857,9 +888,21 @@ class SolidarityRequestForm {
     }
 
     attachEventListeners() {
-        const handlePetSelection = (id) => { this.state.selection.petId = id; this.render(); };
+        const handlePetSelection = (id) => { 
+            this.state.selection.petId = id; 
+            this.state.balances = null; // Reset balances while loading
+            this.fetchBalances(id);
+            this.render(); 
+        };
         const handleTypeSelection = (type) => { this.state.selection.requestType = type; this.render(); };
-        const handleBenefitSelection = (id) => { this.state.selection.benefitType = id; this.render(); };
+        const handleBenefitSelection = (id) => { 
+            this.state.selection.benefitType = id; 
+            // Set default amounts for fixed benefits
+            if (id === 'annual_vaccination') this.state.formData.requestedAmount = '300';
+            else if (id === 'death') this.state.formData.requestedAmount = '2000';
+            else if (id === 'medical_emergency') this.state.formData.requestedAmount = '';
+            this.render(); 
+        };
 
         // Pet selection
         this.container.querySelectorAll('.pata-pet-card:not(.disabled)').forEach(card => {
@@ -879,6 +922,7 @@ class SolidarityRequestForm {
         this.container.querySelectorAll('.pata-benefit-card').forEach(card => {
             const select = (e) => {
                 if (e.target.closest('.pata-benefit-expansion')) return;
+                if (card.classList.contains('exhausted')) return;
                 handleBenefitSelection(card.dataset.id);
             };
             card.onclick = select;
