@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getPetCarenciaDate, isPetActive, getDaysUntilActive } from '@/utils/carencia.utils';
 
 // Headers CORS
 function corsHeaders() {
@@ -57,9 +58,11 @@ interface PetContext {
     age: string | null;
     status: string;
     waitingPeriod: {
-        start: string | null;
+        start?: string | null;
         end: string | null;
         isActive: boolean;
+        daysRemaining?: number;
+        label?: string;
     };
 }
 
@@ -219,6 +222,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 email,
                 phone,
                 membership_status,
+                ambassador_code,
                 created_at
             `);
 
@@ -334,9 +338,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             membershipStatus: user.membership_status
         };
 
+        const hasAmbassadorCode = !!(user?.ambassador_code);
         const petsContext: PetContext[] = (pets || []).map(pet => {
-            const waitingEnd = pet.waiting_period_end ? new Date(pet.waiting_period_end) : null;
-            const isWaitingActive = waitingEnd ? now < waitingEnd : false;
+            const carenciaEnd = getPetCarenciaDate(pet, hasAmbassadorCode);
+            const isActive = isPetActive(pet, hasAmbassadorCode);
+            const daysRemaining = getDaysUntilActive(pet, hasAmbassadorCode);
 
             // Construir edad legible si la columna 'age' está vacía
             let displayAge = pet.age;
@@ -354,9 +360,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 age: displayAge || 'No especificada',
                 status: pet.status,
                 waitingPeriod: {
-                    start: pet.waiting_period_start,
-                    end: pet.waiting_period_end,
-                    isActive: isWaitingActive
+                    isActive: isActive,
+                    end: carenciaEnd.toISOString(),
+                    daysRemaining: daysRemaining,
+                    label: isActive ? 'Activa' : `En carencia (${daysRemaining} días restantes)`
                 }
             };
         });

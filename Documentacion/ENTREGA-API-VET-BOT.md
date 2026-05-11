@@ -67,7 +67,9 @@ Retorna los datos personales, lista de mascotas (con estatus de carencia) e hist
       "status": "approved",
       "waitingPeriod": {
         "isActive": false,
-        "end": "2026-01-01T00:00:00Z"
+        "end": "2026-08-01T00:00:00Z",
+        "daysRemaining": 82,
+        "label": "En carencia (82 días restantes)"
       }
     }
   ],
@@ -106,6 +108,17 @@ Retorna los datos personales, lista de mascotas (con estatus de carencia) e hist
 | `approvedAmount` | Number | Monto aprobado (puede ser null si está pendiente o rechazado). |
 | `petName` | String | Nombre de la mascota asociada a la solicitud. |
 | `caseTitle` | String | Título descriptivo del caso (ej. "Cirugía de emergencia"). |
+
+### Detalle de Periodo de Carencia (waitingPeriod)
+
+Estos campos permiten al bot comunicar de forma precisa cuándo una mascota tendrá cobertura total. La lógica ya incluye beneficios por **Referido de Embajador (90 días)** si aplica.
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `isActive` | Boolean | `true` si la mascota ya tiene cobertura total. |
+| `end` | String | Fecha ISO de finalización (estimada o real). |
+| `daysRemaining` | Number | Días restantes de carencia. `0` si ya terminó. |
+| `label` | String | Texto listo para el usuario (ej. "Activa" o "En carencia (15 días)"). |
 
 ---
 

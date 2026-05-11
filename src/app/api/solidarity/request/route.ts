@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { SOLIDARITY_LIMITS } from '@/types/solidarity.types';
+import { getPetCarenciaDate, getDaysUntilActive, isPetActive } from '@/utils/carencia.utils';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
         // 2. Resolver Usuario (Memberstack ID -> Supabase UUID)
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, first_name, last_name')
+            .select('id, first_name, last_name, ambassador_code')
             .eq('memberstack_id', memberstackId)
             .single();
 
@@ -91,29 +92,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: `La mascota ${pet.name} aún no ha sido aprobada por el comité.` }, { status: 403, headers: corsHeaders });
         }
 
-        // Lógica robusta de carencia (espejo del frontend)
-        const getCarenciaDate = () => {
-            const start = new Date(pet.waiting_period_start || pet.created_at || new Date());
-            if (isNaN(start.getTime())) return new Date();
+        // Lógica robusta de carencia centralizada
+        const hasAmbassadorCode = !!(user.ambassador_code);
+        const isActive = isPetActive(pet, hasAmbassadorCode);
+        const waitingPeriodEnd = getPetCarenciaDate(pet, hasAmbassadorCode);
 
-            const isAdopted = String(pet.is_adopted) === 'true' || pet.is_adopted === true;
-            const isMixed = String(pet.is_mixed_breed) === 'true' || pet.is_mixed_breed === true;
-
-            let days = 180; // Default
-            if (isAdopted) days = 90;
-            else if (isMixed) days = 120;
-
-            const end = new Date(start);
-            end.setDate(end.getDate() + days);
-            return end;
-        };
-
-        const waitingPeriodEnd = getCarenciaDate();
-        const today = new Date();
-
-        if (waitingPeriodEnd > today) {
-            const diffTime = waitingPeriodEnd.getTime() - today.getTime();
-            const daysLeft = Math.ceil(Math.max(0, diffTime) / (1000 * 60 * 60 * 24));
+        if (!isActive) {
+            const daysLeft = getDaysUntilActive(pet, hasAmbassadorCode);
             return NextResponse.json({ 
                 error: `La mascota ${pet.name} aún está en período de carencia. Faltan ${daysLeft} días.` 
             }, { status: 403, headers: corsHeaders });

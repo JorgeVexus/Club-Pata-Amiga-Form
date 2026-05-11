@@ -43,14 +43,21 @@ export async function POST(
 
         console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
 
-        // 0. Obtener estado ANTERIOR de la mascota para detectar si viene de 'appealed'
+        // 0. Obtener estado ANTERIOR de la mascota y datos del USUARIO (para el código de embajador)
         const { data: previousPet } = await supabaseAdmin
             .from('pets')
             .select('status, name, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
             .eq('id', petId)
             .single();
 
+        const { data: owner } = await supabaseAdmin
+            .from('users')
+            .select('ambassador_code')
+            .eq('memberstack_id', memberId)
+            .single();
+
         const wasAppealed = previousPet?.status === 'appealed';
+        const hasAmbassadorCode = !!(owner?.ambassador_code);
 
         // 1. Actualizar estado de la mascota en Supabase
         const updateData: any = {
@@ -69,11 +76,15 @@ export async function POST(
                 const now = new Date();
                 updateData.waiting_period_start = now.toISOString();
 
-                // Calcular el total de días
+                // Calcular el total de días según las reglas de negocio
                 let totalDays = 180;
-                if (previousPet?.waiting_period_days) {
-                    totalDays = parseInt(previousPet.waiting_period_days);
+                
+                if (hasAmbassadorCode) {
+                    totalDays = 90; // Prioridad 1: Código de Embajador
+                } else if (previousPet?.waiting_period_days) {
+                    totalDays = parseInt(previousPet.waiting_period_days); // Prioridad 2: Valor explícito
                 } else if (previousPet?.is_adopted) {
+                    // Prioridad 3: Regla de adoptados
                     const isMixed = previousPet.is_mixed_breed || previousPet.is_mixed || false;
                     totalDays = isMixed ? 120 : 150;
                 }
@@ -81,6 +92,8 @@ export async function POST(
                 const endDate = new Date(now);
                 endDate.setDate(now.getDate() + totalDays);
                 updateData.waiting_period_end = endDate.toISOString();
+                
+                console.log(`📅 Carencia calculada para ${previousPet?.name}: ${totalDays} días (Embajador: ${hasAmbassadorCode})`);
             }
         }
 
