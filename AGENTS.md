@@ -12,10 +12,14 @@
    - ALWAYS update or create the daily changelog file in `changelogs/YYYY-MM-DD.md` immediately after every `git push`.
    - The changelog MUST include details of the changes made, including commit descriptions and functional impacts.
 
-10. **MANDATORY BUILD VERIFICATION (QA)**:
-    - BEFORE asking for authorization to commit or push, ALWAYS run `npm run build` or `npm run type-check`.
-    - Identify and resolve any compilation or linting errors locally.
-    - This acts as a mandatory QA gate to ensure deployment stability.
+10. **MANDATORY SYSTEMATIC QA & BUILD VERIFICATION (GSD Debugger Approach)**:
+    - BEFORE asking for authorization to commit or push, ALWAYS follow the systematic approach of the **GSD Debugger** to verify that the changes are robust and free of side effects.
+    - **Step-by-Step Verification**:
+        1. **Systematic Audit**: Verify that the changes do not affect other dependencies or core logic (regression check).
+        2. **Bug Hunting**: Actively search for potential bugs or inconsistencies introduced by the new code. If a bug is found, fix it immediately.
+        3. **Build & Type Check**: ALWAYS run `npm run build` AND `npm run type-check`.
+        4. **Linting**: Run `npm run lint` to ensure code quality and style consistency.
+    - This acts as a mandatory safety gate to ensure total deployment stability.
 
 11. **TELEGRAM NOTIFICATIONS**:
     - After completing ANY task (including before commit/push authorization to notify the user that work is ready for review), ALWAYS run this command in the terminal:
