@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
         // 4. Validar Período de Carencia de la Mascota
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('waiting_period_end, waiting_period_start, created_at, is_adopted, is_mixed_breed, name, status')
+            .select('waiting_period_end, waiting_period_start, created_at, is_adopted, is_mixed_breed, is_mixed, name, status')
             .eq('id', petId)
             .single();
         

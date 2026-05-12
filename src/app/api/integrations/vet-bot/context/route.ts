@@ -275,7 +275,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 age_unit,
                 status,
                 waiting_period_start,
-                waiting_period_end
+                waiting_period_end,
+                is_adopted,
+                is_mixed_breed,
+                is_mixed
             `)
             .eq('owner_id', user.id)
             .order('created_at', { ascending: true });
