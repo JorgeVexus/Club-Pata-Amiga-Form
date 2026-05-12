@@ -13,7 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getPetCarenciaDate, isPetActive, getDaysUntilActive } from '@/utils/carencia.utils';
+import { getPetCarenciaDate, isPetActive, getDaysUntilActive, getDaysElapsed } from '@/utils/carencia.utils';
 
 // Headers CORS
 function corsHeaders() {
@@ -62,6 +62,7 @@ interface PetContext {
         end: string | null;
         isActive: boolean;
         daysRemaining?: number;
+        daysElapsed?: number;
         label?: string;
     };
 }
@@ -276,6 +277,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 status,
                 waiting_period_start,
                 waiting_period_end,
+                created_at,
                 is_adopted,
                 is_mixed_breed
             `)
@@ -352,6 +354,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             const carenciaEnd = getPetCarenciaDate(pet, hasAmbassadorCode);
             const isActive = isPetActive(pet, hasAmbassadorCode);
             const daysRemaining = getDaysUntilActive(pet, hasAmbassadorCode);
+            const daysElapsed = getDaysElapsed(pet, hasAmbassadorCode);
 
             // Construir edad legible si la columna 'age' está vacía
             let displayAge = pet.age;
@@ -370,9 +373,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 status: pet.status,
                 waitingPeriod: {
                     isActive: isActive,
+                    start: pet.waiting_period_start || pet.created_at,
                     end: carenciaEnd.toISOString(),
                     daysRemaining: daysRemaining,
-                    label: isActive ? 'Activa' : `En carencia (${daysRemaining} días restantes)`
+                    daysElapsed: daysElapsed,
+                    label: isActive ? 'Activa' : `En carencia (${daysElapsed} días transcurridos, ${daysRemaining} días restantes)`
                 }
             };
         });

@@ -74,3 +74,15 @@ export function getDaysUntilActive(pet: CarenciaInput, hasAmbassadorCode: boolea
     const diffTime = carenciaEnd.getTime() - now.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
+/**
+ * Calcula cuántos días han transcurrido desde el inicio de la carencia.
+ */
+export function getDaysElapsed(pet: CarenciaInput, hasAmbassadorCode: boolean = false): number {
+    const startDate = pet.waiting_period_start 
+        ? new Date(pet.waiting_period_start) 
+        : (pet.created_at ? new Date(pet.created_at) : new Date());
+    
+    const now = new Date();
+    const diffTime = now.getTime() - startDate.getTime();
+    return Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
+}
