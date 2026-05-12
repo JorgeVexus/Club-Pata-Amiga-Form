@@ -85,7 +85,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
     // States for Editing
     const [isEditingEmail, setIsEditingEmail] = useState(false);
-    const [editingEmailValue, setEditingEmailValue] = useState(member.auth?.email || member.email || '');
+    const [editingEmailValue, setEditingEmailValue] = useState(member?.auth?.email || member?.email || '');
     const [isSavingEmail, setIsSavingEmail] = useState(false);
 
     const [editingPetId, setEditingPetId] = useState<string | null>(null);
@@ -98,6 +98,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             loadSupabaseUserData();
             loadBillingDetails();
             loadStripeDetails();
+            // Reset editing states
+            setIsEditingEmail(false);
+            setEditingEmailValue(member?.auth?.email || member?.email || '');
+            setEditingPetId(null);
         }
     }, [isOpen, member]);
 
@@ -549,10 +553,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         </div>
                                     ) : (
                                         <div className={styles.valueRow}>
-                                            <span className={styles.value}>{member.auth?.email || member.email || supabaseUser?.email || '-'}</span>
+                                            <span className={styles.value}>{member?.auth?.email || member?.email || supabaseUser?.email || '-'}</span>
                                             <button 
                                                 onClick={() => {
-                                                    setEditingEmailValue(member.auth?.email || member.email || '');
+                                                    setEditingEmailValue(member?.auth?.email || member?.email || '');
                                                     setIsEditingEmail(true);
                                                 }} 
                                                 className={styles.editLink}

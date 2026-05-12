@@ -217,7 +217,7 @@ export default function RequestsTable({
 
             // Populate memberPetCounts
             allowedMembers.forEach((m: any) => {
-                if (m.auth?.email) {
+                if (m?.auth?.email) {
                     const email = m.auth.email.toLowerCase();
                     let count = 0;
                     for (let i = 1; i <= 3; i++) {
@@ -255,7 +255,7 @@ export default function RequestsTable({
 
             // 2. Process Members
             allowedMembers.forEach((member: any) => {
-                const email = member.auth?.email?.toLowerCase();
+                const email = member?.auth?.email?.toLowerCase();
                 const name = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
                 const isNameless = !name;
                 const hasActivePlan = member.planConnections?.some((p: any) =>
@@ -285,7 +285,7 @@ export default function RequestsTable({
                 combinedRequests.push({
                     id: member.id,
                     name: name || 'Sin nombre',
-                    email: member.auth?.email || 'Sin email',
+                    email: member?.auth?.email || 'Sin email',
                     submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
                     status: member.customFields?.['approval-status'] || 'pending',
                     petCount: petCount,
