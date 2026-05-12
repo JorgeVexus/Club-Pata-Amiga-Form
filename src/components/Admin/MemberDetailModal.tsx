@@ -83,6 +83,15 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [stripeDetails, setStripeDetails] = useState<any>(null);
     const [loadingStripe, setLoadingStripe] = useState(false);
 
+    // States for Editing
+    const [isEditingEmail, setIsEditingEmail] = useState(false);
+    const [editingEmailValue, setEditingEmailValue] = useState(member.auth?.email || member.email || '');
+    const [isSavingEmail, setIsSavingEmail] = useState(false);
+
+    const [editingPetId, setEditingPetId] = useState<string | null>(null);
+    const [editingPetNameValue, setEditingPetNameValue] = useState('');
+    const [isSavingPetName, setIsSavingPetName] = useState(false);
+
     useEffect(() => {
         if (isOpen && member) {
             loadPets();
@@ -123,15 +132,79 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     async function loadStripeDetails() {
         setLoadingStripe(true);
         try {
-            const res = await adminFetch(`/api/admin/members/${member.id}/stripe-details`);
-            const data = await res.json();
-            if (data.success) {
-                setStripeDetails(data.stripeData);
+            const response = await adminFetch(`/api/admin/members/${member.id}/stripe-details`);
+            if (response.ok) {
+                const data = await response.json();
+                setStripeDetails(data);
             }
         } catch (error) {
             console.error('Error loading stripe details:', error);
         } finally {
             setLoadingStripe(false);
+        }
+    }
+
+    async function handleSaveEmail() {
+        if (!editingEmailValue || !editingEmailValue.includes('@')) {
+            alert('Por favor ingresa un email válido.');
+            return;
+        }
+
+        setIsSavingEmail(true);
+        try {
+            const response = await adminFetch(`/api/admin/members/${member.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: editingEmailValue })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert('✅ Email actualizado correctamente. Se ha enviado un correo de verificación al nuevo email.');
+                setIsEditingEmail(false);
+                if (onDataChange) onDataChange();
+            } else {
+                alert('❌ Error: ' + (data.error || 'Ocurrió un error al actualizar el email.'));
+            }
+        } catch (error) {
+            console.error('Error saving email:', error);
+            alert('Error de conexión');
+        } finally {
+            setIsSavingEmail(false);
+        }
+    }
+
+    async function handleSavePetName(petId: string, msIndex: number) {
+        if (!editingPetNameValue.trim()) {
+            alert('El nombre no puede estar vacío.');
+            return;
+        }
+
+        setIsSavingPetName(true);
+        try {
+            const response = await adminFetch(`/api/admin/members/${member.id}/pets/${petId}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    name: editingPetNameValue,
+                    msIndex: msIndex
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert('✅ Nombre de mascota actualizado correctamente.');
+                setEditingPetId(null);
+                loadPets(); // Recargar mascotas locales
+                if (onDataChange) onDataChange();
+            } else {
+                alert('❌ Error: ' + (data.error || 'Ocurrió un error al actualizar el nombre.'));
+            }
+        } catch (error) {
+            console.error('Error saving pet name:', error);
+            alert('Error de conexión');
+        } finally {
+            setIsSavingPetName(false);
         }
     }
 
@@ -459,7 +532,36 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Correo Electrónico</span>
-                                <span className={styles.value}>{member.auth?.email || member.email || supabaseUser?.email || '-'}</span>
+                                <div className={styles.editableContainer}>
+                                    {isEditingEmail ? (
+                                        <div className={styles.editRow}>
+                                            <input 
+                                                type="email" 
+                                                value={editingEmailValue} 
+                                                onChange={(e) => setEditingEmailValue(e.target.value)}
+                                                className={styles.editInput}
+                                                autoFocus
+                                            />
+                                            <button onClick={handleSaveEmail} disabled={isSavingEmail} className={styles.saveButton}>
+                                                {isSavingEmail ? '...' : '✓'}
+                                            </button>
+                                            <button onClick={() => setIsEditingEmail(false)} className={styles.cancelButton}>✕</button>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.valueRow}>
+                                            <span className={styles.value}>{member.auth?.email || member.email || supabaseUser?.email || '-'}</span>
+                                            <button 
+                                                onClick={() => {
+                                                    setEditingEmailValue(member.auth?.email || member.email || '');
+                                                    setIsEditingEmail(true);
+                                                }} 
+                                                className={styles.editLink}
+                                            >
+                                                Editar
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Teléfono</span>
@@ -781,7 +883,35 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     )}
                                                 </div>
                                                 <div className={styles.petInfo}>
-                                                    <h4>{pet.name}</h4>
+                                                    {editingPetId === pet.id ? (
+                                                        <div className={styles.editRow}>
+                                                            <input 
+                                                                type="text" 
+                                                                value={editingPetNameValue} 
+                                                                onChange={(e) => setEditingPetNameValue(e.target.value)}
+                                                                className={styles.editInput}
+                                                                autoFocus
+                                                            />
+                                                            <button onClick={() => handleSavePetName(pet.id, pIdx)} disabled={isSavingPetName} className={styles.saveButton}>
+                                                                {isSavingPetName ? '...' : '✓'}
+                                                            </button>
+                                                            <button onClick={() => setEditingPetId(null)} className={styles.cancelButton}>✕</button>
+                                                        </div>
+                                                    ) : (
+                                                        <div className={styles.valueRow}>
+                                                            <h4 style={{ margin: 0 }}>{pet.name}</h4>
+                                                            <button 
+                                                                onClick={() => {
+                                                                    setEditingPetId(pet.id);
+                                                                    setEditingPetNameValue(pet.name);
+                                                                }} 
+                                                                className={styles.editLink}
+                                                                style={{ fontSize: '0.7rem' }}
+                                                            >
+                                                                Editar
+                                                            </button>
+                                                        </div>
+                                                    )}
                                                     <div className={styles.petBreed}>
                                                         {pet.is_mixed_breed 
                                                             ? (pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo') 

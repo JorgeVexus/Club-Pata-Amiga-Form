@@ -863,3 +863,57 @@ export async function getMemberStripeDetails(memberstackId: string) {
         return { success: false, error: error.message };
     }
 }
+
+/**
+ * Actualiza el correo electrónico de un usuario en Supabase
+ */
+export async function updateUserEmailInSupabase(memberstackId: string, newEmail: string) {
+    console.log('🔄 [Server Action] Actualizando email en Supabase:', { memberstackId, newEmail });
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({ email: newEmail })
+            .eq('memberstack_id', memberstackId);
+
+        if (error) {
+            console.error('❌ [Server Action] Error actualizando email:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ [Server Action] Email actualizado en Supabase');
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado:', error);
+        return { success: false, error: error.message };
+    }
+}
+
+/**
+ * Actualiza el nombre de una mascota en Supabase
+ */
+export async function updatePetNameInSupabase(petId: string, newName: string) {
+    console.log('🔄 [Server Action] Actualizando nombre de mascota en Supabase:', { petId, newName });
+    const supabase = getServiceRoleClient();
+    if (!supabase) return { success: false, error: 'Configuración fallida' };
+
+    try {
+        const { error } = await supabase
+            .from('pets')
+            .update({ name: newName })
+            .eq('id', petId);
+
+        if (error) {
+            console.error('❌ [Server Action] Error actualizando nombre de mascota:', error);
+            return { success: false, error: error.message };
+        }
+
+        console.log('✅ [Server Action] Nombre de mascota actualizado en Supabase');
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Server Action] Error inesperado:', error);
+        return { success: false, error: error.message };
+    }
+}

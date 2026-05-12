@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMemberDetails } from '@/services/memberstack-admin.service';
-import { getUserDataByMemberstackId } from '@/app/actions/user.actions';
+import { getMemberDetails, updateMemberData, triggerVerificationEmail } from '@/services/memberstack-admin.service';
+import { getUserDataByMemberstackId, updateUserEmailInSupabase } from '@/app/actions/user.actions';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 export async function GET(
     request: NextRequest,
@@ -65,6 +66,60 @@ export async function GET(
 
     } catch (error: any) {
         console.error('Error obteniendo detalles de miembro:', error);
+        return NextResponse.json(
+            { error: error.message },
+            { status: 500 }
+        );
+    }
+}
+
+export async function PATCH(
+    request: NextRequest,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
+        const { id: memberId } = await params;
+        const body = await request.json();
+        const { email } = body;
+
+        if (!email) {
+            return NextResponse.json({ error: 'Email requerido' }, { status: 400 });
+        }
+
+        console.log(`🔄 Actualizando email de miembro ${memberId} a: ${email}`);
+
+        // 1. Actualizar en Memberstack
+        const msUpdateResult = await updateMemberData(memberId, {
+            auth: { email }
+        });
+
+        if (!msUpdateResult.success) {
+            return NextResponse.json(
+                { error: `Error en Memberstack: ${msUpdateResult.error}` },
+                { status: 500 }
+            );
+        }
+
+        // 2. Disparar email de verificación (opcional pero recomendado tras cambio)
+        await triggerVerificationEmail(memberId);
+
+        // 3. Actualizar en Supabase
+        const supabaseResult = await updateUserEmailInSupabase(memberId, email);
+        
+        if (!supabaseResult.success) {
+            console.error('⚠️ Desincronización: Email actualizado en MS pero falló en Supabase');
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Email actualizado y correo de verificación enviado'
+        });
+
+    } catch (error: any) {
+        console.error('Error actualizando miembro:', error);
         return NextResponse.json(
             { error: error.message },
             { status: 500 }

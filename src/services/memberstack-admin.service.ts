@@ -253,6 +253,72 @@ class MemberstackAdminClient {
     }
 
     /**
+     * Actualiza datos generales de un miembro (auth, customFields, etc)
+     */
+    async updateMember(
+        memberId: string,
+        data: any
+    ): Promise<AdminApiResponse<MemberstackMember>> {
+        try {
+            const url = `${this.baseUrl}/members/${memberId}`;
+
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: this.getHeaders(),
+                body: JSON.stringify(data),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            const result = await response.json();
+
+            // 🆕 Invalidar caché después de actualizar
+            this.invalidateCache();
+
+            return {
+                success: true,
+                data: result.data,
+            };
+        } catch (error: any) {
+            console.error('Error actualizando datos de miembro:', error);
+            return {
+                success: false,
+                error: error.message,
+            };
+        }
+    }
+
+    /**
+     * Dispara un correo de verificación a la dirección actual del miembro
+     */
+    async sendVerificationEmail(memberId: string): Promise<AdminApiResponse> {
+        try {
+            const url = `${this.baseUrl}/members/${memberId}/send-verification-email`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: this.getHeaders(),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP ${response.status}: ${errorText}`);
+            }
+
+            return { success: true };
+        } catch (error: any) {
+            console.error('Error enviando email de verificación:', error);
+            return {
+                success: false,
+                error: error.message,
+            };
+        }
+    }
+
+    /**
      * Aprueba un miembro
      */
     async approveMember(memberId: string, adminId: string): Promise<AdminApiResponse> {
@@ -382,4 +448,11 @@ export async function submitAppeal(memberId: string, appealMessage: string) {
 
 export async function deleteMemberAccount(memberId: string) {
     return await memberstackAdmin.deleteMember(memberId);
+}
+export async function updateMemberData(memberId: string, data: any) {
+    return await memberstackAdmin.updateMember(memberId, data);
+}
+
+export async function triggerVerificationEmail(memberId: string) {
+    return await memberstackAdmin.sendVerificationEmail(memberId);
 }
