@@ -1165,4 +1165,29 @@
 .pdfLink:hover {
     background: #E9D5FF;
     transform: scale(1.05);
-}
+}
+
+.editLink {
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: rgba(0, 0, 0, 0.8);
+    font-family: var(--font-body);
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-left: 8px;
+    transition: opacity 0.2s;
+    line-height: 1;
+    display: inline-block;
+}
+
+.editLink:hover {
+    opacity: 0.7;
+}
+
+.valueRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}

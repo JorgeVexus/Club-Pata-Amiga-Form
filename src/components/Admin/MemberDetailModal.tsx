@@ -910,7 +910,6 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                                     setEditingPetNameValue(pet.name);
                                                                 }} 
                                                                 className={styles.editLink}
-                                                                style={{ fontSize: '0.7rem' }}
                                                             >
                                                                 Editar
                                                             </button>
