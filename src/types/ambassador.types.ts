@@ -11,6 +11,15 @@ export type AmbassadorStatus = 'pending' | 'approved' | 'rejected' | 'suspended'
 export type Gender = 'male' | 'female' | 'not_specified';
 export type PaymentMethod = 'card' | 'clabe' | 'pending';
 
+export interface AmbassadorTermsAcceptance {
+    termsAndConditions: boolean;
+    privacyPolicy: boolean;
+    marketingConsent: boolean;
+    clickwrap: boolean;
+    timestamp?: string;
+    source?: string;
+}
+
 export interface Ambassador {
     id: string;
     ambassador_code: string; // Ej: "EMB-2024-001"
@@ -75,6 +84,9 @@ export interface Ambassador {
     
     // Vínculo con Memberstack (opcional)
     linked_memberstack_id?: string;
+    terms_accepted_at?: string;
+    terms_version?: string;
+    terms_acceptance?: AmbassadorTermsAcceptance;
     
     // Timestamps
     created_at: string;
@@ -264,6 +276,9 @@ export interface CreateAmbassadorRequest {
     
     // Opcional: si ya es miembro
     linked_memberstack_id?: string;
+    terms_accepted_at?: string;
+    terms_version?: string;
+    terms_acceptance?: AmbassadorTermsAcceptance;
 }
 
 // ============================================

@@ -214,6 +214,11 @@ Variables defined in `src/app/globals.css`:
 - **MANDATORY**: After completing ANY task (including before commit/push authorization to notify the user that work is ready for review), ALWAYS run this command in the terminal:
   `curl.exe -s -X POST "https://api.telegram.org/bot8770328522:AAEPbCO0BW44QYGKnjWYe9obSnI1pWC8rRY/sendMessage" -d chat_id="5626898593" -d text="✅ Agent done: [1-line summary of what was completed]"`
 
+### MANDATORY PLANNING DOCUMENTATION
+- For EVERY project/milestone, ALWAYS create a `Documentacion/planeacion/` folder.
+- ALWAYS save implementation plans in this folder with a descriptive filename (e.g., `Documentacion/planeacion/2026-05-12-restructuracion-embajadores.md`).
+- This rule is GLOBAL and MUST be followed for every plan created.
+
 ### Common API Routes
 
 **Admin:**

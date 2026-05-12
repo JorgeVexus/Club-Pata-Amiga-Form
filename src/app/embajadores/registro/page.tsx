@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AmbassadorForm from '@/components/AmbassadorForm/AmbassadorForm';
 import BrandLogo from '@/components/UI/BrandLogo';
@@ -28,27 +28,18 @@ function LoadingCard() {
 }
 
 function AmbassadorStepper({ currentStep = 1 }: { currentStep?: number }) {
-  const steps = [
-    { id: 1, label: 'Completa tu perfil', icon: '👤' },
-    { id: 2, label: 'informacion adicional', icon: '📋' },
-    { id: 3, label: 'datos bancario y rfc', icon: '💰' },
-  ];
+  const isSuccess = currentStep === 4;
 
   return (
     <div className={styles.stepper}>
-      {steps.map((step, index) => (
-        <div key={step.id} className={styles.stepperItem}>
-          <div className={`${styles.stepIcon} ${currentStep === step.id ? styles.stepIconActive : currentStep > step.id ? styles.stepIconCompleted : styles.stepIconInactive}`}>
-            {currentStep > step.id ? '✓' : step.icon}
-          </div>
-          <span className={`${styles.stepLabel} ${currentStep === step.id ? styles.stepLabelActive : currentStep > step.id ? styles.stepLabelCompleted : styles.stepLabelInactive}`}>
-            {step.label}
-          </span>
-          {index < steps.length - 1 && (
-            <div className={`${styles.stepArrow} ${currentStep > step.id ? styles.stepArrowCompleted : ''}`}>→</div>
-          )}
+      <div className={styles.stepperItem}>
+        <div className={`${styles.stepIcon} ${isSuccess ? styles.stepIconCompleted : styles.stepIconActive}`}>
+          {isSuccess ? 'OK' : '1'}
         </div>
-      ))}
+        <span className={`${styles.stepLabel} ${isSuccess ? styles.stepLabelCompleted : styles.stepLabelActive}`}>
+          {isSuccess ? 'Solicitud enviada' : 'Solicitud de embajador'}
+        </span>
+      </div>
     </div>
   );
 }
@@ -78,7 +69,7 @@ function AmbassadorRegistrationContent() {
               firstName: data.member.customFields?.['first-name'] || '',
               paternalLastName: data.member.customFields?.['paternal-last-name'] || '',
               maternalLastName: data.member.customFields?.['maternal-last-name'] || '',
-              phone: data.member.customFields?.['phone'] || '',
+              phone: data.member.customFields?.phone || '',
               customFields: data.member.customFields
             });
             setIsLoggedIn(true);
@@ -101,13 +92,13 @@ function AmbassadorRegistrationContent() {
               firstName: cf['first-name'] || '',
               paternalLastName: cf['paternal-last-name'] || '',
               maternalLastName: cf['maternal-last-name'] || '',
-              phone: cf['phone'] || '',
+              phone: cf.phone || '',
               customFields: cf
             });
             setIsLoggedIn(true);
           }
         } catch (err) {
-          console.log('No hay sesion de Memberstack activa');
+          console.log('No hay sesion de Memberstack activa', err);
         }
       }
 
@@ -122,24 +113,10 @@ function AmbassadorRegistrationContent() {
     return <LoadingCard />;
   }
 
-  const initialStep = (isLoggedIn && memberData) ? 2 : 1;
-  
-  // Usar el paso actual del estado si ya fue inicializado, sino usar initialStep
-  const displayStep = currentStep || initialStep;
-
   return (
     <div className={styles.pageBackground}>
       <BrandLogo />
       <div className={styles.whiteCard}>
-        {/* Imagen del gato - Step 1 */}
-        <img
-          id="embajador-img-gato"
-          src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771514548/embajadores_pantalla_1_lkuaio.png"
-          alt=""
-          className={styles.decorativeImage}
-          aria-hidden
-        />
-        {/* Imagen de la niña - Step 2 (inicialmente oculta) */}
         <img
           id="embajador-img-nina"
           src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771518105/embajadores_step_2_gol1df.png"
@@ -148,7 +125,6 @@ function AmbassadorRegistrationContent() {
           style={{ display: 'none' }}
           aria-hidden
         />
-        {/* Imagen del hombre con tarjeta - Step 3 (inicialmente oculta) */}
         <img
           id="embajador-img-hombre"
           src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771530730/embajadores_step_3_oy2cbb.png"
@@ -157,7 +133,6 @@ function AmbassadorRegistrationContent() {
           style={{ display: 'none' }}
           aria-hidden
         />
-        {/* Imagen de éxito - Step 4 (inicialmente oculta) */}
         <img
           id="embajador-img-exito"
           src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771533698/Centros_1_oortwx.png"
@@ -166,11 +141,12 @@ function AmbassadorRegistrationContent() {
           style={{ display: 'none' }}
           aria-hidden
         />
+
         <h1 className={styles.mainTitle}>se embajador pata amiga</h1>
 
         {isLoggedIn && memberData && (
           <div className={styles.userGreeting}>
-            <span>Hola, <strong>{memberData.firstName || memberData.email}</strong> 👋</span>
+            <span>Hola, <strong>{memberData.firstName || memberData.email}</strong></span>
             <button
               onClick={async () => {
                 if (window.$memberstackDom) {
@@ -185,7 +161,7 @@ function AmbassadorRegistrationContent() {
           </div>
         )}
 
-        <AmbassadorStepper currentStep={displayStep} />
+        <AmbassadorStepper currentStep={currentStep} />
 
         <div className={styles.contentLayout}>
           <div className={styles.formColumn}>
@@ -199,7 +175,7 @@ function AmbassadorRegistrationContent() {
                 phone: memberData.phone,
                 customFields: memberData.customFields
               } : undefined}
-              startAtStep={initialStep}
+              startAtStep={1}
               hideHeader={true}
               onStepChange={setCurrentStep}
             />

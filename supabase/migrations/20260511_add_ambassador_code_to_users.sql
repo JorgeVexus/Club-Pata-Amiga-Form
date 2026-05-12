@@ -17,3 +17,4 @@ ALTER TABLE public.pets
 ADD COLUMN IF NOT EXISTS is_mixed BOOLEAN DEFAULT FALSE;
 
 COMMENT ON COLUMN public.pets.is_mixed IS 'Indica si la mascota es mestiza (campo alternativo para compatibilidad)';
+

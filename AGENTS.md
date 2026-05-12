@@ -25,6 +25,11 @@
     - After completing ANY task (including before commit/push authorization to notify the user that work is ready for review), ALWAYS run this command in the terminal:
       `curl.exe -s -X POST "https://api.telegram.org/bot8770328522:AAEPbCO0BW44QYGKnjWYe9obSnI1pWC8rRY/sendMessage" -d chat_id="5626898593" -d text="✅ Agent done: [1-line summary of what was completed]"`
 
+12. **MANDATORY PLANNING DOCUMENTATION**:
+    - For EVERY project/milestone, ALWAYS create a `Documentacion/planeacion/` folder.
+    - ALWAYS save implementation plans in this folder with a descriptive filename (e.g., `Documentacion/planeacion/2026-05-12-restructuracion-embajadores.md`).
+    - This rule is GLOBAL and MUST be followed for every plan created.
+
 ## Visión General del Proyecto
 
 **Pet Membership Form** es un sistema completo de registro de membresías para mascotas que integra múltiples tecnologías para gestionar usuarios, mascotas, pagos y un dashboard administrativo.

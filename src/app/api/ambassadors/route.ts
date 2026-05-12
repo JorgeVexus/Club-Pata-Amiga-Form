@@ -250,7 +250,10 @@ export async function POST(request: NextRequest) {
                 referral_code_status: 'pending',
                 status: 'pending',
                 commission_percentage: commissionPercentage,
-                linked_memberstack_id: sanitize(body.linked_memberstack_id)
+                linked_memberstack_id: sanitize(body.linked_memberstack_id),
+                terms_accepted_at: sanitize(body.terms_accepted_at),
+                terms_version: sanitize(body.terms_version) || '1.0',
+                terms_acceptance: body.terms_acceptance || null
             })
             .select()
             .single();

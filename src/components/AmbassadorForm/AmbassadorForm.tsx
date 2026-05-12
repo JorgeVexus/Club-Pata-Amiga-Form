@@ -1,60 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import {
-    AmbassadorStep1Data,
-    AmbassadorStep2Data,
-    AmbassadorStep3Data,
-    AmbassadorFormData,
-    Gender
-} from '@/types/ambassador.types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Gender } from '@/types/ambassador.types';
 import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
-import Step1PersonalInfo from './Step1PersonalInfo';
-import Step2AdditionalInfo from './Step2AdditionalInfo';
-import Step3BankingInfo from './Step3BankingInfo';
-import Step4Success from './Step4Success';
 import { trackLead, trackCompleteRegistration, trackSubmitApplication } from '@/components/Analytics/MetaPixel';
-import { validateRFC, formatRFC } from '@/utils/rfc-validator';
+import SimplifiedStep, { SimplifiedAmbassadorData, TermsAcceptance } from './SimplifiedStep';
+import Step4Success from './Step4Success';
 import styles from './AmbassadorForm.module.css';
-
-// Initial values
-const initialStep1: AmbassadorStep1Data = {
-    first_name: '',
-    paternal_surname: '',
-    maternal_surname: '',
-    gender: '' as Gender | '',
-    birth_date: '',
-    curp: '',
-    ine_front: null,
-    ine_back: null,
-    postal_code: '',
-    state: '',
-    city: '',
-    neighborhood: '',
-    address: '',
-    email: '',
-    phone: '',
-    password: '',
-    confirm_password: ''
-};
-
-const initialStep2: AmbassadorStep2Data = {
-    instagram: '',
-    facebook: '',
-    tiktok: '',
-    other_social: '',
-    motivation: ''
-};
-
-const initialStep3: AmbassadorStep3Data = {
-    rfc: '',
-    payment_method: '',
-    bank_name: '',
-    card_number: '',
-    clabe: '',
-    accept_terms: false,
-    accept_communications: false
-};
 
 interface PreloadedMemberData {
     firstName?: string;
@@ -74,792 +26,408 @@ interface Props {
     onStepChange?: (step: number) => void;
 }
 
-export default function AmbassadorForm({ onSuccess, linkedMemberstackId, preloadedData, startAtStep, hideHeader, onStepChange }: Props) {
-    // Si viene preloadedData o startAtStep, empezar en ese paso
-    const [currentStep, setCurrentStep] = useState(startAtStep || (preloadedData ? 2 : 1));
-    const [isExistingMember, setIsExistingMember] = useState(!!preloadedData);
+const initialFormData: SimplifiedAmbassadorData = {
+    full_name: '',
+    gender: '',
+    curp: '',
+    email: '',
+    phone: '',
+    facebook: '',
+    instagram: '',
+    tiktok: '',
+    motivation: ''
+};
 
-    // Inicializar step1Data con los datos precargados si existen
-    const getInitialStep1 = (): AmbassadorStep1Data => {
-        if (!preloadedData) return initialStep1;
+function buildFullName(preloadedData?: PreloadedMemberData): string {
+    if (!preloadedData) return '';
 
-        const cf = preloadedData.customFields || {};
+    return [
+        preloadedData.firstName,
+        preloadedData.paternalLastName,
+        preloadedData.maternalLastName
+    ]
+        .filter(Boolean)
+        .join(' ')
+        .trim();
+}
+
+function splitFullName(fullName: string) {
+    const parts = fullName.trim().replace(/\s+/g, ' ').split(' ');
+
+    if (parts.length === 2) {
         return {
-            ...initialStep1,
-            first_name: preloadedData.firstName || cf['first-name'] || '',
-            paternal_surname: preloadedData.paternalLastName || cf['paternal-last-name'] || '',
-            maternal_surname: preloadedData.maternalLastName || cf['maternal-last-name'] || '',
-            email: preloadedData.email || '',
-            phone: preloadedData.phone || cf['phone'] || '',
-            gender: (cf['gender'] as Gender) || '',
-            birth_date: cf['birth-date'] || '',
-            curp: cf['curp'] || '',
-            postal_code: cf['postal-code'] || '',
-            state: cf['state'] || '',
-            city: cf['city'] || '',
-            neighborhood: cf['neighborhood'] || cf['colony'] || '',
-            address: cf['address'] || '',
-            password: 'MEMBER_LINKED',
-            confirm_password: 'MEMBER_LINKED'
+            first_name: parts[0],
+            paternal_surname: parts[1],
+            maternal_surname: ''
         };
-    };
+    }
 
-    const [step1Data, setStep1Data] = useState<AmbassadorStep1Data>(getInitialStep1);
-    const [step2Data, setStep2Data] = useState<AmbassadorStep2Data>(initialStep2);
-    const [step3Data, setStep3Data] = useState<AmbassadorStep3Data>(initialStep3);
+    return {
+        first_name: parts.slice(0, -2).join(' '),
+        paternal_surname: parts[parts.length - 2],
+        maternal_surname: parts[parts.length - 1]
+    };
+}
+
+function normalizePhone(value: string): string {
+    return value.replace(/\D/g, '').slice(0, 10);
+}
+
+function normalizeCurp(value: string): string {
+    return value.replace(/\s/g, '').toUpperCase().slice(0, 18);
+}
+
+function createTemporaryPassword(): string {
+    const randomBytes = new Uint32Array(2);
+    if (typeof window !== 'undefined' && window.crypto) {
+        window.crypto.getRandomValues(randomBytes);
+    } else {
+        randomBytes[0] = Date.now();
+        randomBytes[1] = Math.floor(Math.random() * 1000000);
+    }
+
+    return `AMB-${randomBytes[0].toString(36)}-${randomBytes[1].toString(36)}`;
+}
+
+function scrollToFeedback() {
+    requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+export default function AmbassadorForm({
+    onSuccess,
+    linkedMemberstackId,
+    preloadedData,
+    hideHeader,
+    onStepChange
+}: Props) {
+    const [formData, setFormData] = useState<SimplifiedAmbassadorData>(() => ({
+        ...initialFormData,
+        full_name: buildFullName(preloadedData),
+        gender: (preloadedData?.customFields?.gender as Gender) || '',
+        curp: normalizeCurp(preloadedData?.customFields?.curp || ''),
+        email: preloadedData?.email || '',
+        phone: normalizePhone(preloadedData?.phone || preloadedData?.customFields?.phone || '')
+    }));
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [isLoadingMember, setIsLoadingMember] = useState(!preloadedData);
     const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
+    const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
 
-    // Controlar visibilidad de las imágenes según el paso actual
+    const hasPreloadedMember = useMemo(() => Boolean(preloadedData || linkedMemberstackId), [linkedMemberstackId, preloadedData]);
+
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const catImage = document.getElementById('embajador-img-gato') as HTMLImageElement;
-            const girlImage = document.getElementById('embajador-img-nina') as HTMLImageElement;
-            const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement;
-            const exitoImage = document.getElementById('embajador-img-exito') as HTMLImageElement;
+        onStepChange?.(showSuccess ? 4 : 1);
+    }, [onStepChange, showSuccess]);
 
-            // Ocultar todas primero
-            if (catImage) catImage.style.display = 'none';
-            if (girlImage) girlImage.style.display = 'none';
-            if (manImage) manImage.style.display = 'none';
-            if (exitoImage) exitoImage.style.display = 'none';
+    useEffect(() => {
+        const saved = localStorage.getItem('ambassador_terms_acceptance');
+        if (!saved) return;
 
-            // Si es éxito, mostrar imagen de éxito
-            if (showSuccess && exitoImage) {
-                exitoImage.style.display = '';
+        try {
+            const parsed = JSON.parse(saved) as TermsAcceptance & { timestamp?: string };
+            if (!parsed.timestamp) return;
+
+            const timestamp = new Date(parsed.timestamp);
+            const hoursDiff = (Date.now() - timestamp.getTime()) / (1000 * 60 * 60);
+            if (hoursDiff < 24) {
+                setTermsAccepted({
+                    termsAndConditions: parsed.termsAndConditions,
+                    privacyPolicy: parsed.privacyPolicy,
+                    marketingConsent: parsed.marketingConsent,
+                    clickwrap: parsed.clickwrap
+                });
+            }
+        } catch (error) {
+            localStorage.removeItem('ambassador_terms_acceptance');
+        }
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const catImage = document.getElementById('embajador-img-gato') as HTMLImageElement | null;
+        const girlImage = document.getElementById('embajador-img-nina') as HTMLImageElement | null;
+        const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement | null;
+        const successImage = document.getElementById('embajador-img-exito') as HTMLImageElement | null;
+
+        if (catImage) catImage.style.display = showSuccess ? 'none' : '';
+        if (girlImage) girlImage.style.display = 'none';
+        if (manImage) manImage.style.display = 'none';
+        if (successImage) successImage.style.display = showSuccess ? '' : 'none';
+    }, [showSuccess]);
+
+    useEffect(() => {
+        const loadMemberData = async () => {
+            if (preloadedData) {
+                setIsLoadingMember(false);
                 return;
             }
 
-            // Mostrar la correspondiente al paso actual
-            if (currentStep === 2 && girlImage) {
-                girlImage.style.display = '';
-            } else if (currentStep === 3 && manImage) {
-                manImage.style.display = '';
-            } else if (catImage) {
-                catImage.style.display = '';
-            }
-        }
-    }, [currentStep, showSuccess]);
-
-    // Notificar al padre cuando cambia el paso
-    useEffect(() => {
-        // Si es éxito, notificar como paso 4
-        if (showSuccess) {
-            onStepChange?.(4);
-        } else {
-            onStepChange?.(currentStep);
-        }
-    }, [currentStep, showSuccess, onStepChange]);
-
-    // Cargar datos del miembro de Memberstack si está logueado
-    useEffect(() => {
-        const loadMemberData = async () => {
             setIsLoadingMember(true);
 
-            // Esperar a que Memberstack esté disponible
             if (typeof window !== 'undefined' && window.$memberstackDom) {
                 try {
                     const memberResult = await window.$memberstackDom.getCurrentMember();
                     const member = memberResult?.data;
 
                     if (member) {
-                        // Guardar ID de Memberstack
-                        setMemberstackId(member.id);
-
-                        // Obtener campos personalizados
                         const cf = member.customFields || {};
-                        const email = member.auth?.email || '';
-
-                        // Campos críticos para saltar al paso 2 (mínimos de Memberstack)
-                        const hasRequiredBasicInfo =
-                            cf['first-name'] &&
-                            email;
-
-                        if (hasRequiredBasicInfo) {
-                            // Marcar como miembro existente y saltar al paso 2
-                            setIsExistingMember(true);
-                            setCurrentStep(2);
-                            console.log('✅ Miembro existente detectado, saltando al paso 2.');
-                        } else {
-                            console.log('⚠️ No se detectó información básica de miembro, permaneciendo en paso 1.');
-                        }
-
-                        // Mapear campos de Memberstack a nuestro formulario
-                        setStep1Data(prev => ({
+                        setMemberstackId(member.id);
+                        setFormData(prev => ({
                             ...prev,
-                            first_name: cf['first-name'] || '',
-                            paternal_surname: cf['paternal-last-name'] || '',
-                            maternal_surname: cf['maternal-last-name'] || '',
-                            gender: (cf['gender'] as Gender) || '',
-                            birth_date: cf['birth-date'] || '',
-                            curp: cf['curp'] || '',
-                            postal_code: cf['postal-code'] || '',
-                            state: cf['state'] || '',
-                            city: cf['city'] || '',
-                            neighborhood: cf['neighborhood'] || cf['colony'] || '',
-                            address: cf['address'] || cf['street-address'] || '',
-                            email: email,
-                            phone: cf['phone'] || cf['phone-number'] || '',
-                            // Contraseña por defecto si es usuario existente
-                            password: prev.password || 'MEMBERSTACK_USER',
-                            confirm_password: prev.confirm_password || 'MEMBERSTACK_USER'
+                            full_name: [
+                                cf['first-name'],
+                                cf['paternal-last-name'],
+                                cf['maternal-last-name']
+                            ].filter(Boolean).join(' ').trim() || prev.full_name,
+                            gender: (cf.gender as Gender) || prev.gender,
+                            curp: normalizeCurp(cf.curp || prev.curp),
+                            email: member.auth?.email || prev.email,
+                            phone: normalizePhone(cf.phone || cf['phone-number'] || prev.phone)
                         }));
                     }
                 } catch (error) {
-                    console.log('ℹ️ Usuario no logueado en Memberstack:', error);
+                    console.log('No hay sesion de Memberstack activa:', error);
                 }
             }
 
             setIsLoadingMember(false);
         };
 
-        // Pequeño delay para asegurar que Memberstack esté listo
         const timer = setTimeout(loadMemberData, 500);
         return () => clearTimeout(timer);
-    }, []);
+    }, [preloadedData]);
 
+    const handleChange = (field: keyof SimplifiedAmbassadorData, value: string) => {
+        const normalizedValue =
+            field === 'phone' ? normalizePhone(value) :
+                field === 'curp' ? normalizeCurp(value) :
+                    value;
 
-    // Handlers para cada paso
-    const handleStep1Change = (field: keyof AmbassadorStep1Data, value: string | File | null) => {
-        setStep1Data(prev => ({ ...prev, [field]: value }));
+        setFormData(prev => ({ ...prev, [field]: normalizedValue }));
 
-        // Validación inmediata para fecha de nacimiento
-        if (field === 'birth_date' && typeof value === 'string') {
-            const birthDate = new Date(value);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            if (age < 18) {
-                setErrors(prev => ({ ...prev, birth_date: 'Debes ser mayor de 18 años' }));
-            } else {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors.birth_date;
-                    return newErrors;
-                });
-            }
-            return;
-        }
-
-        // Limpiar error del campo
-        if (errors[field]) {
+        if (errors[field] || errors.submit) {
             setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
+                const nextErrors = { ...prev };
+                delete nextErrors[field];
+                delete nextErrors.submit;
+                return nextErrors;
             });
         }
     };
 
-    const handleStep2Change = (field: keyof AmbassadorStep2Data, value: string) => {
-        setStep2Data(prev => ({ ...prev, [field]: value }));
-        if (errors[field]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
-            });
+    const validateForm = () => {
+        const nextErrors: Record<string, string> = {};
+        const nameParts = formData.full_name.trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
+
+        if (nameParts.length < 2) {
+            nextErrors.full_name = 'Escribe tu nombre completo con al menos un apellido';
         }
+
+        if (!formData.gender) {
+            nextErrors.gender = 'Selecciona una opcion';
+        }
+
+        if (!formData.curp.trim()) {
+            nextErrors.curp = 'El CURP es requerido';
+        } else if (formData.curp.length !== 18) {
+            nextErrors.curp = 'El CURP debe tener 18 caracteres';
+        }
+
+        if (!formData.email.trim()) {
+            nextErrors.email = 'El correo es requerido';
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+            nextErrors.email = 'Correo invalido';
+        }
+
+        if (!formData.phone.trim()) {
+            nextErrors.phone = 'El celular es requerido';
+        } else if (formData.phone.length !== 10) {
+            nextErrors.phone = 'El celular debe tener 10 digitos';
+        }
+
+        if (!formData.motivation.trim()) {
+            nextErrors.motivation = 'Cuentanos por que quieres ser embajador';
+        } else if (formData.motivation.trim().length < 30) {
+            nextErrors.motivation = 'Escribe al menos 30 caracteres';
+        }
+
+        if (!termsAccepted) {
+            nextErrors.accept_terms = 'Debes aceptar los terminos y condiciones';
+        }
+
+        return nextErrors;
     };
 
-    const handleStep3Change = (field: keyof AmbassadorStep3Data, value: string | boolean) => {
-        let finalValue = value;
-        if (field === 'rfc' && typeof value === 'string') {
-            finalValue = formatRFC(value);
-        }
-        setStep3Data(prev => ({ ...prev, [field]: finalValue }));
-        if (errors[field]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
-            });
-        }
-    };
+    const handleBlur = async (field: keyof SimplifiedAmbassadorData) => {
+        if (field !== 'curp' && field !== 'email') return;
 
-    // Import (esto va arriba del todo, pero aquí lo simulo para el contexto del replace)
-    // import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
+        const value = formData[field].trim();
+        if (!value) return;
 
-    const handleFileUpload = (field: 'ine_front' | 'ine_back', file: File) => {
-        setStep1Data(prev => ({ ...prev, [field]: file }));
-        // Limpiar error al subir archivo
-        if (errors[field]) {
-            setErrors(prev => {
-                const newErrors = { ...prev };
-                delete newErrors[field];
-                return newErrors;
-            });
-        }
-    };
-
-    // Validaciones en tiempo real (onBlur)
-    const handleBlur = async (field: keyof AmbassadorStep1Data | keyof AmbassadorStep3Data) => {
-        // 1. Validación de Contraseñas
-        if (field === 'confirm_password' || field === 'password') {
-            if (step1Data.password && step1Data.confirm_password) {
-                if (step1Data.password !== step1Data.confirm_password) {
-                    setErrors(prev => ({ ...prev, confirm_password: 'Las contraseñas no coinciden' }));
-                } else {
-                    setErrors(prev => {
-                        const newErrors = { ...prev };
-                        delete newErrors['confirm_password'];
-                        return newErrors;
-                    });
-                }
-            }
-            return;
-        }
-
-        // 2. Validación de CURP
-        if (field === 'curp' && step1Data.curp) {
-            const curp = step1Data.curp.toUpperCase();
-
-            // Regex CURP
-            const curpRegex = /^[A-Z]{1}[AEIOU]{1}[A-Z]{2}[0-9]{2}(0[1-9]|1[0-2])(0[1-9]|1[0-9]|2[0-9]|3[0-1])[HM]{1}(AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS|NE)[B-DF-HJ-NP-TV-Z]{3}[0-9A-Z]{1}[0-9]{1}$/;
-
-            if (!curpRegex.test(curp)) {
-                setErrors(prev => ({ ...prev, curp: 'Formato de CURP inválido' }));
-                return;
-            }
-
-            // Verificar disponibilidad en servidor
-            const check = await checkAmbassadorAvailability('curp', curp);
-            if (!check.available) {
-                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
-            } else {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors['curp'];
-                    return newErrors;
-                });
-            }
-        }
-
-        // 3. Validación de RFC
-        if (field === 'rfc' && step3Data.rfc) {
-            const rfc = formatRFC(step3Data.rfc);
-            const rfcValidation = validateRFC(rfc);
-
-            if (!rfcValidation.isValid) {
-                setErrors(prev => ({ 
-                    ...prev, 
-                    rfc: rfcValidation.error || 'RFC inválido' 
-                }));
-                return;
-            }
-
-            // Verificar disponibilidad en servidor
-            const check = await checkAmbassadorAvailability('rfc', rfc);
-            if (!check.available) {
-                setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
-            } else {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors['rfc'];
-                    return newErrors;
-                });
-            }
-        }
-
-        // 4. Validación de Email
-        if (field === 'email' && step1Data.email) {
-            const email = step1Data.email.trim();
-            // Regex simple para email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-            if (!emailRegex.test(email)) {
-                setErrors(prev => ({ ...prev, email: 'Correo inválido' }));
-                return;
-            }
-
-            // Verificar disponibilidad en servidor
-            const check = await checkAmbassadorAvailability('email', email);
-            if (!check.available) {
-                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
-            } else {
-                setErrors(prev => {
-                    const newErrors = { ...prev };
-                    delete newErrors['email'];
-                    return newErrors;
-                });
-            }
-        }
-    };
-
-    // Validaciones
-    const validateStep1 = (): boolean => {
-        const newErrors: Record<string, string> = {};
-
-        if (!step1Data.first_name.trim()) newErrors.first_name = 'El nombre es requerido';
-        if (!step1Data.paternal_surname.trim()) newErrors.paternal_surname = 'El apellido paterno es requerido';
-        if (!step1Data.birth_date) newErrors.birth_date = 'La fecha de nacimiento es requerida';
-        if (!step1Data.curp.trim()) newErrors.curp = 'El CURP es requerido';
-        else if (step1Data.curp.length !== 18) newErrors.curp = 'El CURP debe tener 18 caracteres';
-
-        if (!step1Data.email.trim()) newErrors.email = 'El correo es requerido';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(step1Data.email)) newErrors.email = 'Correo inválido';
-
-        if (!step1Data.phone.trim()) newErrors.phone = 'El teléfono es requerido';
-        else if (step1Data.phone.length !== 10) newErrors.phone = 'El teléfono debe tener 10 dígitos';
-
-        if (!step1Data.postal_code.trim()) newErrors.postal_code = 'El código postal es requerido';
-        if (!step1Data.state) newErrors.state = 'El estado es requerido';
-        if (!step1Data.city.trim()) newErrors.city = 'La ciudad es requerida';
-        if (!step1Data.neighborhood.trim()) newErrors.neighborhood = 'La colonia es requerida';
-
-        if (!step1Data.password) newErrors.password = 'La contraseña es requerida';
-        else if (step1Data.password.length < 8) newErrors.password = 'Mínimo 8 caracteres';
-
-        if (step1Data.password !== step1Data.confirm_password) {
-            newErrors.confirm_password = 'Las contraseñas no coinciden';
-        }
-
-        // Validar archivos INE
-        if (!step1Data.ine_front) {
-            newErrors.ine_front = 'Debes subir el frente de tu INE';
-        }
-        if (!step1Data.ine_back) {
-            newErrors.ine_back = 'Debes subir el reverso de tu INE';
-        }
-
-        // Verificar edad mínima (18 años)
-        if (step1Data.birth_date) {
-            const birthDate = new Date(step1Data.birth_date);
-            const today = new Date();
-            let age = today.getFullYear() - birthDate.getFullYear();
-            const m = today.getMonth() - birthDate.getMonth();
-            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                age--;
-            }
-            if (age < 18) {
-                newErrors.birth_date = 'Debes ser mayor de 18 años para continuar';
-                // Asegurarse de que esto bloquee
-            }
-        }
-
-        setErrors(newErrors);
-        // Si hay errores, retornar false
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const validateStep2 = (): boolean => {
-        const newErrors: Record<string, string> = {};
-
-        // Validar que al menos una red social esté presente
-        const hasSocialNetwork = 
-            step2Data.instagram.trim() || 
-            step2Data.facebook.trim() || 
-            step2Data.tiktok.trim() || 
-            step2Data.other_social.trim();
-        
-        if (!hasSocialNetwork) {
-            newErrors.social_networks = 'Debes proporcionar al menos una red social';
-        }
-
-        if (!step2Data.motivation.trim()) {
-            newErrors.motivation = 'Cuéntanos por qué quieres ser embajador';
-        } else if (step2Data.motivation.length < 50) {
-            newErrors.motivation = 'Escribe al menos 50 caracteres';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    const validateStep3 = (): boolean => {
-        const newErrors: Record<string, string> = {};
-
-        if (!step3Data.rfc.trim()) {
-            newErrors.rfc = 'El RFC es requerido';
-        } else {
-            const rfcValidation = validateRFC(step3Data.rfc);
-            if (!rfcValidation.isValid) {
-                newErrors.rfc = rfcValidation.error || 'RFC inválido';
-            }
-        }
-
-        if (!step3Data.payment_method) {
-            newErrors.payment_method = 'Selecciona un método de pago';
-        }
-
-        if (step3Data.payment_method === 'clabe' && step3Data.clabe.length !== 18) {
-            newErrors.clabe = 'La CLABE debe tener 18 dígitos';
-        }
-
-        if (!step3Data.accept_terms) {
-            newErrors.accept_terms = 'Debes aceptar los términos y condiciones';
-        }
-
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
-    // Navegación
-    const handleNext = async () => {
-        let isValid = false;
+        if (field === 'curp' && value.length !== 18) return;
+        if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return;
 
         try {
-            switch (currentStep) {
-                case 1:
-                    isValid = validateStep1();
-                    if (isValid) {
-                        try {
-                            // Verificar disponibilidad antes de avanzar
-                            const [curpCheck, emailCheck] = await Promise.all([
-                                checkAmbassadorAvailability('curp', step1Data.curp),
-                                checkAmbassadorAvailability('email', step1Data.email)
-                            ]);
-
-                            if (!curpCheck.available) {
-                                setErrors(prev => ({ ...prev, curp: 'Este CURP ya está registrado' }));
-                                isValid = false;
-                            }
-                            if (!emailCheck.available) {
-                                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
-                                isValid = false;
-                            }
-                        } catch (err) {
-                            console.error('Error verificando disponibilidad:', err);
-                            // Si falla la verificación, permitir continuar igual
-                        }
-                    }
-                    break;
-                case 2:
-                    isValid = validateStep2();
-                    break;
-                case 3:
-                    isValid = validateStep3();
-                    if (isValid) {
-                        try {
-                            // Verificar RFC antes de enviar
-                            const rfcCheck = await checkAmbassadorAvailability('rfc', step3Data.rfc);
-                            if (!rfcCheck.available) {
-                                setErrors(prev => ({ ...prev, rfc: 'Este RFC ya está registrado' }));
-                                return; // Detener envío
-                            }
-                        } catch (err) {
-                            console.error('Error verificando RFC:', err);
-                        }
-
-                        handleSubmit();
-                        return;
-                    }
-                    break;
-            }
-
-            if (isValid && currentStep < 3) {
-                setCurrentStep(prev => prev + 1);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+            const check = await checkAmbassadorAvailability(field, value);
+            if (!check.available) {
+                setErrors(prev => ({
+                    ...prev,
+                    [field]: field === 'curp' ? 'Este CURP ya esta registrado' : 'Este correo ya esta registrado'
+                }));
             }
         } catch (error) {
-            console.error('Error en handleNext:', error);
-            setErrors(prev => ({ ...prev, submit: 'Ocurrió un error. Intenta de nuevo.' }));
+            console.error(`Error verificando ${field}:`, error);
         }
     };
 
-    const handleBack = () => {
-        // Si es miembro existente, no puede volver al paso 1
-        const minStep = isExistingMember ? 2 : 1;
-        if (currentStep > minStep) {
-            setCurrentStep(prev => prev - 1);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    };
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
 
-    // Enviar formulario
-    const handleSubmit = async () => {
+        const validationErrors = validateForm();
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            scrollToFeedback();
+            return;
+        }
+
         setIsSubmitting(true);
 
         try {
-            // 0. Si no hay ID de Memberstack, intentar crear cuenta primero
-            let finalMemberstackId = memberstackId || linkedMemberstackId;
+            const acceptedAt = new Date().toISOString();
+            const termsAcceptance = termsAccepted ? {
+                ...termsAccepted,
+                timestamp: acceptedAt,
+                source: 'ambassador_registration'
+            } : undefined;
 
-            if (!finalMemberstackId && step1Data.email && step1Data.password) {
-                console.log("Creating Memberstack user...");
-                try {
-                    // @ts-ignore
-                    const msResult = await window.$memberstackDom.signupMemberEmailPassword({
-                        email: step1Data.email,
-                        password: step1Data.password
-                    });
+            const [curpCheck, emailCheck] = await Promise.all([
+                checkAmbassadorAvailability('curp', formData.curp),
+                checkAmbassadorAvailability('email', formData.email)
+            ]);
 
-                    if (msResult.data && msResult.data.member) {
-                        finalMemberstackId = msResult.data.member.id;
-                        console.log("Memberstack user created:", finalMemberstackId);
-                    } else {
-                        throw new Error("No se pudo crear la cuenta en Memberstack");
-                    }
-                } catch (msError: any) {
-                    console.error("Memberstack creation error:", msError);
-                    setErrors({ submit: msError.message || "Error al crear la cuenta de usuario" });
-                    setIsSubmitting(false);
-                    return;
-                }
-            }
-
-            // Primero subir archivos INE si existen
-            let ineFrontUrl = '';
-            let ineBackUrl = '';
-
-            if (step1Data.ine_front) {
-                const formData = new FormData();
-                formData.append('file', step1Data.ine_front);
-                formData.append('type', 'ambassador_ine_front');
-
-                const uploadRes = await fetch('/api/upload/ambassador-doc', {
-                    method: 'POST',
-                    body: formData
+            if (!curpCheck.available || !emailCheck.available) {
+                setErrors({
+                    ...(curpCheck.available ? {} : { curp: 'Este CURP ya esta registrado' }),
+                    ...(emailCheck.available ? {} : { email: 'Este correo ya esta registrado' })
                 });
-                const uploadData = await uploadRes.json();
-                if (uploadData.success) {
-                    ineFrontUrl = uploadData.url;
-                } else {
-                    console.error('Error uploading front INE:', uploadData.error);
-                    setErrors({ submit: 'Error al subir el frente de tu INE. Por favor intenta de nuevo.' });
-                    setIsSubmitting(false);
-                    return;
-                }
+                setIsSubmitting(false);
+                scrollToFeedback();
+                return;
             }
 
-            if (step1Data.ine_back) {
-                const formData = new FormData();
-                formData.append('file', step1Data.ine_back);
-                formData.append('type', 'ambassador_ine_back');
-
-                const uploadRes = await fetch('/api/upload/ambassador-doc', {
-                    method: 'POST',
-                    body: formData
-                });
-                const uploadData = await uploadRes.json();
-                if (uploadData.success) {
-                    ineBackUrl = uploadData.url;
-                } else {
-                    console.error('Error uploading back INE:', uploadData.error);
-                    setErrors({ submit: 'Error al subir el reverso de tu INE. Por favor intenta de nuevo.' });
-                    setIsSubmitting(false);
-                    return;
-                }
-            }
-
-            // Enviar datos del embajador
+            const nameParts = splitFullName(formData.full_name);
             const response = await fetch('/api/ambassadors', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // Step 1
-                    first_name: step1Data.first_name,
-                    paternal_surname: step1Data.paternal_surname,
-                    maternal_surname: step1Data.maternal_surname || undefined,
-                    gender: step1Data.gender || undefined,
-                    birth_date: step1Data.birth_date,
-                    curp: step1Data.curp,
-                    ine_front_url: ineFrontUrl || undefined,
-                    ine_back_url: ineBackUrl || undefined,
-                    postal_code: step1Data.postal_code,
-                    state: step1Data.state,
-                    city: step1Data.city,
-                    neighborhood: step1Data.neighborhood,
-                    address: step1Data.address || undefined,
-                    email: step1Data.email,
-                    phone: step1Data.phone,
-                    password: step1Data.password,
-
-                    // Step 2
-                    instagram: step2Data.instagram || undefined,
-                    facebook: step2Data.facebook || undefined,
-                    tiktok: step2Data.tiktok || undefined,
-                    other_social: step2Data.other_social || undefined,
-                    motivation: step2Data.motivation,
-
-                    // Step 3
-                    rfc: step3Data.rfc,
-                    payment_method: step3Data.payment_method,
-                    bank_name: step3Data.bank_name || undefined,
-                    card_last_digits: step3Data.card_number || undefined,
-                    clabe: step3Data.clabe || undefined,
-
-                    // Vinculación con Memberstack (si está logueado o recién creado)
-                    linked_memberstack_id: finalMemberstackId || undefined
+                    first_name: nameParts.first_name,
+                    paternal_surname: nameParts.paternal_surname,
+                    maternal_surname: nameParts.maternal_surname || undefined,
+                    gender: formData.gender || undefined,
+                    birth_date: '',
+                    curp: formData.curp,
+                    email: formData.email.trim(),
+                    phone: formData.phone,
+                    password: createTemporaryPassword(),
+                    facebook: formData.facebook.trim() || undefined,
+                    instagram: formData.instagram.trim() || undefined,
+                    tiktok: formData.tiktok.trim() || undefined,
+                    motivation: formData.motivation.trim(),
+                    payment_method: 'pending',
+                    linked_memberstack_id: memberstackId || linkedMemberstackId || undefined,
+                    terms_accepted_at: acceptedAt,
+                    terms_version: '1.0',
+                    terms_acceptance: termsAcceptance
                 })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                // Track Meta Pixel Conversion
-                trackLead({
-                    content_name: 'Ambassador Registration',
-                    content_category: 'ambassador_signup',
-                    email: step1Data.email,
-                    phone: step1Data.phone
-                });
-                trackCompleteRegistration({
-                    content_name: 'Ambassador Registration',
-                    content_category: 'ambassador_signup',
-                    email: step1Data.email,
-                    city: step1Data.city,
-                    state: step1Data.state
-                });
-                trackSubmitApplication({
-                    content_name: 'Ambassador Application',
-                    content_category: 'ambassador_signup',
-                    email: step1Data.email
-                });
                 setShowSuccess(true);
                 onSuccess?.();
+                scrollToFeedback();
+
+                try {
+                    trackLead({
+                        content_name: 'Ambassador Registration',
+                        content_category: 'ambassador_signup',
+                        email: formData.email,
+                        phone: formData.phone
+                    });
+                    trackCompleteRegistration({
+                        content_name: 'Ambassador Registration',
+                        content_category: 'ambassador_signup',
+                        email: formData.email
+                    });
+                    trackSubmitApplication({
+                        content_name: 'Ambassador Application',
+                        content_category: 'ambassador_signup',
+                        email: formData.email
+                    });
+                } catch (trackingError) {
+                    console.warn('Meta Pixel tracking failed after ambassador success:', trackingError);
+                }
             } else {
                 setErrors({ submit: data.error || 'Error al enviar la solicitud' });
+                scrollToFeedback();
             }
         } catch (error) {
             console.error('Error submitting ambassador form:', error);
-            setErrors({ submit: 'Error de conexión. Intenta de nuevo.' });
+            setErrors({ submit: 'Error de conexion. Intenta de nuevo.' });
+            scrollToFeedback();
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Pantalla de éxito - Step 4
     if (showSuccess) {
         return <Step4Success />;
     }
 
-    // Estado de carga mientras se obtienen datos del miembro
     if (isLoadingMember) {
         return (
-            <div className={styles['ambassador-form-container']}>
-                <div className={styles['ambassador-form-card']} style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <div className={styles['ambassador-spinner']} style={{
-                        width: '50px',
-                        height: '50px',
-                        border: '4px solid #eee',
-                        borderTopColor: '#00BBB4',
-                        borderRadius: '50%',
-                        animation: 'spin 0.8s linear infinite',
-                        margin: '0 auto 20px'
-                    }} />
-                    <p style={{ color: '#666' }}>Cargando tu información...</p>
-                </div>
+            <div className={styles.loadingCard}>
+                <div className={styles.spinner} />
+                <p>Cargando tu informacion...</p>
             </div>
         );
     }
 
     return (
         <>
-            {/* Header - oculto cuando hideHeader es true */}
             {!hideHeader && (
-                <>
-                    {/* Título principal */}
-                    <h1 className={styles.mainTitle}>sé embajador pata amiga</h1>
-
-                    {/* Stepper */}
-                    <div className={styles.stepper}>
-                        <div className={styles.stepperItem}>
-                            <div className={`${styles.stepIcon} ${currentStep === 1 ? styles.stepIconActive : currentStep > 1 ? styles.stepIconCompleted : styles.stepIconInactive}`}>
-                                {currentStep > 1 ? '✓' : '👤'}
-                            </div>
-                            <span className={`${styles.stepLabel} ${currentStep === 1 ? styles.stepLabelActive : currentStep > 1 ? styles.stepLabelCompleted : styles.stepLabelInactive}`}>
-                                Completa tu perfil
-                            </span>
-                        </div>
-                        <span className={styles.stepArrow}>→</span>
-                        <div className={styles.stepperItem}>
-                            <div className={`${styles.stepIcon} ${currentStep === 2 ? styles.stepIconActive : currentStep > 2 ? styles.stepIconCompleted : styles.stepIconInactive}`}>
-                                {currentStep > 2 ? '✓' : '📋'}
-                            </div>
-                            <span className={`${styles.stepLabel} ${currentStep === 2 ? styles.stepLabelActive : currentStep > 2 ? styles.stepLabelCompleted : styles.stepLabelInactive}`}>
-                                información adicional
-                            </span>
-                        </div>
-                        <span className={styles.stepArrow}>→</span>
-                        <div className={styles.stepperItem}>
-                            <div className={`${styles.stepIcon} ${currentStep === 3 ? styles.stepIconActive : styles.stepIconInactive}`}>
-                                💰
-                            </div>
-                            <span className={`${styles.stepLabel} ${currentStep === 3 ? styles.stepLabelActive : styles.stepLabelInactive}`}>
-                                datos bancario y rfc
-                            </span>
-                        </div>
-                    </div>
-                </>
+                <h1 className={styles.mainTitle}>se embajador pata amiga</h1>
             )}
-            {/* Mostrar error general */}
+
             {errors.submit && (
-                <div style={{
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    border: '1px solid #ef4444',
-                    borderRadius: '8px',
-                    padding: '15px',
-                    marginBottom: '20px',
-                    color: '#ef4444'
-                }}>
+                <div className={styles.submitError}>
                     {errors.submit}
                 </div>
             )}
 
-            {/* Mensaje de bienvenida para miembros existentes */}
-            {isExistingMember && currentStep === 2 && (
-                <div style={{
-                    background: 'linear-gradient(135deg, rgba(0, 187, 180, 0.1), rgba(0, 187, 180, 0.05))',
-                    border: '1px solid #00BBB4',
-                    borderRadius: '12px',
-                    padding: '20px',
-                    marginBottom: '25px',
-                    textAlign: 'center'
-                }}>
-                    <div style={{ fontSize: '2rem', marginBottom: '10px' }}>👋</div>
-                    <h3 style={{ color: '#00BBB4', margin: '0 0 8px 0', fontSize: '1.1rem' }}>
-                        ¡Hola, {step1Data.first_name}!
-                    </h3>
-                    <p style={{ color: '#555', margin: 0, fontSize: '0.95rem' }}>
-                        Tus datos personales ya están registrados en tu cuenta.
-                        Solo necesitas completar la información adicional para ser embajador.
-                    </p>
+            {hasPreloadedMember && (
+                <div className={styles.memberNotice}>
+                    <strong>Hola, {formData.full_name || formData.email}</strong>
+                    <span>Usaremos los datos de tu cuenta para vincular tu solicitud.</span>
                 </div>
             )}
 
-            {/* Steps Content */}
-            {currentStep === 1 && (
-                <Step1PersonalInfo
-                    data={step1Data}
-                    onChange={handleStep1Change}
-                    errors={errors}
-                    onFileUpload={handleFileUpload}
-                    // @ts-ignore
-                    onBlur={handleBlur}
-                    onNext={handleNext}
-                    onBack={() => window.location.href = '/'}
-                />
-            )}
-
-            {currentStep === 2 && (
-                <Step2AdditionalInfo
-                    data={step2Data}
-                    onChange={handleStep2Change}
-                    errors={errors}
-                    onBack={handleBack}
-                    onNext={handleNext}
-                />
-            )}
-
-            {currentStep === 3 && (
-                <Step3BankingInfo
-                    data={step3Data}
-                    onChange={handleStep3Change}
-                    errors={errors}
-                    // @ts-ignore
-                    onBlur={handleBlur}
-                    onBack={handleBack}
-                    onNext={handleNext}
-                    isSubmitting={isSubmitting}
-                />
-            )}
-
+            <SimplifiedStep
+                data={formData}
+                errors={errors}
+                isSubmitting={isSubmitting}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                onTermsChange={setTermsAccepted}
+                onSubmit={handleSubmit}
+                termsAccepted={termsAccepted}
+            />
         </>
     );
 }
