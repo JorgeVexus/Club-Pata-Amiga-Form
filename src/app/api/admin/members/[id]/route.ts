@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getMemberDetails, updateMemberData, triggerVerificationEmail } from '@/services/memberstack-admin.service';
 import { getUserDataByMemberstackId, updateUserEmailInSupabase } from '@/app/actions/user.actions';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+import { commService } from '@/services/comm.service';
 
 export async function GET(
     request: NextRequest,
@@ -112,6 +113,16 @@ export async function PATCH(
         if (!supabaseResult.success) {
             console.error('⚠️ Desincronización: Email actualizado en MS pero falló en Supabase');
         }
+
+        // 4. Notificar al usuario en el widget
+        await commService.sendInAppNotification({
+            user_id: memberId,
+            type: 'account',
+            title: 'Correo Electrónico Actualizado',
+            message: `Un administrador ha actualizado tu correo electrónico a: ${email}. Se ha enviado un enlace de verificación a tu nueva dirección.`,
+            icon: '📧',
+            metadata: { field: 'email', newValue: email }
+        });
 
         return NextResponse.json({
             success: true,

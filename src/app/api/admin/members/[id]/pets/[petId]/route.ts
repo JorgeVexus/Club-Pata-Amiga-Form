@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { updateMemberData } from '@/services/memberstack-admin.service';
 import { updatePetNameInSupabase } from '@/app/actions/user.actions';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+import { commService } from '@/services/comm.service';
 
 export async function PATCH(
     request: NextRequest,
@@ -42,6 +43,16 @@ export async function PATCH(
         if (!supabaseResult.success) {
             console.error('⚠️ Desincronización: Nombre de mascota actualizado en MS pero falló en Supabase');
         }
+
+        // 3. Notificar al usuario en el widget
+        await commService.sendInAppNotification({
+            user_id: memberId,
+            type: 'account',
+            title: 'Nombre de Mascota Actualizado',
+            message: `Un administrador ha actualizado el nombre de tu mascota a: ${name}.`,
+            icon: '🐾',
+            metadata: { petId, field: 'name', newValue: name }
+        });
 
         return NextResponse.json({
             success: true,
