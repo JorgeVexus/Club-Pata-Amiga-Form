@@ -277,8 +277,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 waiting_period_start,
                 waiting_period_end,
                 is_adopted,
-                is_mixed_breed,
-                is_mixed
+                is_mixed_breed
             `)
             .eq('owner_id', user.id)
             .order('created_at', { ascending: true });
