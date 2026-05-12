@@ -138,11 +138,15 @@ export async function POST(request: NextRequest) {
                 hasValidReferral = true;
                 
                 // Guardar el código en el usuario si aún no tiene uno
-                await supabaseAdmin
-                    .from('users')
-                    .update({ ambassador_code: ambassador.referral_code })
-                    .eq('id', user!.id)
-                    .is('ambassador_code', null);
+                try {
+                    await supabaseAdmin
+                        .from('users')
+                        .update({ ambassador_code: ambassador.referral_code } as any)
+                        .eq('id', user!.id)
+                        .is('ambassador_code', null);
+                } catch (err) {
+                    console.warn('⚠️ [PET_ADD] Columna ambassador_code no disponible en users, saltando...');
+                }
 
                 // Registrar el referido en la tabla referrals para seguimiento
                 try {

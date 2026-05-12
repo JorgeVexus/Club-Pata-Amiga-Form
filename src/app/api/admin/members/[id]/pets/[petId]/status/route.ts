@@ -43,21 +43,22 @@ export async function POST(
 
         console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
 
-        // 0. Obtener estado ANTERIOR de la mascota y datos del USUARIO (para el código de embajador)
+        // 0. Obtener estado ANTERIOR de la mascota
         const { data: previousPet } = await supabaseAdmin
             .from('pets')
             .select('status, name, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
             .eq('id', petId)
             .single();
 
-        const { data: owner } = await supabaseAdmin
-            .from('users')
-            .select('ambassador_code')
-            .eq('memberstack_id', memberId)
-            .single();
+        // 0b. Verificar estatus de embajador del propietario (vía referrals)
+        const { data: referral } = await supabaseAdmin
+            .from('referrals')
+            .select('id')
+            .eq('referred_user_id', memberId)
+            .maybeSingle();
 
         const wasAppealed = previousPet?.status === 'appealed';
-        const hasAmbassadorCode = !!(owner?.ambassador_code);
+        const hasAmbassadorCode = !!referral;
 
         // 1. Actualizar estado de la mascota en Supabase
         const updateData: any = {

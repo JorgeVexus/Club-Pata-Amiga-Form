@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
         // 2. Resolver Usuario (Memberstack ID -> Supabase UUID)
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, first_name, last_name, ambassador_code')
+            .select('id, first_name, last_name')
             .eq('memberstack_id', memberstackId)
             .single();
 
@@ -93,7 +93,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Lógica robusta de carencia centralizada
-        const hasAmbassadorCode = !!(user.ambassador_code);
+        const { data: referral } = await supabaseAdmin
+            .from('referrals')
+            .select('id')
+            .eq('referred_user_id', memberstackId)
+            .maybeSingle();
+        
+        const hasAmbassadorCode = !!referral;
         const isActive = isPetActive(pet, hasAmbassadorCode);
         const waitingPeriodEnd = getPetCarenciaDate(pet, hasAmbassadorCode);
 

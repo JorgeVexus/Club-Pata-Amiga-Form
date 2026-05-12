@@ -222,7 +222,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
                 email,
                 phone,
                 membership_status,
-                ambassador_code,
                 created_at
             `);
 
@@ -251,6 +250,15 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         }
 
         console.log(`✅ [VET_BOT] Usuario identificado: ${user.email} (UUID: ${user.id})`);
+
+        // 4b. Verificar si es embajador (vía referrals) ya que la columna ambassador_code podría no existir en users
+        const { data: referral } = await supabaseAdmin
+            .from('referrals')
+            .select('id')
+            .eq('referred_user_id', user.memberstack_id)
+            .maybeSingle();
+
+        const hasAmbassadorCode = !!referral;
 
         // 5. Buscar mascotas del usuario
         console.log('🐾 [VET_BOT] Consultando tabla PETS...');
@@ -338,7 +346,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
             membershipStatus: user.membership_status
         };
 
-        const hasAmbassadorCode = !!(user?.ambassador_code);
         const petsContext: PetContext[] = (pets || []).map(pet => {
             const carenciaEnd = getPetCarenciaDate(pet, hasAmbassadorCode);
             const isActive = isPetActive(pet, hasAmbassadorCode);
