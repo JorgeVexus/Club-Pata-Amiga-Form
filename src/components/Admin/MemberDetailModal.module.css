@@ -1191,3 +1191,56 @@
     align-items: center;
     gap: 4px;
 }
+.editInput {
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 2px 8px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: #1e293b;
+    outline: none;
+    transition: all 0.2s;
+    background: #f8fafc;
+}
+
+.editInput:focus {
+    border-color: #7DD8D5;
+    background: #fff;
+    box-shadow: 0 0 0 2px rgba(125, 216, 213, 0.1);
+}
+
+.saveButton, .cancelButton {
+    background: transparent;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+}
+
+.saveButton {
+    color: #10b981; /* Emerald 500 */
+    opacity: 0.7;
+}
+
+.cancelButton {
+    color: #ef4444; /* Red 500 */
+    opacity: 0.7;
+}
+
+.saveButton:hover, .cancelButton:hover {
+    opacity: 1;
+    background: #f1f5f9;
+}
+
+.saveButton:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
