@@ -27,7 +27,7 @@ ${content.replace(/<[^>]*>/g, '')}
 
 ${actionButton ? `${actionButton.text}: ${actionButton.url}` : ''}
 
-${footer || "---\nClub Pata Amiga 🐾\nhttps://clubpataamiga.com"}`;
+${footer || "---\nClub Pata Amiga 🐾\nhttps://www.pataamiga.mx"}`;
 
     // Versión HTML con diseño de marca
     const htmlVersion = `<!DOCTYPE html>
@@ -240,7 +240,7 @@ ${footer || "---\nClub Pata Amiga 🐾\nhttps://clubpataamiga.com"}`;
             <td class="email-footer">
                 <p>${footer || 'Con cariño,<br><strong style="color: #ffffff;">El equipo de Club Pata Amiga</strong>'}</p>
                 <p style="margin-top: 20px;">
-                    <a href="https://clubpataamiga.com">clubpataamiga.com</a>
+                    <a href="https://www.pataamiga.mx">www.pataamiga.mx</a>
                 </p>
                 <div class="social-links">
                     <a href="#">Instagram</a> • <a href="#">Facebook</a> • <a href="#">TikTok</a>
@@ -351,7 +351,7 @@ export async function notifyCommissionEarned(params: {
             
             <p style="color: #00BBB4; font-weight: 600;">¡Sigue así, cada referido ayuda a más peludos! 🐾</p>
         `,
-        actionButton: { text: '💰 Ver mi dashboard', url: 'https://clubpataamiga.com/dashboard-embajadores' },
+        actionButton: { text: '💰 Ver mi dashboard', url: 'https://www.pataamiga.mx/embajadores/dashboard' },
     });
 
     return await sendAdminEmail({
@@ -376,7 +376,7 @@ export async function notifyAmbassadorReferralCodeSet(params: {
     const { userId, email, name, referralCode } = params;
 
     const subject = '¡Tu código de embajador está listo! 🎉';
-    const referralUrl = `https://clubpataamiga.com?ref=${referralCode}`;
+    const referralUrl = `https://www.pataamiga.mx?ref=${referralCode}`;
     
     const emailContent = createEmailTemplate({
         title: '¡Código Activado!',
@@ -408,7 +408,7 @@ export async function notifyAmbassadorReferralCodeSet(params: {
             
             <p style="color: #00BBB4; font-weight: 600;">¡Mucho éxito compartiendo el amor por los peludos! 🐕🐱</p>
         `,
-        actionButton: { text: '🚀 Ir a mi dashboard', url: 'https://clubpataamiga.com/dashboard-embajadores' },
+        actionButton: { text: '🚀 Ir a mi dashboard', url: 'https://www.pataamiga.mx/embajadores/dashboard' },
     });
 
     return await sendAdminEmail({
@@ -434,7 +434,7 @@ export async function notifyAmbassadorReferralCodeChanged(params: {
     const { userId, email, name, oldCode, newCode } = params;
 
     const subject = 'Tu código de embajador ha sido actualizado 🔄';
-    const newReferralUrl = `https://clubpataamiga.com?ref=${newCode}`;
+    const newReferralUrl = `https://www.pataamiga.mx?ref=${newCode}`;
     
     const emailContent = createEmailTemplate({
         title: 'Código Actualizado',
@@ -475,7 +475,7 @@ export async function notifyAmbassadorReferralCodeChanged(params: {
             
             <p style="color: #00BBB4; font-weight: 600;">¡Sigue compartiendo y ganando comisiones! 🚀</p>
         `,
-        actionButton: { text: '📊 Ver mi dashboard', url: 'https://clubpataamiga.com/dashboard-embajadores' },
+        actionButton: { text: '📊 Ver mi dashboard', url: 'https://www.pataamiga.mx/embajadores/dashboard' },
     });
 
     return await sendAdminEmail({

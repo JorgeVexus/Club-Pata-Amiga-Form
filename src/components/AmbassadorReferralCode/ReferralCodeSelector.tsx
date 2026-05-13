@@ -186,7 +186,7 @@ export default function ReferralCodeSelector({
             <div className={`${styles.preview} ${isValid ? styles.previewValid : styles.previewInvalid}`}>
                 <div className={styles.previewLabel}>Así se verá tu código:</div>
                 <div className={styles.previewCode}>
-                    clubpataamiga.com?ref={code}
+                    www.pataamiga.mx?ref={code}
                 </div>
             </div>
         );

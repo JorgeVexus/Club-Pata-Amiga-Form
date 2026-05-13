@@ -65,8 +65,8 @@ function CambiarCodigoContent() {
     };
 
     const handleCancel = () => {
-        // Redirigir al dashboard
-        router.push('/embajadores/dashboard');
+        // Redirigir al dashboard externo
+        window.location.href = 'https://www.pataamiga.mx/embajadores/dashboard';
     };
 
     if (isLoading) {

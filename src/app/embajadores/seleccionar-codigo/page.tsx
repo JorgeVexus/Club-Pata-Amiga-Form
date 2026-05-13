@@ -70,12 +70,12 @@ function SuccessState({ code }: { code: string }) {
                     <div className={styles.shareSection}>
                         <p className={styles.shareLabel}>Tu enlace de referido:</p>
                         <div className={styles.shareUrl}>
-                            clubpataamiga.com?ref={code}
+                            www.pataamiga.mx?ref={code}
                         </div>
                     </div>
                     
                     <button 
-                        onClick={() => router.push('/embajadores/dashboard')}
+                        onClick={() => window.location.href = 'https://www.pataamiga.mx/embajadores/dashboard'}
                         className={styles.dashboardButton}
                     >
                         Ir a mi dashboard

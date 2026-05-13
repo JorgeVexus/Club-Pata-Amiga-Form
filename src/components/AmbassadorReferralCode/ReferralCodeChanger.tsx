@@ -328,7 +328,7 @@ export default function ReferralCodeChanger({
                     <div className={styles.preview}>
                         <div className={styles.previewLabel}>Tu nuevo enlace:</div>
                         <div className={styles.previewCode}>
-                            clubpataamiga.com?ref={validationResult.code}
+                            www.pataamiga.mx?ref={validationResult.code}
                         </div>
                     </div>
                 )}
