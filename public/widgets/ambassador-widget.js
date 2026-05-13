@@ -2028,8 +2028,16 @@
         };
 
         // Verificar si tiene código activo
-        const hasActiveCode = ambassador.referral_code && ambassador.referral_code_status === 'active';
+        // Robustez: si tiene un código que no empieza con TMP, lo consideramos activo
+        const hasActiveCode = ambassador.referral_code && 
+                             (ambassador.referral_code_status === 'active' || !ambassador.referral_code.startsWith('TMP'));
         
+        console.log('[AmbassadorWidget] Referral code check:', { 
+            code: ambassador.referral_code, 
+            status: ambassador.referral_code_status,
+            hasActiveCode 
+        });
+
         if (!hasActiveCode) {
             return renderApprovedNoCode(ambassador);
         }

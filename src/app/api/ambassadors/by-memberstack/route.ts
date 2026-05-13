@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
         // Buscar embajador por memberstack_id
         const { data: ambassador, error } = await supabase
             .from('ambassadors')
-            .select('id, first_name, paternal_surname, email, referral_code, status, total_earnings, pending_payout, commission_percentage, created_at')
+            .select('id, first_name, paternal_surname, email, referral_code, referral_code_status, referral_code_selected_at, status, total_earnings, pending_payout, commission_percentage, created_at')
             .eq('linked_memberstack_id', memberstackId)
             .maybeSingle();
 
@@ -88,8 +88,14 @@ export async function GET(request: NextRequest) {
                 ...detailedData,
                 recent_referrals: recentReferrals || [],
                 total_referrals: totalReferrals || 0,
+                referrals_count: totalReferrals || 0, // Alias para compatibilidad con el widget
                 active_referrals: activeReferrals || 0
             };
+        }
+
+        // Fallback de seguridad: si tiene código real pero el status no es 'active' en DB, lo forzamos a active para el widget
+        if (detailedData.referral_code && !detailedData.referral_code.startsWith('TMP') && detailedData.referral_code_status !== 'active') {
+            detailedData.referral_code_status = 'active';
         }
 
         return NextResponse.json({
