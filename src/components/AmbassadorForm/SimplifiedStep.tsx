@@ -10,6 +10,7 @@ export interface SimplifiedAmbassadorData {
     gender: Gender | '';
     curp: string;
     email: string;
+    password: string;
     phone: string;
     facebook: string;
     instagram: string;
@@ -47,6 +48,7 @@ export default function SimplifiedStep({
     onSubmit
 }: Props) {
     const [showTermsModal, setShowTermsModal] = React.useState(false);
+    const [showPassword, setShowPassword] = React.useState(false);
     const fieldClassName = (field: string) => (
         errors[field] ? `${styles.fieldGroup} ${styles.fieldGroupError}` : styles.fieldGroup
     );
@@ -155,6 +157,46 @@ export default function SimplifiedStep({
                         aria-describedby={errors.email ? 'ambassador-email-error' : undefined}
                     />
                     {errors.email && <small id="ambassador-email-error" className={styles.error}>{errors.email}</small>}
+                </label>
+
+                <label className={fieldClassName('password')} data-field="password">
+                    <span>Contrasena</span>
+                    <div className={styles.passwordInput}>
+                        <input
+                            className={styles.input}
+                            type={showPassword ? 'text' : 'password'}
+                            value={data.password}
+                            onChange={(event) => onChange('password', event.target.value)}
+                            placeholder="Minimo 8 caracteres"
+                            autoComplete="new-password"
+                            aria-invalid={!!errors.password}
+                            aria-describedby={errors.password ? 'ambassador-password-error' : undefined}
+                        />
+                        <button
+                            type="button"
+                            className={styles.passwordToggle}
+                            onClick={() => setShowPassword(prev => !prev)}
+                            aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+                            aria-pressed={showPassword}
+                        >
+                            <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">
+                                {showPassword ? (
+                                    <>
+                                        <path d="M3 3l18 18" />
+                                        <path d="M10.6 10.6a2 2 0 002.8 2.8" />
+                                        <path d="M9.9 4.3A10.7 10.7 0 0112 4c5.5 0 9 5.2 9 8a8.2 8.2 0 01-1.6 3.9" />
+                                        <path d="M6.6 6.6C4.3 8.1 3 10.4 3 12c0 2.8 3.5 8 9 8a10.3 10.3 0 004.2-.9" />
+                                    </>
+                                ) : (
+                                    <>
+                                        <path d="M2.5 12S6 5 12 5s9.5 7 9.5 7S18 19 12 19 2.5 12 2.5 12z" />
+                                        <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                    </>
+                                )}
+                            </svg>
+                        </button>
+                    </div>
+                    {errors.password && <small id="ambassador-password-error" className={styles.error}>{errors.password}</small>}
                 </label>
 
                 <label className={fieldClassName('phone')} data-field="phone">

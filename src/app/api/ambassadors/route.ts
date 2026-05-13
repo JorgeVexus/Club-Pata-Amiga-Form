@@ -9,6 +9,12 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+const MEMBERSTACK_API_URL = 'https://admin.memberstack.com/members';
+
+function getMemberstackAdminKey(): string {
+    return process.env.MEMBERSTACK_ADMIN_SECRET_KEY || process.env.MEMBERSTACK_SECRET_KEY || '';
+}
+
 // Función para generar código de embajador único
 function generateAmbassadorCode(): string {
     const year = new Date().getFullYear();
@@ -29,6 +35,130 @@ function corsHeaders() {
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
+}
+
+async function createMemberstackAmbassador(
+    body: CreateAmbassadorRequest,
+    ambassadorCode: string,
+    mappedGender: string | null
+): Promise<{ success: true; memberId: string } | { success: false; error: string; status: number }> {
+    const apiKey = getMemberstackAdminKey();
+
+    if (!apiKey) {
+        return {
+            success: false,
+            error: 'Memberstack no esta configurado en el servidor',
+            status: 500
+        };
+    }
+
+    const response = await fetch(MEMBERSTACK_API_URL, {
+        method: 'POST',
+        headers: {
+            'X-API-KEY': apiKey,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            email: body.email.toLowerCase().trim(),
+            password: body.password,
+            customFields: {
+                'first-name': body.first_name.trim(),
+                'paternal-last-name': body.paternal_surname.trim(),
+                'maternal-last-name': body.maternal_surname?.trim() || '',
+                'gender': mappedGender || '',
+                'curp': body.curp?.toUpperCase() || '',
+                'phone': body.phone?.trim() || '',
+                'role': 'ambassador',
+                'is-ambassador': 'true',
+                'ambassador-status': 'pending',
+                'ambassador-code': ambassadorCode,
+                'approval-status': 'pending',
+                'registration-source': 'ambassador-form'
+            }
+        })
+    });
+
+    const data = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        return {
+            success: false,
+            error: data?.message || data?.error || 'No se pudo crear el usuario en Memberstack',
+            status: response.status
+        };
+    }
+
+    const memberId = data?.data?.id || data?.id;
+    if (!memberId) {
+        return {
+            success: false,
+            error: 'Memberstack creo el usuario, pero no devolvio el ID',
+            status: 502
+        };
+    }
+
+    return { success: true, memberId };
+}
+
+async function updateMemberstackAmbassador(
+    memberId: string,
+    body: CreateAmbassadorRequest,
+    ambassadorCode: string,
+    mappedGender: string | null
+) {
+    const apiKey = getMemberstackAdminKey();
+    if (!apiKey) return;
+
+    const response = await fetch(`${MEMBERSTACK_API_URL}/${memberId}`, {
+        method: 'PATCH',
+        headers: {
+            'X-API-KEY': apiKey,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            customFields: {
+                'first-name': body.first_name.trim(),
+                'paternal-last-name': body.paternal_surname.trim(),
+                'maternal-last-name': body.maternal_surname?.trim() || '',
+                'gender': mappedGender || '',
+                'curp': body.curp?.toUpperCase() || '',
+                'phone': body.phone?.trim() || '',
+                'role': 'ambassador',
+                'is-ambassador': 'true',
+                'ambassador-status': 'pending',
+                'ambassador-code': ambassadorCode,
+                'approval-status': 'pending',
+                'registration-source': 'ambassador-form'
+            }
+        })
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        console.warn(`No se pudo actualizar Memberstack para ${memberId}: ${errorText}`);
+    }
+}
+
+async function deleteMemberstackMember(memberId: string) {
+    const apiKey = getMemberstackAdminKey();
+    if (!apiKey) return;
+
+    try {
+        const response = await fetch(`${MEMBERSTACK_API_URL}/${memberId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-API-KEY': apiKey,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.warn(`No se pudo revertir el miembro de Memberstack ${memberId}: ${errorText}`);
+        }
+    } catch (error) {
+        console.warn(`Error revirtiendo el miembro de Memberstack ${memberId}:`, error);
+    }
 }
 
 // OPTIONS - CORS preflight
@@ -202,6 +332,23 @@ export async function POST(request: NextRequest) {
         // El código de referido se establecerá después de la aprobación
         // Por ahora usamos null para indicar que está pendiente
         const referralCode = null;
+        const mappedGender = mapGender(body.gender);
+        let linkedMemberstackId = sanitize(body.linked_memberstack_id);
+
+        if (linkedMemberstackId) {
+            await updateMemberstackAmbassador(linkedMemberstackId, body, ambassadorCode, mappedGender);
+        } else {
+            const memberstackResult = await createMemberstackAmbassador(body, ambassadorCode, mappedGender);
+
+            if (!memberstackResult.success) {
+                return NextResponse.json(
+                    { success: false, error: memberstackResult.error },
+                    { status: memberstackResult.status, headers: corsHeaders() }
+                );
+            }
+
+            linkedMemberstackId = memberstackResult.memberId;
+        }
 
         // Hash de la contraseña
         const passwordHash = await bcrypt.hash(body.password, 10);
@@ -223,7 +370,7 @@ export async function POST(request: NextRequest) {
                 first_name: body.first_name.trim(),
                 paternal_surname: body.paternal_surname.trim(),
                 maternal_surname: sanitize(body.maternal_surname),
-                gender: mapGender(body.gender),
+                gender: mappedGender,
                 birth_date: sanitize(body.birth_date), // Convertir "" a null
                 curp: body.curp ? body.curp.toUpperCase() : null, // Opcional para extranjeros
                 ine_front_url: sanitize(body.ine_front_url),
@@ -250,7 +397,7 @@ export async function POST(request: NextRequest) {
                 referral_code_status: 'pending',
                 status: 'pending',
                 commission_percentage: commissionPercentage,
-                linked_memberstack_id: sanitize(body.linked_memberstack_id),
+                linked_memberstack_id: linkedMemberstackId,
                 terms_accepted_at: sanitize(body.terms_accepted_at),
                 terms_version: sanitize(body.terms_version) || '1.0',
                 terms_acceptance: body.terms_acceptance || null
@@ -260,6 +407,10 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Error creating ambassador:', error);
+            if (linkedMemberstackId && !body.linked_memberstack_id) {
+                await deleteMemberstackMember(linkedMemberstackId);
+            }
+
             return NextResponse.json(
                 { success: false, error: 'Error al crear la solicitud' },
                 { status: 500, headers: corsHeaders() }
@@ -281,6 +432,7 @@ export async function POST(request: NextRequest) {
             message: 'Solicitud enviada correctamente. Podrás elegir tu código de embajador después de que sea aprobada.',
             data: {
                 id: ambassador.id,
+                memberstack_id: linkedMemberstackId,
                 ambassador_code: ambassador.ambassador_code,
                 referral_code: null, // Se establecerá después de la aprobación
                 next_step: 'wait_for_approval'

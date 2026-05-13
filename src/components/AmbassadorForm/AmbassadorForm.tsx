@@ -31,6 +31,7 @@ const initialFormData: SimplifiedAmbassadorData = {
     gender: '',
     curp: '',
     email: '',
+    password: '',
     phone: '',
     facebook: '',
     instagram: '',
@@ -75,18 +76,6 @@ function normalizePhone(value: string): string {
 
 function normalizeCurp(value: string): string {
     return value.replace(/\s/g, '').toUpperCase().slice(0, 18);
-}
-
-function createTemporaryPassword(): string {
-    const randomBytes = new Uint32Array(2);
-    if (typeof window !== 'undefined' && window.crypto) {
-        window.crypto.getRandomValues(randomBytes);
-    } else {
-        randomBytes[0] = Date.now();
-        randomBytes[1] = Math.floor(Math.random() * 1000000);
-    }
-
-    return `AMB-${randomBytes[0].toString(36)}-${randomBytes[1].toString(36)}`;
 }
 
 function scrollToTop() {
@@ -278,6 +267,12 @@ export default function AmbassadorForm({
             nextErrors.email = 'Correo invalido';
         }
 
+        if (!formData.password) {
+            nextErrors.password = 'La contrasena es requerida';
+        } else if (formData.password.length < 8) {
+            nextErrors.password = 'Usa al menos 8 caracteres';
+        }
+
         if (!formData.phone.trim()) {
             nextErrors.phone = 'El celular es requerido';
         } else if (formData.phone.length !== 10) {
@@ -368,7 +363,7 @@ export default function AmbassadorForm({
                     curp: formData.curp,
                     email: formData.email.trim(),
                     phone: formData.phone,
-                    password: createTemporaryPassword(),
+                    password: formData.password,
                     facebook: formData.facebook.trim() || undefined,
                     instagram: formData.instagram.trim() || undefined,
                     tiktok: formData.tiktok.trim() || undefined,
