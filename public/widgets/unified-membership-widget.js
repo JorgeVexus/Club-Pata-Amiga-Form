@@ -3351,6 +3351,69 @@
             .pata-rejected-container-new {
                 align-items: center;
             }
+            .pata-upload-preview {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+                border-radius: 13px;
+            }
+
+            .pata-upload-filename {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background: rgba(0,0,0,0.7);
+                color: white;
+                font-size: 10px;
+                padding: 4px;
+                text-align: center;
+                z-index: 2;
+                font-weight: 600;
+                backdrop-filter: blur(2px);
+            }
+
+            .pata-alert-banner.pata-premium-info {
+                background: #E0F7F6 !important;
+                border: 3px solid #000 !important;
+                box-shadow: 8px 8px 0 rgba(0, 187, 180, 0.2);
+                border-radius: 30px;
+                padding: 25px !important;
+                transition: transform 0.3s ease;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+
+            .pata-alert-banner.pata-premium-info:hover {
+                transform: translateY(-2px);
+            }
+
+            .pata-btn-premium-banner {
+                margin-top: 15px;
+                background: #FE8F15 !important;
+                color: #000 !important;
+                border: 2px solid #000 !important;
+                padding: 10px 24px !important;
+                border-radius: 50px !important;
+                font-family: 'Fraiche', sans-serif !important;
+                font-size: 15px !important;
+                cursor: pointer;
+                text-transform: lowercase;
+                box-shadow: 4px 4px 0 #000;
+                transition: all 0.2s;
+                display: inline-block;
+                text-decoration: none;
+            }
+
+            .pata-btn-premium-banner:hover {
+                transform: translate(-2px, -2px);
+                box-shadow: 6px 6px 0 #000;
+                background: #ff9f35 !important;
             }
             `;
 
@@ -4551,16 +4614,16 @@
         renderOptionalDocsBanner(pet) {
             if (this.isSenior(pet) && !pet.vet_certificate_url) {
                 return `
-                    <div class="pata-alert-banner pata-alert-info" style="background: #F3E5F5; border-color: #7B1FA2; margin-bottom: 20px;">
-                        <span>🩺</span>
-                        <div>
-                            <div class="pata-subtitle" style="color: #7B1FA2; font-size: 14px; margin-bottom: 5px;">Certificado pendiente (Opcional)</div>
-                            <p style="margin:0; font-size:14px; color:#1A1A1A;">Como es un peludito senior (10+ años), puedes subir su certificado médico para agilizar cualquier atención futura.</p>
-                            <div style="margin-top: 15px;">
-                                <button class="pata-btn" id="pata-btn-open-update-cert" data-pet-id="${pet.id}" style="background: #7B1FA2; color: white; padding: 8px 20px; font-size: 14px; font-weight: 900; border-radius: 50px; cursor: pointer; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                                    📎 Subir Certificado
-                                </button>
-                            </div>
+                    <div class="pata-alert-banner pata-premium-info" style="margin-bottom: 25px;">
+                        <div class="pata-alert-icon" style="font-size: 32px;">📜</div>
+                        <div class="pata-alert-body">
+                            <h4 style="color: #000; font-family: 'Fraiche', sans-serif; font-size: 18px; margin: 0 0 8px 0; text-transform: lowercase;">certificado médico pendiente</h4>
+                            <p style="color: #333; font-family: 'Outfit', sans-serif; font-size: 14px; line-height: 1.4; margin: 0;">
+                                como <strong>${pet.name}</strong> tiene más de 10 años, puedes subir su certificado para reducir su periodo de carencia de 180 a 90 días.
+                            </p>
+                            <button id="pata-btn-open-update-cert" class="pata-btn-premium-banner" data-pet-id="${pet.id}">
+                                subir certificado ahora
+                            </button>
                         </div>
                     </div>
                 `;
@@ -4863,9 +4926,9 @@
 
             if (isSenior && !hasCert) {
                 uploadFields += `
-                    <div style="margin-top: 25px; padding: 20px; background: #F3E5F5; border: 2px solid #7B1FA2; border-radius: 20px;">
-                        <label style="font-weight: 900; margin-bottom: 10px; display: block; color: #7B1FA2;">🩺 Sobre su salud (Senior 10+ años):</label>
-                        <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border-color: #7B1FA2;">
+                    <div style="margin-top: 25px; padding: 25px; background: #E0F7F6; border: 2px solid #000; border-radius: 30px; box-shadow: 6px 6px 0 rgba(0,0,0,0.05);">
+                        <label style="font-weight: 900; margin-bottom: 12px; display: block; color: #000; font-family: 'Fraiche', sans-serif; text-transform: lowercase; font-size: 16px;">🩺 sobre su salud (senior 10+ años):</label>
+                        <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border: 2px dashed #00BBB4; border-radius: 20px; height: 120px; overflow: hidden; position: relative;">
                             <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-file-cert" style="display:none;" />
                             <div class="pata-upload-icon">📄</div>
                             <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
@@ -4896,7 +4959,7 @@
 
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
-                    <div class="pata-modal" style="max-width: 700px;">
+                    <div class="pata-modal" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
                         <div class="pata-modal-header" style="background: #fff; border-bottom: 2px solid #000;">
                             <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px;">📸 Actualizar Información de ${pet.name}</h3>
                             <button class="pata-modal-close" id="pata-modal-close">&times;</button>
@@ -5931,7 +5994,7 @@
                             area.classList.add('has-file');
                             const isImage = file.type.startsWith('image/');
                             area.innerHTML = `
-                                ${isImage ? `<img src="${URL.createObjectURL(file)}" class="pata-upload-preview">` : `<div class="pata-upload-preview" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5; border-radius:10px;"><span style="font-size:30px;">📄</span></div>`}
+                                ${isImage ? `<img src="${URL.createObjectURL(file)}" class="pata-upload-preview">` : `<div class="pata-upload-preview" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5;"><span style="font-size:30px;">📄</span></div>`}
                                 <div class="pata-upload-filename">✓ ${key === 'cert' ? 'Certificado' : 'Foto ' + key.replace('photo', '')}</div>
                             `;
                         }
