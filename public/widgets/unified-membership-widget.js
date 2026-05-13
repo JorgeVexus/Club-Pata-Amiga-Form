@@ -1927,6 +1927,20 @@
             line-height: 1.4;
         }
 
+        .pata-carencia-explanation {
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            line-height: 1.45;
+            color: #000;
+            background: #FFFFFF;
+            border: 2px solid #000;
+            border-radius: 22px;
+            padding: 14px 16px;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.08);
+            margin: 0;
+        }
+
         .pata-approved-progress-container {
             height: 20px;
             background: #F0F0F0;
@@ -3832,25 +3846,53 @@
 
         calculateCarencia(pet) {
             const now = new Date();
-            const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : new Date(pet.created_at);
+            let start = new Date();
+            if (pet.waiting_period_start) {
+                const parsed = new Date(pet.waiting_period_start);
+                if (!isNaN(parsed.getTime())) start = parsed;
+            } else if (pet.created_at) {
+                const parsed = new Date(pet.created_at);
+                if (!isNaN(parsed.getTime())) start = parsed;
+            }
 
             // Lógica de carencia refinada:
-            // 1. Mestizo + Adoptado -> 120 días
-            // 2. Raza + Adoptado -> 150 días
-            // 3. Estándar (No adoptado) -> 180 días
+            // 1. Codigo de embajador -> 90 dias
+            // 2. Mestizo + Adoptado -> 120 dias
+            // 3. Raza + Adoptado -> 150 dias
+            // 4. Estandar (No adoptado) -> 180 dias
+
+            if (pet.waiting_period_end) {
+                const endDate = new Date(pet.waiting_period_end);
+                if (!isNaN(endDate.getTime())) {
+                    const diffTotal = Math.max(0, endDate.getTime() - start.getTime());
+                    const totalDays = Math.ceil(diffTotal / (1000 * 60 * 60 * 24)) || 180;
+                    const diffTime = Math.max(0, now.getTime() - start.getTime());
+                    const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+                    const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+
+                    return { daysRemaining, percentage, totalDays, endDate };
+                }
+            }
 
             let totalDays = 180;
+
+            const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
+            const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
+            const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
+            const hasAmbassadorCode = !!(pet.referral_code || pet.ambassador_code || (this.msFields && (this.msFields['referral-code'] || this.msFields['ambassador-code'])));
 
             // Si el objeto ya trae el campo calculado del backend, usarlo
             if (pet.waiting_period_days) {
                 totalDays = parseInt(pet.waiting_period_days);
-            } else if (pet.is_adopted) {
-                const isMixed = pet.is_mixed_breed || pet.is_mixed || false;
+            } else if (hasAmbassadorCode) {
+                totalDays = 90;
+            } else if (isAdopted) {
                 totalDays = isMixed ? 120 : 150;
             }
 
 
-            const diffTime = Math.abs(now - start);
+            const diffTime = Math.max(0, now.getTime() - start.getTime());
             const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
             const daysRemaining = Math.max(0, totalDays - daysPassed);
             const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
@@ -3859,6 +3901,31 @@
             endDate.setDate(endDate.getDate() + totalDays);
 
             return { daysRemaining, percentage, totalDays, endDate };
+        }
+
+        escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        getCarenciaExplanation(pet) {
+            const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
+            const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
+            const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
+            const hasAmbassadorCode = !!(pet.referral_code || pet.ambassador_code || (this.msFields && (this.msFields['referral-code'] || this.msFields['ambassador-code'])));
+            const carencia = this.calculateCarencia(pet);
+            const type = (pet.pet_type || pet.type || '').toLowerCase();
+            const species = type.includes('gato') || type.includes('cat') ? 'michi' : 'lomito';
+            const adoptedText = isAdopted ? 'adoptado' : 'no adoptado';
+            const breedText = isMixed ? (species === 'michi' ? 'dom&eacute;stico' : 'mestizo') : 'de raza';
+            const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
+            const name = this.escapeHtml(pet.name || 'tu mascota');
+
+            return `Recuerda que <strong>${name}</strong> tiene un periodo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es una ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
         }
 
         isSenior(pet) {
@@ -4846,6 +4913,7 @@
                         <!-- Columna Izquierda: Estatus y Progreso -->
                         <div class="pata-approved-column-left">
                             <span class="pata-approved-status-badge">${carencia.daysRemaining <= 0 ? '¡Felicidades!' : 'tu periodo de espera'}</span>
+                            ${carencia.daysRemaining > 0 ? `<p class="pata-carencia-explanation">${this.getCarenciaExplanation(pet)}</p>` : ''}
                             
                             <div class="pata-approved-progress-box">
                                 ${carencia.daysRemaining <= 0 ? `
@@ -5531,6 +5599,7 @@
                                     return `
                                     <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
                                         <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
+                                        <p class="pata-carencia-explanation" style="margin-bottom: 16px;">${this.getCarenciaExplanation(pet)}</p>
                                         <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
                                             <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
                                         </div>

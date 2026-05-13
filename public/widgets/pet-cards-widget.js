@@ -344,6 +344,18 @@
         .pata-progress-container-v2 {
             margin: 10px 0 20px 0;
         }
+        .pata-carencia-explanation {
+            font-size: 13px;
+            font-weight: 800;
+            line-height: 1.45;
+            color: #000;
+            background: #fff;
+            border: var(--pata-border-thin);
+            border-radius: 18px;
+            padding: 12px 14px;
+            margin: 0 0 14px 0;
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.06);
+        }
         .pata-progress-header {
             display: flex;
             justify-content: space-between;
@@ -788,7 +800,7 @@
             const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
             const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
             const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
-            const hasAmbassadorCode = !!(pet.referral_code || this.msFields['referral-code'] || this.msFields['ambassador-code']);
+            const hasAmbassadorCode = !!(pet.referral_code || pet.ambassador_code || this.msFields['referral-code'] || this.msFields['ambassador-code']);
 
             let totalDays = 180;
             if (hasAmbassadorCode) {
@@ -807,6 +819,31 @@
             endDate.setDate(endDate.getDate() + totalDays);
 
             return { daysRemaining, percentage, totalDays, isWaiting, endDate };
+        }
+
+        escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        getCarenciaExplanation(pet) {
+            const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
+            const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
+            const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
+            const hasAmbassadorCode = !!(pet.referral_code || pet.ambassador_code || (this.msFields && (this.msFields['referral-code'] || this.msFields['ambassador-code'])));
+            const carencia = this.calculateCarencia(pet);
+            const type = (pet.pet_type || pet.type || '').toLowerCase();
+            const species = type.includes('gato') || type.includes('cat') ? 'michi' : 'lomito';
+            const adoptedText = isAdopted ? 'adoptado' : 'no adoptado';
+            const breedText = isMixed ? (species === 'michi' ? 'dom&eacute;stico' : 'mestizo') : 'de raza';
+            const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
+            const name = this.escapeHtml(pet.name || 'tu mascota');
+
+            return `Recuerda que <strong>${name}</strong> tiene un periodo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es una ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
         }
 
         async loadData() {
@@ -1046,6 +1083,7 @@
                                 }
                                 return `
                                     <div class="pata-progress-container-v2">
+                                        <p class="pata-carencia-explanation">${this.getCarenciaExplanation(pet)}</p>
                                         <div class="pata-progress-header">
                                             <span>Periodo de Carencia</span>
                                             <span>${carencia.percentage}%</span>
