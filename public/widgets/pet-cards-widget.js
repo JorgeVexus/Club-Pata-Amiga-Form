@@ -1174,17 +1174,17 @@
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/ingreso.png" alt="Ingreso"></div>
+                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/ingreso.png" alt="Fecha de ingreso a la manada"></div>
                                         <div class="pata-info-texts">
-                                            <span class="pata-info-label">Ingreso</span>
+                                            <span class="pata-info-label">Fecha de ingreso a la manada</span>
                                             <span class="pata-info-value">${registrationDate}</span>
                                         </div>
                                     </div>
                                     ${pet.status === 'approved' ? `
                                         <div class="pata-info-item">
-                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Activación de los beneficios"></div>
+                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Fecha de activación del fondo"></div>
                                             <div class="pata-info-texts">
-                                                <span class="pata-info-label">Activación de los beneficios</span>
+                                                <span class="pata-info-label">Fecha de activación del fondo</span>
                                                 <span class="pata-info-value">${activationDate}</span>
                                             </div>
                                         </div>

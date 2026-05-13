@@ -5620,8 +5620,8 @@
                 { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: 'https://app.pataamiga.mx/Icons/color-pelo.png' },
                 { label: 'Color Ojos', value: pet.eye_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-ojos.png' },
                 { label: 'Color Nariz', value: pet.nose_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-nariz.png' },
-                { label: 'Ingreso', value: registrationDate, icon: 'https://app.pataamiga.mx/Icons/ingreso.png' },
-                ...(pet.status === 'approved' ? [{ label: 'Activación de los beneficios', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
+                { label: 'Fecha de ingreso a la manada', value: registrationDate, icon: 'https://app.pataamiga.mx/Icons/ingreso.png' },
+                ...(pet.status === 'approved' ? [{ label: 'Fecha de activación del fondo', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
             ];
 
             const infoGridHtml = infoItems.map(item => `
