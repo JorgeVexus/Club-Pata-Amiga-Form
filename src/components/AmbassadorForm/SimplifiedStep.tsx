@@ -47,6 +47,11 @@ export default function SimplifiedStep({
     onSubmit
 }: Props) {
     const [showTermsModal, setShowTermsModal] = React.useState(false);
+    const fieldClassName = (field: string) => (
+        errors[field] ? `${styles.fieldGroup} ${styles.fieldGroupError}` : styles.fieldGroup
+    );
+    const radioFieldClassName = errors.gender ? `${styles.radioField} ${styles.radioFieldError}` : styles.radioField;
+    const termsSectionClassName = errors.accept_terms ? `${styles.termsSection} ${styles.termsSectionError}` : styles.termsSection;
 
     const acceptAllTerms = () => {
         const acceptance: TermsAcceptance = {
@@ -82,7 +87,7 @@ export default function SimplifiedStep({
             </div>
 
             <div className={styles.fields}>
-                <label className={styles.fieldGroup}>
+                <label className={fieldClassName('full_name')} data-field="full_name">
                     <span>Nombre completo</span>
                     <input
                         className={styles.input}
@@ -91,15 +96,20 @@ export default function SimplifiedStep({
                         onChange={(event) => onChange('full_name', event.target.value)}
                         placeholder="Nombre y apellidos"
                         autoComplete="name"
+                        aria-invalid={!!errors.full_name}
+                        aria-describedby={errors.full_name ? 'ambassador-full-name-error' : undefined}
                     />
-                    {errors.full_name && <small className={styles.error}>{errors.full_name}</small>}
+                    {errors.full_name && <small id="ambassador-full-name-error" className={styles.error}>{errors.full_name}</small>}
                 </label>
 
-                <fieldset className={styles.radioField}>
+                <fieldset className={radioFieldClassName} data-field="gender" aria-invalid={!!errors.gender}>
                     <legend>Sexo</legend>
                     <div className={styles.radioGrid}>
                         {genderOptions.map(option => (
-                            <label key={option.value} className={styles.radioOption}>
+                            <label
+                                key={option.value}
+                                className={data.gender === option.value ? `${styles.radioOption} ${styles.radioOptionSelected}` : styles.radioOption}
+                            >
                                 <input
                                     type="radio"
                                     name="gender"
@@ -114,7 +124,7 @@ export default function SimplifiedStep({
                     {errors.gender && <small className={styles.error}>{errors.gender}</small>}
                 </fieldset>
 
-                <label className={styles.fieldGroup}>
+                <label className={fieldClassName('curp')} data-field="curp">
                     <span>CURP</span>
                     <input
                         className={styles.input}
@@ -125,11 +135,13 @@ export default function SimplifiedStep({
                         placeholder="18 caracteres"
                         maxLength={18}
                         autoCapitalize="characters"
+                        aria-invalid={!!errors.curp}
+                        aria-describedby={errors.curp ? 'ambassador-curp-error' : undefined}
                     />
-                    {errors.curp && <small className={styles.error}>{errors.curp}</small>}
+                    {errors.curp && <small id="ambassador-curp-error" className={styles.error}>{errors.curp}</small>}
                 </label>
 
-                <label className={styles.fieldGroup}>
+                <label className={fieldClassName('email')} data-field="email">
                     <span>Correo</span>
                     <input
                         className={styles.input}
@@ -139,11 +151,13 @@ export default function SimplifiedStep({
                         onChange={(event) => onChange('email', event.target.value)}
                         placeholder="correo@ejemplo.com"
                         autoComplete="email"
+                        aria-invalid={!!errors.email}
+                        aria-describedby={errors.email ? 'ambassador-email-error' : undefined}
                     />
-                    {errors.email && <small className={styles.error}>{errors.email}</small>}
+                    {errors.email && <small id="ambassador-email-error" className={styles.error}>{errors.email}</small>}
                 </label>
 
-                <label className={styles.fieldGroup}>
+                <label className={fieldClassName('phone')} data-field="phone">
                     <span>Celular</span>
                     <div className={styles.phoneInput}>
                         <span>+52</span>
@@ -156,9 +170,11 @@ export default function SimplifiedStep({
                             inputMode="numeric"
                             autoComplete="tel"
                             maxLength={10}
+                            aria-invalid={!!errors.phone}
+                            aria-describedby={errors.phone ? 'ambassador-phone-error' : undefined}
                         />
                     </div>
-                    {errors.phone && <small className={styles.error}>{errors.phone}</small>}
+                    {errors.phone && <small id="ambassador-phone-error" className={styles.error}>{errors.phone}</small>}
                 </label>
 
                 <div className={styles.socialSection}>
@@ -201,7 +217,7 @@ export default function SimplifiedStep({
                     </label>
                 </div>
 
-                <label className={styles.fieldGroup}>
+                <label className={fieldClassName('motivation')} data-field="motivation">
                     <span>Motivacion</span>
                     <textarea
                         className={styles.textarea}
@@ -209,15 +225,19 @@ export default function SimplifiedStep({
                         onChange={(event) => onChange('motivation', event.target.value)}
                         placeholder="Cuentanos por que quieres representar a Pata Amiga"
                         rows={5}
+                        aria-invalid={!!errors.motivation}
+                        aria-describedby={errors.motivation ? 'ambassador-motivation-error' : undefined}
                     />
-                    {errors.motivation && <small className={styles.error}>{errors.motivation}</small>}
+                    {errors.motivation && <small id="ambassador-motivation-error" className={styles.error}>{errors.motivation}</small>}
                 </label>
 
-                <div className={styles.termsSection}>
+                <div className={termsSectionClassName} data-field="accept_terms">
                     <label className={styles.termsCheckboxLabel}>
                         <input
                             type="checkbox"
                             checked={!!termsAccepted}
+                            aria-invalid={!!errors.accept_terms}
+                            aria-describedby={errors.accept_terms ? 'ambassador-terms-error' : undefined}
                             onChange={() => {
                                 if (!termsAccepted) {
                                     acceptAllTerms();
@@ -241,7 +261,7 @@ export default function SimplifiedStep({
                             </button>
                         </span>
                     </label>
-                    {errors.accept_terms && <small className={styles.error}>{errors.accept_terms}</small>}
+                    {errors.accept_terms && <small id="ambassador-terms-error" className={styles.error}>{errors.accept_terms}</small>}
                 </div>
             </div>
 

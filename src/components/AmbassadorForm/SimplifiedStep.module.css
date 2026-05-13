@@ -40,6 +40,14 @@
     gap: 0.35rem;
 }
 
+.fieldGroupError {
+    padding: 0.85rem;
+    background: rgba(0, 0, 0, 0.14);
+    border: 2px solid #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+}
+
 .fieldGroup span,
 .radioField legend,
 .sectionLabel span {
@@ -81,10 +89,24 @@
     transform: translateY(-1px);
 }
 
+.fieldGroupError .input,
+.fieldGroupError .textarea {
+    border-color: #000000;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
 .radioField {
     border: 0;
     padding: 0;
     margin: 0;
+}
+
+.radioFieldError {
+    padding: 0.85rem;
+    background: rgba(0, 0, 0, 0.14);
+    border: 2px solid #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
 }
 
 .radioGrid {
@@ -113,10 +135,17 @@
     transform: translateY(-1px);
 }
 
+.radioOptionSelected {
+    background: #ffffff;
+    border-color: #000000;
+    color: #2D3748;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
 .radioOption input {
     width: 16px;
     height: 16px;
-    accent-color: #ffffff;
+    accent-color: #00BBB4;
 }
 
 .radioOption span {
@@ -162,10 +191,18 @@
 }
 
 .error {
-    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.35rem 0.65rem;
+    background: #ffffff;
+    color: #A8321C;
+    border: 2px solid #000000;
+    border-radius: 999px;
     font-size: 0.78rem;
-    font-weight: 700;
-    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25);
+    font-weight: 800;
+    line-height: 1.25;
 }
 
 .termsSection {
@@ -174,6 +211,12 @@
     background: rgba(255, 255, 255, 0.12);
     border: 2px solid rgba(255, 255, 255, 0.45);
     border-radius: 22px;
+}
+
+.termsSectionError {
+    background: rgba(0, 0, 0, 0.14);
+    border-color: #ffffff;
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
 }
 
 .termsCheckboxLabel {

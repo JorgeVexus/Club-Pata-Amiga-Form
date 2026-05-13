@@ -89,9 +89,30 @@ function createTemporaryPassword(): string {
     return `AMB-${randomBytes[0].toString(36)}-${randomBytes[1].toString(36)}`;
 }
 
-function scrollToFeedback() {
+function scrollToTop() {
     requestAnimationFrame(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+}
+
+function scrollToField(field?: string) {
+    if (!field || field === 'submit') {
+        scrollToTop();
+        return;
+    }
+
+    requestAnimationFrame(() => {
+        const target = document.querySelector<HTMLElement>(`[data-field="${field}"]`);
+
+        if (!target) {
+            scrollToTop();
+            return;
+        }
+
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+        const control = target.querySelector<HTMLElement>('input, textarea, button');
+        control?.focus({ preventScroll: true });
     });
 }
 
@@ -220,6 +241,19 @@ export default function AmbassadorForm({
         }
     };
 
+    const handleTermsChange = (acceptance: TermsAcceptance | null) => {
+        setTermsAccepted(acceptance);
+
+        if (errors.accept_terms || errors.submit) {
+            setErrors(prev => {
+                const nextErrors = { ...prev };
+                delete nextErrors.accept_terms;
+                delete nextErrors.submit;
+                return nextErrors;
+            });
+        }
+    };
+
     const validateForm = () => {
         const nextErrors: Record<string, string> = {};
         const nameParts = formData.full_name.trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
@@ -291,7 +325,7 @@ export default function AmbassadorForm({
         const validationErrors = validateForm();
         setErrors(validationErrors);
         if (Object.keys(validationErrors).length > 0) {
-            scrollToFeedback();
+            scrollToField(Object.keys(validationErrors)[0]);
             return;
         }
 
@@ -311,12 +345,13 @@ export default function AmbassadorForm({
             ]);
 
             if (!curpCheck.available || !emailCheck.available) {
-                setErrors({
+                const availabilityErrors = {
                     ...(curpCheck.available ? {} : { curp: 'Este CURP ya esta registrado' }),
                     ...(emailCheck.available ? {} : { email: 'Este correo ya esta registrado' })
-                });
+                };
+                setErrors(availabilityErrors);
                 setIsSubmitting(false);
-                scrollToFeedback();
+                scrollToField(Object.keys(availabilityErrors)[0]);
                 return;
             }
 
@@ -351,7 +386,7 @@ export default function AmbassadorForm({
             if (data.success) {
                 setShowSuccess(true);
                 onSuccess?.();
-                scrollToFeedback();
+                scrollToTop();
 
                 try {
                     trackLead({
@@ -375,12 +410,12 @@ export default function AmbassadorForm({
                 }
             } else {
                 setErrors({ submit: data.error || 'Error al enviar la solicitud' });
-                scrollToFeedback();
+                scrollToField('submit');
             }
         } catch (error) {
             console.error('Error submitting ambassador form:', error);
             setErrors({ submit: 'Error de conexion. Intenta de nuevo.' });
-            scrollToFeedback();
+            scrollToField('submit');
         } finally {
             setIsSubmitting(false);
         }
@@ -424,7 +459,7 @@ export default function AmbassadorForm({
                 isSubmitting={isSubmitting}
                 onBlur={handleBlur}
                 onChange={handleChange}
-                onTermsChange={setTermsAccepted}
+                onTermsChange={handleTermsChange}
                 onSubmit={handleSubmit}
                 termsAccepted={termsAccepted}
             />
