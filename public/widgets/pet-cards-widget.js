@@ -757,7 +757,24 @@
         calculateCarencia(pet) {
             const now = new Date();
             
-            // Handle potentially invalid or missing dates
+            // 1. Si ya tiene una fecha de fin explícita en DB, respetarla
+            if (pet.waiting_period_end) {
+                const endDate = new Date(pet.waiting_period_end);
+                if (!isNaN(endDate.getTime())) {
+                    const start = pet.waiting_period_start ? new Date(pet.waiting_period_start) : (pet.created_at ? new Date(pet.created_at) : now);
+                    const diffTotal = Math.max(0, endDate.getTime() - start.getTime());
+                    const totalDays = Math.ceil(diffTotal / (1000 * 60 * 60 * 24)) || 180;
+                    
+                    const diffTime = Math.max(0, now.getTime() - start.getTime());
+                    const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+                    const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
+                    const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
+                    
+                    return { daysRemaining, percentage, totalDays, isWaiting: daysRemaining > 0, endDate };
+                }
+            }
+
+            // 2. Determinar fecha de inicio
             let start = now;
             if (pet.waiting_period_start) {
                 const parsed = new Date(pet.waiting_period_start);
@@ -767,17 +784,15 @@
                 if (!isNaN(parsed.getTime())) start = parsed;
             }
             
-            let totalDays = 180;
-            
-            // Robust check for boolean-ish properties (Supabase, Memberstack, etc.)
+            // 3. Determinar número de días según reglas (SOT: carencia.utils.ts)
             const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
-            
             const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
             const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
+            const hasAmbassadorCode = !!(pet.referral_code || this.msFields['referral-code'] || this.msFields['ambassador-code']);
 
-            if (pet.waiting_period_days) {
-                const customDays = parseInt(pet.waiting_period_days);
-                if (!isNaN(customDays)) totalDays = customDays;
+            let totalDays = 180;
+            if (hasAmbassadorCode) {
+                totalDays = 90;
             } else if (isAdopted) {
                 totalDays = isMixed ? 120 : 150;
             }
@@ -1127,13 +1142,15 @@
                                             <span class="pata-info-value">${registrationDate}</span>
                                         </div>
                                     </div>
-                                    <div class="pata-info-item">
-                                        <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Activación"></div>
-                                        <div class="pata-info-texts">
-                                            <span class="pata-info-label">Activación</span>
-                                            <span class="pata-info-value">${activationDate}</span>
+                                    ${pet.status === 'approved' ? `
+                                        <div class="pata-info-item">
+                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Activación de los beneficios"></div>
+                                            <div class="pata-info-texts">
+                                                <span class="pata-info-label">Activación de los beneficios</span>
+                                                <span class="pata-info-value">${activationDate}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    ` : ''}
                                 </div>
                             </div>
 

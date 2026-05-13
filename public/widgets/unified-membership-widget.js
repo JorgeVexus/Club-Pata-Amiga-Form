@@ -686,16 +686,53 @@
 
         .pata-orange-alert {
             background: var(--pata-accent);
-            border-radius: 30px;
-            padding: 20px 30px;
+            border-radius: 24px;
+            padding: 16px 20px;
             display: flex;
-            gap: 20px;
+            gap: 16px;
             align-items: center;
-            margin-top: 30px;
+            margin-bottom: 20px;
             color: #1A1A1A;
-            border: var(--pata-border-thick);
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.05);
+            border: var(--pata-border-thin);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+            font-family: var(--pata-font-body);
         }
+
+        .pata-alert-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .pata-alert-list li {
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pata-upload-preview {
+            max-width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 16px;
+            border: var(--pata-border-thin);
+            margin-bottom: 12px;
+            background: #f8f8f8;
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        }
+
+        .pata-modal-scrollable {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .pata-modal-scrollable::-webkit-scrollbar { width: 6px; }
+        .pata-modal-scrollable::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
 
         /* ❌ Rejected State Premium Styles */
         .pata-rejected-wrapper {
@@ -4611,24 +4648,41 @@
             });
         }
 
-        renderOptionalDocsBanner(pet) {
-            if (this.isSenior(pet) && !pet.vet_certificate_url) {
-                return `
-                    <div class="pata-alert-banner pata-premium-info" style="margin-bottom: 25px;">
-                        <div class="pata-alert-icon" style="font-size: 32px;">📜</div>
-                        <div class="pata-alert-body">
-                            <h4 style="color: #000; font-family: 'Fraiche', sans-serif; font-size: 18px; margin: 0 0 8px 0; text-transform: lowercase;">certificado médico pendiente</h4>
-                            <p style="color: #333; font-family: 'Outfit', sans-serif; font-size: 14px; line-height: 1.4; margin: 0;">
-                                como <strong>${pet.name}</strong> tiene más de 10 años, puedes subir su certificado para reducir su periodo de carencia de 180 a 90 días.
-                            </p>
-                            <button id="pata-btn-open-update-cert" class="pata-btn-premium-banner" data-pet-id="${pet.id}">
-                                subir certificado ahora
-                            </button>
-                        </div>
-                    </div>
-                `;
+        renderAlertBanners(pet) {
+            const missingDocs = [];
+            const isSenior = this.isSenior(pet);
+            
+            // Check for missing photo (handling both field variants)
+            if (!pet.photo_url && !pet.primary_photo_url) {
+                missingDocs.push('Foto principal de la mascota');
             }
-            return '';
+            
+            // Check for missing certificate (if senior)
+            if (isSenior && !pet.vet_certificate_url) {
+                missingDocs.push('Certificado médico (Requerido para Senior)');
+            }
+
+            if (missingDocs.length === 0) return '';
+
+            return `
+                <div class="pata-orange-alert">
+                    <div style="font-size: 24px;">✨</div>
+                    <div style="flex: 1;">
+                        <p style="margin: 0 0 8px 0; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Documentación Pendiente</p>
+                        <ul class="pata-alert-list">
+                            ${missingDocs.map(doc => `
+                                <li>
+                                    <span class="material-symbols-outlined" style="font-size: 16px; color: #000;">assignment_late</span>
+                                    <span>${doc}</span>
+                                </li>
+                            `).join('')}
+                        </ul>
+                        <p style="margin: 10px 0 0 0; font-size: 11px; font-weight: 600; opacity: 0.8; line-height: 1.4;">
+                            Sube estos documentos para completar el perfil y asegurar la cobertura total de tu mascota.
+                        </p>
+                    </div>
+                </div>
+            `;
         }
 
         renderPetContent(pet) {
@@ -4636,7 +4690,7 @@
 
             // Si falta el certificado y no estamos ya en acción requerida prevemos banner
             if (pet.status !== 'action_required') {
-                content += this.renderOptionalDocsBanner(pet);
+                content += this.renderAlertBanners(pet);
             }
 
             if (pet.status === 'approved') {
