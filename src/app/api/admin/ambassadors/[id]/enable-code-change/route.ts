@@ -120,7 +120,7 @@ export async function POST(
             data: {
                 ambassador_id: ambassador.id,
                 can_change_referral_code: true,
-                change_url: `https://clubpataamiga.com/embajadores/cambiar-codigo?token=${changeToken}`,
+                change_url: `https://app.pataamiga.mx/embajadores/cambiar-codigo?token=${changeToken}`,
                 email_sent: emailSent
             }
         }, { headers: corsHeaders() });

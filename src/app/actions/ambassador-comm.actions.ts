@@ -266,7 +266,7 @@ export async function notifyAmbassadorApproval(params: {
 }) {
     const { userId, email, name, selectionToken } = params;
 
-    const selectionUrl = `https://clubpataamiga.com/embajadores/seleccionar-codigo?token=${selectionToken}`;
+    const selectionUrl = `https://app.pataamiga.mx/embajadores/seleccionar-codigo?token=${selectionToken}`;
 
     const subject = '¡Bienvenido a la manada, Embajador! 🐾';
     
@@ -500,7 +500,7 @@ export async function notifyAmbassadorCodeChangeEnabled(params: {
 }) {
     const { userId, email, name, currentCode, changeToken } = params;
 
-    const changeUrl = `https://clubpataamiga.com/embajadores/cambiar-codigo?token=${changeToken}`;
+    const changeUrl = `https://app.pataamiga.mx/embajadores/cambiar-codigo?token=${changeToken}`;
 
     const subject = 'Puedes cambiar tu código de embajador 🔄';
     
