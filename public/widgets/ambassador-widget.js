@@ -10,6 +10,34 @@
     'use strict';
 
     let currentAmbassador = null;
+    const COMMON_BANK_OPTIONS = [
+        'BBVA',
+        'Santander',
+        'Banorte',
+        'HSBC',
+        'Citibanamex',
+        'Scotiabank',
+        'Inbursa',
+        'Banco Azteca',
+        'BanBajio',
+        'Banregio',
+        'Nu Mexico',
+        'Hey Banco'
+    ];
+    const CLABE_BANK_CODES = {
+        '002': 'Citibanamex',
+        '012': 'BBVA',
+        '014': 'Santander',
+        '021': 'HSBC',
+        '030': 'BanBajio',
+        '036': 'Inbursa',
+        '044': 'Scotiabank',
+        '058': 'Banregio',
+        '072': 'Banorte',
+        '127': 'Banco Azteca',
+        '168': 'Hey Banco',
+        '638': 'Nu Mexico'
+    };
 
     // ============================================
     // CONFIGURACIÓN
@@ -20,6 +48,59 @@
         CLOUDINARY_URL: 'https://res.cloudinary.com/dqy07kgu6/image/upload',
         DEBUG: false
     };
+
+    function sanitizeClabeInput(value) {
+        return String(value || '').replace(/\D/g, '').slice(0, 18);
+    }
+
+    function getBankNameFromClabe(clabe) {
+        return CLABE_BANK_CODES[sanitizeClabeInput(clabe).slice(0, 3)] || '';
+    }
+
+    function isValidClabe(clabe) {
+        const normalizedClabe = sanitizeClabeInput(clabe);
+        if (!/^\d{18}$/.test(normalizedClabe)) {
+            return false;
+        }
+
+        const weights = [3, 7, 1];
+        const partialSum = normalizedClabe
+            .slice(0, 17)
+            .split('')
+            .reduce((sum, digit, index) => {
+                const product = Number(digit) * weights[index % weights.length];
+                return sum + (product % 10);
+            }, 0);
+
+        const checkDigit = (10 - (partialSum % 10)) % 10;
+        return checkDigit === Number(normalizedClabe[17]);
+    }
+
+    function getClabeValidationMessage(clabe) {
+        const normalizedClabe = sanitizeClabeInput(clabe);
+        if (!normalizedClabe) return 'Ingresa tu CLABE.';
+        if (normalizedClabe.length !== 18) return 'La CLABE debe tener exactamente 18 digitos.';
+        if (!isValidClabe(normalizedClabe)) return 'La CLABE no es valida. Revisa los 18 digitos e intentalo de nuevo.';
+        return '';
+    }
+
+    function syncBankInputWithClabe(clabeInput, bankInput) {
+        if (!clabeInput || !bankInput) return;
+        const normalizedClabe = sanitizeClabeInput(clabeInput.value);
+        const detectedBank = getBankNameFromClabe(normalizedClabe);
+        const currentBankName = bankInput.value.trim();
+        const previousAutoValue = bankInput.dataset.autoValue || '';
+        const canAutofill = !currentBankName || currentBankName === previousAutoValue;
+        clabeInput.value = normalizedClabe;
+        if (detectedBank && canAutofill) {
+            bankInput.value = detectedBank;
+            bankInput.dataset.autoValue = detectedBank;
+        } else if (!detectedBank && currentBankName === previousAutoValue) {
+            bankInput.value = '';
+            bankInput.dataset.autoValue = '';
+        }
+        clabeInput.setCustomValidity(getClabeValidationMessage(normalizedClabe));
+    }
 
     // ============================================
     // ESTILOS CSS
@@ -2514,15 +2595,18 @@
                     <form id="amb-payment-form" onsubmit="submitPaymentMethod(event)">
                         <div class="amb-form-group">
                             <label>Banco</label>
-                            <input type="text" name="bank_name" placeholder="Ej: BBVA, Santander..." value="${savedBankName}" required>
+                            <input type="text" name="bank_name" list="amb-bank-options" placeholder="Ej: BBVA, Santander..." value="${savedBankName}" autocomplete="organization" required>
+                            <datalist id="amb-bank-options">
+                                ${COMMON_BANK_OPTIONS.map(bankName => `<option value="${bankName}"></option>`).join('')}
+                            </datalist>
                         </div>
                         <div class="amb-form-group">
                             <label>CLABE</label>
-                            <input type="text" name="clabe" placeholder="18 dígitos" inputmode="numeric" pattern="[0-9]{18}" maxlength="18" value="${savedClabe}" required>
+                            <input type="text" name="clabe" placeholder="18 digitos" inputmode="numeric" pattern="\\d{18}" minlength="18" maxlength="18" title="Ingresa una CLABE valida de 18 digitos" value="${sanitizeClabeInput(savedClabe)}" required>
                         </div>
                         <div class="amb-form-group">
                             <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">
-                                Guarda la CLABE donde quieres recibir tus comisiones mensuales.
+                                Los primeros 3 digitos nos ayudan a sugerir el banco. Puedes corregirlo si hace falta.
                             </p>
                         </div>
                         <button type="submit" class="amb-btn-primary" style="width: 100%; margin-top: 20px;">
@@ -2534,6 +2618,28 @@
         `;
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
+
+        const form = modal.querySelector('#amb-payment-form');
+        const clabeInput = form?.querySelector('input[name="clabe"]');
+        const bankInput = form?.querySelector('input[name="bank_name"]');
+
+        if (clabeInput && bankInput) {
+            bankInput.dataset.autoValue = getBankNameFromClabe(clabeInput.value) || '';
+            syncBankInputWithClabe(clabeInput, bankInput);
+            clabeInput.addEventListener('input', function () {
+                syncBankInputWithClabe(clabeInput, bankInput);
+            });
+            clabeInput.addEventListener('blur', function () {
+                syncBankInputWithClabe(clabeInput, bankInput);
+                clabeInput.reportValidity();
+            });
+            bankInput.addEventListener('input', function () {
+                if (bankInput.value.trim() !== (bankInput.dataset.autoValue || '')) {
+                    bankInput.dataset.autoValue = '';
+                }
+                bankInput.setCustomValidity('');
+            });
+        }
     }
 
     window.closePaymentModal = function(event) {
@@ -2560,17 +2666,33 @@
             return;
         }
 
-        const clabe = String(form.clabe.value || '').replace(/\D/g, '');
-        if (clabe.length !== 18) {
-            alert('❌ La CLABE debe tener exactamente 18 dígitos.');
+        const clabeInput = form.clabe;
+        const bankInput = form.bank_name;
+        const clabe = sanitizeClabeInput(clabeInput.value);
+        const clabeMessage = getClabeValidationMessage(clabe);
+
+        clabeInput.value = clabe;
+        clabeInput.setCustomValidity(clabeMessage);
+
+        if (clabeMessage) {
+            clabeInput.reportValidity();
             submitBtn.disabled = false;
             submitBtn.textContent = 'Guardar CLABE';
             return;
         }
 
+        if (!bankInput.value.trim()) {
+            bankInput.setCustomValidity('Ingresa o confirma el banco de tu CLABE.');
+            bankInput.reportValidity();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar CLABE';
+            return;
+        }
+        bankInput.setCustomValidity('');
+
         const formData = {
             payment_method: 'clabe',
-            bank_name: form.bank_name.value.trim(),
+            bank_name: bankInput.value.trim(),
             clabe
         };
 

@@ -10,6 +10,28 @@ const supabase = createClient(
 const MEMBERSTACK_SECRET_KEY = process.env.MEMBERSTACK_SECRET_KEY;
 const MEMBERSTACK_API_URL = 'https://admin.memberstack.com/members';
 
+function sanitizeClabe(clabe: unknown) {
+    return String(clabe || '').replace(/\D/g, '').slice(0, 18);
+}
+
+function isValidClabe(clabe: string) {
+    if (!/^\d{18}$/.test(clabe)) {
+        return false;
+    }
+
+    const weights = [3, 7, 1] as const;
+    const partialSum = clabe
+        .slice(0, 17)
+        .split('')
+        .reduce((sum, digit, index) => {
+            const product = Number(digit) * weights[index % weights.length];
+            return sum + (product % 10);
+        }, 0);
+
+    const checkDigit = (10 - (partialSum % 10)) % 10;
+    return checkDigit === Number(clabe[17]);
+}
+
 function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
@@ -115,6 +137,9 @@ export async function PATCH(
     try {
         const { id } = await params;
         const body = await request.json();
+        const normalizedPaymentMethod = typeof body.payment_method === 'string' ? body.payment_method.trim() : body.payment_method;
+        const normalizedBankName = typeof body.bank_name === 'string' ? body.bank_name.trim() : body.bank_name;
+        const normalizedClabe = sanitizeClabe(body.clabe);
 
         // Obtener embajador actual
         const { data: currentAmbassador, error: fetchError } = await supabase
@@ -132,6 +157,38 @@ export async function PATCH(
 
         // Preparar datos de actualización
         const updateData: Record<string, unknown> = {};
+
+        if (normalizedPaymentMethod === 'clabe' || normalizedClabe) {
+            if (!normalizedBankName) {
+                return NextResponse.json(
+                    { success: false, error: 'Debes indicar el banco de la CLABE.' },
+                    { status: 400, headers: corsHeaders() }
+                );
+            }
+
+            if (!isValidClabe(normalizedClabe)) {
+                return NextResponse.json(
+                    { success: false, error: 'La CLABE no es válida.' },
+                    { status: 400, headers: corsHeaders() }
+                );
+            }
+        }
+
+        if (normalizedPaymentMethod === 'pending') {
+            body.payment_method = 'pending';
+            body.bank_name = '';
+            body.clabe = '';
+        } else {
+            if (body.payment_method !== undefined) {
+                body.payment_method = normalizedPaymentMethod;
+            }
+            if (body.bank_name !== undefined) {
+                body.bank_name = normalizedBankName;
+            }
+            if (body.clabe !== undefined) {
+                body.clabe = normalizedClabe;
+            }
+        }
 
         // Cambio de status
         if (body.status) {
