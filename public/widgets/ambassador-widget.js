@@ -9,6 +9,8 @@
 (function () {
     'use strict';
 
+    let currentAmbassador = null;
+
     // ============================================
     // CONFIGURACIÓN
     // ============================================
@@ -2013,8 +2015,13 @@
 
     // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
     function renderApproved(ambassador) {
+        const toNumber = (value, fallback = 0) => {
+            const parsed = Number(value);
+            return Number.isFinite(parsed) ? parsed : fallback;
+        };
+
         const formatCurrency = (amount) => {
-            return '$' + (amount || 0).toLocaleString('es-MX');
+            return '$' + toNumber(amount).toLocaleString('es-MX');
         };
 
         const formatDate = (dateString) => {
@@ -2043,20 +2050,19 @@
         }
 
         // Estadísticas del embajador
-        const totalReferrals = ambassador.total_referrals || ambassador.referrals_count || 0;
-        const totalEarnings = ambassador.total_earnings || 0;
-        const pendingPayout = ambassador.pending_payout || 0;
+        const totalReferrals = toNumber(ambassador.total_referrals ?? ambassador.referrals_count);
+        const totalEarnings = toNumber(ambassador.total_earnings);
+        const pendingPayout = toNumber(ambassador.pending_payout);
         const referralCode = ambassador.referral_code || '---';
-        const approvedReferrals = ambassador.approved_referrals || 0;
-        const reviewReferrals = ambassador.review_referrals || 0;
-        const rejectedReferrals = ambassador.rejected_referrals || 0;
+        const approvedReferrals = toNumber(ambassador.approved_referrals);
+        const reviewReferrals = toNumber(ambassador.review_referrals);
+        const rejectedReferrals = toNumber(ambassador.rejected_referrals);
         
         // Datos de pago
-        const hasPaymentMethod = ambassador.payment_method && ambassador.payment_method !== 'pending';
-        const paymentMethodId = ambassador.payment_method_id || ambassador.id;
-        const cardLast4 = ambassador.card_last4 || '----';
-        const cardType = ambassador.card_type || 'default';
-        const cardLabel = cardType === 'mastercard' ? 'Mastercard' : cardType === 'visa' ? 'Visa' : 'Tarjeta';
+        const hasPaymentMethod = ambassador.payment_method === 'clabe' && !!ambassador.clabe;
+        const clabe = String(ambassador.clabe || '');
+        const clabeLast4 = clabe.slice(-4) || '----';
+        const bankName = ambassador.bank_name || 'Banco no especificado';
 
         // Referidos reales
         const referrals = ambassador.recent_referrals || [];
@@ -2119,12 +2125,12 @@
                             
                             <div class="amb-earnings-total">
                                 <span class="amb-earnings-label">Total ganado histórico</span>
-                                <span class="amb-earnings-value">${formatCurrency(totalEarnings || 156)}</span>
+                                <span class="amb-earnings-value">${formatCurrency(totalEarnings)}</span>
                             </div>
                             
                             <div class="amb-earnings-available">
                                 <span class="amb-earnings-label">Disponible para retirar</span>
-                                <span class="amb-earnings-available-value">${formatCurrency(pendingPayout || 48)}</span>
+                                <span class="amb-earnings-available-value">${formatCurrency(pendingPayout)}</span>
                             </div>
                             
                             <p class="amb-earnings-note">
@@ -2156,28 +2162,12 @@
                                 </div>
                                 <div class="amb-stat-box total">
                                     <span class="amb-stat-label">Total</span>
-                                    <span class="amb-stat-num">${totalReferrals || 5}</span>
+                                    <span class="amb-stat-num">${totalReferrals}</span>
                                 </div>
                             </div>
                         </div>
                     </section>
                 </div>
-
-                ${!hasPaymentMethod ? `
-                <!-- Alerta Datos Bancarios -->
-                <div class="amb-bank-alert">
-                    <div class="amb-bank-alert-left">
-                        <img src="${CONFIG.CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="" class="amb-bank-alert-icon">
-                        <div class="amb-bank-alert-text">
-                            <strong>Agrega tus datos bancarios</strong>
-                            Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.
-                        </div>
-                    </div>
-                    <button class="amb-btn-bank" onclick="window.addPaymentMethod()">
-                        Agregar datos bancarios
-                    </button>
-                </div>
-                ` : ''}
 
                 <!-- Método de Pago -->
                 <section class="amb-payment-section">
@@ -2185,21 +2175,21 @@
                     <div class="amb-payment-card">
                         <div class="amb-payment-info">
                             <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/mastercard_icon.png" 
-                                 alt="${cardLabel}" class="amb-payment-icon" 
+                                 alt="CLABE" class="amb-payment-icon" 
                                  onerror="this.style.display='none'">
                             <div class="amb-payment-details">
-                                <span class="amb-payment-label">Cuenta registrada</span>
-                                <span class="amb-payment-card-info">Débito ${cardLabel} •••• ${cardLast4}</span>
+                                <span class="amb-payment-label">${bankName}</span>
+                                <span class="amb-payment-card-info">CLABE •••• ${clabeLast4}</span>
                             </div>
                         </div>
                         <div class="amb-payment-actions">
                             <span class="amb-payment-status">Predeterminado</span>
-                            <button class="amb-payment-link" onclick="window.removePaymentMethod('${paymentMethodId}')">Eliminar tarjeta</button>
+                            <button class="amb-payment-link" onclick="window.removePaymentMethod()">Eliminar CLABE</button>
                         </div>
                         <div class="amb-payment-divider"></div>
                         <button class="amb-payment-add" onclick="window.addPaymentMethod()">
                             <span class="amb-payment-add-icon">+</span>
-                            Agregar otro método de pago
+                            Actualizar CLABE
                         </button>
                         <button class="amb-payment-history" onclick="window.viewPaymentHistory()">Ver historial de pagos</button>
                     </div>
@@ -2209,11 +2199,11 @@
                             <img src="${CONFIG.CLOUDINARY_URL}/v1772049171/tarjeta_zgbc9t.webp" alt="Tarjeta">
                         </div>
                         <div class="amb-payment-empty-content">
-                            <strong>No tienes métodos de pago registrados</strong>
+                            <strong>Agrega tu CLABE bancaria</strong>
                             <p>Para recibir tus comisiones, agrega tus datos bancarios en tu perfil.</p>
                         </div>
                         <button class="amb-btn-primary" onclick="window.addPaymentMethod()">
-                            Agregar método de pago
+                            Agregar CLABE
                         </button>
                     </div>
                     `}
@@ -2513,36 +2503,30 @@
 
     function openPaymentModal() {
         const modal = document.createElement('div');
+        const savedBankName = currentAmbassador?.bank_name || '';
+        const savedClabe = currentAmbassador?.clabe || '';
         modal.id = 'amb-payment-modal';
         modal.innerHTML = `
             <div class="amb-modal-overlay" onclick="closePaymentModal(event)">
                 <div class="amb-modal-content" onclick="event.stopPropagation()">
                     <button class="amb-modal-close" onclick="closePaymentModal()">&times;</button>
-                    <h3 class="amb-modal-title">Agregar método de pago</h3>
+                    <h3 class="amb-modal-title">Agregar CLABE bancaria</h3>
                     <form id="amb-payment-form" onsubmit="submitPaymentMethod(event)">
                         <div class="amb-form-group">
-                            <label>Tipo de cuenta</label>
-                            <select name="account_type" required>
-                                <option value="">Selecciona...</option>
-                                <option value="debit">Débito</option>
-                                <option value="credit">Crédito</option>
-                                <option value="clabe">CLABE</option>
-                            </select>
-                        </div>
-                        <div class="amb-form-group">
                             <label>Banco</label>
-                            <input type="text" name="bank_name" placeholder="Ej: BBVA, Santander..." required>
+                            <input type="text" name="bank_name" placeholder="Ej: BBVA, Santander..." value="${savedBankName}" required>
                         </div>
                         <div class="amb-form-group">
-                            <label>Número de tarjeta / CLABE</label>
-                            <input type="text" name="account_number" placeholder="**** **** **** ****" maxlength="18" required>
+                            <label>CLABE</label>
+                            <input type="text" name="clabe" placeholder="18 dígitos" inputmode="numeric" pattern="[0-9]{18}" maxlength="18" value="${savedClabe}" required>
                         </div>
                         <div class="amb-form-group">
-                            <label>Titular de la cuenta</label>
-                            <input type="text" name="account_holder" placeholder="Nombre completo" required>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.5; color: #555;">
+                                Guarda la CLABE donde quieres recibir tus comisiones mensuales.
+                            </p>
                         </div>
                         <button type="submit" class="amb-btn-primary" style="width: 100%; margin-top: 20px;">
-                            Guardar método de pago
+                            Guardar CLABE
                         </button>
                     </form>
                 </div>
@@ -2569,16 +2553,30 @@
         submitBtn.disabled = true;
         submitBtn.textContent = 'Guardando...';
 
+        if (!currentAmbassador?.id) {
+            alert('❌ No se pudo identificar al embajador actual.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar CLABE';
+            return;
+        }
+
+        const clabe = String(form.clabe.value || '').replace(/\D/g, '');
+        if (clabe.length !== 18) {
+            alert('❌ La CLABE debe tener exactamente 18 dígitos.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar CLABE';
+            return;
+        }
+
         const formData = {
-            account_type: form.account_type.value,
-            bank_name: form.bank_name.value,
-            account_number: form.account_number.value,
-            account_holder: form.account_holder.value
+            payment_method: 'clabe',
+            bank_name: form.bank_name.value.trim(),
+            clabe
         };
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-methods`, {
-                method: 'POST',
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
             });
@@ -2586,41 +2584,51 @@
             const data = await response.json();
 
             if (data.success) {
-                alert('✅ Método de pago guardado correctamente');
+                alert('✅ CLABE guardada correctamente');
                 closePaymentModal();
                 location.reload();
             } else {
-                alert('❌ ' + (data.error || 'No se pudo guardar el método de pago'));
+                alert('❌ ' + (data.error || 'No se pudo guardar la CLABE'));
             }
         } catch (error) {
-            console.error('Error guardando método de pago:', error);
+            console.error('Error guardando CLABE:', error);
             alert('❌ Hubo un error. Por favor intenta más tarde.');
         } finally {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Guardar método de pago';
+            submitBtn.textContent = 'Guardar CLABE';
         }
     };
 
-    window.removePaymentMethod = async function (paymentMethodId) {
-        if (!confirm('¿Deseas eliminar este método de pago?')) {
+    window.removePaymentMethod = async function () {
+        if (!currentAmbassador?.id) {
+            alert('❌ No se pudo identificar al embajador actual.');
+            return;
+        }
+
+        if (!confirm('¿Deseas eliminar esta CLABE?')) {
             return;
         }
         
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-methods/${paymentMethodId}`, {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' }
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    payment_method: 'pending',
+                    bank_name: '',
+                    clabe: ''
+                })
             });
             
             if (response.ok) {
-                alert('✅ Método de pago eliminado correctamente');
+                alert('✅ CLABE eliminada correctamente');
                 location.reload();
             } else {
                 const data = await response.json();
-                alert('❌ ' + (data.error || 'No se pudo eliminar el método de pago'));
+                alert('❌ ' + (data.error || 'No se pudo eliminar la CLABE'));
             }
         } catch (error) {
-            console.error('Error eliminando método de pago:', error);
+            console.error('Error eliminando CLABE:', error);
             alert('❌ Hubo un error al eliminar. Por favor intenta más tarde.');
         }
     };
@@ -2793,6 +2801,7 @@
         if (email || memberId) {
             ambassador = await checkAmbassadorStatus(email, memberId);
         }
+        currentAmbassador = ambassador;
 
         // Render based on status
         let content = '';
