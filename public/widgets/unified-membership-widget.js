@@ -24,6 +24,7 @@
 
     const STYLES = `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@400;600;700&display=swap');
 
         :root {
             --pata-primary: #00BBB4;
@@ -498,6 +499,77 @@
             width: 100%;
         }
 
+        .pata-info-card {
+            background: var(--pata-primary-light);
+            border-radius: 24px;
+            padding: 24px;
+            border: var(--pata-border-thin);
+            margin-bottom: 30px;
+        }
+
+        .pata-info-card-title {
+            font-size: 10px;
+            font-weight: 800;
+            color: #000;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin: 0 0 16px 0;
+            opacity: 0.6;
+        }
+
+        .pata-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .pata-info-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pata-info-icon-wrap {
+            width: 36px;
+            height: 36px;
+            border-radius: 12px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            flex-shrink: 0;
+            border: 2px solid #000;
+        }
+
+        .pata-info-icon-wrap img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+
+        .pata-info-texts {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .pata-info-label {
+            font-size: 9px;
+            font-weight: 800;
+            color: #718096;
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 2px;
+        }
+
+        .pata-info-value {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1A1A1E;
+            line-height: 1.2;
+        }
+
         .pata-editorial-name {
             font-size: clamp(48px, 6vw, 72px);
             font-weight: 950;
@@ -535,6 +607,14 @@
             .pata-editorial-info-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
+            }
+            .pata-info-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .pata-info-card {
+                padding: 20px;
+                border-radius: 22px;
             }
             .pata-editorial-left, .pata-editorial-right {
                 overflow-y: visible; 
@@ -875,9 +955,11 @@
             .pata-editorial-left .pata-editorial-main-img-box,
             .pata-editorial-left .pata-no-scrollbar { display: none; }
             
-            .pata-editorial-right .pata-editorial-info-grid { display: none; }
+            .pata-editorial-right .pata-editorial-info-grid,
+            .pata-editorial-right > .pata-info-card { display: none; }
             .pata-mobile-accordion { display: block; }
-            .pata-mobile-accordion .pata-editorial-info-grid { display: grid !important; }
+            .pata-mobile-accordion .pata-info-card { display: block !important; }
+            .pata-mobile-accordion .pata-info-grid { display: grid !important; }
             
             .pata-editorial-left { padding: 15px; border-bottom: none; }
             .pata-editorial-right { padding: 20px 25px 30px !important; }
@@ -3871,7 +3953,7 @@
                     const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)));
                     const percentage = Math.min(100, Math.round((daysPassed / totalDays) * 100));
 
-                    return { daysRemaining, percentage, totalDays, endDate };
+                    return { daysRemaining, percentage, totalDays, endDate, isWaiting: daysRemaining > 0 };
                 }
             }
 
@@ -3900,7 +3982,7 @@
             const endDate = new Date(start);
             endDate.setDate(endDate.getDate() + totalDays);
 
-            return { daysRemaining, percentage, totalDays, endDate };
+            return { daysRemaining, percentage, totalDays, endDate, isWaiting: daysRemaining > 0 };
         }
 
         escapeHtml(value) {
@@ -4703,7 +4785,7 @@
                             <div class="pata-benefit-icon-box">🤝</div>
                             <div class="pata-benefit-info">
                                 <h4>Impacto Social</h4>
-                                <p>Apoyamos refugios por cada miembro.</p>
+                                <p>Por cada 1,000 miembros, la manada apoya a quienes más lo necesitan. Juntos protegemos más</p>
                             </div>
                         </div>
                     </div>
@@ -5524,30 +5606,30 @@
             if (photos.length === 0) photos.push('https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png');
 
             const registrationDate = pet.created_at ? new Date(pet.created_at).toLocaleDateString('es-MX', {
-                day: 'numeric', month: 'long', year: 'numeric'
+                day: 'numeric', month: 'short', year: 'numeric'
             }) : 'No disponible';
 
             const activationDate = carencia.endDate ? carencia.endDate.toLocaleDateString('es-MX', {
-                day: 'numeric', month: 'long', year: 'numeric'
+                day: 'numeric', month: 'short', year: 'numeric'
             }) : '---';
 
             const infoItems = [
-                { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: '🐾' },
-                { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: '🎂' },
-                { label: 'Género', value: pet.gender || 'Hembra', icon: '⚧' },
-                { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: '🎨' },
-                { label: 'Nariz', value: pet.nose_color || '---', icon: '👃' },
-                { label: 'Ojos', value: pet.eye_color || '---', icon: '👁️' },
-                { label: 'Ingreso', value: registrationDate, icon: '📅' },
-                { label: 'Estatus', value: status.label, icon: '🛡️', isStatus: true },
-                ...(pet.status === 'approved' ? [{ label: 'Activación', value: activationDate, icon: '🚀' }] : [])
+                { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: 'https://app.pataamiga.mx/Icons/especie.png' },
+                { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: 'https://app.pataamiga.mx/Icons/edad.png' },
+                { label: 'Género', value: pet.gender || 'Hembra', icon: 'https://app.pataamiga.mx/Icons/sexo.png' },
+                { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: 'https://app.pataamiga.mx/Icons/color-pelo.png' },
+                { label: 'Color Ojos', value: pet.eye_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-ojos.png' },
+                { label: 'Color Nariz', value: pet.nose_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-nariz.png' },
+                { label: 'Ingreso', value: registrationDate, icon: 'https://app.pataamiga.mx/Icons/ingreso.png' },
+                ...(pet.status === 'approved' ? [{ label: 'Activación de los beneficios', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
             ];
 
             const infoGridHtml = infoItems.map(item => `
-                <div style="border-left: var(--pata-border-thick); border-color: var(--pata-primary); padding-left: 20px;">
-                    <div style="font-size: 11px; font-weight: 950; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">${item.label}</div>
-                    <div class="${item.isStatus ? 'pata-editorial-status-value' : ''}" style="font-size: 17px; font-weight: 900; color: ${item.isStatus ? status.bg : '#000'}; display: flex; align-items: center; gap: 8px;">
-                        <span style="opacity: 0.4;">${item.icon}</span> ${item.value}
+                <div class="pata-info-item">
+                    <div class="pata-info-icon-wrap"><img src="${item.icon}" alt="${item.label}"></div>
+                    <div class="pata-info-texts">
+                        <span class="pata-info-label">${item.label}</span>
+                        <span class="pata-info-value">${item.value}</span>
                     </div>
                 </div>
             `).join('');
@@ -5640,15 +5722,21 @@
                                 ${this.renderModalActionButtons(pet)}
 
                                 <!-- Desktop Info Grid -->
-                                <div class="pata-editorial-info-grid">
-                                    ${infoGridHtml}
+                                <div class="pata-info-card">
+                                    <h3 class="pata-info-card-title">Información General</h3>
+                                    <div class="pata-info-grid">
+                                        ${infoGridHtml}
+                                    </div>
                                 </div>
 
                                 <!-- 📂 Mobile Accordion -->
                                 <details class="pata-mobile-accordion">
                                     <summary>Ver todos los detalles</summary>
-                                    <div class="pata-editorial-info-grid" style="gap: 15px; padding: 20px 0;">
-                                        ${infoGridHtml}
+                                    <div class="pata-info-card" style="margin-top: 16px; margin-bottom: 0;">
+                                        <h3 class="pata-info-card-title">Información General</h3>
+                                        <div class="pata-info-grid">
+                                            ${infoGridHtml}
+                                        </div>
                                     </div>
                                 </details>
 
