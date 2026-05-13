@@ -71,25 +71,42 @@ export async function GET(request: NextRequest) {
                 .order('created_at', { ascending: false })
                 .limit(10);
 
+            // Referidos aprobados (ya sea marcados como approved o ya pagados)
+            const { count: approvedCount } = await supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('ambassador_id', ambassador.id)
+                .in('commission_status', ['approved', 'paid']);
+
+            // Referidos en revisión (pendientes)
+            const { count: reviewCount } = await supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('ambassador_id', ambassador.id)
+                .eq('commission_status', 'pending');
+
+            // Referidos rechazados (cancelados)
+            const { count: rejectedCount } = await supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('ambassador_id', ambassador.id)
+                .eq('commission_status', 'cancelled');
+
             // Obtener conteo total de referidos
             const { count: totalReferrals } = await supabase
                 .from('referrals')
                 .select('*', { count: 'exact', head: true })
                 .eq('ambassador_id', ambassador.id);
 
-            // Referidos activos
-            const { count: activeReferrals } = await supabase
-                .from('referrals')
-                .select('*', { count: 'exact', head: true })
-                .eq('ambassador_id', ambassador.id)
-                .eq('status', 'active');
-
             detailedData = {
                 ...detailedData,
                 recent_referrals: recentReferrals || [],
                 total_referrals: totalReferrals || 0,
-                referrals_count: totalReferrals || 0, // Alias para compatibilidad con el widget
-                active_referrals: activeReferrals || 0
+                referrals_count: totalReferrals || 0,
+                approved_referrals: approvedCount || 0,
+                review_referrals: reviewCount || 0,
+                rejected_referrals: rejectedCount || 0,
+                active_referrals: approvedCount || 0 // Usamos los aprobados como "activos"
             };
         }
 

@@ -2043,27 +2043,23 @@
         }
 
         // Estadísticas del embajador
-        const totalReferrals = ambassador.referrals_count || 0;
+        const totalReferrals = ambassador.total_referrals || ambassador.referrals_count || 0;
         const totalEarnings = ambassador.total_earnings || 0;
         const pendingPayout = ambassador.pending_payout || 0;
-        const referralCode = ambassador.referral_code || 'PATA123';
-        const approvedReferrals = ambassador.approved_referrals || 3;
-        const reviewReferrals = ambassador.review_referrals || 1;
-        const rejectedReferrals = ambassador.rejected_referrals || 1;
+        const referralCode = ambassador.referral_code || '---';
+        const approvedReferrals = ambassador.approved_referrals || 0;
+        const reviewReferrals = ambassador.review_referrals || 0;
+        const rejectedReferrals = ambassador.rejected_referrals || 0;
         
         // Datos de pago
         const hasPaymentMethod = ambassador.payment_method && ambassador.payment_method !== 'pending';
         const paymentMethodId = ambassador.payment_method_id || ambassador.id;
-        const cardLast4 = ambassador.card_last4 || '8832';
-        const cardType = ambassador.card_type || 'mastercard';
-        const cardLabel = cardType === 'mastercard' ? 'Mastercard' : 'Visa';
+        const cardLast4 = ambassador.card_last4 || '----';
+        const cardType = ambassador.card_type || 'default';
+        const cardLabel = cardType === 'mastercard' ? 'Mastercard' : cardType === 'visa' ? 'Visa' : 'Tarjeta';
 
-        // Mock de referidos
-        const referrals = ambassador.recent_referrals || [
-            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'approved' },
-            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'process' },
-            { name: 'María Gonzáles', email: 'maria.gonzales@gmail.com', date: '15 de junio de 2025', commission: 16, status: 'rejected' }
-        ];
+        // Referidos reales
+        const referrals = ambassador.recent_referrals || [];
 
         return `
             <div class="amb-dashboard">
@@ -2247,7 +2243,7 @@
                     </div>
                     
                     <div class="amb-referrals-list">
-                        ${referrals.map(ref => {
+                        ${referrals.length > 0 ? referrals.map(ref => {
                             const status = ref.status || ref.commission_status || 'approved';
                             const statusText = status === 'approved' || status === 'paid' ? 'aprobada' : 
                                               status === 'process' || status === 'pending' ? 'proceso' : 'rechazada';
@@ -2266,7 +2262,7 @@
                                 </div>
                                 <div class="amb-referral-center">
                                     <span class="amb-referral-commission-label">Comisión</span>
-                                    <span class="amb-referral-commission-value">$${ref.commission || ref.commission_amount || 16}</span>
+                                    <span class="amb-referral-commission-value">$${ref.commission || ref.commission_amount || 0}</span>
                                 </div>
                                 <div class="amb-referral-status-wrapper">
                                     <img src="${statusIcon}" alt="" class="amb-status-icon">
@@ -2274,7 +2270,13 @@
                                 </div>
                             </div>
                             `;
-                        }).join('')}
+                        }).join('') : `
+                            <div class="amb-empty-state" style="padding: 40px 20px; text-align: center; color: #718096;">
+                                <img src="${CONFIG.CLOUDINARY_URL}/v1772043745/calendario_1_n3pzcf.svg" alt="" style="width: 48px; opacity: 0.3; margin-bottom: 15px;">
+                                <p style="margin: 0;">Aún no tienes referidos registrados con tu código.</p>
+                                <p style="font-size: 0.9rem; margin-top: 5px;">¡Comparte tu código para empezar a ganar!</p>
+                            </div>
+                        `}
                     </div>
                 </section>
 
