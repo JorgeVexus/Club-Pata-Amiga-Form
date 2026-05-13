@@ -38,6 +38,10 @@
             --pata-border-thin: 2px solid #000;
         }
 
+        body.pata-no-scroll {
+            overflow: hidden !important;
+        }
+
         .pata-unified-panel {
             background: transparent;
             backdrop-filter: none;
@@ -3878,8 +3882,18 @@
         checkMissingDocs(pet) {
             if (!pet) return [];
             const missing = [];
-            if (!pet.photo_url && !pet.primary_photo_url) missing.push("Foto de tu mascota");
-            // Certificado médico es opcional, no lo bloqueamos
+            
+            // 1. Validar Foto Principal
+            const hasPhoto = !!(pet.photo_url || pet.primary_photo_url || pet.pet_photo_url);
+            if (!hasPhoto) missing.push("Foto principal de tu mascota");
+            
+            // 2. Validar Certificado Médico si es Senior
+            if (this.isSenior(pet)) {
+                if (!pet.vet_certificate_url) {
+                    missing.push("Certificado médico de salud");
+                }
+            }
+            
             return missing;
         }
 
@@ -4649,38 +4663,46 @@
         }
 
         renderAlertBanners(pet) {
-            const missingDocs = [];
-            const isSenior = this.isSenior(pet);
+            const isSeniorPet = this.isSenior(pet);
+            const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url || pet.pet_photo_url);
+            const hasCert = !!pet.vet_certificate_url;
             
-            // Check for missing photo (handling both field variants)
-            if (!pet.photo_url && !pet.primary_photo_url) {
-                missingDocs.push('Foto principal de la mascota');
-            }
-            
-            // Check for missing certificate (if senior)
-            if (isSenior && !pet.vet_certificate_url) {
-                missingDocs.push('Certificado médico (Requerido para Senior)');
-            }
+            // Definimos si necesita acción basándonos en la foto o el certificado (si es senior)
+            const needsAction = !hasPhoto1 || (isSeniorPet && !hasCert);
 
-            if (missingDocs.length === 0) return '';
+            if (!needsAction) return '';
+
+            let alertsHtml = '';
+            if (!hasPhoto1) {
+                alertsHtml += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: #000;">photo_camera</span>
+                        <span style="font-size: 14px; font-weight: 700; color: #000;">Falta la foto principal de su álbum.</span>
+                    </div>`;
+            }
+            if (isSeniorPet && !hasCert) {
+                alertsHtml += `
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                        <span class="material-symbols-outlined" style="font-size: 20px; color: #000;">medical_services</span>
+                        <span style="font-size: 14px; font-weight: 700; color: #000;">Falta el certificado médico (Requerido para Senior).</span>
+                    </div>`;
+            }
 
             return `
-                <div class="pata-orange-alert">
-                    <div style="font-size: 24px;">✨</div>
-                    <div style="flex: 1;">
-                        <p style="margin: 0 0 8px 0; font-weight: 900; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">Documentación Pendiente</p>
-                        <ul class="pata-alert-list">
-                            ${missingDocs.map(doc => `
-                                <li>
-                                    <span class="material-symbols-outlined" style="font-size: 16px; color: #000;">assignment_late</span>
-                                    <span>${doc}</span>
-                                </li>
-                            `).join('')}
-                        </ul>
-                        <p style="margin: 10px 0 0 0; font-size: 11px; font-weight: 600; opacity: 0.8; line-height: 1.4;">
-                            Sube estos documentos para completar el perfil y asegurar la cobertura total de tu mascota.
-                        </p>
+                <div class="pata-orange-alert" style="display: block; padding: 20px; background: #FFBD12; border: 3px solid #000; border-radius: 30px; box-shadow: 6px 6px 0 rgba(0,0,0,1); margin-bottom: 25px;">
+                    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; border-bottom: 2px solid rgba(0,0,0,0.1); padding-bottom: 10px;">
+                        <span class="material-symbols-outlined" style="font-size: 24px; color: #000; font-weight: 900;">priority_high</span>
+                        <p style="margin: 0; font-weight: 950; font-size: 18px; text-transform: lowercase; font-family: 'Fraiche', sans-serif; color: #000;">acción requerida</p>
                     </div>
+                    
+                    <div style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 4px;">
+                        ${alertsHtml}
+                    </div>
+
+                    <button id="pata-btn-open-update-cert" style="width: 100%; background: #000; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px; font-weight: 900; font-family: 'Outfit', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: transform 0.2s; font-size: 15px; text-transform: lowercase;">
+                        <span class="material-symbols-outlined" style="font-size: 20px;">upload_file</span>
+                        subir documentos ahora
+                    </button>
                 </div>
             `;
         }
@@ -4954,23 +4976,23 @@
         // 🆕 Renderizar el modal de actualización
         renderUpdateModal(pet) {
             const adminMsg = pet.last_admin_response || 'Por favor actualiza la información solicitada.';
-            const isSenior = pet.age_value >= 10;
-            const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url);
+            const isSeniorPet = this.isSenior(pet);
+            const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url || pet.pet_photo_url);
             const hasCert = !!pet.vet_certificate_url;
-            const isComplete = hasPhoto1 && (!isSenior || hasCert);
+            const isComplete = hasPhoto1 && (!isSeniorPet || hasCert);
 
             let uploadFields = '';
 
             if (!hasPhoto1) {
                 uploadFields += `
-                    <div style="margin-bottom: 20px;">
-                        <p style="font-weight: 800; font-size: 16px; margin-bottom: 15px;">Sube la foto principal de su álbum:</p>
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 200px;">
+                    <div style="margin-bottom: 25px;">
+                        <p style="font-weight: 800; font-size: 17px; margin-bottom: 15px; color: #000; font-family: 'Fraiche', sans-serif; text-transform: lowercase;">📸 foto principal del álbum:</p>
+                        <div style="display: grid; grid-template-columns: 1fr; gap: 15px; max-width: 100%;">
                             <div class="pata-form-group">
-                                <div class="pata-upload-area" id="pata-upload-area-1" style="min-height: 120px; border-radius: 20px;">
+                                <div class="pata-upload-area" id="pata-upload-area-1" style="min-height: 180px; border-radius: 40px; border: 3px dashed #000; background: #f8f8f8; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s;">
                                     <input type="file" accept="image/*" class="pata-upload-input" id="pata-file-1" style="display:none;" />
-                                    <div class="pata-upload-icon" style="font-size: 24px;">📷</div>
-                                    <div class="pata-upload-text" style="font-size: 12px;">Foto Principal</div>
+                                    <div class="pata-upload-icon" style="font-size: 32px; margin-bottom: 8px;">📷</div>
+                                    <div class="pata-upload-text" style="font-size: 14px; font-weight: 800; text-transform: lowercase; font-family: 'Outfit', sans-serif;">seleccionar foto</div>
                                 </div>
                             </div>
                         </div>
@@ -4978,14 +5000,14 @@
                 `;
             }
 
-            if (isSenior && !hasCert) {
+            if (isSeniorPet && !hasCert) {
                 uploadFields += `
-                    <div style="margin-top: 25px; padding: 25px; background: #E0F7F6; border: 2px solid #000; border-radius: 30px; box-shadow: 6px 6px 0 rgba(0,0,0,0.05);">
-                        <label style="font-weight: 900; margin-bottom: 12px; display: block; color: #000; font-family: 'Fraiche', sans-serif; text-transform: lowercase; font-size: 16px;">🩺 sobre su salud (senior 10+ años):</label>
-                        <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border: 2px dashed #00BBB4; border-radius: 20px; height: 120px; overflow: hidden; position: relative;">
+                    <div style="margin-top: 25px; padding: 30px; background: #E0F7F6; border: var(--pata-border-thick); border-radius: 45px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                        <label style="font-weight: 950; margin-bottom: 15px; display: block; color: #000; font-family: 'Fraiche', sans-serif; text-transform: lowercase; font-size: 20px; letter-spacing: -0.5px;">🩺 certificado de salud (senior):</label>
+                        <div class="pata-upload-area" id="pata-upload-area-cert" style="background: #fff; border: 3px dashed #00BBB4; border-radius: 35px; min-height: 160px; overflow: hidden; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.2s;">
                             <input type="file" accept=".pdf,image/*" class="pata-upload-input" id="pata-file-cert" style="display:none;" />
-                            <div class="pata-upload-icon">📄</div>
-                            <div class="pata-upload-text" style="color: #7B1FA2;">Seleccionar certificado de salud</div>
+                            <div class="pata-upload-icon" style="font-size: 32px; margin-bottom: 8px;">📄</div>
+                            <div class="pata-upload-text" style="color: #00BBB4; font-weight: 800; font-family: 'Outfit', sans-serif; font-size: 14px; text-transform: lowercase;">subir pdf o imagen</div>
                         </div>
                     </div>
                 `;
@@ -4993,42 +5015,42 @@
 
             if (isComplete) {
                 uploadFields = `
-                    <div style="padding: 20px; background: #E8F5E9; border: 2px solid #4CAF50; border-radius: 20px; text-align: center; margin-bottom: 25px;">
-                        <div style="font-size: 30px; margin-bottom: 10px;">✅</div>
-                        <p style="margin:0; font-size: 16px; font-weight: 800; color: #2E7D32;">¡Documentos completos!</p>
-                        <p style="margin:5px 0 0 0; font-size: 14px; color: #4CAF50;">Ya recibimos la información necesaria para esta etapa.</p>
+                    <div style="padding: 40px; background: #E8F5E9; border: var(--pata-border-thick); border-radius: 50px; text-align: center; margin-bottom: 25px; box-shadow: 8px 8px 0 rgba(76, 175, 80, 0.1);">
+                        <div style="font-size: 50px; margin-bottom: 15px;">✅</div>
+                        <p style="margin:0; font-size: 22px; font-weight: 950; color: #1B5E20; font-family: 'Fraiche', sans-serif; text-transform: lowercase;">¡documentos listos!</p>
+                        <p style="margin:10px 0 0 0; font-size: 16px; color: #2E7D32; font-weight: 600; font-family: 'Outfit', sans-serif;">Ya contamos con la información necesaria.</p>
                     </div>
                 `;
             }
 
             const adminNote = pet.status === 'action_required' ? `
-                <div class="pata-admin-request" style="background: #FFF9E6; border: 2px solid #FFBD12; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
-                    <div style="font-weight: 900; margin-bottom: 8px; color: #744210;">📩 Nota del equipo:</div>
-                    <p style="margin:0; font-size: 15px; line-height: 1.5; color: #444;">${adminMsg}</p>
+                <div class="pata-admin-request" style="background: #FFF9E6; border: var(--pata-border-thick); padding: 30px; border-radius: 45px; margin-bottom: 30px; box-shadow: 8px 8px 0 rgba(255, 189, 18, 0.1);">
+                    <div style="font-weight: 950; margin-bottom: 12px; color: #744210; font-family: 'Fraiche', sans-serif; text-transform: lowercase; font-size: 20px;">📩 nota del equipo:</div>
+                    <p style="margin:0; font-size: 16px; line-height: 1.6; color: #5D4037; font-weight: 600; font-family: 'Outfit', sans-serif;">${adminMsg}</p>
                 </div>
             ` : '';
 
             const submitDisabled = this.uploading || isComplete ? 'disabled' : '';
-            const submitLabel = this.uploading ? 'Enviando...' : 'Guardar Cambios →';
+            const submitLabel = this.uploading ? 'enviando...' : 'guardar cambios →';
 
             return `
                 <div class="pata-modal-overlay" id="pata-update-modal">
-                    <div class="pata-modal" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
-                        <div class="pata-modal-header" style="background: #fff; border-bottom: 2px solid #000;">
-                            <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px;">📸 Actualizar Información de ${pet.name}</h3>
-                            <button class="pata-modal-close" id="pata-modal-close">&times;</button>
+                    <div class="pata-modal" style="max-width: 600px; max-height: 90vh; border: var(--pata-border-thick); border-radius: 60px; overflow: hidden; display: flex; flex-direction: column; background: #fff; box-shadow: 20px 20px 0 rgba(0,0,0,0.1);">
+                        <div class="pata-modal-header" style="background: #fff; border-bottom: var(--pata-border-thick); padding: 30px 40px; display: flex; justify-content: space-between; align-items: center;">
+                            <h3 class="pata-modal-title" style="font-size: 28px; letter-spacing: -1px; font-family: 'Fraiche', sans-serif; text-transform: lowercase; margin: 0; color: #000;">📸 actualizar datos de ${pet.name}</h3>
+                            <button class="pata-modal-close" id="pata-modal-close" style="font-size: 40px; font-weight: 300; background: transparent; border: none; cursor: pointer; color: #000; display: flex; align-items: center; justify-content: center;">&times;</button>
                         </div>
-                        <div class="pata-modal-body" style="padding: 30px;">
+                        <div class="pata-modal-body" style="padding: 40px; overflow-y: auto; flex: 1; scrollbar-width: thin;">
                             ${adminNote}
                             ${uploadFields}
-                            <div style="margin-top: 25px;">
-                                <label style="font-weight: 800; margin-bottom: 10px; display: block;">Mensaje adicional:</label>
-                                <textarea id="pata-update-message" class="pata-textarea" placeholder="¿Quieres decirnos algo más?" style="width: 100%; min-height: 100px; padding: 15px; border-radius: 20px; border: 2px solid #F0F0F0; font-family: inherit; font-size: 15px;"></textarea>
+                            <div style="margin-top: 35px;">
+                                <label style="font-weight: 900; margin-bottom: 12px; display: block; font-size: 18px; font-family: 'Fraiche', sans-serif; text-transform: lowercase;">mensaje adicional (opcional):</label>
+                                <textarea id="pata-update-message" class="pata-textarea" placeholder="¿Quieres decirnos algo más sobre los cambios?" style="width: 100%; min-height: 140px; padding: 20px; border-radius: 30px; border: 3px solid #000; font-family: 'Outfit', sans-serif; font-size: 16px; box-shadow: 6px 6px 0 rgba(0,0,0,0.05); resize: none;"></textarea>
                             </div>
                         </div>
-                        <div class="pata-modal-footer" style="background: #fff; border-top: 2px solid #000; padding: 25px 30px;">
-                            <button class="pata-btn pata-btn-outline" id="pata-btn-cancel-update" style="border-radius: 50px; padding: 14px 30px;">Cancelar</button>
-                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #00BBB4; color: #fff; border: 2px solid #000; border-radius: 50px; padding: 14px 40px; font-weight: 900;" ${submitDisabled}>
+                        <div class="pata-modal-footer" style="background: #fff; border-top: var(--pata-border-thick); padding: 30px 40px; display: flex; gap: 20px; justify-content: flex-end;">
+                            <button class="pata-btn-outline" id="pata-btn-cancel-update" style="border-radius: 50px; padding: 16px 30px; font-weight: 900; border: 3px solid #000; background: #fff; cursor: pointer; font-family: 'Outfit', sans-serif; text-transform: lowercase; font-size: 16px;">cancelar</button>
+                            <button class="pata-btn" id="pata-btn-submit-update" style="background: #FE8F15; color: #000; border: 3px solid #000; border-radius: 50px; padding: 16px 40px; font-weight: 950; box-shadow: 6px 6px 0 #000; cursor: pointer; font-family: 'Fraiche', sans-serif; text-transform: lowercase; font-size: 18px; transition: transform 0.2s;" ${submitDisabled}>
                                 ${submitLabel}
                             </button>
                         </div>
@@ -6001,11 +6023,19 @@
 
             // 🆕 Abrir modal desde banner opcional
             const openUpdateCertBtn = document.getElementById('pata-btn-open-update-cert');
+            console.log('🔍 Unified Widget: Buscando botón de documentos:', !!openUpdateCertBtn);
             if (openUpdateCertBtn) {
-                openUpdateCertBtn.onclick = () => {
+                openUpdateCertBtn.onclick = (e) => {
+                    e.preventDefault();
+                    console.log('🎯 Unified Widget: Abriendo modal de documentos...');
                     this.showUpdateModal = true;
                     this.uploadFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null, cert: null };
                     const pet = this.pets[this.currentIndex];
+                    
+                    // Eliminar modal anterior si existe
+                    const existing = document.getElementById('pata-update-modal');
+                    if (existing) existing.remove();
+                    
                     document.body.insertAdjacentHTML('beforeend', this.renderUpdateModal(pet));
                     this.attachModalEvents();
                 };
@@ -6047,15 +6077,45 @@
                             this.uploadFiles[key] = file;
                             area.classList.add('has-file');
                             const isImage = file.type.startsWith('image/');
+                            const objectUrl = URL.createObjectURL(file);
+                            
                             area.innerHTML = `
-                                ${isImage ? `<img src="${URL.createObjectURL(file)}" class="pata-upload-preview">` : `<div class="pata-upload-preview" style="display:flex; align-items:center; justify-content:center; background:#f5f5f5;"><span style="font-size:30px;">📄</span></div>`}
-                                <div class="pata-upload-filename">✓ ${key === 'cert' ? 'Certificado' : 'Foto ' + key.replace('photo', '')}</div>
+                                <div style="position: relative; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 15px;">
+                                    ${isImage ? 
+                                        `<img src="${objectUrl}" style="width: 120px; height: 120px; object-fit: cover; border-radius: 20px; border: 3px solid #000; box-shadow: 4px 4px 0 rgba(0,0,0,0.1); margin-bottom: 10px;">` : 
+                                        `<div style="width: 100px; height: 100px; background: #fff; border: 3px solid #00BBB4; border-radius: 20px; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; box-shadow: 4px 4px 0 rgba(0,187,180,0.1);">
+                                            <span style="font-size: 40px;">📄</span>
+                                        </div>`
+                                    }
+                                    <div style="font-size: 13px; font-weight: 800; color: #000; font-family: 'Outfit', sans-serif; text-align: center; text-transform: lowercase;">
+                                        ✓ ${key === 'cert' ? 'certificado cargado' : 'foto ' + key.replace('photo', '') + ' cargada'}
+                                    </div>
+                                    <button type="button" class="pata-remove-file" style="position: absolute; top: 10px; right: 10px; background: #000; color: #fff; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 18px; z-index: 10;">&times;</button>
+                                </div>
                             `;
+
+                            // Listener para remover archivo
+                            const removeBtn = area.querySelector('.pata-remove-file');
+                            if (removeBtn) {
+                                removeBtn.onclick = (event) => {
+                                    event.stopPropagation();
+                                    this.uploadFiles[key] = null;
+                                    area.classList.remove('has-file');
+                                    area.innerHTML = `
+                                        <input type="file" accept="${key === 'cert' ? '.pdf,image/*' : 'image/*'}" class="pata-upload-input" id="${fileId}" style="display:none;" />
+                                        <div class="pata-upload-icon" style="font-size: 32px; margin-bottom: 8px;">${key === 'cert' ? '📄' : '📷'}</div>
+                                        <div class="pata-upload-text" style="font-size: 14px; font-weight: 800; text-transform: lowercase; font-family: 'Outfit', sans-serif; color: ${key === 'cert' ? '#00BBB4' : '#000'};">${key === 'cert' ? 'subir pdf o imagen' : 'seleccionar foto'}</div>
+                                    `;
+                                    // Re-vincular el input ya que se recreó el HTML
+                                    setupUpload(areaId, fileId, key);
+                                };
+                            }
                         }
                     };
                 }
             };
-
+            
+            // Vincular inputs iniciales
             [1, 2, 3, 4, 5].forEach(num => {
                 setupUpload(`pata-upload-area-${num}`, `pata-file-${num}`, `photo${num}`);
             });
