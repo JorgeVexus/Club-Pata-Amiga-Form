@@ -54,30 +54,48 @@ export async function GET(request: NextRequest) {
         if (!ambassador) {
             // No es embajador — respuesta normal (no es un error)
             return NextResponse.json(
-                { success: true, ambassador: null },
+                { success: true, data: null, ambassador: null },
                 { headers: corsHeaders() }
             );
         }
 
-        // Obtener estadísticas de referidos
-        const { count: totalReferrals } = await supabase
-            .from('referrals')
-            .select('*', { count: 'exact', head: true })
-            .eq('ambassador_id', ambassador.id);
+        // Si está aprobado, obtener detalles adicionales (referidos, etc)
+        let detailedData: any = { ...ambassador };
+        
+        if (ambassador.status === 'approved') {
+            // Obtener referidos recientes (últimos 10)
+            const { data: recentReferrals } = await supabase
+                .from('referrals')
+                .select('*')
+                .eq('ambassador_id', ambassador.id)
+                .order('created_at', { ascending: false })
+                .limit(10);
 
-        const { count: activeReferrals } = await supabase
-            .from('referrals')
-            .select('*', { count: 'exact', head: true })
-            .eq('ambassador_id', ambassador.id)
-            .eq('status', 'active');
+            // Obtener conteo total de referidos
+            const { count: totalReferrals } = await supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('ambassador_id', ambassador.id);
+
+            // Referidos activos
+            const { count: activeReferrals } = await supabase
+                .from('referrals')
+                .select('*', { count: 'exact', head: true })
+                .eq('ambassador_id', ambassador.id)
+                .eq('status', 'active');
+
+            detailedData = {
+                ...detailedData,
+                recent_referrals: recentReferrals || [],
+                total_referrals: totalReferrals || 0,
+                active_referrals: activeReferrals || 0
+            };
+        }
 
         return NextResponse.json({
             success: true,
-            ambassador: {
-                ...ambassador,
-                total_referrals: totalReferrals || 0,
-                active_referrals: activeReferrals || 0,
-            }
+            data: detailedData, // Para consistencia con lo que el widget espera
+            ambassador: detailedData
         }, { headers: corsHeaders() });
 
     } catch (e: any) {

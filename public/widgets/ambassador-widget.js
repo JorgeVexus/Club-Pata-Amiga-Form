@@ -2694,35 +2694,48 @@
     // FUNCIONES PRINCIPALES
     // ============================================
 
-    async function checkAmbassadorStatus(email) {
+    async function checkAmbassadorStatus(email, memberstackId) {
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors?search=${encodeURIComponent(email)}&limit=1`);
+            console.log(`[AmbassadorWidget] Checking status for: ${email || 'unknown'} (ID: ${memberstackId || 'none'})`);
+            
+            // Prefer memberstackId for the query
+            const url = memberstackId 
+                ? `${CONFIG.API_BASE_URL}/api/ambassadors/by-memberstack?memberstackId=${encodeURIComponent(memberstackId)}`
+                : `${CONFIG.API_BASE_URL}/api/ambassadors?search=${encodeURIComponent(email)}&limit=1`;
+            
+            console.log(`[AmbassadorWidget] Fetching: ${url}`);
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                console.error(`[AmbassadorWidget] API Error: ${response.status}`);
+                return null;
+            }
+
             const data = await response.json();
+            console.log('[AmbassadorWidget] Received data:', data);
 
-            if (data.success && data.data && data.data.length > 0) {
-                const ambassador = data.data[0];
+            if (data.success && data.data) {
+                // Compatible with both array (old search) and object (by-memberstack)
+                const ambassador = Array.isArray(data.data) ? data.data[0] : data.data;
+                
+                if (!ambassador) {
+                    console.log('[AmbassadorWidget] No ambassador record found');
+                    return null;
+                }
 
-                if (ambassador.status === 'approved') {
-                    try {
-                        const detailResponse = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}`);
-                        const detailData = await detailResponse.json();
-
-                        if (detailData.success && detailData.data) {
-                            return {
-                                ...detailData.data,
-                                recent_referrals: detailData.data.referrals || []
-                            };
-                        }
-                    } catch (detailError) {
-                        console.error('Error getting ambassador details:', detailError);
-                    }
+                console.log(`[AmbassadorWidget] Found ambassador: ${ambassador.id} (Status: ${ambassador.status})`);
+                
+                // Add referrals list for compatibility if not present but expected
+                if (ambassador.recent_referrals && !ambassador.referrals) {
+                    ambassador.referrals = ambassador.recent_referrals;
                 }
 
                 return ambassador;
             }
+            
             return null;
         } catch (error) {
-            console.error('Error checking ambassador status:', error);
+            console.error('[AmbassadorWidget] Exception in checkAmbassadorStatus:', error);
             return null;
         }
     }
@@ -2767,8 +2780,8 @@
 
         // Check ambassador status
         let ambassador = null;
-        if (email) {
-            ambassador = await checkAmbassadorStatus(email);
+        if (email || memberId) {
+            ambassador = await checkAmbassadorStatus(email, memberId);
         }
 
         // Render based on status
