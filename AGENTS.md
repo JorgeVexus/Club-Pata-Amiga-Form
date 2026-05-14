@@ -4,6 +4,10 @@
 
 ## Reglas de Operación y Git
 
+0. MAIN BRANCH WORKFLOW (STRICT):
+   - ALWAYS work directly on the `main` branch unless the USER explicitly requests another branch or worktree.
+   - Do not create feature branches or git worktrees by default for this project.
+
 7. AUTHORIZATION REQUIRED (STRICT):
    - NEVER execute `git commit` or `git push` without explicit authorization from the USER for the specific changes made.
    - ALWAYS ask if you should proceed with the commit after showing a summary of the work and providing the opportunity for local review.

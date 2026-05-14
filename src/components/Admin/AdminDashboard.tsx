@@ -27,6 +27,7 @@ import { Ambassador } from '@/types/ambassador.types';
 import { adminFetch } from '@/utils/admin-fetch';
 import SolidarityDashboard from './Solidarity/SolidarityDashboard';
 import SolidarityRequestDetail from './Solidarity/SolidarityRequestDetail';
+import CancellationsTable from './CancellationsTable';
 
 function DashboardContent() {
     const router = useRouter();
@@ -199,7 +200,7 @@ function DashboardContent() {
 
     useEffect(() => {
         if (hasMounted && !isAdminSuper) {
-            const restricted = ['appeals', 'admins', 'settings', 'all-members'];
+            const restricted = ['appeals', 'admins', 'settings', 'all-members', 'cancellations'];
             if (restricted.includes(activeFilter)) setActiveFilter('member');
         }
     }, [activeFilter, isAdminSuper, hasMounted]);
@@ -335,6 +336,8 @@ function DashboardContent() {
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
+            case 'cancellations':
+                return <CancellationsTable />;
             default:
                 return (
                     <>

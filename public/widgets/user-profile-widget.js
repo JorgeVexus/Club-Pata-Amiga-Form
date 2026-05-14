@@ -109,6 +109,32 @@
         .ppa-msg { margin-top:10px; text-align:center; font-size:14px; font-weight:700; }
         .ppa-msg-ok { color:#38A169; } .ppa-msg-err { color:#E53E3E; }
 
+        .ppa-cancel-overlay { position:fixed; inset:0; background:rgba(0,0,0,.58); z-index:100001; display:flex; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(8px); animation:ppaFI .2s ease; }
+        .ppa-cancel-modal { background:#fff; border-radius:40px; border:3px solid #000; padding:40px; width:100%; max-width:580px; max-height:90vh; overflow-y:auto; box-shadow:12px 12px 0 rgba(0,0,0,.14); animation:ppaSU .3s ease; position:relative; font-family:'Outfit',sans-serif; }
+        .ppa-cancel-title { font-family:'Fraiche',sans-serif; font-size:38px; color:#000; margin:0 0 10px; line-height:1; text-transform:lowercase; text-align:center; }
+        .ppa-cancel-subtitle { font-size:16px; color:#3a3a3a; line-height:1.55; margin:0 0 24px; text-align:center; }
+        .ppa-cancel-link-inline { color:#00BBB4; text-decoration:none; font-weight:900; border-bottom:2px dotted #00BBB4; cursor:pointer; background:none; border-top:none; border-left:none; border-right:none; padding:0; font-family:'Outfit',sans-serif; }
+        .ppa-cancel-link-inline:hover { color:#0a8984; border-bottom-style:solid; }
+        .ppa-cancel-options { margin:20px 0; display:flex; flex-direction:column; gap:10px; }
+        .ppa-cancel-option { display:flex; align-items:center; gap:12px; padding:13px 16px; border:2px solid #e0e0e0; border-radius:28px; cursor:pointer; transition:all .2s; font-size:15px; background:#fff; }
+        .ppa-cancel-option:hover { border-color:#00BBB4; background:#f0fffd; }
+        .ppa-cancel-option.selected { border-color:#00BBB4; background:#e1fffb; font-weight:800; box-shadow:4px 4px 0 rgba(0,0,0,.08); }
+        .ppa-cancel-option input { width:20px; height:20px; accent-color:#00BBB4; flex-shrink:0; }
+        .ppa-cancel-other-input { width:100%; padding:13px 18px; border:2px solid #e0e0e0; border-radius:24px; font-family:'Outfit',sans-serif; font-size:15px; outline:none; }
+        .ppa-cancel-textarea { width:100%; padding:14px 18px; border:2px solid #e0e0e0; border-radius:22px; font-family:'Outfit',sans-serif; font-size:15px; min-height:96px; resize:vertical; outline:none; }
+        .ppa-cancel-other-input:focus,.ppa-cancel-textarea:focus { border-color:#00BBB4; }
+        .ppa-cancel-confirm-box { display:flex; align-items:center; gap:12px; padding:14px 16px; background:#fffce7; border:2px dashed #000; border-radius:22px; margin:18px 0; font-size:15px; font-weight:800; color:#000; }
+        .ppa-cancel-confirm-box input { width:22px; height:22px; accent-color:#E53E3E; flex-shrink:0; }
+        .ppa-cancel-actions { display:flex; gap:12px; margin-top:22px; }
+        .ppa-cancel-btn-primary,.ppa-cancel-btn-secondary { width:100%; border:2px solid #000; border-radius:50px; padding:15px 18px; cursor:pointer; transition:all .2s; font-family:'Fraiche',sans-serif; font-size:22px; text-transform:lowercase; }
+        .ppa-cancel-btn-primary { background:#E53E3E; color:#fff; }
+        .ppa-cancel-btn-primary:hover { transform:translateY(-2px); box-shadow:6px 6px 0 rgba(0,0,0,.12); }
+        .ppa-cancel-btn-primary:disabled { opacity:.45; cursor:not-allowed; transform:none; box-shadow:none; }
+        .ppa-cancel-btn-secondary { background:#fff; color:#000; }
+        .ppa-cancel-btn-secondary:hover { background:#fffc67; }
+        .ppa-cancel-modal-x { position:absolute; top:18px; right:18px; width:36px; height:36px; border-radius:50%; border:2px solid #000; background:#f5f5f5; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
+        .ppa-cancel-detail { background:#f0fffd; border:2px solid #00BBB4; border-radius:24px; padding:16px; text-align:center; font-weight:800; margin:18px 0; }
+
         @keyframes ppaFI { from{opacity:0} to{opacity:1} }
         @keyframes ppaSU { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 
@@ -120,6 +146,9 @@
             .ppa-payment-top { flex-direction:column; gap:10px; }
             .ppa-payment-right { display:flex; gap:14px; }
             .ppa-fr { flex-direction:column; gap:0; }
+            .ppa-cancel-modal { padding:28px 22px; border-radius:28px; }
+            .ppa-cancel-title { font-size:30px; }
+            .ppa-cancel-actions { flex-direction:column-reverse; }
         }
     `;
     class UserProfileWidget {
@@ -388,7 +417,7 @@
 
             // Cancelar membresía
             const cancelBtn = document.getElementById('ppa-cancel-btn');
-            if (cancelBtn) cancelBtn.addEventListener('click', () => this.handleCancel());
+            if (cancelBtn) cancelBtn.addEventListener('click', () => this.openCancellationFlow());
 
             // Copiar código de referido
             const copyRef = document.getElementById('ppa-copy-ref');
@@ -408,34 +437,275 @@
         async openStripePortal() {
             try {
                 await window.$memberstackDom.launchStripeCustomerPortal();
-            } catch(e) {
+            } catch {
                 alert('No se pudo abrir el portal de pagos. Intenta de nuevo.');
             }
         }
 
-        async handleCancel() {
-            const confirmed = confirm('¿Estás seguro de que deseas cancelar tu membresía? Esta acción es irreversible.');
-            if (!confirmed) return;
-            const confirmed2 = confirm('Confirma una vez más. Se cancelará tu plan y perderás acceso a los beneficios de Pata Amiga.');
-            if (!confirmed2) return;
+        escapeHtml(value) {
+            return String(value || '').replace(/[&<>"']/g, ch => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[ch]));
+        }
 
+        async openCancellationFlow() {
+            const wantsToContinue = await this.showCancelConfirmationModal();
+            if (!wantsToContinue) return;
+
+            const cancellationInfo = await this.showCancellationForm();
+            if (!cancellationInfo) return;
+
+            const endDateInfo = await this.fetchCancellationEndDate();
+            if (!endDateInfo.success) {
+                await this.showCancellationFeedbackModal({
+                    title: 'no pudimos calcular tu fecha',
+                    message: endDateInfo.error || 'Intenta de nuevo en unos minutos o contacta a soporte.'
+                });
+                return;
+            }
+
+            const finalConfirmation = await this.showFinalConfirmation(endDateInfo);
+            if (!finalConfirmation) return;
+
+            await this.executeCancellation(cancellationInfo, endDateInfo);
+        }
+
+        showCancelConfirmationModal() {
+            return new Promise(resolve => {
+                const overlay = this.createCancelModal(`
+                    <button class="ppa-cancel-modal-x" id="ppa-cancel-step1-close">x</button>
+                    <h2 class="ppa-cancel-title">cancelar membresia</h2>
+                    <p class="ppa-cancel-subtitle">
+                        Estas por proceder a la cancelacion de tu membresia Pata Amiga y despedirte de la manada.
+                        <br><br>
+                        <strong>Recuerda que no hay reembolsos</strong> de acuerdo con los terminos y condiciones.
+                        <br>
+                        <button type="button" class="ppa-cancel-link-inline" id="ppa-terms-link">Ver terminos y condiciones</button>
+                    </p>
+                    <div class="ppa-cancel-actions">
+                        <button class="ppa-cancel-btn-secondary" id="ppa-cancel-step1-back">volver</button>
+                        <button class="ppa-cancel-btn-primary" id="ppa-cancel-step1-continue">si, continuar</button>
+                    </div>
+                `);
+
+                const close = value => { overlay.remove(); document.body.style.overflow = ''; resolve(value); };
+                document.getElementById('ppa-terms-link').addEventListener('click', () => this.openTermsModal());
+                document.getElementById('ppa-cancel-step1-close').addEventListener('click', () => close(false));
+                document.getElementById('ppa-cancel-step1-back').addEventListener('click', () => close(false));
+                document.getElementById('ppa-cancel-step1-continue').addEventListener('click', () => close(true));
+                overlay.addEventListener('click', e => { if (e.target === overlay) close(false); });
+            });
+        }
+
+        showCancellationForm() {
+            return new Promise(resolve => {
+                const reasons = [
+                    { id: 'no_longer_needed', label: 'Ya no necesito el servicio' },
+                    { id: 'price_too_high', label: 'El precio es muy alto' },
+                    { id: 'found_alternative', label: 'Encontre una mejor opcion' },
+                    { id: 'service_issues', label: 'Problemas con el servicio' },
+                    { id: 'other', label: 'Otro' }
+                ];
+                const overlay = this.createCancelModal(`
+                    <button class="ppa-cancel-modal-x" id="ppa-cancel-step2-close">x</button>
+                    <h2 class="ppa-cancel-title">cuentanos por que</h2>
+                    <p class="ppa-cancel-subtitle">Tu retroalimentacion nos ayuda a mejorar Pata Amiga.</p>
+                    <div class="ppa-cancel-options" id="ppa-cancel-options">
+                        ${reasons.map(reason => `
+                            <label class="ppa-cancel-option" data-reason="${reason.id}">
+                                <input type="radio" name="ppa-cancel-reason" value="${reason.id}">
+                                <span>${reason.label}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                    <input type="text" class="ppa-cancel-other-input" id="ppa-reason-other-text" placeholder="Cuentanos el motivo" style="display:none;margin-bottom:16px;">
+                    <label class="ppa-fl" for="ppa-cancel-comments">Comentarios opcionales</label>
+                    <textarea class="ppa-cancel-textarea" id="ppa-cancel-comments" placeholder="Tu opinion es importante para nosotros"></textarea>
+                    <label class="ppa-cancel-confirm-box">
+                        <input type="checkbox" id="ppa-cancel-agree">
+                        <span>Acepto cancelar mi membresia Pata Amiga</span>
+                    </label>
+                    <div class="ppa-cancel-actions">
+                        <button class="ppa-cancel-btn-secondary" id="ppa-cancel-step2-back">volver</button>
+                        <button class="ppa-cancel-btn-primary" id="ppa-cancel-step2-submit" disabled>continuar</button>
+                    </div>
+                `);
+
+                const submitBtn = document.getElementById('ppa-cancel-step2-submit');
+                const otherInput = document.getElementById('ppa-reason-other-text');
+                const agreeInput = document.getElementById('ppa-cancel-agree');
+                let selectedReason = '';
+
+                const updateState = () => {
+                    const hasOtherText = selectedReason !== 'other' || otherInput.value.trim().length > 0;
+                    submitBtn.disabled = !(selectedReason && agreeInput.checked && hasOtherText);
+                };
+                const close = value => { overlay.remove(); document.body.style.overflow = ''; resolve(value); };
+
+                document.querySelectorAll('.ppa-cancel-option').forEach(option => {
+                    option.addEventListener('click', () => {
+                        document.querySelectorAll('.ppa-cancel-option').forEach(item => item.classList.remove('selected'));
+                        option.classList.add('selected');
+                        selectedReason = option.getAttribute('data-reason');
+                        otherInput.style.display = selectedReason === 'other' ? 'block' : 'none';
+                        if (selectedReason === 'other') otherInput.focus();
+                        updateState();
+                    });
+                });
+                otherInput.addEventListener('input', updateState);
+                agreeInput.addEventListener('change', updateState);
+                document.getElementById('ppa-cancel-step2-close').addEventListener('click', () => close(null));
+                document.getElementById('ppa-cancel-step2-back').addEventListener('click', () => close(null));
+                document.getElementById('ppa-cancel-step2-submit').addEventListener('click', () => close({
+                    reason: selectedReason,
+                    reasonOtherText: selectedReason === 'other' ? otherInput.value.trim() : null,
+                    comments: document.getElementById('ppa-cancel-comments').value.trim() || null
+                }));
+            });
+        }
+
+        async fetchCancellationEndDate() {
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/cancellation-end-date?memberstackId=${encodeURIComponent(this.member.id)}`);
+                return await res.json();
+            } catch(e) {
+                console.error('[ProfileWidget] Error fetching cancellation end date:', e);
+                return { success: false, error: 'Error de conexion' };
+            }
+        }
+
+        showFinalConfirmation(endDateInfo) {
+            return new Promise(resolve => {
+                const formatted = fmtDate(endDateInfo.endDate);
+                const overlay = this.createCancelModal(`
+                    <button class="ppa-cancel-modal-x" id="ppa-cancel-step3-close">x</button>
+                    <h2 class="ppa-cancel-title">ultimo paso</h2>
+                    <p class="ppa-cancel-subtitle">
+                        Lamentamos que ya no continues en la manada de Pata Amiga.
+                    </p>
+                    <div class="ppa-cancel-detail">
+                        Te respaldamos hasta el ${this.escapeHtml(formatted)}.
+                        <br>
+                        Faltan ${Number(endDateInfo.daysRemaining || 0)} dias para que termine tu periodo pagado.
+                    </div>
+                    <p class="ppa-cancel-subtitle">
+                        Al confirmar, se cancelara la renovacion de tu suscripcion y quedara registrada tu solicitud.
+                    </p>
+                    <div class="ppa-cancel-actions">
+                        <button class="ppa-cancel-btn-secondary" id="ppa-cancel-step3-back">volver</button>
+                        <button class="ppa-cancel-btn-primary" id="ppa-cancel-step3-confirm">confirmar cancelacion</button>
+                    </div>
+                `);
+
+                const close = value => { overlay.remove(); document.body.style.overflow = ''; resolve(value); };
+                document.getElementById('ppa-cancel-step3-close').addEventListener('click', () => close(false));
+                document.getElementById('ppa-cancel-step3-back').addEventListener('click', () => close(false));
+                document.getElementById('ppa-cancel-step3-confirm').addEventListener('click', () => close(true));
+            });
+        }
+
+        async executeCancellation(cancellationInfo, endDateInfo) {
             try {
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/deactivate`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ memberstackId: this.member.id })
+                    body: JSON.stringify({
+                        memberstackId: this.member.id,
+                        reason: cancellationInfo.reason,
+                        reasonOtherText: cancellationInfo.reasonOtherText,
+                        comments: cancellationInfo.comments
+                    })
                 }).then(r => r.json());
 
                 if (res.success) {
-                    alert('Tu membresía ha sido cancelada. Gracias por ser parte de Pata Amiga 🐾');
+                    const endDate = res.cancellation?.endDate || endDateInfo.endDate;
+                    await this.showCancellationFeedbackModal({
+                        title: 'membresia cancelada',
+                        message: `Gracias por haber sido parte de Pata Amiga. Te respaldamos hasta el ${fmtDate(endDate)}.`
+                    });
                     await window.$memberstackDom.logout();
                     window.location.href = '/';
                 } else {
-                    alert('Hubo un error al cancelar. Por favor contáctanos.');
+                    await this.showCancellationFeedbackModal({
+                        title: 'no pudimos cancelar',
+                        message: res.error || 'Por favor intenta de nuevo o contacta a soporte.'
+                    });
                 }
-            } catch(e) {
-                alert('Error de conexión. Intenta más tarde.');
+            } catch {
+                await this.showCancellationFeedbackModal({
+                    title: 'error de conexion',
+                    message: 'Intenta de nuevo en unos minutos.'
+                });
             }
+        }
+
+        showCancellationFeedbackModal({ title, message }) {
+            return new Promise(resolve => {
+                const overlay = this.createCancelModal(`
+                    <button class="ppa-cancel-modal-x" id="ppa-cancel-feedback-close">x</button>
+                    <h2 class="ppa-cancel-title">${this.escapeHtml(title)}</h2>
+                    <p class="ppa-cancel-subtitle">${this.escapeHtml(message)}</p>
+                    <button class="ppa-cancel-btn-primary" id="ppa-cancel-feedback-ok">entendido</button>
+                `);
+                const close = () => { overlay.remove(); document.body.style.overflow = ''; resolve(true); };
+                document.getElementById('ppa-cancel-feedback-close').addEventListener('click', close);
+                document.getElementById('ppa-cancel-feedback-ok').addEventListener('click', close);
+            });
+        }
+
+        createCancelModal(content) {
+            const overlay = document.createElement('div');
+            overlay.className = 'ppa-cancel-overlay';
+            overlay.innerHTML = `<div class="ppa-cancel-modal" onclick="event.stopPropagation()">${content}</div>`;
+            document.body.appendChild(overlay);
+            document.body.style.overflow = 'hidden';
+            return overlay;
+        }
+
+        openTermsModal() {
+            const existing = document.getElementById('ppa-terms-modal');
+            if (existing) existing.remove();
+
+            const overlay = document.createElement('div');
+            overlay.className = 'ppa-cancel-overlay';
+            overlay.id = 'ppa-terms-modal';
+            overlay.innerHTML = `
+                <div class="ppa-cancel-modal" onclick="event.stopPropagation()">
+                    <button class="ppa-cancel-modal-x" id="ppa-terms-close">x</button>
+                    <h2 class="ppa-cancel-title">terminos</h2>
+                    <p class="ppa-cancel-subtitle" id="ppa-terms-content">Cargando terminos y condiciones...</p>
+                </div>`;
+            document.body.appendChild(overlay);
+
+            const close = () => overlay.remove();
+            document.getElementById('ppa-terms-close').addEventListener('click', close);
+            overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+
+            fetch(`${CONFIG.apiUrl}/api/legal-documents?audience=members`)
+                .then(r => r.json())
+                .then(data => {
+                    const content = document.getElementById('ppa-terms-content');
+                    const doc = data?.documents?.[0];
+                    if (doc?.file_url) {
+                        content.innerHTML = `
+                            Revisa los documentos legales antes de continuar.
+                            <br><br>
+                            <a href="${this.escapeHtml(doc.file_url)}" target="_blank" rel="noopener noreferrer" class="ppa-cancel-btn-primary" style="display:inline-block;text-decoration:none;color:#fff;">
+                                abrir ${this.escapeHtml(doc.title || 'documento')}
+                            </a>
+                        `;
+                    } else {
+                        content.textContent = 'No pudimos cargar los terminos. Contacta a soporte para continuar.';
+                    }
+                })
+                .catch(() => {
+                    const content = document.getElementById('ppa-terms-content');
+                    if (content) content.textContent = 'No pudimos cargar los terminos. Contacta a soporte para continuar.';
+                });
         }
 
         async handlePhotoChange(e) {

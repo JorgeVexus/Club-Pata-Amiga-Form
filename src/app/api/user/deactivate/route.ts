@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import {
+    calculateDaysRemaining,
+    formatDateForStorage,
+    normalizeCancellationRequest,
+} from '@/utils/membership-cancellation';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,9 +22,15 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Memberstack ID requerido' }, { status: 400 });
         }
 
-        console.log(`[DEACTIVATE] Iniciando desactivación para miembro: ${memberstackId}`);
+        let cancellationInfo;
+        try {
+            cancellationInfo = normalizeCancellationRequest(body);
+        } catch (error: any) {
+            return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+        }
 
-        // 1. Obtener usuario de Supabase
+        console.log(`[DEACTIVATE] Iniciando cancelacion de membresia para miembro: ${memberstackId}`);
+
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('id, stripe_customer_id, email')
@@ -35,79 +46,108 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        // 2. Cancelar suscripciones en Stripe
+        let cancellationRecord = {
+            membershipEndDate: formatDateForStorage(new Date()),
+            daysRemaining: 0,
+            stripeSubscriptionId: null as string | null,
+            stripeCustomerId: user.stripe_customer_id as string | null,
+            subscriptionInterval: null as string | null,
+        };
+
         if (process.env.STRIPE_SECRET_KEY) {
             try {
-                console.log('[DEACTIVATE] Buscando suscripciones en Stripe...');
                 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
                 let stripeCustomerId = user.stripe_customer_id;
 
                 if (!stripeCustomerId && user.email) {
                     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-                    if (customers.data.length > 0) {
-                        stripeCustomerId = customers.data[0].id;
-                    }
+                    stripeCustomerId = customers.data[0]?.id || null;
                 }
 
                 if (stripeCustomerId) {
-                    const activeSubs = await stripe.subscriptions.list({
-                        customer: stripeCustomerId,
-                        status: 'active',
-                        limit: 10,
-                    });
-                    const trialingSubs = await stripe.subscriptions.list({
-                        customer: stripeCustomerId,
-                        status: 'trialing',
-                        limit: 10,
-                    });
+                    cancellationRecord.stripeCustomerId = stripeCustomerId;
+
+                    const [activeSubs, trialingSubs] = await Promise.all([
+                        stripe.subscriptions.list({ customer: stripeCustomerId, status: 'active', limit: 10 }),
+                        stripe.subscriptions.list({ customer: stripeCustomerId, status: 'trialing', limit: 10 }),
+                    ]);
 
                     const allSubs = [...activeSubs.data, ...trialingSubs.data];
+                    const primarySub = allSubs
+                        .sort((a: any, b: any) => (b.current_period_end || 0) - (a.current_period_end || 0))[0] as any;
 
-                    if (allSubs.length > 0) {
-                        console.log(`[DEACTIVATE] Cancelando ${allSubs.length} suscripciones para: ${stripeCustomerId}`);
-                        for (const sub of allSubs) {
-                            await stripe.subscriptions.cancel(sub.id);
-                            console.log(`[DEACTIVATE] Suscripción cancelada: ${sub.id}`);
-                        }
-                    } else {
-                        console.log('[DEACTIVATE] No se encontraron suscripciones activas.');
+                    if (primarySub?.current_period_end) {
+                        const endDate = new Date(primarySub.current_period_end * 1000);
+                        cancellationRecord = {
+                            membershipEndDate: formatDateForStorage(endDate),
+                            daysRemaining: calculateDaysRemaining(endDate),
+                            stripeSubscriptionId: primarySub.id,
+                            stripeCustomerId,
+                            subscriptionInterval: primarySub.items?.data?.[0]?.price?.recurring?.interval || null,
+                        };
+                    }
+
+                    for (const sub of allSubs) {
+                        await stripe.subscriptions.update(sub.id, { cancel_at_period_end: true });
+                        console.log(`[DEACTIVATE] Suscripcion marcada para cancelar al fin del periodo: ${sub.id}`);
                     }
                 }
             } catch (stripeError: any) {
-                console.error('[DEACTIVATE] Error cancelando suscripciones Stripe:', stripeError.message);
-                // No bloqueamos la baja, pero lo registramos
+                console.error('[DEACTIVATE] Error programando cancelacion Stripe:', stripeError.message);
             }
         }
 
-        // 3. Actualizar estado en Supabase a 'cancelled'
-        console.log('[DEACTIVATE] Actualizando estado en Supabase...');
+        const { error: cancellationError } = await supabaseAdmin
+            .from('membership_cancellations')
+            .insert({
+                user_id: user.id,
+                memberstack_id: memberstackId,
+                membership_end_date: cancellationRecord.membershipEndDate,
+                days_remaining_at_cancellation: cancellationRecord.daysRemaining,
+                cancellation_reason: cancellationInfo.reason,
+                reason_other_text: cancellationInfo.reasonOtherText,
+                comments: cancellationInfo.comments,
+                stripe_subscription_id: cancellationRecord.stripeSubscriptionId,
+                stripe_customer_id: cancellationRecord.stripeCustomerId,
+                subscription_interval: cancellationRecord.subscriptionInterval,
+            });
+
+        if (cancellationError) {
+            console.error('[DEACTIVATE] Error guardando auditoria de cancelacion:', cancellationError);
+            return NextResponse.json({ success: false, error: 'Error guardando la cancelacion' }, { status: 500 });
+        }
+
         const { error: updateError } = await supabaseAdmin
             .from('users')
             .update({
                 approval_status: 'cancelled',
-                rejection_reason: 'Cancelado por el usuario desde configuración'
+                rejection_reason: 'Membresia cancelada por el usuario',
             })
             .eq('id', user.id);
 
         if (updateError) {
             console.error('[DEACTIVATE] Error actualizando Supabase:', updateError);
-            return NextResponse.json({ success: false, error: 'Error desactivando cuenta' }, { status: 500 });
+            return NextResponse.json({ success: false, error: 'Error cancelando membresia' }, { status: 500 });
         }
 
-        // 4. Actualizar estado en Memberstack
-        console.log('[DEACTIVATE] Actualizando campos en Memberstack...');
         const msResult = await memberstackAdmin.updateMemberFields(memberstackId, {
             'approval-status': 'cancelled',
-            'rejection-reason': 'Cancelado por el usuario desde configuración'
+            'rejection-reason': 'Membresia cancelada por el usuario',
+            'membership-end-date': cancellationRecord.membershipEndDate,
         });
 
         if (!msResult.success) {
             console.error('[DEACTIVATE] Error actualizando Memberstack:', msResult.error);
         }
 
-        console.log(`[DEACTIVATE] Desactivación completada exitosamente para ${memberstackId}`);
-        return NextResponse.json({ success: true, message: 'Cuenta desactivada correctamente' });
-
+        return NextResponse.json({
+            success: true,
+            message: 'Membresia cancelada correctamente',
+            cancellation: {
+                endDate: cancellationRecord.membershipEndDate,
+                daysRemaining: cancellationRecord.daysRemaining,
+            },
+        });
     } catch (error: any) {
         console.error('[DEACTIVATE] Error inesperado:', error);
         return NextResponse.json({ success: false, error: 'Error procesando la solicitud' }, { status: 500 });

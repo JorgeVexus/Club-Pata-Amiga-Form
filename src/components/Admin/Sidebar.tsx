@@ -5,7 +5,7 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members';
+    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations';
     activeSubStatus?: string | null;
     onFilterChange: (filter: any) => void;
     pendingCounts: Record<string, number>;
@@ -65,6 +65,7 @@ export default function Sidebar({
                 { id: 'ambassador', label: 'Embajadores', icon: '🎯', badge: pendingCounts.ambassador },
                 { id: 'wellness-center', label: 'Centros de bienestar', icon: '🏥', badge: pendingCounts['wellness-center'] },
                 { id: 'terminate-users', label: 'Baja de Usuarios', icon: '🚫' },
+                ...(isSuperAdmin ? [{ id: 'cancellations', label: 'Membresias canceladas', icon: '📋' }] : []),
             ]
         },
         {

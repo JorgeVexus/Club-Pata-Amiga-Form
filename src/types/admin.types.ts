@@ -17,6 +17,7 @@ export type RequestType =
     | 'appeals' 
     | 'all-members' 
     | 'terminate-users'
+    | 'cancellations'
     | 'billing'
     | 'payment-records'
     | 'payment-status'
@@ -138,6 +139,7 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'appeals': BRAND_COLORS.yellow,
     'all-members': BRAND_COLORS.green,
     'terminate-users': BRAND_COLORS.pink,
+    'cancellations': BRAND_COLORS.pink,
     'billing': BRAND_COLORS.orange,
     'payment-records': BRAND_COLORS.green,
     'payment-status': BRAND_COLORS.yellow,
@@ -173,6 +175,7 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'appeals': 'Apelaciones',
     'all-members': 'Pruebas / Todos',
     'terminate-users': 'Baja de Usuarios',
+    'cancellations': 'Membresias Canceladas',
     'billing': 'Facturación',
     'payment-records': 'Registros de pagos',
     'payment-status': 'Estado de pago',
