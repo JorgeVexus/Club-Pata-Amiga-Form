@@ -134,6 +134,14 @@
         .ppa-cancel-btn-secondary:hover { background:#fffc67; }
         .ppa-cancel-modal-x { position:absolute; top:18px; right:18px; width:36px; height:36px; border-radius:50%; border:2px solid #000; background:#f5f5f5; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; }
         .ppa-cancel-detail { background:#f0fffd; border:2px solid #00BBB4; border-radius:24px; padding:16px; text-align:center; font-weight:800; margin:18px 0; }
+        .ppa-terms-modal { max-width:760px; display:flex; flex-direction:column; }
+        .ppa-terms-viewer { width:100%; max-height:58vh; overflow-y:auto; background:#fff; border:2px solid #E2E8F0; border-radius:18px; padding:22px; margin-top:18px; font-family:'Outfit',sans-serif; font-size:14px; line-height:1.62; color:#2D3748; text-align:justify; box-shadow:inset 0 2px 8px rgba(0,0,0,.05); }
+        .ppa-terms-viewer::-webkit-scrollbar { width:8px; }
+        .ppa-terms-viewer::-webkit-scrollbar-track { background:#F7FAFC; border-radius:8px; }
+        .ppa-terms-viewer::-webkit-scrollbar-thumb { background:#CBD5E0; border-radius:8px; }
+        .ppa-terms-text-header { color:#00BBB4; font-family:'Fraiche',sans-serif; font-size:22px; margin:22px 0 10px; border-bottom:1px solid #E2E8F0; padding-bottom:6px; text-align:left; line-height:1.1; text-transform:lowercase; }
+        .ppa-terms-text-line { margin:0 0 12px; white-space:pre-wrap; word-break:break-word; }
+        .ppa-terms-loading { padding:32px; text-align:center; color:#718096; font-weight:800; }
 
         @keyframes ppaFI { from{opacity:0} to{opacity:1} }
         @keyframes ppaSU { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
@@ -149,6 +157,7 @@
             .ppa-cancel-modal { padding:28px 22px; border-radius:28px; }
             .ppa-cancel-title { font-size:30px; }
             .ppa-cancel-actions { flex-direction:column-reverse; }
+            .ppa-terms-viewer { max-height:56vh; padding:16px; font-size:13px; }
         }
     `;
     class UserProfileWidget {
@@ -666,6 +675,18 @@
             return overlay;
         }
 
+        renderLegalText(text) {
+            if (!text) return '<div class="ppa-terms-loading">No hay terminos disponibles.</div>';
+            return text.split('\n').map(line => {
+                const trimmedLine = line.trim();
+                if (trimmedLine.startsWith('## ') || trimmedLine.startsWith('### ')) {
+                    return `<h4 class="ppa-terms-text-header">${this.escapeHtml(trimmedLine.replace(/^###?\s/, ''))}</h4>`;
+                }
+                if (trimmedLine === '') return '<br>';
+                return `<p class="ppa-terms-text-line">${this.escapeHtml(line)}</p>`;
+            }).join('');
+        }
+
         openTermsModal() {
             const existing = document.getElementById('ppa-terms-modal');
             if (existing) existing.remove();
@@ -674,10 +695,13 @@
             overlay.className = 'ppa-cancel-overlay';
             overlay.id = 'ppa-terms-modal';
             overlay.innerHTML = `
-                <div class="ppa-cancel-modal" onclick="event.stopPropagation()">
+                <div class="ppa-cancel-modal ppa-terms-modal" onclick="event.stopPropagation()">
                     <button class="ppa-cancel-modal-x" id="ppa-terms-close">x</button>
                     <h2 class="ppa-cancel-title">terminos</h2>
-                    <p class="ppa-cancel-subtitle" id="ppa-terms-content">Cargando terminos y condiciones...</p>
+                    <p class="ppa-cancel-subtitle">Lee los terminos y condiciones de Pata Amiga.</p>
+                    <div class="ppa-terms-viewer" id="ppa-terms-content">
+                        <div class="ppa-terms-loading">Cargando terminos y condiciones...</div>
+                    </div>
                 </div>`;
             document.body.appendChild(overlay);
 
@@ -685,26 +709,20 @@
             document.getElementById('ppa-terms-close').addEventListener('click', close);
             overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
 
-            fetch(`${CONFIG.apiUrl}/api/legal-documents?audience=members`)
+            fetch(`${CONFIG.apiUrl}/api/legal/terms`)
                 .then(r => r.json())
                 .then(data => {
                     const content = document.getElementById('ppa-terms-content');
-                    const doc = data?.documents?.[0];
-                    if (doc?.file_url) {
-                        content.innerHTML = `
-                            Revisa los documentos legales antes de continuar.
-                            <br><br>
-                            <a href="${this.escapeHtml(doc.file_url)}" target="_blank" rel="noopener noreferrer" class="ppa-cancel-btn-primary" style="display:inline-block;text-decoration:none;color:#fff;">
-                                abrir ${this.escapeHtml(doc.title || 'documento')}
-                            </a>
-                        `;
+                    if (!content) return;
+                    if (data?.success && data.fullDocument) {
+                        content.innerHTML = this.renderLegalText(data.fullDocument);
                     } else {
-                        content.textContent = 'No pudimos cargar los terminos. Contacta a soporte para continuar.';
+                        content.innerHTML = '<div class="ppa-terms-loading">No pudimos cargar los terminos. Contacta a soporte para continuar.</div>';
                     }
                 })
                 .catch(() => {
                     const content = document.getElementById('ppa-terms-content');
-                    if (content) content.textContent = 'No pudimos cargar los terminos. Contacta a soporte para continuar.';
+                    if (content) content.innerHTML = '<div class="ppa-terms-loading">No pudimos cargar los terminos. Contacta a soporte para continuar.</div>';
                 });
         }
 
