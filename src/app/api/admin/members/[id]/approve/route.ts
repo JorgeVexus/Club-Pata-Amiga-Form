@@ -47,19 +47,19 @@ export async function POST(
             const memberEmail = result.data?.auth?.email;
             console.log('🔍 CRM Debug: Buscando usuario. memberstack_id:', memberId, 'email:', memberEmail);
 
-            // Primero intentar por memberstack_id
+            // 0. Buscar el usuario en Supabase para obtener su crm_contact_id y datos de membresía previos
             let { data: user, error: userError } = await supabaseAdmin
                 .from('users')
-                .select('crm_contact_id, email')
+                .select('crm_contact_id, email, membership_type, membership_cost')
                 .eq('memberstack_id', memberId)
                 .single();
 
-            // Si no encuentra, intentar por email
-            if (!user && memberEmail) {
-                console.log('🔄 CRM: No encontrado por memberstack_id, intentando por email...');
+            if (userError || !user) {
+                // Reintento por email si falla por MS ID
+                const memberEmail = request.nextUrl.searchParams.get('email');
                 const emailResult = await supabaseAdmin
                     .from('users')
-                    .select('crm_contact_id, email')
+                    .select('crm_contact_id, email, membership_type, membership_cost')
                     .eq('email', memberEmail)
                     .single();
                 user = emailResult.data;
@@ -69,30 +69,35 @@ export async function POST(
             console.log('🔍 CRM Debug: Resultado query:', {
                 found: !!user,
                 crm_contact_id: user?.crm_contact_id,
-                error: userError?.message
+                membership_type: user?.membership_type,
+                membership_cost: user?.membership_cost
             });
 
             if (user?.crm_contact_id) {
                 // 1. Obtener detalles del plan desde Memberstack
                 const memberDetails = await getMemberDetails(memberId);
-                let planType = 'Mensual'; // Fallback
-                let planCost = '$159';
+                
+                // Fallbacks jerárquicos: Supabase > Default
+                let planType = user.membership_type || 'Mensual';
+                let planCost = user.membership_cost || '$159';
 
                 if (memberDetails.success && memberDetails.data?.planConnections?.length) {
                     const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
                     const priceId = activePlan.priceId;
 
-                    // Mapeo de precios
-                    // PRD: prc_mensual-452k30jah / prc_anual-o9d101ta
+                    // Mapeo de precios basado en IDs reales
                     if (priceId === 'prc_anual-o9d101ta') {
                         planType = 'Anual';
                         planCost = '$1,699';
-                    } else {
-                        // Default mensual
+                    } else if (priceId === 'prc_mensual-452k30jah') {
                         planType = 'Mensual';
                         planCost = '$159';
                     }
-                    console.log(`💳 CRM: Detectado plan ${planType} (${planCost})`);
+                    // Si no coincide con ninguno, mantenemos los valores de Supabase o fallback inicial
+                    
+                    console.log(`💳 CRM: Detectado plan ${planType} (${planCost}) desde Memberstack`);
+                } else {
+                    console.log(`💳 CRM: Usando datos de Supabase/Fallback: ${planType} (${planCost})`);
                 }
 
                 const crmResult = await updateContactAsActive(

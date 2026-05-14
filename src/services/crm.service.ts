@@ -43,6 +43,7 @@ export interface UpsertResponse {
 
 export interface UpdateResponse {
     success: boolean;
+    data?: any;
     error?: string;
 }
 
@@ -139,28 +140,28 @@ export async function updateContactAsActive(
                 }
             ]
         };
-
-        console.log('[CRM] Actualizando contacto como activo:', contactId);
+        console.log(`[CRM] 🔄 Payload para ${contactId}:`, JSON.stringify(payload, null, 2));
 
         const response = await fetch(`${API_URL}/contacts/${contactId}`, {
             method: 'PUT',
-            headers: getHeaders(),
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`,
+                'Version': '2021-07-28'
+            },
             body: JSON.stringify(payload)
         });
 
+        const result = await response.json();
+        
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            console.error('[CRM] Error en update:', response.status, errorData);
-            return {
-                success: false,
-                error: errorData.message || `Error HTTP ${response.status}`
-            };
+            console.error(`[CRM] ❌ Error en PUT /contacts/${contactId}:`, result);
+            return { success: false, error: result.message || 'Error en actualización' };
         }
 
-        const result = await response.json();
-        console.log('[CRM] Contacto marcado como miembro activo:', result.succeeded);
-
-        return { success: result.succeeded || true };
+        console.log(`[CRM] ✅ Respuesta exitosa para ${contactId}:`, JSON.stringify(result, null, 2));
+        return { success: true, data: result };
 
     } catch (error: any) {
         console.error('[CRM] Error actualizando contacto:', error);
