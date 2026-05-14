@@ -4443,7 +4443,7 @@
                                 </svg>
                                 <div class="pata-footer-text-new">
                                     <h4>¿Tienes alguna duda o necesitas ayuda?</h4>
-                                    <p>Nuestro equipo está listo para apoyarte. Escríbenos por el chat o a miembros@pataamiga.mx</p>
+                                    <p>Nuestro equipo está listo para apoyarte. Escríbenos al <a href="https://wa.me/525639545068?text=Hola,%20necesito%20ayuda%20con%20mi%20membresía" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">WhatsApp 56-3954-5068</a> o a <a href="mailto:miembros@pataamiga.mx" style="color: inherit; font-weight: 900; text-decoration: underline;">miembros@pataamiga.mx</a></p>
                                 </div>
                             </div>
                         </section>
