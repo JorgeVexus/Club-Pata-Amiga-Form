@@ -3582,6 +3582,81 @@
             this.render();
         }
 
+        async saveBirthday(petId) {
+            const monthInput = document.getElementById(`pata-birth-month-${petId}`);
+            const yearInput = document.getElementById(`pata-birth-year-${petId}`);
+            const btn = document.getElementById(`pata-btn-birthday-${petId}`);
+            if (!monthInput || !yearInput || !btn) return;
+
+            const monthVal = monthInput.value.trim().toLowerCase();
+            const yearVal = parseInt(yearInput.value, 10);
+            
+            const monthsMap = {
+                'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4, 'mayo': 5, 'junio': 6,
+                'julio': 7, 'agosto': 8, 'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
+            };
+            
+            const birthMonth = monthsMap[monthVal] || parseInt(monthVal, 10);
+            const birthYear = yearVal;
+
+            if (!birthMonth || birthMonth < 1 || birthMonth > 12) {
+                alert('Por favor ingresa un mes válido (ej. "Enero" o "1").');
+                return;
+            }
+
+            const currentYear = new Date().getFullYear();
+            if (!birthYear || birthYear > currentYear || birthYear < 1990) {
+                alert('Por favor ingresa un año válido y que no sea mayor al actual.');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: this.member.id,
+                        birthMonth,
+                        birthYear
+                    })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('¡Cumpleaños guardado exitosamente!');
+                    
+                    // Actualizar localmente
+                    const pet = this.pets.find(p => p.id === petId);
+                    if (pet) {
+                        pet.birth_month = birthMonth;
+                        pet.birth_year = birthYear;
+                    }
+                    
+                    // Refrescar el modal
+                    const modalWrapper = document.getElementById('pata-details-modal-wrapper');
+                    if (modalWrapper) {
+                        modalWrapper.innerHTML = this.renderPetDetailsModal(pet);
+                        this.attachEvents();
+                    } else {
+                        location.reload();
+                    }
+                } else {
+                    alert('Error al guardar: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ocurrió un error inesperado al guardar el cumpleaños.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Guardar';
+                btn.style.opacity = '1';
+            }
+        }
+
         async init() {
             console.log('🚀 Unified Widget: Starting initialization...');
             this.injectStyles();
@@ -5616,6 +5691,31 @@
             const infoItems = [
                 { label: 'Especie', value: pet.type || (pet.pet_type === 'dog' ? 'Perro' : pet.pet_type === 'cat' ? 'Gato' : pet.pet_type) || 'Perro', icon: 'https://app.pataamiga.mx/Icons/especie.png' },
                 { label: 'Edad', value: (pet.age || '').replace(/years?/i, m => m.toLowerCase().endsWith('s') ? 'años' : 'año').replace(/old/i, '').trim() || (pet.age_value ? `${pet.age_value} ${pet.age_unit === 'months' ? 'meses' : 'años'}` : '1 año'), icon: 'https://app.pataamiga.mx/Icons/edad.png' },
+                {
+                    isCustom: true,
+                    html: `
+                        <div class="pata-info-item">
+                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/cumpleanos.png" alt="Cumpleaños"></div>
+                            <div class="pata-info-texts">
+                                <span class="pata-info-label">Cumpleaños</span>
+                                ${pet.birth_month && pet.birth_year ? `
+                                    <span class="pata-info-value">${['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][pet.birth_month] || pet.birth_month} ${pet.birth_year}</span>
+                                ` : `
+                                    <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
+                                        <input type="text" list="pata-months-list" id="pata-birth-month-${pet.id}" placeholder="Mes" style="width:70px; border:1px solid #ddd; border-radius:8px; padding:4px 8px; font-size:12px;">
+                                        <datalist id="pata-months-list">
+                                            <option value="Enero"><option value="Febrero"><option value="Marzo"><option value="Abril">
+                                            <option value="Mayo"><option value="Junio"><option value="Julio"><option value="Agosto">
+                                            <option value="Septiembre"><option value="Octubre"><option value="Noviembre"><option value="Diciembre">
+                                        </datalist>
+                                        <input type="number" id="pata-birth-year-${pet.id}" placeholder="Año" min="1995" max="${new Date().getFullYear()}" style="width:60px; border:1px solid #ddd; border-radius:8px; padding:4px 8px; font-size:12px;">
+                                        <button id="pata-btn-birthday-${pet.id}" onclick="window.pataWidget.saveBirthday('${pet.id}')" style="background:#00BBB4; color:white; border:none; border-radius:8px; padding:4px 10px; font-size:11px; font-weight:bold; cursor:pointer;">Guardar</button>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                    `
+                },
                 { label: 'Género', value: pet.gender || 'Hembra', icon: 'https://app.pataamiga.mx/Icons/sexo.png' },
                 { label: 'Color Pelo', value: pet.coat_color || pet.color || pet.pet_color || 'Multicolor', icon: 'https://app.pataamiga.mx/Icons/color-pelo.png' },
                 { label: 'Color Ojos', value: pet.eye_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-ojos.png' },
@@ -5624,15 +5724,18 @@
                 ...(pet.status === 'approved' ? [{ label: 'Fecha de activación del fondo', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
             ];
 
-            const infoGridHtml = infoItems.map(item => `
-                <div class="pata-info-item">
-                    <div class="pata-info-icon-wrap"><img src="${item.icon}" alt="${item.label}"></div>
-                    <div class="pata-info-texts">
-                        <span class="pata-info-label">${item.label}</span>
-                        <span class="pata-info-value">${item.value}</span>
+            const infoGridHtml = infoItems.map(item => {
+                if (item.isCustom) return item.html;
+                return `
+                    <div class="pata-info-item">
+                        <div class="pata-info-icon-wrap"><img src="${item.icon}" alt="${item.label}"></div>
+                        <div class="pata-info-texts">
+                            <span class="pata-info-label">${item.label}</span>
+                            <span class="pata-info-value">${item.value}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
 
             // Distinctive Editorial Layout
             return `
