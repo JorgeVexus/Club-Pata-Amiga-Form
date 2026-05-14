@@ -8,6 +8,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import TermsModalEnhanced from '../TermsModalEnhanced';
 import styles from './Step3PlanSelection.module.css';
+import { trackEvent } from '@/components/Analytics/MetaPixel';
 
 // Reusable SVG Components for branding
 const CheckIcon = () => (
@@ -202,6 +203,17 @@ export default function Step3PlanSelection({
         }
 
         setIsProcessing(true);
+
+        // 🔥 Meta Pixel: Tracking de inicio de checkout
+        const selectedPlanData = PLANS.find(plan => plan.id === selectedPlan);
+        const planPrice = selectedPlanData ? selectedPlanData.price : 0;
+        trackEvent('InitiateCheckout', {
+            value: planPrice,
+            currency: 'MXN',
+            content_name: `Plan ${selectedPlanData?.name || ''}`,
+            content_category: 'subscription'
+        });
+
         try {
             const memberId = data?.member?.id || member?.id || member?.memberId;
             if (memberId) {

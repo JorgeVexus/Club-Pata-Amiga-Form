@@ -82,6 +82,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [sendingRequest, setSendingRequest] = useState<Record<string, boolean>>({});
     const [stripeDetails, setStripeDetails] = useState<any>(null);
     const [loadingStripe, setLoadingStripe] = useState(false);
+    const [isSyncingCRM, setIsSyncingCRM] = useState(false);
 
     // States for Editing
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -405,6 +406,35 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             alert('Error de conexión al procesar el reembolso.');
         } finally {
             setIsRefunding(false);
+        }
+    }
+
+    async function handleSyncCRM() {
+        if (isSyncingCRM) return;
+        setIsSyncingCRM(true);
+        try {
+            const plan = member.planConnections?.[0];
+            const isAnual = stripeDetails?.subscription?.interval === 'year' || plan?.planName?.toLowerCase().includes('anual');
+            const membershipType = isAnual ? 'Anual' : 'Mensual';
+            const membershipCost = isAnual ? '$1,699' : '$159';
+
+            const response = await adminFetch(`/api/admin/members/${member.id}/sync-crm`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ membershipType, membershipCost })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert('✅ CRM Sincronizado correctamente');
+            } else {
+                alert('❌ Error: ' + (data.error || 'No se pudo sincronizar'));
+            }
+        } catch (error) {
+            console.error('CRM Sync error:', error);
+            alert('Error de conexión');
+        } finally {
+            setIsSyncingCRM(false);
         }
     }
 
@@ -1263,6 +1293,20 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                             disabled={isRefunding}
                         >
                             {isRefunding ? '⏳ Procesando...' : '💳 Reembolsar Pago'}
+                        </button>
+                    )}
+                    {fields['approval-status'] === 'approved' && (
+                        <button
+                            className={`${styles.actionButton}`}
+                            style={{
+                                background: '#00BBB4',
+                                color: 'white',
+                                opacity: isSyncingCRM ? 0.7 : 1,
+                            }}
+                            onClick={handleSyncCRM}
+                            disabled={isSyncingCRM}
+                        >
+                            {isSyncingCRM ? '⏳ Sincronizando...' : '🔄 Resincronizar CRM'}
                         </button>
                     )}
                     {refundDone && (
