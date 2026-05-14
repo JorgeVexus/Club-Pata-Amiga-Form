@@ -97,30 +97,41 @@ export async function POST(
             return NextResponse.json({ error: 'El usuario no tiene un ID de contacto de CRM asociado' }, { status: 400 });
         }
 
-        // 2. Fallbacks jerárquicos (igual que en approve)
-        let planType = membershipType || user.membership_type;
-        let planCost = membershipCost || user.membership_cost;
+        // 2. Obtener detalles del plan desde Memberstack para sincronización precisa
+        const memberDetails = await getMemberDetails(memberId);
+        
+        // Fallbacks jerárquicos: Body (Frontend) > Supabase > Default
+        let planType = membershipType || user.membership_type || 'Mensual';
+        let planCost = membershipCost || user.membership_cost || '$159';
 
-        // Si aún falta algo, intentar Memberstack
-        if (!planType || !planCost) {
-            const memberDetails = await getMemberDetails(memberId);
-            if (memberDetails.success && memberDetails.data?.planConnections?.length) {
-                const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
-                const priceId = activePlan.priceId;
+        console.log(`💳 CRM Resync: Metadata inicial: Type=${planType}, Cost=${planCost}`);
 
-                if (priceId === 'prc_anual-o9d101ta') {
-                    planType = planType || 'Anual';
-                    planCost = planCost || '$1,699';
-                } else if (priceId === 'prc_mensual-452k30jah') {
-                    planType = planType || 'Mensual';
-                    planCost = planCost || '$159';
-                }
+        if (memberDetails.success && memberDetails.data?.planConnections?.length) {
+            const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
+            const priceId = activePlan.priceId;
+            const planName = (activePlan.planName || '').toLowerCase();
+            const amount = activePlan.payment?.amount || 0;
+
+            // Lógica idéntica a la del Dashboard Admin (stripe-data/route.ts)
+            const isAnnualKeyword = planName.includes('anual') || 
+                                  planName.includes('annual') || 
+                                  planName.includes('year') || 
+                                  planName.includes('año');
+            
+            // Si tiene keyword anual O el monto es mayor a 1000 (indicador fuerte de plan anual de 1699 vs 159 mensual)
+            if (priceId === 'prc_anual-o9d101ta' || isAnnualKeyword || amount > 1000) {
+                planType = 'Anual';
+                planCost = amount > 1000 ? `$${amount.toLocaleString('es-MX')}` : '$1,699';
+            } else if (priceId === 'prc_mensual-452k30jah' || (amount > 0 && amount <= 1000)) {
+                planType = 'Mensual';
+                planCost = amount > 0 ? `$${amount.toLocaleString('es-MX')}` : '$159';
             }
+            
+            console.log(`💳 CRM Resync: Detectado plan ${planType} (${planCost}) desde Memberstack (ID: ${priceId}, Amount: ${amount})`);
+        } else {
+            console.log(`💳 CRM Resync: Usando datos de Supabase/Fallback: ${planType} (${planCost})`);
         }
 
-        // Defaults finales
-        planType = planType || 'Mensual';
-        planCost = planCost || '$159';
 
         console.log(`💳 CRM Resync: Enviando Type=${planType}, Cost=${planCost}`);
 

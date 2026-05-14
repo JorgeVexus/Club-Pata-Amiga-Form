@@ -87,21 +87,29 @@ export async function POST(
                 if (memberDetails.success && memberDetails.data?.planConnections?.length) {
                     const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
                     const priceId = activePlan.priceId;
+                    const planName = (activePlan.planName || '').toLowerCase();
+                    const amount = activePlan.payment?.amount || 0;
 
-                    // Mapeo de precios basado en IDs reales
-                    if (priceId === 'prc_anual-o9d101ta') {
-                        planType = 'Anual';
-                        planCost = '$1,699';
-                    } else if (priceId === 'prc_mensual-452k30jah') {
-                        planType = 'Mensual';
-                        planCost = '$159';
-                    }
-                    // Si no coincide con ninguno, mantenemos los valores de Supabase o fallback inicial
+                    // Lógica idéntica a la del Dashboard Admin (stripe-data/route.ts)
+                    const isAnnualKeyword = planName.includes('anual') || 
+                                          planName.includes('annual') || 
+                                          planName.includes('year') || 
+                                          planName.includes('año');
                     
-                    console.log(`💳 CRM: Detectado plan ${planType} (${planCost}) desde Memberstack`);
+                    // Si tiene keyword anual O el monto es mayor a 1000 (indicador fuerte de plan anual de 1699 vs 159 mensual)
+                    if (priceId === 'prc_anual-o9d101ta' || isAnnualKeyword || amount > 1000) {
+                        planType = 'Anual';
+                        planCost = amount > 1000 ? `$${amount.toLocaleString('es-MX')}` : '$1,699';
+                    } else if (priceId === 'prc_mensual-452k30jah' || (amount > 0 && amount <= 1000)) {
+                        planType = 'Mensual';
+                        planCost = amount > 0 ? `$${amount.toLocaleString('es-MX')}` : '$159';
+                    }
+                    
+                    console.log(`💳 CRM: Detectado plan ${planType} (${planCost}) desde Memberstack (ID: ${priceId}, Amount: ${amount})`);
                 } else {
                     console.log(`💳 CRM: Usando datos de Supabase/Fallback: ${planType} (${planCost})`);
                 }
+
 
                 const crmResult = await updateContactAsActive(
                     user.crm_contact_id,

@@ -140,7 +140,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             const response = await adminFetch(`/api/admin/members/${member.id}/stripe-details`);
             if (response.ok) {
                 const data = await response.json();
-                setStripeDetails(data);
+                setStripeDetails(data.stripeData);
             }
         } catch (error) {
             console.error('Error loading stripe details:', error);
@@ -414,7 +414,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         setIsSyncingCRM(true);
         try {
             const plan = member.planConnections?.[0];
-            const isAnual = stripeDetails?.subscription?.interval === 'year' || plan?.planName?.toLowerCase().includes('anual');
+            const isAnual = stripeDetails?.subscription?.interval === 'year' || 
+                            plan?.planName?.toLowerCase().includes('anual') ||
+                            (stripeDetails?.payments?.[0]?.amount && stripeDetails.payments[0].amount > 1000);
             const membershipType = isAnual ? 'Anual' : 'Mensual';
             const membershipCost = isAnual ? '$1,699' : '$159';
 
@@ -643,7 +645,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 }) : '-';
 
                                 // 2. Lógica Dinámica de Próxima Renovación
-                                const isAnual = stripeDetails?.subscription?.interval === 'year' || plan.planName?.toLowerCase().includes('anual');
+                                const isAnual = stripeDetails?.subscription?.interval === 'year' || 
+                                                plan.planName?.toLowerCase().includes('anual') ||
+                                                (stripeDetails?.payments?.[0]?.amount && stripeDetails.payments[0].amount > 1000);
+                                const membershipCost = isAnual ? '$1,699' : '$159';
                                 let finalRenewalDate: Date | null = null;
 
                                 // Prioridad 1: Stripe (Directo del API)
@@ -688,6 +693,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             <span className={styles.label}>Frecuencia de Pago</span>
                                             <span className={styles.value} style={{ textTransform: 'capitalize' }}>
                                                 {isAnual ? 'Anual' : 'Mensual'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Costo de Membresía</span>
+                                            <span className={styles.value} style={{ fontWeight: 600 }}>
+                                                {membershipCost}
                                             </span>
                                         </div>
                                         <div className={styles.field}>
@@ -1266,7 +1277,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                 className={`${styles.actionButton} ${styles.approveButton}`}
                                 onClick={() => {
                                     const plan = member.planConnections?.[0];
-                                    const isAnual = stripeDetails?.subscription?.interval === 'year' || plan?.planName?.toLowerCase().includes('anual');
+                                    const isAnual = stripeDetails?.subscription?.interval === 'year' || 
+                                                    plan?.planName?.toLowerCase().includes('anual') ||
+                                                    (stripeDetails?.payments?.[0]?.amount && stripeDetails.payments[0].amount > 1000);
                                     const membershipType = isAnual ? 'Anual' : 'Mensual';
                                     const membershipCost = isAnual ? '$1,699' : '$159';
                                     onApprove(member.id, { membershipType, membershipCost });
