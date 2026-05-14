@@ -64,7 +64,29 @@ export async function POST(
         });
 
         if (userError || !user) {
-            return NextResponse.json({ error: 'Usuario no encontrado en base de datos' }, { status: 404 });
+            console.warn('⚠️ CRM Debug: Usuario no encontrado en Supabase. Intentando recuperación vía Memberstack...');
+            const memberDetails = await getMemberDetails(memberId);
+            
+            if (memberDetails.success && memberDetails.data) {
+                const msFields = memberDetails.data.customFields || {};
+                const crmId = msFields['crm-contact-id'] || msFields['crm_contact_id'];
+                
+                if (crmId) {
+                    console.log('✅ CRM Debug: ID de contacto encontrado en Memberstack:', crmId);
+                    user = {
+                        crm_contact_id: crmId,
+                        email: memberDetails.data.auth?.email || memberDetails.data.email,
+                        membership_type: null, // Se calculará después
+                        membership_cost: null
+                    } as any;
+                }
+            }
+        }
+
+        if (!user) {
+            return NextResponse.json({ 
+                error: 'Usuario no encontrado en base de datos ni en Memberstack con ID de CRM' 
+            }, { status: 404 });
         }
 
         if (!user.crm_contact_id) {
