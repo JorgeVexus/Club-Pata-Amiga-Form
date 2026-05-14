@@ -418,7 +418,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             const membershipType = isAnual ? 'Anual' : 'Mensual';
             const membershipCost = isAnual ? '$1,699' : '$159';
 
-            const memberEmail = member.email || member.auth?.email || '';
+            const memberEmail = member.auth?.email || member.email || member.customFields?.['email'] || '';
             const response = await adminFetch(`/api/admin/members/${member.id}/sync-crm?email=${encodeURIComponent(memberEmail)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
