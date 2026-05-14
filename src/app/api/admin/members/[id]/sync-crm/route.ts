@@ -79,7 +79,7 @@ export async function POST(
                     console.log('✅ CRM Debug: ID de contacto encontrado en Memberstack:', crmId);
                     user = {
                         crm_contact_id: crmId,
-                        email: memberDetails.data.auth?.email || memberDetails.data.email,
+                        email: memberDetails.data.auth?.email || '',
                         membership_type: null, // Se calculará después
                         membership_cost: null
                     } as any;
