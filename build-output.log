@@ -1,0 +1,182 @@
+
+> pet-membership-form@1.0.0 build
+> next build
+
+⚠ `eslint` configuration in next.config.js is no longer supported. See more info here: https://nextjs.org/docs/app/api-reference/cli/next#next-lint-options
+⚠ `images.domains` is deprecated in favor of `images.remotePatterns`. Please update next.config.js to protect your application from malicious users.
+⚠ Invalid next.config.js options detected: 
+⚠     Unrecognized key(s) in object: 'eslint'
+⚠ See more info here: https://nextjs.org/docs/messages/invalid-next-config
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+ We detected multiple lockfiles and selected the directory of /mnt/c/Users/Jorge Cerna/package-lock.json as the root directory.
+ To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+   See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+ Detected additional lockfiles: 
+   * /mnt/c/Users/Jorge Cerna/OneDrive/Desktop/new project/pet-membership-form/package-lock.json
+
+▲ Next.js 16.2.6 (Turbopack)
+- Environments: .env.local
+
+⚠ The "middleware" file convention is deprecated. Please use "proxy" instead. Learn more: https://nextjs.org/docs/messages/middleware-to-proxy
+  Creating an optimized production build ...
+✓ Compiled successfully in 37.9s
+  Running TypeScript ...
+  Finished TypeScript in 45s ...
+  Collecting page data using 5 workers ...
+  Generating static pages using 5 workers (0/114) ...
+  Generating static pages using 5 workers (28/114) 
+  Generating static pages using 5 workers (56/114) 
+  Generating static pages using 5 workers (85/114) 
+✓ Generating static pages using 5 workers (114/114) in 5.0s
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ○ /admin/dashboard
+├ ○ /admin/login
+├ ○ /admin/register
+├ ƒ /api/admin/activity
+├ ƒ /api/admin/admins
+├ ƒ /api/admin/ambassadors/[id]/enable-code-change
+├ ƒ /api/admin/ambassadors/sync-memberstack
+├ ƒ /api/admin/debug-members
+├ ƒ /api/admin/finance/billing
+├ ƒ /api/admin/finance/stripe-data
+├ ƒ /api/admin/me
+├ ƒ /api/admin/members
+├ ƒ /api/admin/members/[id]
+├ ƒ /api/admin/members/[id]/appeal-logs
+├ ƒ /api/admin/members/[id]/appeal-response
+├ ƒ /api/admin/members/[id]/approve
+├ ƒ /api/admin/members/[id]/delete
+├ ƒ /api/admin/members/[id]/pets/[petId]
+├ ƒ /api/admin/members/[id]/pets/[petId]/status
+├ ƒ /api/admin/members/[id]/refund
+├ ƒ /api/admin/members/[id]/reject
+├ ƒ /api/admin/members/[id]/request-info
+├ ƒ /api/admin/members/[id]/stripe-details
+├ ƒ /api/admin/members/[id]/sync-crm
+├ ƒ /api/admin/members/bulk-delete
+├ ƒ /api/admin/metrics
+├ ƒ /api/admin/migrate-payment-status
+├ ƒ /api/admin/notifications
+├ ƒ /api/admin/notifications/[id]/read
+├ ƒ /api/admin/notifications/mark-all-read
+├ ƒ /api/admin/pets/appealed
+├ ƒ /api/admin/register
+├ ƒ /api/admin/reports/analytics
+├ ƒ /api/admin/seed-breeds
+├ ƒ /api/admin/settings/skip-payment
+├ ƒ /api/admin/solidarity/list
+├ ƒ /api/admin/solidarity/requests/[id]
+├ ƒ /api/admin/solidarity/update
+├ ƒ /api/ambassadors
+├ ƒ /api/ambassadors/[id]
+├ ƒ /api/ambassadors/[id]/generate-code-link
+├ ƒ /api/ambassadors/[id]/payouts
+├ ƒ /api/ambassadors/[id]/request-code-change
+├ ƒ /api/ambassadors/[id]/resend-code-email
+├ ƒ /api/ambassadors/by-memberstack
+├ ƒ /api/ambassadors/login
+├ ƒ /api/ambassadors/me
+├ ƒ /api/ambassadors/re-upload
+├ ƒ /api/ambassadors/referral-code/change
+├ ƒ /api/ambassadors/referral-code/save
+├ ƒ /api/ambassadors/referral-code/validate
+├ ƒ /api/auth/check-role
+├ ƒ /api/auth/magic-token
+├ ƒ /api/auth/session-token
+├ ƒ /api/breeds
+├ ƒ /api/catalogs/breeds
+├ ƒ /api/catalogs/coat-colors
+├ ƒ /api/catalogs/nationalities
+├ ƒ /api/crm/upsert
+├ ƒ /api/cron/missing-info-followup
+├ ƒ /api/cron/test-email
+├ ƒ /api/integrations/vet-bot/consultations
+├ ƒ /api/integrations/vet-bot/context
+├ ƒ /api/integrations/vet-bot/test
+├ ƒ /api/integrations/vet-bot/verify-code
+├ ƒ /api/legal-documents
+├ ƒ /api/legal-documents/[id]
+├ ƒ /api/legal/terms
+├ ƒ /api/memberstack/member
+├ ƒ /api/notifications
+├ ƒ /api/notifications/[id]/read
+├ ƒ /api/notifications/count
+├ ƒ /api/notifications/create
+├ ƒ /api/notifications/mark-all-read
+├ ƒ /api/notifications/preferences
+├ ƒ /api/payouts/[id]
+├ ƒ /api/referrals
+├ ƒ /api/referrals/[id]
+├ ƒ /api/referrals/validate-code
+├ ƒ /api/sepomex
+├ ƒ /api/sepomex/[cp]
+├ ƒ /api/solidarity/allied-centers
+├ ƒ /api/solidarity/balance
+├ ƒ /api/solidarity/chat/send
+├ ƒ /api/solidarity/details
+├ ƒ /api/solidarity/history
+├ ƒ /api/solidarity/request
+├ ƒ /api/solidarity/requests/[id]
+├ ƒ /api/solidarity/requests/[id]/messages
+├ ƒ /api/solidarity/stats
+├ ƒ /api/upload/ambassador-doc
+├ ƒ /api/upload/pet-photo
+├ ƒ /api/upload/profile-photo
+├ ƒ /api/upload/solidarity-attachment
+├ ƒ /api/upload/solidarity-document
+├ ƒ /api/upload/vet-certificate
+├ ƒ /api/user/add-pet
+├ ƒ /api/user/appeal
+├ ƒ /api/user/appeal-history
+├ ƒ /api/user/chat/send
+├ ƒ /api/user/deactivate
+├ ƒ /api/user/fulfill-request
+├ ƒ /api/user/payment-method
+├ ƒ /api/user/pets
+├ ƒ /api/user/pets/[petId]/update
+├ ƒ /api/user/pets/add
+├ ƒ /api/user/preferences
+├ ƒ /api/user/profile
+├ ƒ /api/user/sync-memberstack
+├ ƒ /api/user/update-pet-docs
+├ ƒ /api/user/update-profile
+├ ƒ /api/user/upload-pet-photo
+├ ƒ /api/user/verify-upload-token
+├ ○ /completar-documentacion
+├ ○ /completar-perfil
+├ ○ /demo-cms
+├ ○ /ejemplo-carrusel
+├ ○ /embajadores/cambiar-codigo
+├ ○ /embajadores/re-upload
+├ ○ /embajadores/registro
+├ ○ /embajadores/seleccionar-codigo
+├ ƒ /notificaciones
+├ ○ /payment-processing
+├ ○ /payment-success
+├ ○ /registrar-mascotas
+├ ○ /registro
+├ ○ /registro-mascotas
+├ ○ /registro-v1/completar-mascota
+├ ○ /registro-v1/completar-perfil
+├ ○ /registro-v1/confirmacion
+├ ○ /registro-v1/paso-1-cuenta
+├ ○ /registro-v1/paso-2-mascota
+├ ○ /registro-v1/paso-3-plan
+├ ○ /reporte-mvp
+├ ○ /seleccion-plan
+├ ○ /stepper-demo
+├ ○ /test-datepicker
+├ ○ /test-notifications
+├ ○ /user/inicio-de-sesion
+└ ○ /usuarios/registro
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

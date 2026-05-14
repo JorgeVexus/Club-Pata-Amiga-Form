@@ -35,14 +35,25 @@ export async function POST(
         if (userError || !user) {
             // Reintento por email si falla por MS ID
             const memberEmail = request.nextUrl.searchParams.get('email');
-            console.log('🔍 CRM Debug: Fallback por email:', memberEmail);
-            const emailResult = await supabaseAdmin
-                .from('users')
-                .select('crm_contact_id, email, membership_type, membership_cost')
-                .eq('email', memberEmail)
-                .single();
-            user = emailResult.data;
-            userError = emailResult.error;
+            
+            if (memberEmail && memberEmail !== 'undefined' && memberEmail !== 'null' && memberEmail.trim() !== '') {
+                console.log('🔍 CRM Debug: Fallback por email:', memberEmail);
+                const emailResult = await supabaseAdmin
+                    .from('users')
+                    .select('crm_contact_id, email, membership_type, membership_cost')
+                    .eq('email', memberEmail.trim())
+                    .single();
+                
+                if (emailResult.data) {
+                    user = emailResult.data;
+                    userError = null;
+                    console.log('✅ CRM Debug: Usuario encontrado por email');
+                } else {
+                    console.warn('⚠️ CRM Debug: Usuario tampoco encontrado por email:', memberEmail);
+                }
+            } else {
+                console.warn('⚠️ CRM Debug: No se proporcionó un email válido para fallback');
+            }
         }
 
         console.log('🔍 CRM Debug: Resultado query:', {
