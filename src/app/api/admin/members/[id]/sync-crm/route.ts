@@ -23,12 +23,34 @@ export async function POST(
 
         console.log(`🔄 Resincronizando CRM para miembro ${memberId}...`);
 
-        // 1. Buscar el usuario en Supabase
+        // 1. Buscar el usuario en Supabase (con fallback por email)
         let { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('crm_contact_id, email, membership_type, membership_cost')
             .eq('memberstack_id', memberId)
             .single();
+
+        console.log('🔍 CRM Debug: Buscando usuario. memberstack_id:', memberId);
+
+        if (userError || !user) {
+            // Reintento por email si falla por MS ID
+            const memberEmail = request.nextUrl.searchParams.get('email');
+            console.log('🔍 CRM Debug: Fallback por email:', memberEmail);
+            const emailResult = await supabaseAdmin
+                .from('users')
+                .select('crm_contact_id, email, membership_type, membership_cost')
+                .eq('email', memberEmail)
+                .single();
+            user = emailResult.data;
+            userError = emailResult.error;
+        }
+
+        console.log('🔍 CRM Debug: Resultado query:', {
+            found: !!user,
+            crm_contact_id: user?.crm_contact_id,
+            membership_type: user?.membership_type,
+            membership_cost: user?.membership_cost
+        });
 
         if (userError || !user) {
             return NextResponse.json({ error: 'Usuario no encontrado en base de datos' }, { status: 404 });
