@@ -514,9 +514,16 @@ function DashboardContent() {
                 showAppealSection={activeFilter === 'appeals'}
                 selectedPetId={selectedPetId}
                 isSuperAdmin={isAdminSuper}
-                onApprove={async (id) => {
+                onApprove={async (id, metadata) => {
                     if (confirm('¿Aprobar?')) {
-                        const res = await adminFetch(`/api/admin/members/${id}/approve`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId }) });
+                        const res = await adminFetch(`/api/admin/members/${id}/approve`, { 
+                            method: 'POST', 
+                            headers: { 'Content-Type': 'application/json' }, 
+                            body: JSON.stringify({ 
+                                adminId: currentAdminId,
+                                ...metadata 
+                            }) 
+                        });
                         if (res.ok) { alert('Aprobado'); window.location.reload(); }
                     }
                 }}

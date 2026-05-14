@@ -28,6 +28,7 @@ export async function POST(
 
         const { id: memberId } = await params;
         const body = await request.json();
+        const { membershipType, membershipCost } = body;
         const adminId = adminUser.memberstack_id;
 
         console.log(`📝 Aprobando miembro ${memberId}...`);
@@ -77,9 +78,11 @@ export async function POST(
                 // 1. Obtener detalles del plan desde Memberstack
                 const memberDetails = await getMemberDetails(memberId);
                 
-                // Fallbacks jerárquicos: Supabase > Default
-                let planType = user.membership_type || 'Mensual';
-                let planCost = user.membership_cost || '$159';
+                // Fallbacks jerárquicos: Body (Frontend) > Supabase > Default
+                let planType = membershipType || user.membership_type || 'Mensual';
+                let planCost = membershipCost || user.membership_cost || '$159';
+
+                console.log(`💳 CRM: Metadata recibida del frontend: Type=${membershipType}, Cost=${membershipCost}`);
 
                 if (memberDetails.success && memberDetails.data?.planConnections?.length) {
                     const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];

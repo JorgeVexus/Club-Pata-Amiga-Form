@@ -52,7 +52,7 @@ interface MemberDetailModalProps {
     isOpen: boolean;
     onClose: () => void;
     member: any; // Using any for flexibility with MemberStack data structure
-    onApprove: (id: string) => void;
+    onApprove: (id: string, metadata?: { membershipType: string; membershipCost: string }) => void;
     onReject: (id: string) => void;
     showAppealSection?: boolean; // Solo muestra la sección de apelación si viene del menú de Apelaciones
     selectedPetId?: string | null; // Para filtrar a una sola mascota en apelaciones
@@ -1233,7 +1233,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                         <>
                             <button
                                 className={`${styles.actionButton} ${styles.approveButton}`}
-                                onClick={() => onApprove(member.id)}
+                                onClick={() => {
+                                    const plan = member.planConnections?.[0];
+                                    const isAnual = stripeDetails?.subscription?.interval === 'year' || plan?.planName?.toLowerCase().includes('anual');
+                                    const membershipType = isAnual ? 'Anual' : 'Mensual';
+                                    const membershipCost = isAnual ? '$1,699' : '$159';
+                                    onApprove(member.id, { membershipType, membershipCost });
+                                }}
                             >
                                 Aprobar Solicitud
                             </button>
