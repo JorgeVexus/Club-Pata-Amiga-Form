@@ -26,9 +26,13 @@ export async function POST(
         // 1. Buscar el usuario en Supabase (con fallback por email)
         let { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('crm_contact_id, email, membership_type, membership_cost')
+            .select('*')
             .eq('memberstack_id', memberId)
             .single();
+
+        if (userError) {
+            console.error('❌ CRM Debug Error (Supabase):', userError);
+        }
 
         console.log('🔍 CRM Debug: Buscando usuario. memberstack_id:', memberId);
 
@@ -40,7 +44,7 @@ export async function POST(
                 console.log('🔍 CRM Debug: Fallback por email:', memberEmail);
                 const emailResult = await supabaseAdmin
                     .from('users')
-                    .select('crm_contact_id, email, membership_type, membership_cost')
+                    .select('*')
                     .eq('email', memberEmail.trim())
                     .single();
                 
