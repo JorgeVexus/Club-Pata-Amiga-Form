@@ -32,7 +32,12 @@ export interface ContactData {
     country?: string;
     dateOfBirth?: string; // Formato YYYY-MM-DD
     tags?: string[];
-    customFields?: Array<{ key: string; field_value: any }>;
+    customFields?: Array<{ 
+        key?: string; 
+        field_value?: any;
+        id?: string;
+        value?: any;
+    }>;
 }
 
 export interface UpsertResponse {
@@ -131,12 +136,12 @@ export async function updateContactAsActive(
             tags: ['miembro activo'],
             customFields: [
                 {
-                    key: 'contact.tipo_membresia',
-                    field_value: membershipType
+                    id: 'UDXQDTApGP4lWS7tFrOa',
+                    value: membershipType
                 },
                 {
-                    key: 'contact.costo_membresia',
-                    field_value: membershipCost
+                    id: 'oRTpCwaPnVxwYgAN5WlJ',
+                    value: membershipCost
                 }
             ]
         };
