@@ -7,9 +7,9 @@ import { supabaseAdmin } from '@/lib/supabase';
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { status, rejection_reason, rejection_details, evidence_url, memberstack_id } = body;
 
