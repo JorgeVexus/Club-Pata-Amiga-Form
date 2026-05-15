@@ -78,10 +78,10 @@ export default function WellnessForm({ onSuccess }: Props) {
 
         setIsCheckingEmail(true);
         try {
-            const { available } = await checkWellnessEmailAvailability(formData.email);
+            const { available, message } = await checkWellnessEmailAvailability(formData.email);
             setEmailAvailable(available);
             if (!available) {
-                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+                setErrors(prev => ({ ...prev, email: message || 'Este correo ya está registrado' }));
             } else {
                 setErrors(prev => {
                     const next = { ...prev };

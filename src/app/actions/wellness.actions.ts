@@ -19,28 +19,59 @@ const getServiceRoleClient = () => {
 }
 
 /**
- * Verifica si un email ya está registrado en wellness_centers
+ * Verifica si un email ya está registrado en wellness_centers o Memberstack
  */
 export async function checkWellnessEmailAvailability(email: string) {
     const supabase = getServiceRoleClient()
-    if (!supabase) return { available: true, error: 'configuration_missing' }
+    const memberstackApiKey = process.env.MEMBERSTACK_ADMIN_SECRET_KEY
+
+    if (!supabase || !memberstackApiKey) {
+        console.error('Configuración faltante para validación de email');
+        return { available: true, error: 'configuration_missing' }
+    }
 
     try {
         const normalizedEmail = email.trim().toLowerCase();
 
-        // Buscar si existe el email en wellness_centers
-        const { data: existing, error } = await supabase
+        // 1. Verificar en Supabase (wellness_centers)
+        const { data: existingSupabase, error: supabaseError } = await supabase
             .from('wellness_centers')
             .select('id')
             .eq('email', normalizedEmail)
             .maybeSingle()
 
-        if (error) {
-            console.error('Error verificando email wellness:', error)
-            return { available: true, error: error.message }
+        if (supabaseError) {
+            console.error('Error verificando email wellness en Supabase:', supabaseError)
         }
 
-        return { available: !existing }
+        if (existingSupabase) {
+            return { available: false, message: 'Email ya registrado en base de datos' }
+        }
+
+        // 2. Verificar en Memberstack mediante Admin API
+        try {
+            const memberstackResponse = await fetch(`https://admin.memberstack.com/members?email=${normalizedEmail}`, {
+                method: 'GET',
+                headers: {
+                    'X-API-KEY': memberstackApiKey,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (memberstackResponse.ok) {
+                const msData = await memberstackResponse.json();
+                // Si msData.data es un array y tiene elementos, el email está ocupado
+                if (msData.data && msData.data.length > 0) {
+                    return { available: false, message: 'Email ya registrado en Memberstack' }
+                }
+            } else {
+                console.error('Error Memberstack API status:', memberstackResponse.status);
+            }
+        } catch (msError) {
+            console.error('Error llamando a Memberstack Admin API:', msError);
+        }
+
+        return { available: true }
     } catch (error) {
         console.error('Error inesperado verificando email wellness:', error)
         return { available: true, error: 'unknown_error' }
