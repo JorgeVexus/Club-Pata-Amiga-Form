@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from './WellnessForm.module.css';
 import { WellnessCenterRegistrationData } from '@/types/wellness.types';
 import TermsModalEnhanced from '@/components/RegistrationV2/TermsModalEnhanced';
+import { checkWellnessEmailAvailability } from '@/app/actions/wellness.actions';
 
 interface Props {
     onSuccess?: () => void;
@@ -32,6 +33,12 @@ export default function WellnessForm({ onSuccess }: Props) {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
     const [showTermsModal, setShowTermsModal] = useState(false);
+    
+    // Mejoras solicitadas
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [isCheckingEmail, setIsCheckingEmail] = useState(false);
+    const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
     const toggleService = (service: string) => {
         setFormData(prev => {
@@ -58,7 +65,35 @@ export default function WellnessForm({ onSuccess }: Props) {
         
         if (!formData.accept_terms) newErrors.accept_terms = 'Debes aceptar los términos y condiciones';
         
+        if (emailAvailable === false) newErrors.email = 'Este correo ya está registrado';
+        
         return newErrors;
+    };
+
+    const handleEmailBlur = async () => {
+        if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+            setEmailAvailable(null);
+            return;
+        }
+
+        setIsCheckingEmail(true);
+        try {
+            const { available } = await checkWellnessEmailAvailability(formData.email);
+            setEmailAvailable(available);
+            if (!available) {
+                setErrors(prev => ({ ...prev, email: 'Este correo ya está registrado' }));
+            } else {
+                setErrors(prev => {
+                    const next = { ...prev };
+                    delete next.email;
+                    return next;
+                });
+            }
+        } catch (error) {
+            console.error('Error checking email:', error);
+        } finally {
+            setIsCheckingEmail(false);
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -143,35 +178,63 @@ export default function WellnessForm({ onSuccess }: Props) {
 
             <div className={styles.field}>
                 <label>Correo electrónico</label>
-                <input 
-                    type="email" 
-                    value={formData.email}
-                    onChange={e => setFormData({...formData, email: e.target.value})}
-                    placeholder="contacto@centro.com"
-                    className={errors.email ? styles.inputError : ''}
-                />
+                <div className={styles.inputWrapper}>
+                    <input 
+                        type="email" 
+                        value={formData.email}
+                        onChange={e => {
+                            setFormData({...formData, email: e.target.value});
+                            setEmailAvailable(null);
+                        }}
+                        onBlur={handleEmailBlur}
+                        placeholder="contacto@centro.com"
+                        className={errors.email ? styles.inputError : ''}
+                    />
+                    {isCheckingEmail && <span className={styles.inputIndicator}>...</span>}
+                    {emailAvailable === true && <span className={styles.inputIndicatorSuccess}>✓</span>}
+                </div>
                 {errors.email && <span className={styles.errorText}>{errors.email}</span>}
             </div>
 
             <div className={styles.row}>
                 <div className={styles.field}>
                     <label>Contraseña</label>
-                    <input 
-                        type="password" 
-                        value={formData.password}
-                        onChange={e => setFormData({...formData, password: e.target.value})}
-                        className={errors.password ? styles.inputError : ''}
-                    />
+                    <div className={styles.inputWrapper}>
+                        <input 
+                            type={showPassword ? 'text' : 'password'} 
+                            value={formData.password}
+                            onChange={e => setFormData({...formData, password: e.target.value})}
+                            className={errors.password ? styles.inputError : ''}
+                        />
+                        <button
+                            type="button"
+                            className={styles.passwordToggle}
+                            onClick={() => setShowPassword(!showPassword)}
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                        >
+                            {showPassword ? '👁️‍🗨️' : '👁️'}
+                        </button>
+                    </div>
                     {errors.password && <span className={styles.errorText}>{errors.password}</span>}
                 </div>
                 <div className={styles.field}>
                     <label>Confirmar contraseña</label>
-                    <input 
-                        type="password" 
-                        value={formData.confirm_password}
-                        onChange={e => setFormData({...formData, confirm_password: e.target.value})}
-                        className={errors.confirm_password ? styles.inputError : ''}
-                    />
+                    <div className={styles.inputWrapper}>
+                        <input 
+                            type={showConfirmPassword ? 'text' : 'password'} 
+                            value={formData.confirm_password}
+                            onChange={e => setFormData({...formData, confirm_password: e.target.value})}
+                            className={errors.confirm_password ? styles.inputError : ''}
+                        />
+                        <button
+                            type="button"
+                            className={styles.passwordToggle}
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                            aria-label={showConfirmPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                        >
+                            {showConfirmPassword ? '👁️‍🗨️' : '👁️'}
+                        </button>
+                    </div>
                     {errors.confirm_password && <span className={styles.errorText}>{errors.confirm_password}</span>}
                 </div>
             </div>
