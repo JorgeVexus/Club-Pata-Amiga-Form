@@ -169,6 +169,66 @@
             text-align: center;
             padding: 100px 20px;
         }
+
+        /* Form Styles */
+        .wc-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .wc-label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #475569;
+        }
+
+        .wc-input {
+            width: 100%;
+            padding: 12px 15px;
+            border-radius: 12px;
+            border: 2px solid #E2E8F0;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .wc-input:focus {
+            outline: none;
+            border-color: #FE8F15;
+        }
+
+        .wc-input-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .wc-logo-preview-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+
+        .wc-logo-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            background: #F1F5F9;
+            object-fit: cover;
+            border: 2px solid #E2E8F0;
+        }
+
+        .wc-section-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.2rem;
+            margin: 25px 0 15px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #F1F5F9;
+            color: #1E293B;
+        }
     `;
 
     // ============================================
@@ -267,10 +327,13 @@
                 <p>¡Hola, ${center.name}! Tu solicitud para ser aliado de Pata Amiga está siendo revisada por nuestro equipo.</p>
                 <p>Te notificaremos por correo electrónico una vez que hayamos validado tus datos.</p>
                 <div style="margin-top: 30px; padding: 20px; background: #FFFBEB; border-radius: 20px; border: 2px solid #FEF3C7;">
-                    <p style="font-size: 0.9rem; color: #92400E;">Mientras tanto, asegúrate de tener tus documentos listos por si necesitamos información adicional.</p>
+                    <p style="font-size: 0.9rem; color: #92400E;">Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.</p>
+                    <button id="btn-complete-pending" class="wc-btn wc-btn-primary" style="margin-top:15px; width:100%;">Completar mi Perfil</button>
                 </div>
             </div>
         `;
+
+        container.querySelector('#btn-complete-pending').addEventListener('click', () => showEditProfileModal(container, center));
     }
 
     function renderRejected(container, center) {
@@ -278,17 +341,16 @@
             <div class="wc-status-screen">
                 <div class="wc-status-icon">❌</div>
                 <h1 class="wc-title">Solicitud Rechazada</h1>
-                <p>Lamentamos informarte que tu solicitud no ha sido aprobada en este momento.</p>
+                <p>Hola ${center.establishment_name || center.name}, el comité determinó no aceptar tu solicitud de centro de bienestar debido a:</p>
                 
                 <div class="wc-appeal-box">
-                    <p style="font-weight:bold; color:#E53E3E;">Motivo del rechazo:</p>
-                    <p>${center.rejection_reason || 'No se proporcionó un motivo específico.'}</p>
+                    <p style="${center.rejection_reason ? 'font-weight:bold; color:#E53E3E;' : ''}">${center.rejection_reason || 'No se proporcionó un motivo específico.'}</p>
                 </div>
 
                 <div id="appeal-form-container" style="margin-top: 40px;">
                     <h2 class="wc-title" style="font-size:1.2rem;">¿Deseas apelar esta decisión?</h2>
-                    <p>Cuéntanos por qué deberíamos reconsiderar tu solicitud:</p>
-                    <textarea id="wc-appeal-text" placeholder="Escribe tu mensaje aquí..." style="width:100%; height:120px; padding:15px; border-radius:20px; border:2px solid #000; margin-top:10px; font-family:inherit;"></textarea>
+                    <p>Si consideras que hubo un error o tienes nueva información para compartir, descríbelo aquí:</p>
+                    <textarea id="wc-appeal-text" placeholder="Escribe tu mensaje de apelación aquí..." style="width:100%; height:120px; padding:15px; border-radius:20px; border:2px solid #000; margin-top:10px; font-family:inherit;"></textarea>
                     <button id="btn-submit-appeal" class="wc-btn wc-btn-primary" style="width:100%; margin-top:15px;">Enviar Apelación</button>
                 </div>
             </div>
@@ -368,9 +430,7 @@
 
         container.querySelector('#btn-view-appointments').addEventListener('click', () => showAppointmentsModal(container, center));
         container.querySelector('#btn-view-payments').addEventListener('click', () => showPaymentsModal(container, center));
-        container.querySelector('#btn-edit-profile').addEventListener('click', () => {
-            alert('Esta sección te permite editar tu geolocalización y redes sociales. Próximamente integrada aquí.');
-        });
+        container.querySelector('#btn-edit-profile').addEventListener('click', () => showEditProfileModal(container, center));
         container.querySelector('#wc-btn-exit').addEventListener('click', () => showExitModal(container, center));
 
         // Mostrar modal de bienvenida si es necesario
@@ -385,7 +445,7 @@
         overlay.innerHTML = `
             <div class="wc-modal" style="text-align:center;">
                 <div class="wc-status-icon">🎉</div>
-                <h2 class="wc-title">¡Felicidades, ${center.name}!</h2>
+                <h2 class="wc-title">Felicidades por unirte a la manada de Pata Amiga</h2>
                 <p>Tu solicitud para ser parte de nuestra red de Centros de Bienestar ha sido <strong>aprobada</strong>.</p>
                 <p>A partir de este momento ya puedes administrar solicitudes de miembros y gestionar citas desde este panel.</p>
                 <button id="btn-welcome-close" class="wc-btn wc-btn-primary" style="width:100%; margin-top:20px;">Comenzar ahora</button>
@@ -718,6 +778,224 @@
 
         renderStep1();
         document.body.appendChild(overlay);
+    }
+
+    async function handleLogoUpload(center, file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('memberstackId', center.memberstack_id);
+
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/upload/wellness-logo`, {
+                method: 'POST',
+                body: formData
+            });
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error uploading logo:', error);
+            return { success: false, error: 'Error de conexión al subir logo' };
+        }
+    }
+
+    function showEditProfileModal(container, center) {
+        const overlay = document.createElement('div');
+        overlay.className = 'wc-modal-overlay';
+        
+        const social = center.social_links || {};
+
+        overlay.innerHTML = `
+            <div class="wc-modal">
+                <div class="wc-modal-header">
+                    <h2 class="wc-title">Editar Perfil del Centro</h2>
+                    <button class="wc-close-btn">&times;</button>
+                </div>
+                
+                <form id="wc-edit-profile-form">
+                    <h3 class="wc-section-title">Marca y Logo</h3>
+                    <div class="wc-logo-preview-container">
+                        <img src="${center.logo_url || 'https://via.placeholder.com/80'}" class="wc-logo-preview" id="logo-preview-img">
+                        <div style="flex:1;">
+                            <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Recomendado: Imagen cuadrada, min 200x200px (PNG o JPG).</p>
+                            <input type="file" id="wc-logo-input" accept="image/*" style="display:none;">
+                            <button type="button" id="btn-select-logo" class="wc-btn wc-btn-secondary" style="padding:8px 15px; font-size:0.9rem;">Seleccionar Imagen</button>
+                        </div>
+                    </div>
+
+                    <h3 class="wc-section-title">Información de Contacto</h3>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Nombre del Establecimiento</label>
+                        <input type="text" name="establishment_name" class="wc-input" value="${center.establishment_name || ''}" placeholder="Ej: Clínica Vet Pata Amiga">
+                    </div>
+                    
+                    <div class="wc-form-group">
+                        <label class="wc-label">Teléfono de Contacto</label>
+                        <input type="tel" name="phone" class="wc-input" value="${center.phone || ''}" placeholder="Ej: 5512345678">
+                    </div>
+
+                    <h3 class="wc-section-title">Ubicación y Geolocalización</h3>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Dirección Completa</label>
+                        <textarea name="address" id="wc-address-input" class="wc-input" style="min-height:80px;" placeholder="Calle, número, colonia, CP y ciudad">${center.address || ''}</textarea>
+                    </div>
+
+                    <div class="wc-input-row">
+                        <div class="wc-form-group">
+                            <label class="wc-label">Latitud</label>
+                            <input type="number" step="any" name="lat" id="wc-lat" class="wc-input" value="${center.lat || ''}" placeholder="Ej: 19.4326">
+                        </div>
+                        <div class="wc-form-group">
+                            <label class="wc-label">Longitud</label>
+                            <input type="number" step="any" name="lng" id="wc-lng" class="wc-input" value="${center.lng || ''}" placeholder="Ej: -99.1332">
+                        </div>
+                    </div>
+                    <button type="button" id="btn-get-location" class="wc-btn" style="width:100%; margin-bottom:20px; font-size:0.9rem;">📍 Obtener mi ubicación actual</button>
+
+                    <h3 class="wc-section-title">Redes Sociales</h3>
+                    <div class="wc-input-row">
+                        <div class="wc-form-group">
+                            <label class="wc-label">Instagram (URL)</label>
+                            <input type="url" name="social_instagram" class="wc-input" value="${social.instagram || ''}" placeholder="https://instagram.com/...">
+                        </div>
+                        <div class="wc-form-group">
+                            <label class="wc-label">Facebook (URL)</label>
+                            <input type="url" name="social_facebook" class="wc-input" value="${social.facebook || ''}" placeholder="https://facebook.com/...">
+                        </div>
+                    </div>
+                    <div class="wc-input-row">
+                        <div class="wc-form-group">
+                            <label class="wc-label">TikTok (URL)</label>
+                            <input type="url" name="social_tiktok" class="wc-input" value="${social.tiktok || ''}" placeholder="https://tiktok.com/@...">
+                        </div>
+                        <div class="wc-form-group">
+                            <label class="wc-label">Sitio Web</label>
+                            <input type="url" name="social_website" class="wc-input" value="${social.website || ''}" placeholder="https://...">
+                        </div>
+                    </div>
+
+                    <h3 class="wc-section-title">Promoción para Miembros</h3>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Descripción del Beneficio</label>
+                        <textarea name="promotion_details" class="wc-input" style="min-height:100px;" placeholder="Ej: 15% de descuento en consultas generales y 10% en farmacia.">${center.promotion_details || ''}</textarea>
+                    </div>
+
+                    <div style="margin-top:30px;">
+                        <button type="submit" id="btn-save-profile" class="wc-btn wc-btn-primary" style="width:100%;">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // Geolocation logic
+        overlay.querySelector('#btn-get-location').addEventListener('click', () => {
+            if ("geolocation" in navigator) {
+                const btn = overlay.querySelector('#btn-get-location');
+                btn.innerText = 'Obteniendo...';
+                navigator.geolocation.getCurrentPosition((position) => {
+                    overlay.querySelector('#wc-lat').value = position.coords.latitude.toFixed(8);
+                    overlay.querySelector('#wc-lng').value = position.coords.longitude.toFixed(8);
+                    btn.innerText = '✅ Ubicación obtenida';
+                }, (error) => {
+                    alert('Error al obtener ubicación. Por favor ingrésala manualmente.');
+                    btn.innerText = '📍 Intentar de nuevo';
+                });
+            } else {
+                alert('Tu navegador no soporta geolocalización.');
+            }
+        });
+
+        // Logo upload logic
+        const logoInput = overlay.querySelector('#wc-logo-input');
+        overlay.querySelector('#btn-select-logo').addEventListener('click', () => logoInput.click());
+        
+        logoInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const previewImg = overlay.querySelector('#logo-preview-img');
+            const originalSrc = previewImg.src;
+            previewImg.src = URL.createObjectURL(file);
+
+            const btnSave = overlay.querySelector('#btn-save-profile');
+            btnSave.disabled = true;
+            btnSave.innerText = 'Subiendo logo...';
+
+            const res = await handleLogoUpload(center, file);
+            if (res.success) {
+                center.logo_url = res.url; // Actualizar localmente
+                alert('Logo subido correctamente');
+            } else {
+                alert('Error al subir logo: ' + res.error);
+                previewImg.src = originalSrc;
+            }
+            btnSave.disabled = false;
+            btnSave.innerText = 'Guardar Cambios';
+        });
+
+        // Google Places Autocomplete (if script loaded)
+        if (window.google && window.google.maps && window.google.maps.places) {
+            const addressInput = overlay.querySelector('#wc-address-input');
+            const autocomplete = new google.maps.places.Autocomplete(addressInput);
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    overlay.querySelector('#wc-lat').value = place.geometry.location.lat().toFixed(8);
+                    overlay.querySelector('#wc-lng').value = place.geometry.location.lng().toFixed(8);
+                }
+            });
+        }
+
+        // Form Submission
+        overlay.querySelector('#wc-edit-profile-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            
+            const updateData = {
+                memberstack_id: center.memberstack_id,
+                establishment_name: formData.get('establishment_name'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                lat: parseFloat(formData.get('lat')) || null,
+                lng: parseFloat(formData.get('lng')) || null,
+                promotion_details: formData.get('promotion_details'),
+                social_links: {
+                    instagram: formData.get('social_instagram'),
+                    facebook: formData.get('social_facebook'),
+                    tiktok: formData.get('social_tiktok'),
+                    website: formData.get('social_website')
+                }
+            };
+
+            const btn = overlay.querySelector('#btn-save-profile');
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/wellness/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Perfil actualizado con éxito');
+                    overlay.remove();
+                    init(); // Recargar todo
+                } else {
+                    alert('Error al actualizar: ' + result.error);
+                    btn.disabled = false;
+                    btn.innerText = 'Guardar Cambios';
+                }
+            } catch (error) {
+                alert('Error de conexión');
+                btn.disabled = false;
+                btn.innerText = 'Guardar Cambios';
+            }
+        });
+
+        overlay.querySelector('.wc-close-btn').addEventListener('click', () => overlay.remove());
     }
 
     // ============================================
