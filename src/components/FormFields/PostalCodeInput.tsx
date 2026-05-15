@@ -9,12 +9,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import styles from './PostalCodeInput.module.css';
 import { getCDMXAlcaldia, isCDMXState } from '@/utils/postalCodeUtils';
 
-// Declaración de tipos para Google Places
-declare global {
-    interface Window {
-        google?: any;
-    }
-}
 
 interface PostalCodeInputProps {
     postalCode: string;

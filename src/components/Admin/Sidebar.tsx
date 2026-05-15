@@ -45,6 +45,7 @@ export default function Sidebar({
         'pagos-facturacion': false,
         'gestion-pagos': false,
         'comunicaciones': false,
+        'centros-reg': false
     });
 
     const toggleSection = (sectionId: string) => {
@@ -106,7 +107,7 @@ export default function Sidebar({
             title: 'Centros Registrados',
             icon: '📜',
             items: [
-                { id: 'registered-centers', label: 'Fase 2 (Próximamente)', icon: '🔒' },
+                { id: 'registered-centers', label: 'Ver Directorio', icon: '✅' },
             ]
         },
         {

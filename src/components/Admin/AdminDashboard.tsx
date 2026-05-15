@@ -28,6 +28,9 @@ import { adminFetch } from '@/utils/admin-fetch';
 import SolidarityDashboard from './Solidarity/SolidarityDashboard';
 import SolidarityRequestDetail from './Solidarity/SolidarityRequestDetail';
 import CancellationsTable from './CancellationsTable';
+import WellnessCentersTable from './WellnessCentersTable';
+import WellnessCenterDetailModal from './WellnessCenterDetailModal';
+import { WellnessCenter } from '@/types/wellness.types';
 
 function DashboardContent() {
     const router = useRouter();
@@ -41,6 +44,7 @@ function DashboardContent() {
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
     const [memberToReject, setMemberToReject] = useState<any>(null);
     const [rejectionToView, setRejectionToView] = useState<any>(null);
+    const [selectedWellnessCenter, setSelectedWellnessCenter] = useState<WellnessCenter | null>(null);
     const [metrics, setMetrics] = useState<DashboardMetrics>({
         totalRefunds: 0,
         activeWellnessCenters: 0,
@@ -250,6 +254,10 @@ function DashboardContent() {
             const solidarityRes = await adminFetch('/api/admin/solidarity/list?status=new');
             const solidarityData = await solidarityRes.json();
             if (solidarityData.success) setPendingCounts(prev => ({ ...prev, 'solidarity-fund': solidarityData.count || 0 }));
+
+            const wellnessRes = await adminFetch('/api/admin/wellness?status=pending');
+            const wellnessData = await wellnessRes.json();
+            if (wellnessData.success) setPendingCounts(prev => ({ ...prev, 'wellness-center': wellnessData.data?.length || 0 }));
         } catch (error) { console.error(error); }
     }
 
@@ -334,6 +342,10 @@ function DashboardContent() {
             case 'ambassador':
             case 'ambassadors' as any:
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
+            case 'wellness-center':
+                return <WellnessCentersTable filter="pending" onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
+            case 'registered-centers':
+                return <WellnessCentersTable filter="approved" onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
             case 'cancellations':
@@ -566,6 +578,15 @@ function DashboardContent() {
                     requestId={selectedSolidarityRequestId}
                     adminMemberstackId={adminMemberstackId}
                     onClose={() => setSelectedSolidarityRequestId(null)}
+                />
+            )}
+
+            {selectedWellnessCenter && (
+                <WellnessCenterDetailModal
+                    center={selectedWellnessCenter}
+                    isOpen={!!selectedWellnessCenter}
+                    onClose={() => setSelectedWellnessCenter(null)}
+                    onRefresh={() => window.location.reload()}
                 />
             )}
         </div>
