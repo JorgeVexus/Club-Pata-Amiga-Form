@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import styles from './WellnessForm.module.css';
 import { WellnessCenterRegistrationData } from '@/types/wellness.types';
+import TermsModalEnhanced from '@/components/RegistrationV2/TermsModalEnhanced';
 
 interface Props {
     onSuccess?: () => void;
@@ -30,6 +31,7 @@ export default function WellnessForm({ onSuccess }: Props) {
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [showTermsModal, setShowTermsModal] = useState(false);
 
     const toggleService = (service: string) => {
         setFormData(prev => {
@@ -182,7 +184,14 @@ export default function WellnessForm({ onSuccess }: Props) {
                     onChange={e => setFormData({...formData, accept_terms: e.target.checked})}
                 />
                 <label htmlFor="terms">
-                    Acepto los <a href="/terminos-bienestar" target="_blank">Términos y Condiciones</a>
+                    Acepto los 
+                    <button 
+                        type="button" 
+                        className={styles.viewTermsLink}
+                        onClick={() => setShowTermsModal(true)}
+                    >
+                        Términos y Condiciones
+                    </button>
                 </label>
             </div>
             {errors.accept_terms && <span className={styles.errorText}>{errors.accept_terms}</span>}
@@ -196,6 +205,16 @@ export default function WellnessForm({ onSuccess }: Props) {
             >
                 {isSubmitting ? 'Enviando...' : 'Registrar Centro'}
             </button>
+
+            <TermsModalEnhanced 
+                isOpen={showTermsModal}
+                onClose={(accepted) => {
+                    setShowTermsModal(false);
+                    if (accepted) {
+                        setFormData(prev => ({...prev, accept_terms: true}));
+                    }
+                }}
+            />
         </form>
     );
 }

@@ -98,9 +98,21 @@
     cursor: pointer;
 }
 
-.checkboxField a {
+.checkboxField a, .viewTermsLink {
     color: var(--color-primary);
     text-decoration: underline;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 5px;
+    display: inline;
+}
+
+.checkboxField a:hover, .viewTermsLink:hover {
+    opacity: 0.8;
 }
 
 .submitButton {
