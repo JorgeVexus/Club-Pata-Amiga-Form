@@ -343,9 +343,8 @@ function DashboardContent() {
             case 'ambassadors' as any:
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
             case 'wellness-center':
-                return <WellnessCentersTable filter="pending" onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
             case 'registered-centers':
-                return <WellnessCentersTable filter="approved" onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
+                return <WellnessCentersTable onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
             case 'cancellations':
