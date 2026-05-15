@@ -714,9 +714,8 @@ export async function notifyCheckoutAbandonedToCRM(memberstackId: string, recove
         if (user.crm_contact_id) {
             const result = await updateContact(user.crm_contact_id, {
                 tags: ['carrito abandonado'],
-                // NOTA: Para customFields necesitas asegurarte que la key del campo exista en Lynsales.
-                // Reemplazar 'contact.recovery_link' con el ID real de tu campo personalizado si es necesario.
-                customFields: [{ key: 'contact.recovery_link', field_value: recoveryLink }]
+                // NOTA: Para customFields necesitas asegurarte que el ID del campo exista en Lynsales.
+                customFields: [{ id: 'contact.recovery_link', value: recoveryLink }]
             });
             return { success: result.success, error: result.error };
         } else {
@@ -726,7 +725,7 @@ export async function notifyCheckoutAbandonedToCRM(memberstackId: string, recove
                 firstName: '',
                 lastName: '',
                 tags: ['carrito abandonado'],
-                customFields: [{ key: 'contact.recovery_link', field_value: recoveryLink }]
+                customFields: [{ id: 'contact.recovery_link', value: recoveryLink }]
             });
             
             if (result.success && result.contactId) {
@@ -767,7 +766,7 @@ export async function notifyCheckoutCompletedToCRM(memberstackId: string) {
         // Agregamos la etiqueta que indica el avance y un campo limpio
         const result = await updateContact(user.crm_contact_id, {
             tags: ['pago procesado'],
-            customFields: [{ key: 'contact.recovery_link', field_value: 'pagado' }]
+            customFields: [{ id: 'contact.recovery_link', value: 'pagado' }]
         });
         
         return { success: result.success, error: result.error };
