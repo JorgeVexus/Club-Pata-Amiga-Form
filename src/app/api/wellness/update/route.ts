@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { WellnessCenterComplementaryData } from '@/types/wellness.types';
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 export async function POST(request: NextRequest) {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/wellness/update');
+        return NextResponse.json(
+            { success: false, error: 'Servicio de base de datos no disponible' },
+            { status: 500 }
+        );
+    }
+
     try {
         const body = await request.json();
         const { memberstack_id, ...updateData } = body;
@@ -20,7 +27,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 1. Obtener el centro actual
-        const { data: center, error: fetchError } = await supabase
+        const { data: center, error: fetchError } = await supabaseAdminClient
             .from('wellness_centers')
             .select('id, status')
             .eq('memberstack_id', memberstack_id)
@@ -42,7 +49,7 @@ export async function POST(request: NextRequest) {
         }
 
         // 2. Actualizar datos en Supabase
-        const { data: updated, error: updateError } = await supabase
+        const { data: updated, error: updateError } = await supabaseAdminClient
             .from('wellness_centers')
             .update(updateData)
             .eq('memberstack_id', memberstack_id)
@@ -59,7 +66,7 @@ export async function POST(request: NextRequest) {
 
         // 3. Notificación para Admin si es una apelación
         if (updateData.status === 'appealed') {
-            await supabase.from('notifications').insert({
+            await supabaseAdminClient.from('notifications').insert({
                 user_id: 'admin',
                 type: 'wellness_appeal',
                 title: 'Nueva Apelación de Centro',

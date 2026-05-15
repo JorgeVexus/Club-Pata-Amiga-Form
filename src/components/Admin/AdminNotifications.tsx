@@ -7,10 +7,12 @@ import styles from './AdminNotifications.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
 
 // Cliente de Supabase para el cliente (usando la URL pública)
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+const supabase = (supabaseUrl && supabaseAnonKey) 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 interface AdminNotification {
     id: string;
@@ -57,6 +59,11 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
         loadNotifications();
 
         // 🆕 Suscribirse a cambios en tiempo real
+        if (!supabase) {
+            console.warn('⚠️ Supabase Realtime not available: missing credentials');
+            return;
+        }
+
         const channel = supabase
             .channel('admin-notifications')
             .on(
@@ -110,7 +117,7 @@ export default function AdminNotifications({ onNotificationClick }: AdminNotific
         // Cleanup al desmontar
         return () => {
             console.log('🔌 Desconectando Realtime...');
-            if (channelRef.current) {
+            if (channelRef.current && supabase) {
                 supabase.removeChannel(channelRef.current);
             }
         };

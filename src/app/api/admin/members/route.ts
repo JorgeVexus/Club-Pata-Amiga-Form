@@ -1,14 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
-// Usar Service Role para poder consultar roles de otros usuarios y filtrar admins
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 /**
  * GET /api/admin/members?status=pending
@@ -19,6 +16,15 @@ export async function GET(request: NextRequest) {
         // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
         const admin = await getAdminUser(request);
         if (!admin) return unauthorizedResponse();
+
+        // Verificar configuración de base de datos
+        if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+            console.error('❌ Supabase Admin not configured in /api/admin/members');
+            return NextResponse.json(
+                { error: 'Servicio de base de datos no disponible' },
+                { status: 500 }
+            );
+        }
 
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
@@ -54,7 +60,7 @@ export async function GET(request: NextRequest) {
 
         // Filter out admin/super_admin users from the results
         // USAMOS el cliente admin (Service Role) para saltar RLS
-        const { data: adminUsers, error: adminError } = await supabaseAdmin
+        const { data: adminUsers, error: adminError } = await supabaseAdminClient
             .from('users')
             .select('memberstack_id')
             .in('role', ['admin', 'super_admin']);
@@ -63,7 +69,7 @@ export async function GET(request: NextRequest) {
             console.error('Error fetching admin users:', adminError);
         }
 
-        const adminMemberstackIds = new Set(adminUsers?.map(u => u.memberstack_id) || []);
+        const adminMemberstackIds = new Set(adminUsers?.map((u: { memberstack_id: string }) => u.memberstack_id) || []);
 
         // Filter out admins from the member list
         const filteredMembers = result.data?.filter(member => !adminMemberstackIds.has(member.id)) || [];
@@ -76,18 +82,18 @@ export async function GET(request: NextRequest) {
         const memberDataMap = new Map<string, { petCount: number, pendingPetCount: number, infoStatus: string }>();
 
         if (memberstackIds.length > 0) {
-            const { data: userMappings, error: mappingError } = await supabaseAdmin
+            const { data: userMappings, error: mappingError } = await supabaseAdminClient
                 .from('users')
                 .select('id, memberstack_id, approval_status')
                 .in('memberstack_id', memberstackIds);
 
             if (!mappingError && userMappings) {
-                const supabaseUserIds = userMappings.map(u => u.id);
-                const supabaseIdToMsId = new Map(userMappings.map(u => [u.id, u.memberstack_id]));
-                const msIdToUserStatus = new Map(userMappings.map(u => [u.memberstack_id, u.approval_status]));
+                const supabaseUserIds = userMappings.map((u: { id: string }) => u.id);
+                const supabaseIdToMsId = new Map(userMappings.map((u: { id: string, memberstack_id: string }) => [u.id, u.memberstack_id]));
+                const msIdToUserStatus = new Map(userMappings.map((u: { memberstack_id: string, approval_status: string }) => [u.memberstack_id, u.approval_status]));
 
                 // Fetch detailed pet info
-                const { data: petsData, error: petsError } = await supabaseAdmin
+                const { data: petsData, error: petsError } = await supabaseAdminClient
                     .from('pets')
                     .select('owner_id, photo_url, vet_certificate_url, is_senior, status')
                     .in('owner_id', supabaseUserIds);
@@ -95,14 +101,14 @@ export async function GET(request: NextRequest) {
                 if (!petsError && petsData) {
                     // Group pets by owner
                     const ownerPetsMap = new Map<string, any[]>();
-                    petsData.forEach(pet => {
+                    petsData.forEach((pet: any) => {
                         const pets = ownerPetsMap.get(pet.owner_id) || [];
                         pets.push(pet);
                         ownerPetsMap.set(pet.owner_id, pets);
                     });
 
                     // Calculate status for each member
-                    userMappings.forEach(user => {
+                    userMappings.forEach((user: any) => {
                         const msId = user.memberstack_id;
                         const pets = ownerPetsMap.get(user.id) || [];
                         

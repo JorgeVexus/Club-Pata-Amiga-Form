@@ -372,11 +372,11 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
                 if (!pet.photos || pet.photos.length === 0) continue;
 
-                const photoUploads = await uploadMultipleFiles(pet.photos, 'PET_PHOTO', tempUserId);
+                const uploadResults = await uploadMultipleFiles(pet.photos, 'PET_PHOTOS', tempUserId);
 
-                if (photoUploads.some(u => !u.success)) continue;
+                if (uploadResults.some(u => !u.success)) continue;
 
-                const photoUrls = photoUploads.map(u => u.publicUrl || '');
+                const photoUrls = uploadResults.map(u => u.publicUrl || '');
                 petsWithFinalData[i].photo1Url = photoUrls[0] || '';
                 petsWithFinalData[i].photo2Url = photoUrls[1] || '';
 
@@ -384,7 +384,7 @@ export default function PetRegistrationForm({ onSuccess, onBack }: PetRegistrati
 
                 // Subir certificado veterinario si excede la edad
                 if (pet.exceedsMaxAge && pet.vetCertificate) {
-                    const certUpload = await uploadMultipleFiles([pet.vetCertificate], 'VET_CERTIFICATE', tempUserId);
+                    const certUpload = await uploadMultipleFiles([pet.vetCertificate], 'VET_CERTIFICATES', tempUserId);
                     if (certUpload[0]?.success) {
                         const certUrl = certUpload[0].publicUrl || '';
                         petsWithFinalData[i].vetCertificateUrl = certUrl;

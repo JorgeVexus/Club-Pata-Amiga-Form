@@ -6,16 +6,24 @@ import { NextRequest } from 'next/server';
  * Verifica que el ID de Memberstack proporcionado tenga rol de admin en Supabase.
  */
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+// Create client only if variables exist
+const supabase = (supabaseUrl && supabaseServiceKey) 
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null;
 
 export async function getAdminUser(req: NextRequest) {
     const memberstackId = req.headers.get('x-admin-memberstack-id');
     
     if (!memberstackId) {
         console.error('❌ AdminAuth: No se proporcionó x-admin-memberstack-id en los headers');
+        return null;
+    }
+
+    if (!supabase) {
+        console.error('❌ AdminAuth: Supabase client not initialized (missing environment variables)');
         return null;
     }
 

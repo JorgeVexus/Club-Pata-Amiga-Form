@@ -63,6 +63,8 @@ export default function NotificationBell({
     const [unreadCount, setUnreadCount] = useState(0);
     const [isOpen, setIsOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
     const dropdownRef = useRef<HTMLDivElement>(null);
 
     // Cargar notificaciones
@@ -103,6 +105,11 @@ export default function NotificationBell({
     // Cargar al montar y suscribirse a Realtime
     useEffect(() => {
         loadNotifications();
+        
+        if (!supabase) {
+            console.warn('🔔 NotificationBell: Supabase client not available, skipping realtime');
+            return;
+        }
 
         // Suscribirse a cambios en tiempo real
         const channel = supabase
@@ -115,15 +122,23 @@ export default function NotificationBell({
                     table: 'notifications',
                     filter: `user_id=eq.${userId}`
                 },
-                (payload) => {
+                (payload: any) => {
                     console.log('🔔 Notification change:', payload);
+                    if (payload.eventType === 'INSERT') {
+                        const newNotif = payload.new as Notification;
+                        setToastMessage(newNotif.title);
+                        setShowToast(true);
+                        setTimeout(() => setShowToast(false), 4000);
+                    }
                     loadNotifications();
                 }
             )
             .subscribe();
 
         return () => {
-            supabase.removeChannel(channel);
+            if (supabase && channel) {
+                supabase.removeChannel(channel);
+            }
         };
     }, [userId, loadNotifications]);
 
@@ -195,7 +210,16 @@ export default function NotificationBell({
     };
 
     return (
-        <div className={styles.container} ref={dropdownRef}>
+        <>
+            {/* Toast de nueva notificación */}
+            {showToast && (
+                <div className={styles.toast}>
+                    <span className={styles.toastIcon}>🔔</span>
+                    <span className={styles.toastText}>{toastMessage}</span>
+                </div>
+            )}
+
+            <div className={styles.container} ref={dropdownRef}>
             {/* Botón de campanita */}
             <button
                 className={styles.bellButton}
@@ -278,6 +302,7 @@ export default function NotificationBell({
                     )}
                 </div>
             )}
-        </div>
+            </div>
+        </>
     );
 }

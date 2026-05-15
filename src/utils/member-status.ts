@@ -1,10 +1,4 @@
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-);
+import { supabaseAdmin } from '@/lib/supabase';
 
 /**
  * Recalcula el membership_status del usuario basándose en el estado de todas sus mascotas.
@@ -20,6 +14,9 @@ const supabaseAdmin = createClient(
  */
 export async function recalculateMemberStatus(memberstackId: string) {
     try {
+        if (!supabaseAdmin) {
+            throw new Error('Supabase Admin client not available (check environment variables and context)');
+        }
         console.log(`📊 Recalculando status para el miembro: ${memberstackId}`);
 
         // 1. Obtener el ID interno del usuario
@@ -50,19 +47,19 @@ export async function recalculateMemberStatus(memberstackId: string) {
         }
 
         // 3. Determinar el nuevo estado
-        const statuses = pets.map(p => p.status);
+        const statuses: string[] = pets.map((p: { status: string }) => p.status);
         let derivedStatus = 'active';
 
         // Prioridad: appealed > rejected > action_required > pending > active
-        if (statuses.some(s => s === 'appealed')) {
+        if (statuses.some((s: string) => s === 'appealed')) {
             derivedStatus = 'appealed';
-        } else if (statuses.some(s => s === 'rejected')) {
+        } else if (statuses.some((s: string) => s === 'rejected')) {
             derivedStatus = 'rejected';
-        } else if (statuses.some(s => s === 'action_required')) {
+        } else if (statuses.some((s: string) => s === 'action_required')) {
             derivedStatus = 'action_required';
-        } else if (statuses.some(s => s === 'pending')) {
+        } else if (statuses.some((s: string) => s === 'pending')) {
             derivedStatus = 'pending';
-        } else if (statuses.every(s => s === 'approved')) {
+        } else if (statuses.every((s: string) => s === 'approved')) {
             derivedStatus = 'active';
         } else {
             // Fallback si hay estados mixtos no contemplados (ej: algunos approved, otros pending)

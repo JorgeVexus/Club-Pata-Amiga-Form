@@ -30,7 +30,8 @@ const renderLegalText = (text: string) => {
     if (!text) return null;
     return text.split('\n').map((line, index) => {
         const trimmedLine = line.trim();
-        if (trimmedLine.startsWith('## ') || trimmedLine.startsWith('### ')) {
+        // Support ##, ### and numbering 1), 2) etc as headers
+        if (trimmedLine.startsWith('## ') || trimmedLine.startsWith('### ') || /^\d+\)/.test(trimmedLine)) {
             return (
                 <h4 key={index} className={styles.textHeader}>
                     {trimmedLine.replace(/^###?\s/, '')}
@@ -121,7 +122,7 @@ export default function TermsModalEnhanced({ isOpen, onClose, initialAcceptance,
                                     <div className={styles.docAccordionContent}>
                                         <div className={styles.textViewerContainer}>
                                             <div className={styles.textContent}>
-                                                {renderLegalText(LEGAL_CONTENT.fullDocument)}
+                                                {renderLegalText(LEGAL_CONTENT.fullDocument || LEGAL_CONTENT.terms)}
                                             </div>
                                         </div>
 

@@ -5,13 +5,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 const BUCKET_NAME = 'pet-photos';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -29,6 +26,15 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/upload/pet-photo');
+        return NextResponse.json(
+            { error: 'Servicio de almacenamiento no disponible' }, 
+            { status: 500, headers: corsHeaders }
+        );
+    }
+
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File | null;
@@ -65,7 +71,7 @@ export async function POST(request: NextRequest) {
         const buffer = Buffer.from(await file.arrayBuffer());
 
         // Subir a Supabase Storage
-        const { data, error } = await supabaseAdmin.storage
+        const { data, error } = await supabaseAdminClient.storage
             .from(BUCKET_NAME)
             .upload(fileName, buffer, {
                 contentType: file.type,
@@ -79,7 +85,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Obtener URL pública
-        const { data: urlData } = supabaseAdmin.storage
+        const { data: urlData } = supabaseAdminClient.storage
             .from(BUCKET_NAME)
             .getPublicUrl(data.path);
 

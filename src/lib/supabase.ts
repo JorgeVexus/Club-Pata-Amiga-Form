@@ -1,50 +1,52 @@
-/**
- * Cliente de Supabase
- * Inicializa y exporta el cliente para usar en toda la aplicación
- */
-
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-    if (typeof window !== 'undefined') {
-        console.error('❌ Supabase credentials missing. Please check your .env.local file.');
-    }
-}
-
-// Cliente de Supabase
-export const supabase = createClient(supabaseUrl || '', supabaseAnonKey || '', {
-    auth: {
-        persistSession: false, // No persistir sesión ya que usamos Memberstack para auth
-    },
-});
-
-// Cliente Admin (solo para uso en servidor)
-export const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-    process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-    {
-        auth: {
-            persistSession: false,
-            autoRefreshToken: false,
-        },
-    }
-);
-
-// Nombres de buckets en Supabase Storage
+/**
+ * Buckets de Supabase Storage definidos en el proyecto
+ */
 export const STORAGE_BUCKETS = {
     INE: 'ine-documents',
     PROOF_OF_ADDRESS: 'proof-of-address',
-    PET_PHOTO: 'pet-photos',
-    VET_CERTIFICATE: 'vet-certificates',
-    SOLIDARITY: 'solidarity-documents',
+    PET_PHOTOS: 'pet-photos',
+    VET_CERTIFICATES: 'vet-certificates',
+    AMBASSADOR_DOCS: 'ambassador-documents',
 } as const;
+
+// Log initialization status (helpful for debugging in Vercel)
+if (typeof window !== 'undefined') {
+    if (!supabaseUrl) console.warn('⚠️ NEXT_PUBLIC_SUPABASE_URL is missing');
+    if (!supabaseAnonKey) console.warn('⚠️ NEXT_PUBLIC_SUPABASE_ANON_KEY is missing');
+}
+
+/**
+ * Cliente público de Supabase (usa la anon key)
+ */
+export const supabase = (supabaseUrl && supabaseAnonKey) 
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null as any;
+
+/**
+ * Cliente administrativo de Supabase (usa la service role key)
+ * SOLO PARA USO EN EL SERVIDOR
+ */
+export const supabaseAdmin = (supabaseUrl && supabaseServiceKey)
+    ? createClient(supabaseUrl, supabaseServiceKey, {
+        auth: {
+            autoRefreshToken: false,
+            persistSession: false
+        }
+    })
+    : null as any;
 
 /**
  * Helper para verificar si Supabase está configurado
  */
-export const isSupabaseConfigured = (): boolean => {
-    return Boolean(supabaseUrl && supabaseAnonKey && supabaseUrl.includes('supabase.co'));
-};
+export const isSupabaseConfigured = () => !!supabaseUrl && !!supabaseAnonKey;
+
+/**
+ * Helper para verificar si Supabase Admin está configurado
+ */
+export const isSupabaseAdminConfigured = () => !!supabaseUrl && !!supabaseServiceKey;

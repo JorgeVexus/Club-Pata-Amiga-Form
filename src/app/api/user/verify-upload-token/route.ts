@@ -10,14 +10,21 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUploadToken } from '@/utils/upload-token';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 export async function POST(req: NextRequest) {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/user/verify-upload-token');
+        return NextResponse.json(
+            { valid: false, error: 'Servicio de base de datos no disponible' },
+            { status: 500 }
+        );
+    }
+
     try {
         const { memberId, petIndex, token, exp } = await req.json();
 
@@ -32,7 +39,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Buscar el usuario en Supabase por su memberstack_id
-        const { data: user, error: userError } = await supabaseAdmin
+        const { data: user, error: userError } = await supabaseAdminClient
             .from('users')
             .select('id, first_name, last_name, email')
             .eq('memberstack_id', memberId)
@@ -44,7 +51,7 @@ export async function POST(req: NextRequest) {
         }
 
         // Buscar las mascotas del usuario en Supabase
-        const { data: pets, error: petsError } = await supabaseAdmin
+        const { data: pets, error: petsError } = await supabaseAdminClient
             .from('pets')
             .select('id, name, pet_type, photo_url, vet_certificate_url, is_senior')
             .eq('owner_id', user.id)

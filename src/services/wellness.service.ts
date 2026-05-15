@@ -1,10 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { WellnessCenter, WellnessCenterStatus, WellnessCenterAppointment, WellnessCenterPayment } from '@/types/wellness.types';
 
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Usar el cliente administrativo centralizado
+const supabase = supabaseAdmin;
 
 export const wellnessService = {
     /**

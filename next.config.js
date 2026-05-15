@@ -4,10 +4,15 @@ const nextConfig = {
 
     // Optimización de imágenes
     images: {
-        domains: [
-            'your-supabase-project.supabase.co',
-            'hjvhntxjkuuobgfslzlf.supabase.co',
-            'cdn.prod.website-files.com'
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'hjvhntxjkuuobgfslzlf.supabase.co',
+            },
+            {
+                protocol: 'https',
+                hostname: 'cdn.prod.website-files.com',
+            }
         ],
         formats: ['image/avif', 'image/webp'],
     },
@@ -20,11 +25,6 @@ const nextConfig = {
                 destination: '/usuarios/registro',
             },
         ]
-    },
-
-    // Ignorar ESLint en build por incompatibilidad de versión 9 con Next.js core
-    eslint: {
-        ignoreDuringBuilds: true,
     },
 }
 

@@ -6,16 +6,22 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import Stripe from 'stripe';
 
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 export async function GET(request: NextRequest) {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/user/payment-method');
+        return NextResponse.json(
+            { success: false, error: 'Servicio de base de datos no disponible' },
+            { status: 500 }
+        );
+    }
+
     try {
         const { searchParams } = new URL(request.url);
         const memberstackId = searchParams.get('memberstackId');
@@ -37,7 +43,7 @@ export async function GET(request: NextRequest) {
         console.log(`[PAYMENT-METHOD] Consultando método de pago para: ${memberstackId}`);
 
         // 1. Obtener stripe_customer_id y email desde Supabase
-        const { data: user, error: userError } = await supabaseAdmin
+        const { data: user, error: userError } = await supabaseAdminClient
             .from('users')
             .select('stripe_customer_id, email')
             .eq('memberstack_id', memberstackId)

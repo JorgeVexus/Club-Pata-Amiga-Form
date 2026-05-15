@@ -9,6 +9,12 @@ export async function GET(request: NextRequest) {
         const admin = await getAdminUser(request);
         if (!admin) return unauthorizedResponse();
 
+        // Verificar configuración de base de datos
+        if (!supabase) {
+            console.error('❌ Supabase not configured in /api/admin/metrics');
+            return NextResponse.json({ error: 'Servicio de base de datos no disponible' }, { status: 500 });
+        }
+
         // Obtener todos los miembros (limitado a la paginación actual del servicio)
         // TODO: Mejorar servicio para obtener count total real desde la API de Memberstack si hay paginación
         const result = await memberstackAdmin.listMembers();
@@ -29,7 +35,7 @@ export async function GET(request: NextRequest) {
             console.error('Error fetching admin users:', adminError);
         }
 
-        const adminMemberstackIds = new Set(adminUsers?.map(u => u.memberstack_id) || []);
+        const adminMemberstackIds = new Set(adminUsers?.map((u: { memberstack_id: string }) => u.memberstack_id) || []);
 
         // Calcular métricas reales - EXCLUDE admin/super_admin users
         const totalMembers = members.filter(m =>
@@ -46,7 +52,13 @@ export async function GET(request: NextRequest) {
             .select('*', { count: 'exact', head: true })
             .eq('status', 'approved');
 
-        const activeWellnessCenters = 0; // Placeholder
+        // Fetch wellness centers count from Supabase
+        const { count: totalWellnessCenters } = await supabase
+            .from('wellness_centers')
+            .select('*', { count: 'exact', head: true })
+            .eq('status', 'approved');
+
+        const activeWellnessCenters = totalWellnessCenters || 0;
 
         // Simulación de Fondo Solidario (ej. $50 de cada membresía aprobada se va al fondo)
         const solidarityFund = totalMembers * 50;

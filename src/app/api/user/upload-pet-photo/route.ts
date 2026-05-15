@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 
-const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 // CORS headers para Webflow
 const corsHeaders = {
@@ -20,6 +17,15 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/user/upload-pet-photo');
+        return NextResponse.json(
+            { error: 'Servicio de almacenamiento no disponible' }, 
+            { status: 500, headers: corsHeaders }
+        );
+    }
+
     try {
         const formData = await request.formData();
         const file = formData.get('file') as File;
@@ -44,7 +50,7 @@ export async function POST(request: NextRequest) {
         const fileName = `${userId}_${Math.random().toString(36).substring(2)}.${fileExt}`;
         const filePath = `pets/${fileName}`;
 
-        const { data, error } = await supabaseAdmin.storage
+        const { data, error } = await supabaseAdminClient.storage
             .from('pet-photos')
             .upload(filePath, file, {
                 contentType: file.type,
@@ -53,7 +59,7 @@ export async function POST(request: NextRequest) {
 
         if (error) throw error;
 
-        const { data: { publicUrl } } = supabaseAdmin.storage
+        const { data: { publicUrl } } = supabaseAdminClient.storage
             .from('pet-photos')
             .getPublicUrl(filePath);
 

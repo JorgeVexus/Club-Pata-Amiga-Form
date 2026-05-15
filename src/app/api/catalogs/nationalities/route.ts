@@ -3,15 +3,23 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+// Usar el cliente administrativo centralizado
+const supabaseAdminClient = supabaseAdmin;
 
 export async function GET() {
+    // Verificar configuración
+    if (!isSupabaseAdminConfigured() || !supabaseAdminClient) {
+        console.error('❌ Supabase Admin not configured in /api/catalogs/nationalities');
+        return NextResponse.json(
+            { success: false, error: 'Servicio de base de datos no disponible' },
+            { status: 500 }
+        );
+    }
+
     try {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabaseAdminClient
             .from('catalog_nationalities')
             .select('*')
             .eq('is_active', true)
