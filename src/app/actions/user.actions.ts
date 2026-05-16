@@ -461,9 +461,32 @@ export async function getPetsByUserId(memberstackId: string) {
             }
         }
 
+        // 4. Obtener estado activo de Memberstack para cada mascota (Source of Truth para membresía)
+        let msCustomFields: any = {};
+        try {
+            const msResult = await getMemberDetails(memberstackId);
+            if (msResult.success && msResult.data) {
+                msCustomFields = msResult.data.customFields || {};
+            }
+        } catch (e) {
+            console.error('❌ [Server Action] Error fetching Memberstack details:', e);
+        }
+
+        const petsWithStatus = (pets || []).map((pet, index) => {
+            const petNum = index + 1;
+            const isActiveField = `pet-${petNum}-is-active`;
+            // Por defecto es true si no existe el campo o es explícitamente 'true'
+            const isActive = msCustomFields[isActiveField] !== 'false';
+            
+            return {
+                ...pet,
+                is_active: isActive
+            };
+        });
+
         return {
             success: true,
-            pets,
+            pets: petsWithStatus,
             first_name: userData.first_name,
             last_name: userData.last_name,
             last_admin_response: lastAdminMsg,
