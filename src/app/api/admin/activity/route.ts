@@ -85,6 +85,34 @@ export async function POST(request: NextRequest) {
             }
         });
 
+        // --- 🆕 Procesar Bajas de Mascotas (Supabase) ---
+        const { data: unsubscriptions, error: unsubsError } = await supabase
+            .from('pet_unsubscriptions')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (unsubsError) {
+            console.error('Error fetching unsubscriptions:', unsubsError);
+        }
+
+        (unsubscriptions || []).forEach((unsub: any) => {
+            const isPersonal = unsub.unsubscribed_by_id === adminName || unsub.unsubscribed_by_id === memberstackId;
+            
+            if (isSuperAdmin || isPersonal) {
+                activityLogs.push({
+                    id: `pet-unsub-${unsub.id}`,
+                    type: 'unsubscription',
+                    category: 'member',
+                    title: 'Baja de Mascota',
+                    description: `Dio de baja a ${unsub.pet_name} (${unsub.reason})`,
+                    timestamp: unsub.created_at,
+                    adminName: unsub.unsubscribed_by,
+                    targetName: unsub.pet_name,
+                    role: 'Mascota'
+                });
+            }
+        });
+
         // --- Procesar Embajadores ---
         (ambassadors || []).forEach((amb: any) => {
             const ambName = `${amb.first_name} ${amb.paternal_surname}`.trim();

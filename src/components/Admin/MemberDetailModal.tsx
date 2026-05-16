@@ -80,6 +80,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [selectedRequests, setSelectedRequests] = useState<Record<string, string[]>>({});
     const [requestCustomMsg, setRequestCustomMsg] = useState<Record<string, string>>({});
     const [sendingRequest, setSendingRequest] = useState<Record<string, boolean>>({});
+    const [isUnsubscribing, setIsUnsubscribing] = useState<Record<string, boolean>>({});
     const [stripeDetails, setStripeDetails] = useState<any>(null);
     const [loadingStripe, setLoadingStripe] = useState(false);
     const [isSyncingCRM, setIsSyncingCRM] = useState(false);
@@ -417,6 +418,44 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             alert('Error de conexión');
         } finally {
             setUpdatingPetId(null);
+        }
+    }
+
+    async function handlePetUnsubscribe(petId: string, msIndex: number, petName: string) {
+        const reason = prompt(`¿Estás seguro de dar de baja a ${petName}? Esta acción liberará un espacio en la manada.\n\nEscribe el motivo (ej. Fallecimiento, Ya no vive conmigo, etc.):`);
+        
+        if (!reason || !reason.trim()) return;
+
+        if (!confirm(`Confirmar baja de ${petName}. ¿Proceder?`)) return;
+
+        setIsUnsubscribing(prev => ({ ...prev, [petId]: true }));
+        try {
+            const response = await adminFetch(`/api/user/pets/unsubscribe`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    memberId: member.id,
+                    petId,
+                    petIndex: msIndex,
+                    petName,
+                    reason,
+                    isAdmin: true
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert(`✅ ${petName} ha sido dado de baja correctamente.`);
+                loadPets(); // Recargar para ver el estado (aunque el estado visual dependa de MS fields)
+                if (onDataChange) onDataChange();
+            } else {
+                alert('❌ Error: ' + (data.error || 'No se pudo procesar la baja.'));
+            }
+        } catch (error) {
+            console.error('Error unsubscribing pet:', error);
+            alert('Error de conexión');
+        } finally {
+            setIsUnsubscribing(prev => ({ ...prev, [petId]: false }));
         }
     }
 
@@ -952,7 +991,10 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                     return (
                                         <div key={pet.id} className={styles.petCardFull}>
                                             <div className={styles.petHeader}>
-                                                <div className={styles.petAvatar}>
+                                                <div className={styles.petAvatar} style={{ 
+                                                    filter: fields[`pet-${pIdx}-is-active`] === 'false' ? 'grayscale(100%)' : 'none',
+                                                    opacity: fields[`pet-${pIdx}-is-active`] === 'false' ? 0.7 : 1
+                                                }}>
                                                     {mainPhoto && mainPhoto.startsWith('http') ? (
                                                         <img 
                                                             src={mainPhoto} 
@@ -1215,6 +1257,25 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         disabled={updatingPetId === pet.id}
                                                     >
                                                         {updatingPetId === pet.id ? '...' : 'Rechazar'}
+                                                    </button>
+                                                )}
+                                                {fields[`pet-${pIdx}-is-active`] !== 'false' && (
+                                                    <button
+                                                        className={styles.petUnsubscribeBtn}
+                                                        onClick={() => handlePetUnsubscribe(pet.id, pIdx, pet.name)}
+                                                        disabled={isUnsubscribing[pet.id]}
+                                                        style={{ 
+                                                            background: '#FEE2E2', 
+                                                            color: '#991B1B', 
+                                                            border: '2px solid #991B1B',
+                                                            borderRadius: '50px',
+                                                            padding: '8px 16px',
+                                                            fontWeight: 600,
+                                                            fontSize: '0.8rem',
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    >
+                                                        {isUnsubscribing[pet.id] ? '...' : 'Dar de Baja'}
                                                     </button>
                                                 )}
                                             </div>

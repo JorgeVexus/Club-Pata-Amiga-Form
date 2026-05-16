@@ -158,6 +158,12 @@
     color: #FBC02D;
 }
 
+.tag.unsubscription {
+    background: #EEEEEE;
+    color: #666666;
+    border: 1px solid #CCCCCC;
+}
+
 .actors {
     display: flex;
     gap: 1.5rem;

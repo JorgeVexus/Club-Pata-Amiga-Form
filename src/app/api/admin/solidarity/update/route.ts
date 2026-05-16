@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+import { memberstackAdmin } from '@/services/memberstack-admin.service';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,7 +30,7 @@ export async function POST(request: NextRequest) {
         // 1. Obtener datos actuales de la solicitud
         const { data: currentRequest, error: fetchError } = await supabaseAdmin
             .from('solidarity_requests')
-            .select('user_id, pet_id, status')
+            .select('user_id, pet_id, status, benefit_type')
             .eq('id', requestId)
             .single();
 
@@ -93,6 +94,56 @@ export async function POST(request: NextRequest) {
                 is_read: false,
                 created_at: new Date().toISOString()
             });
+
+        // 5. Automatización de baja si es Fallecimiento
+        if (status === 'approved' && currentRequest.benefit_type === 'Fallecimiento' && currentRequest.pet_id) {
+            try {
+                console.log(`🐾 [Solidarity Automation] Procesando baja automática para pet_id: ${currentRequest.pet_id}`);
+                
+                // Obtener datos de la mascota y su índice
+                const { data: petData } = await supabaseAdmin
+                    .from('pets')
+                    .select('name, owner_id')
+                    .eq('id', currentRequest.pet_id)
+                    .single();
+                
+                if (petData) {
+                    // Obtener todas las mascotas del dueño para encontrar el índice (ordenadas por creación)
+                    const { data: allPets } = await supabaseAdmin
+                        .from('pets')
+                        .select('id')
+                        .eq('owner_id', petData.owner_id)
+                        .order('created_at', { ascending: true });
+                    
+                    const petIndex = allPets?.findIndex(p => p.id === currentRequest.pet_id) ?? -1;
+                    
+                    if (petIndex !== -1) {
+                        const petNum = petIndex + 1;
+                        console.log(`🐾 [Solidarity Automation] Baja confirmada: ${petData.name} (Índice MS: ${petNum})`);
+                        
+                        // 1. Memberstack (Source of Truth para widgets)
+                        await memberstackAdmin.updateMemberFields(currentRequest.user_id, {
+                            [`pet-${petNum}-is-active`]: 'false'
+                        });
+                        
+                        // 2. Supabase Log (Auditoría)
+                        await supabaseAdmin
+                            .from('pet_unsubscriptions')
+                            .insert([{
+                                memberstack_id: currentRequest.user_id,
+                                pet_index: petNum,
+                                pet_name: petData.name,
+                                reason: 'Fallecimiento (Solidaridad)',
+                                description: `Baja automática tras aprobación de fondo solidario #${requestId}`,
+                                unsubscribed_by: 'Comité (Solidaridad)',
+                                unsubscribed_by_id: 'system'
+                            }]);
+                    }
+                }
+            } catch (autoErr) {
+                console.error('❌ [Solidarity Automation] Error in unsubscription automation:', autoErr);
+            }
+        }
 
         return NextResponse.json({
             success: true,

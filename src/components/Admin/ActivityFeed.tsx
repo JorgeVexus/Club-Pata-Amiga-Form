@@ -5,12 +5,13 @@ import styles from './ActivityFeed.module.css';
 
 export interface ActivityLog {
     id: string;
-    type: 'approved' | 'rejected' | 'registration';
+    type: 'approved' | 'rejected' | 'registration' | 'unsubscription';
     targetName: string;
     adminName: string;
     timestamp: string; // ISO Date
-    role: 'Miembro' | 'Embajador';
+    role: 'Miembro' | 'Embajador' | 'Mascota';
     detail?: string; 
+    description?: string; // Add description field
 }
 
 interface ActivityFeedProps {
@@ -19,7 +20,7 @@ interface ActivityFeedProps {
 }
 
 export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
-    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved' | 'registration'>('all');
+    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved' | 'registration' | 'unsubscription'>('all');
     const [search, setSearch] = useState('');
 
     // Time Ago Helper
@@ -93,6 +94,12 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                 >
                     Registros
                 </button>
+                <button
+                    className={`${styles.filterButton} ${filter === 'unsubscription' ? styles.active : ''}`}
+                    onClick={() => setFilter('unsubscription')}
+                >
+                    Bajas
+                </button>
             </div>
 
             {/* Search and Sort Controls */}
@@ -127,14 +134,19 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                                 <span>
                                     {log.type === 'approved' ? 'SOLICITUD APROBADA' : 
                                      log.type === 'rejected' ? 'SOLICITUD RECHAZADA' : 
-                                     'NUEVO REGISTRO'} #{log.id.slice(-4).toUpperCase()}
+                                     log.type === 'registration' ? 'NUEVO REGISTRO' : 
+                                     'BAJA DE MASCOTA'} #{log.id.slice(-4).toUpperCase()}
                                 </span>
                                 <span className={styles.timeAgo}>{timeAgo(log.timestamp)}</span>
                             </div>
 
                             <div className={styles.tags}>
-                                <div className={`${styles.tag} ${log.type === 'approved' ? styles.member : log.type === 'rejected' ? styles.rejected : ''}`}>
-                                    {log.role === 'Miembro' ? '👤 Miembro' : '🗣 Embajador'}
+                                <div className={`${styles.tag} ${
+                                    log.type === 'approved' ? styles.member : 
+                                    log.type === 'rejected' ? styles.rejected : 
+                                    log.type === 'unsubscription' ? styles.unsubscription : ''
+                                }`}>
+                                    {log.role === 'Miembro' ? '👤 Miembro' : log.role === 'Embajador' ? '🗣 Embajador' : '🐾 Mascota'}
                                 </div>
                             </div>
 

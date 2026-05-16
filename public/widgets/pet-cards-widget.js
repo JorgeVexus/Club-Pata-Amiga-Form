@@ -104,6 +104,12 @@
         }
         .pata-pet-card:hover img { transform: scale(1.1); }
 
+        .pata-grayscale {
+            filter: grayscale(100%) !important;
+            opacity: 0.7 !important;
+            transition: all 0.5s ease;
+        }
+
         .pata-card-overlay-status {
             position: absolute;
             top: 15px;
@@ -1010,7 +1016,7 @@
                         <section class="pata-modal-gallery hide-scrollbar" style="border-right: var(--pata-border-thick);">
                             <div class="pata-gallery-main" id="modal-photo-upload-1" style="border: var(--pata-border-thick);">
                                 ${(photoSlots[0] && photoSlots[0].startsWith('http')) ? `
-                                    <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy">
+                                    <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy" class="${pet.is_active === false ? 'pata-grayscale' : ''}">
                                     <div class="pata-gallery-label">
                                         <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
                                         <span>Foto Principal</span>
@@ -1030,7 +1036,7 @@
                                     if (url && url.startsWith('http')) {
                                         return `
                                             <div style="aspect-ratio:1; border-radius:16px; overflow:hidden; border:var(--pata-border-thin); box-shadow:4px 4px 0 rgba(0,0,0,0.05);">
-                                                <img src="${url}" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+                                                <img src="${url}" style="width:100%; height:100%; object-fit:cover;" class="${pet.is_active === false ? 'pata-grayscale' : ''}" loading="lazy">
                                             </div>`;
                                     } else {
                                         return `
@@ -1216,6 +1222,21 @@
                                 </div>
                             </div>
                             ` : ''}
+
+                            <!-- Botón de baja -->
+                            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed #ccc;">
+                                ${pet.is_active !== false ? `
+                                    <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', '${pet.name}')" 
+                                            class="pata-btn" 
+                                            style="width: 100%; background: #fff; color: #E53E3E; border: 2px solid #E53E3E; border-radius: 50px; font-family: var(--font-heading); font-size: 14px; padding: 12px; cursor: pointer; transition: all 0.2s ease;">
+                                        Solicitar baja de este peludito
+                                    </button>
+                                ` : `
+                                    <div style="text-align: center; color: #718096; font-family: var(--font-body); font-size: 14px; font-weight: 700; padding: 12px; background: #f7f7f7; border-radius: 12px;">
+                                        Peludito dado de baja
+                                    </div>
+                                `}
+                            </div>
                         </section>
                     </main>
                 </div>
@@ -1943,6 +1964,36 @@
             } catch (err) {
                 console.error('Modal upload error:', err); alert('No se pudo subir: ' + err.message);
                 container.innerHTML = originalContent; container.style.pointerEvents = 'auto';
+            }
+        }
+
+        async requestPetUnsubscribe(petId, petName) {
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/unsubscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        memberId: this.member.id,
+                        petId: petId,
+                        petName: petName
+                    })
+                });
+                
+                const data = await res.json();
+                if (data.success) {
+                    alert(`Se ha solicitado la baja de ${petName} correctamente.`);
+                    const modal = document.getElementById('pata-details-modal');
+                    if (modal) {
+                        modal.remove();
+                        document.body.style.overflow = '';
+                    }
+                    this.init();
+                } else {
+                    alert('Error al procesar la baja: ' + (data.error || 'Intenta más tarde.'));
+                }
+            } catch (err) {
+                console.error('Error requesting unsubscribe:', err);
+                alert('Ocurrió un error de conexión.');
             }
         }
     }

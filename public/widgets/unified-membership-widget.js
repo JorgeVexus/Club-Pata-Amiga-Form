@@ -198,6 +198,72 @@
             transform: scale(1.05);
         }
 
+        /* 📉 Unsubscription & Inactive States */
+        .pata-grayscale {
+            filter: grayscale(100%) !important;
+            opacity: 0.7 !important;
+        }
+        
+        .pata-grayscale-no-events {
+            filter: grayscale(100%) !important;
+            opacity: 0.8 !important;
+            pointer-events: none !important;
+            cursor: not-allowed !important;
+        }
+        
+        .pata-grayscale-no-events * {
+            pointer-events: none !important;
+        }
+
+        .pata-btn-unsubscribe {
+            background: #f8f9fa;
+            color: #666;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .pata-btn-unsubscribe:hover {
+            background: #fff5f5;
+            color: #c62828;
+            border-color: #c62828;
+            transform: translateY(-2px);
+        }
+
+        /* 🔴 Modal Reason Styles */
+        .pata-reason-item {
+            display: block;
+            padding: 16px 20px;
+            border: 2px solid #eee;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+        
+        .pata-reason-item:hover {
+            border-color: var(--pata-primary);
+            background: #f0fdfc;
+        }
+        
+        .pata-reason-item.selected {
+            border-color: var(--pata-primary);
+            background: #e6fffa;
+            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.1);
+        }
+
         /* Approved View Layout */
         .pata-approved-grid {
             display: grid;
@@ -4422,7 +4488,7 @@
                             <div class="pata-pet-selector-new">
                                 <div class="pata-tabs-new">
                                     ${this.pets.map((p, i) => `
-                                        <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'}" onclick="window.pataWidget.setIndex(${i})">
+                                        <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'} ${p.is_active === false ? 'pata-grayscale' : ''}" onclick="window.pataWidget.setIndex(${i})">
                                             <span class="pata-tab-icon-new">${this.getPetIcon(p)}</span>
                                             <span class="pata-tab-name-new">${p.name.toLowerCase()}</span>
                                         </div>
@@ -5756,7 +5822,7 @@
                                 </div>
 
                                 <!-- Desktop Main Image -->
-                                <div class="pata-editorial-main-img-box">
+                                <div class="pata-editorial-main-img-box ${pet.is_active === false ? 'pata-grayscale' : ''}">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
                                     <div class="pata-status-badge-floating" style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
                                         ${status.icon} ${status.label}
@@ -5862,6 +5928,23 @@
                         '<div style="color: #D32F2F; font-weight: 950; font-size: 15px; display: flex; align-items: center; gap: 10px;">⚠️ Información de salud pendiente</div>'}
                                     </div>
                                 ` : ''}
+
+                                <!-- 🗑️ Solicitar Baja Section -->
+                                ${pet.is_active !== false ? `
+                                    <div style="margin-top: 30px; border-top: 1px dashed #ddd; padding-top: 20px;">
+                                        <button class="pata-btn-unsubscribe" onclick="window.pataWidget.handlePetUnsubscribe('${pet.id}', '${this.escapeHtml(pet.name)}')">
+                                            <span>👋</span> Solicitar baja de este peludito
+                                        </button>
+                                        <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px; font-style: italic;">
+                                            Al dar de baja a un peludito, liberas un espacio en tu manada para proteger a otro integrante.
+                                        </p>
+                                    </div>
+                                ` : `
+                                    <div style="margin-top: 30px; background: #f8f9fa; border: 2px solid #ddd; padding: 20px; border-radius: 20px; text-align: center;">
+                                        <span style="font-size: 24px; display: block; margin-bottom: 10px;">📉</span>
+                                        <p style="font-size: 14px; font-weight: 700; color: #666; margin: 0;">Esta mascota ya no se encuentra activa en la manada.</p>
+                                    </div>
+                                `}
 
                                 <!-- 🆕 Chat Interface Container -->
                                 <div id="pata-chat-root" style="margin-top: 40px;">
@@ -6652,6 +6735,68 @@
                     `;
                 }
             }
+        }
+
+        async handlePetUnsubscribe(petId, petName) {
+            const reason = await this.showUnsubscribeReasons(petName);
+            if (!reason) return;
+            const confirm = await this.showUnsubscribeConfirm(petName);
+            if (!confirm) return;
+            this.showGlobalLoader('Procesando baja...');
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/unsubscribe`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ memberstackId: this.member.id, petId, reason })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(`La baja de ${petName} se ha procesado correctamente.`);
+                    window.location.reload();
+                } else alert('Error: ' + (data.error || 'Inténtalo más tarde.'));
+            } catch (err) { alert('Ocurrió un error inesperado.'); } finally { this.hideGlobalLoaders(); }
+        }
+
+        showUnsubscribeReasons(petName) {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'pata-modal-overlay show';
+                modal.style.zIndex = '1000000';
+                modal.innerHTML = `<div class="pata-modal" style="max-width: 450px;"><div style="padding: 40px;"><h2 style="font-family: 'Fraiche', sans-serif; font-size: 28px; margin-bottom: 10px; text-align: center; color: #000;">razones de la baja</h2><p style="text-align: center; color: #666; margin-bottom: 30px; font-weight: 600;">Lamentamos que ${petName} deje la manada.</p><div class="pata-reasons-list"><div class="pata-reason-item" data-reason="fallecimiento">🕊️ Por fallecimiento</div><div class="pata-reason-item" data-reason="ya no vive conmigo">🏠 Ya no vive conmigo</div><div class="pata-reason-item" data-reason="otra">❓ Otra</div></div><div id="pata-other-reason-container" style="display: none; margin-top: 15px;"><textarea id="pata-other-reason-text" placeholder="Describe el motivo..." style="width: 100%; height: 80px; border: 2px solid #000; border-radius: 15px; padding: 12px; font-family: 'Outfit';"></textarea></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 30px;"><button id="pata-cancel-unsubscribe" class="pata-btn" style="background: #eee; color: #000; border: 2px solid #000;">cancelar</button><button id="pata-confirm-reason" class="pata-btn" style="background: var(--pata-primary); color: #fff; border: 2px solid #000;">continuar</button></div></div></div>`;
+                document.body.appendChild(modal);
+                let selectedReason = '';
+                modal.querySelectorAll('.pata-reason-item').forEach(item => {
+                    item.onclick = () => {
+                        modal.querySelectorAll('.pata-reason-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                        selectedReason = item.dataset.reason;
+                        document.getElementById('pata-other-reason-container').style.display = selectedReason === 'otra' ? 'block' : 'none';
+                    };
+                });
+                document.getElementById('pata-cancel-unsubscribe').onclick = () => { modal.remove(); resolve(null); };
+                document.getElementById('pata-confirm-reason').onclick = () => {
+                    if (!selectedReason) return alert('Selecciona una razón.');
+                    let finalReason = selectedReason;
+                    if (selectedReason === 'otra') {
+                        const other = document.getElementById('pata-other-reason-text').value.trim();
+                        if (!other) return alert('Describe el motivo.');
+                        finalReason = `Otra: ${other}`;
+                    }
+                    modal.remove(); resolve(finalReason);
+                };
+            });
+        }
+
+        showUnsubscribeConfirm(petName) {
+            return new Promise((resolve) => {
+                const modal = document.createElement('div');
+                modal.className = 'pata-modal-overlay show';
+                modal.style.zIndex = '1000000';
+                modal.innerHTML = `<div class="pata-modal" style="max-width: 450px;"><div style="padding: 40px; text-align: center;"><div style="font-size: 50px; margin-bottom: 20px;">⚠️</div><h2 style="font-family: 'Fraiche', sans-serif; font-size: 28px; margin-bottom: 15px; color: #000;">confirmar baja</h2><p style="color: #333; font-weight: 700; font-size: 16px; margin-bottom: 25px;">Proceder a confirmar baja de <strong>${petName}</strong>. <br>Recuerda que con esta acción podrás proteger a otro de tus peludos.</p><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"><button id="pata-no-confirm" class="pata-btn" style="background: #eee; color: #000; border: 2px solid #000;">no, volver</button><button id="pata-yes-confirm" class="pata-btn" style="background: #c62828; color: #fff; border: 2px solid #000;">sí, dar de baja</button></div></div></div>`;
+                document.body.appendChild(modal);
+                document.getElementById('pata-no-confirm').onclick = () => { modal.remove(); resolve(false); };
+                document.getElementById('pata-yes-confirm').onclick = () => { modal.remove(); resolve(true); };
+            });
         }
     }
 
