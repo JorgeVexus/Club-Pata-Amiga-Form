@@ -1075,6 +1075,21 @@
                                 `).join('')}
                             </div>
 
+                            <div class="pata-unsubscription-header" style="margin-top: 12px;">
+                                ${pet.is_active !== false ? `
+                                    <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', '${pet.name}')" 
+                                            style="background: #fff; color: #E53E3E; border: 1.5px solid #E53E3E; border-radius: 50px; font-family: var(--font-body); font-size: 10px; font-weight: 800; padding: 5px 14px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; display: flex; align-items: center; gap: 6px; width: fit-content; box-shadow: 2px 2px 0 rgba(229, 62, 62, 0.1);">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">do_not_disturb_on</span>
+                                        Solicitar baja
+                                    </button>
+                                ` : `
+                                    <div style="color: #718096; font-family: var(--font-body); font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 6px; background: #f7f7f7; padding: 5px 14px; border-radius: 50px; border: 1.5px solid #ddd; width: fit-content;">
+                                        <span class="material-symbols-outlined" style="font-size: 14px;">check_circle</span>
+                                        Peludito dado de baja
+                                    </div>
+                                `}
+                            </div>
+
                             ${alertHtml}
 
                             ${pet.status === 'approved' ? (() => {
@@ -1223,20 +1238,6 @@
                             </div>
                             ` : ''}
 
-                            <!-- Botón de baja -->
-                            <div style="margin-top: 24px; padding-top: 16px; border-top: 1px dashed #ccc;">
-                                ${pet.is_active !== false ? `
-                                    <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', '${pet.name}')" 
-                                            class="pata-btn" 
-                                            style="width: 100%; background: #fff; color: #E53E3E; border: 2px solid #E53E3E; border-radius: 50px; font-family: var(--font-heading); font-size: 14px; padding: 12px; cursor: pointer; transition: all 0.2s ease;">
-                                        Solicitar baja de este peludito
-                                    </button>
-                                ` : `
-                                    <div style="text-align: center; color: #718096; font-family: var(--font-body); font-size: 14px; font-weight: 700; padding: 12px; background: #f7f7f7; border-radius: 12px;">
-                                        Peludito dado de baja
-                                    </div>
-                                `}
-                            </div>
                         </section>
                     </main>
                 </div>
