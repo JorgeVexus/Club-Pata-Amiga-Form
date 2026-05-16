@@ -67,7 +67,7 @@ export default function TestNotificationsPage() {
                 <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
                     <button onClick={() => createTestNotification('account')} disabled={isLoading} style={btnStyle('#00BBB4')}>🎉 Cuenta Aprobada</button>
                     <button onClick={() => createTestNotification('document')} disabled={isLoading} style={btnStyle('#FE8F15')}>📄 Falta Documento</button>
-                    <button onClick={() => createTestNotification('waiting_period')} disabled={isLoading} style={btnStyle('#444')}>⏰ Carencia terminada</button>
+                    <button onClick={() => createTestNotification('waiting_period')} disabled={isLoading} style={btnStyle('#444')}>⏰ Tiempo de espera terminado</button>
                     <button onClick={() => createTestNotification('announcement')} disabled={isLoading} style={btnStyle('#2196F3')}>📢 Anuncio General</button>
                 </div>
             </div>

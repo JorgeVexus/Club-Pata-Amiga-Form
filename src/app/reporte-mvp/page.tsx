@@ -88,7 +88,7 @@ const ReporteMVP = () => {
                         </div>
                         <div className={styles.listItem}>
                             <span className={`${styles.badge} ${styles.badgeSuccess}`}>Paso 5</span>
-                            <strong>Registro Completo de Mascota:</strong> Subida de fotos y certificados veterinarios. Cálculo automatizado del <u>período de carencia</u>.
+                            <strong>Registro Completo de Mascota:</strong> Subida de fotos y certificados veterinarios. Cálculo automatizado del <u>tiempo de espera</u>.
                         </div>
                     </div>
                 </section>
@@ -111,7 +111,7 @@ const ReporteMVP = () => {
                         <div className={styles.card}>
                             <h3 className={styles.cardTitle}>Dashboard de Miembros</h3>
                             <ul className={styles.cardText}>
-                                <li>Vista de estado de protección (Activa vs Carencia).</li>
+                                <li>Vista de estado de protección (Activa vs tiempo de espera).</li>
                                 <li>Gestión de hasta 3 mascotas registradas.</li>
                                 <li>Sistema de quejas y apelaciones integrado.</li>
                             </ul>

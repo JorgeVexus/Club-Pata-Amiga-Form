@@ -1,5 +1,5 @@
 /**
- * Servicio para cálculo de períodos de carencia de mascotas
+ * Servicio para cálculo de tiempo de espera de mascotas
  * y gestión de datos de mascotas en Memberstack
  */
 
@@ -10,11 +10,11 @@ import type {
 } from '@/types/pet.types';
 
 /**
- * Calcula el período de carencia para una mascota
+ * Calcula el tiempo de espera para una mascota
  * @param isOriginal - ¿Es una de las primeras 3 mascotas?
  * @param isAdopted - ¿Fue adoptada o rescatada?
  * @param isMixed - ¿Es mestiza/criolla?
- * @returns Información del período de carencia
+ * @returns Información del tiempo de espera
  */
 export function calculateWaitingPeriod(
     isOriginal: boolean,
@@ -249,7 +249,7 @@ export async function updatePetPhotos(
 }
 
 /**
- * Formatea el mensaje de período de carencia para mostrar al usuario
+ * Formatea el mensaje de tiempo de espera para mostrar al usuario
  */
 export function formatWaitingPeriodMessage(
     calculation: WaitingPeriodCalculation
@@ -268,8 +268,8 @@ export function formatWaitingPeriodMessage(
                 reason = 'cumple con criterios de reducción';
         }
 
-        return `✅ Como tu mascota ${reason}, su período de carencia se reduce a ${calculation.months} meses.`;
+        return `✅ Como tu mascota ${reason}, su tiempo de espera se reduce a ${calculation.months} meses.`;
     }
 
-    return `Período de carencia estándar: ${calculation.months} meses.`;
+    return `Tiempo de espera estándar: ${calculation.months} meses.`;
 }

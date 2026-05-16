@@ -1,7 +1,7 @@
 /**
- * 🎡 Club Pata Amiga - Unified Membership Widget (Tabs + Carencia + Apelación)
+ * 🎡 Club Pata Amiga - Unified Membership Widget (Tabs + tiempo de espera + Apelación)
  * 
- * Este widget unifica el panel de período de carencia y el sistema de apelaciones.
+ * Este widget unifica el panel de tiempo de espera y el sistema de apelaciones.
  * Se adapta dinámicamente al estado de cada mascota individualmente.
  */
 
@@ -3798,7 +3798,7 @@
                                 "pataDebug.pagoProcesando()": "Ver pantalla de Stripe procesando",
                                 "pataDebug.revisionGlobal()": "Ver revisión de cuenta (24h)",
                                 "pataDebug.membresiaCancelada()": "Ver pantalla de renovación",
-                                "pataDebug.aprobado()": "Ver dashboard con carencia",
+                                "pataDebug.aprobado()": "Ver dashboard con tiempo de espera",
                                 "pataDebug.rechazado()": "Ver pantalla de rechazo/reembolso",
                                 "pataDebug.accionRequerida()": "Ver pantalla de documentos faltantes",
                                 "pataDebug.apelado()": "Ver estado de apelación"
@@ -5333,6 +5333,7 @@
                         <div class="pata-chat-bubble admin" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid #FE8F15;">
                             <div style="font-weight:900;font-size:13px;margin-bottom:8px;color:#FE8F15;">📋 Solicitud de Información</div>
                             <div style="font-size:13px;margin-bottom:12px;">${log.message}</div>
+                            <br>
                             <div style="display:flex;flex-direction:column;gap:8px;">
                                 ${actionButtons}
                             </div>

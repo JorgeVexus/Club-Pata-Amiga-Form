@@ -82,7 +82,7 @@ export default function Confirmacion() {
                             </li>
                             <li>
                                 <span className={styles.check}>✓</span>
-                                <span>El período de carencia comienza hoy</span>
+                                <span>El tiempo de espera comienza hoy</span>
                             </li>
                             <li>
                                 <span className={styles.check}>✓</span>
