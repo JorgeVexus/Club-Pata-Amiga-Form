@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Mapa Wellness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #f0f0f0;
+            padding: 50px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        #wellness-map-container {
+            height: 600px; /* Overriding default for test */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mapa de Centros de Bienestar</h1>
+        <p>Este es una prueba local del widget de mapa interactivo.</p>
+        
+        <!-- El contenedor que el widget busca -->
+        <div id="wellness-map-container"></div>
+    </div>
+
+    <!-- Configuración local -->
+    <script>
+        window.PATA_AMIGA_CONFIG = {
+            API_BASE_URL: 'http://localhost:3000',
+            DEBUG: true
+        };
+    </script>
+
+    <!-- El Widget -->
+    <script src="public/widgets/wellness-map-widget.js"></script>
+
+</body>
+</html>

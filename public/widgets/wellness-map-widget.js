@@ -1,0 +1,216 @@
+/**
+ * 🗺️ Widget Mapa Interactivo de Centros de Bienestar - Club Pata Amiga
+ * Integración para Webflow
+ */
+
+(function () {
+    'use strict';
+
+    const CONFIG = {
+        API_BASE_URL: window.PATA_AMIGA_CONFIG?.API_BASE_URL || 'https://app.pataamiga.mx',
+        CONTAINER_ID: 'wellness-map-container',
+        LEAFLET_VERSION: '1.9.4',
+        MEXICO_CENTER: [23.6345, -102.5528],
+        DEFAULT_ZOOM: 5
+    };
+
+    const STYLES = `
+        #${CONFIG.CONTAINER_ID} {
+            width: 100%;
+            height: 500px;
+            border-radius: 30px;
+            border: 3px solid #000;
+            overflow: hidden;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.05);
+            font-family: 'Outfit', sans-serif;
+            background: #f8f9fa;
+        }
+
+        .wc-map-popup {
+            padding: 5px;
+        }
+
+        .wc-map-popup-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #1E293B;
+        }
+
+        .wc-map-popup-address {
+            font-size: 0.85rem;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .wc-map-popup-logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 10px;
+            border: 1px solid #E2E8F0;
+        }
+
+        .wc-map-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #D1FAE5;
+            color: #065F46;
+            border-radius: 50px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: 5px;
+            margin-bottom: 5px;
+            border: 1px solid #065F46;
+        }
+
+        .leaflet-popup-content-wrapper {
+            border-radius: 20px !important;
+            border: 2px solid #000 !important;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.1) !important;
+        }
+
+        .leaflet-popup-tip {
+            border: 2px solid #000 !important;
+        }
+
+        .wc-custom-marker {
+            background: #FE8F15;
+            border: 2px solid #000;
+            border-radius: 50% 50% 50% 0;
+            transform: rotate(-45deg);
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .wc-custom-marker i {
+            transform: rotate(45deg);
+            color: white;
+            font-size: 14px;
+        }
+    `;
+
+    function loadDependencies() {
+        return new Promise((resolve, reject) => {
+            if (window.L) {
+                resolve();
+                return;
+            }
+
+            // Load CSS
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = `https://unpkg.com/leaflet@${CONFIG.LEAFLET_VERSION}/dist/leaflet.css`;
+            document.head.appendChild(link);
+
+            // Load JS
+            const script = document.createElement('script');
+            script.src = `https://unpkg.com/leaflet@${CONFIG.LEAFLET_VERSION}/dist/leaflet.js`;
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    function injectStyles() {
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = STYLES;
+        document.head.appendChild(styleTag);
+    }
+
+    async function fetchLocations() {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/wellness/locations`);
+            const result = await response.json();
+            return result.success ? result.data : [];
+        } catch (error) {
+            console.error('❌ Error fetching wellness locations:', error);
+            return [];
+        }
+    }
+
+    function createPopupContent(center) {
+        const servicesHtml = (center.services || [])
+            .slice(0, 3)
+            .map(s => `<span class="wc-map-badge">${s}</span>`)
+            .join('');
+
+        return `
+            <div class="wc-map-popup">
+                ${center.logo_url ? `<img src="${center.logo_url}" class="wc-map-popup-logo" alt="${center.establishment_name}">` : ''}
+                <div class="wc-map-popup-title">${center.establishment_name}</div>
+                <div class="wc-map-popup-address">${center.address || 'Ubicación física'}</div>
+                <div class="wc-map-services">${servicesHtml}</div>
+                ${center.promotion_details ? `<p style="font-size: 0.8rem; margin-top: 8px; color: #FE8F15; font-weight: bold;">🎁 ${center.promotion_details}</p>` : ''}
+            </div>
+        `;
+    }
+
+    async function init() {
+        const container = document.getElementById(CONFIG.CONTAINER_ID);
+        if (!container) {
+            if (CONFIG.DEBUG) console.warn(`Wellness Map: Container #${CONFIG.CONTAINER_ID} not found.`);
+            return;
+        }
+
+        try {
+            await loadDependencies();
+            injectStyles();
+
+            const map = L.map(CONFIG.CONTAINER_ID).setView(CONFIG.MEXICO_CENTER, CONFIG.DEFAULT_ZOOM);
+
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                subdomains: 'abcd',
+                maxZoom: 20
+            }).addTo(map);
+
+            const locations = await fetchLocations();
+
+            const markers = L.featureGroup();
+
+            locations.forEach(loc => {
+                if (!loc.lat || !loc.lng) return;
+
+                const marker = L.marker([loc.lat, loc.lng], {
+                    title: loc.establishment_name
+                });
+
+                marker.bindPopup(createPopupContent(loc), {
+                    maxWidth: 250,
+                    className: 'wc-leaflet-popup'
+                });
+
+                // Hover interaction
+                marker.on('mouseover', function (e) {
+                    this.openPopup();
+                });
+
+                markers.addLayer(marker);
+            });
+
+            markers.addTo(map);
+
+            // If there are markers, fit bounds
+            if (locations.length > 0) {
+                map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+            }
+
+        } catch (error) {
+            console.error('❌ Wellness Map Initialization Error:', error);
+            container.innerHTML = `<div style="padding: 20px; text-align: center;">Error al cargar el mapa de centros de bienestar.</div>`;
+        }
+    }
+
+    // Auto-init when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+
+})();

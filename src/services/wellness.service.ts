@@ -90,5 +90,24 @@ export const wellnessService = {
         }
 
         return data as any[];
+    },
+
+    /**
+     * Obtiene todos los centros de bienestar aprobados con coordenadas
+     */
+    async getAllApprovedLocations(): Promise<Partial<WellnessCenter>[]> {
+        const { data, error } = await supabase
+            .from('wellness_centers')
+            .select('id, establishment_name, logo_url, address, lat, lng, services, promotion_details, social_links')
+            .eq('status', 'approved')
+            .not('lat', 'is', null)
+            .not('lng', 'is', null);
+
+        if (error) {
+            console.error('❌ Error fetching wellness center locations:', error);
+            return [];
+        }
+
+        return data as Partial<WellnessCenter>[];
     }
 };
