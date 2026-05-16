@@ -4082,7 +4082,7 @@
             const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
             const name = this.escapeHtml(pet.name || 'tu mascota');
 
-            return `Recuerda que <strong>${name}</strong> tiene un periodo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
+            return `Recuerda que <strong>${name}</strong> tiene un tiempo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
         }
 
         isSenior(pet) {
@@ -5069,7 +5069,7 @@
                     <div class="pata-approved-grid-main">
                         <!-- Columna Izquierda: Estatus y Progreso -->
                         <div class="pata-approved-column-left">
-                            <span class="pata-approved-status-badge">${carencia.daysRemaining <= 0 ? '¡Felicidades!' : 'tu periodo de espera'}</span>
+                            <span class="pata-approved-status-badge">${carencia.daysRemaining <= 0 ? '¡Felicidades!' : 'tu tiempo de espera'}</span>
                             ${carencia.daysRemaining > 0 ? `<p class="pata-carencia-explanation">${this.getCarenciaExplanation(pet)}</p>` : ''}
                             
                             <div class="pata-approved-progress-box">

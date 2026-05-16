@@ -843,7 +843,7 @@
             const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
             const name = this.escapeHtml(pet.name || 'tu mascota');
 
-            return `Recuerda que <strong>${name}</strong> tiene un periodo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
+            return `Recuerda que <strong>${name}</strong> tiene un tiempo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
         }
 
         async loadData() {
@@ -921,7 +921,7 @@
                 <div class="pata-add-card" onclick="if(window.ManadaWidget) window.ManadaWidget.showAddForm()" role="button" aria-label="Agregar nueva mascota">
                     <div class="pata-add-icon-circle">+</div>
                     <h3 class="pata-add-text-title">Agregar otro peludo</h3>
-                    <p class="pata-add-text-subtitle">Periodo de carencia de 6 meses</p>
+                    <p class="pata-add-text-subtitle">tiempo de espera de 6 meses</p>
                 </div>
             `;
         }
@@ -1085,7 +1085,7 @@
                                     <div class="pata-progress-container-v2">
                                         <p class="pata-carencia-explanation">${this.getCarenciaExplanation(pet)}</p>
                                         <div class="pata-progress-header">
-                                            <span>Periodo de Carencia</span>
+                                            <span>tiempo de espera</span>
                                             <span>${carencia.percentage}%</span>
                                         </div>
                                         <div class="pata-bar-v2">

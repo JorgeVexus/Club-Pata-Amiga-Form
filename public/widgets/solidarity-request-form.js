@@ -537,7 +537,7 @@ class SolidarityRequestForm {
                                 statusLabel = 'Pendiente aprobación';
                                 statusClass = 'waiting';
                             } else if (!hasFinishedWaiting) {
-                                statusLabel = 'En carencia';
+                                statusLabel = 'En espera';
                                 statusClass = 'waiting';
                             }
 

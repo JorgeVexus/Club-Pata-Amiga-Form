@@ -701,7 +701,7 @@
                     this.ambassadorName = data.ambassador_name;
                     if (statusEl) {
                         statusEl.className = 'pata-referral-status success';
-                        statusEl.innerHTML = `✨ ¡Bienvenido a la manada de <strong>${data.ambassador_name}</strong>! Tu beneficio de carencia ha sido aplicado.`;
+                        statusEl.innerHTML = `✨ ¡Bienvenido a la manada de <strong>${data.ambassador_name}</strong>! Tu beneficio de tiempo de espera ha sido aplicado.`;
                     }
                     // Actualizar Memberstack silenciosamente si existe
                     if (window.$memberstackDom && this.member) {

@@ -837,7 +837,7 @@ class SolidarityDashboard {
             return `
                 <div class="pata-pet-card pata-animate-entry" style="animation-delay: ${index * 0.1}s">
                     ${!isEligible ? `<div class="pata-pet-badge-new" style="background: ${isApproved ? '#FEF9C3' : '#FEE2E2'}; color: ${isApproved ? '#854D0E' : '#991B1B'}; border-color: ${isApproved ? '#854D0E' : '#991B1B'};">
-                        ${!isApproved ? statusContext.label : 'En carencia'}
+                        ${!isApproved ? statusContext.label : 'En espera'}
                     </div>` : ''}
                     
                     <img src="${imageUrl}" 
@@ -852,7 +852,7 @@ class SolidarityDashboard {
                             ${!isApproved ? `
                                 <p style="color: #6B7280; font-weight: 700; font-size: 13px;">${statusContext.icon} Esperando aprobación</p>
                             ` : carencia.isWaiting ? `
-                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ Faltan ${carencia.daysRemaining} días de carencia</p>
+                                <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ Faltan ${carencia.daysRemaining} días de espera</p>
                                 <div style="width: 100%; height: 6px; background: #E2E8F0; border-radius: 10px; margin-top: 8px; overflow: hidden;">
                                     <div style="width: ${carencia.percentage}%; height: 100%; background: #FE8F15; border-radius: 10px;"></div>
                                 </div>
