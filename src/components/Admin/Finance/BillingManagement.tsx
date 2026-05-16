@@ -529,7 +529,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                         <td className={styles.dateText}>
                                             {s.nextBilling 
                                                 ? new Date(s.nextBilling).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
-                                                : 'No recurrente'}
+                                                : (s.status === 'active' ? 'Pendiente' : 'No recurrente')}
                                         </td>
                                         <td className={styles.amount}>{formatMXN(s.amount)}</td>
                                         <td>

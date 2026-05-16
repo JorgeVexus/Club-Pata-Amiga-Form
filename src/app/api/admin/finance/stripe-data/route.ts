@@ -66,53 +66,66 @@ export async function GET(request: NextRequest) {
             const allStripeSubs: any[] = [];
             
             try {
-                // 1. Fetch ALL subscriptions from Stripe with expansion
-                const subscriptions = await stripe.subscriptions.list({
-                    limit: 100,
-                    status: 'all',
-                    expand: ['data.customer', 'data.latest_invoice']
-                });
+                // 1. Fetch ALL subscriptions from Stripe with pagination
+                let hasMore = true;
+                let lastId: string | undefined = undefined;
 
-                subscriptions.data.forEach((sub: any) => {
-                    const email = (sub.customer as any)?.email || 'N/A';
-                    const stripeName = (sub.customer as any)?.name || '';
-                    const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
-                    const invoice = sub.latest_invoice;
-
-                    // Improved interval and plan detection
-                    let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
-                    const price = sub.items.data[0]?.price;
-                    const planName = price?.nickname || (sub as any).plan?.nickname || '';
-                    const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
-                    
-                    const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
-                                          planName.toLowerCase().includes('año') || 
-                                          planName.toLowerCase().includes('year') || 
-                                          planName.toLowerCase().includes('annual');
-                    
-                    if (isAnnualKeyword || amount > 1000) {
-                        interval = 'year';
-                    }
-
-                    allStripeSubs.push({
-                        id: sub.id,
-                        status: sub.status,
-                        plan: planName || price?.product || 'Plan Club Pata Amiga',
-                        amount: amount,
-                        interval,
-                        customerEmail: email,
-                        customerName: msName || stripeName || '',
-                        nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
-                        startDate: new Date(sub.start_date * 1000).toISOString(),
-                        source: 'stripe',
-                        payment: {
-                            invoice_id: invoice?.id || null,
-                            invoice_status: invoice?.status || null,
-                            amount_paid: invoice ? invoice.amount_paid / 100 : 0,
-                            currency: invoice?.currency?.toUpperCase() || 'MXN',
-                        }
+                while (hasMore) {
+                    const stripeBatch: any = await stripe.subscriptions.list({
+                        limit: 100,
+                        status: 'all',
+                        starting_after: lastId,
+                        expand: ['data.customer', 'data.latest_invoice']
                     });
-                });
+
+                    stripeBatch.data.forEach((sub: any) => {
+                        const email = (sub.customer as any)?.email || 'N/A';
+                        const stripeName = (sub.customer as any)?.name || '';
+                        const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
+                        const invoice = sub.latest_invoice;
+
+                        // Improved interval and plan detection
+                        let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
+                        const price = sub.items.data[0]?.price;
+                        const planName = price?.nickname || (sub as any).plan?.nickname || '';
+                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
+                        
+                        const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
+                                              planName.toLowerCase().includes('año') || 
+                                              planName.toLowerCase().includes('year') || 
+                                              planName.toLowerCase().includes('annual');
+                        
+                        if (isAnnualKeyword || amount > 1000) {
+                            interval = 'year';
+                        }
+
+                        allStripeSubs.push({
+                            id: sub.id,
+                            status: sub.status,
+                            plan: planName || price?.product || 'Plan Club Pata Amiga',
+                            amount: amount,
+                            interval,
+                            customerEmail: email,
+                            customerName: msName || stripeName || '',
+                            nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
+                            startDate: new Date(sub.start_date * 1000).toISOString(),
+                            source: 'stripe',
+                            payment: {
+                                invoice_id: invoice?.id || null,
+                                invoice_status: invoice?.status || null,
+                                amount_paid: invoice ? invoice.amount_paid / 100 : 0,
+                                currency: invoice?.currency?.toUpperCase() || 'MXN',
+                            }
+                        });
+                    });
+
+                    hasMore = stripeBatch.has_more;
+                    if (hasMore && stripeBatch.data.length > 0) {
+                        lastId = stripeBatch.data[stripeBatch.data.length - 1].id;
+                    } else {
+                        hasMore = false;
+                    }
+                }
             } catch (err) {
                 console.error(`❌ Error fetching subscriptions from Stripe:`, err);
             }
