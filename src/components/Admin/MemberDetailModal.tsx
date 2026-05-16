@@ -300,10 +300,45 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     function toggleRequestType(petId: string, type: string) {
         setSelectedRequests(prev => {
             const current = prev[petId] || [];
+            let next: string[];
             if (current.includes(type)) {
-                return { ...prev, [petId]: current.filter(t => t !== type) };
+                next = current.filter(t => t !== type);
+            } else {
+                next = [...current, type];
             }
-            return { ...prev, [petId]: [...current, type] };
+            
+            // 🆕 Autocompletar sugerencia de mensaje
+            if (next.length > 0) {
+                const pet = pets.find(p => p.id === petId);
+                const petName = pet?.name || 'la mascota';
+                
+                const typeLabels: Record<string, string> = {
+                    'PET_PHOTO_1': 'Foto Principal',
+                    'PET_VET_CERT': 'Certificado Médico',
+                    'OTHER_DOC': 'Documento Adicional'
+                };
+                
+                const selectedLabels = next.map(t => typeLabels[t] || t);
+                let docsText = selectedLabels.join(' y ');
+                if (selectedLabels.length > 2) {
+                    docsText = selectedLabels.slice(0, -1).join(', ') + ' y ' + selectedLabels.slice(-1);
+                }
+                
+                const suggestedMsg = `Estimado tutor, solicitamos ${docsText} de ${petName} debido a que `;
+                
+                setRequestCustomMsg(prevMsg => ({
+                    ...prevMsg,
+                    [petId]: suggestedMsg
+                }));
+            } else {
+                // Si no hay nada seleccionado, limpiamos el mensaje sugerido
+                setRequestCustomMsg(prevMsg => ({
+                    ...prevMsg,
+                    [petId]: ''
+                }));
+            }
+
+            return { ...prev, [petId]: next };
         });
     }
 
