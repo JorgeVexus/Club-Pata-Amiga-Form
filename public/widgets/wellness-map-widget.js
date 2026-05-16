@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-    const CONFIG = {
+        const CONFIG = {
         API_BASE_URL: window.PATA_AMIGA_CONFIG?.API_BASE_URL || 'https://app.pataamiga.mx',
         CONTAINER_ID: 'wellness-map-container',
         LEAFLET_VERSION: '1.9.4',
@@ -197,7 +197,13 @@
 
             // If there are markers, fit bounds
             if (locations.length > 0) {
-                map.fitBounds(markers.getBounds(), { padding: [50, 50] });
+                if (locations.length === 1) {
+                    // Si solo hay uno, centrar con zoom 5 para mantener vista de México
+                    map.setView([locations[0].lat, locations[0].lng], 5);
+                } else {
+                    // Si hay varios, ajustar con un zoom máximo de 7 para no entrar demasiado
+                    map.fitBounds(markers.getBounds(), { padding: [70, 70], maxZoom: 7 });
+                }
             }
 
         } catch (error) {
