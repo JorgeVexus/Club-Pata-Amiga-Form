@@ -66,66 +66,57 @@ export async function GET(request: NextRequest) {
             const allStripeSubs: any[] = [];
             
             try {
-                // 1. Fetch ALL subscriptions from Stripe with pagination
-                let hasMore = true;
-                let lastId: string | undefined = undefined;
+                // 1. Fetch ALL subscriptions from Stripe using autoPagingToArray (more reliable)
+                const subscriptions = await stripe.subscriptions.list({
+                    limit: 100, // Límite por página, pero autoPaging traerá hasta el límite total
+                    status: 'all',
+                    expand: ['data.customer', 'data.latest_invoice']
+                }).autoPagingToArray({ limit: 1000 }); // Traer hasta 1000 suscripciones de forma automática
 
-                while (hasMore) {
-                    const stripeBatch: any = await stripe.subscriptions.list({
-                        limit: 100,
-                        status: 'all',
-                        starting_after: lastId,
-                        expand: ['data.customer', 'data.latest_invoice']
-                    });
+                console.log(`📡 Stripe devolvió ${subscriptions.length} suscripciones`);
 
-                    stripeBatch.data.forEach((sub: any) => {
-                        const email = (sub.customer as any)?.email || 'N/A';
-                        const stripeName = (sub.customer as any)?.name || '';
-                        const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
-                        const invoice = sub.latest_invoice;
+                subscriptions.forEach((sub: any) => {
+                    // Extraer email de forma segura
+                    const customer = sub.customer;
+                    const email = (typeof customer === 'object' ? customer.email : null) || 'N/A';
+                    const stripeName = (typeof customer === 'object' ? customer.name : null) || '';
+                    const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
+                    const invoice = sub.latest_invoice;
 
-                        // Improved interval and plan detection
-                        let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
-                        const price = sub.items.data[0]?.price;
-                        const planName = price?.nickname || (sub as any).plan?.nickname || '';
-                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
-                        
-                        const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
-                                              planName.toLowerCase().includes('año') || 
-                                              planName.toLowerCase().includes('year') || 
-                                              planName.toLowerCase().includes('annual');
-                        
-                        if (isAnnualKeyword || amount > 1000) {
-                            interval = 'year';
-                        }
-
-                        allStripeSubs.push({
-                            id: sub.id,
-                            status: sub.status,
-                            plan: planName || price?.product || 'Plan Club Pata Amiga',
-                            amount: amount,
-                            interval,
-                            customerEmail: email,
-                            customerName: msName || stripeName || '',
-                            nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
-                            startDate: new Date(sub.start_date * 1000).toISOString(),
-                            source: 'stripe',
-                            payment: {
-                                invoice_id: invoice?.id || null,
-                                invoice_status: invoice?.status || null,
-                                amount_paid: invoice ? invoice.amount_paid / 100 : 0,
-                                currency: invoice?.currency?.toUpperCase() || 'MXN',
-                            }
-                        });
-                    });
-
-                    hasMore = stripeBatch.has_more;
-                    if (hasMore && stripeBatch.data.length > 0) {
-                        lastId = stripeBatch.data[stripeBatch.data.length - 1].id;
-                    } else {
-                        hasMore = false;
+                    // Improved interval and plan detection
+                    let interval = sub.items?.data[0]?.price?.recurring?.interval || 'month';
+                    const price = sub.items?.data[0]?.price;
+                    const planName = price?.nickname || sub.plan?.nickname || '';
+                    const amount = (price?.unit_amount || sub.plan?.amount || 0) / 100;
+                    
+                    const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
+                                          planName.toLowerCase().includes('año') || 
+                                          planName.toLowerCase().includes('year') || 
+                                          planName.toLowerCase().includes('annual');
+                    
+                    if (isAnnualKeyword || amount > 1000) {
+                        interval = 'year';
                     }
-                }
+
+                    allStripeSubs.push({
+                        id: sub.id,
+                        status: sub.status,
+                        plan: planName || 'Plan Club Pata Amiga',
+                        amount: amount,
+                        interval,
+                        customerEmail: email,
+                        customerName: msName || stripeName || email, // Fallback al email si no hay nombre
+                        nextBilling: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+                        startDate: sub.start_date ? new Date(sub.start_date * 1000).toISOString() : null,
+                        source: 'stripe',
+                        payment: {
+                            invoice_id: (typeof invoice === 'object' ? invoice?.id : invoice) || null,
+                            invoice_status: typeof invoice === 'object' ? invoice?.status : null,
+                            amount_paid: typeof invoice === 'object' ? (invoice?.amount_paid || 0) / 100 : 0,
+                            currency: (typeof invoice === 'object' ? invoice?.currency?.toUpperCase() : null) || 'MXN',
+                        }
+                    });
+                });
             } catch (err) {
                 console.error(`❌ Error fetching subscriptions from Stripe:`, err);
             }
