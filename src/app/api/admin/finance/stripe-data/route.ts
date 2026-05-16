@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { resolveSubscriptionPeriodEnd, toStripeTimestampIso } from '@/utils/stripe-subscription-period';
 
 export async function GET(request: NextRequest) {
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
@@ -98,9 +99,8 @@ export async function GET(request: NextRequest) {
                         interval = 'year';
                     }
 
-                    // Búsqueda ultra-redundante de la fecha de cobro
-                    const nextBillingTimestamp = sub.current_period_end || sub.trial_end || sub.cancel_at;
-                    const nextBillingISO = nextBillingTimestamp ? new Date(nextBillingTimestamp * 1000).toISOString() : null;
+                    const nextBillingTimestamp = resolveSubscriptionPeriodEnd(sub);
+                    const nextBillingISO = toStripeTimestampIso(nextBillingTimestamp);
 
                     allStripeSubs.push({
                         id: sub.id,
