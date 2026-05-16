@@ -61,62 +61,63 @@ export async function GET(request: NextRequest) {
             });
         }
 
-        // ── SUBSCRIPTION STATUS (Hybrid: Stripe + Memberstack) ──
+        // ── SUBSCRIPTION STATUS (Real-time from Stripe) ──
         if (type === 'all' || type === 'status') {
-            // 1. Fetch ALL subscriptions from Stripe (not just active)
-            const relevantStatuses: Stripe.SubscriptionListParams.Status[] = ['active', 'trialing', 'past_due'];
             const allStripeSubs: any[] = [];
+            
+            try {
+                // 1. Fetch ALL subscriptions from Stripe with expansion
+                const subscriptions = await stripe.subscriptions.list({
+                    limit: 100,
+                    status: 'all',
+                    expand: ['data.customer', 'data.latest_invoice']
+                });
 
-            for (const status of relevantStatuses) {
-                try {
-                    const subs = await stripe.subscriptions.list({
-                        limit: 100,
-                        status,
-                        expand: ['data.customer']
-                    });
+                subscriptions.data.forEach((sub: any) => {
+                    const email = (sub.customer as any)?.email || 'N/A';
+                    const stripeName = (sub.customer as any)?.name || '';
+                    const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
+                    const invoice = sub.latest_invoice;
+
+                    // Improved interval and plan detection
+                    let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
+                    const price = sub.items.data[0]?.price;
+                    const planName = price?.nickname || (sub as any).plan?.nickname || '';
+                    const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
                     
-                    subs.data.forEach((sub: any) => {
-                        const email = (sub.customer as any)?.email || 'N/A';
-                        const stripeName = (sub.customer as any)?.name || '';
-                        const msName = email !== 'N/A' ? emailToName.get(email.toLowerCase()) : null;
+                    const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
+                                          planName.toLowerCase().includes('año') || 
+                                          planName.toLowerCase().includes('year') || 
+                                          planName.toLowerCase().includes('annual');
+                    
+                    if (isAnnualKeyword || amount > 1000) {
+                        interval = 'year';
+                    }
 
-                        // Improved interval detection
-                        // Mejorar detección de intervalo (Soporta nombres de planes personalizados)
-                        let interval = sub.items.data[0]?.price?.recurring?.interval || 'month';
-                        const price = sub.items.data[0]?.price;
-                        const planName = price?.nickname || (sub as any).plan?.nickname || '';
-                        const amount = (price?.unit_amount || (sub as any).plan?.amount || 0) / 100;
-                        
-                        const isAnnualKeyword = planName.toLowerCase().includes('anual') || 
-                                              planName.toLowerCase().includes('año') || 
-                                              planName.toLowerCase().includes('year') || 
-                                              planName.toLowerCase().includes('annual');
-                        
-                        // Si tiene keyword anual O el monto es mayor a 1000 (indicador fuerte de plan anual de 1699 vs 159 mensual)
-                        if (isAnnualKeyword || amount > 1000) {
-                            interval = 'year';
+                    allStripeSubs.push({
+                        id: sub.id,
+                        status: sub.status,
+                        plan: planName || price?.product || 'Plan Club Pata Amiga',
+                        amount: amount,
+                        interval,
+                        customerEmail: email,
+                        customerName: msName || stripeName || '',
+                        nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
+                        startDate: new Date(sub.start_date * 1000).toISOString(),
+                        source: 'stripe',
+                        payment: {
+                            invoice_id: invoice?.id || null,
+                            invoice_status: invoice?.status || null,
+                            amount_paid: invoice ? invoice.amount_paid / 100 : 0,
+                            currency: invoice?.currency?.toUpperCase() || 'MXN',
                         }
-
-
-                        allStripeSubs.push({
-                            id: sub.id,
-                            status: sub.status,
-                            plan: price?.nickname || (sub as any).plan?.nickname || price?.product || 'Plan',
-                            amount: amount,
-                            interval,
-                            customerEmail: email,
-                            customerName: msName || stripeName || '',
-                            nextBilling: new Date(sub.current_period_end * 1000).toISOString(),
-                            startDate: new Date(sub.start_date * 1000).toISOString(),
-                            source: 'stripe'
-                        });
                     });
-                } catch (err) {
-                    console.error(`❌ Error fetching ${status} subscriptions:`, err);
-                }
+                });
+            } catch (err) {
+                console.error(`❌ Error fetching subscriptions from Stripe:`, err);
             }
 
-            // 2. Memberstack fallback — catch members with paid plans not in Stripe
+            // 2. Memberstack fallback — catch members with paid plans not found in the recent Stripe list
             try {
                 const msResult = await memberstackAdmin.listMembers(undefined, { paidOnly: true });
                 
@@ -129,17 +130,14 @@ export async function GET(request: NextRequest) {
                             );
                             
                             if (!alreadyInStripe) {
-                                // Determine interval from plan name
                                 const planNameLower = (plan.planName || '').toLowerCase();
                                 const amount = plan.payment?.amount || 0;
-                        const isAnnualKeyword = planNameLower.includes('anual') || 
-                                              planNameLower.includes('annual') || 
-                                              planNameLower.includes('year') || 
-                                              planNameLower.includes('año');
-                                              
-                        // Fallback de intervalo basado en nombre o monto (>1000 MXN)
-                        const interval = (isAnnualKeyword || amount > 1000) ? 'year' : 'month';
-                                
+                                const isAnnualKeyword = planNameLower.includes('anual') || 
+                                                      planNameLower.includes('annual') || 
+                                                      planNameLower.includes('year') || 
+                                                      planNameLower.includes('año');
+                                                      
+                                const interval = (isAnnualKeyword || amount > 1000) ? 'year' : 'month';
                                 const firstName = member.customFields?.['first-name'] || '';
                                 const lastName = member.customFields?.['paternal-last-name'] || '';
 
@@ -151,10 +149,11 @@ export async function GET(request: NextRequest) {
                                     interval,
                                     customerEmail: member.auth.email,
                                     customerName: `${firstName} ${lastName}`.trim() || '',
+                                    // FIX: No usar hoy por defecto si la fecha es inválida o inexistente
                                     nextBilling: plan.currentPeriodEnd
                                         ? new Date(typeof plan.currentPeriodEnd === 'number' ? plan.currentPeriodEnd * 1000 : plan.currentPeriodEnd).toISOString()
-                                        : new Date().toISOString(),
-                                    startDate: member.createdAt || new Date().toISOString(),
+                                        : null, 
+                                    startDate: member.createdAt || null,
                                     source: 'memberstack'
                                 });
                             }

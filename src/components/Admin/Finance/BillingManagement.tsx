@@ -23,9 +23,15 @@ interface StripeSubscription {
     interval?: string;
     customerEmail: string;
     customerName?: string;
-    nextBilling: string;
+    nextBilling: string | null;
     startDate?: string;
     source?: string;
+    payment?: {
+        invoice_id: string | null;
+        invoice_status: string | null;
+        amount_paid: number;
+        currency: string;
+    };
 }
 
 interface StripeInvoice {
@@ -521,7 +527,9 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                                             </span>
                                         </td>
                                         <td className={styles.dateText}>
-                                            {new Date(s.nextBilling).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                            {s.nextBilling 
+                                                ? new Date(s.nextBilling).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })
+                                                : 'No recurrente'}
                                         </td>
                                         <td className={styles.amount}>{formatMXN(s.amount)}</td>
                                         <td>
