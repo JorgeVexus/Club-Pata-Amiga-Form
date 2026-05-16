@@ -98,6 +98,10 @@ export async function GET(request: NextRequest) {
                         interval = 'year';
                     }
 
+                    // Búsqueda ultra-redundante de la fecha de cobro
+                    const nextBillingTimestamp = sub.current_period_end || sub.trial_end || sub.cancel_at;
+                    const nextBillingISO = nextBillingTimestamp ? new Date(nextBillingTimestamp * 1000).toISOString() : null;
+
                     allStripeSubs.push({
                         id: sub.id,
                         status: sub.status,
@@ -105,8 +109,8 @@ export async function GET(request: NextRequest) {
                         amount: amount,
                         interval,
                         customerEmail: email,
-                        customerName: msName || stripeName || email, // Fallback al email si no hay nombre
-                        nextBilling: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+                        customerName: msName || stripeName || email,
+                        nextBilling: nextBillingISO,
                         startDate: sub.start_date ? new Date(sub.start_date * 1000).toISOString() : null,
                         source: 'stripe',
                         payment: {
