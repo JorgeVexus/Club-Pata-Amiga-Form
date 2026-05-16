@@ -147,6 +147,8 @@ export default function BillingManagement({ view }: BillingManagementProps) {
     const [stripeInvoices, setStripeInvoices] = useState<StripeInvoice[]>([]);
     const [metrics, setMetrics] = useState<any>(null);
     const [loading, setLoading] = useState(false);
+    const [statusFilter, setStatusFilter] = useState<string>('all');
+    const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
 
     const titles: Record<string, string> = {
         records: 'Registros de Pagos (Stripe)',
@@ -453,6 +455,15 @@ export default function BillingManagement({ view }: BillingManagementProps) {
         const fromStripe = stripeSubscriptions.filter(s => s.source === 'stripe').length;
         const fromMs = stripeSubscriptions.filter(s => s.source === 'memberstack').length;
 
+        // Apply filter and sort
+        const processedSubscriptions = [...stripeSubscriptions]
+            .filter(s => statusFilter === 'all' || s.status === statusFilter)
+            .sort((a, b) => {
+                if (a.status < b.status) return sortDirection === 'asc' ? -1 : 1;
+                if (a.status > b.status) return sortDirection === 'asc' ? 1 : -1;
+                return 0;
+            });
+
         return (
             <>
                 <div className={styles.statsSummary}>
@@ -488,6 +499,54 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                     )}
                 </div>
 
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px', gap: '15px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                        <button 
+                            className={styles.refreshButton} 
+                            style={{ 
+                                background: statusFilter === 'all' ? '#00BBB4' : 'white', 
+                                color: statusFilter === 'all' ? 'white' : '#00BBB4',
+                                fontSize: '12px', padding: '6px 12px'
+                            }}
+                            onClick={() => setStatusFilter('all')}
+                        >
+                            Todas
+                        </button>
+                        <button 
+                            className={styles.refreshButton} 
+                            style={{ 
+                                background: statusFilter === 'active' ? '#2e7d32' : 'white', 
+                                color: statusFilter === 'active' ? 'white' : '#2e7d32',
+                                fontSize: '12px', padding: '6px 12px',
+                                borderColor: '#2e7d32'
+                            }}
+                            onClick={() => setStatusFilter('active')}
+                        >
+                            Activas
+                        </button>
+                        <button 
+                            className={styles.refreshButton} 
+                            style={{ 
+                                background: statusFilter === 'canceled' ? '#d32f2f' : 'white', 
+                                color: statusFilter === 'canceled' ? 'white' : '#d32f2f',
+                                fontSize: '12px', padding: '6px 12px',
+                                borderColor: '#d32f2f'
+                            }}
+                            onClick={() => setStatusFilter('canceled')}
+                        >
+                            Canceladas
+                        </button>
+                    </div>
+
+                    <button 
+                        className={styles.refreshButton}
+                        style={{ fontSize: '12px', padding: '6px 12px' }}
+                        onClick={() => setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')}
+                    >
+                        Ordenar por Estado {sortDirection === 'asc' ? '↑' : '↓'}
+                    </button>
+                </div>
+
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
                         <thead>
@@ -502,7 +561,7 @@ export default function BillingManagement({ view }: BillingManagementProps) {
                             </tr>
                         </thead>
                         <tbody>
-                            {stripeSubscriptions.map(s => {
+                            {processedSubscriptions.map(s => {
                                 const statusLabel = SUB_STATUS_LABELS[s.status] || s.status;
                                 const statusClass = s.status === 'active' ? styles.statusSucceeded
                                     : s.status === 'trialing' ? styles.statusOpen
