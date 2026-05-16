@@ -165,7 +165,7 @@ export async function GET(request: NextRequest) {
                                     // FIX: No usar hoy por defecto si la fecha es inválida o inexistente
                                     nextBilling: plan.currentPeriodEnd
                                         ? new Date(typeof plan.currentPeriodEnd === 'number' ? plan.currentPeriodEnd * 1000 : plan.currentPeriodEnd).toISOString()
-                                        : null, 
+                                        : null,
                                     startDate: member.createdAt || null,
                                     source: 'memberstack'
                                 });
@@ -184,7 +184,7 @@ export async function GET(request: NextRequest) {
         if (type === 'all' || type === 'retries') {
             const invoices = await stripe.invoices.list({
                 limit: 50,
-                expand: ['data.customer', 'data.subscription']
+                expand: ['data.customer']
             });
 
             data.invoices = invoices.data.map(inv => {
@@ -196,18 +196,12 @@ export async function GET(request: NextRequest) {
                     id: inv.id,
                     number: inv.number || inv.id,
                     amount: (inv.amount_due || 0) / 100,
-                    amountPaid: (inv.amount_paid || 0) / 100,
-                    currency: (inv.currency || 'mxn').toUpperCase(),
                     status: inv.status || 'unknown',
                     date: new Date((inv.created || 0) * 1000).toISOString(),
-                    dueDate: inv.due_date ? new Date(inv.due_date * 1000).toISOString() : null,
                     customerEmail: email,
                     customerName: msName || stripeName || 'N/A',
                     invoicePdf: inv.invoice_pdf || null,
                     hostedUrl: inv.hosted_invoice_url || null,
-                    attemptCount: inv.attempt_count || 0,
-                    nextAttempt: inv.next_payment_attempt ? new Date(inv.next_payment_attempt * 1000).toISOString() : null,
-                    subscriptionId: typeof (inv as any).subscription === 'string' ? (inv as any).subscription : ((inv as any).subscription as Stripe.Subscription)?.id || null,
                     periodStart: inv.period_start ? new Date(inv.period_start * 1000).toISOString() : null,
                     periodEnd: inv.period_end ? new Date(inv.period_end * 1000).toISOString() : null,
                 };
@@ -225,7 +219,14 @@ export async function GET(request: NextRequest) {
                 }));
         }
 
-        return NextResponse.json({ success: true, data });
+        // Estructura garantizada para el frontend
+        return NextResponse.json({ 
+            success: true, 
+            data: {
+                ...data,
+                subscriptions: data.subscriptions || []
+            }
+        });
     } catch (error: any) {
         console.error('❌ Stripe Data API Error:', error);
         return NextResponse.json({ 
