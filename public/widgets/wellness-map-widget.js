@@ -6,7 +6,7 @@
 (function () {
     'use strict';
 
-        const CONFIG = {
+    const CONFIG = {
         API_BASE_URL: window.PATA_AMIGA_CONFIG?.API_BASE_URL || 'https://app.pataamiga.mx',
         CONTAINER_ID: 'wellness-map-container',
         LEAFLET_VERSION: '1.9.4',
@@ -28,6 +28,7 @@
 
         .wc-map-popup {
             padding: 5px;
+            text-align: center;
         }
 
         .wc-map-popup-title {
@@ -44,12 +45,39 @@
         }
 
         .wc-map-popup-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 10px;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
             object-fit: cover;
             margin-bottom: 10px;
-            border: 1px solid #E2E8F0;
+            border: 2px solid #000;
+        }
+
+        .wc-map-popup-phone {
+            font-size: 0.9rem;
+            color: #00BBB4;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            border: 2px solid #000;
+            padding: 8px 12px;
+            border-radius: 50px;
+            background: #fff;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .wc-map-popup-phone:hover {
+            background: #00BBB4;
+            color: #fff;
+        }
+
+        .wc-map-popup-phone span {
+            margin-right: 8px;
+            font-size: 1.1rem;
         }
 
         .wc-map-badge {
@@ -75,22 +103,15 @@
             border: 2px solid #000 !important;
         }
 
-        .wc-custom-marker {
-            background: #FE8F15;
-            border: 2px solid #000;
-            border-radius: 50% 50% 50% 0;
-            transform: rotate(-45deg);
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .wc-custom-marker i {
-            transform: rotate(45deg);
-            color: white;
-            font-size: 14px;
+        @media (max-width: 768px) {
+            #${CONFIG.CONTAINER_ID} {
+                height: 400px;
+                border-radius: 20px;
+            }
+            .leaflet-popup-content {
+                width: 220px !important;
+                margin: 15px !important;
+            }
         }
     `;
 
@@ -144,6 +165,13 @@
                 ${center.logo_url ? `<img src="${center.logo_url}" class="wc-map-popup-logo" alt="${center.establishment_name}">` : ''}
                 <div class="wc-map-popup-title">${center.establishment_name}</div>
                 <div class="wc-map-popup-address">${center.address || 'Ubicación física'}</div>
+                
+                ${center.phone ? `
+                    <a href="tel:${center.phone.replace(/\s+/g, '')}" class="wc-map-popup-phone">
+                        <span>📞</span> ${center.phone}
+                    </a>
+                ` : ''}
+
                 <div class="wc-map-services">${servicesHtml}</div>
                 ${center.promotion_details ? `<p style="font-size: 0.8rem; margin-top: 8px; color: #FE8F15; font-weight: bold;">🎁 ${center.promotion_details}</p>` : ''}
             </div>
@@ -185,8 +213,16 @@
                     className: 'wc-leaflet-popup'
                 });
 
-                // Hover interaction
+                // Desktop Hover interaction
                 marker.on('mouseover', function (e) {
+                    // Solo abrir en hover si no es dispositivo táctil
+                    if (!window.matchMedia("(pointer: coarse)").matches) {
+                        this.openPopup();
+                    }
+                });
+
+                // Mobile/Click interaction (handled by bindPopup default, but making sure it works)
+                marker.on('click', function (e) {
                     this.openPopup();
                 });
 

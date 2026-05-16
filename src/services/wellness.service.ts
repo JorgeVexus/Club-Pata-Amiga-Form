@@ -98,7 +98,7 @@ export const wellnessService = {
     async getAllApprovedLocations(): Promise<Partial<WellnessCenter>[]> {
         const { data, error } = await supabase
             .from('wellness_centers')
-            .select('id, establishment_name, logo_url, address, lat, lng, services, promotion_details, social_links')
+            .select('id, establishment_name, logo_url, address, phone, lat, lng, services, promotion_details, social_links')
             .eq('status', 'approved')
             .not('lat', 'is', null)
             .not('lng', 'is', null);
