@@ -16,7 +16,7 @@ interface Pet {
     birth_month?: number;
     birth_year?: number;
     pet_type?: string;
-    status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed';
+    status: 'pending' | 'approved' | 'action_required' | 'rejected' | 'appealed' | 'unsubscribed';
     admin_notes?: string;
     photo_url?: string;
     photo2_url?: string;
@@ -35,6 +35,10 @@ interface Pet {
     is_senior?: boolean;
     waiting_period_end?: string | null;
     created_at: string;
+    is_active?: boolean;
+    unsubscribed_reason?: string | null;
+    unsubscribed_description?: string | null;
+    unsubscribed_at?: string | null;
 }
 
 interface AppealLog {
@@ -1040,11 +1044,13 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                             : pet.breed}
                                                     </div>
                                                 </div>
-                                                <div className={`${styles.statusBadge} ${styles[pet.status]}`}>
-                                                    {pet.status === 'pending' ? 'Pendiente' :
-                                                        pet.status === 'approved' ? 'Aprobada' :
-                                                            pet.status === 'rejected' ? 'Rechazada' :
-                                                                pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
+                                                <div className={`${styles.statusBadge} ${pet.is_active === false ? 'unsubscribed' : styles[pet.status]}`}
+                                                    style={pet.is_active === false ? { background: '#F1F3F4', color: '#3D494D', border: '2px solid #3D494D' } : {}}>
+                                                    {pet.is_active === false ? '🚫 Dada de Baja' :
+                                                        pet.status === 'pending' ? 'Pendiente' :
+                                                            pet.status === 'approved' ? 'Aprobada' :
+                                                                pet.status === 'rejected' ? 'Rechazada' :
+                                                                    pet.status === 'appealed' ? '⚖️ Apelada' : 'Acción Requerida'}
                                                 </div>
                                             </div>
 
@@ -1132,6 +1138,47 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     >
                                                         Descargar Certificado 📄
                                                     </a>
+                                                </div>
+                                            )}
+
+                                            {/* 🆕 Información de Baja */}
+                                            {pet.is_active === false && (
+                                                <div style={{
+                                                    gridColumn: 'span 2',
+                                                    background: '#F1F3F4',
+                                                    borderRadius: '16px',
+                                                    padding: '16px',
+                                                    border: '2px solid #D1D5DB',
+                                                    marginTop: '8px'
+                                                }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
+                                                        <span style={{ fontSize: '20px' }}>🚫</span>
+                                                        <strong style={{ color: '#3D494D', fontSize: '0.95rem' }}>Datos de la Baja</strong>
+                                                    </div>
+                                                    <div className={styles.detailRow}>
+                                                        <span className={styles.detailLabel}>Motivo</span>
+                                                        <span className={styles.detailValue} style={{ fontWeight: 600 }}>
+                                                            {pet.unsubscribed_reason || 'No especificado'}
+                                                        </span>
+                                                    </div>
+                                                    {pet.unsubscribed_description && (
+                                                        <div className={styles.detailRow}>
+                                                            <span className={styles.detailLabel}>Descripción</span>
+                                                            <span className={styles.detailValue}>{pet.unsubscribed_description}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className={styles.detailRow}>
+                                                        <span className={styles.detailLabel}>Fecha de Baja</span>
+                                                        <span className={styles.detailValue} style={{ fontWeight: 600 }}>
+                                                            {pet.unsubscribed_at
+                                                                ? new Date(pet.unsubscribed_at).toLocaleDateString('es-MX', {
+                                                                    day: '2-digit',
+                                                                    month: 'long',
+                                                                    year: 'numeric'
+                                                                })
+                                                                : 'No registrada'}
+                                                        </span>
+                                                    </div>
                                                 </div>
                                             )}
                                         </div>
@@ -1222,6 +1269,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
                                         {/* Admin Actions per Pet */}
                                         <div className={styles.petAdminActions}>
+                                            {pet.is_active !== false && (
+                                                <>
                                             <div className={styles.notesField}>
                                                 <label>Notas del Administrador:</label>
                                                 <textarea
@@ -1357,8 +1406,11 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                         </div>
                                                     )}
                                             </div>
-                                            </div>
+                                            </>     
+
+                                            )}
                                         </div>
+                                    </div>
                                     );
                                 })}
                             </div>

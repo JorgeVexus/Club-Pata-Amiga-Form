@@ -4490,7 +4490,7 @@
                                     ${this.pets.map((p, i) => `
                                         <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'} ${p.is_active === false ? 'pata-grayscale' : ''}" onclick="window.pataWidget.setIndex(${i})">
                                             <span class="pata-tab-icon-new">${this.getPetIcon(p)}</span>
-                                            <span class="pata-tab-name-new">${p.name.toLowerCase()}</span>
+                                            <span class="pata-tab-name-new">${p.name.toLowerCase()}${p.is_active === false ? ' <span style="background:#3D494D;color:#fff;border:2px solid #000;border-radius:50px;padding:2px 8px;font-size:9px;font-weight:950;text-transform:uppercase;margin-left:6px;">baja</span>' : ''}</span>
                                         </div>
                                     `).join('')}
                                 </div>
