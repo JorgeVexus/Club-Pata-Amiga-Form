@@ -5734,6 +5734,7 @@
         }
 
         renderPetDetailsModal(pet) {
+            const petIndex = this.pets.findIndex(p => p.id === pet.id);
             const carencia = this.calculateCarencia(pet);
             const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
 
@@ -5932,7 +5933,7 @@
                                 <!-- 🗑️ Solicitar Baja Section -->
                                 ${pet.is_active !== false ? `
                                     <div style="margin-top: 30px; border-top: 1px dashed #ddd; padding-top: 20px;">
-                                        <button class="pata-btn-unsubscribe" onclick="window.pataWidget.handlePetUnsubscribe('${pet.id}', '${this.escapeHtml(pet.name)}')">
+                                        <button class="pata-btn-unsubscribe" onclick="window.pataWidget.handlePetUnsubscribe('${pet.id}', ${petIndex}, '${this.escapeHtml(pet.name)}')">
                                             <span>👋</span> Solicitar baja de este peludito
                                         </button>
                                         <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px; font-style: italic;">
@@ -6737,7 +6738,7 @@
             }
         }
 
-        async handlePetUnsubscribe(petId, petName) {
+        async handlePetUnsubscribe(petId, petIndex, petName) {
             const reason = await this.showUnsubscribeReasons(petName);
             if (!reason) return;
             const confirm = await this.showUnsubscribeConfirm(petName);
@@ -6747,7 +6748,7 @@
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/unsubscribe`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ memberstackId: this.member.id, petId, reason })
+                    body: JSON.stringify({ memberId: this.member.id, petId, petIndex, petName, reason })
                 });
                 const data = await res.json();
                 if (data.success) {

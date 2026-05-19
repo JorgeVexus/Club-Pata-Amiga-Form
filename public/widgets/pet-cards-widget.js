@@ -987,6 +987,7 @@
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             const breedDisplay = pet.is_mixed_breed ? (isCat ? 'Doméstico' : 'Mestizo') : (pet.breed || 'Mestizo');
 
+            const petIndex = this.pets.findIndex(p => p.id === pet.id);
             const badges = [];
             if (pet.status === 'pending') badges.push({ text: 'EN REVISIÓN', bg: 'rgba(255, 183, 2, 0.2)', color: '#6B4B00', dot: true });
             if (pet.is_adopted) badges.push({ text: 'ADOPTADO', bg: 'rgba(74, 182, 167, 0.2)', color: '#00433C', icon: 'verified' });
@@ -1077,7 +1078,7 @@
 
                             <div class="pata-unsubscription-header" style="margin-top: 12px;">
                                 ${pet.is_active !== false ? `
-                                    <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', '${pet.name}')" 
+                                    <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', ${petIndex}, '${pet.name}')" 
                                             style="background: #fff; color: #E53E3E; border: 1.5px solid #E53E3E; border-radius: 50px; font-family: var(--font-body); font-size: 10px; font-weight: 800; padding: 5px 14px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; display: flex; align-items: center; gap: 6px; width: fit-content; box-shadow: 2px 2px 0 rgba(229, 62, 62, 0.1);">
                                         <span class="material-symbols-outlined" style="font-size: 14px;">do_not_disturb_on</span>
                                         Solicitar baja
@@ -1968,7 +1969,10 @@
             }
         }
 
-        async requestPetUnsubscribe(petId, petName) {
+        async requestPetUnsubscribe(petId, petIndex, petName) {
+            const reason = prompt(`¿Estás seguro de dar de baja a ${petName}? Esta acción liberará un espacio en la manada.\n\nEscribe el motivo (ej. Fallecimiento, Ya no vive conmigo, etc.):`);
+            if (!reason || !reason.trim()) return;
+
             try {
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/unsubscribe`, {
                     method: 'POST',
@@ -1976,7 +1980,9 @@
                     body: JSON.stringify({ 
                         memberId: this.member.id,
                         petId: petId,
-                        petName: petName
+                        petIndex: petIndex,
+                        petName: petName,
+                        reason: reason.trim()
                     })
                 });
                 
