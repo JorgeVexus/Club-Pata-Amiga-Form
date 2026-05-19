@@ -58,6 +58,20 @@ function getEffectiveActivePetCount(customFields = {}, pets = [], maxPets = MAX_
     return getActivePetCount(pets);
 }
 
+function getRegistrationActivePetCount(pets = [], legacyActiveSlotCount = null) {
+    const supabaseActiveCount = getActivePetCount(pets);
+
+    if (
+        Number.isInteger(legacyActiveSlotCount) &&
+        legacyActiveSlotCount >= 0 &&
+        legacyActiveSlotCount < supabaseActiveCount
+    ) {
+        return legacyActiveSlotCount;
+    }
+
+    return supabaseActiveCount;
+}
+
 function buildLatestUnsubscriptionMap(unsubscriptions = []) {
     const byPetId = new Map();
     const bySlot = new Map();
@@ -120,6 +134,7 @@ module.exports = {
     enrichPetsWithLifecycle,
     getActivePetCount,
     getEffectiveActivePetCount,
+    getRegistrationActivePetCount,
     getAvailablePetSlot,
     isFalseLike,
 };

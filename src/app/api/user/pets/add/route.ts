@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateWaitingPeriod } from '@/services/pet.service';
-import { enrichPetsWithLifecycle, getActivePetCount, getAvailablePetSlot } from '@/utils/pet-lifecycle';
+import { enrichPetsWithLifecycle, getAvailablePetSlot, getRegistrationActivePetCount } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -139,7 +139,8 @@ export async function POST(request: NextRequest) {
         }
 
         const petsWithLifecycle = enrichPetsWithLifecycle(existingPets || [], {}, petUnsubscriptions);
-        const activePetCount = getActivePetCount(petsWithLifecycle);
+        const activePetCount = getRegistrationActivePetCount(petsWithLifecycle, occupiedSlots.length);
+        console.log(`📊 [PET_ADD] Conteo activo Supabase=${petsWithLifecycle.filter(p => p.is_active !== false).length}, legacySlots=${occupiedSlots.length}, efectivo=${activePetCount}`);
 
         if (activePetCount >= 3) {
             console.warn(`⚠️ [PET_ADD] El usuario ya tiene 3 mascotas ocupadas.`);

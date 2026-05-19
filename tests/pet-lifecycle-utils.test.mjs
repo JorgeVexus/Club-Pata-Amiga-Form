@@ -6,6 +6,7 @@ import {
   getActivePetCount,
   getAvailablePetSlot,
   getEffectiveActivePetCount,
+  getRegistrationActivePetCount,
 } from '../src/utils/pet-lifecycle.js';
 
 test('getAvailablePetSlot reuses an inactive Memberstack slot', () => {
@@ -115,4 +116,14 @@ test('enrichPetsWithLifecycle supports legacy Supabase unsubscription logs by sl
 
   assert.equal(result[0].is_active, false);
   assert.equal(result[1].is_active, true);
+});
+
+test('getRegistrationActivePetCount uses legacy active slots only to avoid blocking stale Supabase rows', () => {
+  const pets = [
+    { name: 'Luna', is_active: true },
+    { name: 'Milo', is_active: true },
+    { name: 'Nala', is_active: true },
+  ];
+
+  assert.equal(getRegistrationActivePetCount(pets, 1), 1);
 });

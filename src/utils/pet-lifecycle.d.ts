@@ -20,6 +20,11 @@ export function getEffectiveActivePetCount(
     maxPets?: number,
 ): number;
 
+export function getRegistrationActivePetCount(
+    pets?: Array<{ is_active?: boolean }>,
+    legacyActiveSlotCount?: number | null,
+): number;
+
 export function getAvailablePetSlot(
     customFields?: Record<string, unknown>,
     maxPets?: number,
