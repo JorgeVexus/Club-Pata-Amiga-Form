@@ -14,8 +14,14 @@ export function enrichPetsWithLifecycle<T extends Record<string, any>>(
 
 export function getActivePetCount(pets?: Array<{ is_active?: boolean }>): number;
 
+export function getEffectiveActivePetCount(
+    customFields?: Record<string, unknown>,
+    pets?: Array<{ is_active?: boolean }>,
+    maxPets?: number,
+): number;
+
 export function getAvailablePetSlot(
-    customFields?: Record<string, any>,
+    customFields?: Record<string, unknown>,
     maxPets?: number,
 ): number | null;
 

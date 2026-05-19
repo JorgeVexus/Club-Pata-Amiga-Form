@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateWaitingPeriod } from '@/services/pet.service';
-import { getActivePetCount, getAvailablePetSlot } from '@/utils/pet-lifecycle';
+import { enrichPetsWithLifecycle, getActivePetCount, getAvailablePetSlot } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -104,12 +104,42 @@ export async function POST(request: NextRequest) {
 
         console.log(`📊 [PET_ADD] Slots ocupados: [${occupiedSlots.join(', ')}]. Total: ${occupiedSlots.length}`);
 
-        const { data: existingPets } = await supabaseAdmin
+        let existingPets: any[] = [];
+        const { data: existingPetsData, error: existingPetsError } = await supabaseAdmin
             .from('pets')
-            .select('id, is_active')
+            .select('id, name, is_active, memberstack_slot')
             .eq('owner_id', user!.id);
 
-        const activePetCount = getActivePetCount(existingPets || []);
+        if (existingPetsError) {
+            const fallbackPets = await supabaseAdmin
+                .from('pets')
+                .select('id, name')
+                .eq('owner_id', user!.id);
+            existingPets = fallbackPets.data || [];
+        } else {
+            existingPets = existingPetsData || [];
+        }
+
+        let petUnsubscriptions: any[] = [];
+        const { data: unsubs, error: unsubsError } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberstackId)
+            .order('created_at', { ascending: false });
+
+        if (unsubsError) {
+            const { data: fallbackUnsubs } = await supabaseAdmin
+                .from('pet_unsubscriptions')
+                .select('pet_index, pet_name, reason, description, created_at')
+                .eq('memberstack_id', memberstackId)
+                .order('created_at', { ascending: false });
+            petUnsubscriptions = fallbackUnsubs || [];
+        } else {
+            petUnsubscriptions = unsubs || [];
+        }
+
+        const petsWithLifecycle = enrichPetsWithLifecycle(existingPets || [], {}, petUnsubscriptions);
+        const activePetCount = getActivePetCount(petsWithLifecycle);
 
         if (activePetCount >= 3) {
             console.warn(`⚠️ [PET_ADD] El usuario ya tiene 3 mascotas ocupadas.`);
