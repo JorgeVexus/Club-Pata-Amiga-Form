@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendInfoRequestEmail } from '@/app/actions/comm.actions';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -76,12 +77,24 @@ export async function POST(
         // 1. Obtener datos de la mascota
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404 });
+        }
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede recibir solicitudes de información.'
+            }, { status: 409 });
         }
 
         // 2. Obtener datos del usuario para el email

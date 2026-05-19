@@ -4,6 +4,7 @@ import { approveMemberApplication, rejectMemberApplication } from '@/services/me
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
 import { updateContactAsActive } from '@/services/crm.service';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -46,9 +47,21 @@ export async function POST(
         // 0. Obtener estado ANTERIOR de la mascota
         const { data: previousPet } = await supabaseAdmin
             .from('pets')
-            .select('status, name, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
+            .select('status, name, is_active, memberstack_slot, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
             .eq('id', petId)
             .single();
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory({ ...previousPet, id: petId }, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede volver a revisión.'
+            }, { status: 409 });
+        }
 
         // 0b. Verificar estatus de embajador del propietario (vía referrals)
         const { data: referral } = await supabaseAdmin
@@ -229,13 +242,22 @@ async function updateMemberStatusFromPets(memberstackId: string) {
         // Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('status')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('owner_id', user.id);
 
         if (petsError || !pets || pets.length === 0) return;
 
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberstackId)
+            .order('created_at', { ascending: false });
+
+        const activePets = pets.filter(p => !isUnsubscribedPetWithHistory(p, unsubscriptions || []));
+        if (activePets.length === 0) return;
+
         // Calcular el status derivado basado en prioridades
-        const statuses = pets.map(p => p.status);
+        const statuses = activePets.map(p => p.status);
         let derivedStatus = 'active';
 
         // Prioridad: appealed > rejected > action_required > pending > active

@@ -31,3 +31,13 @@ export function getAvailablePetSlot(
 ): number | null;
 
 export function isFalseLike(value: unknown): boolean;
+
+export function isUnsubscribedPet(pet?: {
+    is_active?: boolean;
+    status?: string;
+}): boolean;
+
+export function isUnsubscribedPetWithHistory(
+    pet?: Record<string, unknown>,
+    unsubscriptions?: Record<string, unknown>[],
+): boolean;

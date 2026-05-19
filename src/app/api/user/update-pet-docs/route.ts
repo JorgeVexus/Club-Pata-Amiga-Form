@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyUploadToken } from '@/utils/upload-token';
 import { createClient } from '@supabase/supabase-js';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
         if (!targetPetId) {
             const { data: pets, error: petsError } = await supabaseAdmin
                 .from('pets')
-                .select('id')
+                .select('id, status, is_active')
                 .eq('owner_id', user.id)
                 .order('created_at', { ascending: true });
 
@@ -67,6 +68,25 @@ export async function POST(req: NextRequest) {
             }
 
             targetPetId = pets[idx].id;
+        }
+
+        const { data: targetPet } = await supabaseAdmin
+            .from('pets')
+            .select('id, name, status, is_active, memberstack_slot')
+            .eq('id', targetPetId)
+            .single();
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(targetPet || {}, unsubscriptions || [])) {
+            return NextResponse.json({
+                success: false,
+                error: 'Esta mascota ya fue dada de baja y no puede volver a revisión.'
+            }, { status: 409 });
         }
 
         // Construir campos a actualizar en Supabase

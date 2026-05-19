@@ -22,7 +22,18 @@ function getAvailablePetSlot(customFields = {}, maxPets = MAX_PETS) {
 }
 
 function getActivePetCount(pets = []) {
-    return pets.filter((pet) => pet?.is_active !== false).length;
+    return pets.filter((pet) => !isUnsubscribedPet(pet)).length;
+}
+
+function isUnsubscribedPet(pet = {}) {
+    return pet?.is_active === false || pet?.status === 'unsubscribed';
+}
+
+function isUnsubscribedPetWithHistory(pet = {}, unsubscriptions = []) {
+    if (isUnsubscribedPet(pet)) return true;
+
+    const [petWithLifecycle] = enrichPetsWithLifecycle([pet], {}, unsubscriptions);
+    return petWithLifecycle?.is_active === false || petWithLifecycle?.status === 'unsubscribed';
 }
 
 function getActiveMemberstackSlotCount(customFields = {}, maxPets = MAX_PETS) {
@@ -116,7 +127,7 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
         ));
         const inactiveInDatabase = pet.is_active === false;
         const inactiveInMemberstack = isFalseLike(getSlotActiveValue(customFields, slot));
-        const isActive = !(inactiveByUnsubscription || inactiveInDatabase || (inactiveInMemberstack && !pet.memberstack_slot));
+        const isActive = !(inactiveByUnsubscription || inactiveInDatabase || pet.status === 'unsubscribed' || (inactiveInMemberstack && !pet.memberstack_slot));
 
         return {
             ...pet,
@@ -137,4 +148,6 @@ module.exports = {
     getRegistrationActivePetCount,
     getAvailablePetSlot,
     isFalseLike,
+    isUnsubscribedPet,
+    isUnsubscribedPetWithHistory,
 };

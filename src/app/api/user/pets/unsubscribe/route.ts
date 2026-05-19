@@ -45,9 +45,10 @@ export async function POST(request: NextRequest) {
         // 3. Registrar en Supabase (Auditoría y Actividad)
         const { error: petLifecycleError } = petId ? await supabase
             .from('pets')
-            .update({
-                is_active: false,
-                memberstack_slot: petNum,
+                .update({
+                    status: 'unsubscribed',
+                    is_active: false,
+                    memberstack_slot: petNum,
                 unsubscribed_reason: reason,
                 unsubscribed_description: description || '',
                 unsubscribed_at: new Date().toISOString()

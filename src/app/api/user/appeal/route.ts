@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
         // 2. Buscar la mascota que pertenece a este usuario
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, owner_id, appeal_count')
+            .select('id, name, status, owner_id, appeal_count, is_active, memberstack_slot')
             .eq('id', petId)
             .single();
 
@@ -75,6 +76,18 @@ export async function POST(request: NextRequest) {
         // 3. Verificar que la mascota pertenece al usuario
         if (pet.owner_id !== user.id) {
             return corsResponse({ error: 'No tienes permiso para apelar esta mascota.' }, 403);
+        }
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet, unsubscriptions || [])) {
+            return corsResponse({
+                error: 'Esta mascota ya fue dada de baja y no puede volver a revisión.'
+            }, 409);
         }
 
         // 4. Verificar que la mascota puede ser apelada (status rejected o action_required)
@@ -184,15 +197,24 @@ async function updateMemberStatusFromPets(memberstackId: string, userId: string)
         // Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('status')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('owner_id', userId);
 
         if (petsError || !pets || pets.length === 0) return;
 
+        const { data: statusUnsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberstackId)
+            .order('created_at', { ascending: false });
+
         // Calcular el status derivado
         let derivedStatus = 'active';
 
-        const statuses = pets.map(p => p.status);
+        const activePets = pets.filter(p => !isUnsubscribedPetWithHistory(p, statusUnsubscriptions || []));
+        if (activePets.length === 0) return;
+
+        const statuses = activePets.map(p => p.status);
 
         if (statuses.some(s => s === 'appealed')) {
             derivedStatus = 'appealed';

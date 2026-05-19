@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { enrichPetsWithLifecycle, getActivePetCount } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -85,9 +86,9 @@ export async function POST(request: NextRequest) {
         }
 
         // 3. Contar mascotas activas
-        const { count, error: countError } = await supabaseAdmin
+        const { data: existingPets, error: countError } = await supabaseAdmin
             .from('pets')
-            .select('id', { count: 'exact', head: true })
+            .select('id, name, is_active, status, memberstack_slot')
             .eq('owner_id', userData.id);
 
         if (countError) {
@@ -98,7 +99,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if ((count ?? 0) >= MAX_PETS) {
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberstackId)
+            .order('created_at', { ascending: false });
+
+        const petsWithLifecycle = enrichPetsWithLifecycle(existingPets || [], {}, unsubscriptions || []);
+
+        if (getActivePetCount(petsWithLifecycle) >= MAX_PETS) {
             return NextResponse.json(
                 { success: false, error: `Ya tienes el máximo de ${MAX_PETS} mascotas registradas` },
                 { status: 400, headers: corsHeaders }

@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 // Cliente Supabase con Service Role
 const supabaseAdmin = createClient(
@@ -32,6 +33,24 @@ export async function POST(
         }
 
         console.log(`📩 Enviando respuesta de apelación a mascota ${petId} del usuario ${memberId}...`);
+
+        const { data: pet } = await supabaseAdmin
+            .from('pets')
+            .select('id, name, status, is_active, memberstack_slot')
+            .eq('id', petId)
+            .single();
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet || {}, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede volver a acción requerida.'
+            }, { status: 409 });
+        }
 
         // 1. Registrar en appeal_logs CON el pet_id
         const { error: logError } = await supabaseAdmin

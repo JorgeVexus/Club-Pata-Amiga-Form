@@ -11,6 +11,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -65,12 +66,24 @@ export async function POST(req: NextRequest) {
         // Verificar que la mascota existe
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+        }
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede completar solicitudes de revisión.'
+            }, { status: 409, headers: corsHeaders });
         }
 
         console.log(`📤 [FulfillRequest] Subiendo ${mapping.label} para ${pet.name} (${petId})`);

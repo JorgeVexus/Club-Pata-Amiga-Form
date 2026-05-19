@@ -7,6 +7,8 @@ import {
   getAvailablePetSlot,
   getEffectiveActivePetCount,
   getRegistrationActivePetCount,
+  isUnsubscribedPetWithHistory,
+  isUnsubscribedPet,
 } from '../src/utils/pet-lifecycle.js';
 
 test('getAvailablePetSlot reuses an inactive Memberstack slot', () => {
@@ -26,6 +28,7 @@ test('getActivePetCount ignores pets explicitly marked inactive', () => {
     { name: 'Luna', is_active: false },
     { name: 'Milo', is_active: true },
     { name: 'Nala' },
+    { name: 'Rocky', status: 'unsubscribed' },
   ];
 
   assert.equal(getActivePetCount(pets), 2);
@@ -126,4 +129,17 @@ test('getRegistrationActivePetCount uses legacy active slots only to avoid block
   ];
 
   assert.equal(getRegistrationActivePetCount(pets, 1), 1);
+});
+
+test('isUnsubscribedPet treats inactive or unsubscribed pets as terminal records', () => {
+  assert.equal(isUnsubscribedPet({ is_active: false, status: 'pending' }), true);
+  assert.equal(isUnsubscribedPet({ is_active: true, status: 'unsubscribed' }), true);
+  assert.equal(isUnsubscribedPet({ is_active: true, status: 'approved' }), false);
+});
+
+test('isUnsubscribedPetWithHistory detects stale active rows with unsubscription history', () => {
+  const pet = { id: 'old-pet', name: 'Luna', memberstack_slot: 1, is_active: true, status: 'pending' };
+  const unsubscriptions = [{ pet_index: 1, pet_name: 'Luna', reason: 'Ya no vive conmigo' }];
+
+  assert.equal(isUnsubscribedPetWithHistory(pet, unsubscriptions), true);
 });

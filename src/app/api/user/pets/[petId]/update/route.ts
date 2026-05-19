@@ -6,6 +6,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -56,6 +57,12 @@ export async function POST(
 
         // 2. Obtener datos del dueño por separado para mayor seguridad
         console.log('🔍 Buscando dueño...');
+        if (isUnsubscribedPetWithHistory(pet)) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede actualizarse ni volver a revisión.'
+            }, { status: 409, headers: corsHeaders });
+        }
+
         const { data: owner, error: ownerError } = await supabaseAdmin
             .from('users')
             .select('id, memberstack_id, first_name, last_name')
@@ -65,6 +72,18 @@ export async function POST(
         if (ownerError || !owner) {
             console.error('❌ Error buscando dueño:', ownerError);
             return NextResponse.json({ error: 'Dueño de mascota no encontrado' }, { status: 404, headers: corsHeaders });
+        }
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', owner.memberstack_id)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede actualizarse ni volver a revisión.'
+            }, { status: 409, headers: corsHeaders });
         }
 
         // Verificar propiedad

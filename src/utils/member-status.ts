@@ -1,4 +1,5 @@
 import { supabaseAdmin } from '@/lib/supabase';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 /**
  * Recalcula el membership_status del usuario basándose en el estado de todas sus mascotas.
@@ -34,7 +35,7 @@ export async function recalculateMemberStatus(memberstackId: string) {
         // 2. Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('status')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('owner_id', user.id);
 
         if (petsError) {
@@ -46,8 +47,20 @@ export async function recalculateMemberStatus(memberstackId: string) {
             return null;
         }
 
-        // 3. Determinar el nuevo estado
-        const statuses: string[] = pets.map((p: { status: string }) => p.status);
+        // 3. Determinar el nuevo estado usando solo mascotas activas
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', memberstackId)
+            .order('created_at', { ascending: false });
+
+        const activePets = pets.filter((p: { id?: string; name?: string; status: string; is_active?: boolean; memberstack_slot?: number }) => !isUnsubscribedPetWithHistory(p, unsubscriptions || []));
+        if (activePets.length === 0) {
+            console.log(`ℹ️ El usuario ${memberstackId} no tiene mascotas activas para recalcular.`);
+            return null;
+        }
+
+        const statuses: string[] = activePets.map((p: { status: string }) => p.status);
         let derivedStatus = 'active';
 
         // Prioridad: appealed > rejected > action_required > pending > active

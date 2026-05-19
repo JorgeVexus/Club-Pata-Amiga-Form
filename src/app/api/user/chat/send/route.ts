@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,12 +29,24 @@ export async function POST(req: NextRequest) {
         // 1. Validar que la mascota existe y pertenece al usuario (opcional pero recomendado)
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name')
+            .select('id, name, status, is_active, memberstack_slot')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+        }
+
+        const { data: unsubscriptions } = await supabaseAdmin
+            .from('pet_unsubscriptions')
+            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .eq('memberstack_id', userId)
+            .order('created_at', { ascending: false });
+
+        if (isUnsubscribedPetWithHistory(pet, unsubscriptions || [])) {
+            return NextResponse.json({
+                error: 'Esta mascota ya fue dada de baja y no puede recibir mensajes de revisión.'
+            }, { status: 409, headers: corsHeaders });
         }
 
         // 2. Insertar en appeal_logs
@@ -56,13 +69,7 @@ export async function POST(req: NextRequest) {
         }
 
         // 2.1 Si la mascota estaba en 'action_required', moverla a 'pending' porque el usuario respondió
-        const { data: currentPet } = await supabaseAdmin
-            .from('pets')
-            .select('status')
-            .eq('id', petId)
-            .single();
-
-        if (currentPet?.status === 'action_required') {
+        if (pet.status === 'action_required') {
             console.log(`🔄 [ChatSend] Transicionando mascota ${petId} de action_required a pending`);
             await supabaseAdmin
                 .from('pets')
