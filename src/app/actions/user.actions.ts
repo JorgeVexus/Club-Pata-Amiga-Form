@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js'
 import Stripe from 'stripe'
 import { getMemberDetails } from '@/services/memberstack-admin.service'
 import { upsertContact, updateContact, updateContactAsActive, type ContactData } from '@/services/crm.service'
+import { enrichPetsWithLifecycle } from '@/utils/pet-lifecycle'
 
 // Inicializar cliente seguro para operaciones de administración
 const getServiceRoleClient = () => {
@@ -472,11 +473,33 @@ export async function getPetsByUserId(memberstackId: string) {
             console.error('❌ [Server Action] Error fetching Memberstack details:', e);
         }
 
-        const petsWithStatus = (pets || []).map((pet, index) => {
+        let petUnsubscriptions: any[] = [];
+        try {
+            const { data: unsubs, error: unsubsError } = await supabase
+                .from('pet_unsubscriptions')
+                .select('pet_id, pet_index, reason, description, created_at')
+                .eq('memberstack_id', memberstackId)
+                .order('created_at', { ascending: false });
+
+            if (unsubsError) {
+                const { data: fallbackUnsubs } = await supabase
+                    .from('pet_unsubscriptions')
+                    .select('pet_index, reason, description, created_at')
+                    .eq('memberstack_id', memberstackId)
+                    .order('created_at', { ascending: false });
+                petUnsubscriptions = fallbackUnsubs || [];
+            } else {
+                petUnsubscriptions = unsubs || [];
+            }
+        } catch (e) {
+            console.warn('Could not fetch pet unsubscriptions:', e);
+        }
+
+        const petsWithStatus = enrichPetsWithLifecycle(pets || [], msCustomFields, petUnsubscriptions).map((pet, index) => {
             const petNum = index + 1;
             const isActiveField = `pet-${petNum}-is-active`;
             // Por defecto es true si no existe el campo o es explícitamente 'true'
-            const isActive = msCustomFields[isActiveField] !== 'false';
+            const isActive = pet.is_active;
             
             return {
                 ...pet,

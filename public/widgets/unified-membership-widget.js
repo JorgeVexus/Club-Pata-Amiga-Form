@@ -4999,6 +4999,9 @@
 
         renderPetContent(pet) {
             let content = '';
+            if (pet.is_active === false) {
+                return this.renderUnsubscribedContent(pet);
+            }
 
             // Si falta el certificado y no estamos ya en acción requerida prevemos banner
             if (pet.status !== 'action_required') {
@@ -5016,6 +5019,56 @@
             } else {
                 return content + this.renderPendingContent(pet);
             }
+        }
+
+        renderUnsubscribedContent(pet) {
+            const petPhoto = pet.photo_url || pet.primary_photo_url || pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png';
+            const reason = this.escapeHtml(pet.unsubscribed_reason || pet.admin_notes || 'Baja registrada');
+            const description = pet.unsubscribed_description ? this.escapeHtml(pet.unsubscribed_description) : '';
+            const unsubscribedDate = pet.unsubscribed_at ? new Date(pet.unsubscribed_at).toLocaleDateString('es-MX', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }) : 'Fecha no disponible';
+
+            return `
+                <div class="pata-unsubscribed-view-new" style="padding: 0;">
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:32px; align-items:stretch;">
+                        <div style="background:#F1F3F4; border:var(--pata-border-thick); border-radius:38px; padding:14px; box-shadow:10px 10px 0 rgba(0,0,0,0.06);">
+                            <div style="position:relative; aspect-ratio:1; border-radius:28px; overflow:hidden; border:var(--pata-border-thin); background:#fff;">
+                                <img src="${petPhoto}" alt="${pet.name}" class="pata-grayscale" style="width:100%; height:100%; object-fit:cover;" loading="lazy">
+                                <div style="position:absolute; top:16px; left:16px; background:#fff; color:#3D494D; border:var(--pata-border-thin); border-radius:50px; padding:8px 16px; font-size:11px; font-weight:950; text-transform:uppercase; box-shadow:4px 4px 0 rgba(0,0,0,0.08);">
+                                    DADA DE BAJA
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex; flex-direction:column; justify-content:center;">
+                            <span style="width:max-content; background:#CAF5F2; border:var(--pata-border-thin); border-radius:50px; padding:8px 16px; font-size:11px; font-weight:950; text-transform:uppercase; color:#000; margin-bottom:18px;">espacio liberado</span>
+                            <h2 class="pata-title" style="margin:0 0 14px 0; font-size:40px; color:#000; text-transform:lowercase; font-family:'Fraiche', sans-serif;">${pet.name} fue dado de baja</h2>
+                            <p style="font-size:18px; color:#000; line-height:1.45; font-family:'Outfit', sans-serif; font-weight:700; margin:0 0 24px 0;">
+                                Esta mascota ya no forma parte activa de tu manada. Conservamos este registro para que tengas claridad sobre el historial.
+                            </p>
+
+                            <div style="background:#fff; border:var(--pata-border-thick); border-radius:30px; padding:24px; box-shadow:8px 8px 0 rgba(0,0,0,0.05); display:grid; gap:18px;">
+                                <div>
+                                    <div style="font-size:11px; font-weight:950; text-transform:uppercase; color:#667085; margin-bottom:6px;">causa de baja</div>
+                                    <div style="font-size:20px; font-weight:950; color:#000; font-family:'Fraiche', sans-serif; text-transform:lowercase;">${reason}</div>
+                                    ${description ? `<p style="font-size:14px; font-weight:700; color:#3D494D; margin:8px 0 0 0; line-height:1.45;">${description}</p>` : ''}
+                                </div>
+                                <div>
+                                    <div style="font-size:11px; font-weight:950; text-transform:uppercase; color:#667085; margin-bottom:6px;">fecha registrada</div>
+                                    <div style="font-size:16px; font-weight:900; color:#000; font-family:'Outfit', sans-serif;">${unsubscribedDate}</div>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:22px; background:#FFBD12; border:var(--pata-border-thin); border-radius:24px; padding:18px 20px; font-size:15px; font-weight:900; color:#000; line-height:1.4;">
+                                Ya puedes registrar a otro peludito desde tu widget de manada si tienes menos de 3 mascotas activas.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         renderPendingContent(pet) {
@@ -5736,7 +5789,9 @@
         renderPetDetailsModal(pet) {
             const petIndex = this.pets.findIndex(p => p.id === pet.id);
             const carencia = this.calculateCarencia(pet);
-            const status = CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending;
+            const status = pet.is_active === false
+                ? { bg: '#F1F3F4', text: '#3D494D', label: 'DADA DE BAJA', icon: '' }
+                : (CONFIG.statusColors[pet.status] || CONFIG.statusColors.pending);
 
             const photos = [
                 pet.photo_url || pet.primary_photo_url,

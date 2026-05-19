@@ -110,6 +110,10 @@
             transition: all 0.5s ease;
         }
 
+        .pata-inactive-card {
+            background: #F1F3F4;
+        }
+
         .pata-card-overlay-status {
             position: absolute;
             top: 15px;
@@ -862,6 +866,10 @@
         }
 
         getPetStatusContext(pet) {
+            if (pet.is_active === false) {
+                return { bg: '#F1F3F4', text: '#3D494D', label: 'DADA DE BAJA', icon: '', isInactive: true };
+            }
+
             const ageNum = parseInt(pet.age_value) || 0;
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             
@@ -891,7 +899,8 @@
 
         render() {
             const petCards = this.pets.map((pet, idx) => this.createPetCardHtml(pet, idx + 1)).join('');
-            const addCard = this.pets.length < CONFIG.maxPets ? this.createAddCardHtml() : '';
+            const activePetCount = this.pets.filter(p => p.is_active !== false).length;
+            const addCard = activePetCount < CONFIG.maxPets ? this.createAddCardHtml() : '';
 
             this.container.innerHTML = `
                 <div class="pata-widget-container">
@@ -910,12 +919,12 @@
             const imageUrl = pet.primary_photo_url || pet.photo_url || msPhotoUrl || CONFIG.placeholderDog;
 
             return `
-                <div class="pata-pet-card" onclick="window.ManadaWidget.showDetails('${pet.id}')" role="button" aria-label="Ver detalles de ${pet.name}">
+                <div class="pata-pet-card ${pet.is_active === false ? 'pata-inactive-card' : ''}" onclick="window.ManadaWidget.showDetails('${pet.id}')" role="button" aria-label="Ver detalles de ${pet.name}">
                     <div class="pata-card-photo-wrapper">
                         <div class="pata-card-overlay-status">
                             ${statusContext.icon} ${statusContext.label}
                         </div>
-                        <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}';" loading="lazy">
+                        <img src="${imageUrl}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}';" loading="lazy" class="${pet.is_active === false ? 'pata-grayscale' : ''}">
                         <div class="pata-card-overlay-name">${pet.name}</div>
                     </div>
                 </div>
@@ -986,6 +995,59 @@
             const ageNum = parseInt(ageValue) || 0;
             const isSenior = pet.is_senior || (pet.age_unit === 'months' ? Math.floor(ageNum/12) : ageNum) >= 10;
             const breedDisplay = pet.is_mixed_breed ? (isCat ? 'Doméstico' : 'Mestizo') : (pet.breed || 'Mestizo');
+
+            if (pet.is_active === false) {
+                const inactiveReason = this.escapeHtml(pet.unsubscribed_reason || pet.admin_notes || 'Baja registrada');
+                const inactiveDate = pet.unsubscribed_at ? new Date(pet.unsubscribed_at).toLocaleDateString('es-MX', {
+                    day: 'numeric', month: 'short', year: 'numeric'
+                }) : registrationDate;
+
+                modalOverlay.innerHTML = `
+                    <div class="pata-modal-box" style="max-width: 860px;">
+                        <main class="pata-modal-main">
+                            <section class="pata-modal-gallery hide-scrollbar" style="border-right: var(--pata-border-thick); background:#F1F3F4;">
+                                <div class="pata-gallery-main" style="border: var(--pata-border-thick);">
+                                    <img src="${photoSlots[0] || CONFIG.placeholderDog}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy" class="pata-grayscale">
+                                    <div class="pata-gallery-label">
+                                        <span class="material-symbols-outlined" style="font-size:14px">archive</span>
+                                        <span>Dada de baja</span>
+                                    </div>
+                                </div>
+                            </section>
+                            <section class="pata-modal-info hide-scrollbar">
+                                <header class="pata-info-header">
+                                    <div>
+                                        <h2 class="pata-pet-name" id="pata-modal-pet-name">${pet.name}</h2>
+                                        <div class="pata-pet-breed-info">
+                                            <span class="material-symbols-outlined" style="font-size:18px">pets</span>
+                                            ${breedDisplay}
+                                        </div>
+                                    </div>
+                                    <button class="pata-close-modal" onclick="window.ManadaWidget.closeModal(this.closest('.pata-modal-overlay'))" aria-label="Cerrar expediente">
+                                        <span class="material-symbols-outlined">close</span>
+                                    </button>
+                                </header>
+                                <div class="pata-badge-row">
+                                    <span class="pata-badge" style="background:#F1F3F4; color:#3D494D; border:1.5px solid #3D494D44;">DADA DE BAJA</span>
+                                </div>
+                                <div class="pata-info-card" style="background:#fff;">
+                                    <h3 class="pata-info-card-title">Resumen</h3>
+                                    <div class="pata-info-grid">
+                                        <div class="pata-info-item"><div class="pata-info-icon-wrap"><span class="material-symbols-outlined">event</span></div><div class="pata-info-texts"><span class="pata-info-label">Fecha</span><span class="pata-info-value">${inactiveDate}</span></div></div>
+                                        <div class="pata-info-item"><div class="pata-info-icon-wrap"><span class="material-symbols-outlined">info</span></div><div class="pata-info-texts"><span class="pata-info-label">Causa</span><span class="pata-info-value">${inactiveReason}</span></div></div>
+                                    </div>
+                                </div>
+                                <div style="background:#CAF5F2; border:var(--pata-border-thin); border-radius:24px; padding:20px; font-weight:800; color:#000;">
+                                    Este espacio ya qued&oacute; liberado para registrar a otro peludito en tu manada.
+                                </div>
+                            </section>
+                        </main>
+                    </div>
+                `;
+
+                document.body.appendChild(modalOverlay);
+                return;
+            }
 
             const petIndex = this.pets.findIndex(p => p.id === pet.id);
             const badges = [];

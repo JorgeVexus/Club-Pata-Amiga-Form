@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateWaitingPeriod } from '@/services/pet.service';
+import { getActivePetCount, getAvailablePetSlot } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -96,20 +97,27 @@ export async function POST(request: NextRequest) {
         // Escaneamos qué slots están ocupados y cuál es el primero disponible
         let occupiedSlots: number[] = [];
         for (let i = 1; i <= 3; i++) {
-            if (customFields[`pet-${i}-name`]) {
+            if (customFields[`pet-${i}-name`] && customFields[`pet-${i}-is-active`] !== 'false') {
                 occupiedSlots.push(i);
             }
         }
 
         console.log(`📊 [PET_ADD] Slots ocupados: [${occupiedSlots.join(', ')}]. Total: ${occupiedSlots.length}`);
 
-        if (occupiedSlots.length >= 3) {
+        const { data: existingPets } = await supabaseAdmin
+            .from('pets')
+            .select('id, is_active')
+            .eq('owner_id', user!.id);
+
+        const activePetCount = getActivePetCount(existingPets || []);
+
+        if (activePetCount >= 3) {
             console.warn(`⚠️ [PET_ADD] El usuario ya tiene 3 mascotas ocupadas.`);
             return NextResponse.json({ error: 'Ya has alcanzado el límite de 3 mascotas' }, { status: 400, headers: corsHeaders });
         }
 
         // El siguiente slot es el primero que esté libre
-        let nextSlot = 1;
+        let nextSlot = getAvailablePetSlot(customFields) || 1;
         for (let i = 1; i <= 3; i++) {
             if (!occupiedSlots.includes(i)) {
                 nextSlot = i;
@@ -179,7 +187,9 @@ export async function POST(request: NextRequest) {
         // NOTA: Con la nueva arquitectura, SOLO actualizamos el conteo de mascotas en Memberstack.
         // El resto de la data vive felizmente en Supabase.
         const newFields: Record<string, any> = {
-            'total-pets': (occupiedSlots.length + 1).toString(),
+            'total-pets': (activePetCount + 1).toString(),
+            [`${prefix}-name`]: petData.name,
+            [`${prefix}-is-active`]: 'true',
             // 'approval-status': 'pending' // No es necesario sobreescribir status aquí, eso es del usuario
         };
 
@@ -214,6 +224,8 @@ export async function POST(request: NextRequest) {
         // Intentar con campos extendidos del flujo de registro integrado
         const extendedPetData = {
             ...basePetData,
+            is_active: true,
+            memberstack_slot: nextSlot,
             ...(petData.petType ? { pet_type: petData.petType === 'perro' ? 'dog' : 'cat' } : {}),
             ...(petData.gender ? { gender: petData.gender } : {}),
             ...(petData.ageValue !== undefined ? { age_value: petData.ageValue } : {}),

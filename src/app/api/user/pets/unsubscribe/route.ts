@@ -11,7 +11,7 @@ const supabase = createClient(
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { memberId, petIndex, petName, reason, description, isDeathSolidarity } = body;
+        const { memberId, petId, petIndex, petName, reason, description, isDeathSolidarity } = body;
 
         if (!memberId || petIndex === undefined || !petName || !reason) {
             return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
@@ -43,17 +43,46 @@ export async function POST(request: NextRequest) {
         }
 
         // 3. Registrar en Supabase (Auditoría y Actividad)
-        const { error: sbError } = await supabase
+        const { error: petLifecycleError } = petId ? await supabase
+            .from('pets')
+            .update({
+                is_active: false,
+                memberstack_slot: petNum,
+                unsubscribed_reason: reason,
+                unsubscribed_description: description || '',
+                unsubscribed_at: new Date().toISOString()
+            })
+            .eq('id', petId) : { error: null };
+
+        if (petLifecycleError) {
+            console.warn('No se pudo marcar ciclo de vida de mascota:', petLifecycleError.message);
+        }
+
+        const auditEntry: Record<string, any> = {
+            memberstack_id: memberId,
+            pet_index: petNum,
+            pet_name: petName,
+            reason: reason,
+            description: description || '',
+            unsubscribed_by: unsubscribedBy,
+            unsubscribed_by_id: unsubscribedById
+        };
+
+        if (petId) {
+            auditEntry.pet_id = petId;
+        }
+
+        let { error: sbError } = await supabase
             .from('pet_unsubscriptions')
-            .insert([{
-                memberstack_id: memberId,
-                pet_index: petNum,
-                pet_name: petName,
-                reason: reason,
-                description: description || '',
-                unsubscribed_by: unsubscribedBy,
-                unsubscribed_by_id: unsubscribedById
-            }]);
+            .insert([auditEntry]);
+
+        if (sbError && petId) {
+            delete auditEntry.pet_id;
+            const retry = await supabase
+                .from('pet_unsubscriptions')
+                .insert([auditEntry]);
+            sbError = retry.error;
+        }
 
         if (sbError) {
             console.error('Error guardando en Supabase:', sbError);
