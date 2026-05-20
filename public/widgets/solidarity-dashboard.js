@@ -187,7 +187,11 @@ class SolidarityDashboard {
     }
 
     getPetStatusContext(pet) {
-        if (pet.is_active === false || pet.is_active === 'false') {
+        const isInactive = pet.is_active === false || pet.is_active === 'false' || 
+                      pet.is_active === 0 || pet.is_active === '0' ||
+                      (typeof pet.is_active === 'string' && pet.is_active.toLowerCase() === 'false');
+        
+        if (isInactive) {
             return { label: 'DADA DE BAJA', color: '#718096', icon: '🕊️', isInactive: true };
         }
         
