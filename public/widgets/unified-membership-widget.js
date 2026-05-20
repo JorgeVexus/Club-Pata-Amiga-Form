@@ -5448,10 +5448,13 @@
                         return `<button class="pata-action-btn" data-request-type="${item.type}" data-log-id="${log.id}" data-pet-id="${petId}" style="display:flex;align-items:center;gap:8px;padding:10px 16px;border-radius:12px;background:#FFF3E0;border:2px solid #FE8F15;font-size:13px;font-weight:700;color:#E65100;cursor:pointer;width:100%;text-align:left;transition:0.2s;margin-bottom:4px;box-shadow: 2px 2px 0 rgba(254, 143, 21, 0.2);">${item.label} - Subir/Actualizar</button>`;
                     }).join('');
 
+                    let messageContent = log.message || '';
+                    messageContent = messageContent.replace(/\n/g, '<br><br>');
+
                     return `
                         <div class="pata-chat-bubble admin" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid #FE8F15;">
                             <div style="font-weight:900;font-size:13px;margin-bottom:8px;color:#FE8F15;">📋 Solicitud de Información</div>
-                            <div style="font-size:13px;margin-bottom:12px;">${log.message}</div>
+                            <div style="font-size:13px;margin-bottom:12px;">${messageContent}</div>
                             <br>
                             <div style="display:flex;flex-direction:column;gap:8px;">
                                 ${actionButtons}
