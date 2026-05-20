@@ -507,6 +507,22 @@ class SolidarityDashboard {
                     text-transform: uppercase;
                 }
 
+                .pata-history-title {
+                    font-size: 50px;
+                }
+
+                @media (max-width: 767px) {
+                    .pata-history-title {
+                        font-size: 32px;
+                    }
+                }
+
+                @media (max-width: 480px) {
+                    .pata-history-title {
+                        font-size: 20px !important;
+                    }
+                }
+
                 @media (max-width: 991px) {
                     .pata-section-title { font-size: 64px; }
                     .pata-header h1 { font-size: 48px; }
@@ -869,7 +885,7 @@ class SolidarityDashboard {
                             ${this.data.stats.active > 0 ? 'fondo solidario activo' : 'fondo solidario en espera'}
                         </h2>
                         <p class="pata-status-subtitle">
-                            Tu manada está protegida. Revisa el estado del Fondo de cada uno de tus compañeros de cuatro patas.
+                            La protección es para toda la manada. Consulta el estado del fondo solidario que acompaña a tus compañeros de cuatro patas.
                         </p>
 
                         <div class="pata-stats-grid">
@@ -941,7 +957,7 @@ class SolidarityDashboard {
 
                         <section>
                             <div class="pata-history-panel">
-                                <h2 class="pata-section-title" style="color: var(--pata-white); margin-top: 0; margin-bottom: 25px;">Historial de solicitudes</h2>
+                                <h2 class="pata-section-title pata-history-title" style="color: var(--pata-white); margin-top: 0; margin-bottom: 25px;">Historial de solicitudes</h2>
                                 ${this.renderHistory()}
                             </div>
                         </section>
