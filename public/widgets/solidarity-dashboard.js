@@ -487,7 +487,7 @@ class SolidarityDashboard {
                     display: grid;
                     grid-template-columns: 1fr 1.5fr;
                     gap: 40px;
-                    padding: 20px;
+                    padding: 100px 35px;
                     background-color: #eaeaea;
                     width: 100%;
                     box-sizing: border-box;
