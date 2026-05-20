@@ -51,6 +51,8 @@ export function getSolidarityPetLifecycleSummary<T extends Record<string, unknow
 
 export function isFalseLike(value: unknown): boolean;
 
+export function isTrueLike(value: unknown): boolean;
+
 export function isUnsubscribedPet(pet?: {
     is_active?: boolean;
     status?: string;

@@ -4,6 +4,10 @@ function isFalseLike(value) {
     return value === false || value === 0 || value === 'false' || value === '0';
 }
 
+function isTrueLike(value) {
+    return value === true || value === 1 || value === 'true' || value === '1';
+}
+
 function getSlotActiveValue(customFields, slot) {
     return customFields?.[`pet-${slot}-is-active`];
 }
@@ -115,27 +119,38 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
     return pets.map((pet, index) => {
         const slot = Number(pet.memberstack_slot) || index + 1;
         const petName = typeof pet.name === 'string' ? pet.name.trim().toLowerCase() : '';
+        const slotActiveValue = getSlotActiveValue(customFields, slot);
+        const slotExplicitlyActive = isTrueLike(slotActiveValue);
         const unsubscription =
             byPetId.get(pet.id) ||
             (petName ? bySlotAndName.get(`${slot}:${petName}`) : null) ||
             bySlot.get(slot) ||
             null;
+        const unsubscriptionMatchesPetId = Boolean(unsubscription?.pet_id && unsubscription.pet_id === pet.id);
+        const unsubscriptionMatchesName = Boolean(
+            petName &&
+            unsubscription?.pet_name &&
+            unsubscription.pet_name.trim().toLowerCase() === petName
+        );
         const inactiveByUnsubscription = Boolean(unsubscription && (
-            unsubscription.pet_id === pet.id ||
-            (petName && unsubscription.pet_name && unsubscription.pet_name.trim().toLowerCase() === petName) ||
-            isFalseLike(getSlotActiveValue(customFields, slot))
+            unsubscriptionMatchesPetId ||
+            (!slotExplicitlyActive && unsubscriptionMatchesName) ||
+            isFalseLike(slotActiveValue)
         ));
         const inactiveInDatabase = pet.is_active === false;
-        const inactiveInMemberstack = isFalseLike(getSlotActiveValue(customFields, slot));
+        const inactiveInMemberstack = isFalseLike(slotActiveValue);
         const isActive = !(inactiveByUnsubscription || inactiveInDatabase || pet.status === 'unsubscribed' || (inactiveInMemberstack && !pet.memberstack_slot));
+        const appliedUnsubscription = inactiveByUnsubscription || inactiveInDatabase || pet.status === 'unsubscribed'
+            ? unsubscription
+            : null;
 
         return {
             ...pet,
             memberstack_slot: slot,
             is_active: isActive,
-            unsubscribed_reason: pet.unsubscribed_reason || unsubscription?.reason || null,
-            unsubscribed_description: pet.unsubscribed_description || unsubscription?.description || null,
-            unsubscribed_at: pet.unsubscribed_at || unsubscription?.created_at || null,
+            unsubscribed_reason: pet.unsubscribed_reason || appliedUnsubscription?.reason || null,
+            unsubscribed_description: pet.unsubscribed_description || appliedUnsubscription?.description || null,
+            unsubscribed_at: pet.unsubscribed_at || appliedUnsubscription?.created_at || null,
         };
     });
 }
@@ -199,6 +214,7 @@ module.exports = {
     getAvailablePetSlot,
     getSolidarityPetLifecycleSummary,
     isFalseLike,
+    isTrueLike,
     isUnsubscribedPet,
     isUnsubscribedPetWithHistory,
 };
