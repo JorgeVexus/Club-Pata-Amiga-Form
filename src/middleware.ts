@@ -17,9 +17,10 @@ export function middleware(request: NextRequest) {
     'http://localhost:3000'
   ]
 
-  // Allow Vercel staging/preview URLs dynamically
+  // Allow Vercel staging/preview URLs and Webflow subdomains dynamically
   const isAllowedOrigin = allowedOrigins.includes(origin) || 
-                         (origin.endsWith('.vercel.app') && origin.includes('club-pata-amiga'));
+                          (origin.endsWith('.vercel.app') && origin.includes('club-pata-amiga')) ||
+                          origin.endsWith('.webflow.io');
 
   // Define headers
   const headers = new Headers()

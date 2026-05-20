@@ -107,7 +107,8 @@ class SolidarityDashboard {
         this.data.user = { id: 'mock-1', first_name: 'Usuario', last_name: 'Prueba' };
         this.data.pets = [
             { id: 'p1', name: 'Rex', breed: 'Golden Retriever', primary_photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300', waiting_period_end: new Date(Date.now() - 86400000 * 10).toISOString() },
-            { id: 'p2', name: 'Luna', breed: 'Siamés', primary_photo_url: 'https://images.unsplash.com/photo-1513245543132-31f507417b26?auto=format&fit=crop&q=80&w=300', waiting_period_end: new Date(Date.now() + 86400000 * 45).toISOString() }
+            { id: 'p2', name: 'Luna', breed: 'Siamés', primary_photo_url: 'https://images.unsplash.com/photo-1513245543132-31f507417b26?auto=format&fit=crop&q=80&w=300', waiting_period_end: new Date(Date.now() + 86400000 * 45).toISOString() },
+            { id: 'p3', name: 'Firulais', breed: 'Labrador', is_active: false, status: 'pending', primary_photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300' }
         ];
         this.data.requests = [
             { id: 'r1', pet_id: 'p1', benefit_type: 'medical_emergency', reason: 'Consulta dermatológica', clinic_name: 'Animal Care', status: 'in_review', type: 'clinic', created_at: '2025-06-30T10:00:00Z' },
@@ -121,14 +122,20 @@ class SolidarityDashboard {
     calculateStats() {
         const now = new Date();
         this.data.stats.active = this.data.pets.filter(p => {
-            if (p.is_active === false || p.is_active === 'false') return false;
+            const isInactive = p.is_active === false || p.is_active === 'false' || 
+                             p.is_active === 0 || p.is_active === '0' ||
+                             (typeof p.is_active === 'string' && p.is_active.toLowerCase() === 'false');
+            if (isInactive) return false;
             if (p.status !== 'approved') return false;
             const carencia = this.calculateCarencia(p);
             return !carencia.isWaiting;
         }).length;
 
         this.data.stats.pending = this.data.pets.filter(p => {
-            if (p.is_active === false || p.is_active === 'false') return false;
+            const isInactive = p.is_active === false || p.is_active === 'false' || 
+                             p.is_active === 0 || p.is_active === '0' ||
+                             (typeof p.is_active === 'string' && p.is_active.toLowerCase() === 'false');
+            if (isInactive) return false;
             if (p.status !== 'approved') return true;
             const carencia = this.calculateCarencia(p);
             return carencia.isWaiting;
@@ -855,7 +862,9 @@ class SolidarityDashboard {
             const statusContext = this.getPetStatusContext(pet);
             const imageUrl = pet.primary_photo_url || pet.photo_url || this.data.placeholders.pet;
             
-            const isInactive = pet.is_active === false || pet.is_active === 'false';
+            const isInactive = pet.is_active === false || pet.is_active === 'false' || 
+                          pet.is_active === 0 || pet.is_active === '0' ||
+                          (typeof pet.is_active === 'string' && pet.is_active.toLowerCase() === 'false');
             const isApproved = pet.status === 'approved' && !isInactive;
             const isEligible = isApproved && !carencia.isWaiting;
             
@@ -863,7 +872,7 @@ class SolidarityDashboard {
                 <div class="pata-pet-card pata-animate-entry ${isInactive ? 'pata-inactive-card' : ''}" style="animation-delay: ${index * 0.1}s">
                     ${!isEligible ? `
                         <div class="pata-pet-badge-new" style="background: ${isInactive ? '#F1F3F4' : (isApproved ? '#FEF9C3' : '#FEE2E2')}; color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')}; border-color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')};">
-                            ${isInactive ? 'DADA DE BAJA' : (!isApproved ? statusContext.label : 'En espera')}
+                            ${isInactive ? 'DADA DE BAJA' : (!isApproved ? (pet.status === 'pending' ? 'EN REVISIÓN' : statusContext.label) : 'En espera')}
                         </div>
                     ` : ''}
                     
