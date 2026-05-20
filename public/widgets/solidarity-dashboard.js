@@ -462,6 +462,10 @@ class SolidarityDashboard {
                     gap: 40px;
                     padding: 20px;
                     background-color: #eaeaea;
+                    width: 100%;
+                    max-width: 1400px;
+                    margin: 0 auto;
+                    box-sizing: border-box;
                 }
 
                 @media (max-width: 991px) {
@@ -478,7 +482,12 @@ class SolidarityDashboard {
                     text-transform: uppercase;
                 }
 
-                .pata-pet-list { display: flex; flex-direction: column; gap: 24px; }
+                .pata-pet-list { 
+                    display: flex; 
+                    flex-direction: column; 
+                    gap: 24px;
+                    width: 100%;
+                }
 
                 .pata-pet-card {
                     background: #FFFFFF;
@@ -491,6 +500,8 @@ class SolidarityDashboard {
                     transition: transform 0.3s;
                     position: relative;
                     border: 2px solid var(--pata-black);
+                    max-width: 100%;
+                    box-sizing: border-box;
                 }
 
                 .pata-pet-card.pata-inactive-card {
@@ -713,9 +724,47 @@ class SolidarityDashboard {
                     .pata-benefits-grid { flex-direction: column; gap: 20px; align-items: flex-start; }
                     .pata-benefit-item { width: 100%; }
 
-                    .pata-pet-card { flex-direction: column; text-align: center; padding: 20px; gap: 15px; }
-                    .pata-pet-photo { width: 120px; height: 120px; margin: 0 auto; }
-                    .pata-pet-name { font-size: 24px; }
+                    .pata-pet-list { gap: 16px; }
+                    .pata-pet-card { 
+                        flex-direction: column; 
+                        text-align: center; 
+                        padding: 20px; 
+                        gap: 15px;
+                        width: 100%;
+                    }
+                    .pata-pet-photo { 
+                        width: 120px; 
+                        height: 120px; 
+                        margin: 0 auto;
+                        flex-shrink: 0;
+                    }
+                    .pata-pet-name { 
+                        font-size: 24px;
+                        word-wrap: break-word;
+                        overflow-wrap: break-word;
+                    }
+                    .pata-pet-info {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        gap: 10px;
+                    }
+                    .pata-pet-info p {
+                        max-width: 100%;
+                        word-wrap: break-word;
+                    }
+                    .pata-pet-info button {
+                        width: 100%;
+                        max-width: 280px;
+                        white-space: normal;
+                        word-wrap: break-word;
+                    }
+                    .pata-pet-badge-new {
+                        position: static;
+                        display: inline-block;
+                        margin-bottom: 10px;
+                    }
                     
                     .pata-history-panel { padding: 20px; border-radius: 30px; }
                     .pata-history-header { flex-direction: column; align-items: stretch; gap: 15px; }
@@ -731,6 +780,22 @@ class SolidarityDashboard {
                     }
                     .pata-history-item > div { width: 100% !important; flex-shrink: 1 !important; padding: 0 !important; }
                     .pata-history-item > div:last-child { align-items: flex-start !important; border-top: 1px solid #eee; padding-top: 15px; }
+                }
+
+                /* Extra small screens */
+                @media (max-width: 480px) {
+                    .pata-header { padding: 30px 15px 60px 15px; }
+                    .pata-header h1 { font-size: 32px; }
+                    .pata-main-card { padding: 20px 15px; border-radius: 20px; margin: 5px; }
+                    .pata-pet-card { padding: 15px; border-radius: 25px; }
+                    .pata-pet-photo { width: 100px; height: 100px; }
+                    .pata-pet-name { font-size: 20px; }
+                    .pata-pet-info button { 
+                        font-size: 11px; 
+                        padding: 8px 12px;
+                        max-width: 100%;
+                    }
+                    .pata-section-title { font-size: 20px !important; }
                 }
 
                 /* Design Spells: Animations */
