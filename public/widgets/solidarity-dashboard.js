@@ -501,10 +501,23 @@ class SolidarityDashboard {
                 .pata-section-title {
                     font-family: 'Fraiche', sans-serif;
                     font-weight: 900;
-                    font-size: 48px;
+                    font-size: 100px;
                     color: var(--pata-red);
                     margin-bottom: 30px;
                     text-transform: uppercase;
+                }
+
+                @media (max-width: 991px) {
+                    .pata-section-title { font-size: 64px; }
+                    .pata-header h1 { font-size: 48px; }
+                }
+
+                @media (max-width: 767px) {
+                    .pata-section-title { font-size: 48px; }
+                }
+
+                @media (max-width: 480px) {
+                    .pata-section-title { font-size: 36px; }
                 }
 
                 .pata-pet-list { 
@@ -920,7 +933,7 @@ class SolidarityDashboard {
 
                     <div class="pata-content-layout">
                         <section>
-                            <h2 class="pata-section-title">tus mascotas</h2>
+                            <h2 class="pata-section-title">Tus mascotas registradas</h2>
                             <div class="pata-pet-list">
                                 ${this.renderPets()}
                             </div>
