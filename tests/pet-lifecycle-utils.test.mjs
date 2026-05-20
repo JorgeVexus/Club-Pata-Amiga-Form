@@ -7,6 +7,7 @@ import {
   getAvailablePetSlot,
   getEffectiveActivePetCount,
   getRegistrationActivePetCount,
+  getSolidarityPetLifecycleSummary,
   isUnsubscribedPetWithHistory,
   isUnsubscribedPet,
 } from '../src/utils/pet-lifecycle.js';
@@ -142,4 +143,40 @@ test('isUnsubscribedPetWithHistory detects stale active rows with unsubscription
   const unsubscriptions = [{ pet_index: 1, pet_name: 'Luna', reason: 'Ya no vive conmigo' }];
 
   assert.equal(isUnsubscribedPetWithHistory(pet, unsubscriptions), true);
+});
+
+test('getSolidarityPetLifecycleSummary excludes unsubscription history from active and pending counts', () => {
+  const pets = [
+    {
+      id: 'legacy-pet',
+      name: 'Luna',
+      memberstack_slot: 1,
+      is_active: true,
+      status: 'pending',
+      created_at: '2026-01-01T00:00:00.000Z',
+    },
+    {
+      id: 'ready-pet',
+      name: 'Milo',
+      memberstack_slot: 2,
+      is_active: true,
+      status: 'approved',
+      waiting_period_start: '2025-01-01T00:00:00.000Z',
+    },
+  ];
+  const unsubscriptions = [
+    {
+      pet_index: 1,
+      pet_name: 'Luna',
+      reason: 'Ya no vive conmigo',
+      created_at: '2026-05-18T18:00:00.000Z',
+    },
+  ];
+
+  const summary = getSolidarityPetLifecycleSummary(pets, {}, unsubscriptions, new Date('2026-05-19T00:00:00.000Z'));
+
+  assert.equal(summary.pets[0].is_active, false);
+  assert.equal(summary.pets[0].unsubscribed_reason, 'Ya no vive conmigo');
+  assert.equal(summary.activePets, 1);
+  assert.equal(summary.pendingPets, 0);
 });

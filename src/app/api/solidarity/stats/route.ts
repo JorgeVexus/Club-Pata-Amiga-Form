@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getMemberDetails } from '@/services/memberstack-admin.service';
+import { getSolidarityPetLifecycleSummary } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,7 +28,6 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ error: 'memberstackId es requerido' }, { status: 400, headers: corsHeaders });
         }
 
-        // Resolver el ID interno de Supabase a partir del ID de Memberstack
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('id')
@@ -34,13 +35,12 @@ export async function GET(request: NextRequest) {
             .single();
 
         if (userError || !user) {
-            console.error('❌ Error resolviendo usuario:', userError);
+            console.error('Error resolviendo usuario:', userError);
             return NextResponse.json({ error: 'Usuario no encontrado en Supabase' }, { status: 404, headers: corsHeaders });
         }
 
         const internalUserId = user.id;
 
-        // 1. Obtener estadísticas y datos de mascotas
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
             .select('*')
@@ -48,60 +48,46 @@ export async function GET(request: NextRequest) {
 
         if (petsError) throw petsError;
 
-        // Obtener datos básicos del usuario para el dashboard
-        const { data: userData, error: userDataError } = await supabaseAdmin
+        const { data: userData } = await supabaseAdmin
             .from('users')
             .select('first_name, last_name, email')
             .eq('id', internalUserId)
             .single();
 
-        const now = new Date();
-        let activePets = 0;
-        let pendingPets = 0;
-
-        const petsWithExtraData = pets?.map(pet => {
-            const isApproved = pet.status === 'approved';
-            
-            // Lógica robusta de carencia (espejo del frontend y request API)
-            const getCarenciaDate = () => {
-                const start = new Date(pet.waiting_period_start || pet.created_at || new Date());
-                if (isNaN(start.getTime())) return new Date();
-
-                const isAdopted = String(pet.is_adopted) === 'true' || pet.is_adopted === true;
-                const isMixed = String(pet.is_mixed_breed) === 'true' || pet.is_mixed_breed === true;
-
-                let days = 180; // Default
-                if (isAdopted) days = 90;
-                else if (isMixed) days = 120;
-
-                const end = new Date(start);
-                end.setDate(end.getDate() + days);
-                return end;
-            };
-
-            const waitingPeriodEnd = getCarenciaDate();
-            const hasFinishedWaiting = waitingPeriodEnd <= now;
-            const isEligible = isApproved && hasFinishedWaiting;
-            
-            if (isEligible) {
-                activePets++;
-            } else {
-                pendingPets++;
+        let msCustomFields: Record<string, unknown> = {};
+        try {
+            const msResult = await getMemberDetails(memberstackId);
+            if (msResult.success && msResult.data) {
+                msCustomFields = msResult.data.customFields || {};
             }
+        } catch (error) {
+            console.warn('No se pudieron obtener campos de Memberstack para lifecycle:', error);
+        }
 
-            // Lógica Senior
-            const isSenior = pet.is_senior || false;
-            const hasCertificate = !!pet.vet_certificate_url;
-            const needsSeniorCertificate = isSenior && !hasCertificate;
+        let petUnsubscriptions: Record<string, unknown>[] = [];
+        try {
+            const { data: unsubs, error: unsubsError } = await supabaseAdmin
+                .from('pet_unsubscriptions')
+                .select('pet_id, pet_index, pet_name, reason, description, created_at')
+                .eq('memberstack_id', memberstackId)
+                .order('created_at', { ascending: false });
 
-            return {
-                ...pet,
-                isEligible,
-                needsSeniorCertificate
-            };
-        });
+            if (unsubsError) {
+                const { data: fallbackUnsubs } = await supabaseAdmin
+                    .from('pet_unsubscriptions')
+                    .select('pet_index, pet_name, reason, description, created_at')
+                    .eq('memberstack_id', memberstackId)
+                    .order('created_at', { ascending: false });
+                petUnsubscriptions = fallbackUnsubs || [];
+            } else {
+                petUnsubscriptions = unsubs || [];
+            }
+        } catch (error) {
+            console.warn('No se pudo consultar pet_unsubscriptions para lifecycle:', error);
+        }
 
-        // 2. Obtener estadísticas de solicitudes
+        const lifecycleSummary = getSolidarityPetLifecycleSummary(pets || [], msCustomFields, petUnsubscriptions);
+
         const { data: requests, error: requestsError } = await supabaseAdmin
             .from('solidarity_requests')
             .select('status')
@@ -110,24 +96,25 @@ export async function GET(request: NextRequest) {
         if (requestsError) throw requestsError;
 
         const totalRequests = requests?.length || 0;
-        const inProcessRequests = requests?.filter(r => 
+        const inProcessRequests = requests?.filter(r =>
             ['new', 'in_review', 'needs_info'].includes(r.status)
         ).length || 0;
 
         return NextResponse.json({
             success: true,
             user: userData,
-            pets: petsWithExtraData || [],
+            pets: lifecycleSummary.pets,
             stats: {
-                active: activePets,
-                pending: pendingPets,
+                active: lifecycleSummary.activePets,
+                pending: lifecycleSummary.pendingPets,
                 total: totalRequests,
                 processed: inProcessRequests
             }
         }, { headers: corsHeaders });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error en /api/solidarity/stats:', error);
-        return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
+        const message = error instanceof Error ? error.message : 'Internal Server Error';
+        return NextResponse.json({ error: message }, { status: 500, headers: corsHeaders });
     }
 }

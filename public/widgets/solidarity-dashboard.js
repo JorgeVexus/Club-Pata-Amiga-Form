@@ -148,7 +148,6 @@ class SolidarityDashboard {
     }
 
     calculateStats() {
-        const now = new Date();
         this.data.stats.active = this.data.pets.filter(p => {
             const isInactive = p.is_active === false || p.is_active === 'false' || 
                              p.is_active === 0 || p.is_active === '0' ||
@@ -1154,5 +1153,4 @@ if (document.readyState === 'loading') {
 } else {
     autoInitSolidarity();
 }
-
 

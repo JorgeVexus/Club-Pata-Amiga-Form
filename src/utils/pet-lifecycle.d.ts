@@ -1,9 +1,9 @@
 export const MAX_PETS: number;
 
-export function enrichPetsWithLifecycle<T extends Record<string, any>>(
+export function enrichPetsWithLifecycle<T extends Record<string, unknown>>(
     pets?: T[],
-    customFields?: Record<string, any>,
-    unsubscriptions?: Record<string, any>[],
+    customFields?: Record<string, unknown>,
+    unsubscriptions?: Record<string, unknown>[],
 ): Array<T & {
     memberstack_slot: number;
     is_active: boolean;
@@ -29,6 +29,25 @@ export function getAvailablePetSlot(
     customFields?: Record<string, unknown>,
     maxPets?: number,
 ): number | null;
+
+export function getSolidarityPetLifecycleSummary<T extends Record<string, unknown>>(
+    pets?: T[],
+    customFields?: Record<string, unknown>,
+    unsubscriptions?: Record<string, unknown>[],
+    now?: Date,
+): {
+    pets: Array<T & {
+        memberstack_slot: number;
+        is_active: boolean;
+        unsubscribed_reason: string | null;
+        unsubscribed_description: string | null;
+        unsubscribed_at: string | null;
+        isEligible: boolean;
+        needsSeniorCertificate: boolean;
+    }>;
+    activePets: number;
+    pendingPets: number;
+};
 
 export function isFalseLike(value: unknown): boolean;
 

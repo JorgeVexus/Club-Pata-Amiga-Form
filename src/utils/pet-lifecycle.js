@@ -140,6 +140,56 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
     });
 }
 
+function getSolidarityWaitingPeriodEnd(pet = {}) {
+    const start = new Date(pet.waiting_period_start || pet.created_at || new Date());
+    if (isNaN(start.getTime())) return new Date();
+
+    const isAdopted = String(pet.is_adopted) === 'true' || pet.is_adopted === true;
+    const isMixed = String(pet.is_mixed_breed) === 'true' || pet.is_mixed_breed === true;
+
+    let days = 180;
+    if (isAdopted) days = 90;
+    else if (isMixed) days = 120;
+
+    const end = new Date(start);
+    end.setDate(end.getDate() + days);
+    return end;
+}
+
+function getSolidarityPetLifecycleSummary(pets = [], customFields = {}, unsubscriptions = [], now = new Date()) {
+    let activePets = 0;
+    let pendingPets = 0;
+
+    const petsWithExtraData = enrichPetsWithLifecycle(pets, customFields, unsubscriptions).map((pet) => {
+        const isInactive = isUnsubscribedPet(pet);
+        const isApproved = pet.status === 'approved';
+        const waitingPeriodEnd = getSolidarityWaitingPeriodEnd(pet);
+        const hasFinishedWaiting = waitingPeriodEnd <= now;
+        const isEligible = !isInactive && isApproved && hasFinishedWaiting;
+
+        if (!isInactive) {
+            if (isEligible) activePets += 1;
+            else pendingPets += 1;
+        }
+
+        const isSenior = pet.is_senior || false;
+        const hasCertificate = !!pet.vet_certificate_url;
+        const needsSeniorCertificate = isSenior && !hasCertificate;
+
+        return {
+            ...pet,
+            isEligible,
+            needsSeniorCertificate,
+        };
+    });
+
+    return {
+        pets: petsWithExtraData,
+        activePets,
+        pendingPets,
+    };
+}
+
 module.exports = {
     MAX_PETS,
     enrichPetsWithLifecycle,
@@ -147,6 +197,7 @@ module.exports = {
     getEffectiveActivePetCount,
     getRegistrationActivePetCount,
     getAvailablePetSlot,
+    getSolidarityPetLifecycleSummary,
     isFalseLike,
     isUnsubscribedPet,
     isUnsubscribedPetWithHistory,
