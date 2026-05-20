@@ -110,7 +110,7 @@ export async function POST(
 
         // 3. Construir la lista legible de solicitudes
         const requestLabels = requestTypes.map((t: string) => `${REQUEST_TYPES[t].icon} ${REQUEST_TYPES[t].label}`);
-        const requestMessage = `Se solicita la siguiente información para ${pet.name}:\n${requestLabels.join('\n')}${customMessage ? `\n\nMensaje del administrador: ${customMessage}` : ''}`;
+        const requestMessage = `Se solicita la siguiente información para ${pet.name}: ${requestLabels.join(', ')}${customMessage ? `\n\nMensaje del administrador: ${customMessage}` : ''}`;
 
         // 4. Insertar en appeal_logs con metadata
         const { error: logError } = await supabaseAdmin
