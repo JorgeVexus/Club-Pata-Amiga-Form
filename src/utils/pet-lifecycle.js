@@ -134,7 +134,7 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
         );
         const inactiveByUnsubscription = Boolean(unsubscription && (
             unsubscriptionMatchesPetId ||
-            (!slotExplicitlyActive && unsubscriptionMatchesName) ||
+            (!slotExplicitlyActive && unsubscriptionMatchesName && pet.status !== 'approved') ||
             isFalseLike(slotActiveValue)
         ));
         const inactiveInDatabase = pet.is_active === false;

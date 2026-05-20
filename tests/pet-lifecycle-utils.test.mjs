@@ -181,7 +181,7 @@ test('getSolidarityPetLifecycleSummary excludes unsubscription history from acti
   assert.equal(summary.pendingPets, 0);
 });
 
-test('getSolidarityPetLifecycleSummary keeps an approved pet active when Memberstack says its reused slot is active', () => {
+test('getSolidarityPetLifecycleSummary keeps a Supabase-active approved pet active despite same-name unsubscription history', () => {
   const pets = [
     {
       id: 'current-pet',
@@ -192,10 +192,6 @@ test('getSolidarityPetLifecycleSummary keeps an approved pet active when Members
       waiting_period_start: '2025-01-01T00:00:00.000Z',
     },
   ];
-  const customFields = {
-    'pet-1-name': 'Luna',
-    'pet-1-is-active': 'true',
-  };
   const unsubscriptions = [
     {
       pet_index: 1,
@@ -205,7 +201,7 @@ test('getSolidarityPetLifecycleSummary keeps an approved pet active when Members
     },
   ];
 
-  const summary = getSolidarityPetLifecycleSummary(pets, customFields, unsubscriptions, new Date('2026-05-19T00:00:00.000Z'));
+  const summary = getSolidarityPetLifecycleSummary(pets, {}, unsubscriptions, new Date('2026-05-19T00:00:00.000Z'));
 
   assert.equal(summary.pets[0].is_active, true);
   assert.equal(summary.pets[0].unsubscribed_reason, null);

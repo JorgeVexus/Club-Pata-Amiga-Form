@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { getMemberDetails } from '@/services/memberstack-admin.service';
 import { getSolidarityPetLifecycleSummary } from '@/utils/pet-lifecycle';
 
 const supabaseAdmin = createClient(
@@ -54,16 +53,6 @@ export async function GET(request: NextRequest) {
             .eq('id', internalUserId)
             .single();
 
-        let msCustomFields: Record<string, unknown> = {};
-        try {
-            const msResult = await getMemberDetails(memberstackId);
-            if (msResult.success && msResult.data) {
-                msCustomFields = msResult.data.customFields || {};
-            }
-        } catch (error) {
-            console.warn('No se pudieron obtener campos de Memberstack para lifecycle:', error);
-        }
-
         let petUnsubscriptions: Record<string, unknown>[] = [];
         try {
             const { data: unsubs, error: unsubsError } = await supabaseAdmin
@@ -86,7 +75,7 @@ export async function GET(request: NextRequest) {
             console.warn('No se pudo consultar pet_unsubscriptions para lifecycle:', error);
         }
 
-        const lifecycleSummary = getSolidarityPetLifecycleSummary(pets || [], msCustomFields, petUnsubscriptions);
+        const lifecycleSummary = getSolidarityPetLifecycleSummary(pets || [], {}, petUnsubscriptions);
 
         const { data: requests, error: requestsError } = await supabaseAdmin
             .from('solidarity_requests')
