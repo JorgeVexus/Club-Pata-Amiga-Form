@@ -252,18 +252,23 @@ class SolidarityDashboard {
                 .pata-dashboard-wrapper * {
                     box-sizing: border-box;
                 }
-
                 .pata-dashboard-wrapper {
                     font-family: 'Outfit', sans-serif;
                     color: var(--pata-black);
-                    max-width: 1200px;
+                    max-width: 100%;
                     margin: 0 auto;
                     display: flex;
                     flex-direction: column;
+                    align-items: center;
                     gap: 50px;
                 }
 
+                .pata-dashboard-wrapper > main {
+                    width: 100%;
+                }
+
                 .pata-header {
+                    width: 100%;
                     padding: 60px 40px 120px 40px;
                     border-radius: 0 0 50px 50px;
                     text-align: left;
@@ -301,12 +306,13 @@ class SolidarityDashboard {
                     opacity: 0.9;
                     margin-top: 10px;
                 }
-
                 .pata-main-card {
                     background: var(--pata-white);
                     border-radius: 50px;
                     padding: 40px;
-                    margin: 20px;
+                    margin: 20px auto;
+                    width: calc(100% - 40px);
+                    max-width: 1400px;
                     box-shadow: 0 20px 40px rgba(0,0,0,0.1);
                     position: relative;
                     z-index: 10;
@@ -432,12 +438,12 @@ class SolidarityDashboard {
                     background-color: var(--pata-turquoise);
                     color: white;
                 }
-
                 .pata-content-layout {
                     display: grid;
                     grid-template-columns: 1fr 1.5fr;
                     gap: 40px;
                     padding: 20px;
+                    background-color: #eaeaea;
                 }
 
                 @media (max-width: 991px) {
