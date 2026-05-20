@@ -5471,6 +5471,8 @@
                 }
 
                 let messageContent = log.message || '';
+                // Add line break after 🏥 emoji for better formatting in info request messages
+                messageContent = messageContent.replace(/(🏥)/g, '$1<br>');
                 const imageMatch = messageContent.match(/\[Imagen adjunta\]\((.*?)\)/);
                 const fileMatch = messageContent.match(/\[Archivo adjunto\]\((.*?)\)/);
 
