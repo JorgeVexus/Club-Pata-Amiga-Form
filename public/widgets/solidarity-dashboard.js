@@ -269,6 +269,7 @@ class SolidarityDashboard {
 
                 .pata-header {
                     width: 100%;
+                    max-width: 1400px;
                     padding: 60px 40px 120px 40px;
                     border-radius: 0 0 50px 50px;
                     text-align: left;
