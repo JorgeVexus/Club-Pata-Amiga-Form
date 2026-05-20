@@ -121,12 +121,14 @@ class SolidarityDashboard {
     calculateStats() {
         const now = new Date();
         this.data.stats.active = this.data.pets.filter(p => {
+            if (p.is_active === false || p.is_active === 'false') return false;
             if (p.status !== 'approved') return false;
             const carencia = this.calculateCarencia(p);
             return !carencia.isWaiting;
         }).length;
 
         this.data.stats.pending = this.data.pets.filter(p => {
+            if (p.is_active === false || p.is_active === 'false') return false;
             if (p.status !== 'approved') return true;
             const carencia = this.calculateCarencia(p);
             return carencia.isWaiting;
@@ -178,6 +180,10 @@ class SolidarityDashboard {
     }
 
     getPetStatusContext(pet) {
+        if (pet.is_active === false || pet.is_active === 'false') {
+            return { label: 'DADA DE BAJA', color: '#718096', icon: '🕊️', isInactive: true };
+        }
+        
         const primaryPhotoUrl = pet.photo_url || pet.primary_photo_url;
         const hasPrimaryPhoto = primaryPhotoUrl && primaryPhotoUrl.startsWith('http');
         
@@ -476,12 +482,22 @@ class SolidarityDashboard {
                     border: 2px solid var(--pata-black);
                 }
 
+                .pata-pet-card.pata-inactive-card {
+                    background: #F1F3F4 !important;
+                }
+
                 .pata-pet-photo {
                     width: 150px;
                     height: 150px;
                     border-radius: 30px;
                     object-fit: cover;
                     border: 2px solid var(--pata-black);
+                }
+
+                .pata-pet-photo.pata-grayscale {
+                    filter: grayscale(100%) !important;
+                    opacity: 0.7 !important;
+                    transition: all 0.5s ease;
                 }
 
                 .pata-pet-name {
@@ -810,8 +826,8 @@ class SolidarityDashboard {
                         </section>
 
                         <section>
-                            <h2 class="pata-section-title" style="color: var(--pata-white);">Historial de solicitudes</h2>
                             <div class="pata-history-panel">
+                                <h2 class="pata-section-title" style="color: var(--pata-white); margin-top: 0; margin-bottom: 25px;">Historial de solicitudes</h2>
                                 ${this.renderHistory()}
                             </div>
                         </section>
@@ -838,17 +854,21 @@ class SolidarityDashboard {
             const carencia = this.calculateCarencia(pet);
             const statusContext = this.getPetStatusContext(pet);
             const imageUrl = pet.primary_photo_url || pet.photo_url || this.data.placeholders.pet;
-            const isApproved = pet.status === 'approved';
+            
+            const isInactive = pet.is_active === false || pet.is_active === 'false';
+            const isApproved = pet.status === 'approved' && !isInactive;
             const isEligible = isApproved && !carencia.isWaiting;
             
             return `
-                <div class="pata-pet-card pata-animate-entry" style="animation-delay: ${index * 0.1}s">
-                    ${!isEligible ? `<div class="pata-pet-badge-new" style="background: ${isApproved ? '#FEF9C3' : '#FEE2E2'}; color: ${isApproved ? '#854D0E' : '#991B1B'}; border-color: ${isApproved ? '#854D0E' : '#991B1B'};">
-                        ${!isApproved ? statusContext.label : 'En espera'}
-                    </div>` : ''}
+                <div class="pata-pet-card pata-animate-entry ${isInactive ? 'pata-inactive-card' : ''}" style="animation-delay: ${index * 0.1}s">
+                    ${!isEligible ? `
+                        <div class="pata-pet-badge-new" style="background: ${isInactive ? '#F1F3F4' : (isApproved ? '#FEF9C3' : '#FEE2E2')}; color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')}; border-color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')};">
+                            ${isInactive ? 'DADA DE BAJA' : (!isApproved ? statusContext.label : 'En espera')}
+                        </div>
+                    ` : ''}
                     
                     <img src="${imageUrl}" 
-                         class="pata-pet-photo" 
+                         class="pata-pet-photo ${isInactive ? 'pata-grayscale' : ''}" 
                          alt="Foto de ${pet.name}"
                          onerror="this.src='${this.data.placeholders.pet}';">
                          
@@ -856,7 +876,9 @@ class SolidarityDashboard {
                         <h3 class="pata-pet-name">${pet.name}</h3>
                         <p style="font-size: 14px; margin: 5px 0; color: var(--pata-gray); font-weight: 600;">${pet.breed || 'Mestizo'}</p>
                         <div style="margin-top: 10px;">
-                            ${!isApproved ? `
+                            ${isInactive ? `
+                                <p style="color: #6B7280; font-weight: 700; font-size: 13px;">🕊️ Mascota dada de baja</p>
+                            ` : !isApproved ? `
                                 <p style="color: #6B7280; font-weight: 700; font-size: 13px;">${statusContext.icon} Esperando aprobación</p>
                             ` : carencia.isWaiting ? `
                                 <p style="color: #EAB308; font-weight: 700; font-size: 13px;">⏳ Faltan ${carencia.daysRemaining} días de espera</p>
@@ -872,17 +894,20 @@ class SolidarityDashboard {
                                 </button>
                             `}
                         </div>
-                        <button class="pata-btn" 
-                                style="margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise);" 
-                                onclick="window.location.href='/mi-mascota?id=${pet.id}'">
-                            Ver expediente
-                        </button>
+                        ${isInactive ? '' : `
+                            <button class="pata-btn" 
+                                    style="margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise);" 
+                                    onclick="window.location.href='/mi-mascota?id=${pet.id}'">
+                                Ver expediente
+                            </button>
+                        `}
                     </div>
                 </div>
             `;
         }).join('');
 
-        const addCard = this.data.pets.length < 3 ? `
+        const activePetCount = this.data.pets.filter(p => p.is_active !== false && p.is_active !== 'false').length;
+        const addCard = activePetCount < 3 ? `
             <div class="pata-pet-card" style="border: 2px dashed var(--pata-gray); background: transparent; cursor: pointer; justify-content: center;" id="add-pet-trigger" onclick="window.location.href='/registrar-mascotas'">
                 <div style="text-align: center; padding: 20px;">
                     <div style="font-size: 32px; color: var(--pata-red);">+</div>
