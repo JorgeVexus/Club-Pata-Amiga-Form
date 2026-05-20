@@ -100,6 +100,33 @@ class SolidarityDashboard {
             this.data.requests = historyRes.requests || [];
         }
 
+        // Fetch pet unsubscriptions to mark inactive pets correctly
+        try {
+            const unsubRes = await fetch(`${this.apiUrl}/api/pet-unsubscriptions?memberstackId=${memberstackId}`);
+            const unsubData = await unsubRes.json();
+            
+            if (unsubData.success && unsubData.unsubscriptions) {
+                // Create a map of pet_id -> unsubscription info
+                const unsubMap = new Map();
+                unsubData.unsubscriptions.forEach(unsub => {
+                    unsubMap.set(unsub.pet_id, unsub);
+                });
+
+                // Mark pets as inactive if they are in the unsubscriptions table
+                this.data.pets = this.data.pets.map(pet => {
+                    if (unsubMap.has(pet.id)) {
+                        return { ...pet, is_active: false, isInactive: true };
+                    }
+                    return pet;
+                });
+                
+                // Recalculate stats after marking pets as inactive
+                this.calculateStats();
+            }
+        } catch (error) {
+            console.warn('⚠️ Could not fetch pet unsubscriptions:', error.message);
+        }
+
         this.data.filteredRequests = [...this.data.requests];
     }
 
@@ -108,7 +135,8 @@ class SolidarityDashboard {
         this.data.pets = [
             { id: 'p1', name: 'Rex', breed: 'Golden Retriever', primary_photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300', waiting_period_end: new Date(Date.now() - 86400000 * 10).toISOString() },
             { id: 'p2', name: 'Luna', breed: 'Siamés', primary_photo_url: 'https://images.unsplash.com/photo-1513245543132-31f507417b26?auto=format&fit=crop&q=80&w=300', waiting_period_end: new Date(Date.now() + 86400000 * 45).toISOString() },
-            { id: 'p3', name: 'Firulais', breed: 'Labrador', is_active: false, status: 'pending', primary_photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300' }
+            { id: 'p3', name: 'Firulais', breed: 'Labrador', is_active: false, status: 'pending', primary_photo_url: 'https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&q=80&w=300' },
+            { id: 'p4', name: 'Max', breed: 'Beagle', is_active: false, isInactive: true, status: 'approved', primary_photo_url: 'https://images.unsplash.com/photo-1537151608828-ea2b11777ee8?auto=format&fit=crop&q=80&w=300' }
         ];
         this.data.requests = [
             { id: 'r1', pet_id: 'p1', benefit_type: 'medical_emergency', reason: 'Consulta dermatológica', clinic_name: 'Animal Care', status: 'in_review', type: 'clinic', created_at: '2025-06-30T10:00:00Z' },
@@ -463,8 +491,6 @@ class SolidarityDashboard {
                     padding: 20px;
                     background-color: #eaeaea;
                     width: 100%;
-                    max-width: 1400px;
-                    margin: 0 auto;
                     box-sizing: border-box;
                 }
 
@@ -941,7 +967,7 @@ class SolidarityDashboard {
                 <div class="pata-pet-card pata-animate-entry ${isInactive ? 'pata-inactive-card' : ''}" style="animation-delay: ${index * 0.1}s">
                     ${!isEligible ? `
                         <div class="pata-pet-badge-new" style="background: ${isInactive ? '#F1F3F4' : (isApproved ? '#FEF9C3' : '#FEE2E2')}; color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')}; border-color: ${isInactive ? '#3D494D' : (isApproved ? '#854D0E' : '#991B1B')};">
-                            ${isInactive ? 'DADA DE BAJA' : (!isApproved ? (pet.status === 'pending' ? 'EN REVISIÓN' : statusContext.label) : 'En espera')}
+                            ${isInactive ? 'DADA DE BAJA' : (carencia.isWaiting ? 'En espera' : (pet.status === 'pending' ? 'EN REVISIÓN' : statusContext.label))}
                         </div>
                     ` : ''}
                     
