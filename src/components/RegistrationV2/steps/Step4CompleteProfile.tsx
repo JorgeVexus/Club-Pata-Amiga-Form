@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
-import PhoneInput from '@/components/FormFields/PhoneInput';
 import NationalitySelect from '../NationalitySelect';
 import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
 import { checkCurpAvailability } from '@/app/actions/user.actions';
@@ -25,7 +24,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         birthDate: '',
         nationality: '',
         nationalityCode: '',
-        phone: '',
+        phone: data?.account?.phone || '',
         email: member?.auth?.email || data?.account?.email || '',
         curp: '',
         postalCode: '',
@@ -190,7 +189,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 birthDate: profile.birthDate || '',
                 nationality: profile.nationality || '',
                 nationalityCode: profile.nationalityCode || '',
-                phone: profile.phone || '',
                 email: profile.email || prev.email,
                 curp: profile.curp || '',
                 postalCode: profile.postalCode || '',
@@ -287,7 +285,6 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         }
 
         if (!formData.nationality) newErrors.nationality = 'Requerido';
-        if (!formData.phone || formData.phone.length < 10) newErrors.phone = 'Teléfono inválido';
 
         if (formData.nationality === 'Mexicana' || formData.nationality === 'México' || formData.nationality === 'Mexico') {
             if (!formData.curp || formData.curp.length !== 18) newErrors.curp = 'CURP inválida';
@@ -338,6 +335,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
 
             const dataToSubmit = {
                 ...formData,
+                phone: formData.phone,
                 ine_front_url: passportUrl
             };
 
@@ -534,16 +532,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Contacto</h3>
 
-                        <PhoneInput
-                            label="Teléfono"
-                            name="phone"
-                            value={formData.phone}
-                            onChange={(value) => setFormData({ ...formData, phone: value })}
-                            error={errors.phone}
-                            required
-                        />
-
-                        <TextInput
+<TextInput
                             label="Correo electrónico"
                             name="email"
                             type="email"

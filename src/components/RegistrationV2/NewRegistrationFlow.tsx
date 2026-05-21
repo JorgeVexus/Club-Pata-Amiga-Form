@@ -561,7 +561,7 @@ export default function NewRegistrationFlow() {
     // ===== HANDLERS DE PASOS =====
 
     // Paso 1: Crear cuenta en Memberstack (o hacer login si el email ya existe)
-    const handleStep1Complete = async (data: { email: string; password: string; mode?: 'register' | 'login' }) => {
+    const handleStep1Complete = async (data: { email: string; password: string; phone?: string; mode?: 'register' | 'login' }) => {
         setIsLoading(true);
         try {
             // 🍎 Leer intent guardado en sessionStorage (por iOS ITP o magic token)
@@ -1063,11 +1063,14 @@ export default function NewRegistrationFlow() {
             await saveProgress(5, newData);
 
             // Actualizar Memberstack
+            const msUpdateFields: Record<string, any> = {
+                'registration-step': 5,
+            };
+            if (profileData.firstName) msUpdateFields['first-name'] = profileData.firstName;
+            if (profileData.phone) msUpdateFields.phone = profileData.phone;
+
             const msResult = await window.$memberstackDom.updateMember({
-                customFields: {
-                    'registration-step': 5,
-                    'first-name': profileData.firstName,
-                },
+                customFields: msUpdateFields,
             });
 
             if (msResult.data) {

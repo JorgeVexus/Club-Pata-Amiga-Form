@@ -654,7 +654,7 @@ export default function RegistrationForm({ onSuccess, onCancel }: RegistrationFo
                             onChange={(value) => setFormData({ ...formData, phone: value })}
                             error={errors.phone}
                             helpText="Para comunicarnos cuando sea importante. Sin spam, lo prometemos"
-                            required
+                            // Opcional - no requiere validación
                             memberstackField="phone"
                         />
 

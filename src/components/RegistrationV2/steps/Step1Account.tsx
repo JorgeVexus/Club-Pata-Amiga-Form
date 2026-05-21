@@ -4,6 +4,7 @@ import styles from './Step1Account.module.css';
 import TermsModalEnhanced from '../TermsModalEnhanced';
 import { trackLead, trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 import { checkEmailAvailability } from '@/app/actions/user.actions';
+import PhoneInput from '@/components/FormFields/PhoneInput';
 import {
     BadgeCheckIcon,
     MedicalEmergencyIcon,
@@ -34,7 +35,8 @@ export default function Step1Account({
     const [formData, setFormData] = useState({
         email: defaultEmail || data?.account?.email || '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        phone: ''
     });
 
     const [mode, setMode] = useState<'register' | 'login'>(autoLoginMode ? 'login' : 'register');
@@ -135,21 +137,23 @@ export default function Step1Account({
         const cleanEmail = formData.email.trim();
         try {
             if (isLoggedIn) {
-                onNext({ email: cleanEmail, mode: 'login' });
+                onNext({ email: cleanEmail, mode: 'login', phone: formData.phone });
                 return;
             }
             if (mode === 'login') {
                 await onNext({
                     email: cleanEmail,
                     password: formData.password,
-                    mode: 'login'
+                    mode: 'login',
+                    phone: formData.phone
                 });
             } else {
                 // Registro
                 await onNext({
                     email: cleanEmail,
                     password: formData.password,
-                    mode: 'register'
+                    mode: 'register',
+                    phone: formData.phone
                 });
                 trackLead({ content_name: 'User Registration', content_category: 'signup' });
             }
@@ -361,7 +365,7 @@ export default function Step1Account({
 
                                         <div className={styles.inputGroup}>
                                             <label htmlFor="password" className={styles.inputLabel}>CONTRASEÑA</label>
-                                            <div className={styles.inputWrapper}>
+                                            <div className={`${styles.inputWrapper} ${styles.password}`}>
                                                 <input
                                                     id="password"
                                                     type={showPassword ? 'text' : 'password'}
@@ -390,7 +394,7 @@ export default function Step1Account({
                                         {mode === 'register' && (
                                             <div className={styles.inputGroup}>
                                                 <label htmlFor="confirmPassword" className={styles.inputLabel}>CONFIRMAR CONTRASEÑA</label>
-                                                <div className={styles.inputWrapper}>
+                                                <div className={`${styles.inputWrapper} ${styles.password}`}>
                                                     <input
                                                         id="confirmPassword"
                                                         type={showConfirmPassword ? 'text' : 'password'}
@@ -418,6 +422,15 @@ export default function Step1Account({
                                         )}
                                     </>
                                 )}
+
+                                {/* Teléfono opcional */}
+                                <PhoneInput
+                                    label="Número de teléfono"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                                    helpText="Déjanos tu teléfono si necesitas que te llamemos."
+                                />
 
                                 <button
                                     type="submit"
