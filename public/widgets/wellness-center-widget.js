@@ -15,6 +15,11 @@
         DEBUG: false
     };
 
+    const INSTAGRAM_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
+    const FACEBOOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`;
+    const TIKTOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>`;
+    const WEBSITE_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+
     const STYLES = `
         .wellness-widget-container {
             font-family: 'Outfit', sans-serif;
@@ -229,6 +234,162 @@
             border-bottom: 2px solid #F1F5F9;
             color: #1E293B;
         }
+
+        .wc-info-card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .wc-info-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            border-bottom: 2px solid #F1F5F9;
+            padding-bottom: 15px;
+        }
+
+        .wc-info-logo-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 3px solid #000;
+            background: #F1F5F9;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+        }
+
+        .wc-info-placeholder-logo {
+            width: 90px;
+            height: 90px;
+            border-radius: 20px;
+            border: 3px solid #000;
+            background: #7DD8D5;
+            color: #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 2.5rem;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.1);
+        }
+
+        .wc-info-header-text {
+            flex: 1;
+        }
+
+        .wc-info-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 768px) {
+            .wc-info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .wc-info-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .wc-info-section-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.1rem;
+            color: #000;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wc-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.95rem;
+            color: #475569;
+            line-height: 1.4;
+        }
+
+        .wc-info-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .wc-info-promo-box {
+            background: #FFF7ED;
+            border: 2px dashed #FED7AA;
+            border-radius: 20px;
+            padding: 15px;
+            color: #C2410C;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .wc-info-socials {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .wc-info-social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid #000;
+            background: #FFF;
+            transition: all 0.2s;
+            color: #000;
+            text-decoration: none;
+        }
+
+        .wc-info-social-btn:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+        }
+
+        .wc-info-social-btn.instagram:hover { background: #E1306C; color: white; }
+        .wc-info-social-btn.facebook:hover { background: #1877F2; color: white; }
+        .wc-info-social-btn.tiktok:hover { background: #010101; color: white; }
+        .wc-info-social-btn.website:hover { background: #00BBB4; color: white; }
+
+        .wc-info-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+            border-top: 2px solid #F1F5F9;
+            padding-top: 15px;
+        }
+
+        .wc-info-maps-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+            color: #00BBB4;
+            text-decoration: underline;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            padding: 0;
+            margin-top: 5px;
+        }
+
+        .wc-info-maps-btn:hover {
+            color: #008882;
+        }
     `;
 
     // ============================================
@@ -394,6 +555,8 @@
 
     function renderDashboard(container, center) {
         currentCenter = center;
+        const social = center.social_links || {};
+
         container.innerHTML = `
             <div class="wellness-widget-content">
                 <div class="wc-card">
@@ -417,9 +580,93 @@
                 </div>
 
                 <div class="wc-card">
-                    <h2 class="wc-title" style="font-size:1.5rem;">Información del Centro</h2>
-                    <p>Mantén tus datos de contacto y ubicación actualizados.</p>
-                    <button id="btn-edit-profile" class="wc-btn wc-btn-secondary">Editar Información</button>
+                    <h2 class="wc-title" style="font-size:1.5rem; margin-bottom: 0;">Información del Centro</h2>
+                    
+                    <div class="wc-info-card-content">
+                        <div class="wc-info-header">
+                            ${center.logo_url 
+                                ? `<img src="${center.logo_url}" class="wc-info-logo-large" alt="Logo de ${center.establishment_name}">`
+                                : `<div class="wc-info-placeholder-logo">${(center.establishment_name || center.name || 'C').charAt(0).toUpperCase()}</div>`
+                            }
+                            <div class="wc-info-header-text">
+                                <h3 class="wc-title" style="font-size:1.6rem; margin-bottom: 5px;">${center.establishment_name || 'Sin nombre comercial'}</h3>
+                                <p style="margin: 0; color: #718096; font-size: 0.95rem;">Razón Social / Nombre: ${center.name || 'No especificado'}</p>
+                            </div>
+                        </div>
+
+                        <div class="wc-info-grid">
+                            <div class="wc-info-section">
+                                <h4 class="wc-info-section-title">📍 Datos de Contacto</h4>
+                                <div class="wc-info-item">
+                                    <span class="wc-info-icon">📞</span>
+                                    <div>
+                                        <strong>Teléfono:</strong> 
+                                        ${center.phone 
+                                            ? `<a href="tel:${center.phone}" style="color: inherit; text-decoration: none;">${center.phone}</a>` 
+                                            : '<span style="color:#718096; font-style:italic;">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                                <div class="wc-info-item">
+                                    <span class="wc-info-icon">✉️</span>
+                                    <div>
+                                        <strong>Email:</strong> 
+                                        ${center.email 
+                                            ? `<a href="mailto:${center.email}" style="color: inherit; text-decoration: none;">${center.email}</a>` 
+                                            : '<span style="color:#718096; font-style:italic;">No registrado</span>'
+                                        }
+                                    </div>
+                                </div>
+                                <div class="wc-info-item">
+                                    <span class="wc-info-icon">🏠</span>
+                                    <div>
+                                        <strong>Dirección:</strong> 
+                                        <span>${center.address || '<span style="color:#718096; font-style:italic;">No registrada</span>'}</span>
+                                        ${center.lat && center.lng 
+                                            ? `<br><a href="https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}" target="_blank" class="wc-info-maps-btn">🗺️ Ver en Google Maps</a>` 
+                                            : ''
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="wc-info-section">
+                                <h4 class="wc-info-section-title">🎁 Beneficio para Miembros</h4>
+                                <div class="wc-info-promo-box">
+                                    <strong>Beneficio Especial:</strong><br>
+                                    ${center.promotion_details || '<span style="color:#718096; font-style:italic;">No se ha configurado la promoción para los miembros de Pata Amiga.</span>'}
+                                </div>
+
+                                <h4 class="wc-info-section-title" style="margin-top: 15px;">🌐 Redes Sociales</h4>
+                                <div class="wc-info-socials">
+                                    ${social.instagram 
+                                        ? `<a href="${social.instagram}" target="_blank" class="wc-info-social-btn instagram" title="Instagram">${INSTAGRAM_SVG}</a>` 
+                                        : ''
+                                    }
+                                    ${social.facebook 
+                                        ? `<a href="${social.facebook}" target="_blank" class="wc-info-social-btn facebook" title="Facebook">${FACEBOOK_SVG}</a>` 
+                                        : ''
+                                    }
+                                    ${social.tiktok 
+                                        ? `<a href="${social.tiktok}" target="_blank" class="wc-info-social-btn tiktok" title="TikTok">${TIKTOK_SVG}</a>` 
+                                        : ''
+                                    }
+                                    ${social.website 
+                                        ? `<a href="${social.website}" target="_blank" class="wc-info-social-btn website" title="Sitio Web">${WEBSITE_SVG}</a>` 
+                                        : ''
+                                    }
+                                    ${(!social.instagram && !social.facebook && !social.tiktok && !social.website) 
+                                        ? '<span style="color:#718096; font-size:0.9rem; font-style:italic;">Ninguna red social agregada</span>' 
+                                        : ''
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="wc-info-actions">
+                            <button id="btn-edit-profile" class="wc-btn wc-btn-secondary">Editar Información</button>
+                        </div>
+                    </div>
                 </div>
 
                 <div style="text-align: right; margin-top: 50px;">
