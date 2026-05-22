@@ -70,6 +70,24 @@ export async function POST(request: NextRequest) {
             }, { headers: corsHeaders() });
         }
 
+        // 2.5 Check if user is a Wellness Center
+        console.time(`[Check-Role] Supabase Wellness Center Check: ${memberstackId}`);
+        const { data: wellnessCenter } = await supabase
+            .from('wellness_centers')
+            .select('id, status')
+            .eq('memberstack_id', memberstackId)
+            .maybeSingle();
+        console.timeEnd(`[Check-Role] Supabase Wellness Center Check: ${memberstackId}`);
+
+        if (wellnessCenter && wellnessCenter.status !== 'rejected' && wellnessCenter.status !== 'suspended' && wellnessCenter.status !== 'cancelled') {
+            console.log(`🔍 [Check-Role] Centro de Bienestar encontrado para ID ${memberstackId}:`, wellnessCenter);
+            return NextResponse.json({
+                success: true,
+                role: 'wellness_center',
+                status: wellnessCenter.status
+            }, { headers: corsHeaders() });
+        }
+
         // 3. Optional: Check if global skip_payment_enabled is active
         console.time(`[Check-Role] Supabase Settings Check: ${memberstackId}`);
         const { data: skipPaymentSetting } = await supabase
