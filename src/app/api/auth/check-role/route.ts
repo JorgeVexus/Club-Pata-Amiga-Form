@@ -34,17 +34,18 @@ export async function POST(request: NextRequest) {
         console.log(`🔍 [Check-Role] Request for: ${memberstackId}`);
 
         // 1. Check if user is Admin/SuperAdmin
-        console.time(`[Check-Role] Supabase Admin Check: ${memberstackId}`);
+        const adminStart = Date.now();
         const { data: user } = await supabase
             .from('users')
             .select('role')
             .eq('memberstack_id', memberstackId)
             .maybeSingle();
-        console.timeEnd(`[Check-Role] Supabase Admin Check: ${memberstackId}`);
+        console.log(`[Check-Role] Supabase Admin Check: ${memberstackId} took ${Date.now() - adminStart}ms`);
 
         const adminRole = user?.role;
 
         if (adminRole === 'admin' || adminRole === 'super_admin') {
+            console.log(`🔍 [Check-Role] Admin encontrado para ID ${memberstackId}:`, adminRole);
             return NextResponse.json({
                 success: true,
                 role: 'admin',
@@ -52,32 +53,14 @@ export async function POST(request: NextRequest) {
             }, { headers: corsHeaders() });
         }
 
-        // 2. Check if user is an Ambassador
-        console.time(`[Check-Role] Supabase Ambassador Check: ${memberstackId}`);
-        const { data: ambassador } = await supabase
-            .from('ambassadors')
-            .select('id, status')
-            .eq('linked_memberstack_id', memberstackId)
-            .maybeSingle();
-        console.timeEnd(`[Check-Role] Supabase Ambassador Check: ${memberstackId}`);
-
-        if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended') {
-            console.log(`🔍 [Check-Role] Embajador encontrado para ID ${memberstackId}:`, ambassador);
-            return NextResponse.json({
-                success: true,
-                role: 'ambassador',
-                status: ambassador.status
-            }, { headers: corsHeaders() });
-        }
-
-        // 2.5 Check if user is a Wellness Center
-        console.time(`[Check-Role] Supabase Wellness Center Check: ${memberstackId}`);
+        // 2. Check if user is a Wellness Center (prioridad sobre embajador)
+        const wellnessStart = Date.now();
         const { data: wellnessCenter } = await supabase
             .from('wellness_centers')
             .select('id, status')
             .eq('memberstack_id', memberstackId)
             .maybeSingle();
-        console.timeEnd(`[Check-Role] Supabase Wellness Center Check: ${memberstackId}`);
+        console.log(`[Check-Role] Supabase Wellness Center Check: ${memberstackId} took ${Date.now() - wellnessStart}ms`);
 
         if (wellnessCenter && wellnessCenter.status !== 'rejected' && wellnessCenter.status !== 'suspended' && wellnessCenter.status !== 'cancelled') {
             console.log(`🔍 [Check-Role] Centro de Bienestar encontrado para ID ${memberstackId}:`, wellnessCenter);
@@ -85,6 +68,24 @@ export async function POST(request: NextRequest) {
                 success: true,
                 role: 'wellness_center',
                 status: wellnessCenter.status
+            }, { headers: corsHeaders() });
+        }
+
+        // 3. Check if user is an Ambassador
+        const ambassadorStart = Date.now();
+        const { data: ambassador } = await supabase
+            .from('ambassadors')
+            .select('id, status')
+            .eq('linked_memberstack_id', memberstackId)
+            .maybeSingle();
+        console.log(`[Check-Role] Supabase Ambassador Check: ${memberstackId} took ${Date.now() - ambassadorStart}ms`);
+
+        if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended') {
+            console.log(`🔍 [Check-Role] Embajador encontrado para ID ${memberstackId}:`, ambassador);
+            return NextResponse.json({
+                success: true,
+                role: 'ambassador',
+                status: ambassador.status
             }, { headers: corsHeaders() });
         }
 
