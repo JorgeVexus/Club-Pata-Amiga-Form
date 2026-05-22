@@ -75,16 +75,21 @@
 
             // Determinar URL
             let redirectUrl;
+            const dashboards = CONFIG.dashboards;
+            
+            logger.log('Dashboards disponibles:', dashboards);
+            logger.log('Rol detectado:', data.role);
+
             switch (data.role) {
                 case 'admin':
-                    redirectUrl = CONFIG.dashboards.admin;
+                    redirectUrl = dashboards.admin;
                     break;
                 case 'ambassador':
-                    redirectUrl = CONFIG.dashboards.ambassador;
+                    redirectUrl = dashboards.ambassador;
                     break;
                 case 'wellness_center':
                 case 'wellness-center':
-                    redirectUrl = CONFIG.dashboards.wellness_center;
+                    redirectUrl = dashboards.wellness_center || 'https://www.pataamiga.mx/red-pata-amiga/perfil-centros-del-bienestar';
                     logger.log('Usuario con rol de Centro del Bienestar, redirigiendo a dashboard específico');
                     break;
                 case 'pending_payment':
@@ -92,7 +97,7 @@
                     // Cuando quieras volver a activar el cobro, descomenta la siguiente línea que ya usa la NUEVA URL:
                     // redirectUrl = 'https://app.pataamiga.mx/usuarios/registro';
 
-                    redirectUrl = CONFIG.dashboards.member;
+                    redirectUrl = dashboards.member;
                     logger.log('Usuario sin plan activo, redirigiendo a dashboard (MODO PRUEBA)');
                     break;
                 case 'payment_processing':
@@ -102,8 +107,14 @@
                     break;
                 case 'member':
                 default:
-                    redirectUrl = CONFIG.dashboards.member;
+                    redirectUrl = dashboards.member;
                     break;
+            }
+
+            // Asegurar que la URL no sea undefined
+            if (!redirectUrl) {
+                logger.error('URL de redirección es undefined, usando por defecto');
+                redirectUrl = 'https://www.pataamiga.mx/red-pata-amiga/perfil-centros-del-bienestar';
             }
 
             logger.log('Redirigiendo a:', redirectUrl);
