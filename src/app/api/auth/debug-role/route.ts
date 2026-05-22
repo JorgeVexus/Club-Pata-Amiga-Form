@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
         console.log(`🔍 [Debug-Role] Iniciando depuración para: ${memberstackId}`);
 
-        const result = {
+        const result: any = {
             memberstackId,
             timestamp: new Date().toISOString(),
             checks: {}
