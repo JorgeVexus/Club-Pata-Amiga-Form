@@ -250,10 +250,10 @@ export default function Step3PlanSelection({
                     </div>
 
                     <div className={styles.stepBadge}>
-                        <img 
-                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png" 
-                            alt="Club Pata Amiga Logo" 
-                            className={styles.stepBadgeLogo} 
+                        <img
+                            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
+                            alt="Club Pata Amiga Logo"
+                            className={styles.stepBadgeLogo}
                         />
                         <div className={styles.stepBadgeText}>PASO 3 DE 3</div>
                         <div className={styles.stepBadgeIcon} aria-hidden="true" />
@@ -313,7 +313,8 @@ export default function Step3PlanSelection({
                             ))}
                         </div>
 
-                        {/* Referral Section */}
+                        {/* Referral Section - HIDDEN FOR NOW */}
+                        {/* 
                         <div className={styles.referralSection}>
                             <label className={styles.referralLabel}>
                                 🎟️ ¿Tienes un código de Embajador?
@@ -343,7 +344,7 @@ export default function Step3PlanSelection({
                                 <div className={styles.referralSuccess}>
                                     <span>✨</span>
                                     <span>
-                                        ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>! 
+                                        ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>!
                                         <br />
                                         <small>Tu beneficio de 90 días de carencia ha sido aplicado.</small>
                                     </span>
@@ -353,6 +354,7 @@ export default function Step3PlanSelection({
                                 <span className={styles.referralError}>❌ {referralError}</span>
                             )}
                         </div>
+                        */}
 
                         {/* Checkbox único de términos */}
                         <div className={styles.termsSection}>
