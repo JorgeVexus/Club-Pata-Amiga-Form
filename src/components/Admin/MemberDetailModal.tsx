@@ -5,6 +5,7 @@ import styles from './MemberDetailModal.module.css';
 import { formatMXN } from '@/utils/format';
 import { adminFetch } from '@/utils/admin-fetch';
 import { getPetsByUserId, getBillingDetailsByMemberstackId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
+import { getPetCarenciaDate, getDaysUntilActive, getDaysElapsed } from '@/utils/carencia.utils';
 
 interface Pet {
     id: string;
@@ -33,7 +34,9 @@ interface Pet {
     is_adopted?: boolean;
     adoption_story?: string;
     is_senior?: boolean;
+    waiting_period_start?: string | null;
     waiting_period_end?: string | null;
+    is_mixed?: boolean;
     created_at: string;
     is_active?: boolean;
     unsubscribed_reason?: string | null;
@@ -992,6 +995,25 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                     const pIdx = pets.indexOf(pet) + 1;
                                     const mainPhoto = pet.photo_url || fields[`pet-${pIdx}-photo-1-url`];
 
+                                    const hasAmbassadorCode = !!(fields['ambassador-code'] || supabaseUser?.ambassador_code);
+                                    
+                                    let totalCarenciaDays = 180;
+                                    if (hasAmbassadorCode) {
+                                        totalCarenciaDays = 90;
+                                    } else if (pet.is_adopted) {
+                                        const isMixed = pet.is_mixed_breed === true || pet.is_mixed === true;
+                                        totalCarenciaDays = isMixed ? 120 : 150;
+                                    }
+                                    if (pet.waiting_period_start && pet.waiting_period_end) {
+                                        const start = new Date(pet.waiting_period_start);
+                                        const end = new Date(pet.waiting_period_end);
+                                        const diff = end.getTime() - start.getTime();
+                                        totalCarenciaDays = Math.round(diff / (1000 * 60 * 60 * 24));
+                                    }
+
+                                    const daysElapsed = pet.waiting_period_start ? getDaysElapsed(pet, hasAmbassadorCode) : 0;
+                                    const daysRemaining = pet.waiting_period_start ? getDaysUntilActive(pet, hasAmbassadorCode) : totalCarenciaDays;
+
                                     return (
                                         <div key={pet.id} className={styles.petCardFull}>
                                             <div className={styles.petHeader}>
@@ -1114,6 +1136,45 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     {new Date(pet.created_at).toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' })}
                                                 </span>
                                             </div>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>⏱️ Tiempo de carencia</span>
+                                                <span className={styles.detailValue}>
+                                                    {totalCarenciaDays} días {!pet.waiting_period_start && '(estimado)'}
+                                                </span>
+                                            </div>
+                                            {pet.waiting_period_start ? (
+                                                <>
+                                                    <div className={styles.detailRow}>
+                                                        <span className={styles.detailLabel}>📅 Inicio de carencia</span>
+                                                        <span className={styles.detailValue}>
+                                                            {new Date(pet.waiting_period_start).toLocaleDateString('es-MX', { 
+                                                                day: '2-digit', 
+                                                                month: 'short', 
+                                                                year: 'numeric' 
+                                                            })}
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.detailRow}>
+                                                        <span className={styles.detailLabel}>📈 Días transcurridos</span>
+                                                        <span className={styles.detailValue}>
+                                                            {daysElapsed} {daysElapsed === 1 ? 'día' : 'días'}
+                                                        </span>
+                                                    </div>
+                                                    <div className={styles.detailRow}>
+                                                        <span className={styles.detailLabel}>⏳ Días restantes</span>
+                                                        <span className={styles.detailValue} style={{ fontWeight: 600, color: daysRemaining > 0 ? '#FE8F15' : '#38A169' }}>
+                                                            {daysRemaining > 0 ? `${daysRemaining} ${daysRemaining === 1 ? 'día' : 'días'}` : 'Completado (Activa)'}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            ) : (
+                                                <div className={styles.detailRow}>
+                                                    <span className={styles.detailLabel}>📅 Inicio de carencia</span>
+                                                    <span className={styles.detailValue} style={{ color: '#718096', fontStyle: 'italic' }}>
+                                                        Pendiente de aprobación
+                                                    </span>
+                                                </div>
+                                            )}
                                             {pet.waiting_period_end && (
                                                 <div className={styles.detailRow} style={{ gridColumn: 'span 2' }}>
                                                     <span className={styles.detailLabel}>🚀 Activación de beneficios</span>
