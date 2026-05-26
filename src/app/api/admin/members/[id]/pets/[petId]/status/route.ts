@@ -5,6 +5,7 @@ import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
 import { updateContactAsActive } from '@/services/crm.service';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { getPetCarenciaDate } from '@/utils/carencia.utils';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -47,7 +48,7 @@ export async function POST(
         // 0. Obtener estado ANTERIOR de la mascota
         const { data: previousPet, error: fetchError } = await supabaseAdmin
             .from('pets')
-            .select('status, name, is_active, memberstack_slot, waiting_period_start, is_adopted, is_mixed_breed, is_mixed')
+            .select('status, name, is_active, memberstack_slot, waiting_period_start, is_adopted, is_mixed_breed, is_mixed, breed, pet_type')
             .eq('id', petId)
             .single();
 
@@ -95,20 +96,21 @@ export async function POST(
                 const now = new Date();
                 updateData.waiting_period_start = now.toISOString();
 
-                // Calcular el total de días según las reglas de negocio
-                let totalDays = 180;
+                // Calcular el total de días usando la utilidad centralizada
+                const carenciaInput = {
+                    waiting_period_start: updateData.waiting_period_start,
+                    is_adopted: previousPet.is_adopted,
+                    is_mixed_breed: previousPet.is_mixed_breed,
+                    is_mixed: previousPet.is_mixed,
+                    breed: previousPet.breed,
+                    pet_type: previousPet.pet_type
+                };
                 
-                if (hasAmbassadorCode) {
-                    totalDays = 90; // Prioridad 1: Código de Embajador
-                } else if (previousPet?.is_adopted) {
-                    // Prioridad 2: Regla de adoptados
-                    const isMixed = previousPet.is_mixed_breed || previousPet.is_mixed || false;
-                    totalDays = isMixed ? 120 : 150;
-                }
-
-                const endDate = new Date(now);
-                endDate.setDate(now.getDate() + totalDays);
+                const endDate = getPetCarenciaDate(carenciaInput, hasAmbassadorCode);
                 updateData.waiting_period_end = endDate.toISOString();
+                
+                const diffTime = endDate.getTime() - now.getTime();
+                const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                 
                 console.log(`📅 Carencia calculada para ${previousPet?.name}: ${totalDays} días (Embajador: ${hasAmbassadorCode})`);
             }

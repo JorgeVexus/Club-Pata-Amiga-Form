@@ -11,6 +11,8 @@ interface CarenciaInput {
     is_adopted?: boolean | null;
     is_mixed_breed?: boolean | null;
     is_mixed?: boolean | null; // Soporte para inconsistencias de nombrado
+    breed?: string | null;
+    pet_type?: string | null;
 }
 
 /**
@@ -21,6 +23,8 @@ interface CarenciaInput {
  * 2. Si es adoptado y mestizo: 120 días.
  * 3. Si es adoptado y de raza: 150 días.
  * 4. Por defecto: 180 días.
+ * 
+ * Si es mestizo o gato (michis/mestizos), se considera adoptado por defecto en la lógica.
  * 
  * El periodo inicia desde waiting_period_start (fecha de aprobación).
  * Si no existe, se usa created_at como fallback.
@@ -39,10 +43,16 @@ export function getPetCarenciaDate(pet: CarenciaInput, hasAmbassadorCode: boolea
     // 3. Determinar número de días según reglas
     let days = 180;
     
+    const isMixed = pet.is_mixed_breed === true || pet.is_mixed === true || 
+                    (pet.breed && (pet.breed.toLowerCase().includes('mestizo') || 
+                                   pet.breed.toLowerCase().includes('doméstico') || 
+                                   pet.breed.toLowerCase().includes('domestico')));
+    const isCat = pet.pet_type === 'cat' || pet.pet_type === 'gato' || (pet.pet_type && pet.pet_type.toLowerCase().includes('gato'));
+    const isAdopted = pet.is_adopted === true || isMixed || isCat;
+
     if (hasAmbassadorCode) {
         days = 90;
-    } else if (pet.is_adopted) {
-        const isMixed = pet.is_mixed_breed === true || pet.is_mixed === true;
+    } else if (isAdopted) {
         days = isMixed ? 120 : 150;
     }
 
