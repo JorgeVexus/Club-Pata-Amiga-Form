@@ -45,11 +45,16 @@ export async function POST(
         console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
 
         // 0. Obtener estado ANTERIOR de la mascota
-        const { data: previousPet } = await supabaseAdmin
+        const { data: previousPet, error: fetchError } = await supabaseAdmin
             .from('pets')
-            .select('status, name, is_active, memberstack_slot, waiting_period_start, waiting_period_days, is_adopted, is_mixed_breed, is_mixed')
+            .select('status, name, is_active, memberstack_slot, waiting_period_start, is_adopted, is_mixed_breed, is_mixed')
             .eq('id', petId)
             .single();
+
+        if (fetchError) {
+            console.error('❌ Error al obtener la mascota previa:', fetchError);
+            return NextResponse.json({ error: 'No se pudo obtener la información de la mascota' }, { status: 500 });
+        }
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
@@ -95,10 +100,8 @@ export async function POST(
                 
                 if (hasAmbassadorCode) {
                     totalDays = 90; // Prioridad 1: Código de Embajador
-                } else if (previousPet?.waiting_period_days) {
-                    totalDays = parseInt(previousPet.waiting_period_days); // Prioridad 2: Valor explícito
                 } else if (previousPet?.is_adopted) {
-                    // Prioridad 3: Regla de adoptados
+                    // Prioridad 2: Regla de adoptados
                     const isMixed = previousPet.is_mixed_breed || previousPet.is_mixed || false;
                     totalDays = isMixed ? 120 : 150;
                 }
