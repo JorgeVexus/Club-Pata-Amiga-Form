@@ -17,7 +17,7 @@
     background: white;
     border-radius: var(--radius-lg);
     width: 100%;
-    max-width: 800px;
+    max-width: 1100px;
     max-height: 90vh;
     display: flex;
     flex-direction: column;
@@ -1243,4 +1243,62 @@
 .saveButton:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+}
+
+/* Sección de mascotas dadas de baja colapsable */
+.unsubscribedSection {
+    margin-top: var(--spacing-xl);
+    border: 2px dashed #CBD5E1;
+    border-radius: 16px;
+    background: #F8FAFC;
+    padding: var(--spacing-md);
+}
+
+.unsubscribedHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    padding: var(--spacing-sm) var(--spacing-md);
+    user-select: none;
+    border-radius: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.unsubscribedHeader:hover {
+    background: #F1F5F9;
+}
+
+.unsubscribedTitle {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    color: #475569;
+    margin: 0;
+}
+
+.unsubscribedIcon {
+    font-size: 1rem;
+    color: #64748B;
+    transition: transform 0.2s ease;
+}
+
+.unsubscribedIconRotated {
+    transform: rotate(180deg);
+}
+
+.unsubscribedGrid {
+    margin-top: var(--spacing-md);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-lg);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@media (max-width: 1024px) {
+    .unsubscribedGrid {
+        grid-template-columns: 1fr;
+    }
 }

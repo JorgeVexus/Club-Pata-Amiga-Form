@@ -102,6 +102,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [editingPetId, setEditingPetId] = useState<string | null>(null);
     const [editingPetNameValue, setEditingPetNameValue] = useState('');
     const [isSavingPetName, setIsSavingPetName] = useState(false);
+    const [showUnsubscribedPets, setShowUnsubscribedPets] = useState(false);
 
     useEffect(() => {
         if (isOpen && member) {
@@ -114,6 +115,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             setEditingEmailValue(member?.auth?.email || member?.email || '');
             setEditingPetId(null);
             setShowRejectForm({});
+            setShowUnsubscribedPets(false);
         }
     }, [isOpen, member]);
 
@@ -609,404 +611,18 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         );
     };
 
-    return (
-        <div className={styles.overlay} onClick={onClose}>
-            <div className={styles.modal} onClick={e => e.stopPropagation()}>
-                {/* Header */}
-                <div className={styles.header}>
-                    <h2 className={styles.title}>Detalles de la Solicitud</h2>
-                    <button className={styles.closeButton} onClick={onClose}>✕</button>
-                </div>
+    
+    const activePets = selectedPetId 
+        ? pets.filter(p => p.id === selectedPetId) 
+        : pets.filter(p => p.is_active !== false && p.status !== 'unsubscribed' && fields[`pet-${pets.indexOf(p) + 1}-is-active`] !== 'false');
 
-                {/* Content */}
-                <div className={styles.content}>
-                    {/* Appeal Info Banner (solo info básica, formularios están dentro de cada mascota) */}
-                    {showAppealSection && fields['approval-status'] === 'appealed' && (
-                        <div className={`${styles.section} ${styles.appealSection}`}>
-                            <h3 className={styles.sectionTitle}>📩 Apelación Recibida</h3>
-                            <div className={styles.appealContent}>
-                                <p className={styles.appealMessage}>Mensaje del usuario: "{fields['appeal-message'] || 'Sin mensaje registrado.'}"</p>
-                                <span className={styles.appealDate}>
-                                    Fecha: {fields['appealed-at'] ? new Date(fields['appealed-at']).toLocaleDateString() : 'Desconocida'}
-                                </span>
-                            </div>
-                            <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '10px', fontStyle: 'italic' }}>
-                                💡 Responde a cada mascota individualmente en su tarjeta de abajo.
-                            </p>
-                        </div>
-                    )}
+    const unsubscribedPets = selectedPetId 
+        ? [] 
+        : pets.filter(p => p.is_active === false || p.status === 'unsubscribed' || fields[`pet-${pets.indexOf(p) + 1}-is-active`] === 'false');
 
-                    {/* Personal Info */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Información Personal</h3>
-                        <div className={styles.grid}>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Nombre Completo</span>
-                                <span className={styles.value}>
-                                    {fields['first-name'] || supabaseUser?.first_name || '-'} {fields['paternal-last-name'] || supabaseUser?.last_name || ''} {fields['maternal-last-name'] || supabaseUser?.mother_last_name || ''}
-                                </span>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Fecha de Nacimiento</span>
-                                <span className={styles.value}>{fields['birth-date'] || supabaseUser?.birth_date || '-'}</span>
-                            </div>
-                            {!isForeigner && (
-                                <div className={styles.field}>
-                                    <span className={styles.label}>CURP</span>
-                                    <span className={styles.value}>{fields['curp'] || supabaseUser?.curp || '-'}</span>
-                                </div>
-                            )}
-                            <div className={styles.field}>
-                                <span className={styles.label}>Nacionalidad</span>
-                                <span className={styles.value}>
-                                    {supabaseUser?.nationality ? `${supabaseUser.nationality} (${supabaseUser.nationality_code || ''})` : (fields['nationality'] || '-')}
-                                </span>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Correo Electrónico</span>
-                                <div className={styles.editableContainer}>
-                                    {isEditingEmail ? (
-                                        <div className={styles.editRow}>
-                                            <input 
-                                                type="email" 
-                                                value={editingEmailValue} 
-                                                onChange={(e) => setEditingEmailValue(e.target.value)}
-                                                className={styles.editInput}
-                                                autoFocus
-                                            />
-                                            <button onClick={handleSaveEmail} disabled={isSavingEmail} className={styles.saveButton}>
-                                                {isSavingEmail ? '...' : '✓'}
-                                            </button>
-                                            <button onClick={() => setIsEditingEmail(false)} className={styles.cancelButton}>✕</button>
-                                        </div>
-                                    ) : (
-                                        <div className={styles.valueRow}>
-                                            <span className={styles.value}>{member?.auth?.email || member?.email || supabaseUser?.email || '-'}</span>
-                                            <button 
-                                                onClick={() => {
-                                                    setEditingEmailValue(member?.auth?.email || member?.email || '');
-                                                    setIsEditingEmail(true);
-                                                }} 
-                                                className={styles.editLink}
-                                            >
-                                                Editar
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Teléfono</span>
-                                <span className={styles.value}>{fields['phone'] || supabaseUser?.phone || '-'}</span>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Fecha de Registro</span>
-                                <span className={styles.value}>
-                                    {fields['registration-date'] ? new Date(fields['registration-date']).toLocaleDateString('es-MX', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }) : supabaseUser?.created_at ? new Date(supabaseUser.created_at).toLocaleDateString('es-MX', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric'
-                                    }) : '-'}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Membership Details */}
-                    <div className={styles.section} style={{ background: '#F8FAFC', borderLeft: '4px solid #7DD8D5' }}>
-                        <h3 className={styles.sectionTitle}>Detalles de Membresía 💳</h3>
-                        <div className={styles.grid}>
-                            {(() => {
-                                const plan = member.planConnections?.[0];
-                                if (!plan) return <p className={styles.noBilling}>No se detectaron planes activos en Memberstack.</p>;
-
-                                // 1. Fecha de Activación (Prioridad: Stripe startDate -> plan.createdAt -> member.createdAt -> registration-date -> primer pago)
-                                const activationDate = stripeDetails?.subscription?.startDate ? new Date(stripeDetails.subscription.startDate) :
-                                                     plan.createdAt ? new Date(plan.createdAt) : 
-                                                     (member as any).createdAt ? new Date((member as any).createdAt) :
-                                                     fields['registration-date'] ? new Date(fields['registration-date']) :
-                                                     supabaseUser?.created_at ? new Date(supabaseUser.created_at) :
-                                                     (stripeDetails?.payments?.length > 0) ? new Date(stripeDetails.payments[stripeDetails.payments.length - 1].date) :
-                                                     null;
-
-                                const activationDateFormatted = activationDate ? activationDate.toLocaleDateString('es-MX', {
-                                    day: '2-digit',
-                                    month: 'long',
-                                    year: 'numeric'
-                                }) : '-';
-
-                                // 2. Lógica Dinámica de Próxima Renovación
-                                const isAnual = stripeDetails?.subscription?.interval === 'year' || 
-                                                plan.planName?.toLowerCase().includes('anual') ||
-                                                (stripeDetails?.payments?.[0]?.amount && stripeDetails.payments[0].amount > 1000);
-                                const membershipCost = isAnual ? '$1,699' : '$159';
-                                let finalRenewalDate: Date | null = null;
-
-                                // Prioridad 1: Stripe (Directo del API)
-                                if (stripeDetails?.subscription?.currentPeriodEnd) {
-                                    finalRenewalDate = new Date(stripeDetails.subscription.currentPeriodEnd);
-                                }
-                                // Prioridad 2: Memberstack (Sync previo)
-                                else if (plan.currentPeriodEnd) {
-                                    finalRenewalDate = typeof plan.currentPeriodEnd === 'number' 
-                                        ? new Date(plan.currentPeriodEnd * 1000) 
-                                        : new Date(plan.currentPeriodEnd);
-                                }
-                                // Prioridad 3: Cálculo basado en Último Pago
-                                else if (stripeDetails?.payments?.length > 0) {
-                                    const lastPayment = new Date(stripeDetails.payments[0].date);
-                                    finalRenewalDate = new Date(lastPayment);
-                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
-                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
-                                }
-                                // Prioridad 4: Cálculo basado en Fecha de Activación
-                                else if (activationDate) {
-                                    finalRenewalDate = new Date(activationDate);
-                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
-                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
-                                }
-
-                                const renewalDateFormatted = finalRenewalDate ? finalRenewalDate.toLocaleDateString('es-MX', {
-                                    day: '2-digit',
-                                    month: 'long',
-                                    year: 'numeric'
-                                }) : '-';
-
-                                return (
-                                    <>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Plan Actual</span>
-                                            <span className={styles.value} style={{ fontWeight: 700, color: '#0088BD' }}>
-                                                {plan.planName || plan.planId || 'Membresía Activa'}
-                                            </span>
-                                        </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Frecuencia de Pago</span>
-                                            <span className={styles.value} style={{ textTransform: 'capitalize' }}>
-                                                {isAnual ? 'Anual' : 'Mensual'}
-                                            </span>
-                                        </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Costo de Membresía</span>
-                                            <span className={styles.value} style={{ fontWeight: 600 }}>
-                                                {membershipCost}
-                                            </span>
-                                        </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Estado de Pago</span>
-                                            <span className={`${styles.paymentStatus} ${styles[plan.status?.toLowerCase() || 'none']}`}>
-                                                {plan.status || 'Desconocido'}
-                                            </span>
-                                        </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Fecha de Activación</span>
-                                            <span className={styles.value}>{activationDateFormatted}</span>
-                                        </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Próxima Renovación</span>
-                                            <span className={styles.value} style={{ fontWeight: 600 }}>
-                                                {renewalDateFormatted}
-                                            </span>
-                                        </div>
-                                        {stripeDetails?.payments?.length > 0 && (
-                                            <div className={styles.field}>
-                                                <span className={styles.label}>Último Pago</span>
-                                                <span className={styles.value}>
-                                                    {new Date(stripeDetails.payments[0].date).toLocaleDateString('es-MX', {
-                                                        day: '2-digit',
-                                                        month: 'long'
-                                                    })} - {formatMXN(stripeDetails.payments[0].amount)} {stripeDetails.payments[0].currency}
-                                                </span>
-                                            </div>
-                                        )}
-                                    </>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Stripe Payment History Table */}
-                        {stripeDetails?.payments?.length > 0 && (
-                            <div className={styles.paymentHistory}>
-                                <h4 className={styles.subSectionTitle}>Historial de Pagos Recientes</h4>
-                                <div className={styles.paymentTableWrapper}>
-                                    <table className={styles.paymentTable}>
-                                        <thead>
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Monto</th>
-                                                <th>Estado</th>
-                                                <th>Recibo</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {stripeDetails.payments.map((p: any) => (
-                                                <tr key={p.id}>
-                                                    <td>{new Date(p.date).toLocaleDateString('es-MX')}</td>
-                                                    <td style={{ fontWeight: 600 }}>{formatMXN(p.amount)} {p.currency}</td>
-                                                    <td>
-                                                        <span className={`${styles.statusBadge} ${p.status === 'succeeded' ? styles.statusSucceeded : ''}`}>
-                                                            {p.status === 'succeeded' ? 'Pagado' : p.status}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        {p.pdf ? (
-                                                            <a href={p.pdf} target="_blank" rel="noopener noreferrer" className={styles.pdfLink}>
-                                                                📄 PDF
-                                                            </a>
-                                                        ) : '-'}
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Address */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Dirección</h3>
-                        <div className={styles.grid}>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Colonia</span>
-                                <span className={styles.value}>{fields['colony'] || supabaseUser?.colony || '-'}</span>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Ciudad/Estado</span>
-                                <span className={styles.value}>{(fields['city'] || supabaseUser?.city || '')}, {(fields['state'] || supabaseUser?.state || '')}</span>
-                            </div>
-                            <div className={styles.field}>
-                                <span className={styles.label}>Código Postal</span>
-                                <span className={styles.value}>{fields['postal-code'] || supabaseUser?.postal_code || '-'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Billing Details */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            Datos de Facturación 📄
-                            {loadingBilling && <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Cargando...)</span>}
-                        </h3>
-                        {!loadingBilling && billingDetails ? (
-                            <div className={styles.billingContainer}>
-                                <div className={styles.grid}>
-                                    <div className={styles.field}>
-                                        <span className={styles.label}>RFC</span>
-                                        <span className={styles.value} style={{ fontWeight: 700 }}>{billingDetails.rfc}</span>
-                                    </div>
-                                    <div className={styles.field}>
-                                        <span className={styles.label}>Nombre/Razón Social</span>
-                                        <span className={styles.value}>{billingDetails.business_name}</span>
-                                    </div>
-                                    <div className={styles.field}>
-                                        <span className={styles.label}>Correo de Facturación</span>
-                                        <span className={styles.value}>{billingDetails.email}</span>
-                                    </div>
-                                    <div className={styles.field}>
-                                        <span className={styles.label}>Uso de CFDI</span>
-                                        <span className={styles.value}>{billingDetails.cfdi_use}</span>
-                                    </div>
-                                    <div className={styles.field}>
-                                        <span className={styles.label}>Régimen Fiscal</span>
-                                        <span className={styles.value}>{billingDetails.tax_regime}</span>
-                                    </div>
-                                </div>
-                                <div className={styles.field} style={{ marginTop: '1rem' }}>
-                                    <span className={styles.label}>Dirección Fiscal</span>
-                                    <span className={styles.value}>{billingDetails.fiscal_address}</span>
-                                </div>
-
-                                {billingDetails.tax_certificate_url && (
-                                    <div className={styles.documentCard} style={{ marginTop: '1.25rem', background: '#F0FDF4', borderColor: '#BBF7D0' }}>
-                                        <span className={styles.documentIcon}>📄</span>
-                                        <div className={styles.documentInfo}>
-                                            <div className={styles.documentName}>Constancia de Situación Fiscal</div>
-                                            <div className={styles.docDesc}>Archivo oficial subido por el miembro</div>
-                                        </div>
-                                        <div className={styles.docActions}>
-                                            <a href={billingDetails.tax_certificate_url} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
-                                            <a
-                                                href="#"
-                                                onClick={(e) => handleDownload(e, billingDetails.tax_certificate_url, `constancia-${billingDetails.rfc}`)}
-                                                className={styles.viewDocButton}
-                                            >
-                                                Descargar
-                                            </a>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        ) : !loadingBilling ? (
-                            <div className={styles.noBilling}>
-                                <p>Este miembro no ha registrado datos de facturación.</p>
-                            </div>
-                        ) : null}
-                    </div>
-
-                    {/* Member Documents (Foreigners Only) */}
-                    {isForeigner && (
-                        <div className={styles.section}>
-                            <h3 className={styles.sectionTitle}>Documentación Oficial 🛂</h3>
-                            <div className={styles.grid}>
-                                {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
-                                    <div className={styles.documentCard} style={{ background: '#F0F9FF', borderColor: '#BAE6FD' }}>
-                                        <span className={styles.documentIcon}>🛂</span>
-                                        <div className={styles.documentInfo}>
-                                            <div className={styles.documentName}>Pasaporte</div>
-                                            <div className={styles.docDesc}>Documento de identidad extranjero</div>
-                                        </div>
-                                        <div className={styles.docActions}>
-                                            <a 
-                                                href={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
-                                                target="_blank" 
-                                                rel="noopener noreferrer" 
-                                                className={styles.viewDocButton}
-                                            >
-                                                Ver
-                                            </a>
-                                            <a
-                                                href="#"
-                                                onClick={(e) => handleDownload(e, fields['ine-front-url'] || supabaseUser?.ine_front_url, `pasaporte-${member.id}`)}
-                                                className={styles.viewDocButton}
-                                            >
-                                                Descargar
-                                            </a>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                            
-                            {/* Passport Image Preview */}
-                            {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
-                                <div style={{ marginTop: '1.5rem', borderRadius: '16px', overflow: 'hidden', border: '2px solid #E2E8F0' }}>
-                                    <img 
-                                        src={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
-                                        alt="Pasaporte" 
-                                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f8fafc' }}
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-
-                    {/* Pets */}
-                    <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>
-                            {selectedPetId ? 'Mascota en Apelación' : `Mascotas Registradas (${pets.length})`}
-                        </h3>
-                        {loadingPets ? (
-                            <div className={styles.loading}>Cargando mascotas...</div>
-                        ) : (
-                            <div className={styles.grid}>
-                                 {(selectedPetId ? pets.filter(p => p.id === selectedPetId) : pets).map((pet) => {
-                                    const pIdx = pets.indexOf(pet) + 1;
+    
+    const renderPetCard = (pet: Pet) => {
+        const pIdx = pets.indexOf(pet) + 1;
                                     const mainPhoto = pet.photo_url || fields[`pet-${pIdx}-photo-1-url`];
 
                                     const hasAmbassadorCode = !!(fields['ambassador-code'] || supabaseUser?.ambassador_code);
@@ -1524,8 +1140,435 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         </div>
                                     </div>
                                     );
-                                })}
+    };
+
+return (
+        <div className={styles.overlay} onClick={onClose}>
+            <div className={styles.modal} onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div className={styles.header}>
+                    <h2 className={styles.title}>Detalles de la Solicitud</h2>
+                    <button className={styles.closeButton} onClick={onClose}>✕</button>
+                </div>
+
+                {/* Content */}
+                <div className={styles.content}>
+                    {/* Appeal Info Banner (solo info básica, formularios están dentro de cada mascota) */}
+                    {showAppealSection && fields['approval-status'] === 'appealed' && (
+                        <div className={`${styles.section} ${styles.appealSection}`}>
+                            <h3 className={styles.sectionTitle}>📩 Apelación Recibida</h3>
+                            <div className={styles.appealContent}>
+                                <p className={styles.appealMessage}>Mensaje del usuario: "{fields['appeal-message'] || 'Sin mensaje registrado.'}"</p>
+                                <span className={styles.appealDate}>
+                                    Fecha: {fields['appealed-at'] ? new Date(fields['appealed-at']).toLocaleDateString() : 'Desconocida'}
+                                </span>
                             </div>
+                            <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '10px', fontStyle: 'italic' }}>
+                                💡 Responde a cada mascota individualmente en su tarjeta de abajo.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Personal Info */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Información Personal</h3>
+                        <div className={styles.grid}>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Nombre Completo</span>
+                                <span className={styles.value}>
+                                    {fields['first-name'] || supabaseUser?.first_name || '-'} {fields['paternal-last-name'] || supabaseUser?.last_name || ''} {fields['maternal-last-name'] || supabaseUser?.mother_last_name || ''}
+                                </span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Fecha de Nacimiento</span>
+                                <span className={styles.value}>{fields['birth-date'] || supabaseUser?.birth_date || '-'}</span>
+                            </div>
+                            {!isForeigner && (
+                                <div className={styles.field}>
+                                    <span className={styles.label}>CURP</span>
+                                    <span className={styles.value}>{fields['curp'] || supabaseUser?.curp || '-'}</span>
+                                </div>
+                            )}
+                            <div className={styles.field}>
+                                <span className={styles.label}>Nacionalidad</span>
+                                <span className={styles.value}>
+                                    {supabaseUser?.nationality ? `${supabaseUser.nationality} (${supabaseUser.nationality_code || ''})` : (fields['nationality'] || '-')}
+                                </span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Correo Electrónico</span>
+                                <div className={styles.editableContainer}>
+                                    {isEditingEmail ? (
+                                        <div className={styles.editRow}>
+                                            <input 
+                                                type="email" 
+                                                value={editingEmailValue} 
+                                                onChange={(e) => setEditingEmailValue(e.target.value)}
+                                                className={styles.editInput}
+                                                autoFocus
+                                            />
+                                            <button onClick={handleSaveEmail} disabled={isSavingEmail} className={styles.saveButton}>
+                                                {isSavingEmail ? '...' : '✓'}
+                                            </button>
+                                            <button onClick={() => setIsEditingEmail(false)} className={styles.cancelButton}>✕</button>
+                                        </div>
+                                    ) : (
+                                        <div className={styles.valueRow}>
+                                            <span className={styles.value}>{member?.auth?.email || member?.email || supabaseUser?.email || '-'}</span>
+                                            <button 
+                                                onClick={() => {
+                                                    setEditingEmailValue(member?.auth?.email || member?.email || '');
+                                                    setIsEditingEmail(true);
+                                                }} 
+                                                className={styles.editLink}
+                                            >
+                                                Editar
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Teléfono</span>
+                                <span className={styles.value}>{fields['phone'] || supabaseUser?.phone || '-'}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Fecha de Registro</span>
+                                <span className={styles.value}>
+                                    {fields['registration-date'] ? new Date(fields['registration-date']).toLocaleDateString('es-MX', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }) : supabaseUser?.created_at ? new Date(supabaseUser.created_at).toLocaleDateString('es-MX', {
+                                        day: '2-digit',
+                                        month: 'long',
+                                        year: 'numeric'
+                                    }) : '-'}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Membership Details */}
+                    <div className={styles.section} style={{ background: '#F8FAFC', borderLeft: '4px solid #7DD8D5' }}>
+                        <h3 className={styles.sectionTitle}>Detalles de Membresía 💳</h3>
+                        <div className={styles.grid}>
+                            {(() => {
+                                const plan = member.planConnections?.[0];
+                                if (!plan) return <p className={styles.noBilling}>No se detectaron planes activos en Memberstack.</p>;
+
+                                // 1. Fecha de Activación (Prioridad: Stripe startDate -> plan.createdAt -> member.createdAt -> registration-date -> primer pago)
+                                const activationDate = stripeDetails?.subscription?.startDate ? new Date(stripeDetails.subscription.startDate) :
+                                                     plan.createdAt ? new Date(plan.createdAt) : 
+                                                     (member as any).createdAt ? new Date((member as any).createdAt) :
+                                                     fields['registration-date'] ? new Date(fields['registration-date']) :
+                                                     supabaseUser?.created_at ? new Date(supabaseUser.created_at) :
+                                                     (stripeDetails?.payments?.length > 0) ? new Date(stripeDetails.payments[stripeDetails.payments.length - 1].date) :
+                                                     null;
+
+                                const activationDateFormatted = activationDate ? activationDate.toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                }) : '-';
+
+                                // 2. Lógica Dinámica de Próxima Renovación
+                                const isAnual = stripeDetails?.subscription?.interval === 'year' || 
+                                                plan.planName?.toLowerCase().includes('anual') ||
+                                                (stripeDetails?.payments?.[0]?.amount && stripeDetails.payments[0].amount > 1000);
+                                const membershipCost = isAnual ? '$1,699' : '$159';
+                                let finalRenewalDate: Date | null = null;
+
+                                // Prioridad 1: Stripe (Directo del API)
+                                if (stripeDetails?.subscription?.currentPeriodEnd) {
+                                    finalRenewalDate = new Date(stripeDetails.subscription.currentPeriodEnd);
+                                }
+                                // Prioridad 2: Memberstack (Sync previo)
+                                else if (plan.currentPeriodEnd) {
+                                    finalRenewalDate = typeof plan.currentPeriodEnd === 'number' 
+                                        ? new Date(plan.currentPeriodEnd * 1000) 
+                                        : new Date(plan.currentPeriodEnd);
+                                }
+                                // Prioridad 3: Cálculo basado en Último Pago
+                                else if (stripeDetails?.payments?.length > 0) {
+                                    const lastPayment = new Date(stripeDetails.payments[0].date);
+                                    finalRenewalDate = new Date(lastPayment);
+                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
+                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
+                                }
+                                // Prioridad 4: Cálculo basado en Fecha de Activación
+                                else if (activationDate) {
+                                    finalRenewalDate = new Date(activationDate);
+                                    if (isAnual) finalRenewalDate.setFullYear(finalRenewalDate.getFullYear() + 1);
+                                    else finalRenewalDate.setMonth(finalRenewalDate.getMonth() + 1);
+                                }
+
+                                const renewalDateFormatted = finalRenewalDate ? finalRenewalDate.toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                }) : '-';
+
+                                return (
+                                    <>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Plan Actual</span>
+                                            <span className={styles.value} style={{ fontWeight: 700, color: '#0088BD' }}>
+                                                {plan.planName || plan.planId || 'Membresía Activa'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Frecuencia de Pago</span>
+                                            <span className={styles.value} style={{ textTransform: 'capitalize' }}>
+                                                {isAnual ? 'Anual' : 'Mensual'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Costo de Membresía</span>
+                                            <span className={styles.value} style={{ fontWeight: 600 }}>
+                                                {membershipCost}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Estado de Pago</span>
+                                            <span className={`${styles.paymentStatus} ${styles[plan.status?.toLowerCase() || 'none']}`}>
+                                                {plan.status || 'Desconocido'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Fecha de Activación</span>
+                                            <span className={styles.value}>{activationDateFormatted}</span>
+                                        </div>
+                                        <div className={styles.field}>
+                                            <span className={styles.label}>Próxima Renovación</span>
+                                            <span className={styles.value} style={{ fontWeight: 600 }}>
+                                                {renewalDateFormatted}
+                                            </span>
+                                        </div>
+                                        {stripeDetails?.payments?.length > 0 && (
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>Último Pago</span>
+                                                <span className={styles.value}>
+                                                    {new Date(stripeDetails.payments[0].date).toLocaleDateString('es-MX', {
+                                                        day: '2-digit',
+                                                        month: 'long'
+                                                    })} - {formatMXN(stripeDetails.payments[0].amount)} {stripeDetails.payments[0].currency}
+                                                </span>
+                                            </div>
+                                        )}
+                                    </>
+                                );
+                            })()}
+                        </div>
+
+                        {/* Stripe Payment History Table */}
+                        {stripeDetails?.payments?.length > 0 && (
+                            <div className={styles.paymentHistory}>
+                                <h4 className={styles.subSectionTitle}>Historial de Pagos Recientes</h4>
+                                <div className={styles.paymentTableWrapper}>
+                                    <table className={styles.paymentTable}>
+                                        <thead>
+                                            <tr>
+                                                <th>Fecha</th>
+                                                <th>Monto</th>
+                                                <th>Estado</th>
+                                                <th>Recibo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {stripeDetails.payments.map((p: any) => (
+                                                <tr key={p.id}>
+                                                    <td>{new Date(p.date).toLocaleDateString('es-MX')}</td>
+                                                    <td style={{ fontWeight: 600 }}>{formatMXN(p.amount)} {p.currency}</td>
+                                                    <td>
+                                                        <span className={`${styles.statusBadge} ${p.status === 'succeeded' ? styles.statusSucceeded : ''}`}>
+                                                            {p.status === 'succeeded' ? 'Pagado' : p.status}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        {p.pdf ? (
+                                                            <a href={p.pdf} target="_blank" rel="noopener noreferrer" className={styles.pdfLink}>
+                                                                📄 PDF
+                                                            </a>
+                                                        ) : '-'}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Address */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>Dirección</h3>
+                        <div className={styles.grid}>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Colonia</span>
+                                <span className={styles.value}>{fields['colony'] || supabaseUser?.colony || '-'}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Ciudad/Estado</span>
+                                <span className={styles.value}>{(fields['city'] || supabaseUser?.city || '')}, {(fields['state'] || supabaseUser?.state || '')}</span>
+                            </div>
+                            <div className={styles.field}>
+                                <span className={styles.label}>Código Postal</span>
+                                <span className={styles.value}>{fields['postal-code'] || supabaseUser?.postal_code || '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Billing Details */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            Datos de Facturación 📄
+                            {loadingBilling && <span style={{ fontSize: '0.8rem', fontWeight: 'normal' }}>(Cargando...)</span>}
+                        </h3>
+                        {!loadingBilling && billingDetails ? (
+                            <div className={styles.billingContainer}>
+                                <div className={styles.grid}>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>RFC</span>
+                                        <span className={styles.value} style={{ fontWeight: 700 }}>{billingDetails.rfc}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Nombre/Razón Social</span>
+                                        <span className={styles.value}>{billingDetails.business_name}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Correo de Facturación</span>
+                                        <span className={styles.value}>{billingDetails.email}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Uso de CFDI</span>
+                                        <span className={styles.value}>{billingDetails.cfdi_use}</span>
+                                    </div>
+                                    <div className={styles.field}>
+                                        <span className={styles.label}>Régimen Fiscal</span>
+                                        <span className={styles.value}>{billingDetails.tax_regime}</span>
+                                    </div>
+                                </div>
+                                <div className={styles.field} style={{ marginTop: '1rem' }}>
+                                    <span className={styles.label}>Dirección Fiscal</span>
+                                    <span className={styles.value}>{billingDetails.fiscal_address}</span>
+                                </div>
+
+                                {billingDetails.tax_certificate_url && (
+                                    <div className={styles.documentCard} style={{ marginTop: '1.25rem', background: '#F0FDF4', borderColor: '#BBF7D0' }}>
+                                        <span className={styles.documentIcon}>📄</span>
+                                        <div className={styles.documentInfo}>
+                                            <div className={styles.documentName}>Constancia de Situación Fiscal</div>
+                                            <div className={styles.docDesc}>Archivo oficial subido por el miembro</div>
+                                        </div>
+                                        <div className={styles.docActions}>
+                                            <a href={billingDetails.tax_certificate_url} target="_blank" rel="noopener noreferrer" className={styles.viewDocButton}>Ver</a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => handleDownload(e, billingDetails.tax_certificate_url, `constancia-${billingDetails.rfc}`)}
+                                                className={styles.viewDocButton}
+                                            >
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        ) : !loadingBilling ? (
+                            <div className={styles.noBilling}>
+                                <p>Este miembro no ha registrado datos de facturación.</p>
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {/* Member Documents (Foreigners Only) */}
+                    {isForeigner && (
+                        <div className={styles.section}>
+                            <h3 className={styles.sectionTitle}>Documentación Oficial 🛂</h3>
+                            <div className={styles.grid}>
+                                {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
+                                    <div className={styles.documentCard} style={{ background: '#F0F9FF', borderColor: '#BAE6FD' }}>
+                                        <span className={styles.documentIcon}>🛂</span>
+                                        <div className={styles.documentInfo}>
+                                            <div className={styles.documentName}>Pasaporte</div>
+                                            <div className={styles.docDesc}>Documento de identidad extranjero</div>
+                                        </div>
+                                        <div className={styles.docActions}>
+                                            <a 
+                                                href={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
+                                                target="_blank" 
+                                                rel="noopener noreferrer" 
+                                                className={styles.viewDocButton}
+                                            >
+                                                Ver
+                                            </a>
+                                            <a
+                                                href="#"
+                                                onClick={(e) => handleDownload(e, fields['ine-front-url'] || supabaseUser?.ine_front_url, `pasaporte-${member.id}`)}
+                                                className={styles.viewDocButton}
+                                            >
+                                                Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            
+                            {/* Passport Image Preview */}
+                            {(fields['ine-front-url'] || supabaseUser?.ine_front_url) && (
+                                <div style={{ marginTop: '1.5rem', borderRadius: '16px', overflow: 'hidden', border: '2px solid #E2E8F0' }}>
+                                    <img 
+                                        src={fields['ine-front-url'] || supabaseUser?.ine_front_url} 
+                                        alt="Pasaporte" 
+                                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain', background: '#f8fafc' }}
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+
+                    {/* Pets */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>
+                            {selectedPetId ? 'Mascota en Apelación' : `Mascotas Registradas (${pets.length})`}
+                        </h3>
+                        {loadingPets ? (
+                            <div className={styles.loading}>Cargando mascotas...</div>
+                        ) : (
+                            <>
+                                {activePets.length > 0 ? (
+                                    <div className={styles.grid}>
+                                        {activePets.map((pet) => renderPetCard(pet))}
+                                    </div>
+                                ) : (
+                                    <p className={styles.noPets} style={{ fontStyle: 'italic', color: '#64748B', padding: '16px 0' }}>
+                                        No hay mascotas activas o pendientes.
+                                    </p>
+                                )}
+
+                                {unsubscribedPets.length > 0 && (
+                                    <div className={styles.unsubscribedSection}>
+                                        <div 
+                                            className={`${styles.unsubscribedHeader} ${showUnsubscribedPets ? styles.unsubscribedHeaderActive : ''}`} 
+                                            onClick={() => setShowUnsubscribedPets(!showUnsubscribedPets)}
+                                        >
+                                            <h4 className={styles.unsubscribedTitle}>
+                                                📁 Mascotas Dadas de Baja (${unsubscribedPets.length})
+                                            </h4>
+                                            <span className={`${styles.unsubscribedIcon} ${showUnsubscribedPets ? styles.unsubscribedIconRotated : ''}`}>
+                                                ▼
+                                            </span>
+                                        </div>
+                                        {showUnsubscribedPets && (
+                                            <div className={styles.unsubscribedGrid}>
+                                                {unsubscribedPets.map((pet) => renderPetCard(pet))}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </>
                         )}
                     </div>
                 </div>
