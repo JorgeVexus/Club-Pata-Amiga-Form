@@ -325,8 +325,9 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
         }
 
         // 2. Preparar los datos de las mascotas
-        const petsToInsert = pets.map(pet => ({
+        const petsToInsert = pets.map((pet, index) => ({
             owner_id: userData.id,
+            memberstack_slot: index + 1,
             name: pet.name || pet.petName,
             pet_type: (pet.petType || 'perro') === 'perro' ? 'dog' : 'cat',
             breed: pet.breed || (pet.isMixedBreed ? 'Mestizo' : ''),
@@ -437,7 +438,8 @@ export async function getPetsByUserId(memberstackId: string) {
             .from('pets')
             .select('*')
             .eq('owner_id', userData.id)
-            .order('created_at', { ascending: true });
+            .order('created_at', { ascending: true })
+            .order('id', { ascending: true });
 
         if (petsError) return { success: false, error: petsError.message };
 
