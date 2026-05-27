@@ -42,6 +42,7 @@ interface Pet {
     unsubscribed_reason?: string | null;
     unsubscribed_description?: string | null;
     unsubscribed_at?: string | null;
+    memberstack_slot?: number | null;
 }
 
 interface AppealLog {
@@ -359,6 +360,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             return;
         }
 
+        const pet = pets.find(p => p.id === petId);
+        const memberstackSlot = pet?.memberstack_slot || (pet ? pets.indexOf(pet) + 1 : undefined);
+
         setSendingRequest(prev => ({ ...prev, [petId]: true }));
         try {
             const res = await adminFetch(`/api/admin/members/${member.id}/request-info`, {
@@ -366,6 +370,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     petId,
+                    memberstackSlot,
+                    petName: pet?.name,
                     requestTypes: types,
                     customMessage: requestCustomMsg[petId]?.trim() || null,
                     adminId: 'current_admin'
@@ -402,12 +408,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
         setUpdatingPetId(petId);
         try {
+            const pet = pets.find(p => p.id === petId);
+            const memberstackSlot = pet?.memberstack_slot || (pet ? pets.indexOf(pet) + 1 : undefined);
             const response = await adminFetch(`/api/admin/members/${member.id}/pets/${petId}/status`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     status,
                     adminNotes: petNotes[petId],
+                    memberstackSlot,
+                    petName: pet?.name,
                     adminId: 'current_admin' // TODO: Get from auth
                 })
             });

@@ -1,20 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { approveMemberApplication, rejectMemberApplication } from '@/services/memberstack-admin.service';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
 import { updateContactAsActive } from '@/services/crm.service';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { getPetCarenciaDate } from '@/utils/carencia.utils';
+import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
-// Cliente Supabase con Service Role para operaciones admin
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
+
+async function findPetForMember(
+    ownerId: string,
+    lookup: { petId: string; memberstackSlot?: unknown; petName?: unknown }
+) {
+    const attempts = buildAdminPetLookupAttempts(lookup);
+
+    for (const attempt of attempts) {
+        let query = supabaseAdmin
+            .from('pets')
+            .select('id, status, name, is_active, memberstack_slot, waiting_period_start, is_adopted, is_mixed_breed, is_mixed, breed, pet_type')
+            .eq('owner_id', ownerId);
+
+        if (attempt.type === 'id') {
+            query = query.eq('id', attempt.value);
+        } else if (attempt.type === 'slot') {
+            query = query.eq('memberstack_slot', attempt.value);
+        } else {
+            query = query.ilike('name', attempt.value);
+        }
+
+        const { data, error } = await query
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (data) {
+            if (attempt.type !== 'id') {
+                console.warn('[Pet Status] Mascota resuelta por fallback:', {
+                    lookupType: attempt.type,
+                    lookupValue: attempt.value,
+                    resolvedPetId: data.id,
+                });
+            }
+            return data;
+        }
+
+        if (error) {
+            console.warn('[Pet Status] Fallo intento de busqueda de mascota:', {
+                lookupType: attempt.type,
+                error: error.message,
+            });
+        }
+    }
+
+    return null;
+}
 
 export async function POST(
     request: NextRequest,
@@ -26,16 +72,14 @@ export async function POST(
 
         const { id: memberId, petId } = await params;
         const body = await request.json();
-        const { status, adminNotes } = body;
+        const { status, adminNotes, memberstackSlot, petName } = body;
         const adminId = adminUser.memberstack_id;
 
-        // Permitir también 'appealed' pero solo para leer, no para setear directamente
         const validStatuses = ['pending', 'approved', 'action_required', 'rejected'];
         if (!validStatuses.includes(status)) {
             return NextResponse.json({ error: 'Estado inválido' }, { status: 400 });
         }
 
-        // Validación: Motivo requerido para rechazo o solicitud de info
         if ((status === 'rejected' || status === 'action_required') && (!adminNotes || adminNotes.trim().length === 0)) {
             return NextResponse.json(
                 { error: 'Debes proporcionar una razón para rechazar o solicitar cambios.' },
@@ -43,19 +87,25 @@ export async function POST(
             );
         }
 
-        console.log(`🔄 Actualizando mascota ${petId} a estado: ${status}`);
+        console.log(`[Pet Status] Actualizando mascota ${petId} a estado: ${status}`);
 
-        // 0. Obtener estado ANTERIOR de la mascota
-        const { data: previousPet, error: fetchError } = await supabaseAdmin
-            .from('pets')
-            .select('status, name, is_active, memberstack_slot, waiting_period_start, is_adopted, is_mixed_breed, is_mixed, breed, pet_type')
-            .eq('id', petId)
+        const { data: ownerUser, error: ownerError } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', memberId)
             .single();
 
-        if (fetchError) {
-            console.error('❌ Error al obtener la mascota previa:', fetchError);
-            return NextResponse.json({ error: 'No se pudo obtener la información de la mascota' }, { status: 500 });
+        if (ownerError || !ownerUser) {
+            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
         }
+
+        const previousPet = await findPetForMember(ownerUser.id, { petId, memberstackSlot, petName });
+
+        if (!previousPet) {
+            return NextResponse.json({ error: 'Mascota no encontrada para este miembro' }, { status: 404 });
+        }
+
+        const resolvedPetId = previousPet.id;
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
@@ -63,74 +113,67 @@ export async function POST(
             .eq('memberstack_id', memberId)
             .order('created_at', { ascending: false });
 
-        if (isUnsubscribedPetWithHistory({ ...previousPet, id: petId }, unsubscriptions || [])) {
+        if (isUnsubscribedPetWithHistory(previousPet, unsubscriptions || [])) {
             return NextResponse.json({
                 error: 'Esta mascota ya fue dada de baja y no puede volver a revisión.'
             }, { status: 409 });
         }
 
-        // 0b. Verificar estatus de embajador del propietario (vía referrals)
         const { data: referral } = await supabaseAdmin
             .from('referrals')
             .select('id')
             .eq('referred_user_id', memberId)
             .maybeSingle();
 
-        const wasAppealed = previousPet?.status === 'appealed';
+        const wasAppealed = previousPet.status === 'appealed';
         const hasAmbassadorCode = !!referral;
 
-        // 1. Actualizar estado de la mascota en Supabase
-        const updateData: any = {
+        const updateData: Record<string, unknown> = {
             status,
             admin_notes: adminNotes || null,
             last_admin_response: adminNotes || null
         };
 
-        // Si se aprueba una mascota
         if (status === 'approved') {
             updateData.appeal_message = null;
             updateData.appealed_at = null;
-            
-            // Establecer el inicio de carencia al momento de la aprobación si no existe
-            if (!previousPet?.waiting_period_start) {
-                const now = new Date();
-                updateData.waiting_period_start = now.toISOString();
 
-                // Calcular el total de días usando la utilidad centralizada
+            if (!previousPet.waiting_period_start) {
+                const now = new Date();
+                const waitingPeriodStart = now.toISOString();
+                updateData.waiting_period_start = waitingPeriodStart;
+
                 const carenciaInput = {
-                    waiting_period_start: updateData.waiting_period_start,
+                    waiting_period_start: waitingPeriodStart,
                     is_adopted: previousPet.is_adopted,
                     is_mixed_breed: previousPet.is_mixed_breed,
                     is_mixed: previousPet.is_mixed,
                     breed: previousPet.breed,
                     pet_type: previousPet.pet_type
                 };
-                
+
                 const endDate = getPetCarenciaDate(carenciaInput, hasAmbassadorCode);
                 updateData.waiting_period_end = endDate.toISOString();
-                
+
                 const diffTime = endDate.getTime() - now.getTime();
                 const totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                
-                console.log(`📅 Carencia calculada para ${previousPet?.name}: ${totalDays} días (Embajador: ${hasAmbassadorCode})`);
+
+                console.log(`[Pet Status] Carencia calculada para ${previousPet.name}: ${totalDays} días (Embajador: ${hasAmbassadorCode})`);
             }
         }
 
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
             .update(updateData)
-            .eq('id', petId)
+            .eq('id', resolvedPetId)
             .select()
             .single();
 
         if (petError) throw petError;
 
-        // 2. Recalcular el membership_status del usuario basándose en TODAS sus mascotas
         await updateMemberStatusFromPets(memberId);
 
-        // 3. Notificaciones según el cambio de estado
         if (status === 'approved') {
-            // 3.1 Notificar al CRM - Miembro Activo
             try {
                 const { data: userForCrm } = await supabaseAdmin
                     .from('users')
@@ -144,15 +187,14 @@ export async function POST(
                         userForCrm.membership_type || 'Mensual',
                         userForCrm.membership_cost || '$159'
                     );
-                    console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
+                    console.log('[Pet Status] CRM: Miembro marcado como activo:', crmResult.success);
                 } else {
-                    console.warn('⚠️ Usuario sin crm_contact_id, omitiendo sync CRM');
+                    console.warn('[Pet Status] Usuario sin crm_contact_id, omitiendo sync CRM');
                 }
             } catch (crmError) {
-                console.error('⚠️ Error no crítico actualizando CRM:', crmError);
+                console.error('[Pet Status] Error no crítico actualizando CRM:', crmError);
             }
 
-            // 3.2 Notificación interna
             await createServerNotification({
                 userId: memberId,
                 type: 'account',
@@ -181,10 +223,8 @@ export async function POST(
             });
         }
 
-        // 3.5 Si venía de 'appealed', enviar email de resolución
         if (wasAppealed && (status === 'approved' || status === 'rejected')) {
             try {
-                // Obtener email del usuario
                 const { data: user } = await supabaseAdmin
                     .from('users')
                     .select('email')
@@ -199,19 +239,18 @@ export async function POST(
                         resolution: status as 'approved' | 'rejected',
                         adminNotes: adminNotes
                     });
-                    console.log(`📧 Email de resolución de apelación enviado a ${user.email}`);
+                    console.log(`[Pet Status] Email de resolución de apelación enviado a ${user.email}`);
                 }
             } catch (emailError) {
-                console.error('Error enviando email de apelación (no crítico):', emailError);
+                console.error('[Pet Status] Error enviando email de apelación (no crítico):', emailError);
             }
         }
 
-        // 4. Crear log de la acción del admin
         await supabaseAdmin
             .from('appeal_logs')
             .insert({
                 user_id: memberId,
-                pet_id: petId,
+                pet_id: resolvedPetId,
                 admin_id: adminId,
                 type: status === 'approved' ? 'admin_approve' : status === 'rejected' ? 'admin_reject' : 'admin_request',
                 message: adminNotes || `Estado cambiado a ${status}`,
@@ -224,18 +263,15 @@ export async function POST(
             pet
         });
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error actualizando mascota:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
 
-/**
- * Recalcula el membership_status del usuario basándose en el estado de sus mascotas
- */
 async function updateMemberStatusFromPets(memberstackId: string) {
     try {
-        // Obtener el usuario
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('id')
@@ -244,7 +280,6 @@ async function updateMemberStatusFromPets(memberstackId: string) {
 
         if (userError || !user) return;
 
-        // Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
             .select('id, name, status, is_active, memberstack_slot')
@@ -261,11 +296,9 @@ async function updateMemberStatusFromPets(memberstackId: string) {
         const activePets = pets.filter(p => !isUnsubscribedPetWithHistory(p, unsubscriptions || []));
         if (activePets.length === 0) return;
 
-        // Calcular el status derivado basado en prioridades
         const statuses = activePets.map(p => p.status);
         let derivedStatus = 'active';
 
-        // Prioridad: appealed > rejected > action_required > pending > active
         if (statuses.some(s => s === 'appealed')) {
             derivedStatus = 'appealed';
         } else if (statuses.some(s => s === 'rejected')) {
@@ -278,7 +311,6 @@ async function updateMemberStatusFromPets(memberstackId: string) {
             derivedStatus = 'active';
         }
 
-        // Actualizar el usuario en Supabase
         await supabaseAdmin
             .from('users')
             .update({
@@ -289,7 +321,7 @@ async function updateMemberStatusFromPets(memberstackId: string) {
             })
             .eq('memberstack_id', memberstackId);
 
-        console.log(`📊 Status del miembro ${memberstackId} recalculado a: ${derivedStatus}`);
+        console.log(`[Pet Status] Status del miembro ${memberstackId} recalculado a: ${derivedStatus}`);
 
     } catch (error) {
         console.error('Error actualizando status del miembro:', error);

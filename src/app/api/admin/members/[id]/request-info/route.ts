@@ -1,14 +1,9 @@
 /**
  * API Route: /api/admin/members/[id]/request-info
- * 
+ *
  * Permite a un administrador solicitar información específica al miembro
  * sobre una mascota. Crea un log con metadata, envía email vía Resend
  * y crea notificación in-app.
- * 
- * Tipos de solicitud soportados:
- *   - PET_PHOTO_1       → Foto Principal
- *   - PET_VET_CERT      → Certificado Médico Veterinario
- *   - OTHER_DOC          → Documento genérico (adjunto libre)
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendInfoRequestEmail } from '@/app/actions/comm.actions';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -25,7 +21,6 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-/** Tipos de solicitud válidos con etiquetas legibles */
 const REQUEST_TYPES: Record<string, { label: string; icon: string; description: string }> = {
     PET_PHOTO_1: {
         label: 'Foto Principal',
@@ -44,6 +39,53 @@ const REQUEST_TYPES: Record<string, { label: string; icon: string; description: 
     }
 };
 
+async function findPetForMember(
+    ownerId: string,
+    lookup: { petId: string; memberstackSlot?: unknown; petName?: unknown }
+) {
+    const attempts = buildAdminPetLookupAttempts(lookup);
+
+    for (const attempt of attempts) {
+        let query = supabaseAdmin
+            .from('pets')
+            .select('id, name, status, is_active, memberstack_slot')
+            .eq('owner_id', ownerId);
+
+        if (attempt.type === 'id') {
+            query = query.eq('id', attempt.value);
+        } else if (attempt.type === 'slot') {
+            query = query.eq('memberstack_slot', attempt.value);
+        } else {
+            query = query.ilike('name', attempt.value);
+        }
+
+        const { data, error } = await query
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .maybeSingle();
+
+        if (data) {
+            if (attempt.type !== 'id') {
+                console.warn('[Request Info] Mascota resuelta por fallback:', {
+                    lookupType: attempt.type,
+                    lookupValue: attempt.value,
+                    resolvedPetId: data.id,
+                });
+            }
+            return data;
+        }
+
+        if (error) {
+            console.warn('[Request Info] Fallo intento de busqueda de mascota:', {
+                lookupType: attempt.type,
+                error: error.message,
+            });
+        }
+    }
+
+    return null;
+}
+
 export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
@@ -54,10 +96,9 @@ export async function POST(
 
         const { id: memberId } = await params;
         const body = await request.json();
-        const { petId, requestTypes, customMessage } = body;
+        const { petId, requestTypes, customMessage, memberstackSlot, petName } = body;
         const adminId = adminUser.memberstack_id;
 
-        // --- Validaciones ---
         if (!petId) {
             return NextResponse.json({ error: 'petId es obligatorio' }, { status: 400 });
         }
@@ -66,24 +107,30 @@ export async function POST(
             return NextResponse.json({ error: 'Debes seleccionar al menos un tipo de solicitud' }, { status: 400 });
         }
 
-        // Validar que todos los tipos sean válidos
         const invalidTypes = requestTypes.filter((t: string) => !REQUEST_TYPES[t]);
         if (invalidTypes.length > 0) {
             return NextResponse.json({ error: `Tipos inválidos: ${invalidTypes.join(', ')}` }, { status: 400 });
         }
 
-        console.log(`📋 [Request Info] Admin solicita ${requestTypes.join(', ')} para mascota ${petId} del miembro ${memberId}`);
+        console.log(`[Request Info] Admin solicita ${requestTypes.join(', ')} para mascota ${petId} del miembro ${memberId}`);
 
-        // 1. Obtener datos de la mascota
-        const { data: pet, error: petError } = await supabaseAdmin
-            .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
-            .eq('id', petId)
+        const { data: user, error: userError } = await supabaseAdmin
+            .from('users')
+            .select('id, email, first_name, last_name, memberstack_id')
+            .eq('memberstack_id', memberId)
             .single();
 
-        if (petError || !pet) {
-            return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404 });
+        if (userError || !user) {
+            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
         }
+
+        const pet = await findPetForMember(user.id, { petId, memberstackSlot, petName });
+
+        if (!pet) {
+            return NextResponse.json({ error: 'Mascota no encontrada para este miembro' }, { status: 404 });
+        }
+
+        const resolvedPetId = pet.id;
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
@@ -97,27 +144,14 @@ export async function POST(
             }, { status: 409 });
         }
 
-        // 2. Obtener datos del usuario para el email
-        const { data: user, error: userError } = await supabaseAdmin
-            .from('users')
-            .select('id, email, first_name, last_name, memberstack_id')
-            .eq('memberstack_id', memberId)
-            .single();
-
-        if (userError || !user) {
-            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
-        }
-
-        // 3. Construir la lista legible de solicitudes
         const requestLabels = requestTypes.map((t: string) => `${REQUEST_TYPES[t].icon} ${REQUEST_TYPES[t].label}`);
         const requestMessage = `Se solicita la siguiente información para ${pet.name}: ${requestLabels.join(', ')}${customMessage ? `\n\nMensaje del administrador: ${customMessage}` : ''}`;
 
-        // 4. Insertar en appeal_logs con metadata
         const { error: logError } = await supabaseAdmin
             .from('appeal_logs')
             .insert({
                 user_id: memberId,
-                pet_id: petId,
+                pet_id: resolvedPetId,
                 admin_id: adminId || 'admin',
                 type: 'admin_info_request',
                 message: requestMessage,
@@ -135,11 +169,10 @@ export async function POST(
             });
 
         if (logError) {
-            console.error('❌ Error creando log de solicitud:', logError);
+            console.error('Error creando log de solicitud:', logError);
             return NextResponse.json({ error: 'Error al registrar la solicitud' }, { status: 500 });
         }
 
-        // 5. Actualizar estatus de la mascota a action_required (si no lo está ya)
         if (pet.status !== 'action_required') {
             await supabaseAdmin
                 .from('pets')
@@ -147,31 +180,29 @@ export async function POST(
                     status: 'action_required',
                     last_admin_response: requestMessage
                 })
-                .eq('id', petId);
+                .eq('id', resolvedPetId);
         }
 
-        // 6. Crear notificación in-app para el miembro
         await createServerNotification({
             userId: memberId,
             type: 'account',
             title: `📋 Acción requerida: ${pet.name}`,
             message: `Necesitamos ${requestLabels.length === 1 ? requestLabels[0] : `${requestLabels.length} documentos`} para completar la revisión de ${pet.name}.`,
             icon: '📋',
-            link: `/mi-membresia?petId=${petId}&action=chat`,
-            metadata: { source: 'info_request', petId, requestTypes }
+            link: `/mi-membresia?petId=${resolvedPetId}&action=chat`,
+            metadata: { source: 'info_request', petId: resolvedPetId, requestTypes }
         });
 
-        // 7. Enviar email vía Resend
         if (user.email) {
-            const dashboardUrl = `https://club.pataamiga.mx/mi-membresia?petId=${petId}&action=chat`;
-            
+            const dashboardUrl = `https://club.pataamiga.mx/mi-membresia?petId=${resolvedPetId}&action=chat`;
+
             try {
                 await sendInfoRequestEmail({
                     userId: user.id,
                     userEmail: user.email,
                     userName: `${user.first_name || ''} ${user.last_name || ''}`.trim(),
                     petName: pet.name,
-                    petId: petId,
+                    petId: resolvedPetId,
                     requestTypes: requestTypes.map((t: string) => ({
                         type: t,
                         label: REQUEST_TYPES[t].label,
@@ -181,21 +212,22 @@ export async function POST(
                     customMessage: customMessage || null,
                     dashboardUrl
                 });
-                console.log(`📧 Email de solicitud enviado a ${user.email}`);
+                console.log(`Email de solicitud enviado a ${user.email}`);
             } catch (emailErr) {
-                console.error('⚠️ Error enviando email (no crítico):', emailErr);
+                console.error('Error enviando email (no crítico):', emailErr);
             }
         }
 
-        console.log(`✅ Solicitud de información creada para ${pet.name}`);
+        console.log(`Solicitud de información creada para ${pet.name}`);
 
         return NextResponse.json({
             success: true,
             message: `Solicitud enviada correctamente para ${pet.name}`
         });
 
-    } catch (error: any) {
-        console.error('💥 Error en request-info API:', error);
-        return NextResponse.json({ error: error.message }, { status: 500 });
+    } catch (error: unknown) {
+        console.error('Error en request-info API:', error);
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return NextResponse.json({ error: message }, { status: 500 });
     }
 }
