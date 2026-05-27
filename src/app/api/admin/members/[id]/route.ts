@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMemberDetails, updateMemberData, triggerVerificationEmail } from '@/services/memberstack-admin.service';
+import { getMemberDetails, updateMemberData, triggerVerificationEmail, memberstackAdmin } from '@/services/memberstack-admin.service';
 import { getUserDataByMemberstackId, updateUserEmailInSupabase } from '@/app/actions/user.actions';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 import { commService } from '@/services/comm.service';
@@ -11,10 +11,18 @@ export async function GET(
     try {
         // TODO: Validar que el usuario sea admin
         const { id: memberId } = await params;
+        const { searchParams } = new URL(request.url);
+        const forceRefresh = searchParams.get('refresh') === 'true';
 
-        console.log(`📋 Obteniendo detalles de miembro ${memberId}...`);
+        console.log(`📋 Obteniendo detalles de miembro ${memberId}...${forceRefresh ? ' (FORCE REFRESH)' : ''}`);
 
-        // 1. Obtener datos de Memberstack
+        // 1. Invalidar caché si se solicita refresco forzado
+        if (forceRefresh) {
+            memberstackAdmin.invalidateCache();
+            console.log(`🗑️ Caché invalidada para miembro ${memberId}`);
+        }
+
+        // 2. Obtener datos de Memberstack
         const result = await getMemberDetails(memberId);
 
         if (!result.success) {

@@ -89,11 +89,19 @@ function DashboardContent() {
     // Fetch helpers
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
         try {
-            const response = await adminFetch(`/api/admin/members/${id}`);
+            // Force refresh to get the latest data from Memberstack
+            const response = await adminFetch(`/api/admin/members/${id}?refresh=true`);
             const data = await response.json();
-            if (data.success && data.member) customSetter(data.member);
-            else alert('No se pudo cargar la información.');
-        } catch (error) { console.error(error); }
+            if (data.success && data.member) {
+                customSetter(data.member);
+                console.log(`🔄 Member details refreshed for ${id}`);
+            } else {
+                alert('No se pudo cargar la información.');
+            }
+        } catch (error) { 
+            console.error('Error fetching member details:', error);
+            alert('Error al cargar la información del miembro.');
+        }
     };
 
     const fetchAmbassadorDetails = async (id: string) => {
@@ -110,9 +118,15 @@ function DashboardContent() {
     useEffect(() => {
         const tabParam = searchParams.get('tab');
         if (tabParam) setActiveFilter(tabParam as any);
-        
+
         const memberId = searchParams.get('member');
-        if (memberId) fetchMemberDetails(memberId, setSelectedMember);
+        if (memberId) {
+            fetchMemberDetails(memberId, setSelectedMember);
+        } else {
+            // Si el parámetro member se elimina (usuario regresó de la vista de detalle), 
+            // forzar refresco de la lista para obtener datos actualizados
+            triggerInPlaceRefresh();
+        }
 
         const requestId = searchParams.get('requestId');
         if (requestId) {
@@ -533,7 +547,12 @@ function DashboardContent() {
 
             <MemberDetailModal
                 isOpen={!!selectedMember}
-                onClose={() => { setSelectedMember(null); setSelectedPetId(null); }}
+                onClose={() => { 
+                    setSelectedMember(null); 
+                    setSelectedPetId(null);
+                    // Refresh the list when closing the modal to get updated data
+                    triggerInPlaceRefresh();
+                }}
                 member={selectedMember}
                 showAppealSection={activeFilter === 'appeals'}
                 selectedPetId={selectedPetId}
