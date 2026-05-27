@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import styles from './Navbar.module.css';
 import AdminNotifications from './AdminNotifications';
@@ -11,6 +11,28 @@ interface NavbarProps {
 }
 
 export default function Navbar({ onMobileMenuToggle, onNotificationClick }: NavbarProps) {
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const handleForceRefresh = async () => {
+        if (isRefreshing) return;
+        
+        setIsRefreshing(true);
+        
+        try {
+            // Recargar datos del dashboard
+            window.dispatchEvent(new CustomEvent('force-refresh-dashboard'));
+            
+            // Mostrar feedback visual
+            setTimeout(() => {
+                setIsRefreshing(false);
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Error al recargar:', error);
+            setIsRefreshing(false);
+        }
+    };
+
     return (
         <nav className={styles.navbar}>
             <div className={styles.navbarLogo}>
@@ -34,6 +56,16 @@ export default function Navbar({ onMobileMenuToggle, onNotificationClick }: Navb
             </div>
 
             <div className={styles.navbarRight}>
+                {/* Botón de recarga manual */}
+                <button
+                    className={styles.refreshButton}
+                    onClick={handleForceRefresh}
+                    disabled={isRefreshing}
+                    title="Recargar datos (invalida caché)"
+                >
+                    {isRefreshing ? '🔄' : '🔄'}
+                </button>
+
                 {/* 🆕 Campanita de Notificaciones */}
                 <AdminNotifications onNotificationClick={onNotificationClick} />
 

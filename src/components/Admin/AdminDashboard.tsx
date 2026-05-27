@@ -141,6 +141,19 @@ function DashboardContent() {
         }
     }, [searchParams]);
 
+    // Escuchar evento de recarga forzada desde el navbar
+    useEffect(() => {
+        const handleForceRefresh = () => {
+            console.log('🔄 Recibida señal de recarga forzada');
+            triggerInPlaceRefresh();
+        };
+
+        window.addEventListener('force-refresh-dashboard', handleForceRefresh);
+        return () => {
+            window.removeEventListener('force-refresh-dashboard', handleForceRefresh);
+        };
+    }, []);
+
     const handleFilterChange = (filter: any) => {
         if (typeof filter === 'object') {
             setActiveFilter(filter.id);
