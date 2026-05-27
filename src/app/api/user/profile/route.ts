@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        console.log(`[PROFILE GET] Datos recuperados para ${data.email}. ID Supabase: ${data.id}`);
+        console.log(`[PROFILE GET] Datos recuperados para ${(data as any).email}. ID Supabase: ${(data as any).id}`);
         return NextResponse.json({ success: true, user: data });
 
     } catch (e: any) {
