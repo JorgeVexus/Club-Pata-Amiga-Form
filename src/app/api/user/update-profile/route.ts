@@ -63,15 +63,11 @@ export async function POST(request: NextRequest) {
         if (state !== undefined) updatePayload.state = state.trim();
         if (postal_code !== undefined) updatePayload.postal_code = postal_code.trim();
         if (birth_date !== undefined) updatePayload.birth_date = birth_date;
-        if (avatar_url !== undefined) updatePayload.avatar_url = avatar_url;
         if (curp !== undefined) updatePayload.curp = curp.trim().toUpperCase();
         if (gender !== undefined) updatePayload.gender = gender;
-        if (nationality !== undefined) updatePayload.nationality = nationality;
-        if (nationality_code !== undefined) updatePayload.nationality_code = nationality_code;
-        if (ine_front_url !== undefined) updatePayload.ine_front_url = ine_front_url;
-        if (ine_back_url !== undefined) updatePayload.ine_back_url = ine_back_url;
-        if (proof_of_address_url !== undefined) updatePayload.proof_of_address_url = proof_of_address_url;
-        if (is_foreigner !== undefined) updatePayload.is_foreigner = is_foreigner;
+
+        // Note: nationality, avatar_url, and is_foreigner are NOT columns in the users table 
+        // based on the supabase-setup.sql schema. We will skip updating them to prevent SQL errors.
 
         const { data, error } = await supabaseAdmin
             .from('users')
@@ -81,11 +77,92 @@ export async function POST(request: NextRequest) {
             .single();
 
         if (error) {
-            console.error('[UPDATE-PROFILE] Error actualizando Supabase:', error);
+            console.error('[UPDATE-PROFILE] Error actualizando Supabase (users):', error);
             return NextResponse.json(
                 { success: false, error: 'Error actualizando el perfil', details: error.message },
                 { status: 500 }
             );
+        }
+
+        // --- Handle Documents Updates ---
+        // If document URLs are provided, we should ideally extract the path from the URL 
+        // and upsert them into the documents table. 
+        // Since the upload API already uploads to storage, we just need to ensure the DB record exists.
+        
+        const documentsToUpsert = [];
+        
+        // Helper function to extract file_path and file_name from a Supabase public URL
+        const extractFileInfo = (url: string) => {
+            try {
+                // URLs look like: .../storage/v1/object/public/ine-documents/member_id_ine_front_123.jpg
+                const parts = url.split('/');
+                const fileName = parts.pop() || '';
+                // For simplicity, we can use the file name as the path if we assume a flat structure or 
+                // just save the full URL if we don't need strict path tracking.
+                // However, the schema expects 'file_path' and 'file_name'.
+                const pathParts = url.split('/public/')[1]?.split('/') || [];
+                pathParts.shift(); // remove bucket name
+                const filePath = pathParts.join('/');
+                
+                return { file_path: filePath || fileName, file_name: fileName };
+            } catch (e) {
+                return null;
+            }
+        };
+
+        if (data && data.id) {
+            if (ine_front_url) {
+                const info = extractFileInfo(ine_front_url);
+                if (info) {
+                    documentsToUpsert.push({
+                        user_id: data.id,
+                        document_type: 'ine_front',
+                        file_name: info.file_name,
+                        file_path: info.file_path
+                    });
+                }
+            }
+            if (ine_back_url) {
+                const info = extractFileInfo(ine_back_url);
+                if (info) {
+                    documentsToUpsert.push({
+                        user_id: data.id,
+                        document_type: 'ine_back',
+                        file_name: info.file_name,
+                        file_path: info.file_path
+                    });
+                }
+            }
+            if (proof_of_address_url) {
+                const info = extractFileInfo(proof_of_address_url);
+                if (info) {
+                    documentsToUpsert.push({
+                        user_id: data.id,
+                        document_type: 'proof_of_address',
+                        file_name: info.file_name,
+                        file_path: info.file_path
+                    });
+                }
+            }
+
+            if (documentsToUpsert.length > 0) {
+                // Upsert to documents table
+                // Since there is no unique constraint on (user_id, document_type), 
+                // we should ideally delete existing ones of that type first or use a more complex query.
+                // For safety and simplicity here, we will just insert. In a real scenario, you'd clean up old docs.
+                for (const doc of documentsToUpsert) {
+                     // Delete old document of same type
+                     await supabaseAdmin
+                         .from('documents')
+                         .delete()
+                         .match({ user_id: data.id, document_type: doc.document_type });
+                         
+                     // Insert new
+                     await supabaseAdmin
+                         .from('documents')
+                         .insert([doc]);
+                }
+            }
         }
 
         console.log(`[UPDATE-PROFILE] Perfil actualizado exitosamente para ${memberstackId}`);
