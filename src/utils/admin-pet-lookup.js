@@ -17,7 +17,7 @@ function normalizeMemberstackSlot(value) {
 function buildAdminPetLookupAttempts({ petId, memberstackSlot, petName } = {}) {
     const attempts = [];
     const normalizedPetId = typeof petId === 'string' ? petId.trim() : '';
-    const normalizedSlot = normalizeMemberstackSlot(memberstackSlot);
+    const normalizedSlot = normalizeMemberstackSlot(memberstackSlot) || normalizeMemberstackSlot(normalizedPetId);
     const normalizedName = typeof petName === 'string' ? petName.trim() : '';
 
     if (isUuid(normalizedPetId)) {

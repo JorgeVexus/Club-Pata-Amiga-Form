@@ -39,6 +39,8 @@ const REQUEST_TYPES: Record<string, { label: string; icon: string; description: 
     }
 };
 
+const PET_SELECT = 'id, name, status, is_active';
+
 async function findPetForMember(
     ownerId: string,
     lookup: { petId: string; memberstackSlot?: unknown; petName?: unknown }
@@ -46,15 +48,36 @@ async function findPetForMember(
     const attempts = buildAdminPetLookupAttempts(lookup);
 
     for (const attempt of attempts) {
+        if (attempt.type === 'slot') {
+            const { data: petsByOwner, error: ordinalError } = await supabaseAdmin
+                .from('pets')
+                .select(PET_SELECT)
+                .eq('owner_id', ownerId)
+                .order('created_at', { ascending: true });
+
+            const ordinalPet = petsByOwner?.[attempt.value - 1];
+            if (ordinalPet) {
+                console.warn('[Request Info] Mascota resuelta por posicion legacy:', {
+                    requestedSlot: attempt.value,
+                    resolvedPetId: ordinalPet.id,
+                });
+                return ordinalPet;
+            }
+
+            if (ordinalError) {
+                console.warn('[Request Info] Fallo fallback por posicion legacy:', ordinalError.message);
+            }
+
+            continue;
+        }
+
         let query = supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
+            .select(PET_SELECT)
             .eq('owner_id', ownerId);
 
         if (attempt.type === 'id') {
             query = query.eq('id', attempt.value);
-        } else if (attempt.type === 'slot') {
-            query = query.eq('memberstack_slot', attempt.value);
         } else {
             query = query.ilike('name', attempt.value);
         }

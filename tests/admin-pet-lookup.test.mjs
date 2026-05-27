@@ -35,6 +35,16 @@ test('buildAdminPetLookupAttempts falls back to slot and name when pet id is not
   ]);
 });
 
+test('buildAdminPetLookupAttempts derives the slot from legacy pet ids when no extra payload is sent', () => {
+  const attempts = buildAdminPetLookupAttempts({
+    petId: 'pet-1',
+  });
+
+  assert.deepEqual(attempts, [
+    { type: 'slot', value: 1 },
+  ]);
+});
+
 test('buildAdminPetLookupAttempts keeps UUID lookup first and adds slot fallback for stale ids', () => {
   const attempts = buildAdminPetLookupAttempts({
     petId: '8076f4df-4197-4e77-8661-33654da202a8',
