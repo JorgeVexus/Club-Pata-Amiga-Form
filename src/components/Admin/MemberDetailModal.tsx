@@ -1422,7 +1422,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     {fields[`pet-${pets.indexOf(pet) + 1}-is-active`] !== 'false' && (
                                                         <button
                                                             className={styles.petUnsubscribeBtn}
-                                                            onClick={() => handlePetUnsubscribe(pet.id, pets.indexOf(pet) + 1, pet.name)}
+                                                            onClick={() => handlePetUnsubscribe(pet.id, pets.indexOf(pet), pet.name)}
                                                             disabled={isUnsubscribing[pet.id]}
                                                             style={{ 
                                                                 background: '#FEE2E2', 
