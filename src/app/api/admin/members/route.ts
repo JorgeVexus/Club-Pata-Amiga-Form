@@ -79,19 +79,23 @@ export async function GET(request: NextRequest) {
 
         // ENRICHMENT: Fetch real pet counts and info status from Supabase
         const memberstackIds = filteredMembers.map(m => m.id);
-        const memberDataMap = new Map<string, { petCount: number, pendingPetCount: number, infoStatus: string }>();
+        const memberDataMap = new Map<string, { 
+            petCount: number, 
+            pendingPetCount: number, 
+            infoStatus: string,
+            firstName?: string,
+            lastName?: string
+        }>();
 
         if (memberstackIds.length > 0) {
             const { data: userMappings, error: mappingError } = await supabaseAdminClient
                 .from('users')
-                .select('id, memberstack_id, approval_status')
+                .select('id, memberstack_id, approval_status, first_name, last_name')
                 .in('memberstack_id', memberstackIds);
 
             if (!mappingError && userMappings) {
                 const supabaseUserIds = userMappings.map((u: { id: string }) => u.id);
-                const supabaseIdToMsId = new Map(userMappings.map((u: { id: string, memberstack_id: string }) => [u.id, u.memberstack_id]));
-                const msIdToUserStatus = new Map(userMappings.map((u: { memberstack_id: string, approval_status: string }) => [u.memberstack_id, u.approval_status]));
-
+                
                 // Fetch detailed pet info
                 const { data: petsData, error: petsError } = await supabaseAdminClient
                     .from('pets')
@@ -139,7 +143,9 @@ export async function GET(request: NextRequest) {
                         memberDataMap.set(msId, {
                             petCount: pets.length,
                             pendingPetCount: pets.filter(p => p.status !== 'approved').length,
-                            infoStatus: infoStatus
+                            infoStatus: infoStatus,
+                            firstName: user.first_name,
+                            lastName: user.last_name
                         });
                     });
                 }
@@ -159,7 +165,9 @@ export async function GET(request: NextRequest) {
                 petCount: enriched?.petCount || 0,
                 pendingPetCount: enriched?.pendingPetCount || 0,
                 infoStatus: enriched?.infoStatus || 'complete',
-                paymentStatus: paymentStatus
+                paymentStatus: paymentStatus,
+                supabaseFirstName: enriched?.firstName,
+                supabaseLastName: enriched?.lastName
             };
         });
 

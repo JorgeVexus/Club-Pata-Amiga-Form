@@ -258,7 +258,12 @@ export default function RequestsTable({
             // 2. Process Members
             allowedMembers.forEach((member: any) => {
                 const email = member?.auth?.email?.toLowerCase();
-                const name = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
+                
+                // Priorizar nombre de Memberstack, pero si no está, usar el enriquecido de Supabase
+                const msName = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
+                const supabaseName = `${member.supabaseFirstName || ''} ${member.supabaseLastName || ''}`.trim();
+                const name = msName || supabaseName;
+                
                 const isNameless = !name;
                 const hasActivePlan = member.planConnections?.some((p: any) =>
                     p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
