@@ -12,12 +12,15 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const memberstackId = searchParams.get('memberstackId');
+        const email = searchParams.get('email');
 
-        if (!memberstackId) {
-            return NextResponse.json({ success: false, error: 'memberstackId requerido' }, { status: 400 });
+        if (!memberstackId && !email) {
+            return NextResponse.json({ success: false, error: 'Se requiere memberstackId o email' }, { status: 400 });
         }
 
-        const { data, error } = await supabaseAdmin
+        console.log(`[PROFILE GET] Buscando usuario. msId: ${memberstackId}, email: ${email}`);
+
+        let query = supabaseAdmin
             .from('users')
             .select([
                 'id', 'memberstack_id', 'first_name', 'last_name', 'mother_last_name',
@@ -26,9 +29,15 @@ export async function GET(request: NextRequest) {
                 'membership_status', 'approval_status', 'created_at', 'is_foreigner', 'role',
                 'curp', 'gender', 'nationality', 'nationality_code',
                 'ine_front_url', 'ine_back_url', 'proof_of_address_url'
-            ].join(','))
-            .eq('memberstack_id', memberstackId)
-            .maybeSingle();
+            ].join(','));
+
+        if (memberstackId) {
+            query = query.eq('memberstack_id', memberstackId);
+        } else if (email) {
+            query = query.eq('email', email.toLowerCase().trim());
+        }
+
+        const { data, error } = await query.maybeSingle();
 
         if (error) {
             console.error('[PROFILE GET] Supabase error:', error);
@@ -36,11 +45,11 @@ export async function GET(request: NextRequest) {
         }
 
         if (!data) {
-            console.warn(`[PROFILE GET] Usuario no encontrado: ${memberstackId}`);
+            console.warn(`[PROFILE GET] Usuario no encontrado: ${memberstackId || email}`);
             return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        console.log(`[PROFILE GET] Datos recuperados para ${memberstackId}. avatar_url: ${(data as any).avatar_url || 'null'}`);
+        console.log(`[PROFILE GET] Datos recuperados para ${data.email}. ID Supabase: ${data.id}`);
         return NextResponse.json({ success: true, user: data });
 
     } catch (e: any) {

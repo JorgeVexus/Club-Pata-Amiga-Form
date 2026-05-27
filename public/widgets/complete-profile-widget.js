@@ -128,30 +128,36 @@
 
         async loadData() {
             try {
-                console.log('🔍 Cargando datos desde API...');
+                console.log('🔍 [DEBUG] Cargando datos para member:', this.member.auth.email);
                 this.renderLoading();
-                const [profileRes, petsRes] = await Promise.all([
-                    fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${this.member.id}`).then(r => r.json()),
-                    fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`).then(r => r.json())
-                ]);
-
-                console.log('📦 Perfil API:', profileRes);
-                console.log('🐾 Mascotas API:', petsRes);
-
+                
+                // Enviamos tanto ID como Email para asegurar que lo encuentre
+                const profileRes = await fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${this.member.id}&email=${encodeURIComponent(this.member.auth.email)}`).then(r => r.json());
+                
+                let petsRes = { success: false, pets: [] };
                 if (profileRes.success && profileRes.user) {
                     this.user = profileRes.user;
-                    // Initialize formData with existing user data
+                    console.log('✅ [DEBUG] Usuario cargado desde Supabase:', this.user);
                     this.formData = { ...this.user };
+                    
+                    // Si encontramos al usuario, buscamos sus mascotas por su ID interno de Supabase
+                    petsRes = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.user.id}`).then(r => r.json());
                 } else {
-                    console.warn('⚠️ Usuario no encontrado en Supabase, se creará uno nuevo al guardar.');
+                    console.warn('⚠️ [DEBUG] Usuario no encontrado en Supabase por ID o Email.');
                 }
+
+                console.log('📦 [DEBUG] Respuesta Perfil:', profileRes);
+                console.log('🐾 [DEBUG] Respuesta Mascotas:', petsRes);
                 
-                if (petsRes.success) this.pets = petsRes.pets || [];
+                if (petsRes.success) {
+                    this.pets = petsRes.pets || [];
+                    console.log('✅ [DEBUG] Mascotas cargadas:', this.pets.length);
+                }
 
                 this.determineSteps();
                 this.startFlow();
             } catch (e) {
-                console.error('Load data error:', e);
+                console.error('❌ [DEBUG] Error cargando datos:', e);
                 this.renderError('No pudimos conectar con la base de datos.');
             }
         }
@@ -160,39 +166,54 @@
             this.steps = [];
             const u = this.user || {};
             
+            console.log('🛠️ [DEBUG] Evaluando campos para determinar pasos:');
+            console.log('- first_name:', u.first_name);
+            console.log('- last_name:', u.last_name);
+            console.log('- curp:', u.curp);
+            console.log('- phone:', u.phone);
+            console.log('- postal_code:', u.postal_code);
+            console.log('- address:', u.address);
+
             // Step 1: Personal Info
-            // Validamos si faltan campos críticos
-            const missingInfo = !u.first_name || !u.last_name || !u.curp || !u.phone || !u.postal_code || !u.address;
-            if (missingInfo) {
-                console.log('🚩 Falta información personal');
+            // Aseguramos que los campos existan y no sean solo espacios
+            const hasInfo = u.first_name && u.last_name && u.curp && u.phone && u.postal_code && u.address;
+            if (!hasInfo) {
+                console.log('🚩 [DEBUG] Paso "member_info" REQUERIDO');
                 this.steps.push('member_info');
+            } else {
+                console.log('✅ [DEBUG] Paso "member_info" SALTADO (datos completos)');
             }
 
             // Step 2: Documents
-            const missingDocs = !u.ine_front_url || !u.proof_of_address_url;
-            if (missingDocs) {
-                console.log('🚩 Faltan documentos');
+            console.log('- ine_front:', u.ine_front_url);
+            console.log('- proof:', u.proof_of_address_url);
+            const hasDocs = u.ine_front_url && u.proof_of_address_url;
+            if (!hasDocs) {
+                console.log('🚩 [DEBUG] Paso "documents" REQUERIDO');
                 this.steps.push('documents');
+            } else {
+                console.log('✅ [DEBUG] Paso "documents" SALTADO');
             }
 
             // Step 3: Pets
             if (this.pets.length === 0) {
-                console.log('🚩 No hay mascotas registradas');
+                console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas)');
                 this.steps.push('add_pet');
             } else {
-                // Check if any existing pet is incomplete (missing photo or certificate if senior)
                 const incompletePet = this.pets.find(p => !p.primary_photo_url || (p.is_senior && !p.vet_certificate_url));
                 if (incompletePet) {
-                    console.log('🚩 Mascota incompleta detectada:', incompletePet.name);
+                    console.log('🚩 [DEBUG] Paso "complete_pet" REQUERIDO para:', incompletePet.name);
                     this.steps.push('complete_pet');
                     this.incompletePetId = incompletePet.id;
+                } else {
+                    console.log('✅ [DEBUG] Paso "pets" SALTADO');
                 }
             }
 
-            console.log('📋 Pasos determinados:', this.steps);
+            console.log('📋 [DEBUG] Lista final de pasos:', this.steps);
 
             if (this.steps.length === 0) {
-                this.currentStep = 4; // Todo completo
+                this.currentStep = 4;
             } else {
                 this.currentStep = 1;
             }
