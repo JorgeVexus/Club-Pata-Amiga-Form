@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { verifyUploadToken } from '@/utils/upload-token';
+import { buildFulfillRequestPetUpdate } from '@/utils/pet-info-request-status';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -76,7 +77,7 @@ export async function POST(req: NextRequest) {
         // Verificar que la mascota existe
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active')
+            .select('id, name, status, is_active, waiting_period_start, waiting_period_end')
             .eq('id', petId)
             .single();
 
@@ -126,15 +127,15 @@ export async function POST(req: NextRequest) {
         const fileUrl = publicUrl.publicUrl;
 
         // 3. Actualizar el campo de la mascota y su estado
-        const petUpdate: Record<string, string> = { status: 'pending' };
-        if (mapping.petField) {
-            petUpdate[mapping.petField] = fileUrl;
-        }
+        const petUpdate = buildFulfillRequestPetUpdate(pet, mapping.petField, fileUrl);
+        const shouldUpdatePet = Object.keys(petUpdate).length > 0;
 
-        const { error: updateError } = await supabaseAdmin
-            .from('pets')
-            .update(petUpdate)
-            .eq('id', petId);
+        const { error: updateError } = shouldUpdatePet
+            ? await supabaseAdmin
+                .from('pets')
+                .update(petUpdate)
+                .eq('id', petId)
+            : { error: null };
 
         if (updateError) {
             console.error('❌ Error actualizando campo de mascota:', updateError);
@@ -142,11 +143,13 @@ export async function POST(req: NextRequest) {
             console.log(`✅ ${mapping.petField || 'status'} actualizado para ${pet.name}`);
 
             // 3.1 Recalcular status global del miembro
-            try {
-                const { recalculateMemberStatus } = await import('@/utils/member-status');
-                await recalculateMemberStatus(userId);
-            } catch (statusError) {
-                console.error('⚠️ Error recalculando status de miembro:', statusError);
+            if ('status' in petUpdate) {
+                try {
+                    const { recalculateMemberStatus } = await import('@/utils/member-status');
+                    await recalculateMemberStatus(userId);
+                } catch (statusError) {
+                    console.error('⚠️ Error recalculando status de miembro:', statusError);
+                }
             }
         }
 

@@ -8,6 +8,7 @@ import { getPetCarenciaDate } from '@/utils/carencia.utils';
 import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
 import { isUuid } from '@/utils/admin-pet-lookup';
 import { mapPetDerivedStatusToUserStatuses } from '@/utils/member-status-mapping';
+import { ADMIN_PET_STATUS_SELECT } from '@/utils/admin-pet-status-select';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -17,7 +18,7 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-const PET_SELECT = 'id, status, name, is_active, waiting_period_start, is_adopted, is_mixed_breed, is_mixed, breed, pet_type';
+const PET_SELECT = ADMIN_PET_STATUS_SELECT;
 
 async function findPetForMember(
     ownerId: string,
@@ -205,7 +206,6 @@ export async function POST(
                     waiting_period_start: waitingPeriodStart,
                     is_adopted: previousPet.is_adopted,
                     is_mixed_breed: previousPet.is_mixed_breed,
-                    is_mixed: previousPet.is_mixed,
                     breed: previousPet.breed,
                     pet_type: previousPet.pet_type
                 };

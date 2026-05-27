@@ -14,6 +14,7 @@ import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
 import { generateUploadToken } from '@/utils/upload-token';
 import { buildInfoRequestUploadUrl } from '@/utils/info-request-upload-link';
+import { buildInfoRequestPetUpdate } from '@/utils/pet-info-request-status';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -41,7 +42,7 @@ const REQUEST_TYPES: Record<string, { label: string; icon: string; description: 
     }
 };
 
-const PET_SELECT = 'id, name, status, is_active';
+const PET_SELECT = 'id, name, status, is_active, waiting_period_start, waiting_period_end';
 
 async function getPetIndexForMember(ownerId: string, petId: string) {
     const { data: pets } = await supabaseAdmin
@@ -211,15 +212,10 @@ export async function POST(
             return NextResponse.json({ error: 'Error al registrar la solicitud' }, { status: 500 });
         }
 
-        if (pet.status !== 'action_required') {
-            await supabaseAdmin
-                .from('pets')
-                .update({
-                    status: 'action_required',
-                    last_admin_response: requestMessage
-                })
-                .eq('id', resolvedPetId);
-        }
+        await supabaseAdmin
+            .from('pets')
+            .update(buildInfoRequestPetUpdate(pet, requestMessage))
+            .eq('id', resolvedPetId);
 
         await createServerNotification({
             userId: memberId,
