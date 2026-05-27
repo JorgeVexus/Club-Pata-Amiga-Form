@@ -12,6 +12,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { verifyUploadToken } from '@/utils/upload-token';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -43,6 +44,9 @@ export async function POST(req: NextRequest) {
         const petId = formData.get('petId') as string;
         const requestType = formData.get('requestType') as string;
         const logId = formData.get('logId') as string | null; // ID del appeal_log que originó la solicitud
+        const token = formData.get('token') as string | null;
+        const exp = formData.get('exp') as string | null;
+        const petIndex = formData.get('petIndex') as string | null;
 
         // --- Validaciones ---
         if (!userId || !petId || !requestType) {
@@ -51,6 +55,12 @@ export async function POST(req: NextRequest) {
 
         if (!file) {
             return NextResponse.json({ error: 'No se recibió ningún archivo' }, { status: 400, headers: corsHeaders });
+        }
+
+        if (token || exp || petIndex) {
+            if (!token || !exp || !petIndex || !verifyUploadToken(userId, Number(petIndex), token, Number(exp))) {
+                return NextResponse.json({ error: 'Token inválido o expirado' }, { status: 401, headers: corsHeaders });
+            }
         }
 
         const mapping = FIELD_MAP[requestType];
@@ -66,7 +76,7 @@ export async function POST(req: NextRequest) {
         // Verificar que la mascota existe
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
+            .select('id, name, status, is_active')
             .eq('id', petId)
             .single();
 
@@ -116,27 +126,27 @@ export async function POST(req: NextRequest) {
         const fileUrl = publicUrl.publicUrl;
 
         // 3. Actualizar el campo de la mascota y su estado
+        const petUpdate: Record<string, string> = { status: 'pending' };
         if (mapping.petField) {
-            const { error: updateError } = await supabaseAdmin
-                .from('pets')
-                .update({ 
-                    [mapping.petField]: fileUrl,
-                    status: 'pending' // Regresa a revisión al completar info
-                })
-                .eq('id', petId);
+            petUpdate[mapping.petField] = fileUrl;
+        }
 
-            if (updateError) {
-                console.error('❌ Error actualizando campo de mascota:', updateError);
-            } else {
-                console.log(`✅ Campo ${mapping.petField} y status actualizados para ${pet.name}`);
-                
-                // 3.1 Recalcular status global del miembro
-                try {
-                    const { recalculateMemberStatus } = await import('@/utils/member-status');
-                    await recalculateMemberStatus(userId);
-                } catch (statusError) {
-                    console.error('⚠️ Error recalculando status de miembro:', statusError);
-                }
+        const { error: updateError } = await supabaseAdmin
+            .from('pets')
+            .update(petUpdate)
+            .eq('id', petId);
+
+        if (updateError) {
+            console.error('❌ Error actualizando campo de mascota:', updateError);
+        } else {
+            console.log(`✅ ${mapping.petField || 'status'} actualizado para ${pet.name}`);
+
+            // 3.1 Recalcular status global del miembro
+            try {
+                const { recalculateMemberStatus } = await import('@/utils/member-status');
+                await recalculateMemberStatus(userId);
+            } catch (statusError) {
+                console.error('⚠️ Error recalculando status de miembro:', statusError);
             }
         }
 

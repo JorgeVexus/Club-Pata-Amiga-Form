@@ -35,8 +35,9 @@ export async function recalculateMemberStatus(memberstackId: string) {
         // 2. Obtener todas las mascotas del usuario
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
-            .eq('owner_id', user.id);
+            .select('id, name, status, is_active')
+            .eq('owner_id', user.id)
+            .order('created_at', { ascending: true });
 
         if (petsError) {
             throw new Error(`Error obteniendo mascotas: ${petsError.message}`);
@@ -54,7 +55,7 @@ export async function recalculateMemberStatus(memberstackId: string) {
             .eq('memberstack_id', memberstackId)
             .order('created_at', { ascending: false });
 
-        const activePets = pets.filter((p: { id?: string; name?: string; status: string; is_active?: boolean; memberstack_slot?: number }) => !isUnsubscribedPetWithHistory(p, unsubscriptions || []));
+        const activePets = pets.filter((p: { id?: string; name?: string; status: string; is_active?: boolean }) => !isUnsubscribedPetWithHistory(p, unsubscriptions || []));
         if (activePets.length === 0) {
             console.log(`ℹ️ El usuario ${memberstackId} no tiene mascotas activas para recalcular.`);
             return null;

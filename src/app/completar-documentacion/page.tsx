@@ -20,12 +20,52 @@ import styles from './completar-documentacion.module.css';
 
 type UploadStatus = 'idle' | 'uploading' | 'success' | 'error';
 type MissingDocs  = 'photo' | 'certificate' | 'both' | null;
+type AdminRequestType = 'PET_PHOTO_1' | 'PET_VET_CERT' | 'OTHER_DOC';
 
 interface PetInfo {
     name: string;
     type: string;
     petIndex: number;
     missingDocs: MissingDocs;
+    petId?: string;
+    logId?: string;
+    requestTypes?: AdminRequestType[];
+}
+
+const VALID_ADMIN_REQUEST_TYPES: AdminRequestType[] = ['PET_PHOTO_1', 'PET_VET_CERT', 'OTHER_DOC'];
+
+function parseAdminRequestTypes(value: string): AdminRequestType[] {
+    const validTypes = new Set(VALID_ADMIN_REQUEST_TYPES);
+    const uniqueTypes = new Set<AdminRequestType>();
+
+    value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean)
+        .forEach((item) => {
+            if (validTypes.has(item as AdminRequestType)) {
+                uniqueTypes.add(item as AdminRequestType);
+            }
+        });
+
+    return Array.from(uniqueTypes);
+}
+
+function hasAdminRequest(petInfo: PetInfo, type: AdminRequestType): boolean {
+    return petInfo.requestTypes?.includes(type) || false;
+}
+
+function getRequestedDocumentsLabel(needsPhoto: boolean, needsCert: boolean, needsOther: boolean): string {
+    const labels = [
+        needsPhoto ? 'la foto' : null,
+        needsCert ? 'el certificado médico' : null,
+        needsOther ? 'el documento adicional' : null,
+    ].filter(Boolean) as string[];
+
+    if (labels.length === 0) return 'la documentación solicitada';
+    if (labels.length === 1) return labels[0];
+
+    return `${labels.slice(0, -1).join(', ')} y ${labels[labels.length - 1]}`;
 }
 
 // ─── Wrapper con Suspense (requerido por Next.js 15 para useSearchParams) ────
@@ -46,6 +86,9 @@ function CompletarDocumentacionContent() {
     const petIndexParam = parseInt(searchParams.get('p') || '1', 10);
     const token        = searchParams.get('t') || '';
     const exp          = searchParams.get('exp') || '';
+    const requestTypesParam = searchParams.get('rt') || '';
+    const petIdParam = searchParams.get('petId') || '';
+    const logIdParam = searchParams.get('log') || '';
 
     const [petInfo, setPetInfo] = useState<PetInfo | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -55,6 +98,7 @@ function CompletarDocumentacionContent() {
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [certFile, setCertFile] = useState<File | null>(null);
+    const [otherDocFile, setOtherDocFile] = useState<File | null>(null);
 
     const [uploadStatus, setUploadStatus] = useState<UploadStatus>('idle');
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -62,6 +106,7 @@ function CompletarDocumentacionContent() {
 
     const photoInputRef = useRef<HTMLInputElement>(null);
     const certInputRef  = useRef<HTMLInputElement>(null);
+    const otherDocInputRef = useRef<HTMLInputElement>(null);
 
     // ── 1. Autenticación (Token magic link O Memberstack) ─────────────────────
     useEffect(() => {
@@ -97,7 +142,9 @@ function CompletarDocumentacionContent() {
                     // Token válido — cargar info de mascota
                     setAuthenticatedMemberId(memberId);
 
-                    if (!verifyData.petInfo.missingDocs) {
+                    const requestedTypes = parseAdminRequestTypes(requestTypesParam);
+
+                    if (!verifyData.petInfo.missingDocs && requestedTypes.length === 0) {
                         setIsSuccess(true);
                         setIsLoading(false);
                         return;
@@ -108,6 +155,9 @@ function CompletarDocumentacionContent() {
                         type: verifyData.petInfo.type,
                         petIndex: petIndexParam,
                         missingDocs: verifyData.petInfo.missingDocs as MissingDocs,
+                        petId: petIdParam || verifyData.petId,
+                        logId: logIdParam || undefined,
+                        requestTypes: requestedTypes,
                     });
 
                     setIsLoading(false);
@@ -163,7 +213,9 @@ function CompletarDocumentacionContent() {
                 else if (!hasPhoto) missing = 'photo';
                 else if (requiresCert && !hasCert) missing = 'certificate';
 
-                if (!missing) {
+                const requestedTypes = parseAdminRequestTypes(requestTypesParam);
+
+                if (!missing && requestedTypes.length === 0) {
                     setIsSuccess(true);
                     setIsLoading(false);
                     return;
@@ -174,6 +226,9 @@ function CompletarDocumentacionContent() {
                     type: cf[`pet-${idx}-type`] || 'mascota',
                     petIndex: idx,
                     missingDocs: missing,
+                    petId: petIdParam || undefined,
+                    logId: logIdParam || undefined,
+                    requestTypes: requestedTypes,
                 });
 
                 setIsLoading(false);
@@ -185,7 +240,7 @@ function CompletarDocumentacionContent() {
         };
 
         init();
-    }, [memberId, petIndexParam, token, exp]);
+    }, [memberId, petIndexParam, token, exp, requestTypesParam, petIdParam, logIdParam]);
 
     // ── 2. Manejadores de archivos ────────────────────────────────────────────
 
@@ -202,13 +257,20 @@ function CompletarDocumentacionContent() {
         setCertFile(file);
     };
 
+    const handleOtherDocChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setOtherDocFile(file);
+    };
+
     // ── 3. Subida de archivos ─────────────────────────────────────────────────
 
     const handleSubmit = async () => {
         if (!petInfo || !authenticatedMemberId) return;
 
-        const needsPhoto = petInfo.missingDocs === 'photo' || petInfo.missingDocs === 'both';
-        const needsCert  = petInfo.missingDocs === 'certificate' || petInfo.missingDocs === 'both';
+        const needsPhoto = hasAdminRequest(petInfo, 'PET_PHOTO_1') || petInfo.missingDocs === 'photo' || petInfo.missingDocs === 'both';
+        const needsCert  = hasAdminRequest(petInfo, 'PET_VET_CERT') || petInfo.missingDocs === 'certificate' || petInfo.missingDocs === 'both';
+        const needsOther = hasAdminRequest(petInfo, 'OTHER_DOC');
 
         if (needsPhoto && !photoFile) {
             setErrorMessage('Por favor selecciona una foto para continuar.');
@@ -218,6 +280,10 @@ function CompletarDocumentacionContent() {
             setErrorMessage('Por favor selecciona el certificado médico para continuar.');
             return;
         }
+        if (needsOther && !otherDocFile) {
+            setErrorMessage('Por favor selecciona el documento adicional para continuar.');
+            return;
+        }
 
         setErrorMessage(null);
         setUploadStatus('uploading');
@@ -225,6 +291,45 @@ function CompletarDocumentacionContent() {
         try {
             const idx = petInfo.petIndex;
             const updatedFields: Record<string, string> = {};
+            const hasAdminRequestFlow = (petInfo.requestTypes?.length || 0) > 0;
+
+            if (hasAdminRequestFlow) {
+                if (!petInfo.petId) {
+                    throw new Error('No se encontró la mascota asociada a esta solicitud.');
+                }
+
+                const filesByRequestType: Record<AdminRequestType, File | null> = {
+                    PET_PHOTO_1: photoFile,
+                    PET_VET_CERT: certFile,
+                    OTHER_DOC: otherDocFile,
+                };
+
+                for (const requestType of petInfo.requestTypes || []) {
+                    const selectedFile = filesByRequestType[requestType];
+                    if (!selectedFile) continue;
+
+                    const fulfillFormData = new FormData();
+                    fulfillFormData.append('file', selectedFile);
+                    fulfillFormData.append('userId', authenticatedMemberId);
+                    fulfillFormData.append('petId', petInfo.petId);
+                    fulfillFormData.append('requestType', requestType);
+                    fulfillFormData.append('petIndex', String(petInfo.petIndex));
+                    if (token) fulfillFormData.append('token', token);
+                    if (exp) fulfillFormData.append('exp', exp);
+                    if (petInfo.logId) fulfillFormData.append('logId', petInfo.logId);
+
+                    const fulfillRes = await fetch('/api/user/fulfill-request', {
+                        method: 'POST',
+                        body: fulfillFormData,
+                    });
+                    const fulfillData = await fulfillRes.json();
+                    if (!fulfillData.success) throw new Error(fulfillData.error || 'Error subiendo la información solicitada');
+                }
+
+                setUploadStatus('success');
+                setIsSuccess(true);
+                return;
+            }
 
             // Subir foto
             if (needsPhoto && photoFile) {
@@ -294,8 +399,10 @@ function CompletarDocumentacionContent() {
 
     if (!petInfo) return <ErrorScreen message="No se encontró la información de la mascota." />;
 
-    const needsPhoto = petInfo.missingDocs === 'photo' || petInfo.missingDocs === 'both';
-    const needsCert  = petInfo.missingDocs === 'certificate' || petInfo.missingDocs === 'both';
+    const needsPhoto = hasAdminRequest(petInfo, 'PET_PHOTO_1') || petInfo.missingDocs === 'photo' || petInfo.missingDocs === 'both';
+    const needsCert  = hasAdminRequest(petInfo, 'PET_VET_CERT') || petInfo.missingDocs === 'certificate' || petInfo.missingDocs === 'both';
+    const needsOther = hasAdminRequest(petInfo, 'OTHER_DOC');
+    const requestedDocuments = getRequestedDocumentsLabel(needsPhoto, needsCert, needsOther);
 
     return (
         <div className={styles.pageWrapper}>
@@ -317,9 +424,7 @@ function CompletarDocumentacionContent() {
                         ¡Casi listo, <span className={styles.petNameHighlight}>{petInfo.name}</span>! 🐾
                     </h1>
                     <p className={styles.subtitle}>
-                        Solo falta{needsPhoto && needsCert ? 'n' : ''}{' '}
-                        {needsPhoto && needsCert ? 'la foto y el certificado médico' :
-                         needsPhoto ? 'la foto' : 'el certificado médico'}.
+                        Solo falta subir {requestedDocuments}.
                     </p>
 
                     <div className={styles.fieldsContainer}>
@@ -392,6 +497,38 @@ function CompletarDocumentacionContent() {
                                     onChange={handleCertChange}
                                     style={{ display: 'none' }}
                                     id="vet-cert-input"
+                                />
+                            </div>
+                        )}
+
+                        {/* Campo: Documento adicional */}
+                        {needsOther && (
+                            <div className={styles.fieldGroup}>
+                                <div className={styles.fieldLabel}>
+                                    <span className={styles.fieldIcon} style={{ background: '#805AD5' }}>📎</span>
+                                    <div>
+                                        <p className={styles.fieldTitle}>Documento adicional</p>
+                                        <p className={styles.fieldHint}>Sube el archivo solicitado por nuestro equipo</p>
+                                    </div>
+                                </div>
+
+                                <div
+                                    className={`${styles.uploadArea} ${otherDocFile ? styles.uploadAreaSuccess : ''}`}
+                                    onClick={() => otherDocInputRef.current?.click()}
+                                >
+                                    <div className={styles.uploadIcon}>{otherDocFile ? '✅' : '📄'}</div>
+                                    <p className={styles.uploadText}>
+                                        {otherDocFile ? otherDocFile.name : 'Haz clic para seleccionar el documento'}
+                                    </p>
+                                    <p className={styles.uploadHint}>PDF, JPG o PNG · Máx. 10 MB</p>
+                                </div>
+                                <input
+                                    ref={otherDocInputRef}
+                                    type="file"
+                                    accept=".pdf,image/*"
+                                    onChange={handleOtherDocChange}
+                                    style={{ display: 'none' }}
+                                    id="other-doc-input"
                                 />
                             </div>
                         )}

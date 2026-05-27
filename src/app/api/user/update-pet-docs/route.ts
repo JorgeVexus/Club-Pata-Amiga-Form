@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
 
         const { data: targetPet } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
+            .select('id, name, status, is_active')
             .eq('id', targetPetId)
             .single();
 

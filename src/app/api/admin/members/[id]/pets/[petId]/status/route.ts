@@ -305,8 +305,9 @@ async function updateMemberStatusFromPets(memberstackId: string) {
 
         const { data: pets, error: petsError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
-            .eq('owner_id', user.id);
+            .select('id, name, status, is_active')
+            .eq('owner_id', user.id)
+            .order('created_at', { ascending: true });
 
         if (petsError || !pets || pets.length === 0) return;
 

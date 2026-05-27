@@ -12,6 +12,8 @@ import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendInfoRequestEmail } from '@/app/actions/comm.actions';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
+import { generateUploadToken } from '@/utils/upload-token';
+import { buildInfoRequestUploadUrl } from '@/utils/info-request-upload-link';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -40,6 +42,17 @@ const REQUEST_TYPES: Record<string, { label: string; icon: string; description: 
 };
 
 const PET_SELECT = 'id, name, status, is_active';
+
+async function getPetIndexForMember(ownerId: string, petId: string) {
+    const { data: pets } = await supabaseAdmin
+        .from('pets')
+        .select('id')
+        .eq('owner_id', ownerId)
+        .order('created_at', { ascending: true });
+
+    const index = (pets || []).findIndex((pet) => pet.id === petId);
+    return index >= 0 ? index + 1 : 1;
+}
 
 async function findPetForMember(
     ownerId: string,
@@ -170,7 +183,7 @@ export async function POST(
         const requestLabels = requestTypes.map((t: string) => `${REQUEST_TYPES[t].icon} ${REQUEST_TYPES[t].label}`);
         const requestMessage = `Se solicita la siguiente información para ${pet.name}: ${requestLabels.join(', ')}${customMessage ? `\n\nMensaje del administrador: ${customMessage}` : ''}`;
 
-        const { error: logError } = await supabaseAdmin
+        const { data: logData, error: logError } = await supabaseAdmin
             .from('appeal_logs')
             .insert({
                 user_id: memberId,
@@ -189,7 +202,9 @@ export async function POST(
                     }))
                 },
                 created_at: new Date().toISOString()
-            });
+            })
+            .select('id')
+            .single();
 
         if (logError) {
             console.error('Error creando log de solicitud:', logError);
@@ -217,7 +232,18 @@ export async function POST(
         });
 
         if (user.email) {
-            const dashboardUrl = `https://club.pataamiga.mx/mi-membresia?petId=${resolvedPetId}&action=chat`;
+            const petIndex = await getPetIndexForMember(user.id, resolvedPetId);
+            const { token, exp } = generateUploadToken(memberId, petIndex);
+            const dashboardUrl = buildInfoRequestUploadUrl({
+                baseUrl: process.env.NEXT_PUBLIC_APP_URL || 'https://app.pataamiga.mx',
+                memberId,
+                petIndex,
+                petId: resolvedPetId,
+                requestTypes,
+                logId: logData?.id || null,
+                token,
+                exp,
+            });
 
             try {
                 await sendInfoRequestEmail({

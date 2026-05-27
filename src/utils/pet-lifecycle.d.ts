@@ -5,7 +5,7 @@ export function enrichPetsWithLifecycle<T extends Record<string, unknown>>(
     customFields?: Record<string, unknown>,
     unsubscriptions?: Record<string, unknown>[],
 ): Array<T & {
-    memberstack_slot: number;
+    memberstack_slot?: number;
     is_active: boolean;
     unsubscribed_reason: string | null;
     unsubscribed_description: string | null;
@@ -37,7 +37,7 @@ export function getSolidarityPetLifecycleSummary<T extends Record<string, unknow
     now?: Date,
 ): {
     pets: Array<T & {
-        memberstack_slot: number;
+        memberstack_slot?: number;
         is_active: boolean;
         unsubscribed_reason: string | null;
         unsubscribed_description: string | null;
