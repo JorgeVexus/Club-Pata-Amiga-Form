@@ -72,8 +72,8 @@
             this.member = null;
             this.user = null;
             this.pets = [];
-            this.currentStep = 0; // 0: detect, 1: member info, 2: documents, 3: pet info, 4: success
-            this.steps = []; // List of required steps
+            this.currentStep = 0;
+            this.steps = []; 
             this.formData = {};
             this.isLoading = false;
         }
@@ -95,22 +95,32 @@
         }
 
         async waitForMemberstack() {
+            console.log('⏳ Esperando a Memberstack...');
             let tries = 0;
             const attempt = async () => {
                 try {
-                    const res = await window.$memberstackDom.getCurrentMember();
-                    if (res?.data) {
-                        this.member = res.data;
-                        await this.loadData();
-                    } else if (tries < 10) {
+                    if (window.$memberstackDom) {
+                        const res = await window.$memberstackDom.getCurrentMember();
+                        if (res?.data) {
+                            console.log('✅ Miembro detectado:', res.data.id);
+                            this.member = res.data;
+                            await this.loadData();
+                        } else if (tries < 15) {
+                            tries++;
+                            setTimeout(attempt, 500);
+                        } else {
+                            console.log('👤 No hay sesión activa.');
+                            this.renderLoginRequired();
+                        }
+                    } else if (tries < 15) {
                         tries++;
                         setTimeout(attempt, 500);
                     } else {
-                        this.renderLoginRequired();
+                        this.renderError('No se pudo cargar el sistema de autenticación.');
                     }
                 } catch(e) {
                     console.error('Memberstack wait error:', e);
-                    this.renderError('Error al conectar con Memberstack.');
+                    this.renderError('Error al conectar con el servidor.');
                 }
             };
             attempt();
@@ -118,20 +128,31 @@
 
         async loadData() {
             try {
+                console.log('🔍 Cargando datos desde API...');
                 this.renderLoading();
                 const [profileRes, petsRes] = await Promise.all([
                     fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${this.member.id}`).then(r => r.json()),
                     fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${this.member.id}`).then(r => r.json())
                 ]);
 
-                if (profileRes.success) this.user = profileRes.user;
-                if (petsRes.success) this.pets = petsRes.pets;
+                console.log('📦 Perfil API:', profileRes);
+                console.log('🐾 Mascotas API:', petsRes);
+
+                if (profileRes.success && profileRes.user) {
+                    this.user = profileRes.user;
+                    // Initialize formData with existing user data
+                    this.formData = { ...this.user };
+                } else {
+                    console.warn('⚠️ Usuario no encontrado en Supabase, se creará uno nuevo al guardar.');
+                }
+                
+                if (petsRes.success) this.pets = petsRes.pets || [];
 
                 this.determineSteps();
                 this.startFlow();
             } catch (e) {
                 console.error('Load data error:', e);
-                this.renderError('No pudimos cargar tu información.');
+                this.renderError('No pudimos conectar con la base de datos.');
             }
         }
 
@@ -139,31 +160,39 @@
             this.steps = [];
             const u = this.user || {};
             
-            // Step: Personal Info
-            const missingInfo = !u.first_name || !u.last_name || !u.curp || !u.phone || !u.postal_code;
+            // Step 1: Personal Info
+            // Validamos si faltan campos críticos
+            const missingInfo = !u.first_name || !u.last_name || !u.curp || !u.phone || !u.postal_code || !u.address;
             if (missingInfo) {
+                console.log('🚩 Falta información personal');
                 this.steps.push('member_info');
             }
 
-            // Step: Documents
+            // Step 2: Documents
             const missingDocs = !u.ine_front_url || !u.proof_of_address_url;
             if (missingDocs) {
+                console.log('🚩 Faltan documentos');
                 this.steps.push('documents');
             }
 
-            // Step: Pets
+            // Step 3: Pets
             if (this.pets.length === 0) {
+                console.log('🚩 No hay mascotas registradas');
                 this.steps.push('add_pet');
             } else {
+                // Check if any existing pet is incomplete (missing photo or certificate if senior)
                 const incompletePet = this.pets.find(p => !p.primary_photo_url || (p.is_senior && !p.vet_certificate_url));
                 if (incompletePet) {
+                    console.log('🚩 Mascota incompleta detectada:', incompletePet.name);
                     this.steps.push('complete_pet');
                     this.incompletePetId = incompletePet.id;
                 }
             }
 
+            console.log('📋 Pasos determinados:', this.steps);
+
             if (this.steps.length === 0) {
-                this.currentStep = 4; // Success/Complete
+                this.currentStep = 4; // Todo completo
             } else {
                 this.currentStep = 1;
             }
@@ -198,7 +227,7 @@
                         <div class="ppa-loading-overlay" id="ppa-loader"><div class="ppa-spinner"></div></div>
                         <div class="ppa-complete-header">
                             <h1 class="ppa-complete-title">completar perfil</h1>
-                            <p class="ppa-complete-subtitle">Casi eres parte de la manada, solo faltan unos detalles.</p>
+                            <p class="ppa-complete-subtitle">${this.getStepSubtitle(stepType)}</p>
                         </div>
                         <div class="ppa-step-indicator">
                             ${this.steps.map((_, i) => `<div class="ppa-step-dot ${i + 1 === this.currentStep ? 'active' : i + 1 < this.currentStep ? 'done' : ''}"></div>`).join('')}
@@ -210,6 +239,16 @@
             `;
 
             this.bindEvents();
+        }
+
+        getStepSubtitle(type) {
+            const map = {
+                'member_info': 'Tus datos básicos para la membresía.',
+                'documents': 'Sube tus identificaciones oficiales.',
+                'add_pet': 'Registra a tu primer peludo.',
+                'complete_pet': 'Termina de subir los datos de tu mascota.'
+            };
+            return map[type] || 'Casi terminamos.';
         }
 
         renderMemberInfoForm() {
@@ -318,9 +357,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="ppa-form-group">
-                        <label class="ppa-label">Raza</label>
-                        <input type="text" name="breed" class="ppa-input" placeholder="Ej: Poodle, Mestizo" required>
+                    <div class="ppa-row">
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Raza</label>
+                            <input type="text" name="breed" class="ppa-input" placeholder="Ej: Poodle, Mestizo" required>
+                        </div>
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Tamaño</label>
+                            <select name="breedSize" class="ppa-input" required>
+                                <option value="pequeño">Pequeño</option>
+                                <option value="mediano">Mediano</option>
+                                <option value="grande">Grande</option>
+                                <option value="extra_grande">Extra Grande</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="ppa-row">
                         <div class="ppa-form-group">
@@ -335,6 +385,25 @@
                             </select>
                         </div>
                     </div>
+                    
+                    <div style="background:#F7FAFC;border-radius:20px;padding:20px;margin-bottom:20px;border:1px solid #E2E8F0;">
+                        <div class="ppa-form-group">
+                            <label class="ppa-label" style="display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" name="isAdopted" style="width:18px;height:18px;"> ¿Es adoptado?
+                            </label>
+                        </div>
+                        <div class="ppa-form-group" id="ppa-adoption-story-box" style="display:none;">
+                            <label class="ppa-label">Cuéntanos su historia de adopción</label>
+                            <textarea name="adoptionStory" class="ppa-input" style="border-radius:20px;min-height:80px;" placeholder="¿Cómo llegó a tu vida?"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="ppa-form-group">
+                        <label class="ppa-label" style="display:flex;align-items:center;gap:8px;">
+                            <input type="checkbox" name="isSenior" id="ppa-is-senior" style="width:18px;height:18px;"> ¿Es mascota Senior? (Perros 7+ años, Gatos 10+ años)
+                        </label>
+                    </div>
+
                     <div class="ppa-form-group">
                         <label class="ppa-label">Foto de tu mascota</label>
                         <div class="ppa-upload-box" id="up-pet-photo" style="min-height:180px;">
@@ -344,6 +413,17 @@
                             <div class="ppa-upload-preview"><img src="" id="pre-pet-photo"></div>
                         </div>
                     </div>
+
+                    <div class="ppa-form-group" id="ppa-pet-cert-box" style="display:none;">
+                        <label class="ppa-label">Certificado Veterinario (Requerido para Senior)</label>
+                        <div class="ppa-upload-box" id="up-pet-cert" style="min-height:100px;">
+                            <input type="file" id="fi-pet-cert" hidden accept="image/*,application/pdf">
+                            <div class="ppa-upload-icon">📜</div>
+                            <div class="ppa-upload-text">Subir certificado</div>
+                            <div class="ppa-upload-preview"><img src="" id="pre-pet-cert"></div>
+                        </div>
+                    </div>
+
                     <button type="submit" class="ppa-btn-next">registrar mascota</button>
                     ${this.currentStep > 1 ? '<button class="ppa-btn-back" id="ppa-btn-back">volver</button>' : ''}
                 </form>
@@ -403,7 +483,7 @@
 
         renderLoading() {
             const container = document.getElementById('pata-complete-profile');
-            if (container) container.innerHTML = '<div style="text-align:center;padding:60px;font-family:Outfit,sans-serif;color:#666;">Cargando...</div>';
+            if (container) container.innerHTML = '<div style="text-align:center;padding:60px;font-family:Outfit,sans-serif;color:#666;"><div class="ppa-spinner" style="margin:0 auto 20px;"></div>Cargando...</div>';
         }
 
         renderLoginRequired() {
@@ -473,11 +553,35 @@
             const petForm = document.getElementById('ppa-pet-form');
             if (petForm) {
                 petForm.addEventListener('submit', e => this.handlePetSubmit(e));
+                
+                const isAdoptedCheck = petForm.querySelector('input[name="isAdopted"]');
+                const adoptionStoryBox = document.getElementById('ppa-adoption-story-box');
+                if (isAdoptedCheck && adoptionStoryBox) {
+                    isAdoptedCheck.addEventListener('change', e => {
+                        adoptionStoryBox.style.display = e.target.checked ? 'block' : 'none';
+                    });
+                }
+
+                const isSeniorCheck = document.getElementById('ppa-is-senior');
+                const petCertBox = document.getElementById('ppa-pet-cert-box');
+                if (isSeniorCheck && petCertBox) {
+                    isSeniorCheck.addEventListener('change', e => {
+                        petCertBox.style.display = e.target.checked ? 'block' : 'none';
+                    });
+                }
+
                 const petPhotoBox = document.getElementById('up-pet-photo');
                 const petPhotoInput = document.getElementById('fi-pet-photo');
                 if (petPhotoBox && petPhotoInput) {
                     petPhotoBox.addEventListener('click', () => petPhotoInput.click());
                     petPhotoInput.addEventListener('change', e => this.handleFileUpload(e, 'pet-photo'));
+                }
+
+                const petCertBoxUpload = document.getElementById('up-pet-cert');
+                const petCertInput = document.getElementById('fi-pet-cert');
+                if (petCertBoxUpload && petCertInput) {
+                    petCertBoxUpload.addEventListener('click', () => petCertInput.click());
+                    petCertInput.addEventListener('change', e => this.handleFileUpload(e, 'pet-cert'));
                 }
             }
 
@@ -625,11 +729,22 @@
             e.preventDefault();
             const fd = new FormData(e.target);
             const data = Object.fromEntries(fd.entries());
+            
+            // Convert checkbox values
+            data.isAdopted = e.target.querySelector('input[name="isAdopted"]').checked;
+            data.isSenior = e.target.querySelector('input[name="isSenior"]').checked;
+            
             data.memberstackId = this.member.id;
             data.primaryPhotoUrl = this.formData.primaryPhotoUrl;
+            data.vetCertificateUrl = this.formData.vetCertificateUrl;
 
             if (!data.primaryPhotoUrl) {
                 this.showError('Debes subir una foto de tu mascota');
+                return;
+            }
+
+            if (data.isSenior && !data.vetCertificateUrl) {
+                this.showError('Debes subir el certificado veterinario para mascotas senior');
                 return;
             }
 
