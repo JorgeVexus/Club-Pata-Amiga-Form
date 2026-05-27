@@ -92,6 +92,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [stripeDetails, setStripeDetails] = useState<any>(null);
     const [loadingStripe, setLoadingStripe] = useState(false);
     const [isSyncingCRM, setIsSyncingCRM] = useState(false);
+    const [showRejectForm, setShowRejectForm] = useState<Record<string, boolean>>({});
 
     // States for Editing
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -112,6 +113,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             setIsEditingEmail(false);
             setEditingEmailValue(member?.auth?.email || member?.email || '');
             setEditingPetId(null);
+            setShowRejectForm({});
         }
     }, [isOpen, member]);
 
@@ -426,6 +428,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             if (data.success) {
                 // Actualizar localmente
                 setPets(prev => prev.map(p => p.id === petId ? { ...p, status: status as any, admin_notes: petNotes[petId] } : p));
+                setShowRejectForm(prev => ({ ...prev, [petId]: false }));
                 alert(`Mascota actualizada a ${status}`);
                 if (onDataChange) onDataChange(); // Notificar al padre
             } else {
@@ -1343,65 +1346,102 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                         <div className={styles.petAdminActions}>
                                             {pet.is_active !== false && (
                                                 <>
-                                            <div className={styles.notesField}>
-                                                <label>Notas del Administrador:</label>
-                                                <textarea
-                                                    value={petNotes[pet.id] || ''}
-                                                    onChange={(e) => setPetNotes({ ...petNotes, [pet.id]: e.target.value })}
-                                                    placeholder="Razón del rechazo o info faltante..."
-                                                    className={styles.notesInput}
-                                                />
-                                            </div>
-                                            <div className={styles.petButtons}>
-                                                {pet.status !== 'approved' && (
-                                                    <button
-                                                        className={styles.petApproveBtn}
-                                                        onClick={() => handlePetStatusUpdate(pet.id, 'approved')}
-                                                        disabled={updatingPetId === pet.id}
-                                                    >
-                                                        {updatingPetId === pet.id ? '...' : 'Aprobar'}
-                                                    </button>
-                                                )}
-                                                {pet.status !== 'action_required' && (
-                                                    <button
-                                                        className={styles.petInfoBtn}
-                                                        onClick={() => handlePetStatusUpdate(pet.id, 'action_required')}
-                                                        disabled={updatingPetId === pet.id}
-                                                    >
-                                                        {updatingPetId === pet.id ? '...' : 'Solicitar Info'}
-                                                    </button>
-                                                )}
-                                                {pet.status !== 'rejected' && (
-                                                    <button
-                                                        className={styles.petRejectBtn}
-                                                        onClick={() => handlePetStatusUpdate(pet.id, 'rejected')}
-                                                        disabled={updatingPetId === pet.id}
-                                                    >
-                                                        {updatingPetId === pet.id ? '...' : 'Rechazar'}
-                                                    </button>
-                                                )}
-                                                {fields[`pet-${pIdx}-is-active`] !== 'false' && (
-                                                    <button
-                                                        className={styles.petUnsubscribeBtn}
-                                                        onClick={() => handlePetUnsubscribe(pet.id, pIdx, pet.name)}
-                                                        disabled={isUnsubscribing[pet.id]}
-                                                        style={{ 
-                                                            background: '#FEE2E2', 
-                                                            color: '#991B1B', 
-                                                            border: '2px solid #991B1B',
-                                                            borderRadius: '50px',
-                                                            padding: '8px 16px',
-                                                            fontWeight: 600,
-                                                            fontSize: '0.8rem',
-                                                            cursor: 'pointer'
-                                                        }}
-                                                    >
-                                                        {isUnsubscribing[pet.id] ? '...' : 'Dar de Baja'}
-                                                    </button>
-                                                )}
-                                            </div>
+                                            {showRejectForm[pet.id] ? (
+                                                <div className={styles.notesField} style={{ animation: 'fadeIn 0.2s ease-out', marginBottom: '16px' }}>
+                                                    <label style={{ color: '#991B1B', fontWeight: 'bold', display: 'block', marginBottom: '6px' }}>
+                                                        Motivo del Rechazo (Requerido):
+                                                    </label>
+                                                    <textarea
+                                                        value={petNotes[pet.id] || ''}
+                                                        onChange={(e) => setPetNotes({ ...petNotes, [pet.id]: e.target.value })}
+                                                        placeholder="Escribe la razón detallada del rechazo..."
+                                                        className={styles.notesInput}
+                                                        style={{ borderColor: '#FCA5A5', minHeight: '80px', width: '100%' }}
+                                                        autoFocus
+                                                    />
+                                                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                                                        <button
+                                                            className={styles.petRejectBtn}
+                                                            onClick={() => handlePetStatusUpdate(pet.id, 'rejected')}
+                                                            disabled={updatingPetId === pet.id}
+                                                            style={{ 
+                                                                flex: 1, 
+                                                                background: '#DC2626', 
+                                                                color: '#fff', 
+                                                                border: '2px solid #000',
+                                                                borderRadius: '50px',
+                                                                padding: '8px 16px',
+                                                                fontWeight: 800,
+                                                                fontSize: '0.8rem',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            {updatingPetId === pet.id ? '...' : 'Confirmar Rechazo ❌'}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => {
+                                                                setShowRejectForm(prev => ({ ...prev, [pet.id]: false }));
+                                                                setPetNotes(prev => ({ ...prev, [pet.id]: '' }));
+                                                            }}
+                                                            style={{
+                                                                flex: 1,
+                                                                background: '#E2E8F0',
+                                                                color: '#475569',
+                                                                border: '2px solid #475569',
+                                                                borderRadius: '50px',
+                                                                padding: '8px 16px',
+                                                                fontWeight: 800,
+                                                                fontSize: '0.8rem',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            Cancelar
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className={styles.petButtons}>
+                                                    {pet.status !== 'approved' && (
+                                                        <button
+                                                            className={styles.petApproveBtn}
+                                                            onClick={() => handlePetStatusUpdate(pet.id, 'approved')}
+                                                            disabled={updatingPetId === pet.id}
+                                                        >
+                                                            {updatingPetId === pet.id ? '...' : 'Aprobar'}
+                                                        </button>
+                                                    )}
+                                                    {pet.status !== 'rejected' && (
+                                                        <button
+                                                            className={styles.petRejectBtn}
+                                                            onClick={() => setShowRejectForm(prev => ({ ...prev, [pet.id]: true }))}
+                                                            disabled={updatingPetId === pet.id}
+                                                        >
+                                                            {updatingPetId === pet.id ? '...' : 'Rechazar'}
+                                                        </button>
+                                                    )}
+                                                    {fields[`pet-${pets.indexOf(pet) + 1}-is-active`] !== 'false' && (
+                                                        <button
+                                                            className={styles.petUnsubscribeBtn}
+                                                            onClick={() => handlePetUnsubscribe(pet.id, pets.indexOf(pet) + 1, pet.name)}
+                                                            disabled={isUnsubscribing[pet.id]}
+                                                            style={{ 
+                                                                background: '#FEE2E2', 
+                                                                color: '#991B1B', 
+                                                                border: '2px solid #991B1B',
+                                                                borderRadius: '50px',
+                                                                padding: '8px 16px',
+                                                                fontWeight: 600,
+                                                                fontSize: '0.8rem',
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            {isUnsubscribing[pet.id] ? '...' : 'Dar de Baja'}
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            )}
 
-                                            {/* 🆕 Sección de Comunicación Mejorada por Mascota */}
+{/* 🆕 Sección de Comunicación Mejorada por Mascota */}
                                             <div className={styles.petCommunicationSection}>
                                                     {/* Botones de acción */}
                                                     <div style={{ display: 'flex', gap: '8px', marginBottom: '12px', flexWrap: 'wrap' }}>
