@@ -1137,7 +1137,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 </span>
                                             </div>
                                             <div className={styles.detailRow}>
-                                                <span className={styles.detailLabel}>⏱️ Tiempo de carencia</span>
+                                                <span className={styles.detailLabel}>⏱️ Tiempo de espera</span>
                                                 <span className={styles.detailValue}>
                                                     {totalCarenciaDays} días {!pet.waiting_period_start && '(estimado)'}
                                                 </span>
@@ -1145,7 +1145,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             {pet.waiting_period_start ? (
                                                 <>
                                                     <div className={styles.detailRow}>
-                                                        <span className={styles.detailLabel}>📅 Inicio de carencia</span>
+                                                        <span className={styles.detailLabel}>📅 Inicio de tiempo de espera</span>
                                                         <span className={styles.detailValue}>
                                                             {new Date(pet.waiting_period_start).toLocaleDateString('es-MX', { 
                                                                 day: '2-digit', 
@@ -1169,7 +1169,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                 </>
                                             ) : (
                                                 <div className={styles.detailRow}>
-                                                    <span className={styles.detailLabel}>📅 Inicio de carencia</span>
+                                                    <span className={styles.detailLabel}>📅 Inicio de tiempo de espera</span>
                                                     <span className={styles.detailValue} style={{ color: '#718096', fontStyle: 'italic' }}>
                                                         Pendiente de aprobación
                                                     </span>
