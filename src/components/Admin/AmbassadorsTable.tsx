@@ -7,9 +7,10 @@ import { Ambassador, AmbassadorStatus } from '@/types/ambassador.types';
 
 interface AmbassadorsTableProps {
     onViewDetails: (ambassador: Ambassador) => void;
+    refreshKey?: number;
 }
 
-export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProps) {
+export default function AmbassadorsTable({ onViewDetails, refreshKey }: AmbassadorsTableProps) {
     const [ambassadors, setAmbassadors] = useState<Ambassador[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState<AmbassadorStatus | 'all'>('all');
@@ -75,11 +76,11 @@ export default function AmbassadorsTable({ onViewDetails }: AmbassadorsTableProp
 
     useEffect(() => {
         loadAmbassadors();
-    }, [statusFilter, searchQuery, currentPage]);
+    }, [statusFilter, searchQuery, currentPage, refreshKey]);
 
     useEffect(() => {
         loadStats();
-    }, []);
+    }, [refreshKey]);
 
     // Aprobar embajador
     const handleApprove = async (id: string) => {

@@ -77,6 +77,15 @@ function DashboardContent() {
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
     const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    const triggerInPlaceRefresh = () => {
+        setRefreshKey(prev => prev + 1);
+        loadMetrics(adminMemberstackId || undefined);
+        loadPendingCounts(isAdminSuper, adminMemberstackId || undefined);
+        loadActivityLogs(adminMemberstackId || undefined);
+    };
+
     // Fetch helpers
     const fetchMemberDetails = async (id: string, customSetter: (member: any) => void) => {
         try {
@@ -341,10 +350,10 @@ function DashboardContent() {
                 );
             case 'ambassador':
             case 'ambassadors' as any:
-                return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} />;
+                return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} refreshKey={refreshKey} />;
             case 'wellness-center':
             case 'registered-centers':
-                return <WellnessCentersTable onViewDetails={(center) => setSelectedWellnessCenter(center)} />;
+                return <WellnessCentersTable onViewDetails={(center) => setSelectedWellnessCenter(center)} refreshKey={refreshKey} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
             case 'cancellations':
@@ -357,6 +366,7 @@ function DashboardContent() {
                             isSuperAdmin={isAdminSuper}
                             requestType={activeFilter === 'all-members' ? 'all' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
                             mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
+                            refreshKey={refreshKey}
                             onViewDetails={(id, type, petId) => {
                                 if (type === 'ambassador') fetchAmbassadorDetails(id);
                                 else {
@@ -373,7 +383,7 @@ function DashboardContent() {
                                             method: 'PATCH',
                                             body: JSON.stringify({ status: 'approved' })
                                         });
-                                        if (response.ok) { alert('Embajador aprobado'); window.location.reload(); }
+                                        if (response.ok) { alert('Embajador aprobado'); triggerInPlaceRefresh(); }
                                         else alert('Error al aprobar');
                                     } catch (e) { console.error(e); }
                                 } else {
@@ -384,7 +394,7 @@ function DashboardContent() {
                                                 headers: { 'Content-Type': 'application/json' },
                                                 body: JSON.stringify({ adminId: currentAdminId })
                                             });
-                                            if (response.ok) { alert('Miembro aprobado'); window.location.reload(); }
+                                            if (response.ok) { alert('Miembro aprobado'); triggerInPlaceRefresh(); }
                                             else alert('Error al aprobar');
                                         } catch (error) { console.error(error); }
                                     }
@@ -399,7 +409,7 @@ function DashboardContent() {
                                         headers: { 'Content-Type': 'application/json' },
                                         body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
                                     }).then(res => {
-                                        if (res.ok) { alert('Rechazado'); window.location.reload(); }
+                                        if (res.ok) { alert('Rechazado'); triggerInPlaceRefresh(); }
                                         else alert('Error');
                                     });
                                 } else fetchMemberDetails(id, setMemberToReject);
@@ -410,7 +420,7 @@ function DashboardContent() {
                                     let url = `/api/admin/members/${id}/delete`;
                                     if (type === 'ambassador') url = `/api/ambassadors/${id}`;
                                     const res = await adminFetch(url, { method: 'DELETE' });
-                                    if (res.ok) { alert('Eliminado correctamente'); window.location.reload(); }
+                                    if (res.ok) { alert('Eliminado correctamente'); triggerInPlaceRefresh(); }
                                     else alert('Error al eliminar');
                                 } catch (e) { console.error(e); }
                             }}
@@ -538,11 +548,22 @@ function DashboardContent() {
                                 ...metadata 
                             }) 
                         });
-                        if (res.ok) { alert('Aprobado'); window.location.reload(); }
+                        if (res.ok) {
+                            alert('Aprobado');
+                            triggerInPlaceRefresh();
+                            fetchMemberDetails(id, setSelectedMember);
+                        } else {
+                            alert('Error al aprobar');
+                        }
                     }
                 }}
                 onReject={() => { setMemberToReject(selectedMember); setSelectedMember(null); }}
-                onDataChange={() => window.location.reload()}
+                onDataChange={() => {
+                    triggerInPlaceRefresh();
+                    if (selectedMember?.id) {
+                        fetchMemberDetails(selectedMember.id, setSelectedMember);
+                    }
+                }}
             />
 
             <RejectionModal
@@ -551,7 +572,13 @@ function DashboardContent() {
                 memberName={`${memberToReject?.customFields?.['first-name'] || ''} ${memberToReject?.customFields?.['paternal-last-name'] || ''}`}
                 onConfirm={async (reason) => {
                     const res = await adminFetch(`/api/admin/members/${memberToReject.id}/reject`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ adminId: currentAdminId, reason }) });
-                    if (res.ok) { alert('Rechazado'); window.location.reload(); }
+                    if (res.ok) {
+                        alert('Rechazado');
+                        setMemberToReject(null);
+                        triggerInPlaceRefresh();
+                    } else {
+                        alert('Error al rechazar');
+                    }
                 }}
             />
 
@@ -568,7 +595,10 @@ function DashboardContent() {
                 <AmbassadorDetailModal
                     ambassador={selectedAmbassador}
                     onClose={() => setSelectedAmbassador(null)}
-                    onRefresh={() => window.location.reload()}
+                    onRefresh={() => {
+                        triggerInPlaceRefresh();
+                        fetchAmbassadorDetails(selectedAmbassador.id);
+                    }}
                 />
             )}
 
@@ -585,7 +615,7 @@ function DashboardContent() {
                     center={selectedWellnessCenter}
                     isOpen={!!selectedWellnessCenter}
                     onClose={() => setSelectedWellnessCenter(null)}
-                    onRefresh={() => window.location.reload()}
+                    onRefresh={triggerInPlaceRefresh}
                 />
             )}
         </div>

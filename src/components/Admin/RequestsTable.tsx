@@ -46,6 +46,7 @@ interface RequestsTableProps {
     onTerminate?: (member: MemberRequest) => void;
     mode?: 'default' | 'termination';
     isSuperAdmin?: boolean;
+    refreshKey?: number;
 }
 
 export default function RequestsTable({ 
@@ -59,7 +60,8 @@ export default function RequestsTable({
     onBulkDelete,
     onTerminate,
     mode = 'default',
-    isSuperAdmin = false 
+    isSuperAdmin = false,
+    refreshKey
 }: RequestsTableProps) {
 
     const [requests, setRequests] = useState<MemberRequest[]>([]);
@@ -85,11 +87,11 @@ export default function RequestsTable({
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter, requestType, infoFilter, paymentFilter]);
+    }, [sortFilter, requestType, infoFilter, paymentFilter, refreshKey]);
 
     useEffect(() => {
         loadStats();
-    }, [requestType]);
+    }, [requestType, refreshKey]);
 
     async function loadStats() {
         if (requestType === 'appeals' || requestType === 'solidarity-fund' || requestType === 'terminate-users') {

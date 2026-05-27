@@ -295,6 +295,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                 setPetMessages(prev => ({ ...prev, [petId]: '' }));
                 loadPetAppealLogs(petId); // Recargar historial de esta mascota
                 loadPets(); // Recargar para ver el nuevo status
+                if (onDataChange) onDataChange();
             } else {
                 const err = await res.json();
                 alert('Error: ' + (err.error || 'Error al enviar'));

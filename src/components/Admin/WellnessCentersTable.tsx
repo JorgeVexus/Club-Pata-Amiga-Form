@@ -7,9 +7,10 @@ import { WellnessCenter } from '@/types/wellness.types';
 
 interface Props {
     onViewDetails: (center: WellnessCenter) => void;
+    refreshKey?: number;
 }
 
-export default function WellnessCentersTable({ onViewDetails }: Props) {
+export default function WellnessCentersTable({ onViewDetails, refreshKey }: Props) {
     const [centers, setCenters] = useState<WellnessCenter[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
@@ -23,11 +24,11 @@ export default function WellnessCentersTable({ onViewDetails }: Props) {
 
     useEffect(() => {
         loadStats();
-    }, []);
+    }, [refreshKey]);
 
     useEffect(() => {
         fetchCenters();
-    }, [sortFilter]);
+    }, [sortFilter, refreshKey]);
 
     const loadStats = async () => {
         try {
