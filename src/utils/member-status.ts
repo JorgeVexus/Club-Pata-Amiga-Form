@@ -38,7 +38,8 @@ export async function recalculateMemberStatus(memberstackId: string) {
             .from('pets')
             .select('id, name, status, is_active')
             .eq('owner_id', user.id)
-            .order('created_at', { ascending: true });
+            .order('created_at', { ascending: true })
+            .order('id', { ascending: true });
 
         if (petsError) {
             throw new Error(`Error obteniendo mascotas: ${petsError.message}`);

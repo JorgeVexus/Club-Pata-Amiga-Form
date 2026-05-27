@@ -33,7 +33,8 @@ async function findPetForMember(
                 .from('pets')
                 .select(PET_SELECT)
                 .eq('owner_id', ownerId)
-                .order('created_at', { ascending: true });
+                .order('created_at', { ascending: true })
+                .order('id', { ascending: true });
 
             const ordinalPet = petsByOwner?.[attempt.value - 1];
             if (ordinalPet) {
@@ -64,6 +65,7 @@ async function findPetForMember(
 
         const { data, error } = await query
             .order('created_at', { ascending: false })
+            .order('id', { ascending: false })
             .limit(1)
             .maybeSingle();
 
@@ -342,7 +344,8 @@ async function updateMemberStatusFromPets(memberstackId: string) {
             .from('pets')
             .select('id, name, status, is_active')
             .eq('owner_id', user.id)
-            .order('created_at', { ascending: true });
+            .order('created_at', { ascending: true })
+            .order('id', { ascending: true });
 
         if (petsError || !pets || pets.length === 0) return;
 
