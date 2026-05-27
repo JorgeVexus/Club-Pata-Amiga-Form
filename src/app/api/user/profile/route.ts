@@ -23,7 +23,9 @@ export async function GET(request: NextRequest) {
                 'id', 'memberstack_id', 'first_name', 'last_name', 'mother_last_name',
                 'email', 'phone', 'address', 'colony',
                 'city', 'state', 'postal_code', 'birth_date', 'avatar_url',
-                'membership_status', 'approval_status', 'created_at', 'is_foreigner', 'role'
+                'membership_status', 'approval_status', 'created_at', 'is_foreigner', 'role',
+                'curp', 'gender', 'nationality', 'nationality_code',
+                'ine_front_url', 'ine_back_url', 'proof_of_address_url'
             ].join(','))
             .eq('memberstack_id', memberstackId)
             .maybeSingle();

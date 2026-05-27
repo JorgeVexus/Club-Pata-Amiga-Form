@@ -31,6 +31,14 @@ export async function POST(request: NextRequest) {
             postal_code,
             birth_date,
             avatar_url,
+            curp,
+            gender,
+            nationality,
+            nationality_code,
+            ine_front_url,
+            ine_back_url,
+            proof_of_address_url,
+            is_foreigner
         } = body;
 
         if (!memberstackId) {
@@ -56,12 +64,20 @@ export async function POST(request: NextRequest) {
         if (postal_code !== undefined) updatePayload.postal_code = postal_code.trim();
         if (birth_date !== undefined) updatePayload.birth_date = birth_date;
         if (avatar_url !== undefined) updatePayload.avatar_url = avatar_url;
+        if (curp !== undefined) updatePayload.curp = curp.trim().toUpperCase();
+        if (gender !== undefined) updatePayload.gender = gender;
+        if (nationality !== undefined) updatePayload.nationality = nationality;
+        if (nationality_code !== undefined) updatePayload.nationality_code = nationality_code;
+        if (ine_front_url !== undefined) updatePayload.ine_front_url = ine_front_url;
+        if (ine_back_url !== undefined) updatePayload.ine_back_url = ine_back_url;
+        if (proof_of_address_url !== undefined) updatePayload.proof_of_address_url = proof_of_address_url;
+        if (is_foreigner !== undefined) updatePayload.is_foreigner = is_foreigner;
 
         const { data, error } = await supabaseAdmin
             .from('users')
             .update(updatePayload)
             .eq('memberstack_id', memberstackId)
-            .select('id, first_name, last_name, mother_last_name, phone, address, colony, city, state, postal_code, birth_date, avatar_url')
+            .select('*')
             .single();
 
         if (error) {
