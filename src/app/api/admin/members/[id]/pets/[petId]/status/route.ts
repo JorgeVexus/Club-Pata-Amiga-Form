@@ -6,6 +6,8 @@ import { updateContactAsActive } from '@/services/crm.service';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { getPetCarenciaDate } from '@/utils/carencia.utils';
 import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
+import { isUuid } from '@/utils/admin-pet-lookup';
+import { mapPetDerivedStatusToUserStatuses } from '@/utils/member-status-mapping';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -19,6 +21,7 @@ const PET_SELECT = 'id, status, name, is_active, waiting_period_start, is_adopte
 
 async function findPetForMember(
     ownerId: string,
+    memberId: string,
     lookup: { petId: string; memberstackSlot?: unknown; petName?: unknown }
 ) {
     const attempts = buildAdminPetLookupAttempts(lookup);
@@ -80,6 +83,38 @@ async function findPetForMember(
                 error: error.message,
             });
         }
+
+        if (attempt.type === 'id' && isUuid(attempt.value)) {
+            const { data: linkedLog } = await supabaseAdmin
+                .from('appeal_logs')
+                .select('id')
+                .eq('user_id', memberId)
+                .eq('pet_id', attempt.value)
+                .in('type', ['admin_info_request', 'user_fulfill', 'admin_request', 'user_update'])
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            if (linkedLog) {
+                const { data: linkedPet, error: linkedPetError } = await supabaseAdmin
+                    .from('pets')
+                    .select(PET_SELECT)
+                    .eq('id', attempt.value)
+                    .maybeSingle();
+
+                if (linkedPet) {
+                    console.warn('[Pet Status] Mascota resuelta por historial auditado:', {
+                        memberId,
+                        resolvedPetId: linkedPet.id,
+                    });
+                    return linkedPet;
+                }
+
+                if (linkedPetError) {
+                    console.warn('[Pet Status] Fallo fallback por historial auditado:', linkedPetError.message);
+                }
+            }
+        }
     }
 
     return null;
@@ -122,7 +157,7 @@ export async function POST(
             return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404 });
         }
 
-        const previousPet = await findPetForMember(ownerUser.id, { petId, memberstackSlot, petName });
+        const previousPet = await findPetForMember(ownerUser.id, memberId, { petId, memberstackSlot, petName });
 
         if (!previousPet) {
             return NextResponse.json({ error: 'Mascota no encontrada para este miembro' }, { status: 404 });
@@ -337,12 +372,7 @@ async function updateMemberStatusFromPets(memberstackId: string) {
 
         await supabaseAdmin
             .from('users')
-            .update({
-                membership_status: derivedStatus,
-                approval_status: derivedStatus === 'active' ? 'approved' :
-                    derivedStatus === 'appealed' ? 'appealed' :
-                        derivedStatus === 'rejected' ? 'rejected' : undefined
-            })
+            .update(mapPetDerivedStatusToUserStatuses(derivedStatus))
             .eq('memberstack_id', memberstackId);
 
         console.log(`[Pet Status] Status del miembro ${memberstackId} recalculado a: ${derivedStatus}`);

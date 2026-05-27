@@ -1,5 +1,6 @@
 import { supabaseAdmin } from '@/lib/supabase';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { mapPetDerivedStatusToUserStatuses } from '@/utils/member-status-mapping';
 
 /**
  * Recalcula el membership_status del usuario basándose en el estado de todas sus mascotas.
@@ -83,16 +84,10 @@ export async function recalculateMemberStatus(memberstackId: string) {
         console.log(`✅ Nuevo status calculado para ${memberstackId}: ${derivedStatus}`);
 
         // 4. Actualizar el usuario en Supabase
+        const userStatusUpdate = mapPetDerivedStatusToUserStatuses(derivedStatus);
         const { data: updatedUser, error: updateError } = await supabaseAdmin
             .from('users')
-            .update({
-                membership_status: derivedStatus,
-                // También actualizamos approval_status para consistencia en el admin dashboard
-                approval_status: derivedStatus === 'active' ? 'approved' :
-                                derivedStatus === 'appealed' ? 'appealed' :
-                                derivedStatus === 'rejected' ? 'rejected' : 
-                                derivedStatus === 'action_required' ? 'action_required' : 'waiting_approval'
-            })
+            .update(userStatusUpdate)
             .eq('memberstack_id', memberstackId)
             .select()
             .single();
