@@ -192,6 +192,7 @@
             console.log('🛠️ [DEBUG] Evaluando campos para determinar pasos:');
             console.log('- first_name:', u.first_name);
             console.log('- last_name:', u.last_name);
+            console.log('- mother_last_name:', u.mother_last_name);
             console.log('- curp:', u.curp);
             console.log('- phone:', u.phone);
             console.log('- postal_code:', u.postal_code);
@@ -200,7 +201,7 @@
 
             // Step 1: Personal Info
             // Aseguramos que los campos existan y no sean solo espacios
-            const hasInfo = u.first_name && u.last_name && u.curp && u.phone && u.postal_code && u.colony && u.city;
+            const hasInfo = u.first_name && u.last_name && u.mother_last_name && u.curp && u.phone && u.postal_code && u.colony && u.city;
             if (!hasInfo) {
                 console.log('🚩 [DEBUG] Paso "member_info" REQUERIDO');
                 this.steps.push('member_info');
@@ -310,7 +311,7 @@
                         </div>
                         <div class="ppa-form-group">
                             <label class="ppa-label">Apellido Materno</label>
-                            <input type="text" name="mother_last_name" class="ppa-input" value="${u.mother_last_name || ''}" placeholder="Segundo apellido">
+                            <input type="text" name="mother_last_name" class="ppa-input" value="${u.mother_last_name || ''}" placeholder="Segundo apellido" required>
                         </div>
                     </div>
                     <div class="ppa-row">
