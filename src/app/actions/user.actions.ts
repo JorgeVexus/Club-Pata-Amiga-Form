@@ -413,7 +413,7 @@ export async function getPetsByUserId(memberstackId: string) {
         try {
             let query = supabase
                 .from('users')
-                .select('id, first_name, last_name, last_admin_response, action_required_fields, membership_status');
+                .select('id, memberstack_id, first_name, last_name, last_admin_response, action_required_fields, membership_status');
             
             if (isUuid) {
                 query = query.eq('id', memberstackId);
@@ -428,7 +428,7 @@ export async function getPetsByUserId(memberstackId: string) {
                 // Intento fallback solo con ID si falló (por si faltan columnas)
                 let fallbackQuery = supabase
                     .from('users')
-                    .select('id, first_name, last_name');
+                    .select('id, memberstack_id, first_name, last_name');
                 
                 if (isUuid) {
                     fallbackQuery = fallbackQuery.eq('id', memberstackId);
@@ -446,6 +446,7 @@ export async function getPetsByUserId(memberstackId: string) {
         }
 
         if (!userData) return { success: false, error: 'Usuario no encontrado en Supabase' };
+        const realMemberstackId = userData.memberstack_id || memberstackId;
 
         // 2. Obtener las mascotas
         const { data: pets, error: petsError } = await supabase
@@ -464,7 +465,7 @@ export async function getPetsByUserId(memberstackId: string) {
                 const { data: lastLog } = await supabase
                     .from('appeal_logs')
                     .select('message')
-                    .eq('user_id', memberstackId)
+                    .eq('user_id', realMemberstackId)
                     .eq('type', 'admin_request')
                     .order('created_at', { ascending: false })
                     .limit(1)
@@ -481,7 +482,7 @@ export async function getPetsByUserId(memberstackId: string) {
         // 4. Obtener estado activo de Memberstack para cada mascota (Source of Truth para membresía)
         let msCustomFields: any = {};
         try {
-            const msResult = await getMemberDetails(memberstackId);
+            const msResult = await getMemberDetails(realMemberstackId);
             if (msResult.success && msResult.data) {
                 msCustomFields = msResult.data.customFields || {};
             }
@@ -494,14 +495,14 @@ export async function getPetsByUserId(memberstackId: string) {
             const { data: unsubs, error: unsubsError } = await supabase
                 .from('pet_unsubscriptions')
                 .select('pet_id, pet_index, reason, description, created_at')
-                .eq('memberstack_id', memberstackId)
+                .eq('memberstack_id', realMemberstackId)
                 .order('created_at', { ascending: false });
 
             if (unsubsError) {
                 const { data: fallbackUnsubs } = await supabase
                     .from('pet_unsubscriptions')
                     .select('pet_index, reason, description, created_at')
-                    .eq('memberstack_id', memberstackId)
+                    .eq('memberstack_id', realMemberstackId)
                     .order('created_at', { ascending: false });
                 petUnsubscriptions = fallbackUnsubs || [];
             } else {
@@ -511,9 +512,7 @@ export async function getPetsByUserId(memberstackId: string) {
             console.warn('Could not fetch pet unsubscriptions:', e);
         }
 
-        const petsWithStatus = enrichPetsWithLifecycle(pets || [], msCustomFields, petUnsubscriptions).map((pet, index) => {
-            const petNum = index + 1;
-            const isActiveField = `pet-${petNum}-is-active`;
+        const petsWithStatus = enrichPetsWithLifecycle(pets || [], msCustomFields, petUnsubscriptions).map((pet) => {
             // Por defecto es true si no existe el campo o es explícitamente 'true'
             const isActive = pet.is_active;
             
