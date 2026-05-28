@@ -172,11 +172,12 @@
             console.log('- curp:', u.curp);
             console.log('- phone:', u.phone);
             console.log('- postal_code:', u.postal_code);
-            console.log('- address:', u.address);
+            console.log('- city:', u.city);
+            console.log('- colony:', u.colony);
 
             // Step 1: Personal Info
             // Aseguramos que los campos existan y no sean solo espacios
-            const hasInfo = u.first_name && u.last_name && u.curp && u.phone && u.postal_code && u.address;
+            const hasInfo = u.first_name && u.last_name && u.curp && u.phone && u.postal_code && u.colony && u.city;
             if (!hasInfo) {
                 console.log('🚩 [DEBUG] Paso "member_info" REQUERIDO');
                 this.steps.push('member_info');
@@ -312,9 +313,17 @@
                             <input type="text" name="state" id="ppa-state" class="ppa-input" value="${u.state || ''}" readonly>
                         </div>
                     </div>
-                    <div class="ppa-form-group">
-                        <label class="ppa-label">Dirección (Calle y Número)</label>
-                        <input type="text" name="address" class="ppa-input" value="${u.address || ''}" placeholder="Ej: Av. Reforma 123" required>
+                    <div class="ppa-row">
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Municipio/Alcaldía</label>
+                            <input type="text" name="city" id="ppa-city" class="ppa-input" value="${u.city || ''}" placeholder="Tu municipio o alcaldía" required>
+                        </div>
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Colonia</label>
+                            <select name="colony" id="ppa-colony" class="ppa-input" required>
+                                ${u.colony ? `<option value="${u.colony}">${u.colony}</option>` : '<option value="">Ingresa tu CP primero</option>'}
+                            </select>
+                        </div>
                     </div>
                     <button type="submit" class="ppa-btn-next">guardar y continuar</button>
                 </form>
@@ -555,7 +564,13 @@
             if (memberForm) {
                 memberForm.addEventListener('submit', e => this.handleMemberSubmit(e));
                 const cpInput = document.getElementById('ppa-cp');
-                if (cpInput) cpInput.addEventListener('input', e => this.handleCPChange(e));
+                if (cpInput) {
+                    cpInput.addEventListener('input', e => this.handleCPChange(e));
+                    // Si ya tiene 5 dígitos al cargar, poblar colonias
+                    if (cpInput.value && cpInput.value.length === 5) {
+                        this.handleCPChange({ target: cpInput });
+                    }
+                }
             }
 
             // Documents Form
@@ -653,10 +668,40 @@
                     const res = await fetch(`${CONFIG.apiUrl}/api/sepomex?cp=${cp}`).then(r => r.json());
                     if (res.success && res.data) {
                         const stateInput = document.getElementById('ppa-state');
-                        if (stateInput) stateInput.value = res.data.state;
-                        this.formData.city = res.data.municipality;
-                        if (res.data.colonies?.length > 0) {
-                            this.formData.colony = res.data.colonies[0];
+                        const cityInput = document.getElementById('ppa-city');
+                        const colonySelect = document.getElementById('ppa-colony');
+
+                        if (stateInput) stateInput.value = res.data.state || '';
+                        if (cityInput) cityInput.value = res.data.municipality || '';
+                        
+                        this.formData.state = res.data.state || '';
+                        this.formData.city = res.data.municipality || '';
+
+                        if (colonySelect) {
+                            const currentColony = this.formData.colony || (this.user && this.user.colony) || '';
+                            colonySelect.innerHTML = '';
+                            if (res.data.colonies && res.data.colonies.length > 0) {
+                                res.data.colonies.forEach(colony => {
+                                    const opt = document.createElement('option');
+                                    opt.value = colony;
+                                    opt.textContent = colony;
+                                    if (colony === currentColony) {
+                                        opt.selected = true;
+                                    }
+                                    colonySelect.appendChild(opt);
+                                });
+                                if (!res.data.colonies.includes(currentColony)) {
+                                    this.formData.colony = res.data.colonies[0];
+                                } else {
+                                    this.formData.colony = currentColony;
+                                }
+                            } else {
+                                const opt = document.createElement('option');
+                                opt.value = '';
+                                opt.textContent = 'No se encontraron colonias';
+                                colonySelect.appendChild(opt);
+                                this.formData.colony = '';
+                            }
                         }
                     }
                 } catch (e) {
