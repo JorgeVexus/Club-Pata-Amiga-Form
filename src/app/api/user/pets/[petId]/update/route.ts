@@ -33,7 +33,26 @@ export async function POST(
     try {
         const { petId } = await params;
         const body = await request.json();
-        const { userId, photo1Url, photo2Url, photo3Url, photo4Url, photo5Url, vetCertificateUrl, message, adoptionStory, birthMonth, birthYear } = body;
+        const {
+            userId,
+            photo1Url,
+            photo2Url,
+            photo3Url,
+            photo4Url,
+            photo5Url,
+            vetCertificateUrl,
+            message,
+            adoptionStory,
+            birthMonth,
+            birthYear,
+            gender,
+            coatColor,
+            noseColor,
+            eyeColor,
+            isMixedBreed,
+            breed,
+            isAdopted
+        } = body;
 
         console.log(`📝 [PetUpdate] Inicio: Usuario=${userId}, Pet=${petId}`);
         console.log('📦 Body:', JSON.stringify(body, null, 2));
@@ -94,7 +113,8 @@ export async function POST(
 
         // Verificar que está en un status que permite actualización
         const allowedStatuses = ['action_required', 'rejected', 'appealed', 'pending', 'pending_approval', 'waiting_approval', 'approved'];
-        const isOnlyAdoptionStoryOrBirthday = (adoptionStory || birthMonth || birthYear) && !photo1Url && !photo2Url && !vetCertificateUrl;
+        const isDocumentOrComplementaryUpdate = photo1Url || photo2Url || vetCertificateUrl || gender || coatColor || noseColor || eyeColor || breed;
+        const isOnlyAdoptionStoryOrBirthday = (adoptionStory || birthMonth || birthYear) && !isDocumentOrComplementaryUpdate;
         
         if (!allowedStatuses.includes(pet.status) && !isOnlyAdoptionStoryOrBirthday) {
             return NextResponse.json({
@@ -113,6 +133,7 @@ export async function POST(
         // Actualizar URLs
         if (isValidUrl(photo1Url)) {
             updateData.photo_url = photo1Url;
+            updateData.primary_photo_url = photo1Url;
             console.log('📷 URL Foto 1:', photo1Url);
         }
         if (isValidUrl(photo2Url)) {
@@ -137,6 +158,35 @@ export async function POST(
             console.log('📜 URL Certificado:', vetCertificateUrl);
         }
         
+        // Actualizar género
+        if (gender !== undefined && gender !== null) {
+            updateData.gender = gender;
+        }
+
+        // Actualizar colores
+        if (coatColor !== undefined && coatColor !== null) {
+            updateData.coat_color = coatColor;
+        }
+        if (noseColor !== undefined && noseColor !== null) {
+            updateData.nose_color = noseColor;
+        }
+        if (eyeColor !== undefined && eyeColor !== null) {
+            updateData.eye_color = eyeColor;
+        }
+
+        // Actualizar tipo de raza y raza
+        if (isMixedBreed !== undefined && isMixedBreed !== null) {
+            updateData.is_mixed_breed = isMixedBreed;
+        }
+        if (breed !== undefined && breed !== null) {
+            updateData.breed = breed;
+        }
+
+        // Actualizar adopción
+        if (isAdopted !== undefined && isAdopted !== null) {
+            updateData.is_adopted = isAdopted;
+        }
+
         // Actualizar Historia de Adopción
         if (adoptionStory && typeof adoptionStory === 'string') {
             updateData.adoption_story = adoptionStory;
@@ -149,6 +199,11 @@ export async function POST(
         }
         if (birthYear !== undefined && birthYear !== null) {
             updateData.birth_year = parseInt(birthYear, 10) || null;
+        }
+
+        // Marcar info complementaria como completada si se está enviando
+        if (gender || coatColor || breed || photo1Url) {
+            updateData.complementary_info_completed = true;
         }
 
         if (Object.keys(updateData).length === 0 && !message) {
@@ -232,6 +287,14 @@ export async function POST(
             console.error('⚠️ Error notificando al admin (no crítico):', notificationError);
         }
 
+        // 7. Recalcular status global del miembro
+        try {
+            const { recalculateMemberStatus } = await import('@/utils/member-status');
+            await recalculateMemberStatus(owner.memberstack_id);
+        } catch (statusError) {
+            console.error('⚠️ [PetUpdate] Error recalculando status de miembro:', statusError);
+        }
+
         console.log(`✅ Mascota ${petId} procesada correctamente.`);
 
         return NextResponse.json({
@@ -252,4 +315,3 @@ export async function POST(
 function isValidUrl(url: any): boolean {
     return !!(url && typeof url === 'string' && url.trim() !== '');
 }
-

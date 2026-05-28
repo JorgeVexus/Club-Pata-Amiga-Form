@@ -185,23 +185,19 @@
                 console.log('✅ [DEBUG] Paso "member_info" SALTADO (datos completos)');
             }
 
-            // Step 2: Documents
-            console.log('- ine_front:', u.ine_front_url);
-            console.log('- proof:', u.proof_of_address_url);
-            const hasDocs = u.ine_front_url && u.proof_of_address_url;
-            if (!hasDocs) {
-                console.log('🚩 [DEBUG] Paso "documents" REQUERIDO');
-                this.steps.push('documents');
-            } else {
-                console.log('✅ [DEBUG] Paso "documents" SALTADO');
-            }
-
-            // Step 3: Pets
+            // Step 2: Pets
             if (this.pets.length === 0) {
                 console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas)');
                 this.steps.push('add_pet');
             } else {
-                const incompletePet = this.pets.find(p => !p.primary_photo_url || (p.is_senior && !p.vet_certificate_url));
+                const incompletePet = this.pets.find(p => {
+                    const hasPhoto = p.primary_photo_url || p.photo_url;
+                    const hasGender = p.gender && (p.gender === 'macho' || p.gender === 'hembra');
+                    const hasCoatColor = p.coat_color && p.coat_color.trim() !== '';
+                    const hasBreed = p.is_mixed_breed || (p.breed && p.breed.trim() !== '');
+                    const hasVetCert = !p.is_senior || p.vet_certificate_url;
+                    return !hasPhoto || !hasGender || !hasCoatColor || !hasBreed || !hasVetCert;
+                });
                 if (incompletePet) {
                     console.log('🚩 [DEBUG] Paso "complete_pet" REQUERIDO para:', incompletePet.name);
                     this.steps.push('complete_pet');
@@ -238,7 +234,6 @@
 
             switch (stepType) {
                 case 'member_info': content = this.renderMemberInfoForm(); break;
-                case 'documents': content = this.renderDocumentsForm(); break;
                 case 'add_pet': content = this.renderAddPetForm(); break;
                 case 'complete_pet': content = this.renderCompletePetForm(); break;
             }
@@ -266,7 +261,6 @@
         getStepSubtitle(type) {
             const map = {
                 'member_info': 'Tus datos básicos para la membresía.',
-                'documents': 'Sube tus identificaciones oficiales.',
                 'add_pet': 'Registra a tu primer peludo.',
                 'complete_pet': 'Termina de subir los datos de tu mascota.'
             };
@@ -330,38 +324,7 @@
             `;
         }
 
-        renderDocumentsForm() {
-            const u = this.user || {};
-            return `
-                <div id="ppa-docs-view">
-                    <p style="text-align:center;margin-bottom:20px;font-size:14px;color:#4A5568;">Sube una foto clara de tus documentos. Aceptamos JPG, PNG o PDF.</p>
-                    <div class="ppa-upload-grid">
-                        <div class="ppa-upload-box ${u.ine_front_url ? 'done' : ''}" id="up-ine-front">
-                            <input type="file" id="fi-ine-front" hidden accept="image/*,application/pdf">
-                            <div class="ppa-upload-icon">🪪</div>
-                            <div class="ppa-upload-text">INE Frente / Pasaporte</div>
-                            <div class="ppa-upload-preview"><img src="${u.ine_front_url || ''}" id="pre-ine-front"></div>
-                        </div>
-                        <div class="ppa-upload-box ${u.ine_back_url ? 'done' : ''}" id="up-ine-back">
-                            <input type="file" id="fi-ine-back" hidden accept="image/*,application/pdf">
-                            <div class="ppa-upload-icon">🔙</div>
-                            <div class="ppa-upload-text">INE Reverso</div>
-                            <div class="ppa-upload-preview"><img src="${u.ine_back_url || ''}" id="pre-ine-back"></div>
-                        </div>
-                    </div>
-                    <div class="ppa-form-group" style="margin-top:16px">
-                        <div class="ppa-upload-box ${u.proof_of_address_url ? 'done' : ''}" id="up-proof" style="min-height:100px;">
-                            <input type="file" id="fi-proof" hidden accept="image/*,application/pdf">
-                            <div class="ppa-upload-icon">🏠</div>
-                            <div class="ppa-upload-text">Comprobante de Domicilio</div>
-                            <div class="ppa-upload-preview"><img src="${u.proof_of_address_url || ''}" id="pre-proof"></div>
-                        </div>
-                    </div>
-                    <button type="button" class="ppa-btn-next" id="ppa-btn-docs">continuar</button>
-                    ${this.currentStep > 1 ? '<button class="ppa-btn-back" id="ppa-btn-back">volver</button>' : ''}
-                </div>
-            `;
-        }
+
 
         renderAddPetForm() {
             return `
@@ -462,33 +425,80 @@
 
         renderCompletePetForm() {
             const pet = this.pets.find(p => p.id === this.incompletePetId) || {};
+            const isMixed = pet.is_mixed_breed !== undefined ? pet.is_mixed_breed : true;
             return `
                 <form id="ppa-complete-pet-form">
-                    <p style="text-align:center;margin-bottom:20px;font-size:14px;color:#4A5568;">Faltan detalles de <strong>${pet.name}</strong></p>
+                    <p style="text-align:center;margin-bottom:20px;font-size:14px;color:#4A5568;">Completa la información complementaria de <strong>${pet.name}</strong></p>
                     
-                    ${!pet.primary_photo_url ? `
-                        <div class="ppa-form-group">
-                            <label class="ppa-label">Foto de ${pet.name}</label>
-                            <div class="ppa-upload-box" id="up-pet-photo" style="min-height:180px;">
-                                <input type="file" id="fi-pet-photo" hidden accept="image/*">
-                                <div class="ppa-upload-icon">📸</div>
-                                <div class="ppa-upload-text">Subir foto principal</div>
-                                <div class="ppa-upload-preview"><img src="" id="pre-pet-photo"></div>
-                            </div>
-                        </div>
-                    ` : ''}
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Sexo</label>
+                        <select name="gender" class="ppa-input" required>
+                            <option value="" ${!pet.gender ? 'selected' : ''}>Selecciona el sexo</option>
+                            <option value="macho" ${pet.gender === 'macho' ? 'selected' : ''}>Macho</option>
+                            <option value="hembra" ${pet.gender === 'hembra' ? 'selected' : ''}>Hembra</option>
+                        </select>
+                    </div>
 
-                    ${pet.is_senior && !pet.vet_certificate_url ? `
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Tipo de Raza</label>
+                        <select name="isMixedBreed" id="ppa-complete-pet-mixed" class="ppa-input" required>
+                            <option value="true" ${isMixed ? 'selected' : ''}>Mestizo / Doméstico</option>
+                            <option value="false" ${!isMixed ? 'selected' : ''}>De Raza</option>
+                        </select>
+                    </div>
+
+                    <div class="ppa-form-group" id="ppa-complete-pet-breed-box" style="display: ${isMixed ? 'none' : 'block'};">
+                        <label class="ppa-label">Raza</label>
+                        <input type="text" name="breed" class="ppa-input" value="${pet.breed && pet.breed !== 'Mestizo' && pet.breed !== 'Doméstico' ? pet.breed : ''}" placeholder="Ej: Poodle, Labrador">
+                    </div>
+
+                    <div class="ppa-row">
                         <div class="ppa-form-group">
-                            <label class="ppa-label">Certificado Veterinario (Mascota Senior)</label>
-                            <div class="ppa-upload-box" id="up-pet-cert" style="min-height:120px;">
-                                <input type="file" id="fi-pet-cert" hidden accept="image/*,application/pdf">
-                                <div class="ppa-upload-icon">📜</div>
-                                <div class="ppa-upload-text">Subir certificado</div>
-                                <div class="ppa-upload-preview"><img src="" id="pre-pet-cert"></div>
-                            </div>
+                            <label class="ppa-label">Color de pelo</label>
+                            <input type="text" name="coatColor" class="ppa-input" value="${pet.coat_color || ''}" placeholder="Ej: Café, Negro" required>
                         </div>
-                    ` : ''}
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Color de nariz</label>
+                            <input type="text" name="noseColor" class="ppa-input" value="${pet.nose_color || ''}" placeholder="Ej: Negro, Rosa">
+                        </div>
+                    </div>
+
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Color de ojos</label>
+                        <input type="text" name="eyeColor" class="ppa-input" value="${pet.eye_color || ''}" placeholder="Ej: Café, Azul">
+                    </div>
+
+                    <div style="background:#F7FAFC;border-radius:20px;padding:20px;margin-bottom:20px;border:1px solid #E2E8F0;">
+                        <div class="ppa-form-group">
+                            <label class="ppa-label" style="display:flex;align-items:center;gap:8px;">
+                                <input type="checkbox" name="isAdopted" id="ppa-complete-pet-adopted" style="width:18px;height:18px;" ${pet.is_adopted ? 'checked' : ''}> ¿Es adoptado?
+                            </label>
+                        </div>
+                        <div class="ppa-form-group" id="ppa-complete-pet-adoption-story-box" style="display: ${pet.is_adopted ? 'block' : 'none'};">
+                            <label class="ppa-label">Cuéntanos su historia de adopción</label>
+                            <textarea name="adoptionStory" class="ppa-input" style="border-radius:20px;min-height:80px;" placeholder="¿Cómo llegó a tu vida?">${pet.adoption_story || ''}</textarea>
+                        </div>
+                    </div>
+
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Foto de tu mascota</label>
+                        <div class="ppa-upload-box ${pet.primary_photo_url || pet.photo_url ? 'done' : ''}" id="up-pet-photo" style="min-height:180px;">
+                            <input type="file" id="fi-pet-photo" hidden accept="image/*">
+                            <div class="ppa-upload-icon">📸</div>
+                            <div class="ppa-upload-text">Subir foto principal</div>
+                            <div class="ppa-upload-preview"><img src="${pet.primary_photo_url || pet.photo_url || ''}" id="pre-pet-photo"></div>
+                        </div>
+                    </div>
+
+                    <div class="ppa-form-group" id="ppa-complete-pet-cert-box" style="display: ${pet.is_senior ? 'block' : 'none'};">
+                        <label class="ppa-label">Certificado Veterinario (Requerido para Senior)</label>
+                        <div class="ppa-upload-box ${pet.vet_certificate_url ? 'done' : ''}" id="up-pet-cert" style="min-height:120px;">
+                            <input type="file" id="fi-pet-cert" hidden accept="image/*,application/pdf">
+                            <div class="ppa-upload-icon">📜</div>
+                            <div class="ppa-upload-text">Subir certificado</div>
+                            <div class="ppa-upload-preview"><img src="${pet.vet_certificate_url || ''}" id="pre-pet-cert"></div>
+                        </div>
+                    </div>
 
                     <button type="submit" class="ppa-btn-next">completar información</button>
                     ${this.currentStep > 1 ? '<button class="ppa-btn-back" id="ppa-btn-back">volver</button>' : ''}
@@ -573,18 +583,6 @@
                 }
             }
 
-            // Documents Form
-            ['ine-front', 'ine-back', 'proof'].forEach(id => {
-                const box = document.getElementById(`up-${id}`);
-                const input = document.getElementById(`fi-${id}`);
-                if (box && input) {
-                    box.addEventListener('click', () => input.click());
-                    input.addEventListener('change', e => this.handleFileUpload(e, id));
-                }
-            });
-            const docsBtn = document.getElementById('ppa-btn-docs');
-            if (docsBtn) docsBtn.addEventListener('click', () => this.nextStep());
-
             // Pet Form
             const petForm = document.getElementById('ppa-pet-form');
             if (petForm) {
@@ -625,6 +623,23 @@
             const completePetForm = document.getElementById('ppa-complete-pet-form');
             if (completePetForm) {
                 completePetForm.addEventListener('submit', e => this.handleCompletePetSubmit(e));
+                
+                const mixedSelect = document.getElementById('ppa-complete-pet-mixed');
+                const breedBox = document.getElementById('ppa-complete-pet-breed-box');
+                if (mixedSelect && breedBox) {
+                    mixedSelect.addEventListener('change', e => {
+                        breedBox.style.display = e.target.value === 'false' ? 'block' : 'none';
+                    });
+                }
+
+                const adoptedCheck = document.getElementById('ppa-complete-pet-adopted');
+                const adoptionStoryBox = document.getElementById('ppa-complete-pet-adoption-story-box');
+                if (adoptedCheck && adoptionStoryBox) {
+                    adoptedCheck.addEventListener('change', e => {
+                        adoptionStoryBox.style.display = e.target.checked ? 'block' : 'none';
+                    });
+                }
+
                 const petPhotoBox = document.getElementById('up-pet-photo');
                 const petPhotoInput = document.getElementById('fi-pet-photo');
                 if (petPhotoBox && petPhotoInput) {
@@ -836,16 +851,33 @@
 
         async handleCompletePetSubmit(e) {
             e.preventDefault();
-            const data = {
-                memberstackId: this.member.id,
-                petId: this.incompletePetId,
-                primaryPhotoUrl: this.formData.primaryPhotoUrl,
-                vetCertificateUrl: this.formData.vetCertificateUrl
-            };
+            const fd = new FormData(e.target);
+            const data = Object.fromEntries(fd.entries());
+            
+            // Convert checkbox and select values
+            data.isAdopted = document.getElementById('ppa-complete-pet-adopted').checked;
+            data.isMixedBreed = document.getElementById('ppa-complete-pet-mixed').value === 'true';
+            
+            // Set additional required values
+            data.userId = this.member.id;
+            data.petId = this.incompletePetId;
+            data.photo1Url = this.formData.primaryPhotoUrl || this.pets.find(p => p.id === this.incompletePetId)?.primary_photo_url || this.pets.find(p => p.id === this.incompletePetId)?.photo_url;
+            data.vetCertificateUrl = this.formData.vetCertificateUrl || this.pets.find(p => p.id === this.incompletePetId)?.vet_certificate_url;
+
+            if (!data.photo1Url) {
+                this.showError('Debes subir una foto de tu mascota');
+                return;
+            }
+
+            const pet = this.pets.find(p => p.id === this.incompletePetId) || {};
+            if (pet.is_senior && !data.vetCertificateUrl) {
+                this.showError('Debes subir el certificado veterinario para mascotas senior');
+                return;
+            }
 
             this.setLoading(true);
             try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/update-pet-docs`, {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${this.incompletePetId}/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
