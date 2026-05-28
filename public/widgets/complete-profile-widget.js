@@ -209,12 +209,16 @@
             }
 
             // Step 2: Pets — determine missing fields per pet or need new pet
-            if (this.pets.length === 0) {
-                console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas)');
+            // Filter out pets that were unsubscribed/deactivated
+            const activePets = this.pets.filter(p => p.is_active !== false && p.status !== 'unsubscribed');
+            console.log('🐾 [DEBUG] Mascotas activas:', activePets.length, 'de', this.pets.length, 'totales');
+
+            if (activePets.length === 0) {
+                console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas activas)');
                 this.steps.push('add_pet');
             } else {
-                // Check each pet for missing fields and collect them
-                const incompletePet = this.pets.find(p => {
+                // Check each ACTIVE pet for missing fields and collect them
+                const incompletePet = activePets.find(p => {
                     const missing = this.getMissingFields(p);
                     return missing.length > 0;
                 });
