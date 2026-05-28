@@ -62,6 +62,24 @@
 
         .ppa-error-msg { background:#FFF5F5; color:#C53030; padding:12px 20px; border-radius:12px; font-size:14px; font-weight:600; margin-bottom:20px; border:1px solid #FEB2B2; display:none; }
 
+        .ppa-login-shell { text-align:left; max-width:430px; margin:0 auto; }
+        .ppa-login-brand { width:70px; height:auto; display:block; margin:0 auto 18px; }
+        .ppa-login-kicker { font-size:12px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; color:#00BBB4; text-align:center; margin:0 0 10px; }
+        .ppa-login-title { font-family:'Fraiche',sans-serif; font-size:38px; line-height:1; text-align:center; color:#181C1C; margin:0 0 10px; text-transform:lowercase; }
+        .ppa-login-copy { color:#5B6675; font-size:15px; line-height:1.55; text-align:center; margin:0 auto 28px; max-width:34ch; }
+        .ppa-login-form { display:flex; flex-direction:column; gap:18px; }
+        .ppa-login-field { display:flex; flex-direction:column; gap:8px; }
+        .ppa-login-label { font-size:12px; font-weight:900; color:#2D3748; letter-spacing:.08em; text-transform:uppercase; }
+        .ppa-login-input { width:100%; min-height:56px; padding:15px 20px; border:2px solid #E2E8F0; border-radius:18px; font-family:'Outfit',sans-serif; font-size:16px; outline:none; background:#fff; color:#181C1C; box-sizing:border-box; transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease; }
+        .ppa-login-input:focus { border-color:#00BBB4; box-shadow:0 0 0 4px rgba(0,187,180,.13); }
+        .ppa-login-submit { width:100%; min-height:58px; background:#FE8F15; color:#181C1C; border:2px solid #181C1C; border-radius:50px; font-family:'Fraiche',sans-serif; font-size:24px; cursor:pointer; transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease; text-transform:lowercase; box-shadow:6px 6px 0 rgba(24,28,28,.10); }
+        .ppa-login-submit:hover { transform:translateY(-2px); box-shadow:8px 8px 0 rgba(24,28,28,.12); }
+        .ppa-login-submit:active { transform:translateY(0); box-shadow:4px 4px 0 rgba(24,28,28,.10); }
+        .ppa-login-submit:disabled { opacity:.55; cursor:not-allowed; transform:none; box-shadow:none; }
+        .ppa-login-footer { text-align:center; font-size:14px; color:#718096; margin:22px 0 0; }
+        .ppa-login-footer a { color:#00BBB4; font-weight:900; text-decoration:none; }
+        .ppa-login-support { text-align:center; font-size:13px; color:#718096; margin:12px 0 0; }
+
         .ppa-breed-switch { display:flex; gap:0; border:2px solid #E2E8F0; border-radius:50px; overflow:hidden; margin-bottom:20px; }
         .ppa-breed-switch-btn { flex:1; padding:12px 16px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; border:none; cursor:pointer; background:#fff; color:#718096; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; }
         .ppa-breed-switch-btn.active { background:#15BEB2; color:#000; }
@@ -649,31 +667,99 @@
             
             container.innerHTML = `
                 <div class="ppa-complete-widget">
-                    <div class="ppa-complete-card" style="text-align:center;">
-                        <div class="ppa-complete-header">
-                            <h1 class="ppa-complete-title">inicia sesión</h1>
-                            <p class="ppa-complete-subtitle">Para completar tu perfil, primero necesitamos saber quién eres.</p>
-                        </div>
-                        <div style="padding:20px 0;">
-                            <div style="font-size:64px;margin-bottom:24px;">🔑</div>
-                            <button id="ppa-btn-login" class="ppa-btn-next">iniciar sesión</button>
-                            <p style="margin-top:20px;font-size:14px;color:#718096;">
-                                ¿No tienes cuenta? <a href="/registro" style="color:#15BEB2;font-weight:700;text-decoration:none;">Regístrate aquí</a>
+                    <div class="ppa-complete-card">
+                        <div class="ppa-loading-overlay" id="ppa-loader"><div class="ppa-spinner"></div></div>
+                        <div class="ppa-login-shell">
+                            <img
+                                src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695917/logo_pata_amiga_amarillo_i762ow.png"
+                                alt="Club Pata Amiga"
+                                class="ppa-login-brand"
+                            >
+                            <p class="ppa-login-kicker">miembros</p>
+                            <h1 class="ppa-login-title">inicia sesión</h1>
+                            <p class="ppa-login-copy">Entra con el correo de tu membresía para completar los datos que faltan.</p>
+                            <div class="ppa-error-msg" id="ppa-error"></div>
+
+                            <form id="ppa-login-form" class="ppa-login-form">
+                                <div class="ppa-login-field">
+                                    <label class="ppa-login-label" for="ppa-login-email">correo electrónico</label>
+                                    <input
+                                        id="ppa-login-email"
+                                        name="email"
+                                        type="email"
+                                        class="ppa-login-input"
+                                        placeholder="clubpataamiga@correo.com"
+                                        autocomplete="email"
+                                        required
+                                    >
+                                </div>
+                                <div class="ppa-login-field">
+                                    <label class="ppa-login-label" for="ppa-login-password">contraseña</label>
+                                    <input
+                                        id="ppa-login-password"
+                                        name="password"
+                                        type="password"
+                                        class="ppa-login-input"
+                                        placeholder="Tu contraseña"
+                                        autocomplete="current-password"
+                                        required
+                                    >
+                                </div>
+                                <button type="submit" id="ppa-btn-login" class="ppa-login-submit ppa-btn-next">entrar y continuar</button>
+                            </form>
+                            <p class="ppa-login-footer">
+                                ¿No tienes cuenta? <a href="/registro">Regístrate aquí</a>
+                            </p>
+                            <p class="ppa-login-support">
+                                Si no recuerdas tu contraseña, usa la opción de recuperación en tu correo de acceso.
                             </p>
                         </div>
                     </div>
                 </div>
             `;
 
-            const loginBtn = document.getElementById('ppa-btn-login');
-            if (loginBtn) {
-                loginBtn.addEventListener('click', () => {
-                    if (window.$memberstackDom) {
-                        window.$memberstackDom.openModal('LOGIN');
-                    } else {
-                        alert('Error al cargar el sistema de autenticación. Por favor recarga la página.');
-                    }
+            const loginForm = document.getElementById('ppa-login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', e => this.handleLoginSubmit(e));
+            }
+        }
+
+        async handleLoginSubmit(e) {
+            e.preventDefault();
+
+            if (!window.$memberstackDom) {
+                this.showError('No se pudo cargar el sistema de autenticación. Recarga la página e intenta de nuevo.');
+                return;
+            }
+
+            const fd = new FormData(e.target);
+            const email = String(fd.get('email') || '').trim();
+            const password = String(fd.get('password') || '');
+
+            if (!email || !password) {
+                this.showError('Escribe tu correo y contraseña para continuar.');
+                return;
+            }
+
+            this.setLoading(true);
+            try {
+                const loginResult = await window.$memberstackDom.loginMemberEmailPassword({
+                    email,
+                    password,
                 });
+
+                if (!loginResult?.data) {
+                    this.showError('No pudimos iniciar sesión con esos datos.');
+                    return;
+                }
+
+                this.member = loginResult.data;
+                await this.loadData();
+            } catch (error) {
+                console.error('Login error:', error);
+                this.showError('No pudimos iniciar sesión. Revisa tu correo y contraseña.');
+            } finally {
+                this.setLoading(false);
             }
         }
 
