@@ -54,3 +54,6 @@ config.local.*
 # Compiled assets
 *.css.map
 *.min.css
+
+# Graphify
+graphify-out/
