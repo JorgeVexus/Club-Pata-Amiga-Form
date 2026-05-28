@@ -127,6 +127,14 @@
             await this.waitForMemberstack();
         }
 
+        getMemberEmail(member = this.member) {
+            return member?.auth?.email || member?.email || member?.data?.auth?.email || member?.data?.email || '';
+        }
+
+        getMemberId(member = this.member) {
+            return member?.id || member?.memberId || member?.data?.id || member?.data?.memberId || '';
+        }
+
         injectStyles() {
             if (document.getElementById('ppa-complete-styles')) return;
             const s = document.createElement('style');
@@ -169,11 +177,18 @@
 
         async loadData() {
             try {
-                console.log('🔍 [DEBUG] Cargando datos para member:', this.member.auth.email);
+                const memberId = this.getMemberId();
+                const memberEmail = this.getMemberEmail();
+
+                if (!memberId || !memberEmail) {
+                    throw new Error('missing_member_session_data');
+                }
+
+                console.log('🔍 [DEBUG] Cargando datos para member:', memberEmail);
                 this.renderLoading();
                 
                 // Enviamos tanto ID como Email para asegurar que lo encuentre
-                const profileRes = await fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${this.member.id}&email=${encodeURIComponent(this.member.auth.email)}`).then(r => r.json());
+                const profileRes = await fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${encodeURIComponent(memberId)}&email=${encodeURIComponent(memberEmail)}`).then(r => r.json());
                 
                 let petsRes = { success: false, pets: [] };
                 if (profileRes.success && profileRes.user) {
@@ -753,7 +768,8 @@
                     return;
                 }
 
-                this.member = loginResult.data;
+                const { data: freshMember } = await window.$memberstackDom.getCurrentMember();
+                this.member = freshMember || loginResult.data;
                 await this.loadData();
             } catch (error) {
                 console.error('Login error:', error);

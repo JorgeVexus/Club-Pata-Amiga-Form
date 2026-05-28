@@ -22,8 +22,38 @@ test('complete profile widget uses custom login instead of Memberstack basic mod
   );
   assert.match(
     source,
-    /this\.member = loginResult\.data;/,
-    'successful login must store the authenticated member in the widget',
+    /getCurrentMember\(\)/,
+    'successful login must refresh the current member before loading profile data',
+  );
+  assert.match(
+    source,
+    /this\.member = freshMember \|\| loginResult\.data;/,
+    'successful login must prefer the fresh Memberstack session member',
+  );
+  assert.match(
+    source,
+    /getMemberEmail\(member = this\.member\)/,
+    'widget must read member email through a shape-tolerant helper',
+  );
+  assert.match(
+    source,
+    /getMemberId\(member = this\.member\)/,
+    'widget must read member id through a shape-tolerant helper',
+  );
+  assert.doesNotMatch(
+    source,
+    /this\.member\.auth\.email/,
+    'loadData must not assume login result always contains auth.email directly',
+  );
+  assert.match(
+    source,
+    /memberEmail = this\.getMemberEmail\(\)/,
+    'loadData must use the normalized member email',
+  );
+  assert.match(
+    source,
+    /memberId = this\.getMemberId\(\)/,
+    'loadData must use the normalized member id',
   );
   assert.match(
     source,
