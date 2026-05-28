@@ -135,6 +135,35 @@
             return member?.id || member?.memberId || member?.data?.id || member?.data?.memberId || '';
         }
 
+        hasCompleteMemberSession(member) {
+            return Boolean(this.getMemberId(member) && this.getMemberEmail(member));
+        }
+
+        delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async waitForAuthenticatedMember(fallbackMember) {
+            if (this.hasCompleteMemberSession(fallbackMember)) {
+                return fallbackMember;
+            }
+
+            for (let attempt = 0; attempt < 12; attempt++) {
+                try {
+                    const { data: currentMember } = await window.$memberstackDom.getCurrentMember();
+                    if (this.hasCompleteMemberSession(currentMember)) {
+                        return currentMember;
+                    }
+                } catch (error) {
+                    console.warn('Memberstack session refresh pending:', error);
+                }
+
+                await this.delay(300);
+            }
+
+            return null;
+        }
+
         injectStyles() {
             if (document.getElementById('ppa-complete-styles')) return;
             const s = document.createElement('style');
@@ -214,7 +243,12 @@
                 this.startFlow();
             } catch (e) {
                 console.error('❌ [DEBUG] Error cargando datos:', e);
-                this.renderError('No pudimos conectar con la base de datos.');
+                if (e?.message === 'missing_member_session_data') {
+                    this.renderError('No pudimos confirmar tu sesion. Recarga la pagina e intenta de nuevo.');
+                    return;
+                }
+
+                this.renderError('No pudimos cargar tu informacion. Recarga la pagina e intenta de nuevo.');
             }
         }
 
@@ -768,8 +802,13 @@
                     return;
                 }
 
-                const { data: freshMember } = await window.$memberstackDom.getCurrentMember();
-                this.member = freshMember || loginResult.data;
+                const authenticatedMember = await this.waitForAuthenticatedMember(loginResult.data);
+                if (!authenticatedMember) {
+                    this.showError('No pudimos confirmar tu sesion. Recarga la pagina e intenta de nuevo.');
+                    return;
+                }
+
+                this.member = authenticatedMember;
                 await this.loadData();
             } catch (error) {
                 console.error('Login error:', error);

@@ -27,8 +27,48 @@ test('complete profile widget uses custom login instead of Memberstack basic mod
   );
   assert.match(
     source,
-    /this\.member = freshMember \|\| loginResult\.data;/,
-    'successful login must prefer the fresh Memberstack session member',
+    /waitForAuthenticatedMember\(loginResult\.data\)/,
+    'successful login must wait until Memberstack exposes a complete current member',
+  );
+  assert.doesNotMatch(
+    source,
+    /freshMember \|\| loginResult\.data/,
+    'successful login must not immediately fall back to the incomplete login payload',
+  );
+  assert.match(
+    source,
+    /hasCompleteMemberSession\(member\)/,
+    'widget must detect whether a member has both id and email before loading data',
+  );
+  assert.match(
+    source,
+    /await this\.delay\(300\)/,
+    'post-login session refresh must retry briefly before showing an error',
+  );
+  assert.match(
+    source,
+    /this\.member = authenticatedMember;/,
+    'successful login must store the fully authenticated member in the widget',
+  );
+  assert.match(
+    source,
+    /No pudimos confirmar tu sesi[oó]n/,
+    'login must show a session-specific message instead of the database error when Memberstack is still not ready',
+  );
+  assert.match(
+    source,
+    /throw new Error\('missing_member_session_data'\);/,
+    'loadData must keep guarding against incomplete member data',
+  );
+  assert.match(
+    source,
+    /No pudimos confirmar tu sesi[oó]n/,
+    'missing member session data must not be reported as a database connectivity problem',
+  );
+  assert.match(
+    source,
+    /No pudimos cargar tu informaci[oó]n/,
+    'real data loading failures should use a profile loading message, not a misleading database connection message',
   );
   assert.match(
     source,
