@@ -408,21 +408,35 @@ export async function getPetsByUserId(memberstackId: string) {
     try {
         // 1. Obtener el ID interno del usuario y campos de comunicación (con tolerancia a errores)
         let userData: any = null;
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(memberstackId);
+        
         try {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('users')
-                .select('id, first_name, last_name, last_admin_response, action_required_fields, membership_status')
-                .eq('memberstack_id', memberstackId)
-                .maybeSingle();
+                .select('id, first_name, last_name, last_admin_response, action_required_fields, membership_status');
+            
+            if (isUuid) {
+                query = query.eq('id', memberstackId);
+            } else {
+                query = query.eq('memberstack_id', memberstackId);
+            }
+            
+            const { data, error } = await query.maybeSingle();
 
             if (error) {
                 console.warn('⚠️ [Server Action] Could not fetch user communication fields:', error.message);
                 // Intento fallback solo con ID si falló (por si faltan columnas)
-                const { data: fallbackData } = await supabase
+                let fallbackQuery = supabase
                     .from('users')
-                    .select('id, first_name, last_name')
-                    .eq('memberstack_id', memberstackId)
-                    .maybeSingle();
+                    .select('id, first_name, last_name');
+                
+                if (isUuid) {
+                    fallbackQuery = fallbackQuery.eq('id', memberstackId);
+                } else {
+                    fallbackQuery = fallbackQuery.eq('memberstack_id', memberstackId);
+                }
+                
+                const { data: fallbackData } = await fallbackQuery.maybeSingle();
                 userData = fallbackData;
             } else {
                 userData = data;

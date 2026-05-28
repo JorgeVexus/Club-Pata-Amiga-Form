@@ -28,7 +28,7 @@
 
         .ppa-form-group { margin-bottom:20px; }
         .ppa-label { display:block; font-size:14px; font-weight:700; color:#4A5568; margin-bottom:8px; }
-        .ppa-input { width:100%; padding:14px 20px; border:2px solid #E2E8F0; border-radius:50px; font-family:'Outfit',sans-serif; font-size:16px; outline:none; transition:all .2s; background:#fff; color:#000; }
+        .ppa-input { width:100%; padding:14px 20px; border:2px solid #E2E8F0; border-radius:50px; font-family:'Outfit',sans-serif; font-size:16px; outline:none; transition:all .2s; background:#fff; color:#000; box-sizing:border-box; }
         .ppa-input:focus { border-color:#15BEB2; box-shadow:0 0 0 3px rgba(21,190,178,.15); }
         .ppa-input.error { border-color:#E53E3E; }
         
@@ -48,6 +48,8 @@
         .ppa-btn-next { width:100%; background:#FE8F15; color:#000; border:2px solid #000; border-radius:50px; padding:16px; font-family:'Fraiche',sans-serif; font-size:24px; cursor:pointer; transition:all .2s; margin-top:12px; text-transform:lowercase; }
         .ppa-btn-next:hover { transform:translateY(-2px); box-shadow:6px 6px 0 rgba(0,0,0,.1); }
         .ppa-btn-next:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+        .ppa-btn-secondary { width:100%; background:#00BBB4; color:#000; border:2px solid #000; border-radius:50px; padding:16px; font-family:'Fraiche',sans-serif; font-size:24px; cursor:pointer; transition:all .2s; margin-top:8px; text-transform:lowercase; }
+        .ppa-btn-secondary:hover { transform:translateY(-2px); box-shadow:6px 6px 0 rgba(0,0,0,.1); }
 
         .ppa-btn-back { background:none; border:none; color:#718096; font-size:14px; font-weight:700; cursor:pointer; margin-top:16px; text-decoration:underline; width:100%; text-align:center; }
         
@@ -59,6 +61,27 @@
         @keyframes ppaSpin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
         .ppa-error-msg { background:#FFF5F5; color:#C53030; padding:12px 20px; border-radius:12px; font-size:14px; font-weight:600; margin-bottom:20px; border:1px solid #FEB2B2; display:none; }
+
+        .ppa-breed-switch { display:flex; gap:0; border:2px solid #E2E8F0; border-radius:50px; overflow:hidden; margin-bottom:20px; }
+        .ppa-breed-switch-btn { flex:1; padding:12px 16px; font-family:'Outfit',sans-serif; font-size:14px; font-weight:700; border:none; cursor:pointer; background:#fff; color:#718096; transition:all .2s; display:flex; align-items:center; justify-content:center; gap:6px; }
+        .ppa-breed-switch-btn.active { background:#15BEB2; color:#000; }
+        .ppa-breed-switch-btn:first-child { border-right:1px solid #E2E8F0; }
+
+        .ppa-section-title { font-family:'Fraiche',sans-serif; font-size:18px; color:#000; margin:24px 0 16px; padding-bottom:8px; border-bottom:1px solid #E2E8F0; text-transform:lowercase; }
+        .ppa-section-title:first-of-type { margin-top:0; }
+
+        .ppa-adoption-box { background:#F7FAFC; border-radius:20px; padding:20px; margin-bottom:20px; border:1px solid #E2E8F0; }
+        .ppa-adoption-notice { font-size:12px; color:#718096; margin:8px 0 0; }
+
+        .ppa-autocomplete-wrapper { position:relative; }
+        .ppa-autocomplete-list { position:absolute; top:100%; left:0; right:0; background:#fff; border:2px solid #E2E8F0; border-top:none; border-radius:0 0 20px 20px; max-height:200px; overflow-y:auto; z-index:20; display:none; }
+        .ppa-autocomplete-list.show { display:block; }
+        .ppa-autocomplete-item { padding:10px 20px; cursor:pointer; font-size:14px; transition:background .15s; }
+        .ppa-autocomplete-item:hover { background:#F0FFFD; }
+
+        .ppa-info-box { background:#E6FFFA; border:1px solid #15BEB2; border-radius:16px; padding:12px 16px; font-size:13px; color:#2D3748; margin-bottom:16px; display:flex; align-items:flex-start; gap:8px; }
+        .ppa-info-box.warning { background:#FFFBEB; border-color:#F6AD55; }
+        .ppa-info-box.error { background:#FFF5F5; border-color:#FC8181; }
 
         @media(max-width:480px) {
             .ppa-complete-card { padding:30px 20px; }
@@ -185,25 +208,24 @@
                 console.log('✅ [DEBUG] Paso "member_info" SALTADO (datos completos)');
             }
 
-            // Step 2: Pets
+            // Step 2: Pets — determine missing fields per pet or need new pet
             if (this.pets.length === 0) {
                 console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas)');
                 this.steps.push('add_pet');
             } else {
+                // Check each pet for missing fields and collect them
                 const incompletePet = this.pets.find(p => {
-                    const hasPhoto = p.primary_photo_url || p.photo_url;
-                    const hasGender = p.gender && (p.gender === 'macho' || p.gender === 'hembra');
-                    const hasCoatColor = p.coat_color && p.coat_color.trim() !== '';
-                    const hasBreed = p.is_mixed_breed || (p.breed && p.breed.trim() !== '');
-                    const hasVetCert = !p.is_senior || p.vet_certificate_url;
-                    return !hasPhoto || !hasGender || !hasCoatColor || !hasBreed || !hasVetCert;
+                    const missing = this.getMissingFields(p);
+                    return missing.length > 0;
                 });
                 if (incompletePet) {
-                    console.log('🚩 [DEBUG] Paso "complete_pet" REQUERIDO para:', incompletePet.name);
+                    const missing = this.getMissingFields(incompletePet);
+                    console.log('🚩 [DEBUG] Paso "complete_pet" REQUERIDO para:', incompletePet.name, '| Campos faltantes:', missing);
                     this.steps.push('complete_pet');
                     this.incompletePetId = incompletePet.id;
+                    this.incompletePetMissingFields = missing;
                 } else {
-                    console.log('✅ [DEBUG] Paso "pets" SALTADO');
+                    console.log('✅ [DEBUG] Paso "pets" SALTADO (todas completas)');
                 }
             }
 
@@ -326,10 +348,27 @@
 
 
 
+        getMissingFields(pet) {
+            const missing = [];
+            if (!pet.gender || (pet.gender !== 'macho' && pet.gender !== 'hembra')) missing.push('gender');
+            const hasBreed = pet.is_mixed_breed || (pet.breed && pet.breed.trim() !== '' && pet.breed !== 'Mestizo' && pet.breed !== 'Doméstico');
+            if (!pet.is_mixed_breed && !hasBreed) missing.push('breed');
+            if (pet.is_mixed_breed === undefined || pet.is_mixed_breed === null) missing.push('breedType');
+            if (!pet.coat_color || pet.coat_color.trim() === '') missing.push('coatColor');
+            if (!pet.nose_color || pet.nose_color.trim() === '') missing.push('noseColor');
+            if (!pet.eye_color || pet.eye_color.trim() === '') missing.push('eyeColor');
+            if (!(pet.primary_photo_url || pet.photo_url)) missing.push('photo');
+            if (pet.is_senior && !pet.vet_certificate_url) missing.push('vetCert');
+            return missing;
+        }
+
         renderAddPetForm() {
             return `
                 <form id="ppa-pet-form">
                     <p style="text-align:center;margin-bottom:20px;font-size:14px;color:#4A5568;">¡Cuéntanos sobre tu mascota!</p>
+
+                    <h3 class="ppa-section-title">🐾 datos básicos</h3>
+
                     <div class="ppa-form-group">
                         <label class="ppa-label">Nombre de tu mascota</label>
                         <input type="text" name="name" class="ppa-input" placeholder="¿Cómo se llama?" required>
@@ -337,14 +376,15 @@
                     <div class="ppa-row">
                         <div class="ppa-form-group">
                             <label class="ppa-label">Especie</label>
-                            <select name="petType" class="ppa-input" required>
+                            <select name="petType" id="ppa-pet-type" class="ppa-input" required>
                                 <option value="perro">Perro</option>
                                 <option value="gato">Gato</option>
                             </select>
                         </div>
                         <div class="ppa-form-group">
-                            <label class="ppa-label">Género</label>
+                            <label class="ppa-label">Sexo</label>
                             <select name="gender" class="ppa-input" required>
+                                <option value="" disabled selected>Selecciona</option>
                                 <option value="macho">Macho</option>
                                 <option value="hembra">Hembra</option>
                             </select>
@@ -352,23 +392,8 @@
                     </div>
                     <div class="ppa-row">
                         <div class="ppa-form-group">
-                            <label class="ppa-label">Raza</label>
-                            <input type="text" name="breed" class="ppa-input" placeholder="Ej: Poodle, Mestizo" required>
-                        </div>
-                        <div class="ppa-form-group">
-                            <label class="ppa-label">Tamaño</label>
-                            <select name="breedSize" class="ppa-input" required>
-                                <option value="pequeño">Pequeño</option>
-                                <option value="mediano">Mediano</option>
-                                <option value="grande">Grande</option>
-                                <option value="extra_grande">Extra Grande</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="ppa-row">
-                        <div class="ppa-form-group">
                             <label class="ppa-label">Edad</label>
-                            <input type="number" name="ageValue" class="ppa-input" placeholder="0" required>
+                            <input type="number" name="ageValue" class="ppa-input" placeholder="0" min="0" required>
                         </div>
                         <div class="ppa-form-group">
                             <label class="ppa-label">Unidad</label>
@@ -378,16 +403,69 @@
                             </select>
                         </div>
                     </div>
-                    
-                    <div style="background:#F7FAFC;border-radius:20px;padding:20px;margin-bottom:20px;border:1px solid #E2E8F0;">
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Tamaño</label>
+                        <select name="breedSize" class="ppa-input" required>
+                            <option value="" disabled selected>Selecciona</option>
+                            <option value="pequeño">Pequeño</option>
+                            <option value="mediano">Mediano</option>
+                            <option value="grande">Grande</option>
+                            <option value="extra_grande">Extra Grande</option>
+                        </select>
+                    </div>
+
+                    <h3 class="ppa-section-title">📋 información general</h3>
+
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Tipo de raza</label>
+                        <div class="ppa-breed-switch">
+                            <button type="button" class="ppa-breed-switch-btn active" id="ppa-breed-mestizo" data-value="true">
+                                <span id="ppa-breed-mestizo-label">Mestizo</span>
+                            </button>
+                            <button type="button" class="ppa-breed-switch-btn" id="ppa-breed-raza" data-value="false">
+                                Raza
+                            </button>
+                        </div>
+                        <input type="hidden" name="isMixed" id="ppa-is-mixed" value="true">
+                    </div>
+
+                    <div class="ppa-form-group" id="ppa-breed-input-box" style="display:none;">
+                        <label class="ppa-label">Raza</label>
+                        <div class="ppa-autocomplete-wrapper">
+                            <input type="text" name="breed" id="ppa-breed-input" class="ppa-input" placeholder="Buscar raza..." autocomplete="off">
+                            <div class="ppa-autocomplete-list" id="ppa-breed-list"></div>
+                        </div>
+                    </div>
+
+                    <h3 class="ppa-section-title">🎨 características físicas</h3>
+
+                    <div class="ppa-row">
                         <div class="ppa-form-group">
-                            <label class="ppa-label" style="display:flex;align-items:center;gap:8px;">
-                                <input type="checkbox" name="isAdopted" style="width:18px;height:18px;"> ¿Es adoptado?
+                            <label class="ppa-label">Color de pelo *</label>
+                            <input type="text" name="coatColor" class="ppa-input" placeholder="Ej: Café, Negro" required>
+                        </div>
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Color de nariz</label>
+                            <input type="text" name="noseColor" class="ppa-input" placeholder="Ej: Negro, Rosa">
+                        </div>
+                    </div>
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Color de ojos</label>
+                        <input type="text" name="eyeColor" class="ppa-input" placeholder="Ej: Café, Azul">
+                    </div>
+
+                    <h3 class="ppa-section-title">🏠 adopción</h3>
+
+                    <div class="ppa-adoption-box">
+                        <div class="ppa-form-group" style="margin-bottom:8px;">
+                            <label class="ppa-label" style="display:flex;align-items:center;gap:8px;margin-bottom:0;">
+                                <input type="checkbox" name="isAdopted" style="width:18px;height:18px;"> ¿Es adoptado/rescatado?
                             </label>
                         </div>
-                        <div class="ppa-form-group" id="ppa-adoption-story-box" style="display:none;">
-                            <label class="ppa-label">Cuéntanos su historia de adopción</label>
-                            <textarea name="adoptionStory" class="ppa-input" style="border-radius:20px;min-height:80px;" placeholder="¿Cómo llegó a tu vida?"></textarea>
+                        <p class="ppa-adoption-notice">⚠️ Al llenar la historia nos autorizas a publicarla en redes para inspirar a otros.</p>
+                        <div class="ppa-form-group" id="ppa-adoption-story-box" style="display:none;margin-top:12px;">
+                            <label class="ppa-label">Cuéntanos su historia</label>
+                            <textarea name="adoptionStory" class="ppa-input" style="border-radius:20px;min-height:80px;" placeholder="¿Cómo llegó a tu vida?" maxlength="500"></textarea>
                         </div>
                     </div>
 
@@ -396,6 +474,8 @@
                             <input type="checkbox" name="isSenior" id="ppa-is-senior" style="width:18px;height:18px;"> ¿Es mascota Senior? (Perros 7+ años, Gatos 10+ años)
                         </label>
                     </div>
+
+                    <h3 class="ppa-section-title">📷 fotografía</h3>
 
                     <div class="ppa-form-group">
                         <label class="ppa-label">Foto de tu mascota</label>
@@ -425,81 +505,113 @@
 
         renderCompletePetForm() {
             const pet = this.pets.find(p => p.id === this.incompletePetId) || {};
+            const missing = this.incompletePetMissingFields || this.getMissingFields(pet);
             const isMixed = pet.is_mixed_breed !== undefined ? pet.is_mixed_breed : true;
-            return `
-                <form id="ppa-complete-pet-form">
-                    <p style="text-align:center;margin-bottom:20px;font-size:14px;color:#4A5568;">Completa la información complementaria de <strong>${pet.name}</strong></p>
-                    
+
+            let fieldsHtml = '';
+
+            // Gender
+            if (missing.includes('gender')) {
+                fieldsHtml += `
                     <div class="ppa-form-group">
                         <label class="ppa-label">Sexo</label>
                         <select name="gender" class="ppa-input" required>
-                            <option value="" ${!pet.gender ? 'selected' : ''}>Selecciona el sexo</option>
-                            <option value="macho" ${pet.gender === 'macho' ? 'selected' : ''}>Macho</option>
-                            <option value="hembra" ${pet.gender === 'hembra' ? 'selected' : ''}>Hembra</option>
+                            <option value="" selected>Selecciona el sexo</option>
+                            <option value="macho">Macho</option>
+                            <option value="hembra">Hembra</option>
                         </select>
-                    </div>
+                    </div>`;
+            }
 
+            // Breed type + breed input
+            if (missing.includes('breedType') || missing.includes('breed')) {
+                fieldsHtml += `
                     <div class="ppa-form-group">
-                        <label class="ppa-label">Tipo de Raza</label>
-                        <select name="isMixedBreed" id="ppa-complete-pet-mixed" class="ppa-input" required>
-                            <option value="true" ${isMixed ? 'selected' : ''}>Mestizo / Doméstico</option>
-                            <option value="false" ${!isMixed ? 'selected' : ''}>De Raza</option>
-                        </select>
+                        <label class="ppa-label">Tipo de raza</label>
+                        <div class="ppa-breed-switch">
+                            <button type="button" class="ppa-breed-switch-btn ${isMixed ? 'active' : ''}" id="ppa-complete-breed-mestizo" data-value="true">
+                                ${pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo'}
+                            </button>
+                            <button type="button" class="ppa-breed-switch-btn ${!isMixed ? 'active' : ''}" id="ppa-complete-breed-raza" data-value="false">
+                                Raza
+                            </button>
+                        </div>
+                        <input type="hidden" name="isMixedBreed" id="ppa-complete-pet-mixed" value="${isMixed}">
                     </div>
-
                     <div class="ppa-form-group" id="ppa-complete-pet-breed-box" style="display: ${isMixed ? 'none' : 'block'};">
                         <label class="ppa-label">Raza</label>
-                        <input type="text" name="breed" class="ppa-input" value="${pet.breed && pet.breed !== 'Mestizo' && pet.breed !== 'Doméstico' ? pet.breed : ''}" placeholder="Ej: Poodle, Labrador">
-                    </div>
-
-                    <div class="ppa-row">
-                        <div class="ppa-form-group">
-                            <label class="ppa-label">Color de pelo</label>
-                            <input type="text" name="coatColor" class="ppa-input" value="${pet.coat_color || ''}" placeholder="Ej: Café, Negro" required>
+                        <div class="ppa-autocomplete-wrapper">
+                            <input type="text" name="breed" id="ppa-complete-breed-input" class="ppa-input" value="${pet.breed && pet.breed !== 'Mestizo' && pet.breed !== 'Doméstico' ? pet.breed : ''}" placeholder="Buscar raza..." autocomplete="off">
+                            <div class="ppa-autocomplete-list" id="ppa-complete-breed-list"></div>
                         </div>
-                        <div class="ppa-form-group">
-                            <label class="ppa-label">Color de nariz</label>
-                            <input type="text" name="noseColor" class="ppa-input" value="${pet.nose_color || ''}" placeholder="Ej: Negro, Rosa">
-                        </div>
-                    </div>
+                    </div>`;
+            }
 
+            // Coat color
+            if (missing.includes('coatColor')) {
+                fieldsHtml += `
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Color de pelo *</label>
+                        <input type="text" name="coatColor" class="ppa-input" placeholder="Ej: Café, Negro" required>
+                    </div>`;
+            }
+
+            // Nose color
+            if (missing.includes('noseColor')) {
+                fieldsHtml += `
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Color de nariz</label>
+                        <input type="text" name="noseColor" class="ppa-input" placeholder="Ej: Negro, Rosa">
+                    </div>`;
+            }
+
+            // Eye color
+            if (missing.includes('eyeColor')) {
+                fieldsHtml += `
                     <div class="ppa-form-group">
                         <label class="ppa-label">Color de ojos</label>
-                        <input type="text" name="eyeColor" class="ppa-input" value="${pet.eye_color || ''}" placeholder="Ej: Café, Azul">
-                    </div>
+                        <input type="text" name="eyeColor" class="ppa-input" placeholder="Ej: Café, Azul">
+                    </div>`;
+            }
 
-                    <div style="background:#F7FAFC;border-radius:20px;padding:20px;margin-bottom:20px;border:1px solid #E2E8F0;">
-                        <div class="ppa-form-group">
-                            <label class="ppa-label" style="display:flex;align-items:center;gap:8px;">
-                                <input type="checkbox" name="isAdopted" id="ppa-complete-pet-adopted" style="width:18px;height:18px;" ${pet.is_adopted ? 'checked' : ''}> ¿Es adoptado?
-                            </label>
-                        </div>
-                        <div class="ppa-form-group" id="ppa-complete-pet-adoption-story-box" style="display: ${pet.is_adopted ? 'block' : 'none'};">
-                            <label class="ppa-label">Cuéntanos su historia de adopción</label>
-                            <textarea name="adoptionStory" class="ppa-input" style="border-radius:20px;min-height:80px;" placeholder="¿Cómo llegó a tu vida?">${pet.adoption_story || ''}</textarea>
-                        </div>
-                    </div>
-
+            // Photo
+            if (missing.includes('photo')) {
+                fieldsHtml += `
                     <div class="ppa-form-group">
                         <label class="ppa-label">Foto de tu mascota</label>
-                        <div class="ppa-upload-box ${pet.primary_photo_url || pet.photo_url ? 'done' : ''}" id="up-pet-photo" style="min-height:180px;">
+                        <div class="ppa-upload-box" id="up-pet-photo" style="min-height:180px;">
                             <input type="file" id="fi-pet-photo" hidden accept="image/*">
                             <div class="ppa-upload-icon">📸</div>
                             <div class="ppa-upload-text">Subir foto principal</div>
-                            <div class="ppa-upload-preview"><img src="${pet.primary_photo_url || pet.photo_url || ''}" id="pre-pet-photo"></div>
+                            <div class="ppa-upload-preview"><img src="" id="pre-pet-photo"></div>
                         </div>
-                    </div>
+                    </div>`;
+            }
 
-                    <div class="ppa-form-group" id="ppa-complete-pet-cert-box" style="display: ${pet.is_senior ? 'block' : 'none'};">
+            // Vet certificate (senior)
+            if (missing.includes('vetCert')) {
+                fieldsHtml += `
+                    <div class="ppa-form-group">
                         <label class="ppa-label">Certificado Veterinario (Requerido para Senior)</label>
-                        <div class="ppa-upload-box ${pet.vet_certificate_url ? 'done' : ''}" id="up-pet-cert" style="min-height:120px;">
+                        <div class="ppa-upload-box" id="up-pet-cert" style="min-height:120px;">
                             <input type="file" id="fi-pet-cert" hidden accept="image/*,application/pdf">
                             <div class="ppa-upload-icon">📜</div>
                             <div class="ppa-upload-text">Subir certificado</div>
-                            <div class="ppa-upload-preview"><img src="${pet.vet_certificate_url || ''}" id="pre-pet-cert"></div>
+                            <div class="ppa-upload-preview"><img src="" id="pre-pet-cert"></div>
                         </div>
-                    </div>
+                    </div>`;
+            }
 
+            const petEmoji = pet.pet_type === 'cat' ? '🐱' : '🐶';
+            const missingCount = missing.length;
+
+            return `
+                <form id="ppa-complete-pet-form">
+                    <div class="ppa-info-box">
+                        <span>${petEmoji}</span>
+                        <span>A <strong>${pet.name}</strong> le ${missingCount === 1 ? 'falta 1 dato' : 'faltan ' + missingCount + ' datos'} por completar.</span>
+                    </div>
+                    ${fieldsHtml}
                     <button type="submit" class="ppa-btn-next">completar información</button>
                     ${this.currentStep > 1 ? '<button class="ppa-btn-back" id="ppa-btn-back">volver</button>' : ''}
                 </form>
@@ -583,7 +695,7 @@
                 }
             }
 
-            // Pet Form
+            // Pet Form (add_pet)
             const petForm = document.getElementById('ppa-pet-form');
             if (petForm) {
                 petForm.addEventListener('submit', e => this.handlePetSubmit(e));
@@ -604,6 +716,38 @@
                     });
                 }
 
+                // Breed type toggle
+                const breedMestizoBtn = document.getElementById('ppa-breed-mestizo');
+                const breedRazaBtn = document.getElementById('ppa-breed-raza');
+                const isMixedInput = document.getElementById('ppa-is-mixed');
+                const breedInputBox = document.getElementById('ppa-breed-input-box');
+                const petTypeSelect = document.getElementById('ppa-pet-type');
+                const mestizoLabel = document.getElementById('ppa-breed-mestizo-label');
+                if (breedMestizoBtn && breedRazaBtn && isMixedInput && breedInputBox) {
+                    breedMestizoBtn.addEventListener('click', () => {
+                        breedMestizoBtn.classList.add('active');
+                        breedRazaBtn.classList.remove('active');
+                        isMixedInput.value = 'true';
+                        breedInputBox.style.display = 'none';
+                    });
+                    breedRazaBtn.addEventListener('click', () => {
+                        breedRazaBtn.classList.add('active');
+                        breedMestizoBtn.classList.remove('active');
+                        isMixedInput.value = 'false';
+                        breedInputBox.style.display = 'block';
+                    });
+                }
+                // Update Mestizo/Doméstico label on species change
+                if (petTypeSelect && mestizoLabel) {
+                    petTypeSelect.addEventListener('change', e => {
+                        mestizoLabel.textContent = e.target.value === 'gato' ? 'Doméstico' : 'Mestizo';
+                    });
+                }
+
+                // Breed autocomplete
+                this.setupBreedAutocomplete('ppa-breed-input', 'ppa-breed-list', 'ppa-pet-type');
+
+                // File uploads
                 const petPhotoBox = document.getElementById('up-pet-photo');
                 const petPhotoInput = document.getElementById('fi-pet-photo');
                 if (petPhotoBox && petPhotoInput) {
@@ -619,27 +763,37 @@
                 }
             }
 
-            // Complete Pet Form
+            // Complete Pet Form (complete_pet — dynamic missing fields)
             const completePetForm = document.getElementById('ppa-complete-pet-form');
             if (completePetForm) {
                 completePetForm.addEventListener('submit', e => this.handleCompletePetSubmit(e));
                 
-                const mixedSelect = document.getElementById('ppa-complete-pet-mixed');
+                // Breed type toggle (only present if breed fields are missing)
+                const mestizoBtn = document.getElementById('ppa-complete-breed-mestizo');
+                const razaBtn = document.getElementById('ppa-complete-breed-raza');
+                const mixedInput = document.getElementById('ppa-complete-pet-mixed');
                 const breedBox = document.getElementById('ppa-complete-pet-breed-box');
-                if (mixedSelect && breedBox) {
-                    mixedSelect.addEventListener('change', e => {
-                        breedBox.style.display = e.target.value === 'false' ? 'block' : 'none';
+                if (mestizoBtn && razaBtn && mixedInput && breedBox) {
+                    mestizoBtn.addEventListener('click', () => {
+                        mestizoBtn.classList.add('active');
+                        razaBtn.classList.remove('active');
+                        mixedInput.value = 'true';
+                        breedBox.style.display = 'none';
+                    });
+                    razaBtn.addEventListener('click', () => {
+                        razaBtn.classList.add('active');
+                        mestizoBtn.classList.remove('active');
+                        mixedInput.value = 'false';
+                        breedBox.style.display = 'block';
                     });
                 }
 
-                const adoptedCheck = document.getElementById('ppa-complete-pet-adopted');
-                const adoptionStoryBox = document.getElementById('ppa-complete-pet-adoption-story-box');
-                if (adoptedCheck && adoptionStoryBox) {
-                    adoptedCheck.addEventListener('change', e => {
-                        adoptionStoryBox.style.display = e.target.checked ? 'block' : 'none';
-                    });
-                }
+                // Breed autocomplete in complete form
+                const pet = this.pets.find(p => p.id === this.incompletePetId);
+                const petType = pet ? (pet.pet_type === 'dog' ? 'perro' : pet.pet_type === 'cat' ? 'gato' : pet.pet_type) : 'perro';
+                this.setupBreedAutocomplete('ppa-complete-breed-input', 'ppa-complete-breed-list', null, petType);
 
+                // File uploads (only present if those fields are missing)
                 const petPhotoBox = document.getElementById('up-pet-photo');
                 const petPhotoInput = document.getElementById('fi-pet-photo');
                 if (petPhotoBox && petPhotoInput) {
@@ -806,6 +960,42 @@
             }
         }
 
+        setupBreedAutocomplete(inputId, listId, typeSelectId, fixedType) {
+            const breedInput = document.getElementById(inputId);
+            const breedList = document.getElementById(listId);
+            if (!breedInput || !breedList) return;
+
+            let debounceTimer = null;
+            breedInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const query = breedInput.value.trim();
+                if (query.length < 2) { breedList.classList.remove('show'); return; }
+                debounceTimer = setTimeout(async () => {
+                    const petType = fixedType || (typeSelectId && document.getElementById(typeSelectId)?.value) || 'perro';
+                    try {
+                        const res = await fetch(`${CONFIG.apiUrl}/api/breeds?type=${petType}&search=${encodeURIComponent(query)}`).then(r => r.json());
+                        if (res.breeds && res.breeds.length > 0) {
+                            breedList.innerHTML = res.breeds.slice(0, 8).map(b => `<div class="ppa-autocomplete-item" data-breed="${b.name}">${b.name}</div>`).join('');
+                            breedList.classList.add('show');
+                            breedList.querySelectorAll('.ppa-autocomplete-item').forEach(item => {
+                                item.addEventListener('click', () => {
+                                    breedInput.value = item.dataset.breed;
+                                    breedList.classList.remove('show');
+                                });
+                            });
+                        } else {
+                            breedList.classList.remove('show');
+                        }
+                    } catch (e) { breedList.classList.remove('show'); }
+                }, 300);
+            });
+            document.addEventListener('click', (e) => {
+                if (!breedInput.contains(e.target) && !breedList.contains(e.target)) {
+                    breedList.classList.remove('show');
+                }
+            });
+        }
+
         async handlePetSubmit(e) {
             e.preventDefault();
             const fd = new FormData(e.target);
@@ -814,6 +1004,13 @@
             // Convert checkbox values
             data.isAdopted = e.target.querySelector('input[name="isAdopted"]').checked;
             data.isSenior = e.target.querySelector('input[name="isSenior"]').checked;
+            // Read hidden isMixed value
+            const isMixedVal = document.getElementById('ppa-is-mixed')?.value;
+            data.isMixed = isMixedVal === 'true';
+            if (data.isMixed) {
+                const petTypeVal = document.getElementById('ppa-pet-type')?.value;
+                data.breed = petTypeVal === 'gato' ? 'Doméstico' : 'Mestizo';
+            }
             
             data.memberstackId = this.member.id;
             data.primaryPhotoUrl = this.formData.primaryPhotoUrl;
@@ -853,24 +1050,31 @@
             e.preventDefault();
             const fd = new FormData(e.target);
             const data = Object.fromEntries(fd.entries());
+            const pet = this.pets.find(p => p.id === this.incompletePetId) || {};
             
-            // Convert checkbox and select values
-            data.isAdopted = document.getElementById('ppa-complete-pet-adopted').checked;
-            data.isMixedBreed = document.getElementById('ppa-complete-pet-mixed').value === 'true';
+            // Parse isMixedBreed from hidden input if present
+            const mixedInput = document.getElementById('ppa-complete-pet-mixed');
+            if (mixedInput) {
+                data.isMixedBreed = mixedInput.value === 'true';
+                if (data.isMixedBreed && !data.breed) {
+                    data.breed = pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo';
+                }
+            }
             
-            // Set additional required values
+            // Set additional required values, merging existing pet data with form data
             data.userId = this.member.id;
             data.petId = this.incompletePetId;
-            data.photo1Url = this.formData.primaryPhotoUrl || this.pets.find(p => p.id === this.incompletePetId)?.primary_photo_url || this.pets.find(p => p.id === this.incompletePetId)?.photo_url;
-            data.vetCertificateUrl = this.formData.vetCertificateUrl || this.pets.find(p => p.id === this.incompletePetId)?.vet_certificate_url;
+            data.photo1Url = this.formData.primaryPhotoUrl || pet.primary_photo_url || pet.photo_url;
+            data.vetCertificateUrl = this.formData.vetCertificateUrl || pet.vet_certificate_url;
 
-            if (!data.photo1Url) {
+            // Only validate photo if it was a missing field
+            const missing = this.incompletePetMissingFields || [];
+            if (missing.includes('photo') && !data.photo1Url) {
                 this.showError('Debes subir una foto de tu mascota');
                 return;
             }
 
-            const pet = this.pets.find(p => p.id === this.incompletePetId) || {};
-            if (pet.is_senior && !data.vetCertificateUrl) {
+            if (missing.includes('vetCert') && !data.vetCertificateUrl) {
                 this.showError('Debes subir el certificado veterinario para mascotas senior');
                 return;
             }
