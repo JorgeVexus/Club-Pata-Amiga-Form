@@ -27,6 +27,7 @@ export type RequestType =
     | 'finance-wellness'
     | 'finance-commissions'
     | 'reports-interactive'
+    | 'communications-emails'
     | 'registered-centers';
 
 // Estados de solicitud
@@ -149,6 +150,7 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'finance-wellness': BRAND_COLORS.orange,
     'finance-commissions': BRAND_COLORS.yellow,
     'reports-interactive': BRAND_COLORS.green,
+    'communications-emails': BRAND_COLORS.orange,
     'registered-centers': BRAND_COLORS.orange,
 };
 
@@ -185,6 +187,7 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'finance-wellness': 'Pagos a Centros',
     'finance-commissions': 'Comisiones (Embajadores)',
     'reports-interactive': 'Gráficas interactivas',
+    'communications-emails': 'Plantillas de Correo',
     'registered-centers': 'Centros registrados',
 };
 
