@@ -1,17 +1,16 @@
 # STATE.md
 
 ## Last Session Summary
-Completed Phase 5 Plan 2: Implementación de la Interfaz del Visualizador de Correos:
-- Created the interactive visual email previewer in `src/components/Admin/Communications/EmailTemplatePreviewer.tsx` supporting 13 email templates across member, ambassador, and wellness categories.
-- Created premium CSS module styling for the previewer in `src/components/Admin/Communications/EmailTemplatePreviewer.module.css` with live HSL color system variables.
-- Integrated the component inside `src/components/Admin/AdminDashboard.tsx`.
-- Verified compilation, type safety, and code quality successfully through `npm run build`, `npm run type-check`, and `npm run lint`.
+Completed Phase 5 Plan 3: Bypass de Período de Carencia para Super Admins:
+- Created POST API endpoint at `src/app/api/admin/pets/[petId]/bypass-carencia/route.ts` to set status as approved and waiting period to elapsed (180 days ago to now).
+- Added settings panel section in `src/components/Admin/SettingsPanel.tsx` allowing Super Admins to search members, load their pets, and click "Forzar Fin" to bypass their waiting period.
+- Completed all type checks, lint checks, and pushed code to GitHub.
 
 ## Current Context
-The Visual Email Template Previewer is fully integrated and functional inside the admin dashboard. All tests and linting verified successfully.
+The carencia bypass feature is fully implemented and accessible under the configuration settings tab for super admins.
 
 ## Next Steps
-- Verify visual functionality with the user in development environment.
+- Verify solidarity requests can be made immediately on Webflow widgets after bypassing a pet's carencia.
 
 ## Blocks & Risks
 - None currently identified.
