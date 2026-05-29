@@ -118,6 +118,7 @@ export default function Sidebar({
                 { id: 'communications-member', label: 'Miembros', icon: '👥' },
                 { id: 'communications-wellness', label: 'Centros de Bienestar', icon: '🏥' },
                 { id: 'communications-ambassador', label: 'Embajadores', icon: '🎯' },
+                { id: 'communications-emails', label: 'Plantillas de Correo', icon: '📧' },
             ]
         },
         {
