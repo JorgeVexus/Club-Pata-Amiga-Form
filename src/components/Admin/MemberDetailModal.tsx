@@ -739,20 +739,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             </div>
                                             <div className={styles.detailRow}>
                                                 <span className={styles.detailLabel}>🎨 Color pelo</span>
-                                                <span className={styles.detailValue}>{pet.coat_color || '---'}</span>
+                                                <span className={styles.detailValue}>{pet.coat_color || fields[`pet-${pIdx}-coat-color`] || '---'}</span>
                                             </div>
-                                            {pet.nose_color && (
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.detailLabel}>👃 Nariz</span>
-                                                    <span className={styles.detailValue}>{pet.nose_color}</span>
-                                                </div>
-                                            )}
-                                            {pet.eye_color && (
-                                                <div className={styles.detailRow}>
-                                                    <span className={styles.detailLabel}>👁️ Ojos</span>
-                                                    <span className={styles.detailValue}>{pet.eye_color}</span>
-                                                </div>
-                                            )}
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>👃 Nariz</span>
+                                                <span className={styles.detailValue}>{pet.nose_color || fields[`pet-${pIdx}-nose-color`] || '---'}</span>
+                                            </div>
+                                            <div className={styles.detailRow}>
+                                                <span className={styles.detailLabel}>👁️ Ojos</span>
+                                                <span className={styles.detailValue}>{pet.eye_color || fields[`pet-${pIdx}-eye-color`] || '---'}</span>
+                                            </div>
 
                                             <div className={styles.detailRow}>
                                                 <span className={styles.detailLabel}>🧬 Tipo</span>
