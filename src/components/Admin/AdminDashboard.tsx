@@ -16,6 +16,7 @@ import RejectionReasonModal from './RejectionReasonModal';
 import ActivityFeed, { ActivityLog } from './ActivityFeed';
 import AdminsTable from './AdminsTable';
 import CommunicationsHub from './Communications/CommunicationsHub';
+import EmailTemplatePreviewer from './Communications/EmailTemplatePreviewer';
 import AmbassadorsTable from './AmbassadorsTable';
 import AmbassadorDetailModal from './AmbassadorDetailModal';
 import LegalDocsManager from './LegalDocsManager';
@@ -376,7 +377,7 @@ function DashboardContent() {
                     />
                 );
             case 'communications-emails':
-                return <div style={{ padding: '24px', background: '#fff', borderRadius: '16px', border: '2px solid #000' }}>Visualizador de Plantillas de Correo</div>;
+                return <EmailTemplatePreviewer />;
             case 'ambassador':
             case 'ambassadors' as any:
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} refreshKey={refreshKey} />;

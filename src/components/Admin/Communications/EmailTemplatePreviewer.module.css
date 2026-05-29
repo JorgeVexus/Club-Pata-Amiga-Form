@@ -1,0 +1,255 @@
+.previewerContainer {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 24px;
+    height: calc(100vh - 180px);
+    min-height: 500px;
+    font-family: 'Outfit', sans-serif;
+    color: #2d3748;
+}
+
+@media (max-width: 1024px) {
+    .previewerContainer {
+        grid-template-columns: 1fr;
+        height: auto;
+    }
+}
+
+/* Panel izquierdo: controles */
+.controlsPanel {
+    background: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 24px;
+    box-shadow: 4px 4px 0px #000000;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+    height: 100%;
+}
+
+.sectionTitle {
+    font-family: 'Fraiche', sans-serif;
+    font-size: 1.3rem;
+    margin: 0;
+    color: #1a202c;
+}
+
+/* Categorías selector (Tabs) */
+.categoryTabs {
+    display: flex;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    border: 1.5px solid #cbd5e1;
+}
+
+.categoryTab {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 8px 4px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.categoryTab.active {
+    background: #ffffff;
+    color: #00bbb4;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Lista de plantillas */
+.templateList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 4px;
+    border-bottom: 2px dashed #e2e8f0;
+    padding-bottom: 16px;
+}
+
+.templateButton {
+    text-align: left;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.templateButton:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+}
+
+.templateButton.active {
+    background: #eff6ff;
+    border-color: #3b82f6;
+    color: #2563eb;
+}
+
+.templateIcon {
+    font-size: 1.1rem;
+}
+
+/* Formulario de parámetros */
+.parametersForm {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.formGroup label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.formInput, .formSelect, .formTextarea {
+    padding: 10px 16px;
+    border: 2px solid #e2e8f0;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.formTextarea {
+    border-radius: 16px;
+    min-height: 80px;
+    resize: vertical;
+}
+
+.formInput:focus, .formSelect:focus, .formTextarea:focus {
+    border-color: #00bbb4;
+    background: #f0fdfa;
+}
+
+/* Checkbox group */
+.checkboxGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkboxLabel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkboxLabel input {
+    width: 18px;
+    height: 18px;
+    accent-color: #00bbb4;
+}
+
+/* Panel derecho: Iframe preview */
+.previewPanel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: 100%;
+}
+
+.previewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 16px;
+    padding: 12px 20px;
+    box-shadow: 2px 2px 0px #000000;
+}
+
+.previewMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.previewSubject {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.previewRecipient {
+    font-size: 0.8rem;
+    color: #64748b;
+}
+
+.viewportToggles {
+    display: flex;
+    gap: 8px;
+}
+
+.viewportButton {
+    background: #f1f5f9;
+    border: 1.5px solid #cbd5e1;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.viewportButton:hover {
+    background: #e2e8f0;
+}
+
+.viewportButton.active {
+    background: #00bbb4;
+    border-color: #00bbb4;
+    color: #ffffff;
+}
+
+.iframeWrapper {
+    flex: 1;
+    background: #f1f5f9;
+    border: 2px solid #000000;
+    border-radius: 24px;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 4px 4px 0px #000000;
+    height: 100%;
+}
+
+.previewIframe {
+    border: none;
+    background: #f8fafc;
+    height: 100%;
+    transition: width 0.3s ease;
+}
