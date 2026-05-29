@@ -375,6 +375,8 @@ function DashboardContent() {
                         audience={audience}
                     />
                 );
+            case 'communications-emails':
+                return <div style={{ padding: '24px', background: '#fff', borderRadius: '16px', border: '2px solid #000' }}>Visualizador de Plantillas de Correo</div>;
             case 'ambassador':
             case 'ambassadors' as any:
                 return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} refreshKey={refreshKey} />;
