@@ -150,3 +150,22 @@
     cursor: not-allowed;
     transform: none;
 }
+
+.select {
+    width: 100%;
+    padding: var(--spacing-md);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-size: 0.875rem;
+    outline: none;
+    background-color: white;
+    margin-bottom: var(--spacing-md);
+    transition: border-color 0.2s;
+    cursor: pointer;
+}
+
+.select:focus {
+    border-color: var(--brand-pink);
+    box-shadow: 0 0 0 3px rgba(251, 113, 133, 0.1);
+}
