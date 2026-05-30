@@ -163,7 +163,7 @@ export async function POST(
 
                 
                 const notificationTitle = isFromAdmin 
-                    ? `💬 Nuevo mensaje de Soporte (Fondo Solidario)`
+                    ? `💬 Nuevo mensaje de Soporte (Apoyo Económico)`
                     : `💬 Nuevo mensaje de ${petName}`;
                 
                 const notificationMessage = message 

@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
             .insert({
                 user_id: currentRequest.user_id,
                 type: 'solidarity',
-                title: `Actualización de Fondo Solidario`,
+                title: `Actualización de Apoyo Económico`,
                 message: `Tu solicitud ${statusText}.`,
                 icon: '💰',
                 link: `/miembros/detalle-solicitud?id=${requestId}`,
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
                                 pet_index: petNum,
                                 pet_name: petData.name,
                                 reason: 'Fallecimiento (Solidaridad)',
-                                description: `Baja automática tras aprobación de fondo solidario #${requestId}`,
+                                description: `Baja automática tras aprobación de apoyo económico #${requestId}`,
                                 unsubscribed_by: 'Comité (Solidaridad)',
                                 unsubscribed_by_id: 'system'
                             }]);

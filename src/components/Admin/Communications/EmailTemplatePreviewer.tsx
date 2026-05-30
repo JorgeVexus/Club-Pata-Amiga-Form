@@ -741,7 +741,7 @@ Estamos sumamente contentos de contar con ustedes en la manada. Ya se encuentra 
 
 ${adminNotes ? `Notas adicionales del equipo de administración:\n${adminNotes}` : ''}
 
-A partir de este momento, los tutores de mascotas podrán seleccionar su centro para realizar sus citas veterinarias y gestionar los reembolsos de su seguro médico solidario.`;
+A partir de este momento, los tutores de mascotas podrán seleccionar su centro para realizar sus citas veterinarias y gestionar los reembolsos de su apoyo económico.`;
 
             return buildBrandedEmailHtml({
                 memberName: centerName,

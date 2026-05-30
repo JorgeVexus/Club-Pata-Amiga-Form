@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
             .insert({
                 user_id: 'admin',
                 type: 'solidarity',
-                title: `💬 Mensaje en Fondo Solidario`,
+                title: `💬 Mensaje en Apoyo Económico`,
                 message: message.substring(0, 100) + (message.length > 100 ? '...' : ''),
                 icon: '💰',
                 link: `/admin/dashboard?requestId=${requestId}`,

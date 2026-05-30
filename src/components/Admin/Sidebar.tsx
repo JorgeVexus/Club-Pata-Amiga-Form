@@ -71,7 +71,7 @@ export default function Sidebar({
         },
         {
             id: 'fondo',
-            title: 'Fondo Solidario',
+            title: 'Apoyo Económico',
             icon: '💰',
             items: [
                 { id: 'solidarity-fund', label: 'Nuevas solicitudes', icon: '📩', subStatus: 'new', badge: pendingCounts['solidarity-fund'] },

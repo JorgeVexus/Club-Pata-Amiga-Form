@@ -107,7 +107,7 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
         const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
         link.setAttribute('href', url);
-        link.setAttribute('download', `reembolsos_solidarios_${new Date().toISOString().split('T')[0]}.csv`);
+        link.setAttribute('download', `reembolsos_apoyo_economico_${new Date().toISOString().split('T')[0]}.csv`);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
@@ -174,7 +174,7 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
             </div>
 
             <div className={styles.header}>
-                <h2 className={styles.title}>Fondo Solidario</h2>
+                <h2 className={styles.title}>Apoyo Económico</h2>
                 <div className={styles.headerActions}>
                     <button onClick={exportToCSV} className={styles.exportBtn}>
                         📥 Exportar Reembolsos

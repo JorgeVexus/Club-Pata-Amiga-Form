@@ -23,7 +23,7 @@ export default function MetricCards({ metrics, activeFilter }: MetricCardsProps)
                     ${metrics.totalRefunds.toLocaleString()}
                 </div>
                 <div className={styles.metricLabel}>
-                    Fondo Solidario
+                    Apoyo Económico
                 </div>
             </div>
 
