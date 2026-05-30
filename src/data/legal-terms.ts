@@ -42,18 +42,18 @@ Plan de Membresía y acepta los presentes Términos mediante aceptación electr�
 la Plataforma.
 Las únicas partes de este contrato son GIRBAZ, S.A. DE C.V. y EL TITULAR. Sin
 embargo, el Titular reconoce que puede existir un componente solidario o
-canalización de recursos a un fondo administrado por CLUB PATA AMIGA, A.C., lo cual
+canalización de recursos a un apoyo económico administrado por CLUB PATA AMIGA, A.C., lo cual
 se regula mediante instrumentos independientes (incluyendo el Convenio de
-Adhesión y el Reglamento del Fondo), sin que CLUB PATA AMIGA, A.C. sea parte de
+Adhesión y el Reglamento del Apoyo Económico), sin que CLUB PATA AMIGA, A.C. sea parte de
 los presentes Términos y Condiciones de uso y contratación de Membresía.
-1.3 Tercero relacionado (Fondo Solidario)
+1.3 Tercero relacionado (Apoyo Económico)
 Sin que ello implique que sea parte de estos Términos, el Titular reconoce que el
-Fondo Solidario del Proyecto “Club Pata Amiga” es administrado por CLUB PATA
+Apoyo Económico del Proyecto “Club Pata Amiga” es administrado por CLUB PATA
 AMIGA, ASOCIACIÓN CIVIL (“CLUB PATA AMIGA, A.C.”), constituida mediante
 instrumento número 39,000, volumen 1,100, de fecha 30 de enero de 2026, otorgado
 ante la fe de la Lic. Mariana Sandoval Igartúa, titular de la Notaría número 33 del
 Estado de México y del Patrimonio Inmobiliario Federal.
-Para efectos de notificaciones relacionadas con el Fondo, el domicilio de CLUB PATA
+Para efectos de notificaciones relacionadas con el Apoyo Económico, el domicilio de CLUB PATA
 AMIGA, A.C. será: Calle Gustavo Díaz Ordaz, Número Exterior 18, Número Interior 1,
 Colonia San Juan, Municipio de Tultitlán, Estado de México, C.P. 54900.
 
@@ -71,13 +71,13 @@ correspondiente y aceptar.
 
 
 
-- “CLUB PATA AMIGA, A.C.”: Asociación civil administradora del Fondo Solidario
+- “CLUB PATA AMIGA, A.C.”: Asociación civil administradora del Apoyo Económico
 del Proyecto “Club Pata Amiga”, distinta e independiente de GIRBAZ, mencionada en
 estos Términos únicamente para identificar el destino del Componente Solidario y el
 deslinde de responsabilidades.
-- “Componente Solidario” / “Aportación al Fondo” (si aplica): La porción del
+- “Componente Solidario” / “Aportación al Apoyo Económico” (si aplica): La porción del
 pago total que, en su caso, la Plataforma muestre como destinada a ser canalizada a
-un tercero (por ejemplo, una asociación civil administradora de un fondo), conforme a
+un tercero (por ejemplo, una asociación civil administradora de un apoyo económico), conforme a
 lo aceptado por el Titular en el flujo de pago y a la autorización/mandato
 correspondiente. Dicho componente no convierte la Membresía en seguro ni genera
 garantía de apoyos.
@@ -85,8 +85,8 @@ garantía de apoyos.
 credenciales de acceso y datos de registro.
 - “Cuota” / “Precio”: El importe total que paga el Titular por la Membresía
 conforme al Plan elegido, mostrado de forma previa al pago.
-- “Fondo Solidario”: Mecanismo solidario administrado por CLUB PATA AMIGA,
-A.C., sujeto a reglas propias (Convenio de Adhesión y Reglamento del Fondo)
+- “Apoyo Económico”: Mecanismo solidario administrado por CLUB PATA AMIGA,
+A.C., sujeto a reglas propias (Convenio de Adhesión y Reglamento del Apoyo Económico)
 aceptadas separadamente por el Titular.
 - “Fraude/Abuso”: Conductas destinadas a engañar, manipular o aprovechar
 indebidamente la Plataforma o sus mecanismos, incluyendo suplantación, evidencia
@@ -281,17 +281,17 @@ Plataforma y los Servicios digitales.
 
 6.3.2 Parte B – Componente Solidario. Si la Plataforma muestra, al momento del
 pago, que una porción del precio total constituye un Componente Solidario /
-Aportación al Fondo, el Titular reconoce que dicha porción será canalizada a CLUB
+Aportación al Apoyo Económico, el Titular reconoce que dicha porción será canalizada a CLUB
 PATA AMIGA, A.C., como aportación voluntaria, conforme a lo mostrado en pantalla y
 a la autorización/mandato otorgado por el Titular.
 6.3.3 Visualización y aceptación. El Titular reconoce que el porcentaje y/o monto
-destinado a GIRBAZ y la Aportación al Fondo Solidario será el que se muestre en la
+destinado a GIRBAZ y la Aportación al Apoyo Económico será el que se muestre en la
 Plataforma al momento de contratar o renovar la Membresía (incluyendo el
 recibo/confirmación digital), pudiendo identificarse como:
 - 70% / $ (importe equivalente al 70% del precio total de la Membresía) a favor de
 GIRBAZ; y
 -  30% / $ (importe equivalente al 30% del precio total de la Membresía) como
-Aportación al Fondo Solidario a favor de CLUB PATA AMIGA, A.C.
+Aportación al Apoyo Económico a favor de CLUB PATA AMIGA, A.C.
 Sin perjuicio de que estos porcentajes/montos puedan actualizarse conforme a la
 cláusula de modificaciones/actualizaciones y siempre que se muestren de forma
 expresa en la Plataforma al momento de la contratación, renovación o cambio de
@@ -319,7 +319,7 @@ el comprobante/recibo correspondiente por dicha aportación, conforme a sus
 políticas y a la información fiscal que, en su caso, recabe para tal efecto.
 6.4.3  Responsabilidad  por  facturación.  El  Titular  reconoce  que:
 a) cualquier aclaración sobre CFDI de GIRBAZ se gestiona con GIRBAZ; y
-b) cualquier comprobante o recibo relativo a la aportación al Fondo, si se expide,
+b) cualquier comprobante o recibo relativo a la aportación al Apoyo Económico, si se expide,
 corresponde a CLUB PATA AMIGA, A.C., sin que ello la convierta en parte de estos
 ## Términos.
 
@@ -328,7 +328,7 @@ Si al contratar o renovar el Plan el Titular acepta la casilla correspondiente, 
 mandata y autoriza expresamente a GIRBAZ para que:
 a) reciba el pago total de la Membresía a través del Proveedor de Pagos; y
 b) canalice la porción identificada como Componente Solidario / Aportación al
-Fondo a CLUB PATA AMIGA, A.C., sin que ello implique apropiación por parte de
+Apoyo Económico a CLUB PATA AMIGA, A.C., sin que ello implique apropiación por parte de
 GIRBAZ, sino un acto de canalización operativa conforme a la instrucción del Titular.
 7.2 Separación automática y contingencia por motor de pagos
 7.2.1 Separación automática. Cuando el Proveedor de Pagos permita la separación
@@ -348,21 +348,21 @@ bancarias o reportes de conciliación internos.
 
 
 
-8) Relación con el Fondo Solidario (cláusula “anti-confusión” + deslinde) 8.1 No
+8) Relación con el Apoyo Económico (cláusula “anti-confusión” + deslinde) 8.1 No
 seguro / no aseguradora
 El Titular reconoce expresamente que la Plataforma “Pata Amiga” y la Membresía no
 constituyen un contrato de seguro, póliza, cobertura aseguradora, indemnización
 garantizada, plan de ahorro, inversión o producto financiero. GIRBAZ no es una
 aseguradora ni actúa como tal.
-8.2 Fondo Solidario administrado por tercero (A.C.)
+8.2 Apoyo Económico administrado por tercero (A.C.)
 El Titular reconoce que, solo en caso de aceptar adicionalmente el Convenio de
 Adhesión correspondiente, podrá participar como asociado adherente en un
 esquema solidario administrado por CLUB PATA AMIGA, A.C. y, en su caso, presentar
-Solicitudes de apoyo con cargo a dicho Fondo, sujetas estrictamente a:
-a) el Reglamento del Fondo publicado en la Plataforma;
+Solicitudes de apoyo con cargo a dicho Apoyo Económico, sujetas estrictamente a:
+a) el Reglamento del Apoyo Económico publicado en la Plataforma;
 b) carencias, límites, criterios y requisitos vigentes;
 c) procesos de validación y controles antifraude; y
-d) la suficiencia real del Fondo.
+d) la suficiencia real del Apoyo Económico.
 En ningún caso la Membresía por sí sola genera derecho automático o exigible a
 apoyos.
 8.3 Deslinde total GIRBAZ vs CLUB PATA AMIGA, A.C.
@@ -370,13 +370,13 @@ a) GIRBAZ es responsable de la operación técnica de la Plataforma, la prestaci
 de Servicios digitales, el cobro de la Membresía, las aclaraciones de pago y el soporte
 al Titular.
 b) CLUB PATA AMIGA, A.C. es responsable exclusivamente de la administración
-del Fondo Solidario y de la resolución de Solicitudes relacionadas con dicho Fondo,
+del Apoyo Económico y de la resolución de Solicitudes relacionadas con dicho Apoyo Económico,
 conforme a su Convenio y Reglamento.
 c) En consecuencia, cualquier reclamación, queja, aclaración o controversia
 relacionada con uso de Plataforma, fallas técnicas, cargos, renovación/cancelación
 de Membresía o soporte deberá dirigirse exclusivamente a GIRBAZ; y cualquier
-asunto relativo a apoyos del Fondo deberá tramitarse conforme a los instrumentos y
-canales del Fondo administrado por CLUB PATA AMIGA, A.C., sin que ello la convierta
+asunto relativo a apoyos del Apoyo Económico deberá tramitarse conforme a los instrumentos y
+canales del Apoyo Económico administrado por CLUB PATA AMIGA, A.C., sin que ello la convierta
 en parte de estos Términos.
 
 
@@ -501,8 +501,8 @@ bajo obligaciones de confidencialidad y seguridad;
 c) Autoridades competentes, cuando exista requerimiento válido o mandato
 legal; y
 d) CLUB PATA AMIGA, A.C., únicamente si aplica el flujo del Componente
-Solidario/Fondo y siempre para finalidades vinculadas a la canalización, control,
-trazabilidad y operación del Fondo conforme a los instrumentos del mismo, sin que
+Solidario/Apoyo Económico y siempre para finalidades vinculadas a la canalización, control,
+trazabilidad y operación del Apoyo Económico conforme a los instrumentos del mismo, sin que
 ello la convierta en parte de estos Términos.
 12.5 Derechos ARCO y revocación
 
@@ -751,15 +751,15 @@ sus domicilios presentes o futuros o por cualquier otra causa.
 
 
 
-## REGLAMENTO DEL FONDO SOLIDARIO
+## REGLAMENTO DEL APOYO ECONÓMICO
 ## “CLUB PATA AMIGA”
 Versión: 1.0 Fecha de entrada en vigor: 15 de febrero de 2026
 Publicación: Disponible en la Plataforma “Pata Amiga”
 Vinculación: Este Reglamento forma parte del Convenio de Adhesión aceptado por el
 Titular mediante clic en “ACEPTO”, por lo que su aceptación es obligatoria para el
 Titular/Asociado Adherente.
-Responsable del Fondo: CLUB PATA AMIGA, A.C., en su carácter de administradora y
-aplicadora del Fondo Solidario.
+Responsable del Apoyo Económico: CLUB PATA AMIGA, A.C., en su carácter de administradora y
+aplicadora del Apoyo Económico.
 
 
 
@@ -774,16 +774,16 @@ aplicadora del Fondo Solidario.
 
 ## CAPÍTULO 1. DISPOSICIONES GENERALES
 1.1 Objeto del Reglamento
-El presente Reglamento del Fondo Solidario “Club Pata Amiga” (el “Reglamento”) tiene por
+El presente Reglamento del Apoyo Económico “Club Pata Amiga” (el “Reglamento”) tiene por
 objeto establecer, de manera clara y verificable, las reglas operativas, criterios, límites y el
 procedimiento aplicables a las Solicitudes de Apoyo que, en su caso, se tramiten con cargo
-al Fondo  Solidario, así como las bases mínimas de validación, resolución y entrega de
+al Apoyo Económico  Solidario, así como las bases mínimas de validación, resolución y entrega de
 apoyos, conforme a lo previsto en el Convenio de Adhesión aceptado por el Titular.
 1.2 Ámbito de aplicación
 El presente Reglamento es aplicable a todas las personas que, en su carácter de Titular de
 una cuenta en la Plataforma Pata Amiga, se hayan adherido como Asociados Adherentes y
 cuenten con Membresía  vigente y Cuenta  activa, y pretendan registrar mascotas y/o
-presentar Solicitudes de Apoyo con cargo al Fondo Solidario.
+presentar Solicitudes de Apoyo con cargo al Apoyo Económico.
 1.3 Carácter público y aceptación
 1.3.1 Carácter público. El Reglamento se mantiene publicado y disponible en la Plataforma
 Pata  Amiga, a efecto de que el Titular pueda consultarlo  y  verificar  con  precisión sus
@@ -795,97 +795,97 @@ aceptación del presente Reglamento:
 previstas en el Convenio.
 En consecuencia, el Titular se obliga a cumplir el Reglamento en su versión vigente, en los
 términos establecidos.
-1.4 Naturaleza del Fondo
-1.4.1 El Titular reconoce expresamente que el Fondo Solidario es un mecanismo solidario y
+1.4 Naturaleza del Apoyo Económico
+1.4.1 El Titular reconoce expresamente que el Apoyo Económico es un mecanismo solidario y
 asociativo administrado por CLUB PATA AMIGA, A.C., y que NO constituye:
 - un seguro, póliza, cobertura aseguradora o producto equivalente;
 - una indemnización garantizada;
 - un esquema de ahorro, inversión, rendimientos o captación; ni
 - una prestación exigible por el solo pago de la Membresía.
-1.4.2 El pago de la Membresía y/o cualquier aportación al Fondo NO  genera derecho de
+1.4.2 El pago de la Membresía y/o cualquier aportación al Apoyo Económico NO  genera derecho de
 crédito, derecho adquirido, reembolso, ni acción para exigir apoyos automáticos. Todo
 
 
 
 Apoyo  es eventual,  y su  procedencia  se  encuentra  sujeta  a  las  reglas  del  presente
-Reglamento, a la Validación y a la suficiencia del Fondo.
+Reglamento, a la Validación y a la suficiencia del Apoyo Económico.
 El  Titular  reconoce  y  acepta que  el  pago de  la  Membresía  se  integra  por:  (i)  una
 contraprestación equivalente al setenta por ciento (70%) por el uso, acceso y operación de
 la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales  asociados;  y  (ii)  una
-Aportación  al  Fondo  Solidario equivalente al treinta  por  ciento  (30%), destinada a la
+Aportación  al  Apoyo Económico  Solidario equivalente al treinta  por  ciento  (30%), destinada a la
 administración y eventual entrega de apoyos por parte de CLUB PATA AMIGA, A.C., sin que
 ello genere derecho automático, exigible o garantizado a recibir Apoyo alguno, el cual en
 todo caso será discrecional, sujeto a validación, carencias, límites, reglas  vigentes y
-suficiencia del Fondo, conforme a este Reglamento.
+suficiencia del Apoyo Económico, conforme a este Reglamento.
 1.5 Definiciones operativas
 Para efectos del presente Reglamento, los términos utilizados con mayúscula inicial tendrán
 el significado que se les asigna en el Convenio  de  Adhesión aceptado por el Titular,
-incluyendo, de manera enunciativa mas no limitativa: Fondo Solidario, Apoyo, Solicitud o
+incluyendo, de manera enunciativa mas no limitativa: Apoyo Económico, Apoyo, Solicitud o
 Solicitud de Apoyo, Validación, Titular, Asociado Adherente, Mascota registrada, Carencia,
 Límites y Suficiencia.
 En caso de duda interpretativa, prevalecerá lo dispuesto en el Convenio de Adhesión y en el
-presente Reglamento, aplicando el criterio que mejor proteja la integridad del Fondo y la
+presente Reglamento, aplicando el criterio que mejor proteja la integridad del Apoyo Económico y la
 operación del programa.
 
-## CAPÍTULO 2. INTEGRACIÓN Y ADMINISTRACIÓN DEL FONDO
+## CAPÍTULO 2. INTEGRACIÓN Y ADMINISTRACIÓN DEL APOYO ECONÓMICO
 2.1 Identificación de responsables operativos. Para efectos del presente Reglamento, y sin
 perjuicio de lo previsto en el Convenio de Adhesión:
 - “LA ASOCIACIÓN” es CLUB PATA AMIGA, A.C., en su carácter de administradora y
-aplicadora del Fondo Solidario; y
+aplicadora del Apoyo Económico; y
 - “LA  EMPRESA” es GIRBAZ,  S.A.  DE  C.V.,  en  su  carácter  de operadora  de  la
 Plataforma “Pata Amiga”, responsable de la operación técnica de la Plataforma y de
 la gestión del cobro de Membresías, así como de la canalización a LA ASOCIACIÓN
-de la porción destinada al Fondo Solidario conforme al mandato otorgado por el
+de la porción destinada al Apoyo Económico conforme al mandato otorgado por el
 ## Titular.
 
-2.2 Fuentes de integración del Fondo Solidario
-El Fondo Solidario se integra exclusivamente por:
+2.2 Fuentes de integración del Apoyo Económico
+El Apoyo Económico se integra exclusivamente por:
 
 
 
-a) La Aportación al Fondo Solidario, equivalente al treinta por ciento (30%) del precio total
+a) La Aportación al Apoyo Económico, equivalente al treinta por ciento (30%) del precio total
 de la Membresía (cuota mensual o anual) pagada por el Titular a través de la Plataforma
 “Pata Amiga”, en  los  términos  y  montos  exactos  que  se  muestren  en  la  Plataforma  al
 momento del pago y aceptación;
 b) Aportaciones voluntarias adicionales, únicamente en caso de que se habiliten en la
 Plataforma  y  se  encuentren  expresamente  identificadas  como  “aportación
-voluntaria al Fondo”, sin que por ello se genere derecho automático a Apoyo ni se
-modifique la naturaleza del Fondo; y
-c) Cualquier otro ingreso que, en su caso, reciba LA ASOCIACIÓN para el Fondo y que
+voluntaria al Apoyo Económico”, sin que por ello se genere derecho automático a Apoyo ni se
+modifique la naturaleza del Apoyo Económico; y
+c) Cualquier otro ingreso que, en su caso, reciba LA ASOCIACIÓN para el Apoyo Económico y que
 sea compatible con su naturaleza y con este Reglamento, sin convertirlo en seguro,
 captación, ahorro o inversión, ni generar derecho de crédito o exigibilidad.
 2.3 Canalización operativa
-2.3.1  Regla  general. La Aportación al Fondo Solidario se canalizará directamente a CLUB
+2.3.1  Regla  general. La Aportación al Apoyo Económico se canalizará directamente a CLUB
 PATA AMIGA, A.C. mediante la pasarela de pagos habilitada en la Plataforma “Pata Amiga”,
 a través de los mecanismos de separación/división (split) que, en su caso, se encuentren
-disponibles, de forma que el porcentaje destinado al Fondo se deposite en la cuenta
+disponibles, de forma que el porcentaje destinado al Apoyo Económico se deposite en la cuenta
 bancaria de LA ASOCIACIÓN.
 2.3.2  Mecanismo  excepcional  (mandato/encargo  supletorio). Solo en caso de que, por
 motivos técnicos, operativos, de mantenimiento, contingencia o limitaciones de la pasarela
 de pagos, no sea posible realizar la canalización directa referida en el párrafo anterior, el
 Titular autoriza que GIRBAZ,  S.A.  de  C.V. reciba el pago y transfiera a LA ASOCIACIÓN la
-porción correspondiente a la Aportación al Fondo Solidario, actuando como canalizador sin
+porción correspondiente a la Aportación al Apoyo Económico, actuando como canalizador sin
 apropiación y sin alterar la naturaleza de la aportación, conforme a los plazos y procesos
 internos de conciliación y registro que se definan para tal efecto.
 
 2.3 Exclusión expresa del componente de Membresía (70%)
-El setenta por ciento (70%) restante del precio total de la Membresía no integra el Fondo
+El setenta por ciento (70%) restante del precio total de la Membresía no integra el Apoyo Económico
 Solidario, ya que corresponde exclusivamente a la contraprestación por el uso,  acceso,
 operación  y  disfrute  de  la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales
 asociados, prestados por GIRBAZ, S.A. de C.V., en términos de sus Términos y Condiciones.
 2.4 Principio de suficiencia
-2.4.1 El Fondo Solidario opera bajo el principio de suficiencia, por lo que su capacidad para
+2.4.1 El Apoyo Económico opera bajo el principio de suficiencia, por lo que su capacidad para
 otorgar apoyos depende de su disponibilidad real y de las necesidades que se presenten.
 
 
 
-2.4.2 El Titular reconoce que puede existir insuficiencia  temporal del Fondo Solidario, lo
+2.4.2 El Titular reconoce que puede existir insuficiencia  temporal del Apoyo Económico, lo
 cual podrá derivar en rechazo de Solicitudes, listas de espera, priorización, prorrateo o
 ajustes de montos, según lo previsto en este Reglamento.
 2.5 No reembolsabilidad
-2.5.1 Las cantidades destinadas al Fondo Solidario, incluyendo la porción de la Membresía
+2.5.1 Las cantidades destinadas al Apoyo Económico, incluyendo la porción de la Membresía
 y, en su caso, aportaciones voluntarias adicionales, son no reembolsables, en virtud de la
-naturaleza solidaria y asociativa del Fondo.
+naturaleza solidaria y asociativa del Apoyo Económico.
 2.5.2 Lo anterior no limita el derecho del Titular a solicitar a LA  EMPRESA la revisión de
 cargos duplicados o cobros manifiestamente improcedentes atribuibles al procesamiento
 del pago, conforme a las políticas de operación de LA EMPRESA y del proveedor del medio
@@ -895,20 +895,20 @@ cargos  improcedentes, contracargos o incidencias atribuibles a la pasarela  de 
 banco emisor o al procesamiento de la Membresía, corresponde exclusivamente a GIRBAZ,
 S.A. de C.V., como operadora de la Plataforma y responsable del cobro del Plan, y deberá
 tramitarse conforme a sus Términos y Condiciones; en ningún caso dicha revisión implica
-reembolso  de  la Aportación   al   Fondo   Solidario,  la  cual  conserva  su  carácter no
+reembolso  de  la Aportación   al   Apoyo Económico   Solidario,  la  cual  conserva  su  carácter no
 reembolsable.
 2.6 Finalidad exclusiva
-2.6.1 El Fondo Solidario se destinará exclusivamente a la atención de Solicitudes de Apoyo
+2.6.1 El Apoyo Económico se destinará exclusivamente a la atención de Solicitudes de Apoyo
 y, en su caso, a la entrega de apoyos conforme a este Reglamento. Asimismo, podrá
 destinarse a los procesos estrictamente necesarios para su operación, control, validación y
-prevención  de  fraude dentro del ámbito del Fondo, sin que ello implique gastos de
+prevención  de  fraude dentro del ámbito del Apoyo Económico, sin que ello implique gastos de
 operación de la Plataforma, los cuales corresponden a LA EMPRESA.
 En congruencia con lo anterior, el setenta por ciento (70%) del precio total de la Membresía
 corresponde exclusivamente a  la  contraprestación  por  el uso,  acceso,  operación  y
 mantenimiento de la Plataforma “Pata Amiga” y los servicios/beneficios digitales asociados,
-prestados por GIRBAZ, S.A. de C.V., y no forma parte del Fondo Solidario ni puede destinarse
+prestados por GIRBAZ, S.A. de C.V., y no forma parte del Apoyo Económico ni puede destinarse
 a los fines del mismo.
-2.6.2 Queda prohibida cualquier aplicación del Fondo distinta a la prevista en el presente
+2.6.2 Queda prohibida cualquier aplicación del Apoyo Económico distinta a la prevista en el presente
 ## Reglamento.
 
 
@@ -917,24 +917,24 @@ a los fines del mismo.
 
 2.7 Facultades de administración y roles operativos
 2.7.1 Facultades  de  LA  ASOCIACIÓN. Corresponde a CLUB  PATA  AMIGA,  A.C., como
-administradora del Fondo Solidario:
-- definir y mantener las reglas del Fondo previstas en este Reglamento;
+administradora del Apoyo Económico:
+- definir y mantener las reglas del Apoyo Económico previstas en este Reglamento;
 - revisar, evaluar y resolver las Solicitudes de Apoyo;
 - determinar la procedencia o improcedencia de apoyos, su monto y modalidad de
 entrega, conforme a reglas, límites y suficiencia; y
 - implementar medidas de control, validación y prevención de fraude en el ámbito del
-## Fondo.
+## Apoyo Económico.
 2.7.2 Facultades de LA EMPRESA (GIRBAZ, S.A. DE C.V.). Corresponde a LA EMPRESA, como
 operadora de la Plataforma:
 - operar, administrar y dar soporte a la Plataforma “Pata Amiga”;
 - gestionar  el  cobro  de  Membresías  y  la  relación  operativa  con
 procesadores/pasarelas de pago;
-- canalizar a LA ASOCIACIÓN la porción indicada como Aportación al Fondo Solidario
+- canalizar a LA ASOCIACIÓN la porción indicada como Aportación al Apoyo Económico
 conforme al mandato del Titular y al esquema operativo vigente; y
 - mantener registros operativos y trazabilidad de pagos, canalizaciones y estatus
 visibles en Plataforma, sin que ello implique que LA EMPRESA administre o resuelva
-apoyos del Fondo, lo cual corresponde exclusivamente a LA ASOCIACIÓN.
-2.7.3 Deslinde operativo. El Titular reconoce que la administración del Fondo corresponde
+apoyos del Apoyo Económico, lo cual corresponde exclusivamente a LA ASOCIACIÓN.
+2.7.3 Deslinde operativo. El Titular reconoce que la administración del Apoyo Económico corresponde
 a LA ASOCIACIÓN, mientras que la operación técnica y cobros de membresía corresponden
 a LA EMPRESA, conforme al Convenio de Adhesión.
 En caso de que la operación, administración o titularidad de la Plataforma “Pata Amiga” sea
@@ -946,9 +946,9 @@ sociedad operadora de la Plataforma, sin necesidad de formalidad adicional, bast
 publicación del aviso de sustitución dentro de la Plataforma y/o la notificación electrónica
 correspondiente.
 La sustitución operará únicamente respecto de las obligaciones vinculadas a la operación
-de  la  Plataforma,  cobro  de  Membresías  y  canalización  de  la  Aportación  al  Fondo,
+de  la  Plataforma,  cobro  de  Membresías  y  canalización  de  la  Aportación  al  Apoyo Económico,
 manteniéndose intactas las facultades y responsabilidades de CLUB  PATA  AMIGA,  A.C.
-como administradora del Fondo Solidario.
+como administradora del Apoyo Económico.
 
 
 
@@ -965,13 +965,13 @@ aquí se deja el requisito general).
 - Cumplimiento de carencia y reglas de uso. Además de la carencia, aplican límites de
 uso por tipo de apoyo y periodos de espera/reingreso, conforme a este Reglamento.
 ## 3.2 Carencia
-- Carencia general. Para acceder a Solicitudes de Apoyo con cargo al Fondo, aplica una
+- Carencia general. Para acceder a Solicitudes de Apoyo con cargo al Apoyo Económico, aplica una
 carencia de 6 (seis) meses contados desde la activación de la Membresía (afiliación
 continua).
 - Reingreso. En caso de reingreso (reactivación posterior a baja/cancelación), se
 requerirá 6  (seis)  meses  de  espera para recuperar derechos conforme a reglas
 vigentes.
-- Regla de “reinicio” por uso (por tipo de apoyo). Si el Titular utiliza el Fondo en un
+- Regla de “reinicio” por uso (por tipo de apoyo). Si el Titular utiliza el Apoyo Económico en un
 tipo de apoyo, la carencia se reinicia por 12 (doce) meses para ese tipo de apoyo,
 en los términos operativos publicados.
 - Carencias  diferenciadas. Sin perjuicio de la Carencia  general prevista en este
@@ -989,7 +989,7 @@ de la activación exitosa de la Membresía y el registro validado de la mascota,
 siempre que el Código se encuentre vigente y sea aceptado por los controles
 de integridad/antifraude de la Plataforma.
 Las carencias diferenciadas no generan derecho automático a Apoyo y en todo caso se
-sujetan a la validación, límites, exclusiones, suficiencia  del  Fondo y reglas  vigentes al
+sujetan a la validación, límites, exclusiones, suficiencia  del  Apoyo Económico y reglas  vigentes al
 momento de presentar la Solicitud.
 3.3 Registro de mascotas (máximo 3)
 - Límite máximo. El Titular podrá registrar hasta 3 (tres) mascotas por Cuenta/CURP.
@@ -1001,13 +1001,13 @@ cada 12 (doce) meses por Cuenta/CURP (para desincentivar fraude y sobre-registro
 3.4 Tipos de mascota permitidos y exclusiones
 - Tipos permitidos: El proyecto se plantea para perros y gatos.
 - Exclusiones/restricciones generales (para dejar claro): Quedan fuera del alcance del
-Fondo (y por tanto no elegibles para registro con fines de apoyo) otras  especies
+Apoyo Económico (y por tanto no elegibles para registro con fines de apoyo) otras  especies
 distintas de perros y gatos, salvo que una actualización publicada en la Plataforma
 habilite expresamente otros supuestos.
 3.5 Criterios diferenciados por raza
 - Criterios    diferenciados    sin    exclusión    expresa. Podrán  aplicarse  criterios
 diferenciados  por  predisposición  genética  a  enfermedades sin   excluir   razas
-explícitamente, para equilibrar equidad y sostenibilidad del Fondo.
+explícitamente, para equilibrar equidad y sostenibilidad del Apoyo Económico.
 - Reglas  especiales  (alto  riesgo). Para las razas listadas en la política interna, se
 contemplan reglas como: carencia  extendida  6  meses para emergencias médicas,
 tope de emergencia $2,000 MXN, y un evento cada 24 meses por mascota (cuando
@@ -1016,11 +1016,11 @@ aplique y esté publicado).
 
 
 
-## CAPÍTULO 4. EVENTOS, CONCEPTOS ELEGIBLES Y EXCLUSIONES DEL FONDO
+## CAPÍTULO 4. EVENTOS, CONCEPTOS ELEGIBLES Y EXCLUSIONES DEL APOYO ECONÓMICO
 4.1 Conceptos elegibles
-4.1.1 El Fondo Solidario podrá destinar apoyos únicamente a los conceptos habilitados y
+4.1.1 El Apoyo Económico podrá destinar apoyos únicamente a los conceptos habilitados y
 descritos  en  la  Plataforma  y  en  el  presente  Reglamento.  Actualmente,  el  programa
-contempla como conceptos elegibles, sujetos a Validación y suficiencia del Fondo:
+contempla como conceptos elegibles, sujetos a Validación y suficiencia del Apoyo Económico:
 - Emergencia     médica     veterinaria;  2.
 Fallecimiento de mascota registrada;
 - Vacunación anual.
@@ -1031,13 +1031,13 @@ conforme al Convenio y este Reglamento.
 
 4.2 Exclusiones (eventos no cubiertos / conceptos no aceptados)
 4.2.1 Regla general
-No serán elegibles para Apoyo con cargo al Fondo, y podrán ser rechazadas o canceladas,
+No serán elegibles para Apoyo con cargo al Apoyo Económico, y podrán ser rechazadas o canceladas,
 las Solicitudes que se ubiquen en cualquiera de los supuestos de exclusión previstos en este
 Reglamento, en el Convenio de Adhesión, en el Reglamento de Integridad  y/o en las reglas
 operativas publicadas en la Plataforma.
 Las exclusiones previstas en este numeral son enunciativas y no limitativas, por lo que LA
 ASOCIACIÓN podrá determinar la improcedencia cuando el evento, gasto o conducta sea
-incompatible con la naturaleza del Fondo, la suficiencia, la integridad del Proyecto y/o el
+incompatible con la naturaleza del Apoyo Económico, la suficiencia, la integridad del Proyecto y/o el
 presente Reglamento.
 
 4.2.2   Preexistencias,   carencia   y   continuidad Quedan
@@ -1112,10 +1112,10 @@ exista indicio o confirmación de fraude/abuso, suplantación, uso indebido de C
 manipulación de evidencia, duplicidad de Solicitudes por el mismo hecho, o cualquier
 infracción a las reglas de integridad/antifraude publicadas.
 
-4.2.10 Insuficiencia del Fondo
+4.2.10 Insuficiencia del Apoyo Económico
 Aun cuando el evento sea elegible, podrá excluirse (o en su caso colocarse en lista de
 espera/prorrateo, si así se prevé) cualquier Solicitud cuando exista insuficiencia temporal
-del Fondo, conforme al principio de suficiencia y a las reglas vigentes.
+del Apoyo Económico, conforme al principio de suficiencia y a las reglas vigentes.
 
 
 
@@ -1134,7 +1134,7 @@ publicada en la Plataforma.
 ## CAPÍTULO 5. LÍMITES, TOPES Y REGLAS DE MONTO
 5.1 Montos máximos por tipo de Apoyo (tope por evento/tipo)
 Los montos máximos por tipo de Apoyo, siempre sujetos a Validación y a Suficiencia del
-Fondo, son los siguientes:
+Apoyo Económico, son los siguientes:
 - Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
 anual global.
 - Fallecimiento: hasta $2,000.00 (dos mil pesos 00/100 M.N.).
@@ -1159,9 +1159,9 @@ hasta el tope señalado en el numeral 5.1, siempre sujeto a Validación, reglas 
 El Apoyo por Vacuna anual podrá autorizarse una (1) sola vez por año natural, por Titular,
 hasta el tope señalado en el numeral 5.1, conforme a reglas vigentes, evidencia validada y
 ## Suficiencia.
-5.3 Límite global por beneficiario (protección del Fondo)
+5.3 Límite global por beneficiario (protección del Apoyo Económico)
 En ningún caso se podrá autorizar que un solo Titular disponga de más del 5% (cinco por
-ciento) del Fondo total disponible al momento de la resolución, aun cuando existan eventos
+ciento) del Apoyo Económico total disponible al momento de la resolución, aun cuando existan eventos
 elegibles, sin perjuicio de los topes específicos previstos en este Capítulo.
 5.4 No acumulación y control de duplicidad
 No se autorizarán Apoyos duplicados por el mismo hecho, ni Solicitudes fraccionadas o
@@ -1170,7 +1170,7 @@ realizar cruces de consistencia para prevenir abuso, incluyendo validaciones de 
 del Titular (p. ej., CURP e ID de Cuenta) y de la mascota registrada.
 5.5 Regla de Suficiencia
 Aun cuando el evento sea elegible y se cumplan requisitos, la procedencia y el monto del
-Apoyo estarán siempre sujetos a la disponibilidad real del Fondo (Suficiencia) y a la
+Apoyo estarán siempre sujetos a la disponibilidad real del Apoyo Económico (Suficiencia) y a la
 Validación correspondiente, sin generar derecho exigible.
 
 ## CAPÍTULO 6. PROCEDIMIENTO DE SOLICITUD DE APOYO
@@ -1210,7 +1210,7 @@ veterinarios): la Solicitud deberá indicar:
 mostrar  su  estatus,  de  manera  enunciativa: “recibida”, “en   validación”, “requiere
 información” o “resuelta”.
 6.6 Plazos operativos
-6.6.1 Los tiempos de revisión son orientativos y pueden variar por suficiencia del Fondo,
+6.6.1 Los tiempos de revisión son orientativos y pueden variar por suficiencia del Apoyo Económico,
 volumen de solicitudes, validación y auditoría.
 6.6.2 Como referencia operativa:
 - Revisión estimada 48 a 72 horas.
@@ -1225,7 +1225,7 @@ volumen de solicitudes, validación y auditoría.
 - verificación de evidencia (foto/video), factura/nota y descripción del evento; y
 - congruencia del servicio con el concepto solicitado.
 7.2 Facultades de verificación
-7.2.1 Para validar una Solicitud, el Comité/instancia del Fondo podrá:
+7.2.1 Para validar una Solicitud, el Comité/instancia del Apoyo Económico podrá:
 - requerir información adicional o aclaraciones;
 - solicitar confirmación del servicio mediante la información del veterinario y clínica
 proporcionada;
@@ -1262,7 +1262,7 @@ activar auditorías preventivas.
 ## CAPÍTULO 8. RESOLUCIÓN Y FORMA DE ENTREGA DEL APOYO
 8.1 Autoridad para resolver
 La determinación sobre la procedencia o improcedencia de cada Solicitud de Apoyo
-corresponde a LA ASOCIACIÓN, a través del Comité del Fondo (3 personas) , quien revisa
+corresponde a LA ASOCIACIÓN, a través del Comité del Apoyo Económico (3 personas) , quien revisa
 conforme a reglas claras y tiene la última palabra .
 8.2 Criterios de resolución (regla general)
 Para resolver, el Comité verificará, como mínimo:
@@ -1271,11 +1271,11 @@ desde la afiliación) .
 - Límites por usuario y por tipo de apoyo y regla de “1 apoyo por tipo cada 12 meses”
 ## .
 - Documentación y evidencia (foto/video; factura/nota; constancias; etc.) .
-- Suficiencia real del Fondo (cláusula de suficiencia presupuestaria y disponibilidad) .
+- Suficiencia real del Apoyo Económico (cláusula de suficiencia presupuestaria y disponibilidad) .
 - Conducta  y  controles  antifraude (historial limpio, sin fraude, agresiones o pagos
 vencidos) .
 8.3 Tipos de Apoyo y montos máximos (tope)
-Sin perjuicio de otros beneficios que se publiquen en la Plataforma, el Fondo contempla
+Sin perjuicio de otros beneficios que se publiquen en la Plataforma, el Apoyo Económico contempla
 como base los siguientes tipos de Apoyo, sujetos a Validación y Suficiencia:
 a) Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
 anual por Cuenta/Titular. Esta bolsa podrá utilizarse en una o varias Solicitudes y
@@ -1318,17 +1318,17 @@ veterinario (nombre y RFC del veterinario; clínica) .
 Como regla operativa, el Comité resolverá en un plazo orientativo de 2 días hábiles (sin que
 ello constituya garantía de tiempo).
 8.7 Efectos del Apoyo sobre carencias futuras (reinicio)
-Una vez utilizado un tipo de apoyo del Fondo, se reinicia la carencia por 12 meses para ese
+Una vez utilizado un tipo de apoyo del Apoyo Económico, se reinicia la carencia por 12 meses para ese
 tipo de apoyo .
 
 
 
-8.8 Comité del Fondo: integración, quórum y facultades
-- Integración. La resolución de Solicitudes de Apoyo con cargo al Fondo Solidario será
-realizada por el Comité  del  Fondo, órgano interno de CLUB  PATA  AMIGA,  A.C.,
+8.8 Comité del Apoyo Económico: integración, quórum y facultades
+- Integración. La resolución de Solicitudes de Apoyo con cargo al Apoyo Económico será
+realizada por el Comité  del  Apoyo Económico, órgano interno de CLUB  PATA  AMIGA,  A.C.,
 integrado por tres  (3)  personas, designadas conforme a las reglas internas de LA
 ## ASOCIACIÓN.
-- Sesiones y medios. El Comité del Fondo podrá sesionar de manera presencial o a
+- Sesiones y medios. El Comité del Apoyo Económico podrá sesionar de manera presencial o a
 distancia, mediante medios electrónicos, videollamada o cualquier otro medio
 digital que permita la identificación de sus integrantes y la trazabilidad de sus
 determinaciones.
@@ -1341,7 +1341,7 @@ c) En caso de empate (solo posible cuando sesionen los tres integrantes y
 existan  votos  divididos),  prevalecerá  el  criterio  que  determine  LA
 ASOCIACIÓN conforme a sus reglas internas; en todo caso, podrá diferirse la
 decisión para recabar información adicional.
-- Facultades mínimas. Para el cumplimiento de este Reglamento, el Comité del Fondo
+- Facultades mínimas. Para el cumplimiento de este Reglamento, el Comité del Apoyo Económico
 tendrá, como mínimo, las siguientes facultades:
 a) Requerir  información  y  evidencia  adicional al  Titular/Usuario,  cuando
 resulte necesario para la Validación;
@@ -1351,7 +1351,7 @@ operación  (logs)  disponibles  en  la  Plataforma,  siempre  conforme  a  la
 normativa aplicable de protección de datos y a los instrumentos vigentes;
 c) Determinar la procedencia o improcedencia de las Solicitudes y, en su caso,
 fijar condiciones razonables de entrega conforme a este Reglamento y a la
-suficiencia del Fondo;
+suficiencia del Apoyo Económico;
 d) Ordenar  la  pausa,  suspensión  o  cancelación del trámite de una Solicitud
 cuando existan inconsistencias relevantes, falta de evidencia o indicios de
 fraude/abuso; y
@@ -1360,13 +1360,13 @@ fraude/abuso; y
 
 e) Vetar  o  rechazar Solicitudes cuando se actualicen supuestos de exclusión,
 incumplimiento, fraude/abuso o violación al Reglamento de Integridad.
-- Trazabilidad. Las determinaciones del Comité del Fondo deberán documentarse en
+- Trazabilidad. Las determinaciones del Comité del Apoyo Económico deberán documentarse en
 un registro interno (bitácora) que permita identificar, al menos: fecha, integrantes
 participantes,  estatus  de  la  Solicitud,  determinación  adoptada  y  fundamento
 operativo aplicable.
-- Sin garantía. La existencia del Comité del Fondo y sus procesos no implican garantía
+- Sin garantía. La existencia del Comité del Apoyo Económico y sus procesos no implican garantía
 de otorgamiento de Apoyo, el cual se mantiene sujeto a validación, reglas vigentes,
-límites y suficiencia del Fondo, conforme a este Reglamento.
+límites y suficiencia del Apoyo Económico, conforme a este Reglamento.
 
 ## CAPÍTULO 9. RECHAZO, LISTA DE ESPERA Y PRORRATEO/AJUSTES
 9.1 Supuestos de improcedencia o rechazo
@@ -1391,9 +1391,9 @@ conforme a su revisión .
 
 
 
-9.3 Lista de espera por insuficiencia del Fondo
+9.3 Lista de espera por insuficiencia del Apoyo Económico
 Aun cuando la Solicitud cumpla requisitos, el Apoyo solo procede si hay recursos suficientes;
-si el Fondo está agotado, se genera lista de espera .
+si el Apoyo Económico está agotado, se genera lista de espera .
 Los criterios  de  atención  y  liberación de casos en lista de espera deberán publicarse de
 manera clara en la Plataforma (Reglamento público y verificable), y se entienden aceptados
 por el Titular al adherirse.
@@ -1417,7 +1417,7 @@ congruencia con la naturaleza solidaria del programa y con la obligación estatu
 cuotas y aportaciones no recuperables en esta categoría.
 10.3. No generan derecho automático
 10.3.1  Las  aportaciones  voluntarias  adicionales no  generan por  sí  mismas  derecho
-adquirido, garantía, ni exigibilidad de apoyos; únicamente incrementan el Fondo y, por ende,
+adquirido, garantía, ni exigibilidad de apoyos; únicamente incrementan el Apoyo Económico y, por ende,
 pueden fortalecer su suficiencia, pero cualquier Apoyo seguirá sujeto a reglas, Validación y
 disponibilidad.
 
@@ -1432,11 +1432,11 @@ de la Plataforma.
 ## CAPÍTULO 11. RELACIÓN CON REGLAMENTO ANTIFRAUDE Y MEDIDAS POR FRAUDE
 11.1 Reglamento Antifraude público en Plataforma
 11.1.1 Existe un Reglamento Antifraude publicado en la Plataforma, que establece políticas
-de prevención y detección de fraude en la operación del Fondo, incluyendo medidas contra
+de prevención y detección de fraude en la operación del Apoyo Económico, incluyendo medidas contra
 fraudes sistemáticos y colusión con proveedores.
 11.1.2 El Titular reconoce que, al aceptar el Convenio (click “ACEPTO”), queda  adherido
 también a dicho Reglamento Antifraude y a sus actualizaciones publicadas.
-11.2. Conductas prohibidas relevantes al Fondo
+11.2. Conductas prohibidas relevantes al Apoyo Económico
 Sin perjuicio de lo previsto en el Reglamento Antifraude, se consideran conductas prohibidas
 ## (enunciativas):
 - presentar evidencia apócrifa o alterada;
@@ -1469,7 +1469,7 @@ legales por hechos posiblemente constitutivos de ilícitos o responsabilidades.
 ## CAPÍTULO 12. CONTROLES DE LICITUD DE RECURSOS (PLD / KYC BÁSICO)
 12.1 Declaración de licitud (Titular)
 12.1.1 El Titular declara que las cantidades pagadas por Membresía y/o aportaciones
-(incluidas las canalizadas al Fondo) provienen de fuentes lícitas.
+(incluidas las canalizadas al Apoyo Económico) provienen de fuentes lícitas.
 12.2 Facultad de requerir información razonable
 12.2.1 La ASOCIACIÓN y/o LA EMPRESA podrán solicitar información razonable para fines
 de identificación y control (KYC básico), incluyendo confirmación de identidad, datos de
@@ -1482,7 +1482,7 @@ contacto, y/o información de pago, cuando:
 - suspender temporalmente la evaluación;
 - requerir información adicional; y/o
 - cancelar la Solicitud y/o la Cuenta, conforme a reglas vigentes y a la protección del
-## Fondo.
+## Apoyo Económico.
 12.4 Cooperación con autoridades conforme a derecho
 12.4.1 En su caso, se colaborará con autoridades competentes conforme a las leyes
 mexicanas aplicables y requerimientos válidos.
@@ -1497,7 +1497,7 @@ mexicanas aplicables y requerimientos válidos.
 - Si el Titular solicita baja/cancelación sin  adeudos y con Membresía vigente al
 momento de ingresar la Solicitud, la  Solicitud  ingresada  antes  de  la  baja podrá
 continuar su evaluación de manera condicionada a: (i) no existir indicios de fraude,
-(ii) completar validaciones pendientes, y (iii) suficiencia del Fondo.
+(ii) completar validaciones pendientes, y (iii) suficiencia del Apoyo Económico.
 - En todo caso, no habrá devolución de cuotas pasadas y el acceso a beneficios se rige
 por reglas vigentes.
 13.1.2 Suspensión preventiva (validación/antifraude).
@@ -1532,9 +1532,9 @@ Solicitudes ingresadas antes de la baja y sujetas a validación y suficiencia.
 14.1 Actualización del Reglamento
 14.1.1 El presente Reglamento podrá ser actualizado por LA ASOCIACIÓN, y/o en lo
 conducente por LA EMPRESA respecto de aspectos operativos de Plataforma, de  manera
-anual y/o cuando  resulte  necesario para asegurar la sostenibilidad del Fondo, fortalecer
+anual y/o cuando  resulte  necesario para asegurar la sostenibilidad del Apoyo Económico, fortalecer
 controles antifraude, ajustar procesos, o reflejar cambios operativos del Proyecto, siempre
-respetando la naturaleza del Fondo y el Convenio de Adhesión.
+respetando la naturaleza del Apoyo Económico y el Convenio de Adhesión.
 14.2 Notificación de actualizaciones
 14.2.1  Toda  actualización  será  comunicada  al  Titular  por  cualquiera  de  los  medios
 siguientes:
@@ -1560,11 +1560,11 @@ momento de presentar la Solicitud en la Plataforma.
 
 
 ## CAPÍTULO 15. ATENCIÓN, ACLARACIONES Y CANALES DE CONTACTO
-15.1 Canal de contacto del Fondo (LA ASOCIACIÓN)
-15.1.1 Para asuntos relacionados con el Fondo Solidario, incluyendo dudas generales,
+15.1 Canal de contacto del Apoyo Económico (LA ASOCIACIÓN)
+15.1.1 Para asuntos relacionados con el Apoyo Económico, incluyendo dudas generales,
 estatus y requerimientos de información de Solicitudes (cuando proceda), el canal de
 contacto de LA ASOCIACIÓN será el siguiente correo:
-Correo del Fondo (LA ASOCIACIÓN): fondo@pataamiga.com
+Correo del Apoyo Económico (LA ASOCIACIÓN): apoyo económico@pataamiga.com
 15.2 Aclaraciones de pagos y Membresía (LA EMPRESA)
 15.2.1 El Titular reconoce que cualquier aclaración relacionada con:
 - cobros, cargos, contracargos o devoluciones del procesador de pago;
@@ -1578,7 +1578,7 @@ al correo: Correo de Aclaraciones (LA EMPRESA): girbaz31@gmail.com
 16.1.1 Este Reglamento se interpreta de manera sistemática con el Convenio de Adhesión
 del Asociado Adherente y con los Términos  y  Condiciones de la Plataforma. En caso de
 contradicción entre documentos:
-a) para materias de Fondo Solidario, Solicitudes, carencia, validación, límites, exclusiones
+a) para materias de Apoyo Económico, Solicitudes, carencia, validación, límites, exclusiones
 y suficiencia, prevalecerá el Convenio de Adhesión y este
 Reglamento; y
 b) para materias de uso de Plataforma, Membresía, cobros, cargos recurrentes, soporte,
@@ -1608,7 +1608,7 @@ aceptación  y  adhesión  se  perfecciona  mediante:  (i)  la  aceptación  ele
 Plataforma y/o la renovación de la Membresía, en términos de los instrumentos vigentes.
 16.6 Actualizaciones, versión aplicable y aceptación por continuidad.
 LA ASOCIACIÓN podrá actualizar este Reglamento cuando resulte necesario por operación,
-suficiencia del Fondo, medidas de integridad o cambios normativos. Las actualizaciones se
+suficiencia del Apoyo Económico, medidas de integridad o cambios normativos. Las actualizaciones se
 publicarán en la Plataforma, señalando versión y fecha de entrada en vigor. La versión
 aplicable a una Solicitud será la que se encuentre vigente al momento de su presentación,
 salvo que los instrumentos vigentes indiquen expresamente otra regla. La continuidad en el
@@ -1663,15 +1663,15 @@ consulta en la Plataforma “Pata Amiga”. Se entiende aceptado por el Titular:
 conforme a los Términos y Condiciones de GIRBAZ; y/o
 - mediante la continuidad de uso y/o pago de la Membresía; y/o
 - mediante la aceptación del Convenio de Adhesión y del Reglamento
-del Fondo cuando corresponda, para efectos del mecanismo solidario.
+del Apoyo Económico cuando corresponda, para efectos del mecanismo solidario.
 
 Sujetos obligados
 Este Reglamento es aplicable y obligatorio para:
 - GIRBAZ, S.A. de C.V. (Operación de Plataforma, prestación de servicios
 digitales, cobros, soporte, seguridad y controles antifraude operativos.)
-- CLUB PATA AMIGA, A.C. (Administración del Fondo Solidario,
+- CLUB PATA AMIGA, A.C. (Administración del Apoyo Económico,
 validación y resolución de Solicitudes conforme a su Convenio y Reglamento
-del Fondo, y controles de integridad en el ámbito del Fondo.)
+del Apoyo Económico, y controles de integridad en el ámbito del Apoyo Económico.)
 - Titulares / Usuarios / Asociados Adherentes (Obligaciones de
 veracidad, uso permitido, licitud de recursos, prevención de fraude/abuso, y
 cumplimiento de este Reglamento y demás instrumentos publicados.)
@@ -1753,7 +1753,7 @@ resoluciones vinculadas al Proyecto.
 
 Artículo 2. Ámbito de aplicación Este Reglamento es aplicable a:
 - todo uso de la Plataforma y de los Servicios prestados por GIRBAZ;
-- toda interacción relacionada con el Fondo, incluyendo Solicitudes,
+- toda interacción relacionada con el Apoyo Económico, incluyendo Solicitudes,
 validaciones, determinaciones, auditorías y entrega de apoyos cuando
 proceda;
 
@@ -1795,7 +1795,7 @@ medidas razonables de seguridad, conforme a la normativa aplicable.
 ## Artículo 5. Definiciones
 Para efectos del presente Reglamento, los términos que a continuación se indican
 tendrán el significado siguiente, en congruencia con los instrumentos vigentes del
-Proyecto (Términos y Condiciones, Convenio de Adhesión y Reglamento del Fondo),
+Proyecto (Términos y Condiciones, Convenio de Adhesión y Reglamento del Apoyo Económico),
 sin perjuicio de otras definiciones que en dichos instrumentos resulten aplicables:
 - Abuso: uso indebido o contrario a la finalidad del Proyecto y sus reglas,
 aun sin configurar fraude pleno, incluyendo intentos de eludir controles o
@@ -1803,18 +1803,18 @@ aprovechar vacíos operativos.
 - Aliados / Proveedores: terceros vinculados al Proyecto para validación,
 prestación de servicios, confirmación de información o entrega de apoyos
 (cuando aplique).
-- Apoyo: entrega o aplicación de recursos del Fondo, cuando proceda,
+- Apoyo: entrega o aplicación de recursos del Apoyo Económico, cuando proceda,
 conforme a reglas vigentes y suficiencia.
 - Asociado Adherente: Titular que, adicionalmente, acepta el
 instrumento de adhesión correspondiente para participar en el mecanismo
 solidario administrado por la A.C.
 - Carencia: periodo mínimo de antigüedad o espera aplicable antes de
-poder solicitar apoyos, conforme al instrumento del Fondo.
+poder solicitar apoyos, conforme al instrumento del Apoyo Económico.
 - Cuenta: perfil digital del Titular/Usuario dentro de la Plataforma.
 - Evidencia: documentos, imágenes, videos, comprobantes, reportes,
 facturas, constancias, registros digitales y demás elementos aportados o
 generados para acreditar hechos o requisitos.
-- Fondo: Fondo Solidario administrado por CLUB PATA AMIGA, A.C.,
+- Apoyo Económico: Apoyo Económico administrado por CLUB PATA AMIGA, A.C.,
 sujeto a reglas de suficiencia, carencias, límites, validación y demás criterios
 vigentes.
 - Fraude: conducta dolosa destinada a obtener un beneficio indebido o
@@ -1831,9 +1831,9 @@ interfaces y funcionalidades.
 - Proveedor de pagos: tercero que procesa pagos, cargos recurrentes,
 confirmaciones o devoluciones cuando proceda.
 - Solicitud: trámite o petición presentada por el Titular/Asociado
-Adherente dentro de la Plataforma, en particular las relacionadas con el Fondo
+Adherente dentro de la Plataforma, en particular las relacionadas con el Apoyo Económico
 cuando aplique.
-- Suficiencia: disponibilidad real del Fondo para atender solicitudes, sin
+- Suficiencia: disponibilidad real del Apoyo Económico para atender solicitudes, sin
 generar derecho automático o exigible.
 - Suspensión / Bloqueo / Cancelación: medidas operativas aplicadas a
 la Cuenta o Membresía, de manera temporal o definitiva, conforme a este
@@ -1859,17 +1859,17 @@ suspensión/bloqueo/cancelación conforme a instrumentos vigentes.
 
 
 - CLUB PATA AMIGA, A.C. es responsable de la integridad en el ámbito
-del Fondo, incluyendo:
-a) validación y resolución de Solicitudes con cargo al Fondo;
+del Apoyo Económico, incluyendo:
+a) validación y resolución de Solicitudes con cargo al Apoyo Económico;
 b) criterios de control y auditoría aplicables a apoyos; y
 c) determinaciones relacionadas con elegibilidad, suficiencia y
-medidas vinculadas al Fondo, conforme al Convenio de Adhesión y
-Reglamento del Fondo.
+medidas vinculadas al Apoyo Económico, conforme al Convenio de Adhesión y
+Reglamento del Apoyo Económico.
 - La separación funcional anterior se establece para evitar confusión de
 responsabilidades, de manera que:
 a) controversias de Plataforma/cobros/soporte corresponden a
 GIRBAZ; y
-b) decisiones y medidas asociadas al Fondo corresponden a la
+b) decisiones y medidas asociadas al Apoyo Económico corresponden a la
 A.C., sin perjuicio de la colaboración operativa permitida.
 
 Artículo 7. Responsable/Encargado de Cumplimiento
@@ -1881,7 +1881,7 @@ interno con facultades para:
 - emitir determinaciones operativas en materia de integridad
 dentro del ámbito de GIRBAZ.
 - CLUB PATA AMIGA, A.C. designará, cuando corresponda, una figura
-responsable  para coordinar las medidas de integridad en el ámbito del Fondo,
+responsable  para coordinar las medidas de integridad en el ámbito del Apoyo Económico,
 incluyendo verificación y auditoría, y para canalizar medidas internas
 conforme a sus instrumentos.
 - Gancho LFPIORPI: En caso de que se actualicen supuestos legales
@@ -1891,16 +1891,16 @@ designaciones y procedimientos necesarios para el cumplimiento normativo
 
 
 
-correspondiente, sin que ello implique modificar la naturaleza del Fondo ni
+correspondiente, sin que ello implique modificar la naturaleza del Apoyo Económico ni
 convertirlo en un producto financiero.
 
 ## Artículo 8. Comité
-- Para casos relevantes, podrá existir un Comité del Fondo y de
+- Para casos relevantes, podrá existir un Comité del Apoyo Económico y de
 Integridad, como órgano interno de revisión, con funciones de análisis,
 auditoría, validación reforzada y emisión de determinaciones internas en
-asuntos relacionados con: (i) el Fondo Solidario y sus Solicitudes; y/o (ii)
+asuntos relacionados con: (i) el Apoyo Económico y sus Solicitudes; y/o (ii)
 incidentes de fraude, abuso, licitud de recursos (PLD) e
-integridad/anticorrupción vinculados con la Plataforma y/o el Fondo.
+integridad/anticorrupción vinculados con la Plataforma y/o el Apoyo Económico.
 - Integración y quórum: El Comité se integrará por tres (3) personas,
 designadas por CLUB PATA AMIGA, A.C. y/o por GIRBAZ, S.A. de C.V. según la
 materia del caso. Podrá sesionar de manera presencial o a distancia
@@ -1927,7 +1927,7 @@ b) la contratación y pago de la Membresía;
 
 c) el registro de información y mascotas; y
 d) la presentación y tramitación de Solicitudes (incluyendo
-aquellas vinculadas al Fondo, cuando aplique).
+aquellas vinculadas al Apoyo Económico, cuando aplique).
 - Las medidas antifraude podrán aplicarse a nivel de Cuenta,
 Membresía, Solicitud, evidencia, proveedor y/o dispositivo, según
 corresponda.
@@ -1993,10 +1993,10 @@ de actividad, cambios de perfil, IP, dispositivo, logs);
 d) validar con terceros cuando aplique, tales como proveedores/aliados,
 clínicas o prestadores de servicios, únicamente para confirmar autenticidad o
 consistencia de la evidencia;
-e) activar revisión reforzada por el Comité de Integridad y Fondo
+e) activar revisión reforzada por el Comité de Integridad y Apoyo Económico
 Solidario cuando el caso sea relevante; y
 f) realizar auditorías aleatorias o dirigidas conforme al Reglamento del
-Fondo y a este Reglamento de Integridad.
+Apoyo Económico y a este Reglamento de Integridad.
 
 Artículo 13. Medidas antifraude (escalonadas)
 En función de la gravedad, recurrencia y riesgo, podrán aplicarse medidas
@@ -2071,7 +2071,7 @@ Vulnerable por recepción de donativos conforme a la LFPIORPI.
 - Los recursos utilizados para el pago de la Membresía/Plan y cualquier
 aporte relacionado provienen de fuentes lícitas; y
 - No utilizará la Plataforma, el Proyecto, ni cualquier mecanismo
-vinculado al Fondo para fines ilícitos.
+vinculado al Apoyo Económico para fines ilícitos.
 - Prohibición expresa. Queda prohibido usar la Plataforma/Proyecto para realizar u
 ocultar operaciones con recursos de procedencia ilícita o para encubrir su origen,
 destino o titularidad, en términos de la regulación penal aplicable.
@@ -2121,7 +2121,7 @@ c) Suspender/bloquear temporalmente el acceso o la cuenta;
 
 
 d) Cancelar por incumplimiento grave;
-e) Negar la canalización de cualquier componente al Fondo mientras se
+e) Negar la canalización de cualquier componente al Apoyo Económico mientras se
 verifica la licitud, cuando aplique.
 Si existen indicios relevantes, se prevé la posibilidad de abstenerse de realizar el
 acto u operación o proporcionar el servicio relacionado, y actuar conforme a las
@@ -2201,7 +2201,7 @@ tolerancia frente a cualquier acto de corrupción, soborno, cohecho, extorsión,
 colusión, conflicto de interés no revelado o intento de influir indebidamente en
 decisiones operativas, validaciones o resoluciones.
 - Esta política es obligatoria para: GIRBAZ, CLUB PATA AMIGA, A.C., el
-Comité de Integridad y Fondo Solidario, personal, aliados, proveedores y
+Comité de Integridad y Apoyo Económico, personal, aliados, proveedores y
 Titulares/Usuarios/Asociados Adherentes, en el ámbito de sus interacciones
 con el Proyecto.
 
@@ -2212,7 +2212,7 @@ especie, a favor de cualquier persona, con el fin de:
 a) acelerar o destrabar trámites, validaciones o procesos;
 b) obtener aprobaciones, accesos, excepciones, descuentos,
 devoluciones o condiciones preferentes no autorizadas;
-c) influir, alterar o condicionar la evaluación de una Solicitud del Fondo o
+c) influir, alterar o condicionar la evaluación de una Solicitud del Apoyo Económico o
 la determinación de procedencia/improcedencia;
 d) modificar resultados, evidencias, plazos, prioridades, listas de espera o
 montos;
@@ -2245,10 +2245,10 @@ indirectamente) regalos, atenciones, hospitalidad, viajes, reembolsos,
 invitaciones o cualquier beneficio que pueda influir, aparentar influir o
 comprometer la independencia en decisiones del Proyecto, incluyendo
 validaciones, revisiones, resoluciones, priorizaciones o determinaciones
-relacionadas con la Plataforma y/o el Fondo.
+relacionadas con la Plataforma y/o el Apoyo Económico.
 - Prohibición total. La prohibición aplica en todo caso para:
 a) personal de GIRBAZ y de CLUB PATA AMIGA, A.C.;
-b) integrantes del Comité de Integridad y Fondo Solidario;
+b) integrantes del Comité de Integridad y Apoyo Económico;
 c) aliados y proveedores; y
 
 
@@ -2281,7 +2281,7 @@ influir) en su imparcialidad.
 - Obligación de revelar. Personal, integrantes del Comité, aliados y
 proveedores deberán revelar de inmediato cualquier conflicto real o potencial
 al Responsable de Cumplimiento de GIRBAZ y, cuando se relacione con el
-Fondo, al Responsable del Fondo de CLUB PATA AMIGA, A.C., mediante
+Apoyo Económico, al Responsable del Apoyo Económico de CLUB PATA AMIGA, A.C., mediante
 correo electrónico a: transparencia@pataamiga.mx. La omisión de revelar o la
 participación pese al conflicto podrá dar lugar a la exclusión del proceso de
 revisión/decisión, la revisión interna de la determinación adoptada y la
@@ -2295,7 +2295,7 @@ participar en cualquier revisión, validación, recomendación o decisión
 relacionada, y se asentará constancia interna de la excusa.
 - Trazabilidad. Las decisiones relevantes deberán ser trazables y,
 cuando aplique, sujetas a revisión reforzada por el Comité de Integridad y
-## Fondo Solidario.
+## Apoyo Económico.
 
 Artículo 22. Terceros, aliados y proveedores (debida diligencia proporcional)
 - GIRBAZ y la A.C. podrán aplicar debida diligencia proporcional para alta
@@ -2406,7 +2406,7 @@ formal o cuando proceda conforme a derecho.
 a) las finalidades del Proyecto;
 b) medidas razonables de seguridad; y
 c) lo previsto en los instrumentos aplicables (Términos y
-Condiciones, Convenio, Reglamento del Fondo, Avisos de Privacidad).
+Condiciones, Convenio, Reglamento del Apoyo Económico, Avisos de Privacidad).
 - El Titular reconoce que, para fines de integridad, ciertos datos podrán
 ser utilizados en revisión interna por responsables y/o el Comité, con base en
 necesidad y proporcionalidad.
@@ -2471,11 +2471,11 @@ de México, C.P. 54900.
 mantenga al menos un medio electrónico funcional y se informe dentro de la
 ## Plataforma.
 
-Artículo 31. Contacto para integridad y asuntos del Fondo (CLUB PATA AMIGA,
+Artículo 31. Contacto para integridad y asuntos del Apoyo Económico (CLUB PATA AMIGA,
 ## A.C.)
-- Para reportes relacionados con integridad vinculada al Fondo (fraude/abuso en
+- Para reportes relacionados con integridad vinculada al Apoyo Económico (fraude/abuso en
 Solicitudes, validación, conductas indebidas, conflicto de interés, y cualquier asunto
-de integridad en la administración del Fondo), el Titular, aliados o proveedores podrán
+de integridad en la administración del Apoyo Económico), el Titular, aliados o proveedores podrán
 contactar a CLUB PATA AMIGA, A.C. en:
 -  Correo: legal@pataamiga.mx
 - Domicilio para notificaciones: Calle Gustavo Díaz Ordaz, Número Exterior 18,
@@ -2485,7 +2485,7 @@ Número Interior 1, Colonia San Juan, Municipio de Tultitlán, Estado de México
 
 
 - Para evitar duplicidades, cuando el asunto sea cobro/membresía/plataforma,
-deberá canalizarse a GIRBAZ; cuando sea integridad del Fondo, a la A.C., sin
+deberá canalizarse a GIRBAZ; cuando sea integridad del Apoyo Económico, a la A.C., sin
 perjuicio de que ambos coordinen internamente conforme a este Reglamento.
 
 Artículo 32. Regla de “perfil actualizado” como notificación efectiva
@@ -2528,7 +2528,7 @@ c) Suspensión temporal de funcionalidades, acceso o Cuenta;
 d) Bloqueo temporal de la Cuenta y/o del acceso a servicios;
 e) Cancelación definitiva de la Cuenta/Membresía y/o terminación
 del acceso a la Plataforma;
-f) Rechazo o cancelación definitiva de Solicitudes del Fondo
+f) Rechazo o cancelación definitiva de Solicitudes del Apoyo Económico
 relacionadas con el caso;
 g) Retención preventiva de beneficios o no liberación de apoyos
 hasta concluir verificación (cuando aplique);
@@ -2539,7 +2539,7 @@ existan elementos suficientes.
 Reglamento, salvo en supuestos de riesgo crítico o fraude grave, donde podrá
 aplicarse cancelación inmediata para prevenir daño o elusión.
 
-Artículo 35. Efectos en el Fondo y en la Plataforma
+Artículo 35. Efectos en el Apoyo Económico y en la Plataforma
 - Sospecha o investigación en curso. Cuando exista sospecha
 razonable, verificación o investigación por integridad, podrán aplicarse las
 siguientes consecuencias:
@@ -2559,13 +2559,13 @@ de soborno o cualquier conducta que comprometa la integridad del Proyecto,
 se podrán aplicar de forma inmediata:
 a) Cancelación definitiva de la Cuenta/Membresía en Plataforma
 (por GIRBAZ);
-b) Rechazo inmediato y definitivo de Solicitudes del Fondo
+b) Rechazo inmediato y definitivo de Solicitudes del Apoyo Económico
 relacionadas
 (por la A.C.);
 c) Registro del caso en la lista interna de integridad; y
 d) Resguardo de evidencias y bitácoras para auditoría y, en su
 caso, acciones legales.
-- Coordinación. Si un caso impacta a la Plataforma y al Fondo, GIRBAZ y
+- Coordinación. Si un caso impacta a la Plataforma y al Apoyo Económico, GIRBAZ y
 la A.C. podrán coordinar medidas, compartiendo únicamente la información
 necesaria y proporcional, conforme a los avisos de privacidad y a los
 instrumentos aplicables.
@@ -2586,7 +2586,7 @@ de cuenta, correo, teléfono, dispositivo, IP, medios de pago tokenizados, y/o
 vínculos técnicos de consistencia, exclusivamente para:
 a) detectar elusión de sanciones mediante nuevas cuentas;
 b) prevenir reincidencia y fraude sistemático;
-c) proteger la integridad del Fondo y la Plataforma.
+c) proteger la integridad del Apoyo Económico y la Plataforma.
 - Periodos de bloqueo. Sin perjuicio de otras medidas, se podrán aplicar
 los siguientes periodos de bloqueo:
 a) Bloqueo de 30 (treinta) días naturales:
@@ -2611,7 +2611,7 @@ destinadas a afectar sistemáticamente el Proyecto.
 - Criterios para determinar el bloqueo aplicable. Para elegir el periodo
 aplicable se considerarán: gravedad del hecho, impacto, recurrencia,
 cooperación del Titular, suficiencia de evidencia, riesgo de elusión y
-protección del Fondo.
+protección del Apoyo Económico.
 
 
 
@@ -2668,15 +2668,15 @@ entre los instrumentos del Proyecto, en lo que resulte aplicable:
 todo lo relativo a uso de Plataforma, Membresía, cobros, cancelación, soporte y
 operación digital;
 - Convenio de Adhesión celebrado con CLUB PATA AMIGA, A.C., aplicable a la
-adhesión como Asociado Adherente, la aportación al Fondo y las condiciones de
-participación vinculadas al Fondo;
-- Reglamento del Fondo Solidario “Club Pata Amiga”, para requisitos,
+adhesión como Asociado Adherente, la aportación al Apoyo Económico y las condiciones de
+participación vinculadas al Apoyo Económico;
+- Reglamento del Apoyo Económico “Club Pata Amiga”, para requisitos,
 carencias, límites, elegibilidad, procedimiento y resolución de Solicitudes de
 Apoyo; y
 - Este Reglamento de Integridad, como marco transversal aplicable a
 todos los anteriores en materia de prevención y detección de fraude/abuso,
 licitud de recursos y reglas de integridad, sin ampliar derechos de apoyo,
-sin generar exigibilidad y sin convertir la Membresía ni el Fondo en un
+sin generar exigibilidad y sin convertir la Membresía ni el Apoyo Económico en un
 esquema de seguro, indemnización garantizada, ahorro o inversión.
 
 
@@ -2721,7 +2721,7 @@ El presente Reglamento, Versión 1.0, entra en vigor el 15 de febrero de 2026, y
 aplicable a partir de esa fecha para:
 a) el uso de la Plataforma por Titulares/Usuarios;
 b) la operación de validaciones y medidas de integridad; y
-c) la administración y resolución de Solicitudes del Fondo, en lo que
+c) la administración y resolución de Solicitudes del Apoyo Económico, en lo que
 corresponda.
 
 ## Artículo 46. Aceptación
@@ -2734,7 +2734,7 @@ Membresía/Plan conforme a los instrumentos vigentes.
 Artículo 47. Interpretación y separabilidad
 - La interpretación del presente Reglamento deberá realizarse de forma
 sistemática con los Términos y Condiciones, el Convenio de Adhesión y el
-Reglamento del Fondo.
+Reglamento del Apoyo Económico.
 - Si alguna disposición se declara inválida o inaplicable por autoridad
 competente, dicha determinación no afectará la validez del resto del
 Reglamento, el cual permanecerá vigente en lo conducente.
@@ -2742,7 +2742,7 @@ Reglamento, el cual permanecerá vigente en lo conducente.
 Artículo 48. Actualizaciones y versión aplicable
 La versión aplicable será la publicada como vigente en la Plataforma al momento de
 los hechos, actos o conductas correspondientes, y/o la que se encuentre vigente al
-momento de la Solicitud cuando el asunto se relacione con el Fondo, conforme a la
+momento de la Solicitud cuando el asunto se relacione con el Apoyo Económico, conforme a la
 jerarquía y reglas de prevalencia previstas en este Reglamento.
 
 
@@ -2790,7 +2790,7 @@ Proyecto “Pata Amiga” – https://www.pataamiga.mx/
 Responsable: GIRBAZ, S.A. de C.V. (operación de la
 ## Plataforma) Contacto:
 girbaz31@gmail.com
-Contacto A.C. (temas Fondo/Asociación):
+Contacto A.C. (temas Apoyo Económico/Asociación):
 legal@pataamiga.mx Versión: 1.0
 Fecha de publicación y entrada en vigor: 15 de febrero de
 ## 2026
@@ -2918,7 +2918,7 @@ aplicable desde su fecha de publicación.
 ## 9) Contacto
 Para dudas o solicitudes relacionadas con cookies y privacidad:
 -  GIRBAZ (Plataforma): girbaz31@gmail.com •  CLUB PATA AMIGA, A.C.
-(temas del Fondo/Asociación): legal@pataamiga.mx
+(temas del Apoyo Económico/Asociación): legal@pataamiga.mx
 
 
 
@@ -2974,8 +2974,8 @@ Convenio mediante el mecanismo de aceptación electrónica.
 2.4 “Asociado Adherente”: El TITULAR que, habiendo aceptado el presente
 Convenio, queda incorporado a LA ASOCIACIÓN en la modalidad de asociado
 adherente, para los fines previstos en este instrumento.
-2.5 “Fondo Solidario”: Mecanismo solidario y asociativo administrado por CLUB
-PATA AMIGA, A.C., integrado por las Aportaciones al Fondo y, en su caso, otras
+2.5 “Apoyo Económico”: Mecanismo solidario y asociativo administrado por CLUB
+PATA AMIGA, A.C., integrado por las Aportaciones al Apoyo Económico y, en su caso, otras
 fuentes permitidas conforme a este Reglamento, sujeto a reglas de Suficiencia,
 Carencias, Límites, Validación y demás criterios vigentes, sin constituir seguro ni
 indemnización garantizada.
@@ -2985,13 +2985,13 @@ operación y disfrute de los beneficios y funcionalidades de la Plataforma opera
 por GIRBAZ. La Membresía no constituye ni se interpreta como “prima”,
 “cobertura”, “póliza”, “seguro” ni equivalente, ni genera por sí misma derecho
 automático a recibir Apoyos.
-2.7 “Aportación al Fondo o Aportación al Fondo Solidario”: Parte del precio de la
+2.7 “Aportación al Apoyo Económico o Aportación al Apoyo Económico”: Parte del precio de la
 Membresía equivalente al 30% (treinta por ciento) de la cuota mensual o anual,
-destinada a la integración del Fondo Solidario administrado por CLUB PATA
+destinada a la integración del Apoyo Económico administrado por CLUB PATA
 AMIGA, A.C., conforme a este Reglamento, al Convenio de Adhesión y a lo
 mostrado en la Plataforma al momento del pago/renovación. El Titular reconoce
 que el 70% (setenta por ciento) restante del precio de la Membresía no integra el
-Fondo, al corresponder a la contraprestación por el uso y operación de la
+Apoyo Económico, al corresponder a la contraprestación por el uso y operación de la
 ## Plataforma.
 2.8 “Solicitud” o “Solicitud de Apoyo”: Petición presentada por el Titular dentro
 de la Plataforma para que sea evaluada la procedencia de un Apoyo conforme a
@@ -3006,8 +3006,8 @@ cancelar por falta de verificabilidad.
 
 
 2.10 “Beneficio” o “Apoyo”: La ayuda que, en su caso, LA ASOCIACIÓN autorice
-con cargo al Fondo Solidario, conforme a reglas, límites, carencias, suficiencia
-del fondo y resultados de Validación. El TITULAR reconoce que el Apoyo es
+con cargo al Apoyo Económico, conforme a reglas, límites, carencias, suficiencia
+del apoyo económico y resultados de Validación. El TITULAR reconoce que el Apoyo es
 eventual y no garantizado.
 2.11 “Fraude”: Cualquier acto u omisión del TITULAR o de terceros relacionados
 con su Cuenta que implique simulación, falsedad, suplantación, documentación
@@ -3017,12 +3017,12 @@ destinada a obtener apoyos o ventajas indebidas.
 Plataforma, así como la gestión de cobros de Membresía, a cargo de LA
 EMPRESA, de manera independiente a LA ASOCIACIÓN.
 2.13 “Suficiencia”: Principio conforme al cual la autorización y monto de
-cualquier Apoyo dependen de la disponibilidad real del Fondo al momento de
+cualquier Apoyo dependen de la disponibilidad real del Apoyo Económico al momento de
 resolver, por lo que pueden existir rechazos, listas de espera, priorización,
 prorrateo o ajustes de monto sin que ello genere derecho exigible.
 2.14 “Carencia o Tiempo de Espera”: Periodo mínimo de antigüedad y/o espera
 aplicable a partir de la activación de la Membresía del Titular, durante el cual no
-será posible solicitar y/o recibir Apoyos con cargo al Fondo, aun cuando el Titular
+será posible solicitar y/o recibir Apoyos con cargo al Apoyo Económico, aun cuando el Titular
 tenga Membresía vigente. La duración de la Carencia podrá variar por plan,
 campaña, programa, segmento (incluyendo, en su caso, registro por
 Código de Embajador) y/o por tipo de Apoyo, siempre que se indique de manera
@@ -3055,7 +3055,7 @@ Localidad Buenavista, Municipio o Demarcación Territorial Tultitlán,
 Estado de México; entre Calle Calvario y Cerrada de los Tanques.
 d) Medio para notificaciones.  Para efectos de notificaciones derivadas
 del presente Convenio, LA ASOCIACIÓN señala como medio de
-notificación electrónico el siguiente correo: fondo@pataamiga.mx (el
+notificación electrónico el siguiente correo: apoyo@pataamiga.mx (el
 “Correo de Notificaciones de LA ASOCIACIÓN”).
 LA ASOCIACIÓN se obliga a mantener dicho correo vigente y disponible para
 recibir comunicaciones. En caso de modificación del Correo de Notificaciones de
@@ -3067,13 +3067,13 @@ actualización en dicho registro, sin necesidad de formalidad adicional.
 En tanto no se actualice dicho registro, se tendrá por válido el último Correo de
 Notificaciones de LA ASOCIACIÓN previamente señalado o registrado para todos
 los efectos de comunicación y notificación.
-e) Objeto y facultad para administrar el Fondo. Que, conforme a su
+e) Objeto y facultad para administrar el Apoyo Económico. Que, conforme a su
 objeto social y fines asociativos, cuenta con facultades para administrar y
-aplicar el Fondo Solidario relacionado con el Proyecto “Club Pata Amiga”,
+aplicar el Apoyo Económico relacionado con el Proyecto “Club Pata Amiga”,
 en los términos y bajo las reglas previstas en el presente Convenio.
 f) Alcance de participación. Que reconoce que la Plataforma es
 operada por LA EMPRESA, y que la intervención de LA ASOCIACIÓN se
-limita a la administración del Fondo Solidario, conforme a este Convenio.
+limita a la administración del Apoyo Económico, conforme a este Convenio.
 
 
 
@@ -3120,7 +3120,7 @@ y
 gestionar el cobro de la Membresía a través de la Plataforma, mediante los
 medios de pago habilitados, así como de atender las aclaraciones relacionadas
 con el procesamiento del pago, sin perjuicio de la canalización de la Aportación
-al Fondo a LA ASOCIACIÓN en los términos del presente Convenio.
+al Apoyo Económico a LA ASOCIACIÓN en los términos del presente Convenio.
 
 3.3 Declara EL TITULAR / ASOCIADO ADHERENTE, que:
 a) Mayoría de edad y capacidad. Es una persona física mayor de edad,
@@ -3143,10 +3143,10 @@ registros electrónicos generados por la Plataforma (tales como fecha,
 hora, IP, dispositivo y/o identificadores de cuenta), constituye
 manifestación expresa de voluntad y evidencia de su consentimiento para
 obligarse conforme a este Convenio.
-e) Aceptación del alcance del Fondo. Reconoce y acepta que el Fondo
+e) Aceptación del alcance del Apoyo Económico. Reconoce y acepta que el Apoyo Económico
 Solidario no es un seguro, no implica indemnización garantizada y no
 genera derecho de crédito exigible; y que cualquier apoyo está sujeto a
-reglas, validación, límites, carencias y suficiencia del Fondo, conforme a
+reglas, validación, límites, carencias y suficiencia del Apoyo Económico, conforme a
 este Convenio.
 
 
@@ -3158,15 +3158,15 @@ a) Establecer los términos y condiciones bajo los cuales EL TITULAR
 solicita y acepta su adhesión como Asociado Adherente de LA
 ASOCIACIÓN, mediante aceptación electrónica a través de la Plataforma.
 b) Regular el acceso del TITULAR a la posibilidad de solicitar apoyos
-con cargo al Fondo Solidario administrado por LA ASOCIACIÓN,
+con cargo al Apoyo Económico administrado por LA ASOCIACIÓN,
 entendiendo que dicha posibilidad está sujeta a: (i) los criterios y reglas
 previstas en este Convenio, (ii) el procedimiento y resultados de
 Validación, (iii) límites, carencias y restricciones aplicables, y (iv) la
-suficiencia del Fondo Solidario.
+suficiencia del Apoyo Económico.
 c) Establecer el marco de colaboración operativo entre LA
 ASOCIACIÓN y LA EMPRESA, así como la autorización del TITULAR para
 que LA EMPRESA reciba el pago de la membresía y canalice a LA
-ASOCIACIÓN la porción destinada al Fondo Solidario, conforme a lo
+ASOCIACIÓN la porción destinada al Apoyo Económico, conforme a lo
 indicado en este Convenio y a lo mostrado en la Plataforma al momento de
 la aceptación.
 
@@ -3198,12 +3198,12 @@ pago); y
 c) del importe total efectivamente cobrado, se aplicará el
 desglose y destino ya previsto en este Convenio: 70% como
 contraprestación por uso/operación de Plataforma a favor de
-GIRBAZ, S.A. de C.V., y 30% como Aportación al Fondo Solidario a
+GIRBAZ, S.A. de C.V., y 30% como Aportación al Apoyo Económico a
 favor de CLUB PATA AMIGA, A.C., integrándose esta última
 preferentemente por dispersión/transferencia directa mediante la
 pasarela de pagos. En ese supuesto, EL TITULAR podrá acceder a los
 beneficios de la Plataforma y, en su caso, a la posibilidad de
-Solicitar Apoyos con cargo al Fondo, sujeto a Carencias, Validación,
+Solicitar Apoyos con cargo al Apoyo Económico, sujeto a Carencias, Validación,
 Límites y Suficiencia.
 - Efectos si se RECHAZA o vence el plazo. Si LA ASOCIACIÓN rechaza
 la solicitud, o si transcurren las 48 horas sin que LA ASOCIACIÓN haya
@@ -3233,7 +3233,7 @@ usuario como Asociado Adherente. El plazo máximo de evaluación será de 48
 horas.
 Si la solicitud es aceptada dentro del plazo, se efectuará el cargo definitivo y se
 aplicará el split correspondiente (70% a GIRBAZ por el uso/operación de la
-Plataforma y 30% a CLUB PATA AMIGA, A.C. como Aportación al Fondo).
+Plataforma y 30% a CLUB PATA AMIGA, A.C. como Aportación al Apoyo Económico).
 Si la solicitud es rechazada o no es aceptada dentro del plazo, no se capturará el
 pago y la retención se liberará, conforme a las reglas de la red de pagos/banco
 emisor.
@@ -3248,8 +3248,8 @@ subsanado los requisitos solicitados, sin que ello genere derecho automático de
 aceptación.
 
 
-5) Naturaleza jurídica del Fondo
-5.1 Naturaleza no aseguradora. EL TITULAR reconoce expresamente que el Fondo
+5) Naturaleza jurídica del Apoyo Económico
+5.1 Naturaleza no aseguradora. EL TITULAR reconoce expresamente que el Apoyo Económico
 Solidario es un mecanismo solidario y asociativo administrado por LA
 ASOCIACIÓN, y que NO constituye:
 a) un seguro, póliza, cobertura aseguradora o producto regulado por
@@ -3262,19 +3262,19 @@ c) un esquema de ahorro, inversión, rendimiento, intereses o
 captación; ni
 d) una prestación exigible por el solo pago de la membresía.
 5.2 Inexistencia de derecho de crédito. EL TITULAR acepta que el pago de la
-Membresía y/o la Aportación al Fondo no genera a su favor derecho de crédito,
+Membresía y/o la Aportación al Apoyo Económico no genera a su favor derecho de crédito,
 derecho adquirido, derecho de reembolso, ni acción para exigir pagos
 automáticos. Cualquier apoyo autorizado tendrá el carácter de eventual y estará
 condicionado a los supuestos previstos en este Convenio.
-5.3 Sujeción a suficiencia y reglas. Los apoyos del Fondo Solidario se
+5.3 Sujeción a suficiencia y reglas. Los apoyos del Apoyo Económico se
 encuentran sujetos, en todo momento, a:
-a) la suficiencia y disponibilidad financiera del Fondo;
+a) la suficiencia y disponibilidad financiera del Apoyo Económico;
 b) el cumplimiento de carencias, límites, requisitos y restricciones;
 c) el procedimiento de Validación y la autenticidad de evidencias;
 d) los criterios de aceptación y priorización establecidos en este
 ## Convenio.
 5.4 Cuotas no reembolsables. EL TITULAR reconoce que las cantidades pagadas
-por concepto de Membresía y/o Aportación al Fondo son, salvo disposición
+por concepto de Membresía y/o Aportación al Apoyo Económico son, salvo disposición
 expresa en contrario prevista en este Convenio, no reembolsables, sin perjuicio
 de la atención de aclaraciones exclusivamente respecto del procesamiento del
 pago por LA EMPRESA conforme a sus políticas.
@@ -3297,18 +3297,18 @@ i. el 70% (setenta por ciento) corresponde a la contraprestación a favor de LA
 EMPRESA (GIRBAZ, S.A. de C.V.) por la operación, uso, acceso y disfrute de
 funcionalidades, módulos y beneficios de la Plataforma “Pata Amiga” (URL:
 https://www.pataamiga.mx/); y
-ii. el 30% (treinta por ciento) constituye la Aportación al Fondo Solidario,
-destinada exclusivamente a la integración del Fondo Solidario administrado por
+ii. el 30% (treinta por ciento) constituye la Aportación al Apoyo Económico,
+destinada exclusivamente a la integración del Apoyo Económico administrado por
 LA ASOCIACIÓN (CLUB PATA AMIGA, A.C.), conforme a este Convenio y al
-Reglamento del Fondo vigente.
-La Aportación al Fondo Solidario (30%) se integrará preferentemente mediante
+Reglamento del Apoyo Económico vigente.
+La Aportación al Apoyo Económico (30%) se integrará preferentemente mediante
 dispersión/transferencia directa a LA ASOCIACIÓN a través de la pasarela de
 pagos y mecanismos tecnológicos habilitados en la Plataforma. Solo de manera
 excepcional, cuando por causas técnicas no sea posible la dispersión directa por
 la pasarela de pagos, LA EMPRESA podrá recibir y canalizar dicha Aportación a LA
 ASOCIACIÓN conforme al mecanismo de mandato/instrucción previsto en este
 Convenio y/o en los documentos aplicables del Proyecto, sin que ello implique
-apropiación de recursos del Fondo ni modificación de la naturaleza no
+apropiación de recursos del Apoyo Económico ni modificación de la naturaleza no
 aseguradora del mismo.
 EL TITULAR acepta que el desglose anterior, así como el cargo total y su
 separación proporcional, podrá mostrarse en la Plataforma como parte del
@@ -3317,8 +3317,8 @@ proceso de pago, confirmación, recibo digital y/o historial de transacciones.
 Salvo disposición expresa en contrario prevista en este Convenio o por mandato
 de autoridad competente, EL TITULAR reconoce y acepta que los pagos
 realizados por concepto de Membresía, incluyendo la porción destinada como
-Aportación al Fondo Solidario, son no reembolsables, en virtud de su naturaleza
-asociativa, de acceso a servicios y de integración solidaria del Fondo.
+Aportación al Apoyo Económico, son no reembolsables, en virtud de su naturaleza
+asociativa, de acceso a servicios y de integración solidaria del Apoyo Económico.
 Lo anterior no limita el derecho del TITULAR a solicitar a LA EMPRESA la revisión
 de cargos duplicados o cobros manifiestamente improcedentes atribuibles al
 procesamiento del pago, conforme a las políticas operativas de LA EMPRESA y
@@ -3329,17 +3329,17 @@ del proveedor del medio de pago correspondiente.
 La revisión, aclaración, devolución, contracargo o corrección de cargos
 duplicados o cobros improcedentes se refiere exclusivamente al cobro de la
 Membresía por parte de LA EMPRESA (operación de la Plataforma) y no implica
-reembolso, reverso o devolución de la Aportación al Fondo Solidario, salvo
+reembolso, reverso o devolución de la Aportación al Apoyo Económico, salvo
 instrucción expresa de autoridad competente.
 6.4 Facturación, recibos y comprobación Las Partes acuerdan que:
 a) LA EMPRESA será la responsable de emitir, en su caso, el
 comprobante, recibo digital y/o CFDI relacionado con el cobro de la
 Membresía por el uso y operación de la Plataforma, conforme a su régimen
 fiscal y a la información fiscal proporcionada por EL TITULAR (en su caso).
-b) En lo relativo a la Aportación al Fondo Solidario, LA ASOCIACIÓN
+b) En lo relativo a la Aportación al Apoyo Económico, LA ASOCIACIÓN
 podrá emitir, en su caso y cuando así proceda conforme a su régimen y
 políticas, la constancia o comprobante correspondiente respecto de la
-porción canalizada al Fondo, siempre que EL TITULAR proporcione la
+porción canalizada al Apoyo Económico, siempre que EL TITULAR proporcione la
 información necesaria y que dicha emisión sea viable fiscal y
 operativamente.
 
@@ -3349,13 +3349,13 @@ EL TITULAR reconoce y acepta que, debido a la naturaleza evolutiva del Proyecto
 “Club Pata Amiga”, LA EMPRESA podrá actualizar anualmente (o en periodos
 mayores) cualquiera de los siguientes elementos:
 a) el precio de la Membresía;
-b) el monto/porcentaje destinado como Aportación al Fondo Solidario;
+b) el monto/porcentaje destinado como Aportación al Apoyo Económico;
 y/o
 c) reglas operativas vinculadas a la prestación del servicio de
 Plataforma, la administración de planes, el proceso de renovación y
 aspectos operativos del programa.
 Asimismo, EL TITULAR reconoce que LA ASOCIACIÓN podrá actualizar reglas
-operativas del Fondo Solidario (tales como criterios, límites, carencias,
+operativas del Apoyo Económico (tales como criterios, límites, carencias,
 requisitos de validación, medidas antifraude y procedimientos) cuando ello sea
 necesario para su sostenibilidad, integridad y correcto funcionamiento,
 conforme a lo previsto en este Convenio.
@@ -3381,7 +3381,7 @@ no renovar su Plan y/o solicitar la baja conforme a este Convenio, entendiendo
 que ello no genera reembolsos de cantidades ya devengadas o pagadas con
 anterioridad.
 
-8) Mandato expreso a LA EMPRESA (canalización de la Aportación al Fondo)
+8) Mandato expreso a LA EMPRESA (canalización de la Aportación al Apoyo Económico)
 8.1 Autorización y mandato de canalización
 EL TITULAR otorga su autorización expresa y confiere a LA EMPRESA un
 mandato/encargo de canalización para que, con motivo del pago de su
@@ -3389,7 +3389,7 @@ Membresía, LA EMPRESA:
 a) reciba el pago correspondiente al Plan elegido por EL TITULAR a
 través de la
 Plataforma; y
-b) canalice a LA ASOCIACIÓN la Aportación al Fondo Solidario, por el
+b) canalice a LA ASOCIACIÓN la Aportación al Apoyo Económico, por el
 monto o porcentaje que se muestre en la Plataforma al momento de la
 aceptación o
 renovación y/o el previsto en este Convenio.
@@ -3397,12 +3397,12 @@ renovación y/o el previsto en este Convenio.
 
 
 EL TITULAR reconoce que dicha canalización tiene como única finalidad integrar
-el Fondo Solidario administrado por LA ASOCIACIÓN, conforme a la mecánica
+el Apoyo Económico administrado por LA ASOCIACIÓN, conforme a la mecánica
 descrita en este instrumento.
 8.2 Separación automática por el motor de pagos
 Cuando el motor de pagos, pasarela o procesador habilitado en la Plataforma
 permita la separación automática del pago, LA EMPRESA realizará la distribución
-correspondiente, de modo que la Aportación al Fondo Solidario sea dirigida a LA
+correspondiente, de modo que la Aportación al Apoyo Económico sea dirigida a LA
 ASOCIACIÓN conforme al esquema operativo vigente.
 8.3 Supuesto de imposibilidad técnica
 En caso de que, por causas técnicas, operativas, del procesador de pagos o por
@@ -3410,27 +3410,27 @@ limitaciones del medio de cobro, no sea posible realizar la separación
 automática del pago, EL TITULAR autoriza expresamente a LA EMPRESA para que:
 a) reciba el importe total del pago de la Membresía; y
 b) realice la transferencia a LA ASOCIACIÓN del monto que
-corresponda a la Aportación al Fondo Solidario.
+corresponda a la Aportación al Apoyo Económico.
 Dicha transferencia se realizará a más tardar dentro de 48 (cuarenta y ocho)
 horas contadas a partir de la confirmación/captura del pago por el procesador,
 salvo demoras atribuibles al sistema bancario o al propio procesador.
 8.4 Conciliación, evidencia y registro interno
 LA EMPRESA llevará un registro interno de (i) pagos recibidos, (ii) cálculo de la
-Aportación al Fondo Solidario, y (iii) transferencias efectuadas a LA ASOCIACIÓN,
+Aportación al Apoyo Económico, y (iii) transferencias efectuadas a LA ASOCIACIÓN,
 incluyendo referencias, fechas y montos. EL TITULAR reconoce y acepta que:
 a) la información visible en la Plataforma podrá consistir en
 confirmaciones/recibos digitales y estatus de pago;
 b) la conciliación contable y operativa entre LA EMPRESA y LA
 ASOCIACIÓN podrá realizarse de forma interna; y
 c) lo anterior no implica que EL TITULAR adquiera derecho de
-propiedad, reembolso o exigibilidad sobre el Fondo, en términos de la
-cláusula de naturaleza jurídica del Fondo.
+propiedad, reembolso o exigibilidad sobre el Apoyo Económico, en términos de la
+cláusula de naturaleza jurídica del Apoyo Económico.
 8.5 No constitución de relación laboral, financiera o de seguros
 
 
 
 Las Partes reconocen que el mandato/encargo previsto en esta cláusula es
-estrictamente operativo para la canalización de la Aportación al Fondo y no
+estrictamente operativo para la canalización de la Aportación al Apoyo Económico y no
 constituye intermediación financiera, captación, inversión, préstamo, seguro,
 fianza o producto equivalente, ni genera obligación de pago garantizado a favor
 del TITULAR.
@@ -3463,17 +3463,17 @@ El Programa y el registro de mascotas en la Cuenta aplican, como base,
 
 
 Exclusiones / restricciones. Quedan excluidas del alcance del Programa y del
-Fondo (y por tanto no elegibles para registro con fines de Apoyo) cualesquiera
+Apoyo Económico (y por tanto no elegibles para registro con fines de Apoyo) cualesquiera
 especies distintas de perros y gatos, salvo que una actualización publicada de
 manera expresa en la Plataforma habilite otros supuestos.
 Asimismo, las exclusiones y conceptos no elegibles para efectos del
 otorgamiento de Apoyos (por ejemplo, por condiciones preexistentes,
 negligencia o maltrato, eventos no veterinarios, falta de verificabilidad y/o
 contravención a reglas antifraude), serán las previstas en el Reglamento del
-Fondo Solidario vigente, particularmente en el capítulo de “Eventos, Conceptos
+Apoyo Económico vigente, particularmente en el capítulo de “Eventos, Conceptos
 Elegibles y Exclusiones”, el cual forma parte integrante del presente Convenio y
 se mantiene publicado en la Plataforma.
-En tanto el Reglamento del Fondo y/o la Plataforma contemplen criterios
+En tanto el Reglamento del Apoyo Económico y/o la Plataforma contemplen criterios
 diferenciados (p. ej., por predisposición genética, reglas especiales por “alto
 riesgo”, carencias extendidas, topes ajustados y/o periodicidades distintas),
 éstos serán aplicables solo cuando estén publicados y sean informados al
@@ -3485,13 +3485,13 @@ manipulación de evidencia o conducta que configure fraude se sancionará
 conforme a las cláusulas antifraude y podrá dar lugar a suspensión o
 cancelación de la Cuenta y de la adhesión como Asociado Adherente.
 
-10) Reglas del Fondo Solidario y Plan de Acción (Reglamento público en
+10) Reglas del Apoyo Económico y Plan de Acción (Reglamento público en
 ## Plataforma)
-10.1 Existencia y aceptación del Reglamento del Fondo
+10.1 Existencia y aceptación del Reglamento del Apoyo Económico
 EL TITULAR reconoce y acepta que las reglas operativas, criterios, límites,
 requisitos y
-procedimientos aplicables al Fondo Solidario se encuentran establecidos en un
-Reglamento del Fondo Solidario (el “Reglamento del Fondo”) que se mantiene
+procedimientos aplicables al Apoyo Económico se encuentran establecidos en un
+Reglamento del Apoyo Económico (el “Reglamento del Apoyo Económico”) que se mantiene
 publicado y disponible para consulta dentro de la Plataforma, con el objeto de
 que los Asociados Adherentes puedan verificar con precisión las condiciones
 vigentes.
@@ -3499,26 +3499,26 @@ vigentes.
 
 
 En virtud de lo anterior, EL TITULAR acepta que la adhesión al presente Convenio
-implica también su adhesión expresa al Reglamento del Fondo, mismo que forma
+implica también su adhesión expresa al Reglamento del Apoyo Económico, mismo que forma
 parte integrante de este Convenio para todos los efectos legales, y que será
 aplicable en su versión vigente al momento de la aceptación y/o al momento de
 presentar una Solicitud de Apoyo, según corresponda.
 ## 10.2 Carencia
 Como regla general, y salvo disposición distinta publicada de manera expresa en
-la Plataforma y/o prevista en el Reglamento del Fondo Solidario vigente, la
+la Plataforma y/o prevista en el Reglamento del Apoyo Económico vigente, la
 posibilidad del TITULAR de presentar Solicitudes y, en su caso, recibir Apoyos
-con cargo al Fondo Solidario estará sujeta a un periodo de carencia o tiempo de
+con cargo al Apoyo Económico estará sujeta a un periodo de carencia o tiempo de
 espera contado a partir de la fecha de activación de su Membresía, en los
 términos y bajo las condiciones establecidas en dicho Reglamento y en lo que se
 muestre al TITULAR al momento de la contratación, activación o renovación.
-Durante el periodo de carencia, la Membresía y la Aportación al Fondo Solidario
+Durante el periodo de carencia, la Membresía y la Aportación al Apoyo Económico
 se seguirán integrando conforme al presente Convenio, sin que ello genere por sí
 mismo derecho automático a recibir Apoyos.
 
 10.3 Límites por evento y por año
-Los Apoyos que, en su caso, pudieran autorizarse con cargo al Fondo Solidario
-estarán sujetos a límites máximos, conforme al Reglamento del Fondo, a la
-suficiencia del Fondo y a lo mostrado en la Plataforma, incluyendo de manera
+Los Apoyos que, en su caso, pudieran autorizarse con cargo al Apoyo Económico
+estarán sujetos a límites máximos, conforme al Reglamento del Apoyo Económico, a la
+suficiencia del Apoyo Económico y a lo mostrado en la Plataforma, incluyendo de manera
 enunciativa:
 a) Montos máximos por tipo de apoyo (tope por uso al año) §  Emergencia
 médica veterinaria: hasta $3,000.00 M.N.
@@ -3530,7 +3530,7 @@ M.N. constituye un tope anual global para EL TITULAR y podrá
 utilizarse de forma total o parcial durante el año natural,
 distribuyéndose entre las mascotas registradas (máximo 3),
 conforme a Validación, evidencia, criterios de priorización y
-suficiencia del Fondo.
+suficiencia del Apoyo Económico.
 
 
 
@@ -3538,31 +3538,31 @@ suficiencia del Fondo.
 EL TITULAR, hasta por $2,000.00 M.N.
 ▪ Vacunación anual: máximo 1 (una) vacuna por año
 natural por EL TITULAR, hasta por $300.00 M.N.
-c) Límite global por beneficiario (protección del Fondo)
+c) Límite global por beneficiario (protección del Apoyo Económico)
 En ningún caso un solo beneficiario podrá disponer de más del 5% (cinco por
-ciento) del Fondo total, aun cuando existan eventos elegibles.
+ciento) del Apoyo Económico total, aun cuando existan eventos elegibles.
 EL TITULAR reconoce que los límites anteriores podrán depender del Plan
-contratado, de la suficiencia del Fondo, del tipo de evento y de los criterios de
+contratado, de la suficiencia del Apoyo Económico, del tipo de evento y de los criterios de
 priorización, Validación y reglas vigentes aplicables al momento de la Solicitud.
 10.4 Criterios de aceptación de solicitudes
 La autorización de apoyos se sujetará, en todo momento, a los criterios previstos
-en el Reglamento del Fondo, incluyendo, de forma enunciativa mas no limitativa:
+en el Reglamento del Apoyo Económico, incluyendo, de forma enunciativa mas no limitativa:
 a) la pertenencia vigente del TITULAR como Asociado Adherente
 (membresía activa y sin adeudos);
 b) el cumplimiento de carencia, límites y requisitos;
 c) la Validación de la Solicitud (evidencia, documentos,
 comprobantes, etc.);
 d) la inexistencia de indicios de fraude o abuso; y
-e) la suficiencia del Fondo Solidario al momento de resolver.
+e) la suficiencia del Apoyo Económico al momento de resolver.
 10.5 Forma de entrega del apoyo
 En caso de que un apoyo sea autorizado, éste podrá entregarse conforme a
-cualquiera de las modalidades previstas en el Reglamento del Fondo, tales
+cualquiera de las modalidades previstas en el Reglamento del Apoyo Económico, tales
 como:
 a) pago directo a un proveedor (por ejemplo, clínica, veterinaria o
 aliado);
 b) reembolso parcial o total al TITULAR, cuando así se determine; y/o
 c) otros mecanismos operativos permitidos por el Reglamento del
-## Fondo.
+## Apoyo Económico.
 
 
 
@@ -3570,17 +3570,17 @@ EL TITULAR reconoce que la modalidad aplicable dependerá del caso concreto,
 de la evidencia disponible, del tipo de gasto y de las políticas de control y
 prevención de fraude.
 10.6 Supuestos de rechazo
-Sin perjuicio de otros supuestos establecidos en el Reglamento del Fondo,
+Sin perjuicio de otros supuestos establecidos en el Reglamento del Apoyo Económico,
 podrán rechazarse Solicitudes cuando:
 a) no se cumpla carencia, límites o requisitos;
 b) la evidencia resulte insuficiente, inconsistente o no verificable;
 c) existan indicios razonables de fraude, simulación o abuso;
 d) el evento o concepto no esté contemplado o esté excluido;
 e) el TITULAR esté suspendido, bloqueado o dado de baja; y/o
-f) no exista suficiencia financiera del Fondo para atender la solicitud.
+f) no exista suficiencia financiera del Apoyo Económico para atender la solicitud.
 10.7 Lista de espera, prorrateo y suficiencia
-EL TITULAR reconoce que el Fondo Solidario opera bajo el principio de
-suficiencia. En caso de insuficiencia temporal, el Reglamento del Fondo podrá
+EL TITULAR reconoce que el Apoyo Económico opera bajo el principio de
+suficiencia. En caso de insuficiencia temporal, el Reglamento del Apoyo Económico podrá
 prever mecanismos como:
 a) lista de espera;
 b) priorización por criterios objetivos; y/o
@@ -3589,7 +3589,7 @@ La existencia de una Solicitud o su recepción en Plataforma no garantiza su
 autorización ni su pago.
 10.8 Aportaciones voluntarias adicionales
 LA EMPRESA podrá habilitar, de forma opcional, la posibilidad de que el TITULAR
-realice aportaciones voluntarias adicionales al Fondo Solidario. Dichas
+realice aportaciones voluntarias adicionales al Apoyo Económico. Dichas
 aportaciones, en su caso:
 a) serán siempre voluntarias;
 b) tendrán carácter no reembolsable;
@@ -3599,12 +3599,12 @@ apoyos; y
 
 
 d) se regirán por las condiciones específicas que se muestren en la
-Plataforma y por el Reglamento del Fondo.
+Plataforma y por el Reglamento del Apoyo Económico.
 11) Reglamento Antifraude (integrado como cláusulas y publicado en Plataforma)
 11.1 Existencia y aceptación del Reglamento Antifraude
 EL TITULAR reconoce y acepta que existe un Reglamento Antifraude (el
 “Reglamento Antifraude”) publicado y disponible en la Plataforma para su
-consulta, con el objeto de prevenir abusos, proteger la integridad del Fondo
+consulta, con el objeto de prevenir abusos, proteger la integridad del Apoyo Económico
 Solidario y asegurar un uso lícito y transparente del programa.
 En virtud de lo anterior, EL TITULAR acepta que la adhesión al presente Convenio
 implica también su adhesión expresa al Reglamento Antifraude, mismo que
@@ -3637,7 +3637,7 @@ e) simular eventos, gastos o documentos;
 f) intentar vulnerar la Plataforma, evadir controles, o explotar fallas;
 y/o
 g) cualquier conducta que configure fraude, abuso, o uso indebido del
-## Fondo Solidario.
+## Apoyo Económico.
 
 11.4 Medidas y consecuencias
 Ante indicios razonables o confirmación de fraude o abuso, LA EMPRESA y/o LA
@@ -3650,7 +3650,7 @@ d) rechazar Solicitudes en curso;
 e) retener la tramitación de apoyos hasta concluir verificaciones; y
 f) resguardar evidencia digital y trazabilidad de operaciones.
 EL TITULAR reconoce que estas medidas tienen como finalidad proteger la
-integridad del programa y del Fondo, y que podrán aplicarse aun durante
+integridad del programa y del Apoyo Económico, y que podrán aplicarse aun durante
 procesos de investigación interna.
 11.5 Resguardo de evidencias
 EL TITULAR acepta que LA EMPRESA podrá conservar registros, bitácoras, IP,
@@ -3665,7 +3665,7 @@ Cuando proceda, LA EMPRESA y/o LA ASOCIACIÓN podrán:
 a) cooperar con autoridades competentes mediante entrega de
 información conforme a derecho; y/o
 b) ejercer las acciones legales que correspondan para la protección
-del Proyecto, la Plataforma, el Fondo Solidario y los derechos de terceros,
+del Proyecto, la Plataforma, el Apoyo Económico y los derechos de terceros,
 incluyendo la presentación de denuncias en caso de hechos posiblemente
 constitutivos de delito.
 
@@ -3679,7 +3679,7 @@ relacionadas con lavado de dinero, financiamiento al terrorismo, corrupción,
 fraude o actividades prohibidas por la ley.
 12.2 Controles y solicitud de información (KYC básico)
 EL TITULAR reconoce y acepta que, con el fin de proteger la integridad del
-Proyecto, la Plataforma y el Fondo Solidario, LA EMPRESA y/o LA ASOCIACIÓN
+Proyecto, la Plataforma y el Apoyo Económico, LA EMPRESA y/o LA ASOCIACIÓN
 podrán implementar controles razonables de identificación y verificación, y
 podrán solicitar, en cualquier momento, información y/o documentación
 adicional, incluyendo de forma enunciativa:
@@ -3710,7 +3710,7 @@ d) rechazar operaciones o Solicitudes; y/o
 e) cancelar la adhesión como Asociado Adherente, conforme a este
 ## Convenio.
 EL TITULAR reconoce que estas medidas son preventivas y buscan proteger la
-integridad del Proyecto y del Fondo Solidario.
+integridad del Proyecto y del Apoyo Económico.
 12.4 Cooperación con autoridades
 Cuando exista requerimiento de autoridad competente o resulte legalmente
 procedente, LA EMPRESA y/o LA ASOCIACIÓN podrán colaborar con autoridades,
@@ -3726,7 +3726,7 @@ personales que recabe y trate para la operación de la Plataforma, gestión
 de Cuenta, soporte, administración de Membresía, procesamiento de
 pagos, seguridad, prevención de fraude y atención al usuario.
 b) LA ASOCIACIÓN será responsable del tratamiento de los datos
-personales estrictamente necesarios para la administración del Fondo
+personales estrictamente necesarios para la administración del Apoyo Económico
 
 
 
@@ -3770,9 +3770,9 @@ a) crear y administrar la Cuenta del TITULAR;
 b) operar la Plataforma y brindar soporte;
 c) procesar pagos, renovaciones, confirmaciones y aclaraciones del
 cobro;
-d) canalizar la Aportación al Fondo Solidario conforme al mandato
+d) canalizar la Aportación al Apoyo Económico conforme al mandato
 otorgado;
-e) administrar el Fondo Solidario y atender Solicitudes de Apoyo;
+e) administrar el Apoyo Económico y atender Solicitudes de Apoyo;
 f) ealizar Validación de registros, solicitudes y evidencias;
 g) prevenir, detectar y sancionar fraude y abuso;
 h) cumplir obligaciones legales y atender requerimientos de autoridad
@@ -3807,14 +3807,14 @@ Oposición (ARCO), así como revocar su consentimiento cuando sea aplicable,
 mediante solicitud enviada al siguiente correo:
 - Para  asuntos  de  Plataforma  y  Membresía  (LA
 EMPRESA): girbaz@pataamiga.mx
-- Para asuntos del Fondo Solidario (LA ASOCIACIÓN):
+- Para asuntos del Apoyo Económico (LA ASOCIACIÓN):
 legal@pataamiga.mx
 La solicitud deberá incluir, al menos: nombre del TITULAR, medio de contacto,
 descripción clara del derecho a ejercer y, en su caso, documentación que
 acredite identidad. Las Partes podrán requerir información adicional para
 autenticar la solicitud y proteger la Cuenta.
 EL TITULAR reconoce que la cancelación u oposición respecto de datos
-necesarios para la operación de la Plataforma o la administración del Fondo
+necesarios para la operación de la Plataforma o la administración del Apoyo Económico
 podrá implicar la imposibilidad de mantener la Membresía, procesar pagos o
 tramitar Solicitudes, y podrá dar lugar a la baja conforme a este Convenio.
 13.6 Medidas de seguridad y conservación de información
@@ -3839,7 +3839,7 @@ como
 Asociado Adherente, podrá tener acceso a información relacionada con el
 Proyecto “Club Pata Amiga”, incluyendo reglas operativas, procesos,
 funcionalidades, contenidos, textos, materiales, comunicaciones, criterios de
-validación, estructuras, métricas, lógica operativa, flujos, mecánicas del Fondo
+validación, estructuras, métricas, lógica operativa, flujos, mecánicas del Apoyo Económico
 Solidario, y/o know-how (la “Información”).
 EL TITULAR se obliga a:
 a) utilizar la Información únicamente para fines de uso personal de la
@@ -3852,7 +3852,7 @@ c) no realizar actos tendientes a eludir controles de seguridad,
 confidencialidad o antifraude; y
 d) no replicar, copiar, desarrollar, implementar, adaptar, comercializar,
 ni promover, por cuenta propia o de terceros, de manera total o parcial, un
-modelo de negocio, plataforma, programa, membresía, fondo, esquema
+modelo de negocio, plataforma, programa, membresía, apoyo económico, esquema
 solidario o servicio sustancialmente similar al Proyecto “Club Pata Amiga”
 que derive del uso o aprovechamiento de la Información, ni utilizar la
 Información para diseñar o facilitar productos o servicios equivalentes,
@@ -3887,7 +3887,7 @@ e) permitir el acceso de terceros a su Cuenta o credenciales.
 15) Deslinde total A.C. vs Plataforma
 15.1 Alcance de LA ASOCIACIÓN
 EL TITULAR reconoce y acepta expresamente que LA ASOCIACIÓN:
-a) únicamente administra y aplica el Fondo Solidario, conforme a los
+a) únicamente administra y aplica el Apoyo Económico, conforme a los
 criterios y reglas previstos en este Convenio; y
 b) no opera, administra, desarrolla, da soporte, ni controla la
 Plataforma, ni el procesamiento de pagos de membresía, ni la atención
@@ -3918,7 +3918,7 @@ c) prestación del servicio digital asociado a la Membresía, deberá
 dirigirse exclusivamente contra LA EMPRESA, por los medios de contacto
 que ésta habilite.
 Lo anterior es independiente de las solicitudes y determinaciones relacionadas
-con el Fondo Solidario, las cuales se tramitarán conforme al presente Convenio.
+con el Apoyo Económico, las cuales se tramitarán conforme al presente Convenio.
 
 16) Vigencia, baja, cancelación y efectos
 ## 16.1 Vigencia
@@ -3944,12 +3944,12 @@ c) se detecten operaciones inusuales o riesgos relevantes;
 d) se proporcionen datos falsos o se niegue información requerida
 para validaciones; y/o
 e) se realicen conductas que dañen la Plataforma, el Proyecto o el
-## Fondo
+## Apoyo Económico
 ## Solidario.
 16.4 Sin reembolsos
 Salvo disposición expresa en contrario prevista en este Convenio o por mandato
 de autoridad competente, EL TITULAR reconoce que los pagos realizados por
-Membresía y/o Aportación al Fondo son no reembolsables, incluso en caso de
+Membresía y/o Aportación al Apoyo Económico son no reembolsables, incluso en caso de
 baja o cancelación, sin perjuicio de aclaraciones por cargos duplicados
 imputables al procesamiento del pago por LA EMPRESA.
 16.5 Efectos sobre Solicitudes en curso
@@ -3962,7 +3962,7 @@ sus pagos y sin indicios de fraude o abuso, las Solicitudes ingresadas antes de 
 fecha efectiva de baja podrán:
 - continuar su evaluación y validación; y
 - en su caso, resolverse conforme a las reglas vigentes al momento de su
-presentación y a la suficiencia del Fondo, siempre que la documentación y
+presentación y a la suficiencia del Apoyo Económico, siempre que la documentación y
 evidencias sean suficientes y verificables.
 
 
@@ -3985,7 +3985,7 @@ EMPRESA y/o LA ASOCIACIÓN podrán, según el caso:
 - cancelar la Solicitud en curso; o
 - continuar su evaluación únicamente si el TITULAR subsana el
 incumplimiento dentro de un plazo de 5 días naturales, quedando a
-criterio de la autoridad interna/operación del Fondo, y siempre
+criterio de la autoridad interna/operación del Apoyo Económico, y siempre
 sujeto a suficiencia y reglas vigentes.
 
 d) Fraude, abuso, suplantación o evidencia apócrifa (fraude grave)
@@ -4023,7 +4023,7 @@ actualización realizada por el TITULAR en su perfil se considerará efectiva de
 su registro en la Plataforma.
 17.3 Notificaciones a LA ASOCIACIÓN
 Para notificaciones dirigidas a LA ASOCIACIÓN, se señala como correo:
-fondo@pataamiga.mx. Cualquier modificación se considerará efectiva desde
+apoyo@pataamiga.mx. Cualquier modificación se considerará efectiva desde
 que sea actualizada y publicada en la Plataforma como medio oficial de contacto
 del Proyecto.
 17.4 Notificaciones a LA EMPRESA
@@ -4052,7 +4052,7 @@ presente Convenio, con plena validez y efectos legales.
 ## EL PRESENTE CONVENIO CONSTITUYE EL ACUERDO TOTAL ENTRE LAS PARTES
 ## RESPECTO DE SU OBJETO Y DEJA SIN EFECTOS CUALQUIER COMUNICACIÓN,
 ## NEGOCIACIÓN O ACUERDO PREVIO, VERBAL O ESCRITO, RELACIONADO CON LA
-## ADHESIÓN COMO ASOCIADO ADHERENTE Y LA OPERACIÓN DEL FONDO
+## ADHESIÓN COMO ASOCIADO ADHERENTE Y LA OPERACIÓN DEL APOYO ECONÓMICO
 ## SOLIDARIO, SIN PERJUICIO DE LAS ACTUALIZACIONES PERMITIDAS CONFORME
 ## A ESTE PROPIO CONVENIO.
 ## SI ALGUNA DISPOSICIÓN DEL PRESENTE CONVENIO FUERE DECLARADA NULA,
@@ -4132,7 +4132,7 @@ Juan, Municipio de Tultitlán, Estado de México, C.P. 54900.
 
 b) CLUB PATA AMIGA, A.C. (“CLUB PATA AMIGA”)
 Responsable del tratamiento de datos personales relacionados con la administración  del
-Fondo   Solidario,  resolución  de  solicitudes  de  apoyo,  validación  y  determinaciones
+Apoyo Económico   Solidario,  resolución  de  solicitudes  de  apoyo,  validación  y  determinaciones
 asociativas conforme a sus instrumentos aplicables.
 Correo de privacidad: legal@pataamiga.mx Domicilio: Calle Juárez No. 3, Interior sin
 número, Col. San Francisco Chilpan, Localidad Buenavista, C.P. 54944, Tultitlán, Estado de
@@ -4234,9 +4234,9 @@ comprobantes o gestionar atención vinculada a una Solicitud (cuando proceda).
 - Autoridades competentes, por requerimiento fundado y motivado o para
 cumplimiento legal.
 Transferencia GIRBAZ ↔ CLUB PATA AMIGA:
-Cuando el Titular participe en el esquema del Fondo o en Solicitudes, GIRBAZ podrá
+Cuando el Titular participe en el esquema del Apoyo Económico o en Solicitudes, GIRBAZ podrá
 transferir a CLUB PATA AMIGA los datos necesarios para: (i) integración/administración del
-Fondo, (ii) validación, (iii) prevención de fraude y (iv) resolución de solicitudes, conforme a
+Apoyo Económico, (ii) validación, (iii) prevención de fraude y (iv) resolución de solicitudes, conforme a
 los instrumentos del Proyecto.
 
 6) Uso de cookies y tecnologías de rastreo
@@ -4256,7 +4256,7 @@ Tienes derecho a Acceder,  Rectificar,  Cancelar  u  Oponerte (ARCO) al tratamie
 datos, así como a revocar tu consentimiento cuando proceda.
 Canales ARCO:
 - Para datos de Plataforma/cuenta/cobros (GIRBAZ): girbaz31@gmail.com
-- Para  datos  vinculados  al  Fondo/solicitudes  (CLUB  PATA
+- Para  datos  vinculados  al  Apoyo Económico/solicitudes  (CLUB  PATA
 AMIGA): legal@pataamiga.mx
 La solicitud ARCO debe incluir:
 a) Nombre y medio para responder (correo).
@@ -4312,7 +4312,7 @@ AMIGA (Privacidad): legal@pataamiga.mx
 
 
 
-## ANEXO1 REGLAMENTO FONDO
+## ANEXO1 REGLAMENTO APOYO ECONÓMICO
 ## PERROS/CANINOS
 ## RAZA ENFERMEDADES CONGENITAS, GENÉTICAS Y HEREDITARIAS
 Beagle-Harrier Displasia de cadera, Enfermedad del disco intervertebral, Epilepsia
@@ -5039,18 +5039,18 @@ Plan de Membresía y acepta los presentes Términos mediante aceptación electr�
 la Plataforma.
 Las únicas partes de este contrato son GIRBAZ, S.A. DE C.V. y EL TITULAR. Sin
 embargo, el Titular reconoce que puede existir un componente solidario o
-canalización de recursos a un fondo administrado por CLUB PATA AMIGA, A.C., lo cual
+canalización de recursos a un apoyo económico administrado por CLUB PATA AMIGA, A.C., lo cual
 se regula mediante instrumentos independientes (incluyendo el Convenio de
-Adhesión y el Reglamento del Fondo), sin que CLUB PATA AMIGA, A.C. sea parte de
+Adhesión y el Reglamento del Apoyo Económico), sin que CLUB PATA AMIGA, A.C. sea parte de
 los presentes Términos y Condiciones de uso y contratación de Membresía.
-1.3 Tercero relacionado (Fondo Solidario)
+1.3 Tercero relacionado (Apoyo Económico)
 Sin que ello implique que sea parte de estos Términos, el Titular reconoce que el
-Fondo Solidario del Proyecto “Club Pata Amiga” es administrado por CLUB PATA
+Apoyo Económico del Proyecto “Club Pata Amiga” es administrado por CLUB PATA
 AMIGA, ASOCIACIÓN CIVIL (“CLUB PATA AMIGA, A.C.”), constituida mediante
 instrumento número 39,000, volumen 1,100, de fecha 30 de enero de 2026, otorgado
 ante la fe de la Lic. Mariana Sandoval Igartúa, titular de la Notaría número 33 del
 Estado de México y del Patrimonio Inmobiliario Federal.
-Para efectos de notificaciones relacionadas con el Fondo, el domicilio de CLUB PATA
+Para efectos de notificaciones relacionadas con el Apoyo Económico, el domicilio de CLUB PATA
 AMIGA, A.C. será: Calle Gustavo Díaz Ordaz, Número Exterior 18, Número Interior 1,
 Colonia San Juan, Municipio de Tultitlán, Estado de México, C.P. 54900.
 
@@ -5068,13 +5068,13 @@ correspondiente y aceptar.
 
 
 
-- “CLUB PATA AMIGA, A.C.”: Asociación civil administradora del Fondo Solidario
+- “CLUB PATA AMIGA, A.C.”: Asociación civil administradora del Apoyo Económico
 del Proyecto “Club Pata Amiga”, distinta e independiente de GIRBAZ, mencionada en
 estos Términos únicamente para identificar el destino del Componente Solidario y el
 deslinde de responsabilidades.
-- “Componente Solidario” / “Aportación al Fondo” (si aplica): La porción del
+- “Componente Solidario” / “Aportación al Apoyo Económico” (si aplica): La porción del
 pago total que, en su caso, la Plataforma muestre como destinada a ser canalizada a
-un tercero (por ejemplo, una asociación civil administradora de un fondo), conforme a
+un tercero (por ejemplo, una asociación civil administradora de un apoyo económico), conforme a
 lo aceptado por el Titular en el flujo de pago y a la autorización/mandato
 correspondiente. Dicho componente no convierte la Membresía en seguro ni genera
 garantía de apoyos.
@@ -5082,8 +5082,8 @@ garantía de apoyos.
 credenciales de acceso y datos de registro.
 - “Cuota” / “Precio”: El importe total que paga el Titular por la Membresía
 conforme al Plan elegido, mostrado de forma previa al pago.
-- “Fondo Solidario”: Mecanismo solidario administrado por CLUB PATA AMIGA,
-A.C., sujeto a reglas propias (Convenio de Adhesión y Reglamento del Fondo)
+- “Apoyo Económico”: Mecanismo solidario administrado por CLUB PATA AMIGA,
+A.C., sujeto a reglas propias (Convenio de Adhesión y Reglamento del Apoyo Económico)
 aceptadas separadamente por el Titular.
 - “Fraude/Abuso”: Conductas destinadas a engañar, manipular o aprovechar
 indebidamente la Plataforma o sus mecanismos, incluyendo suplantación, evidencia
@@ -5278,17 +5278,17 @@ Plataforma y los Servicios digitales.
 
 6.3.2 Parte B – Componente Solidario. Si la Plataforma muestra, al momento del
 pago, que una porción del precio total constituye un Componente Solidario /
-Aportación al Fondo, el Titular reconoce que dicha porción será canalizada a CLUB
+Aportación al Apoyo Económico, el Titular reconoce que dicha porción será canalizada a CLUB
 PATA AMIGA, A.C., como aportación voluntaria, conforme a lo mostrado en pantalla y
 a la autorización/mandato otorgado por el Titular.
 6.3.3 Visualización y aceptación. El Titular reconoce que el porcentaje y/o monto
-destinado a GIRBAZ y la Aportación al Fondo Solidario será el que se muestre en la
+destinado a GIRBAZ y la Aportación al Apoyo Económico será el que se muestre en la
 Plataforma al momento de contratar o renovar la Membresía (incluyendo el
 recibo/confirmación digital), pudiendo identificarse como:
 - 70% / $ (importe equivalente al 70% del precio total de la Membresía) a favor de
 GIRBAZ; y
 -  30% / $ (importe equivalente al 30% del precio total de la Membresía) como
-Aportación al Fondo Solidario a favor de CLUB PATA AMIGA, A.C.
+Aportación al Apoyo Económico a favor de CLUB PATA AMIGA, A.C.
 Sin perjuicio de que estos porcentajes/montos puedan actualizarse conforme a la
 cláusula de modificaciones/actualizaciones y siempre que se muestren de forma
 expresa en la Plataforma al momento de la contratación, renovación o cambio de
@@ -5316,7 +5316,7 @@ el comprobante/recibo correspondiente por dicha aportación, conforme a sus
 políticas y a la información fiscal que, en su caso, recabe para tal efecto.
 6.4.3  Responsabilidad  por  facturación.  El  Titular  reconoce  que:
 a) cualquier aclaración sobre CFDI de GIRBAZ se gestiona con GIRBAZ; y
-b) cualquier comprobante o recibo relativo a la aportación al Fondo, si se expide,
+b) cualquier comprobante o recibo relativo a la aportación al Apoyo Económico, si se expide,
 corresponde a CLUB PATA AMIGA, A.C., sin que ello la convierta en parte de estos
 ## Términos.
 
@@ -5325,7 +5325,7 @@ Si al contratar o renovar el Plan el Titular acepta la casilla correspondiente, 
 mandata y autoriza expresamente a GIRBAZ para que:
 a) reciba el pago total de la Membresía a través del Proveedor de Pagos; y
 b) canalice la porción identificada como Componente Solidario / Aportación al
-Fondo a CLUB PATA AMIGA, A.C., sin que ello implique apropiación por parte de
+Apoyo Económico a CLUB PATA AMIGA, A.C., sin que ello implique apropiación por parte de
 GIRBAZ, sino un acto de canalización operativa conforme a la instrucción del Titular.
 7.2 Separación automática y contingencia por motor de pagos
 7.2.1 Separación automática. Cuando el Proveedor de Pagos permita la separación
@@ -5345,21 +5345,21 @@ bancarias o reportes de conciliación internos.
 
 
 
-8) Relación con el Fondo Solidario (cláusula “anti-confusión” + deslinde) 8.1 No
+8) Relación con el Apoyo Económico (cláusula “anti-confusión” + deslinde) 8.1 No
 seguro / no aseguradora
 El Titular reconoce expresamente que la Plataforma “Pata Amiga” y la Membresía no
 constituyen un contrato de seguro, póliza, cobertura aseguradora, indemnización
 garantizada, plan de ahorro, inversión o producto financiero. GIRBAZ no es una
 aseguradora ni actúa como tal.
-8.2 Fondo Solidario administrado por tercero (A.C.)
+8.2 Apoyo Económico administrado por tercero (A.C.)
 El Titular reconoce que, solo en caso de aceptar adicionalmente el Convenio de
 Adhesión correspondiente, podrá participar como asociado adherente en un
 esquema solidario administrado por CLUB PATA AMIGA, A.C. y, en su caso, presentar
-Solicitudes de apoyo con cargo a dicho Fondo, sujetas estrictamente a:
-a) el Reglamento del Fondo publicado en la Plataforma;
+Solicitudes de apoyo con cargo a dicho Apoyo Económico, sujetas estrictamente a:
+a) el Reglamento del Apoyo Económico publicado en la Plataforma;
 b) carencias, límites, criterios y requisitos vigentes;
 c) procesos de validación y controles antifraude; y
-d) la suficiencia real del Fondo.
+d) la suficiencia real del Apoyo Económico.
 En ningún caso la Membresía por sí sola genera derecho automático o exigible a
 apoyos.
 8.3 Deslinde total GIRBAZ vs CLUB PATA AMIGA, A.C.
@@ -5367,13 +5367,13 @@ a) GIRBAZ es responsable de la operación técnica de la Plataforma, la prestaci
 de Servicios digitales, el cobro de la Membresía, las aclaraciones de pago y el soporte
 al Titular.
 b) CLUB PATA AMIGA, A.C. es responsable exclusivamente de la administración
-del Fondo Solidario y de la resolución de Solicitudes relacionadas con dicho Fondo,
+del Apoyo Económico y de la resolución de Solicitudes relacionadas con dicho Apoyo Económico,
 conforme a su Convenio y Reglamento.
 c) En consecuencia, cualquier reclamación, queja, aclaración o controversia
 relacionada con uso de Plataforma, fallas técnicas, cargos, renovación/cancelación
 de Membresía o soporte deberá dirigirse exclusivamente a GIRBAZ; y cualquier
-asunto relativo a apoyos del Fondo deberá tramitarse conforme a los instrumentos y
-canales del Fondo administrado por CLUB PATA AMIGA, A.C., sin que ello la convierta
+asunto relativo a apoyos del Apoyo Económico deberá tramitarse conforme a los instrumentos y
+canales del Apoyo Económico administrado por CLUB PATA AMIGA, A.C., sin que ello la convierta
 en parte de estos Términos.
 
 
@@ -5498,8 +5498,8 @@ bajo obligaciones de confidencialidad y seguridad;
 c) Autoridades competentes, cuando exista requerimiento válido o mandato
 legal; y
 d) CLUB PATA AMIGA, A.C., únicamente si aplica el flujo del Componente
-Solidario/Fondo y siempre para finalidades vinculadas a la canalización, control,
-trazabilidad y operación del Fondo conforme a los instrumentos del mismo, sin que
+Solidario/Apoyo Económico y siempre para finalidades vinculadas a la canalización, control,
+trazabilidad y operación del Apoyo Económico conforme a los instrumentos del mismo, sin que
 ello la convierta en parte de estos Términos.
 12.5 Derechos ARCO y revocación
 
@@ -5748,15 +5748,15 @@ sus domicilios presentes o futuros o por cualquier otra causa.
 
 
 
-## REGLAMENTO DEL FONDO SOLIDARIO
+## REGLAMENTO DEL APOYO ECONÓMICO
 ## “CLUB PATA AMIGA”
 Versión: 1.0 Fecha de entrada en vigor: 15 de febrero de 2026
 Publicación: Disponible en la Plataforma “Pata Amiga”
 Vinculación: Este Reglamento forma parte del Convenio de Adhesión aceptado por el
 Titular mediante clic en “ACEPTO”, por lo que su aceptación es obligatoria para el
 Titular/Asociado Adherente.
-Responsable del Fondo: CLUB PATA AMIGA, A.C., en su carácter de administradora y
-aplicadora del Fondo Solidario.
+Responsable del Apoyo Económico: CLUB PATA AMIGA, A.C., en su carácter de administradora y
+aplicadora del Apoyo Económico.
 
 
 
@@ -5771,16 +5771,16 @@ aplicadora del Fondo Solidario.
 
 ## CAPÍTULO 1. DISPOSICIONES GENERALES
 1.1 Objeto del Reglamento
-El presente Reglamento del Fondo Solidario “Club Pata Amiga” (el “Reglamento”) tiene por
+El presente Reglamento del Apoyo Económico “Club Pata Amiga” (el “Reglamento”) tiene por
 objeto establecer, de manera clara y verificable, las reglas operativas, criterios, límites y el
 procedimiento aplicables a las Solicitudes de Apoyo que, en su caso, se tramiten con cargo
-al Fondo  Solidario, así como las bases mínimas de validación, resolución y entrega de
+al Apoyo Económico  Solidario, así como las bases mínimas de validación, resolución y entrega de
 apoyos, conforme a lo previsto en el Convenio de Adhesión aceptado por el Titular.
 1.2 Ámbito de aplicación
 El presente Reglamento es aplicable a todas las personas que, en su carácter de Titular de
 una cuenta en la Plataforma Pata Amiga, se hayan adherido como Asociados Adherentes y
 cuenten con Membresía  vigente y Cuenta  activa, y pretendan registrar mascotas y/o
-presentar Solicitudes de Apoyo con cargo al Fondo Solidario.
+presentar Solicitudes de Apoyo con cargo al Apoyo Económico.
 1.3 Carácter público y aceptación
 1.3.1 Carácter público. El Reglamento se mantiene publicado y disponible en la Plataforma
 Pata  Amiga, a efecto de que el Titular pueda consultarlo  y  verificar  con  precisión sus
@@ -5792,97 +5792,97 @@ aceptación del presente Reglamento:
 previstas en el Convenio.
 En consecuencia, el Titular se obliga a cumplir el Reglamento en su versión vigente, en los
 términos establecidos.
-1.4 Naturaleza del Fondo
-1.4.1 El Titular reconoce expresamente que el Fondo Solidario es un mecanismo solidario y
+1.4 Naturaleza del Apoyo Económico
+1.4.1 El Titular reconoce expresamente que el Apoyo Económico es un mecanismo solidario y
 asociativo administrado por CLUB PATA AMIGA, A.C., y que NO constituye:
 - un seguro, póliza, cobertura aseguradora o producto equivalente;
 - una indemnización garantizada;
 - un esquema de ahorro, inversión, rendimientos o captación; ni
 - una prestación exigible por el solo pago de la Membresía.
-1.4.2 El pago de la Membresía y/o cualquier aportación al Fondo NO  genera derecho de
+1.4.2 El pago de la Membresía y/o cualquier aportación al Apoyo Económico NO  genera derecho de
 crédito, derecho adquirido, reembolso, ni acción para exigir apoyos automáticos. Todo
 
 
 
 Apoyo  es eventual,  y su  procedencia  se  encuentra  sujeta  a  las  reglas  del  presente
-Reglamento, a la Validación y a la suficiencia del Fondo.
+Reglamento, a la Validación y a la suficiencia del Apoyo Económico.
 El  Titular  reconoce  y  acepta que  el  pago de  la  Membresía  se  integra  por:  (i)  una
 contraprestación equivalente al setenta por ciento (70%) por el uso, acceso y operación de
 la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales  asociados;  y  (ii)  una
-Aportación  al  Fondo  Solidario equivalente al treinta  por  ciento  (30%), destinada a la
+Aportación  al  Apoyo Económico  Solidario equivalente al treinta  por  ciento  (30%), destinada a la
 administración y eventual entrega de apoyos por parte de CLUB PATA AMIGA, A.C., sin que
 ello genere derecho automático, exigible o garantizado a recibir Apoyo alguno, el cual en
 todo caso será discrecional, sujeto a validación, carencias, límites, reglas  vigentes y
-suficiencia del Fondo, conforme a este Reglamento.
+suficiencia del Apoyo Económico, conforme a este Reglamento.
 1.5 Definiciones operativas
 Para efectos del presente Reglamento, los términos utilizados con mayúscula inicial tendrán
 el significado que se les asigna en el Convenio  de  Adhesión aceptado por el Titular,
-incluyendo, de manera enunciativa mas no limitativa: Fondo Solidario, Apoyo, Solicitud o
+incluyendo, de manera enunciativa mas no limitativa: Apoyo Económico, Apoyo, Solicitud o
 Solicitud de Apoyo, Validación, Titular, Asociado Adherente, Mascota registrada, Carencia,
 Límites y Suficiencia.
 En caso de duda interpretativa, prevalecerá lo dispuesto en el Convenio de Adhesión y en el
-presente Reglamento, aplicando el criterio que mejor proteja la integridad del Fondo y la
+presente Reglamento, aplicando el criterio que mejor proteja la integridad del Apoyo Económico y la
 operación del programa.
 
-## CAPÍTULO 2. INTEGRACIÓN Y ADMINISTRACIÓN DEL FONDO
+## CAPÍTULO 2. INTEGRACIÓN Y ADMINISTRACIÓN DEL APOYO ECONÓMICO
 2.1 Identificación de responsables operativos. Para efectos del presente Reglamento, y sin
 perjuicio de lo previsto en el Convenio de Adhesión:
 - “LA ASOCIACIÓN” es CLUB PATA AMIGA, A.C., en su carácter de administradora y
-aplicadora del Fondo Solidario; y
+aplicadora del Apoyo Económico; y
 - “LA  EMPRESA” es GIRBAZ,  S.A.  DE  C.V.,  en  su  carácter  de operadora  de  la
 Plataforma “Pata Amiga”, responsable de la operación técnica de la Plataforma y de
 la gestión del cobro de Membresías, así como de la canalización a LA ASOCIACIÓN
-de la porción destinada al Fondo Solidario conforme al mandato otorgado por el
+de la porción destinada al Apoyo Económico conforme al mandato otorgado por el
 ## Titular.
 
-2.2 Fuentes de integración del Fondo Solidario
-El Fondo Solidario se integra exclusivamente por:
+2.2 Fuentes de integración del Apoyo Económico
+El Apoyo Económico se integra exclusivamente por:
 
 
 
-a) La Aportación al Fondo Solidario, equivalente al treinta por ciento (30%) del precio total
+a) La Aportación al Apoyo Económico, equivalente al treinta por ciento (30%) del precio total
 de la Membresía (cuota mensual o anual) pagada por el Titular a través de la Plataforma
 “Pata Amiga”, en  los  términos  y  montos  exactos  que  se  muestren  en  la  Plataforma  al
 momento del pago y aceptación;
 b) Aportaciones voluntarias adicionales, únicamente en caso de que se habiliten en la
 Plataforma  y  se  encuentren  expresamente  identificadas  como  “aportación
-voluntaria al Fondo”, sin que por ello se genere derecho automático a Apoyo ni se
-modifique la naturaleza del Fondo; y
-c) Cualquier otro ingreso que, en su caso, reciba LA ASOCIACIÓN para el Fondo y que
+voluntaria al Apoyo Económico”, sin que por ello se genere derecho automático a Apoyo ni se
+modifique la naturaleza del Apoyo Económico; y
+c) Cualquier otro ingreso que, en su caso, reciba LA ASOCIACIÓN para el Apoyo Económico y que
 sea compatible con su naturaleza y con este Reglamento, sin convertirlo en seguro,
 captación, ahorro o inversión, ni generar derecho de crédito o exigibilidad.
 2.3 Canalización operativa
-2.3.1  Regla  general. La Aportación al Fondo Solidario se canalizará directamente a CLUB
+2.3.1  Regla  general. La Aportación al Apoyo Económico se canalizará directamente a CLUB
 PATA AMIGA, A.C. mediante la pasarela de pagos habilitada en la Plataforma “Pata Amiga”,
 a través de los mecanismos de separación/división (split) que, en su caso, se encuentren
-disponibles, de forma que el porcentaje destinado al Fondo se deposite en la cuenta
+disponibles, de forma que el porcentaje destinado al Apoyo Económico se deposite en la cuenta
 bancaria de LA ASOCIACIÓN.
 2.3.2  Mecanismo  excepcional  (mandato/encargo  supletorio). Solo en caso de que, por
 motivos técnicos, operativos, de mantenimiento, contingencia o limitaciones de la pasarela
 de pagos, no sea posible realizar la canalización directa referida en el párrafo anterior, el
 Titular autoriza que GIRBAZ,  S.A.  de  C.V. reciba el pago y transfiera a LA ASOCIACIÓN la
-porción correspondiente a la Aportación al Fondo Solidario, actuando como canalizador sin
+porción correspondiente a la Aportación al Apoyo Económico, actuando como canalizador sin
 apropiación y sin alterar la naturaleza de la aportación, conforme a los plazos y procesos
 internos de conciliación y registro que se definan para tal efecto.
 
 2.3 Exclusión expresa del componente de Membresía (70%)
-El setenta por ciento (70%) restante del precio total de la Membresía no integra el Fondo
+El setenta por ciento (70%) restante del precio total de la Membresía no integra el Apoyo Económico
 Solidario, ya que corresponde exclusivamente a la contraprestación por el uso,  acceso,
 operación  y  disfrute  de  la  Plataforma  “Pata  Amiga”  y  los  servicios/beneficios  digitales
 asociados, prestados por GIRBAZ, S.A. de C.V., en términos de sus Términos y Condiciones.
 2.4 Principio de suficiencia
-2.4.1 El Fondo Solidario opera bajo el principio de suficiencia, por lo que su capacidad para
+2.4.1 El Apoyo Económico opera bajo el principio de suficiencia, por lo que su capacidad para
 otorgar apoyos depende de su disponibilidad real y de las necesidades que se presenten.
 
 
 
-2.4.2 El Titular reconoce que puede existir insuficiencia  temporal del Fondo Solidario, lo
+2.4.2 El Titular reconoce que puede existir insuficiencia  temporal del Apoyo Económico, lo
 cual podrá derivar en rechazo de Solicitudes, listas de espera, priorización, prorrateo o
 ajustes de montos, según lo previsto en este Reglamento.
 2.5 No reembolsabilidad
-2.5.1 Las cantidades destinadas al Fondo Solidario, incluyendo la porción de la Membresía
+2.5.1 Las cantidades destinadas al Apoyo Económico, incluyendo la porción de la Membresía
 y, en su caso, aportaciones voluntarias adicionales, son no reembolsables, en virtud de la
-naturaleza solidaria y asociativa del Fondo.
+naturaleza solidaria y asociativa del Apoyo Económico.
 2.5.2 Lo anterior no limita el derecho del Titular a solicitar a LA  EMPRESA la revisión de
 cargos duplicados o cobros manifiestamente improcedentes atribuibles al procesamiento
 del pago, conforme a las políticas de operación de LA EMPRESA y del proveedor del medio
@@ -5892,20 +5892,20 @@ cargos  improcedentes, contracargos o incidencias atribuibles a la pasarela  de 
 banco emisor o al procesamiento de la Membresía, corresponde exclusivamente a GIRBAZ,
 S.A. de C.V., como operadora de la Plataforma y responsable del cobro del Plan, y deberá
 tramitarse conforme a sus Términos y Condiciones; en ningún caso dicha revisión implica
-reembolso  de  la Aportación   al   Fondo   Solidario,  la  cual  conserva  su  carácter no
+reembolso  de  la Aportación   al   Apoyo Económico   Solidario,  la  cual  conserva  su  carácter no
 reembolsable.
 2.6 Finalidad exclusiva
-2.6.1 El Fondo Solidario se destinará exclusivamente a la atención de Solicitudes de Apoyo
+2.6.1 El Apoyo Económico se destinará exclusivamente a la atención de Solicitudes de Apoyo
 y, en su caso, a la entrega de apoyos conforme a este Reglamento. Asimismo, podrá
 destinarse a los procesos estrictamente necesarios para su operación, control, validación y
-prevención  de  fraude dentro del ámbito del Fondo, sin que ello implique gastos de
+prevención  de  fraude dentro del ámbito del Apoyo Económico, sin que ello implique gastos de
 operación de la Plataforma, los cuales corresponden a LA EMPRESA.
 En congruencia con lo anterior, el setenta por ciento (70%) del precio total de la Membresía
 corresponde exclusivamente a  la  contraprestación  por  el uso,  acceso,  operación  y
 mantenimiento de la Plataforma “Pata Amiga” y los servicios/beneficios digitales asociados,
-prestados por GIRBAZ, S.A. de C.V., y no forma parte del Fondo Solidario ni puede destinarse
+prestados por GIRBAZ, S.A. de C.V., y no forma parte del Apoyo Económico ni puede destinarse
 a los fines del mismo.
-2.6.2 Queda prohibida cualquier aplicación del Fondo distinta a la prevista en el presente
+2.6.2 Queda prohibida cualquier aplicación del Apoyo Económico distinta a la prevista en el presente
 ## Reglamento.
 
 
@@ -5914,24 +5914,24 @@ a los fines del mismo.
 
 2.7 Facultades de administración y roles operativos
 2.7.1 Facultades  de  LA  ASOCIACIÓN. Corresponde a CLUB  PATA  AMIGA,  A.C., como
-administradora del Fondo Solidario:
-- definir y mantener las reglas del Fondo previstas en este Reglamento;
+administradora del Apoyo Económico:
+- definir y mantener las reglas del Apoyo Económico previstas en este Reglamento;
 - revisar, evaluar y resolver las Solicitudes de Apoyo;
 - determinar la procedencia o improcedencia de apoyos, su monto y modalidad de
 entrega, conforme a reglas, límites y suficiencia; y
 - implementar medidas de control, validación y prevención de fraude en el ámbito del
-## Fondo.
+## Apoyo Económico.
 2.7.2 Facultades de LA EMPRESA (GIRBAZ, S.A. DE C.V.). Corresponde a LA EMPRESA, como
 operadora de la Plataforma:
 - operar, administrar y dar soporte a la Plataforma “Pata Amiga”;
 - gestionar  el  cobro  de  Membresías  y  la  relación  operativa  con
 procesadores/pasarelas de pago;
-- canalizar a LA ASOCIACIÓN la porción indicada como Aportación al Fondo Solidario
+- canalizar a LA ASOCIACIÓN la porción indicada como Aportación al Apoyo Económico
 conforme al mandato del Titular y al esquema operativo vigente; y
 - mantener registros operativos y trazabilidad de pagos, canalizaciones y estatus
 visibles en Plataforma, sin que ello implique que LA EMPRESA administre o resuelva
-apoyos del Fondo, lo cual corresponde exclusivamente a LA ASOCIACIÓN.
-2.7.3 Deslinde operativo. El Titular reconoce que la administración del Fondo corresponde
+apoyos del Apoyo Económico, lo cual corresponde exclusivamente a LA ASOCIACIÓN.
+2.7.3 Deslinde operativo. El Titular reconoce que la administración del Apoyo Económico corresponde
 a LA ASOCIACIÓN, mientras que la operación técnica y cobros de membresía corresponden
 a LA EMPRESA, conforme al Convenio de Adhesión.
 En caso de que la operación, administración o titularidad de la Plataforma “Pata Amiga” sea
@@ -5943,9 +5943,9 @@ sociedad operadora de la Plataforma, sin necesidad de formalidad adicional, bast
 publicación del aviso de sustitución dentro de la Plataforma y/o la notificación electrónica
 correspondiente.
 La sustitución operará únicamente respecto de las obligaciones vinculadas a la operación
-de  la  Plataforma,  cobro  de  Membresías  y  canalización  de  la  Aportación  al  Fondo,
+de  la  Plataforma,  cobro  de  Membresías  y  canalización  de  la  Aportación  al  Apoyo Económico,
 manteniéndose intactas las facultades y responsabilidades de CLUB  PATA  AMIGA,  A.C.
-como administradora del Fondo Solidario.
+como administradora del Apoyo Económico.
 
 
 
@@ -5962,13 +5962,13 @@ aquí se deja el requisito general).
 - Cumplimiento de carencia y reglas de uso. Además de la carencia, aplican límites de
 uso por tipo de apoyo y periodos de espera/reingreso, conforme a este Reglamento.
 ## 3.2 Carencia
-- Carencia general. Para acceder a Solicitudes de Apoyo con cargo al Fondo, aplica una
+- Carencia general. Para acceder a Solicitudes de Apoyo con cargo al Apoyo Económico, aplica una
 carencia de 6 (seis) meses contados desde la activación de la Membresía (afiliación
 continua).
 - Reingreso. En caso de reingreso (reactivación posterior a baja/cancelación), se
 requerirá 6  (seis)  meses  de  espera para recuperar derechos conforme a reglas
 vigentes.
-- Regla de “reinicio” por uso (por tipo de apoyo). Si el Titular utiliza el Fondo en un
+- Regla de “reinicio” por uso (por tipo de apoyo). Si el Titular utiliza el Apoyo Económico en un
 tipo de apoyo, la carencia se reinicia por 12 (doce) meses para ese tipo de apoyo,
 en los términos operativos publicados.
 - Carencias  diferenciadas. Sin perjuicio de la Carencia  general prevista en este
@@ -5986,7 +5986,7 @@ de la activación exitosa de la Membresía y el registro validado de la mascota,
 siempre que el Código se encuentre vigente y sea aceptado por los controles
 de integridad/antifraude de la Plataforma.
 Las carencias diferenciadas no generan derecho automático a Apoyo y en todo caso se
-sujetan a la validación, límites, exclusiones, suficiencia  del  Fondo y reglas  vigentes al
+sujetan a la validación, límites, exclusiones, suficiencia  del  Apoyo Económico y reglas  vigentes al
 momento de presentar la Solicitud.
 3.3 Registro de mascotas (máximo 3)
 - Límite máximo. El Titular podrá registrar hasta 3 (tres) mascotas por Cuenta/CURP.
@@ -5998,13 +5998,13 @@ cada 12 (doce) meses por Cuenta/CURP (para desincentivar fraude y sobre-registro
 3.4 Tipos de mascota permitidos y exclusiones
 - Tipos permitidos: El proyecto se plantea para perros y gatos.
 - Exclusiones/restricciones generales (para dejar claro): Quedan fuera del alcance del
-Fondo (y por tanto no elegibles para registro con fines de apoyo) otras  especies
+Apoyo Económico (y por tanto no elegibles para registro con fines de apoyo) otras  especies
 distintas de perros y gatos, salvo que una actualización publicada en la Plataforma
 habilite expresamente otros supuestos.
 3.5 Criterios diferenciados por raza
 - Criterios    diferenciados    sin    exclusión    expresa. Podrán  aplicarse  criterios
 diferenciados  por  predisposición  genética  a  enfermedades sin   excluir   razas
-explícitamente, para equilibrar equidad y sostenibilidad del Fondo.
+explícitamente, para equilibrar equidad y sostenibilidad del Apoyo Económico.
 - Reglas  especiales  (alto  riesgo). Para las razas listadas en la política interna, se
 contemplan reglas como: carencia  extendida  6  meses para emergencias médicas,
 tope de emergencia $2,000 MXN, y un evento cada 24 meses por mascota (cuando
@@ -6013,11 +6013,11 @@ aplique y esté publicado).
 
 
 
-## CAPÍTULO 4. EVENTOS, CONCEPTOS ELEGIBLES Y EXCLUSIONES DEL FONDO
+## CAPÍTULO 4. EVENTOS, CONCEPTOS ELEGIBLES Y EXCLUSIONES DEL APOYO ECONÓMICO
 4.1 Conceptos elegibles
-4.1.1 El Fondo Solidario podrá destinar apoyos únicamente a los conceptos habilitados y
+4.1.1 El Apoyo Económico podrá destinar apoyos únicamente a los conceptos habilitados y
 descritos  en  la  Plataforma  y  en  el  presente  Reglamento.  Actualmente,  el  programa
-contempla como conceptos elegibles, sujetos a Validación y suficiencia del Fondo:
+contempla como conceptos elegibles, sujetos a Validación y suficiencia del Apoyo Económico:
 - Emergencia     médica     veterinaria;  2.
 Fallecimiento de mascota registrada;
 - Vacunación anual.
@@ -6028,13 +6028,13 @@ conforme al Convenio y este Reglamento.
 
 4.2 Exclusiones (eventos no cubiertos / conceptos no aceptados)
 4.2.1 Regla general
-No serán elegibles para Apoyo con cargo al Fondo, y podrán ser rechazadas o canceladas,
+No serán elegibles para Apoyo con cargo al Apoyo Económico, y podrán ser rechazadas o canceladas,
 las Solicitudes que se ubiquen en cualquiera de los supuestos de exclusión previstos en este
 Reglamento, en el Convenio de Adhesión, en el Reglamento de Integridad  y/o en las reglas
 operativas publicadas en la Plataforma.
 Las exclusiones previstas en este numeral son enunciativas y no limitativas, por lo que LA
 ASOCIACIÓN podrá determinar la improcedencia cuando el evento, gasto o conducta sea
-incompatible con la naturaleza del Fondo, la suficiencia, la integridad del Proyecto y/o el
+incompatible con la naturaleza del Apoyo Económico, la suficiencia, la integridad del Proyecto y/o el
 presente Reglamento.
 
 4.2.2   Preexistencias,   carencia   y   continuidad Quedan
@@ -6109,10 +6109,10 @@ exista indicio o confirmación de fraude/abuso, suplantación, uso indebido de C
 manipulación de evidencia, duplicidad de Solicitudes por el mismo hecho, o cualquier
 infracción a las reglas de integridad/antifraude publicadas.
 
-4.2.10 Insuficiencia del Fondo
+4.2.10 Insuficiencia del Apoyo Económico
 Aun cuando el evento sea elegible, podrá excluirse (o en su caso colocarse en lista de
 espera/prorrateo, si así se prevé) cualquier Solicitud cuando exista insuficiencia temporal
-del Fondo, conforme al principio de suficiencia y a las reglas vigentes.
+del Apoyo Económico, conforme al principio de suficiencia y a las reglas vigentes.
 
 
 
@@ -6131,7 +6131,7 @@ publicada en la Plataforma.
 ## CAPÍTULO 5. LÍMITES, TOPES Y REGLAS DE MONTO
 5.1 Montos máximos por tipo de Apoyo (tope por evento/tipo)
 Los montos máximos por tipo de Apoyo, siempre sujetos a Validación y a Suficiencia del
-Fondo, son los siguientes:
+Apoyo Económico, son los siguientes:
 - Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
 anual global.
 - Fallecimiento: hasta $2,000.00 (dos mil pesos 00/100 M.N.).
@@ -6156,9 +6156,9 @@ hasta el tope señalado en el numeral 5.1, siempre sujeto a Validación, reglas 
 El Apoyo por Vacuna anual podrá autorizarse una (1) sola vez por año natural, por Titular,
 hasta el tope señalado en el numeral 5.1, conforme a reglas vigentes, evidencia validada y
 ## Suficiencia.
-5.3 Límite global por beneficiario (protección del Fondo)
+5.3 Límite global por beneficiario (protección del Apoyo Económico)
 En ningún caso se podrá autorizar que un solo Titular disponga de más del 5% (cinco por
-ciento) del Fondo total disponible al momento de la resolución, aun cuando existan eventos
+ciento) del Apoyo Económico total disponible al momento de la resolución, aun cuando existan eventos
 elegibles, sin perjuicio de los topes específicos previstos en este Capítulo.
 5.4 No acumulación y control de duplicidad
 No se autorizarán Apoyos duplicados por el mismo hecho, ni Solicitudes fraccionadas o
@@ -6167,7 +6167,7 @@ realizar cruces de consistencia para prevenir abuso, incluyendo validaciones de 
 del Titular (p. ej., CURP e ID de Cuenta) y de la mascota registrada.
 5.5 Regla de Suficiencia
 Aun cuando el evento sea elegible y se cumplan requisitos, la procedencia y el monto del
-Apoyo estarán siempre sujetos a la disponibilidad real del Fondo (Suficiencia) y a la
+Apoyo estarán siempre sujetos a la disponibilidad real del Apoyo Económico (Suficiencia) y a la
 Validación correspondiente, sin generar derecho exigible.
 
 ## CAPÍTULO 6. PROCEDIMIENTO DE SOLICITUD DE APOYO
@@ -6207,7 +6207,7 @@ veterinarios): la Solicitud deberá indicar:
 mostrar  su  estatus,  de  manera  enunciativa: “recibida”, “en   validación”, “requiere
 información” o “resuelta”.
 6.6 Plazos operativos
-6.6.1 Los tiempos de revisión son orientativos y pueden variar por suficiencia del Fondo,
+6.6.1 Los tiempos de revisión son orientativos y pueden variar por suficiencia del Apoyo Económico,
 volumen de solicitudes, validación y auditoría.
 6.6.2 Como referencia operativa:
 - Revisión estimada 48 a 72 horas.
@@ -6222,7 +6222,7 @@ volumen de solicitudes, validación y auditoría.
 - verificación de evidencia (foto/video), factura/nota y descripción del evento; y
 - congruencia del servicio con el concepto solicitado.
 7.2 Facultades de verificación
-7.2.1 Para validar una Solicitud, el Comité/instancia del Fondo podrá:
+7.2.1 Para validar una Solicitud, el Comité/instancia del Apoyo Económico podrá:
 - requerir información adicional o aclaraciones;
 - solicitar confirmación del servicio mediante la información del veterinario y clínica
 proporcionada;
@@ -6259,7 +6259,7 @@ activar auditorías preventivas.
 ## CAPÍTULO 8. RESOLUCIÓN Y FORMA DE ENTREGA DEL APOYO
 8.1 Autoridad para resolver
 La determinación sobre la procedencia o improcedencia de cada Solicitud de Apoyo
-corresponde a LA ASOCIACIÓN, a través del Comité del Fondo (3 personas) , quien revisa
+corresponde a LA ASOCIACIÓN, a través del Comité del Apoyo Económico (3 personas) , quien revisa
 conforme a reglas claras y tiene la última palabra .
 8.2 Criterios de resolución (regla general)
 Para resolver, el Comité verificará, como mínimo:
@@ -6268,11 +6268,11 @@ desde la afiliación) .
 - Límites por usuario y por tipo de apoyo y regla de “1 apoyo por tipo cada 12 meses”
 ## .
 - Documentación y evidencia (foto/video; factura/nota; constancias; etc.) .
-- Suficiencia real del Fondo (cláusula de suficiencia presupuestaria y disponibilidad) .
+- Suficiencia real del Apoyo Económico (cláusula de suficiencia presupuestaria y disponibilidad) .
 - Conducta  y  controles  antifraude (historial limpio, sin fraude, agresiones o pagos
 vencidos) .
 8.3 Tipos de Apoyo y montos máximos (tope)
-Sin perjuicio de otros beneficios que se publiquen en la Plataforma, el Fondo contempla
+Sin perjuicio de otros beneficios que se publiquen en la Plataforma, el Apoyo Económico contempla
 como base los siguientes tipos de Apoyo, sujetos a Validación y Suficiencia:
 a) Emergencia  médica: hasta $3,000.00  (tres  mil  pesos  00/100  M.N.) como bolsa
 anual por Cuenta/Titular. Esta bolsa podrá utilizarse en una o varias Solicitudes y
@@ -6315,17 +6315,17 @@ veterinario (nombre y RFC del veterinario; clínica) .
 Como regla operativa, el Comité resolverá en un plazo orientativo de 2 días hábiles (sin que
 ello constituya garantía de tiempo).
 8.7 Efectos del Apoyo sobre carencias futuras (reinicio)
-Una vez utilizado un tipo de apoyo del Fondo, se reinicia la carencia por 12 meses para ese
+Una vez utilizado un tipo de apoyo del Apoyo Económico, se reinicia la carencia por 12 meses para ese
 tipo de apoyo .
 
 
 
-8.8 Comité del Fondo: integración, quórum y facultades
-- Integración. La resolución de Solicitudes de Apoyo con cargo al Fondo Solidario será
-realizada por el Comité  del  Fondo, órgano interno de CLUB  PATA  AMIGA,  A.C.,
+8.8 Comité del Apoyo Económico: integración, quórum y facultades
+- Integración. La resolución de Solicitudes de Apoyo con cargo al Apoyo Económico será
+realizada por el Comité  del  Apoyo Económico, órgano interno de CLUB  PATA  AMIGA,  A.C.,
 integrado por tres  (3)  personas, designadas conforme a las reglas internas de LA
 ## ASOCIACIÓN.
-- Sesiones y medios. El Comité del Fondo podrá sesionar de manera presencial o a
+- Sesiones y medios. El Comité del Apoyo Económico podrá sesionar de manera presencial o a
 distancia, mediante medios electrónicos, videollamada o cualquier otro medio
 digital que permita la identificación de sus integrantes y la trazabilidad de sus
 determinaciones.
@@ -6338,7 +6338,7 @@ c) En caso de empate (solo posible cuando sesionen los tres integrantes y
 existan  votos  divididos),  prevalecerá  el  criterio  que  determine  LA
 ASOCIACIÓN conforme a sus reglas internas; en todo caso, podrá diferirse la
 decisión para recabar información adicional.
-- Facultades mínimas. Para el cumplimiento de este Reglamento, el Comité del Fondo
+- Facultades mínimas. Para el cumplimiento de este Reglamento, el Comité del Apoyo Económico
 tendrá, como mínimo, las siguientes facultades:
 a) Requerir  información  y  evidencia  adicional al  Titular/Usuario,  cuando
 resulte necesario para la Validación;
@@ -6348,7 +6348,7 @@ operación  (logs)  disponibles  en  la  Plataforma,  siempre  conforme  a  la
 normativa aplicable de protección de datos y a los instrumentos vigentes;
 c) Determinar la procedencia o improcedencia de las Solicitudes y, en su caso,
 fijar condiciones razonables de entrega conforme a este Reglamento y a la
-suficiencia del Fondo;
+suficiencia del Apoyo Económico;
 d) Ordenar  la  pausa,  suspensión  o  cancelación del trámite de una Solicitud
 cuando existan inconsistencias relevantes, falta de evidencia o indicios de
 fraude/abuso; y
@@ -6357,13 +6357,13 @@ fraude/abuso; y
 
 e) Vetar  o  rechazar Solicitudes cuando se actualicen supuestos de exclusión,
 incumplimiento, fraude/abuso o violación al Reglamento de Integridad.
-- Trazabilidad. Las determinaciones del Comité del Fondo deberán documentarse en
+- Trazabilidad. Las determinaciones del Comité del Apoyo Económico deberán documentarse en
 un registro interno (bitácora) que permita identificar, al menos: fecha, integrantes
 participantes,  estatus  de  la  Solicitud,  determinación  adoptada  y  fundamento
 operativo aplicable.
-- Sin garantía. La existencia del Comité del Fondo y sus procesos no implican garantía
+- Sin garantía. La existencia del Comité del Apoyo Económico y sus procesos no implican garantía
 de otorgamiento de Apoyo, el cual se mantiene sujeto a validación, reglas vigentes,
-límites y suficiencia del Fondo, conforme a este Reglamento.
+límites y suficiencia del Apoyo Económico, conforme a este Reglamento.
 
 ## CAPÍTULO 9. RECHAZO, LISTA DE ESPERA Y PRORRATEO/AJUSTES
 9.1 Supuestos de improcedencia o rechazo
@@ -6388,9 +6388,9 @@ conforme a su revisión .
 
 
 
-9.3 Lista de espera por insuficiencia del Fondo
+9.3 Lista de espera por insuficiencia del Apoyo Económico
 Aun cuando la Solicitud cumpla requisitos, el Apoyo solo procede si hay recursos suficientes;
-si el Fondo está agotado, se genera lista de espera .
+si el Apoyo Económico está agotado, se genera lista de espera .
 Los criterios  de  atención  y  liberación de casos en lista de espera deberán publicarse de
 manera clara en la Plataforma (Reglamento público y verificable), y se entienden aceptados
 por el Titular al adherirse.
@@ -6414,7 +6414,7 @@ congruencia con la naturaleza solidaria del programa y con la obligación estatu
 cuotas y aportaciones no recuperables en esta categoría.
 10.3. No generan derecho automático
 10.3.1  Las  aportaciones  voluntarias  adicionales no  generan por  sí  mismas  derecho
-adquirido, garantía, ni exigibilidad de apoyos; únicamente incrementan el Fondo y, por ende,
+adquirido, garantía, ni exigibilidad de apoyos; únicamente incrementan el Apoyo Económico y, por ende,
 pueden fortalecer su suficiencia, pero cualquier Apoyo seguirá sujeto a reglas, Validación y
 disponibilidad.
 
@@ -6429,11 +6429,11 @@ de la Plataforma.
 ## CAPÍTULO 11. RELACIÓN CON REGLAMENTO ANTIFRAUDE Y MEDIDAS POR FRAUDE
 11.1 Reglamento Antifraude público en Plataforma
 11.1.1 Existe un Reglamento Antifraude publicado en la Plataforma, que establece políticas
-de prevención y detección de fraude en la operación del Fondo, incluyendo medidas contra
+de prevención y detección de fraude en la operación del Apoyo Económico, incluyendo medidas contra
 fraudes sistemáticos y colusión con proveedores.
 11.1.2 El Titular reconoce que, al aceptar el Convenio (click “ACEPTO”), queda  adherido
 también a dicho Reglamento Antifraude y a sus actualizaciones publicadas.
-11.2. Conductas prohibidas relevantes al Fondo
+11.2. Conductas prohibidas relevantes al Apoyo Económico
 Sin perjuicio de lo previsto en el Reglamento Antifraude, se consideran conductas prohibidas
 ## (enunciativas):
 - presentar evidencia apócrifa o alterada;
@@ -6466,7 +6466,7 @@ legales por hechos posiblemente constitutivos de ilícitos o responsabilidades.
 ## CAPÍTULO 12. CONTROLES DE LICITUD DE RECURSOS (PLD / KYC BÁSICO)
 12.1 Declaración de licitud (Titular)
 12.1.1 El Titular declara que las cantidades pagadas por Membresía y/o aportaciones
-(incluidas las canalizadas al Fondo) provienen de fuentes lícitas.
+(incluidas las canalizadas al Apoyo Económico) provienen de fuentes lícitas.
 12.2 Facultad de requerir información razonable
 12.2.1 La ASOCIACIÓN y/o LA EMPRESA podrán solicitar información razonable para fines
 de identificación y control (KYC básico), incluyendo confirmación de identidad, datos de
@@ -6479,7 +6479,7 @@ contacto, y/o información de pago, cuando:
 - suspender temporalmente la evaluación;
 - requerir información adicional; y/o
 - cancelar la Solicitud y/o la Cuenta, conforme a reglas vigentes y a la protección del
-## Fondo.
+## Apoyo Económico.
 12.4 Cooperación con autoridades conforme a derecho
 12.4.1 En su caso, se colaborará con autoridades competentes conforme a las leyes
 mexicanas aplicables y requerimientos válidos.
@@ -6494,7 +6494,7 @@ mexicanas aplicables y requerimientos válidos.
 - Si el Titular solicita baja/cancelación sin  adeudos y con Membresía vigente al
 momento de ingresar la Solicitud, la  Solicitud  ingresada  antes  de  la  baja podrá
 continuar su evaluación de manera condicionada a: (i) no existir indicios de fraude,
-(ii) completar validaciones pendientes, y (iii) suficiencia del Fondo.
+(ii) completar validaciones pendientes, y (iii) suficiencia del Apoyo Económico.
 - En todo caso, no habrá devolución de cuotas pasadas y el acceso a beneficios se rige
 por reglas vigentes.
 13.1.2 Suspensión preventiva (validación/antifraude).
@@ -6529,9 +6529,9 @@ Solicitudes ingresadas antes de la baja y sujetas a validación y suficiencia.
 14.1 Actualización del Reglamento
 14.1.1 El presente Reglamento podrá ser actualizado por LA ASOCIACIÓN, y/o en lo
 conducente por LA EMPRESA respecto de aspectos operativos de Plataforma, de  manera
-anual y/o cuando  resulte  necesario para asegurar la sostenibilidad del Fondo, fortalecer
+anual y/o cuando  resulte  necesario para asegurar la sostenibilidad del Apoyo Económico, fortalecer
 controles antifraude, ajustar procesos, o reflejar cambios operativos del Proyecto, siempre
-respetando la naturaleza del Fondo y el Convenio de Adhesión.
+respetando la naturaleza del Apoyo Económico y el Convenio de Adhesión.
 14.2 Notificación de actualizaciones
 14.2.1  Toda  actualización  será  comunicada  al  Titular  por  cualquiera  de  los  medios
 siguientes:
@@ -6557,11 +6557,11 @@ momento de presentar la Solicitud en la Plataforma.
 
 
 ## CAPÍTULO 15. ATENCIÓN, ACLARACIONES Y CANALES DE CONTACTO
-15.1 Canal de contacto del Fondo (LA ASOCIACIÓN)
-15.1.1 Para asuntos relacionados con el Fondo Solidario, incluyendo dudas generales,
+15.1 Canal de contacto del Apoyo Económico (LA ASOCIACIÓN)
+15.1.1 Para asuntos relacionados con el Apoyo Económico, incluyendo dudas generales,
 estatus y requerimientos de información de Solicitudes (cuando proceda), el canal de
 contacto de LA ASOCIACIÓN será el siguiente correo:
-Correo del Fondo (LA ASOCIACIÓN): fondo@pataamiga.com
+Correo del Apoyo Económico (LA ASOCIACIÓN): apoyo económico@pataamiga.com
 15.2 Aclaraciones de pagos y Membresía (LA EMPRESA)
 15.2.1 El Titular reconoce que cualquier aclaración relacionada con:
 - cobros, cargos, contracargos o devoluciones del procesador de pago;
@@ -6575,7 +6575,7 @@ al correo: Correo de Aclaraciones (LA EMPRESA): girbaz31@gmail.com
 16.1.1 Este Reglamento se interpreta de manera sistemática con el Convenio de Adhesión
 del Asociado Adherente y con los Términos  y  Condiciones de la Plataforma. En caso de
 contradicción entre documentos:
-a) para materias de Fondo Solidario, Solicitudes, carencia, validación, límites, exclusiones
+a) para materias de Apoyo Económico, Solicitudes, carencia, validación, límites, exclusiones
 y suficiencia, prevalecerá el Convenio de Adhesión y este
 Reglamento; y
 b) para materias de uso de Plataforma, Membresía, cobros, cargos recurrentes, soporte,
@@ -6605,7 +6605,7 @@ aceptación  y  adhesión  se  perfecciona  mediante:  (i)  la  aceptación  ele
 Plataforma y/o la renovación de la Membresía, en términos de los instrumentos vigentes.
 16.6 Actualizaciones, versión aplicable y aceptación por continuidad.
 LA ASOCIACIÓN podrá actualizar este Reglamento cuando resulte necesario por operación,
-suficiencia del Fondo, medidas de integridad o cambios normativos. Las actualizaciones se
+suficiencia del Apoyo Económico, medidas de integridad o cambios normativos. Las actualizaciones se
 publicarán en la Plataforma, señalando versión y fecha de entrada en vigor. La versión
 aplicable a una Solicitud será la que se encuentre vigente al momento de su presentación,
 salvo que los instrumentos vigentes indiquen expresamente otra regla. La continuidad en el
@@ -6660,15 +6660,15 @@ consulta en la Plataforma “Pata Amiga”. Se entiende aceptado por el Titular:
 conforme a los Términos y Condiciones de GIRBAZ; y/o
 - mediante la continuidad de uso y/o pago de la Membresía; y/o
 - mediante la aceptación del Convenio de Adhesión y del Reglamento
-del Fondo cuando corresponda, para efectos del mecanismo solidario.
+del Apoyo Económico cuando corresponda, para efectos del mecanismo solidario.
 
 Sujetos obligados
 Este Reglamento es aplicable y obligatorio para:
 - GIRBAZ, S.A. de C.V. (Operación de Plataforma, prestación de servicios
 digitales, cobros, soporte, seguridad y controles antifraude operativos.)
-- CLUB PATA AMIGA, A.C. (Administración del Fondo Solidario,
+- CLUB PATA AMIGA, A.C. (Administración del Apoyo Económico,
 validación y resolución de Solicitudes conforme a su Convenio y Reglamento
-del Fondo, y controles de integridad en el ámbito del Fondo.)
+del Apoyo Económico, y controles de integridad en el ámbito del Apoyo Económico.)
 - Titulares / Usuarios / Asociados Adherentes (Obligaciones de
 veracidad, uso permitido, licitud de recursos, prevención de fraude/abuso, y
 cumplimiento de este Reglamento y demás instrumentos publicados.)
@@ -6750,7 +6750,7 @@ resoluciones vinculadas al Proyecto.
 
 Artículo 2. Ámbito de aplicación Este Reglamento es aplicable a:
 - todo uso de la Plataforma y de los Servicios prestados por GIRBAZ;
-- toda interacción relacionada con el Fondo, incluyendo Solicitudes,
+- toda interacción relacionada con el Apoyo Económico, incluyendo Solicitudes,
 validaciones, determinaciones, auditorías y entrega de apoyos cuando
 proceda;
 
@@ -6792,7 +6792,7 @@ medidas razonables de seguridad, conforme a la normativa aplicable.
 ## Artículo 5. Definiciones
 Para efectos del presente Reglamento, los términos que a continuación se indican
 tendrán el significado siguiente, en congruencia con los instrumentos vigentes del
-Proyecto (Términos y Condiciones, Convenio de Adhesión y Reglamento del Fondo),
+Proyecto (Términos y Condiciones, Convenio de Adhesión y Reglamento del Apoyo Económico),
 sin perjuicio de otras definiciones que en dichos instrumentos resulten aplicables:
 - Abuso: uso indebido o contrario a la finalidad del Proyecto y sus reglas,
 aun sin configurar fraude pleno, incluyendo intentos de eludir controles o
@@ -6800,18 +6800,18 @@ aprovechar vacíos operativos.
 - Aliados / Proveedores: terceros vinculados al Proyecto para validación,
 prestación de servicios, confirmación de información o entrega de apoyos
 (cuando aplique).
-- Apoyo: entrega o aplicación de recursos del Fondo, cuando proceda,
+- Apoyo: entrega o aplicación de recursos del Apoyo Económico, cuando proceda,
 conforme a reglas vigentes y suficiencia.
 - Asociado Adherente: Titular que, adicionalmente, acepta el
 instrumento de adhesión correspondiente para participar en el mecanismo
 solidario administrado por la A.C.
 - Carencia: periodo mínimo de antigüedad o espera aplicable antes de
-poder solicitar apoyos, conforme al instrumento del Fondo.
+poder solicitar apoyos, conforme al instrumento del Apoyo Económico.
 - Cuenta: perfil digital del Titular/Usuario dentro de la Plataforma.
 - Evidencia: documentos, imágenes, videos, comprobantes, reportes,
 facturas, constancias, registros digitales y demás elementos aportados o
 generados para acreditar hechos o requisitos.
-- Fondo: Fondo Solidario administrado por CLUB PATA AMIGA, A.C.,
+- Apoyo Económico: Apoyo Económico administrado por CLUB PATA AMIGA, A.C.,
 sujeto a reglas de suficiencia, carencias, límites, validación y demás criterios
 vigentes.
 - Fraude: conducta dolosa destinada a obtener un beneficio indebido o
@@ -6828,9 +6828,9 @@ interfaces y funcionalidades.
 - Proveedor de pagos: tercero que procesa pagos, cargos recurrentes,
 confirmaciones o devoluciones cuando proceda.
 - Solicitud: trámite o petición presentada por el Titular/Asociado
-Adherente dentro de la Plataforma, en particular las relacionadas con el Fondo
+Adherente dentro de la Plataforma, en particular las relacionadas con el Apoyo Económico
 cuando aplique.
-- Suficiencia: disponibilidad real del Fondo para atender solicitudes, sin
+- Suficiencia: disponibilidad real del Apoyo Económico para atender solicitudes, sin
 generar derecho automático o exigible.
 - Suspensión / Bloqueo / Cancelación: medidas operativas aplicadas a
 la Cuenta o Membresía, de manera temporal o definitiva, conforme a este
@@ -6856,17 +6856,17 @@ suspensión/bloqueo/cancelación conforme a instrumentos vigentes.
 
 
 - CLUB PATA AMIGA, A.C. es responsable de la integridad en el ámbito
-del Fondo, incluyendo:
-a) validación y resolución de Solicitudes con cargo al Fondo;
+del Apoyo Económico, incluyendo:
+a) validación y resolución de Solicitudes con cargo al Apoyo Económico;
 b) criterios de control y auditoría aplicables a apoyos; y
 c) determinaciones relacionadas con elegibilidad, suficiencia y
-medidas vinculadas al Fondo, conforme al Convenio de Adhesión y
-Reglamento del Fondo.
+medidas vinculadas al Apoyo Económico, conforme al Convenio de Adhesión y
+Reglamento del Apoyo Económico.
 - La separación funcional anterior se establece para evitar confusión de
 responsabilidades, de manera que:
 a) controversias de Plataforma/cobros/soporte corresponden a
 GIRBAZ; y
-b) decisiones y medidas asociadas al Fondo corresponden a la
+b) decisiones y medidas asociadas al Apoyo Económico corresponden a la
 A.C., sin perjuicio de la colaboración operativa permitida.
 
 Artículo 7. Responsable/Encargado de Cumplimiento
@@ -6878,7 +6878,7 @@ interno con facultades para:
 - emitir determinaciones operativas en materia de integridad
 dentro del ámbito de GIRBAZ.
 - CLUB PATA AMIGA, A.C. designará, cuando corresponda, una figura
-responsable  para coordinar las medidas de integridad en el ámbito del Fondo,
+responsable  para coordinar las medidas de integridad en el ámbito del Apoyo Económico,
 incluyendo verificación y auditoría, y para canalizar medidas internas
 conforme a sus instrumentos.
 - Gancho LFPIORPI: En caso de que se actualicen supuestos legales
@@ -6888,16 +6888,16 @@ designaciones y procedimientos necesarios para el cumplimiento normativo
 
 
 
-correspondiente, sin que ello implique modificar la naturaleza del Fondo ni
+correspondiente, sin que ello implique modificar la naturaleza del Apoyo Económico ni
 convertirlo en un producto financiero.
 
 ## Artículo 8. Comité
-- Para casos relevantes, podrá existir un Comité del Fondo y de
+- Para casos relevantes, podrá existir un Comité del Apoyo Económico y de
 Integridad, como órgano interno de revisión, con funciones de análisis,
 auditoría, validación reforzada y emisión de determinaciones internas en
-asuntos relacionados con: (i) el Fondo Solidario y sus Solicitudes; y/o (ii)
+asuntos relacionados con: (i) el Apoyo Económico y sus Solicitudes; y/o (ii)
 incidentes de fraude, abuso, licitud de recursos (PLD) e
-integridad/anticorrupción vinculados con la Plataforma y/o el Fondo.
+integridad/anticorrupción vinculados con la Plataforma y/o el Apoyo Económico.
 - Integración y quórum: El Comité se integrará por tres (3) personas,
 designadas por CLUB PATA AMIGA, A.C. y/o por GIRBAZ, S.A. de C.V. según la
 materia del caso. Podrá sesionar de manera presencial o a distancia
@@ -6924,7 +6924,7 @@ b) la contratación y pago de la Membresía;
 
 c) el registro de información y mascotas; y
 d) la presentación y tramitación de Solicitudes (incluyendo
-aquellas vinculadas al Fondo, cuando aplique).
+aquellas vinculadas al Apoyo Económico, cuando aplique).
 - Las medidas antifraude podrán aplicarse a nivel de Cuenta,
 Membresía, Solicitud, evidencia, proveedor y/o dispositivo, según
 corresponda.
@@ -6990,10 +6990,10 @@ de actividad, cambios de perfil, IP, dispositivo, logs);
 d) validar con terceros cuando aplique, tales como proveedores/aliados,
 clínicas o prestadores de servicios, únicamente para confirmar autenticidad o
 consistencia de la evidencia;
-e) activar revisión reforzada por el Comité de Integridad y Fondo
+e) activar revisión reforzada por el Comité de Integridad y Apoyo Económico
 Solidario cuando el caso sea relevante; y
 f) realizar auditorías aleatorias o dirigidas conforme al Reglamento del
-Fondo y a este Reglamento de Integridad.
+Apoyo Económico y a este Reglamento de Integridad.
 
 Artículo 13. Medidas antifraude (escalonadas)
 En función de la gravedad, recurrencia y riesgo, podrán aplicarse medidas
@@ -7068,7 +7068,7 @@ Vulnerable por recepción de donativos conforme a la LFPIORPI.
 - Los recursos utilizados para el pago de la Membresía/Plan y cualquier
 aporte relacionado provienen de fuentes lícitas; y
 - No utilizará la Plataforma, el Proyecto, ni cualquier mecanismo
-vinculado al Fondo para fines ilícitos.
+vinculado al Apoyo Económico para fines ilícitos.
 - Prohibición expresa. Queda prohibido usar la Plataforma/Proyecto para realizar u
 ocultar operaciones con recursos de procedencia ilícita o para encubrir su origen,
 destino o titularidad, en términos de la regulación penal aplicable.
@@ -7118,7 +7118,7 @@ c) Suspender/bloquear temporalmente el acceso o la cuenta;
 
 
 d) Cancelar por incumplimiento grave;
-e) Negar la canalización de cualquier componente al Fondo mientras se
+e) Negar la canalización de cualquier componente al Apoyo Económico mientras se
 verifica la licitud, cuando aplique.
 Si existen indicios relevantes, se prevé la posibilidad de abstenerse de realizar el
 acto u operación o proporcionar el servicio relacionado, y actuar conforme a las
@@ -7198,7 +7198,7 @@ tolerancia frente a cualquier acto de corrupción, soborno, cohecho, extorsión,
 colusión, conflicto de interés no revelado o intento de influir indebidamente en
 decisiones operativas, validaciones o resoluciones.
 - Esta política es obligatoria para: GIRBAZ, CLUB PATA AMIGA, A.C., el
-Comité de Integridad y Fondo Solidario, personal, aliados, proveedores y
+Comité de Integridad y Apoyo Económico, personal, aliados, proveedores y
 Titulares/Usuarios/Asociados Adherentes, en el ámbito de sus interacciones
 con el Proyecto.
 
@@ -7209,7 +7209,7 @@ especie, a favor de cualquier persona, con el fin de:
 a) acelerar o destrabar trámites, validaciones o procesos;
 b) obtener aprobaciones, accesos, excepciones, descuentos,
 devoluciones o condiciones preferentes no autorizadas;
-c) influir, alterar o condicionar la evaluación de una Solicitud del Fondo o
+c) influir, alterar o condicionar la evaluación de una Solicitud del Apoyo Económico o
 la determinación de procedencia/improcedencia;
 d) modificar resultados, evidencias, plazos, prioridades, listas de espera o
 montos;
@@ -7242,10 +7242,10 @@ indirectamente) regalos, atenciones, hospitalidad, viajes, reembolsos,
 invitaciones o cualquier beneficio que pueda influir, aparentar influir o
 comprometer la independencia en decisiones del Proyecto, incluyendo
 validaciones, revisiones, resoluciones, priorizaciones o determinaciones
-relacionadas con la Plataforma y/o el Fondo.
+relacionadas con la Plataforma y/o el Apoyo Económico.
 - Prohibición total. La prohibición aplica en todo caso para:
 a) personal de GIRBAZ y de CLUB PATA AMIGA, A.C.;
-b) integrantes del Comité de Integridad y Fondo Solidario;
+b) integrantes del Comité de Integridad y Apoyo Económico;
 c) aliados y proveedores; y
 
 
@@ -7278,7 +7278,7 @@ influir) en su imparcialidad.
 - Obligación de revelar. Personal, integrantes del Comité, aliados y
 proveedores deberán revelar de inmediato cualquier conflicto real o potencial
 al Responsable de Cumplimiento de GIRBAZ y, cuando se relacione con el
-Fondo, al Responsable del Fondo de CLUB PATA AMIGA, A.C., mediante
+Apoyo Económico, al Responsable del Apoyo Económico de CLUB PATA AMIGA, A.C., mediante
 correo electrónico a: transparencia@pataamiga.mx. La omisión de revelar o la
 participación pese al conflicto podrá dar lugar a la exclusión del proceso de
 revisión/decisión, la revisión interna de la determinación adoptada y la
@@ -7292,7 +7292,7 @@ participar en cualquier revisión, validación, recomendación o decisión
 relacionada, y se asentará constancia interna de la excusa.
 - Trazabilidad. Las decisiones relevantes deberán ser trazables y,
 cuando aplique, sujetas a revisión reforzada por el Comité de Integridad y
-## Fondo Solidario.
+## Apoyo Económico.
 
 Artículo 22. Terceros, aliados y proveedores (debida diligencia proporcional)
 - GIRBAZ y la A.C. podrán aplicar debida diligencia proporcional para alta
@@ -7403,7 +7403,7 @@ formal o cuando proceda conforme a derecho.
 a) las finalidades del Proyecto;
 b) medidas razonables de seguridad; y
 c) lo previsto en los instrumentos aplicables (Términos y
-Condiciones, Convenio, Reglamento del Fondo, Avisos de Privacidad).
+Condiciones, Convenio, Reglamento del Apoyo Económico, Avisos de Privacidad).
 - El Titular reconoce que, para fines de integridad, ciertos datos podrán
 ser utilizados en revisión interna por responsables y/o el Comité, con base en
 necesidad y proporcionalidad.
@@ -7468,11 +7468,11 @@ de México, C.P. 54900.
 mantenga al menos un medio electrónico funcional y se informe dentro de la
 ## Plataforma.
 
-Artículo 31. Contacto para integridad y asuntos del Fondo (CLUB PATA AMIGA,
+Artículo 31. Contacto para integridad y asuntos del Apoyo Económico (CLUB PATA AMIGA,
 ## A.C.)
-- Para reportes relacionados con integridad vinculada al Fondo (fraude/abuso en
+- Para reportes relacionados con integridad vinculada al Apoyo Económico (fraude/abuso en
 Solicitudes, validación, conductas indebidas, conflicto de interés, y cualquier asunto
-de integridad en la administración del Fondo), el Titular, aliados o proveedores podrán
+de integridad en la administración del Apoyo Económico), el Titular, aliados o proveedores podrán
 contactar a CLUB PATA AMIGA, A.C. en:
 -  Correo: legal@pataamiga.mx
 - Domicilio para notificaciones: Calle Gustavo Díaz Ordaz, Número Exterior 18,
@@ -7482,7 +7482,7 @@ Número Interior 1, Colonia San Juan, Municipio de Tultitlán, Estado de México
 
 
 - Para evitar duplicidades, cuando el asunto sea cobro/membresía/plataforma,
-deberá canalizarse a GIRBAZ; cuando sea integridad del Fondo, a la A.C., sin
+deberá canalizarse a GIRBAZ; cuando sea integridad del Apoyo Económico, a la A.C., sin
 perjuicio de que ambos coordinen internamente conforme a este Reglamento.
 
 Artículo 32. Regla de “perfil actualizado” como notificación efectiva
@@ -7525,7 +7525,7 @@ c) Suspensión temporal de funcionalidades, acceso o Cuenta;
 d) Bloqueo temporal de la Cuenta y/o del acceso a servicios;
 e) Cancelación definitiva de la Cuenta/Membresía y/o terminación
 del acceso a la Plataforma;
-f) Rechazo o cancelación definitiva de Solicitudes del Fondo
+f) Rechazo o cancelación definitiva de Solicitudes del Apoyo Económico
 relacionadas con el caso;
 g) Retención preventiva de beneficios o no liberación de apoyos
 hasta concluir verificación (cuando aplique);
@@ -7536,7 +7536,7 @@ existan elementos suficientes.
 Reglamento, salvo en supuestos de riesgo crítico o fraude grave, donde podrá
 aplicarse cancelación inmediata para prevenir daño o elusión.
 
-Artículo 35. Efectos en el Fondo y en la Plataforma
+Artículo 35. Efectos en el Apoyo Económico y en la Plataforma
 - Sospecha o investigación en curso. Cuando exista sospecha
 razonable, verificación o investigación por integridad, podrán aplicarse las
 siguientes consecuencias:
@@ -7556,13 +7556,13 @@ de soborno o cualquier conducta que comprometa la integridad del Proyecto,
 se podrán aplicar de forma inmediata:
 a) Cancelación definitiva de la Cuenta/Membresía en Plataforma
 (por GIRBAZ);
-b) Rechazo inmediato y definitivo de Solicitudes del Fondo
+b) Rechazo inmediato y definitivo de Solicitudes del Apoyo Económico
 relacionadas
 (por la A.C.);
 c) Registro del caso en la lista interna de integridad; y
 d) Resguardo de evidencias y bitácoras para auditoría y, en su
 caso, acciones legales.
-- Coordinación. Si un caso impacta a la Plataforma y al Fondo, GIRBAZ y
+- Coordinación. Si un caso impacta a la Plataforma y al Apoyo Económico, GIRBAZ y
 la A.C. podrán coordinar medidas, compartiendo únicamente la información
 necesaria y proporcional, conforme a los avisos de privacidad y a los
 instrumentos aplicables.
@@ -7583,7 +7583,7 @@ de cuenta, correo, teléfono, dispositivo, IP, medios de pago tokenizados, y/o
 vínculos técnicos de consistencia, exclusivamente para:
 a) detectar elusión de sanciones mediante nuevas cuentas;
 b) prevenir reincidencia y fraude sistemático;
-c) proteger la integridad del Fondo y la Plataforma.
+c) proteger la integridad del Apoyo Económico y la Plataforma.
 - Periodos de bloqueo. Sin perjuicio de otras medidas, se podrán aplicar
 los siguientes periodos de bloqueo:
 a) Bloqueo de 30 (treinta) días naturales:
@@ -7608,7 +7608,7 @@ destinadas a afectar sistemáticamente el Proyecto.
 - Criterios para determinar el bloqueo aplicable. Para elegir el periodo
 aplicable se considerarán: gravedad del hecho, impacto, recurrencia,
 cooperación del Titular, suficiencia de evidencia, riesgo de elusión y
-protección del Fondo.
+protección del Apoyo Económico.
 
 
 
@@ -7665,15 +7665,15 @@ entre los instrumentos del Proyecto, en lo que resulte aplicable:
 todo lo relativo a uso de Plataforma, Membresía, cobros, cancelación, soporte y
 operación digital;
 - Convenio de Adhesión celebrado con CLUB PATA AMIGA, A.C., aplicable a la
-adhesión como Asociado Adherente, la aportación al Fondo y las condiciones de
-participación vinculadas al Fondo;
-- Reglamento del Fondo Solidario “Club Pata Amiga”, para requisitos,
+adhesión como Asociado Adherente, la aportación al Apoyo Económico y las condiciones de
+participación vinculadas al Apoyo Económico;
+- Reglamento del Apoyo Económico “Club Pata Amiga”, para requisitos,
 carencias, límites, elegibilidad, procedimiento y resolución de Solicitudes de
 Apoyo; y
 - Este Reglamento de Integridad, como marco transversal aplicable a
 todos los anteriores en materia de prevención y detección de fraude/abuso,
 licitud de recursos y reglas de integridad, sin ampliar derechos de apoyo,
-sin generar exigibilidad y sin convertir la Membresía ni el Fondo en un
+sin generar exigibilidad y sin convertir la Membresía ni el Apoyo Económico en un
 esquema de seguro, indemnización garantizada, ahorro o inversión.
 
 
@@ -7718,7 +7718,7 @@ El presente Reglamento, Versión 1.0, entra en vigor el 15 de febrero de 2026, y
 aplicable a partir de esa fecha para:
 a) el uso de la Plataforma por Titulares/Usuarios;
 b) la operación de validaciones y medidas de integridad; y
-c) la administración y resolución de Solicitudes del Fondo, en lo que
+c) la administración y resolución de Solicitudes del Apoyo Económico, en lo que
 corresponda.
 
 ## Artículo 46. Aceptación
@@ -7731,7 +7731,7 @@ Membresía/Plan conforme a los instrumentos vigentes.
 Artículo 47. Interpretación y separabilidad
 - La interpretación del presente Reglamento deberá realizarse de forma
 sistemática con los Términos y Condiciones, el Convenio de Adhesión y el
-Reglamento del Fondo.
+Reglamento del Apoyo Económico.
 - Si alguna disposición se declara inválida o inaplicable por autoridad
 competente, dicha determinación no afectará la validez del resto del
 Reglamento, el cual permanecerá vigente en lo conducente.
@@ -7739,7 +7739,7 @@ Reglamento, el cual permanecerá vigente en lo conducente.
 Artículo 48. Actualizaciones y versión aplicable
 La versión aplicable será la publicada como vigente en la Plataforma al momento de
 los hechos, actos o conductas correspondientes, y/o la que se encuentre vigente al
-momento de la Solicitud cuando el asunto se relacione con el Fondo, conforme a la
+momento de la Solicitud cuando el asunto se relacione con el Apoyo Económico, conforme a la
 jerarquía y reglas de prevalencia previstas en este Reglamento.
 
 
@@ -7787,7 +7787,7 @@ Proyecto “Pata Amiga” – https://www.pataamiga.mx/
 Responsable: GIRBAZ, S.A. de C.V. (operación de la
 ## Plataforma) Contacto:
 girbaz31@gmail.com
-Contacto A.C. (temas Fondo/Asociación):
+Contacto A.C. (temas Apoyo Económico/Asociación):
 legal@pataamiga.mx Versión: 1.0
 Fecha de publicación y entrada en vigor: 15 de febrero de
 ## 2026
@@ -7915,7 +7915,7 @@ aplicable desde su fecha de publicación.
 ## 9) Contacto
 Para dudas o solicitudes relacionadas con cookies y privacidad:
 -  GIRBAZ (Plataforma): girbaz31@gmail.com •  CLUB PATA AMIGA, A.C.
-(temas del Fondo/Asociación): legal@pataamiga.mx
+(temas del Apoyo Económico/Asociación): legal@pataamiga.mx
 
 
 
@@ -7971,8 +7971,8 @@ Convenio mediante el mecanismo de aceptación electrónica.
 2.4 “Asociado Adherente”: El TITULAR que, habiendo aceptado el presente
 Convenio, queda incorporado a LA ASOCIACIÓN en la modalidad de asociado
 adherente, para los fines previstos en este instrumento.
-2.5 “Fondo Solidario”: Mecanismo solidario y asociativo administrado por CLUB
-PATA AMIGA, A.C., integrado por las Aportaciones al Fondo y, en su caso, otras
+2.5 “Apoyo Económico”: Mecanismo solidario y asociativo administrado por CLUB
+PATA AMIGA, A.C., integrado por las Aportaciones al Apoyo Económico y, en su caso, otras
 fuentes permitidas conforme a este Reglamento, sujeto a reglas de Suficiencia,
 Carencias, Límites, Validación y demás criterios vigentes, sin constituir seguro ni
 indemnización garantizada.
@@ -7982,13 +7982,13 @@ operación y disfrute de los beneficios y funcionalidades de la Plataforma opera
 por GIRBAZ. La Membresía no constituye ni se interpreta como “prima”,
 “cobertura”, “póliza”, “seguro” ni equivalente, ni genera por sí misma derecho
 automático a recibir Apoyos.
-2.7 “Aportación al Fondo o Aportación al Fondo Solidario”: Parte del precio de la
+2.7 “Aportación al Apoyo Económico o Aportación al Apoyo Económico”: Parte del precio de la
 Membresía equivalente al 30% (treinta por ciento) de la cuota mensual o anual,
-destinada a la integración del Fondo Solidario administrado por CLUB PATA
+destinada a la integración del Apoyo Económico administrado por CLUB PATA
 AMIGA, A.C., conforme a este Reglamento, al Convenio de Adhesión y a lo
 mostrado en la Plataforma al momento del pago/renovación. El Titular reconoce
 que el 70% (setenta por ciento) restante del precio de la Membresía no integra el
-Fondo, al corresponder a la contraprestación por el uso y operación de la
+Apoyo Económico, al corresponder a la contraprestación por el uso y operación de la
 ## Plataforma.
 2.8 “Solicitud” o “Solicitud de Apoyo”: Petición presentada por el Titular dentro
 de la Plataforma para que sea evaluada la procedencia de un Apoyo conforme a
@@ -8003,8 +8003,8 @@ cancelar por falta de verificabilidad.
 
 
 2.10 “Beneficio” o “Apoyo”: La ayuda que, en su caso, LA ASOCIACIÓN autorice
-con cargo al Fondo Solidario, conforme a reglas, límites, carencias, suficiencia
-del fondo y resultados de Validación. El TITULAR reconoce que el Apoyo es
+con cargo al Apoyo Económico, conforme a reglas, límites, carencias, suficiencia
+del apoyo económico y resultados de Validación. El TITULAR reconoce que el Apoyo es
 eventual y no garantizado.
 2.11 “Fraude”: Cualquier acto u omisión del TITULAR o de terceros relacionados
 con su Cuenta que implique simulación, falsedad, suplantación, documentación
@@ -8014,12 +8014,12 @@ destinada a obtener apoyos o ventajas indebidas.
 Plataforma, así como la gestión de cobros de Membresía, a cargo de LA
 EMPRESA, de manera independiente a LA ASOCIACIÓN.
 2.13 “Suficiencia”: Principio conforme al cual la autorización y monto de
-cualquier Apoyo dependen de la disponibilidad real del Fondo al momento de
+cualquier Apoyo dependen de la disponibilidad real del Apoyo Económico al momento de
 resolver, por lo que pueden existir rechazos, listas de espera, priorización,
 prorrateo o ajustes de monto sin que ello genere derecho exigible.
 2.14 “Carencia o Tiempo de Espera”: Periodo mínimo de antigüedad y/o espera
 aplicable a partir de la activación de la Membresía del Titular, durante el cual no
-será posible solicitar y/o recibir Apoyos con cargo al Fondo, aun cuando el Titular
+será posible solicitar y/o recibir Apoyos con cargo al Apoyo Económico, aun cuando el Titular
 tenga Membresía vigente. La duración de la Carencia podrá variar por plan,
 campaña, programa, segmento (incluyendo, en su caso, registro por
 Código de Embajador) y/o por tipo de Apoyo, siempre que se indique de manera
@@ -8052,7 +8052,7 @@ Localidad Buenavista, Municipio o Demarcación Territorial Tultitlán,
 Estado de México; entre Calle Calvario y Cerrada de los Tanques.
 d) Medio para notificaciones.  Para efectos de notificaciones derivadas
 del presente Convenio, LA ASOCIACIÓN señala como medio de
-notificación electrónico el siguiente correo: fondo@pataamiga.mx (el
+notificación electrónico el siguiente correo: apoyo@pataamiga.mx (el
 “Correo de Notificaciones de LA ASOCIACIÓN”).
 LA ASOCIACIÓN se obliga a mantener dicho correo vigente y disponible para
 recibir comunicaciones. En caso de modificación del Correo de Notificaciones de
@@ -8064,13 +8064,13 @@ actualización en dicho registro, sin necesidad de formalidad adicional.
 En tanto no se actualice dicho registro, se tendrá por válido el último Correo de
 Notificaciones de LA ASOCIACIÓN previamente señalado o registrado para todos
 los efectos de comunicación y notificación.
-e) Objeto y facultad para administrar el Fondo. Que, conforme a su
+e) Objeto y facultad para administrar el Apoyo Económico. Que, conforme a su
 objeto social y fines asociativos, cuenta con facultades para administrar y
-aplicar el Fondo Solidario relacionado con el Proyecto “Club Pata Amiga”,
+aplicar el Apoyo Económico relacionado con el Proyecto “Club Pata Amiga”,
 en los términos y bajo las reglas previstas en el presente Convenio.
 f) Alcance de participación. Que reconoce que la Plataforma es
 operada por LA EMPRESA, y que la intervención de LA ASOCIACIÓN se
-limita a la administración del Fondo Solidario, conforme a este Convenio.
+limita a la administración del Apoyo Económico, conforme a este Convenio.
 
 
 
@@ -8117,7 +8117,7 @@ y
 gestionar el cobro de la Membresía a través de la Plataforma, mediante los
 medios de pago habilitados, así como de atender las aclaraciones relacionadas
 con el procesamiento del pago, sin perjuicio de la canalización de la Aportación
-al Fondo a LA ASOCIACIÓN en los términos del presente Convenio.
+al Apoyo Económico a LA ASOCIACIÓN en los términos del presente Convenio.
 
 3.3 Declara EL TITULAR / ASOCIADO ADHERENTE, que:
 a) Mayoría de edad y capacidad. Es una persona física mayor de edad,
@@ -8140,10 +8140,10 @@ registros electrónicos generados por la Plataforma (tales como fecha,
 hora, IP, dispositivo y/o identificadores de cuenta), constituye
 manifestación expresa de voluntad y evidencia de su consentimiento para
 obligarse conforme a este Convenio.
-e) Aceptación del alcance del Fondo. Reconoce y acepta que el Fondo
+e) Aceptación del alcance del Apoyo Económico. Reconoce y acepta que el Apoyo Económico
 Solidario no es un seguro, no implica indemnización garantizada y no
 genera derecho de crédito exigible; y que cualquier apoyo está sujeto a
-reglas, validación, límites, carencias y suficiencia del Fondo, conforme a
+reglas, validación, límites, carencias y suficiencia del Apoyo Económico, conforme a
 este Convenio.
 
 
@@ -8155,15 +8155,15 @@ a) Establecer los términos y condiciones bajo los cuales EL TITULAR
 solicita y acepta su adhesión como Asociado Adherente de LA
 ASOCIACIÓN, mediante aceptación electrónica a través de la Plataforma.
 b) Regular el acceso del TITULAR a la posibilidad de solicitar apoyos
-con cargo al Fondo Solidario administrado por LA ASOCIACIÓN,
+con cargo al Apoyo Económico administrado por LA ASOCIACIÓN,
 entendiendo que dicha posibilidad está sujeta a: (i) los criterios y reglas
 previstas en este Convenio, (ii) el procedimiento y resultados de
 Validación, (iii) límites, carencias y restricciones aplicables, y (iv) la
-suficiencia del Fondo Solidario.
+suficiencia del Apoyo Económico.
 c) Establecer el marco de colaboración operativo entre LA
 ASOCIACIÓN y LA EMPRESA, así como la autorización del TITULAR para
 que LA EMPRESA reciba el pago de la membresía y canalice a LA
-ASOCIACIÓN la porción destinada al Fondo Solidario, conforme a lo
+ASOCIACIÓN la porción destinada al Apoyo Económico, conforme a lo
 indicado en este Convenio y a lo mostrado en la Plataforma al momento de
 la aceptación.
 
@@ -8195,12 +8195,12 @@ pago); y
 c) del importe total efectivamente cobrado, se aplicará el
 desglose y destino ya previsto en este Convenio: 70% como
 contraprestación por uso/operación de Plataforma a favor de
-GIRBAZ, S.A. de C.V., y 30% como Aportación al Fondo Solidario a
+GIRBAZ, S.A. de C.V., y 30% como Aportación al Apoyo Económico a
 favor de CLUB PATA AMIGA, A.C., integrándose esta última
 preferentemente por dispersión/transferencia directa mediante la
 pasarela de pagos. En ese supuesto, EL TITULAR podrá acceder a los
 beneficios de la Plataforma y, en su caso, a la posibilidad de
-Solicitar Apoyos con cargo al Fondo, sujeto a Carencias, Validación,
+Solicitar Apoyos con cargo al Apoyo Económico, sujeto a Carencias, Validación,
 Límites y Suficiencia.
 - Efectos si se RECHAZA o vence el plazo. Si LA ASOCIACIÓN rechaza
 la solicitud, o si transcurren las 48 horas sin que LA ASOCIACIÓN haya
@@ -8230,7 +8230,7 @@ usuario como Asociado Adherente. El plazo máximo de evaluación será de 48
 horas.
 Si la solicitud es aceptada dentro del plazo, se efectuará el cargo definitivo y se
 aplicará el split correspondiente (70% a GIRBAZ por el uso/operación de la
-Plataforma y 30% a CLUB PATA AMIGA, A.C. como Aportación al Fondo).
+Plataforma y 30% a CLUB PATA AMIGA, A.C. como Aportación al Apoyo Económico).
 Si la solicitud es rechazada o no es aceptada dentro del plazo, no se capturará el
 pago y la retención se liberará, conforme a las reglas de la red de pagos/banco
 emisor.
@@ -8245,8 +8245,8 @@ subsanado los requisitos solicitados, sin que ello genere derecho automático de
 aceptación.
 
 
-5) Naturaleza jurídica del Fondo
-5.1 Naturaleza no aseguradora. EL TITULAR reconoce expresamente que el Fondo
+5) Naturaleza jurídica del Apoyo Económico
+5.1 Naturaleza no aseguradora. EL TITULAR reconoce expresamente que el Apoyo Económico
 Solidario es un mecanismo solidario y asociativo administrado por LA
 ASOCIACIÓN, y que NO constituye:
 a) un seguro, póliza, cobertura aseguradora o producto regulado por
@@ -8259,19 +8259,19 @@ c) un esquema de ahorro, inversión, rendimiento, intereses o
 captación; ni
 d) una prestación exigible por el solo pago de la membresía.
 5.2 Inexistencia de derecho de crédito. EL TITULAR acepta que el pago de la
-Membresía y/o la Aportación al Fondo no genera a su favor derecho de crédito,
+Membresía y/o la Aportación al Apoyo Económico no genera a su favor derecho de crédito,
 derecho adquirido, derecho de reembolso, ni acción para exigir pagos
 automáticos. Cualquier apoyo autorizado tendrá el carácter de eventual y estará
 condicionado a los supuestos previstos en este Convenio.
-5.3 Sujeción a suficiencia y reglas. Los apoyos del Fondo Solidario se
+5.3 Sujeción a suficiencia y reglas. Los apoyos del Apoyo Económico se
 encuentran sujetos, en todo momento, a:
-a) la suficiencia y disponibilidad financiera del Fondo;
+a) la suficiencia y disponibilidad financiera del Apoyo Económico;
 b) el cumplimiento de carencias, límites, requisitos y restricciones;
 c) el procedimiento de Validación y la autenticidad de evidencias;
 d) los criterios de aceptación y priorización establecidos en este
 ## Convenio.
 5.4 Cuotas no reembolsables. EL TITULAR reconoce que las cantidades pagadas
-por concepto de Membresía y/o Aportación al Fondo son, salvo disposición
+por concepto de Membresía y/o Aportación al Apoyo Económico son, salvo disposición
 expresa en contrario prevista en este Convenio, no reembolsables, sin perjuicio
 de la atención de aclaraciones exclusivamente respecto del procesamiento del
 pago por LA EMPRESA conforme a sus políticas.
@@ -8294,18 +8294,18 @@ i. el 70% (setenta por ciento) corresponde a la contraprestación a favor de LA
 EMPRESA (GIRBAZ, S.A. de C.V.) por la operación, uso, acceso y disfrute de
 funcionalidades, módulos y beneficios de la Plataforma “Pata Amiga” (URL:
 https://www.pataamiga.mx/); y
-ii. el 30% (treinta por ciento) constituye la Aportación al Fondo Solidario,
-destinada exclusivamente a la integración del Fondo Solidario administrado por
+ii. el 30% (treinta por ciento) constituye la Aportación al Apoyo Económico,
+destinada exclusivamente a la integración del Apoyo Económico administrado por
 LA ASOCIACIÓN (CLUB PATA AMIGA, A.C.), conforme a este Convenio y al
-Reglamento del Fondo vigente.
-La Aportación al Fondo Solidario (30%) se integrará preferentemente mediante
+Reglamento del Apoyo Económico vigente.
+La Aportación al Apoyo Económico (30%) se integrará preferentemente mediante
 dispersión/transferencia directa a LA ASOCIACIÓN a través de la pasarela de
 pagos y mecanismos tecnológicos habilitados en la Plataforma. Solo de manera
 excepcional, cuando por causas técnicas no sea posible la dispersión directa por
 la pasarela de pagos, LA EMPRESA podrá recibir y canalizar dicha Aportación a LA
 ASOCIACIÓN conforme al mecanismo de mandato/instrucción previsto en este
 Convenio y/o en los documentos aplicables del Proyecto, sin que ello implique
-apropiación de recursos del Fondo ni modificación de la naturaleza no
+apropiación de recursos del Apoyo Económico ni modificación de la naturaleza no
 aseguradora del mismo.
 EL TITULAR acepta que el desglose anterior, así como el cargo total y su
 separación proporcional, podrá mostrarse en la Plataforma como parte del
@@ -8314,8 +8314,8 @@ proceso de pago, confirmación, recibo digital y/o historial de transacciones.
 Salvo disposición expresa en contrario prevista en este Convenio o por mandato
 de autoridad competente, EL TITULAR reconoce y acepta que los pagos
 realizados por concepto de Membresía, incluyendo la porción destinada como
-Aportación al Fondo Solidario, son no reembolsables, en virtud de su naturaleza
-asociativa, de acceso a servicios y de integración solidaria del Fondo.
+Aportación al Apoyo Económico, son no reembolsables, en virtud de su naturaleza
+asociativa, de acceso a servicios y de integración solidaria del Apoyo Económico.
 Lo anterior no limita el derecho del TITULAR a solicitar a LA EMPRESA la revisión
 de cargos duplicados o cobros manifiestamente improcedentes atribuibles al
 procesamiento del pago, conforme a las políticas operativas de LA EMPRESA y
@@ -8326,17 +8326,17 @@ del proveedor del medio de pago correspondiente.
 La revisión, aclaración, devolución, contracargo o corrección de cargos
 duplicados o cobros improcedentes se refiere exclusivamente al cobro de la
 Membresía por parte de LA EMPRESA (operación de la Plataforma) y no implica
-reembolso, reverso o devolución de la Aportación al Fondo Solidario, salvo
+reembolso, reverso o devolución de la Aportación al Apoyo Económico, salvo
 instrucción expresa de autoridad competente.
 6.4 Facturación, recibos y comprobación Las Partes acuerdan que:
 a) LA EMPRESA será la responsable de emitir, en su caso, el
 comprobante, recibo digital y/o CFDI relacionado con el cobro de la
 Membresía por el uso y operación de la Plataforma, conforme a su régimen
 fiscal y a la información fiscal proporcionada por EL TITULAR (en su caso).
-b) En lo relativo a la Aportación al Fondo Solidario, LA ASOCIACIÓN
+b) En lo relativo a la Aportación al Apoyo Económico, LA ASOCIACIÓN
 podrá emitir, en su caso y cuando así proceda conforme a su régimen y
 políticas, la constancia o comprobante correspondiente respecto de la
-porción canalizada al Fondo, siempre que EL TITULAR proporcione la
+porción canalizada al Apoyo Económico, siempre que EL TITULAR proporcione la
 información necesaria y que dicha emisión sea viable fiscal y
 operativamente.
 
@@ -8346,13 +8346,13 @@ EL TITULAR reconoce y acepta que, debido a la naturaleza evolutiva del Proyecto
 “Club Pata Amiga”, LA EMPRESA podrá actualizar anualmente (o en periodos
 mayores) cualquiera de los siguientes elementos:
 a) el precio de la Membresía;
-b) el monto/porcentaje destinado como Aportación al Fondo Solidario;
+b) el monto/porcentaje destinado como Aportación al Apoyo Económico;
 y/o
 c) reglas operativas vinculadas a la prestación del servicio de
 Plataforma, la administración de planes, el proceso de renovación y
 aspectos operativos del programa.
 Asimismo, EL TITULAR reconoce que LA ASOCIACIÓN podrá actualizar reglas
-operativas del Fondo Solidario (tales como criterios, límites, carencias,
+operativas del Apoyo Económico (tales como criterios, límites, carencias,
 requisitos de validación, medidas antifraude y procedimientos) cuando ello sea
 necesario para su sostenibilidad, integridad y correcto funcionamiento,
 conforme a lo previsto en este Convenio.
@@ -8378,7 +8378,7 @@ no renovar su Plan y/o solicitar la baja conforme a este Convenio, entendiendo
 que ello no genera reembolsos de cantidades ya devengadas o pagadas con
 anterioridad.
 
-8) Mandato expreso a LA EMPRESA (canalización de la Aportación al Fondo)
+8) Mandato expreso a LA EMPRESA (canalización de la Aportación al Apoyo Económico)
 8.1 Autorización y mandato de canalización
 EL TITULAR otorga su autorización expresa y confiere a LA EMPRESA un
 mandato/encargo de canalización para que, con motivo del pago de su
@@ -8386,7 +8386,7 @@ Membresía, LA EMPRESA:
 a) reciba el pago correspondiente al Plan elegido por EL TITULAR a
 través de la
 Plataforma; y
-b) canalice a LA ASOCIACIÓN la Aportación al Fondo Solidario, por el
+b) canalice a LA ASOCIACIÓN la Aportación al Apoyo Económico, por el
 monto o porcentaje que se muestre en la Plataforma al momento de la
 aceptación o
 renovación y/o el previsto en este Convenio.
@@ -8394,12 +8394,12 @@ renovación y/o el previsto en este Convenio.
 
 
 EL TITULAR reconoce que dicha canalización tiene como única finalidad integrar
-el Fondo Solidario administrado por LA ASOCIACIÓN, conforme a la mecánica
+el Apoyo Económico administrado por LA ASOCIACIÓN, conforme a la mecánica
 descrita en este instrumento.
 8.2 Separación automática por el motor de pagos
 Cuando el motor de pagos, pasarela o procesador habilitado en la Plataforma
 permita la separación automática del pago, LA EMPRESA realizará la distribución
-correspondiente, de modo que la Aportación al Fondo Solidario sea dirigida a LA
+correspondiente, de modo que la Aportación al Apoyo Económico sea dirigida a LA
 ASOCIACIÓN conforme al esquema operativo vigente.
 8.3 Supuesto de imposibilidad técnica
 En caso de que, por causas técnicas, operativas, del procesador de pagos o por
@@ -8407,27 +8407,27 @@ limitaciones del medio de cobro, no sea posible realizar la separación
 automática del pago, EL TITULAR autoriza expresamente a LA EMPRESA para que:
 a) reciba el importe total del pago de la Membresía; y
 b) realice la transferencia a LA ASOCIACIÓN del monto que
-corresponda a la Aportación al Fondo Solidario.
+corresponda a la Aportación al Apoyo Económico.
 Dicha transferencia se realizará a más tardar dentro de 48 (cuarenta y ocho)
 horas contadas a partir de la confirmación/captura del pago por el procesador,
 salvo demoras atribuibles al sistema bancario o al propio procesador.
 8.4 Conciliación, evidencia y registro interno
 LA EMPRESA llevará un registro interno de (i) pagos recibidos, (ii) cálculo de la
-Aportación al Fondo Solidario, y (iii) transferencias efectuadas a LA ASOCIACIÓN,
+Aportación al Apoyo Económico, y (iii) transferencias efectuadas a LA ASOCIACIÓN,
 incluyendo referencias, fechas y montos. EL TITULAR reconoce y acepta que:
 a) la información visible en la Plataforma podrá consistir en
 confirmaciones/recibos digitales y estatus de pago;
 b) la conciliación contable y operativa entre LA EMPRESA y LA
 ASOCIACIÓN podrá realizarse de forma interna; y
 c) lo anterior no implica que EL TITULAR adquiera derecho de
-propiedad, reembolso o exigibilidad sobre el Fondo, en términos de la
-cláusula de naturaleza jurídica del Fondo.
+propiedad, reembolso o exigibilidad sobre el Apoyo Económico, en términos de la
+cláusula de naturaleza jurídica del Apoyo Económico.
 8.5 No constitución de relación laboral, financiera o de seguros
 
 
 
 Las Partes reconocen que el mandato/encargo previsto en esta cláusula es
-estrictamente operativo para la canalización de la Aportación al Fondo y no
+estrictamente operativo para la canalización de la Aportación al Apoyo Económico y no
 constituye intermediación financiera, captación, inversión, préstamo, seguro,
 fianza o producto equivalente, ni genera obligación de pago garantizado a favor
 del TITULAR.
@@ -8460,17 +8460,17 @@ El Programa y el registro de mascotas en la Cuenta aplican, como base,
 
 
 Exclusiones / restricciones. Quedan excluidas del alcance del Programa y del
-Fondo (y por tanto no elegibles para registro con fines de Apoyo) cualesquiera
+Apoyo Económico (y por tanto no elegibles para registro con fines de Apoyo) cualesquiera
 especies distintas de perros y gatos, salvo que una actualización publicada de
 manera expresa en la Plataforma habilite otros supuestos.
 Asimismo, las exclusiones y conceptos no elegibles para efectos del
 otorgamiento de Apoyos (por ejemplo, por condiciones preexistentes,
 negligencia o maltrato, eventos no veterinarios, falta de verificabilidad y/o
 contravención a reglas antifraude), serán las previstas en el Reglamento del
-Fondo Solidario vigente, particularmente en el capítulo de “Eventos, Conceptos
+Apoyo Económico vigente, particularmente en el capítulo de “Eventos, Conceptos
 Elegibles y Exclusiones”, el cual forma parte integrante del presente Convenio y
 se mantiene publicado en la Plataforma.
-En tanto el Reglamento del Fondo y/o la Plataforma contemplen criterios
+En tanto el Reglamento del Apoyo Económico y/o la Plataforma contemplen criterios
 diferenciados (p. ej., por predisposición genética, reglas especiales por “alto
 riesgo”, carencias extendidas, topes ajustados y/o periodicidades distintas),
 éstos serán aplicables solo cuando estén publicados y sean informados al
@@ -8482,13 +8482,13 @@ manipulación de evidencia o conducta que configure fraude se sancionará
 conforme a las cláusulas antifraude y podrá dar lugar a suspensión o
 cancelación de la Cuenta y de la adhesión como Asociado Adherente.
 
-10) Reglas del Fondo Solidario y Plan de Acción (Reglamento público en
+10) Reglas del Apoyo Económico y Plan de Acción (Reglamento público en
 ## Plataforma)
-10.1 Existencia y aceptación del Reglamento del Fondo
+10.1 Existencia y aceptación del Reglamento del Apoyo Económico
 EL TITULAR reconoce y acepta que las reglas operativas, criterios, límites,
 requisitos y
-procedimientos aplicables al Fondo Solidario se encuentran establecidos en un
-Reglamento del Fondo Solidario (el “Reglamento del Fondo”) que se mantiene
+procedimientos aplicables al Apoyo Económico se encuentran establecidos en un
+Reglamento del Apoyo Económico (el “Reglamento del Apoyo Económico”) que se mantiene
 publicado y disponible para consulta dentro de la Plataforma, con el objeto de
 que los Asociados Adherentes puedan verificar con precisión las condiciones
 vigentes.
@@ -8496,26 +8496,26 @@ vigentes.
 
 
 En virtud de lo anterior, EL TITULAR acepta que la adhesión al presente Convenio
-implica también su adhesión expresa al Reglamento del Fondo, mismo que forma
+implica también su adhesión expresa al Reglamento del Apoyo Económico, mismo que forma
 parte integrante de este Convenio para todos los efectos legales, y que será
 aplicable en su versión vigente al momento de la aceptación y/o al momento de
 presentar una Solicitud de Apoyo, según corresponda.
 ## 10.2 Carencia
 Como regla general, y salvo disposición distinta publicada de manera expresa en
-la Plataforma y/o prevista en el Reglamento del Fondo Solidario vigente, la
+la Plataforma y/o prevista en el Reglamento del Apoyo Económico vigente, la
 posibilidad del TITULAR de presentar Solicitudes y, en su caso, recibir Apoyos
-con cargo al Fondo Solidario estará sujeta a un periodo de carencia o tiempo de
+con cargo al Apoyo Económico estará sujeta a un periodo de carencia o tiempo de
 espera contado a partir de la fecha de activación de su Membresía, en los
 términos y bajo las condiciones establecidas en dicho Reglamento y en lo que se
 muestre al TITULAR al momento de la contratación, activación o renovación.
-Durante el periodo de carencia, la Membresía y la Aportación al Fondo Solidario
+Durante el periodo de carencia, la Membresía y la Aportación al Apoyo Económico
 se seguirán integrando conforme al presente Convenio, sin que ello genere por sí
 mismo derecho automático a recibir Apoyos.
 
 10.3 Límites por evento y por año
-Los Apoyos que, en su caso, pudieran autorizarse con cargo al Fondo Solidario
-estarán sujetos a límites máximos, conforme al Reglamento del Fondo, a la
-suficiencia del Fondo y a lo mostrado en la Plataforma, incluyendo de manera
+Los Apoyos que, en su caso, pudieran autorizarse con cargo al Apoyo Económico
+estarán sujetos a límites máximos, conforme al Reglamento del Apoyo Económico, a la
+suficiencia del Apoyo Económico y a lo mostrado en la Plataforma, incluyendo de manera
 enunciativa:
 a) Montos máximos por tipo de apoyo (tope por uso al año) §  Emergencia
 médica veterinaria: hasta $3,000.00 M.N.
@@ -8527,7 +8527,7 @@ M.N. constituye un tope anual global para EL TITULAR y podrá
 utilizarse de forma total o parcial durante el año natural,
 distribuyéndose entre las mascotas registradas (máximo 3),
 conforme a Validación, evidencia, criterios de priorización y
-suficiencia del Fondo.
+suficiencia del Apoyo Económico.
 
 
 
@@ -8535,31 +8535,31 @@ suficiencia del Fondo.
 EL TITULAR, hasta por $2,000.00 M.N.
 ▪ Vacunación anual: máximo 1 (una) vacuna por año
 natural por EL TITULAR, hasta por $300.00 M.N.
-c) Límite global por beneficiario (protección del Fondo)
+c) Límite global por beneficiario (protección del Apoyo Económico)
 En ningún caso un solo beneficiario podrá disponer de más del 5% (cinco por
-ciento) del Fondo total, aun cuando existan eventos elegibles.
+ciento) del Apoyo Económico total, aun cuando existan eventos elegibles.
 EL TITULAR reconoce que los límites anteriores podrán depender del Plan
-contratado, de la suficiencia del Fondo, del tipo de evento y de los criterios de
+contratado, de la suficiencia del Apoyo Económico, del tipo de evento y de los criterios de
 priorización, Validación y reglas vigentes aplicables al momento de la Solicitud.
 10.4 Criterios de aceptación de solicitudes
 La autorización de apoyos se sujetará, en todo momento, a los criterios previstos
-en el Reglamento del Fondo, incluyendo, de forma enunciativa mas no limitativa:
+en el Reglamento del Apoyo Económico, incluyendo, de forma enunciativa mas no limitativa:
 a) la pertenencia vigente del TITULAR como Asociado Adherente
 (membresía activa y sin adeudos);
 b) el cumplimiento de carencia, límites y requisitos;
 c) la Validación de la Solicitud (evidencia, documentos,
 comprobantes, etc.);
 d) la inexistencia de indicios de fraude o abuso; y
-e) la suficiencia del Fondo Solidario al momento de resolver.
+e) la suficiencia del Apoyo Económico al momento de resolver.
 10.5 Forma de entrega del apoyo
 En caso de que un apoyo sea autorizado, éste podrá entregarse conforme a
-cualquiera de las modalidades previstas en el Reglamento del Fondo, tales
+cualquiera de las modalidades previstas en el Reglamento del Apoyo Económico, tales
 como:
 a) pago directo a un proveedor (por ejemplo, clínica, veterinaria o
 aliado);
 b) reembolso parcial o total al TITULAR, cuando así se determine; y/o
 c) otros mecanismos operativos permitidos por el Reglamento del
-## Fondo.
+## Apoyo Económico.
 
 
 
@@ -8567,17 +8567,17 @@ EL TITULAR reconoce que la modalidad aplicable dependerá del caso concreto,
 de la evidencia disponible, del tipo de gasto y de las políticas de control y
 prevención de fraude.
 10.6 Supuestos de rechazo
-Sin perjuicio de otros supuestos establecidos en el Reglamento del Fondo,
+Sin perjuicio de otros supuestos establecidos en el Reglamento del Apoyo Económico,
 podrán rechazarse Solicitudes cuando:
 a) no se cumpla carencia, límites o requisitos;
 b) la evidencia resulte insuficiente, inconsistente o no verificable;
 c) existan indicios razonables de fraude, simulación o abuso;
 d) el evento o concepto no esté contemplado o esté excluido;
 e) el TITULAR esté suspendido, bloqueado o dado de baja; y/o
-f) no exista suficiencia financiera del Fondo para atender la solicitud.
+f) no exista suficiencia financiera del Apoyo Económico para atender la solicitud.
 10.7 Lista de espera, prorrateo y suficiencia
-EL TITULAR reconoce que el Fondo Solidario opera bajo el principio de
-suficiencia. En caso de insuficiencia temporal, el Reglamento del Fondo podrá
+EL TITULAR reconoce que el Apoyo Económico opera bajo el principio de
+suficiencia. En caso de insuficiencia temporal, el Reglamento del Apoyo Económico podrá
 prever mecanismos como:
 a) lista de espera;
 b) priorización por criterios objetivos; y/o
@@ -8586,7 +8586,7 @@ La existencia de una Solicitud o su recepción en Plataforma no garantiza su
 autorización ni su pago.
 10.8 Aportaciones voluntarias adicionales
 LA EMPRESA podrá habilitar, de forma opcional, la posibilidad de que el TITULAR
-realice aportaciones voluntarias adicionales al Fondo Solidario. Dichas
+realice aportaciones voluntarias adicionales al Apoyo Económico. Dichas
 aportaciones, en su caso:
 a) serán siempre voluntarias;
 b) tendrán carácter no reembolsable;
@@ -8596,12 +8596,12 @@ apoyos; y
 
 
 d) se regirán por las condiciones específicas que se muestren en la
-Plataforma y por el Reglamento del Fondo.
+Plataforma y por el Reglamento del Apoyo Económico.
 11) Reglamento Antifraude (integrado como cláusulas y publicado en Plataforma)
 11.1 Existencia y aceptación del Reglamento Antifraude
 EL TITULAR reconoce y acepta que existe un Reglamento Antifraude (el
 “Reglamento Antifraude”) publicado y disponible en la Plataforma para su
-consulta, con el objeto de prevenir abusos, proteger la integridad del Fondo
+consulta, con el objeto de prevenir abusos, proteger la integridad del Apoyo Económico
 Solidario y asegurar un uso lícito y transparente del programa.
 En virtud de lo anterior, EL TITULAR acepta que la adhesión al presente Convenio
 implica también su adhesión expresa al Reglamento Antifraude, mismo que
@@ -8634,7 +8634,7 @@ e) simular eventos, gastos o documentos;
 f) intentar vulnerar la Plataforma, evadir controles, o explotar fallas;
 y/o
 g) cualquier conducta que configure fraude, abuso, o uso indebido del
-## Fondo Solidario.
+## Apoyo Económico.
 
 11.4 Medidas y consecuencias
 Ante indicios razonables o confirmación de fraude o abuso, LA EMPRESA y/o LA
@@ -8647,7 +8647,7 @@ d) rechazar Solicitudes en curso;
 e) retener la tramitación de apoyos hasta concluir verificaciones; y
 f) resguardar evidencia digital y trazabilidad de operaciones.
 EL TITULAR reconoce que estas medidas tienen como finalidad proteger la
-integridad del programa y del Fondo, y que podrán aplicarse aun durante
+integridad del programa y del Apoyo Económico, y que podrán aplicarse aun durante
 procesos de investigación interna.
 11.5 Resguardo de evidencias
 EL TITULAR acepta que LA EMPRESA podrá conservar registros, bitácoras, IP,
@@ -8662,7 +8662,7 @@ Cuando proceda, LA EMPRESA y/o LA ASOCIACIÓN podrán:
 a) cooperar con autoridades competentes mediante entrega de
 información conforme a derecho; y/o
 b) ejercer las acciones legales que correspondan para la protección
-del Proyecto, la Plataforma, el Fondo Solidario y los derechos de terceros,
+del Proyecto, la Plataforma, el Apoyo Económico y los derechos de terceros,
 incluyendo la presentación de denuncias en caso de hechos posiblemente
 constitutivos de delito.
 
@@ -8676,7 +8676,7 @@ relacionadas con lavado de dinero, financiamiento al terrorismo, corrupción,
 fraude o actividades prohibidas por la ley.
 12.2 Controles y solicitud de información (KYC básico)
 EL TITULAR reconoce y acepta que, con el fin de proteger la integridad del
-Proyecto, la Plataforma y el Fondo Solidario, LA EMPRESA y/o LA ASOCIACIÓN
+Proyecto, la Plataforma y el Apoyo Económico, LA EMPRESA y/o LA ASOCIACIÓN
 podrán implementar controles razonables de identificación y verificación, y
 podrán solicitar, en cualquier momento, información y/o documentación
 adicional, incluyendo de forma enunciativa:
@@ -8707,7 +8707,7 @@ d) rechazar operaciones o Solicitudes; y/o
 e) cancelar la adhesión como Asociado Adherente, conforme a este
 ## Convenio.
 EL TITULAR reconoce que estas medidas son preventivas y buscan proteger la
-integridad del Proyecto y del Fondo Solidario.
+integridad del Proyecto y del Apoyo Económico.
 12.4 Cooperación con autoridades
 Cuando exista requerimiento de autoridad competente o resulte legalmente
 procedente, LA EMPRESA y/o LA ASOCIACIÓN podrán colaborar con autoridades,
@@ -8723,7 +8723,7 @@ personales que recabe y trate para la operación de la Plataforma, gestión
 de Cuenta, soporte, administración de Membresía, procesamiento de
 pagos, seguridad, prevención de fraude y atención al usuario.
 b) LA ASOCIACIÓN será responsable del tratamiento de los datos
-personales estrictamente necesarios para la administración del Fondo
+personales estrictamente necesarios para la administración del Apoyo Económico
 
 
 
@@ -8767,9 +8767,9 @@ a) crear y administrar la Cuenta del TITULAR;
 b) operar la Plataforma y brindar soporte;
 c) procesar pagos, renovaciones, confirmaciones y aclaraciones del
 cobro;
-d) canalizar la Aportación al Fondo Solidario conforme al mandato
+d) canalizar la Aportación al Apoyo Económico conforme al mandato
 otorgado;
-e) administrar el Fondo Solidario y atender Solicitudes de Apoyo;
+e) administrar el Apoyo Económico y atender Solicitudes de Apoyo;
 f) ealizar Validación de registros, solicitudes y evidencias;
 g) prevenir, detectar y sancionar fraude y abuso;
 h) cumplir obligaciones legales y atender requerimientos de autoridad
@@ -8804,14 +8804,14 @@ Oposición (ARCO), así como revocar su consentimiento cuando sea aplicable,
 mediante solicitud enviada al siguiente correo:
 - Para  asuntos  de  Plataforma  y  Membresía  (LA
 EMPRESA): girbaz@pataamiga.mx
-- Para asuntos del Fondo Solidario (LA ASOCIACIÓN):
+- Para asuntos del Apoyo Económico (LA ASOCIACIÓN):
 legal@pataamiga.mx
 La solicitud deberá incluir, al menos: nombre del TITULAR, medio de contacto,
 descripción clara del derecho a ejercer y, en su caso, documentación que
 acredite identidad. Las Partes podrán requerir información adicional para
 autenticar la solicitud y proteger la Cuenta.
 EL TITULAR reconoce que la cancelación u oposición respecto de datos
-necesarios para la operación de la Plataforma o la administración del Fondo
+necesarios para la operación de la Plataforma o la administración del Apoyo Económico
 podrá implicar la imposibilidad de mantener la Membresía, procesar pagos o
 tramitar Solicitudes, y podrá dar lugar a la baja conforme a este Convenio.
 13.6 Medidas de seguridad y conservación de información
@@ -8836,7 +8836,7 @@ como
 Asociado Adherente, podrá tener acceso a información relacionada con el
 Proyecto “Club Pata Amiga”, incluyendo reglas operativas, procesos,
 funcionalidades, contenidos, textos, materiales, comunicaciones, criterios de
-validación, estructuras, métricas, lógica operativa, flujos, mecánicas del Fondo
+validación, estructuras, métricas, lógica operativa, flujos, mecánicas del Apoyo Económico
 Solidario, y/o know-how (la “Información”).
 EL TITULAR se obliga a:
 a) utilizar la Información únicamente para fines de uso personal de la
@@ -8849,7 +8849,7 @@ c) no realizar actos tendientes a eludir controles de seguridad,
 confidencialidad o antifraude; y
 d) no replicar, copiar, desarrollar, implementar, adaptar, comercializar,
 ni promover, por cuenta propia o de terceros, de manera total o parcial, un
-modelo de negocio, plataforma, programa, membresía, fondo, esquema
+modelo de negocio, plataforma, programa, membresía, apoyo económico, esquema
 solidario o servicio sustancialmente similar al Proyecto “Club Pata Amiga”
 que derive del uso o aprovechamiento de la Información, ni utilizar la
 Información para diseñar o facilitar productos o servicios equivalentes,
@@ -8884,7 +8884,7 @@ e) permitir el acceso de terceros a su Cuenta o credenciales.
 15) Deslinde total A.C. vs Plataforma
 15.1 Alcance de LA ASOCIACIÓN
 EL TITULAR reconoce y acepta expresamente que LA ASOCIACIÓN:
-a) únicamente administra y aplica el Fondo Solidario, conforme a los
+a) únicamente administra y aplica el Apoyo Económico, conforme a los
 criterios y reglas previstos en este Convenio; y
 b) no opera, administra, desarrolla, da soporte, ni controla la
 Plataforma, ni el procesamiento de pagos de membresía, ni la atención
@@ -8915,7 +8915,7 @@ c) prestación del servicio digital asociado a la Membresía, deberá
 dirigirse exclusivamente contra LA EMPRESA, por los medios de contacto
 que ésta habilite.
 Lo anterior es independiente de las solicitudes y determinaciones relacionadas
-con el Fondo Solidario, las cuales se tramitarán conforme al presente Convenio.
+con el Apoyo Económico, las cuales se tramitarán conforme al presente Convenio.
 
 16) Vigencia, baja, cancelación y efectos
 ## 16.1 Vigencia
@@ -8941,12 +8941,12 @@ c) se detecten operaciones inusuales o riesgos relevantes;
 d) se proporcionen datos falsos o se niegue información requerida
 para validaciones; y/o
 e) se realicen conductas que dañen la Plataforma, el Proyecto o el
-## Fondo
+## Apoyo Económico
 ## Solidario.
 16.4 Sin reembolsos
 Salvo disposición expresa en contrario prevista en este Convenio o por mandato
 de autoridad competente, EL TITULAR reconoce que los pagos realizados por
-Membresía y/o Aportación al Fondo son no reembolsables, incluso en caso de
+Membresía y/o Aportación al Apoyo Económico son no reembolsables, incluso en caso de
 baja o cancelación, sin perjuicio de aclaraciones por cargos duplicados
 imputables al procesamiento del pago por LA EMPRESA.
 16.5 Efectos sobre Solicitudes en curso
@@ -8959,7 +8959,7 @@ sus pagos y sin indicios de fraude o abuso, las Solicitudes ingresadas antes de 
 fecha efectiva de baja podrán:
 - continuar su evaluación y validación; y
 - en su caso, resolverse conforme a las reglas vigentes al momento de su
-presentación y a la suficiencia del Fondo, siempre que la documentación y
+presentación y a la suficiencia del Apoyo Económico, siempre que la documentación y
 evidencias sean suficientes y verificables.
 
 
@@ -8982,7 +8982,7 @@ EMPRESA y/o LA ASOCIACIÓN podrán, según el caso:
 - cancelar la Solicitud en curso; o
 - continuar su evaluación únicamente si el TITULAR subsana el
 incumplimiento dentro de un plazo de 5 días naturales, quedando a
-criterio de la autoridad interna/operación del Fondo, y siempre
+criterio de la autoridad interna/operación del Apoyo Económico, y siempre
 sujeto a suficiencia y reglas vigentes.
 
 d) Fraude, abuso, suplantación o evidencia apócrifa (fraude grave)
@@ -9020,7 +9020,7 @@ actualización realizada por el TITULAR en su perfil se considerará efectiva de
 su registro en la Plataforma.
 17.3 Notificaciones a LA ASOCIACIÓN
 Para notificaciones dirigidas a LA ASOCIACIÓN, se señala como correo:
-fondo@pataamiga.mx. Cualquier modificación se considerará efectiva desde
+apoyo@pataamiga.mx. Cualquier modificación se considerará efectiva desde
 que sea actualizada y publicada en la Plataforma como medio oficial de contacto
 del Proyecto.
 17.4 Notificaciones a LA EMPRESA
@@ -9049,7 +9049,7 @@ presente Convenio, con plena validez y efectos legales.
 ## EL PRESENTE CONVENIO CONSTITUYE EL ACUERDO TOTAL ENTRE LAS PARTES
 ## RESPECTO DE SU OBJETO Y DEJA SIN EFECTOS CUALQUIER COMUNICACIÓN,
 ## NEGOCIACIÓN O ACUERDO PREVIO, VERBAL O ESCRITO, RELACIONADO CON LA
-## ADHESIÓN COMO ASOCIADO ADHERENTE Y LA OPERACIÓN DEL FONDO
+## ADHESIÓN COMO ASOCIADO ADHERENTE Y LA OPERACIÓN DEL APOYO ECONÓMICO
 ## SOLIDARIO, SIN PERJUICIO DE LAS ACTUALIZACIONES PERMITIDAS CONFORME
 ## A ESTE PROPIO CONVENIO.
 ## SI ALGUNA DISPOSICIÓN DEL PRESENTE CONVENIO FUERE DECLARADA NULA,
@@ -9129,7 +9129,7 @@ Juan, Municipio de Tultitlán, Estado de México, C.P. 54900.
 
 b) CLUB PATA AMIGA, A.C. (“CLUB PATA AMIGA”)
 Responsable del tratamiento de datos personales relacionados con la administración  del
-Fondo   Solidario,  resolución  de  solicitudes  de  apoyo,  validación  y  determinaciones
+Apoyo Económico   Solidario,  resolución  de  solicitudes  de  apoyo,  validación  y  determinaciones
 asociativas conforme a sus instrumentos aplicables.
 Correo de privacidad: legal@pataamiga.mx Domicilio: Calle Juárez No. 3, Interior sin
 número, Col. San Francisco Chilpan, Localidad Buenavista, C.P. 54944, Tultitlán, Estado de
@@ -9231,9 +9231,9 @@ comprobantes o gestionar atención vinculada a una Solicitud (cuando proceda).
 - Autoridades competentes, por requerimiento fundado y motivado o para
 cumplimiento legal.
 Transferencia GIRBAZ ↔ CLUB PATA AMIGA:
-Cuando el Titular participe en el esquema del Fondo o en Solicitudes, GIRBAZ podrá
+Cuando el Titular participe en el esquema del Apoyo Económico o en Solicitudes, GIRBAZ podrá
 transferir a CLUB PATA AMIGA los datos necesarios para: (i) integración/administración del
-Fondo, (ii) validación, (iii) prevención de fraude y (iv) resolución de solicitudes, conforme a
+Apoyo Económico, (ii) validación, (iii) prevención de fraude y (iv) resolución de solicitudes, conforme a
 los instrumentos del Proyecto.
 
 6) Uso de cookies y tecnologías de rastreo
@@ -9253,7 +9253,7 @@ Tienes derecho a Acceder,  Rectificar,  Cancelar  u  Oponerte (ARCO) al tratamie
 datos, así como a revocar tu consentimiento cuando proceda.
 Canales ARCO:
 - Para datos de Plataforma/cuenta/cobros (GIRBAZ): girbaz31@gmail.com
-- Para  datos  vinculados  al  Fondo/solicitudes  (CLUB  PATA
+- Para  datos  vinculados  al  Apoyo Económico/solicitudes  (CLUB  PATA
 AMIGA): legal@pataamiga.mx
 La solicitud ARCO debe incluir:
 a) Nombre y medio para responder (correo).
@@ -9309,7 +9309,7 @@ AMIGA (Privacidad): legal@pataamiga.mx
 
 
 
-## ANEXO1 REGLAMENTO FONDO
+## ANEXO1 REGLAMENTO APOYO ECONÓMICO
 ## PERROS/CANINOS
 ## RAZA ENFERMEDADES CONGENITAS, GENÉTICAS Y HEREDITARIAS
 Beagle-Harrier Displasia de cadera, Enfermedad del disco intervertebral, Epilepsia

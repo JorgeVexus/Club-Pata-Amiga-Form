@@ -11,7 +11,7 @@ const PLANS = {
         id: 'prc_mensual-452k30jah',
         name: 'Mensualidad',
         price: '159',
-        description: 'Perfecto para empezar a formar parte de la comunidad y cuidar con respaldo.\nIncluye acceso al fondo solidario y beneficios exclusivos de la manada.'
+        description: 'Perfecto para empezar a formar parte de la comunidad y cuidar con respaldo.\nIncluye acceso al apoyo económico y beneficios exclusivos de la manada.'
     },
     ANNUAL: {
         id: 'prc_anual-o9d101ta',
@@ -183,8 +183,8 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
 
             {/* Footer Info */}
             <div className={styles.footerInfo}>
-                <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo solidario.</p>
-                <p>El fondo se activa a partir del 6° mes (o antes si tu compañero es adoptado o llegas con código referido).</p>
+                <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo económico.</p>
+                <p>El apoyo económico se activa a partir del 6° mes (o antes si tu compañero es adoptado o llegas con código referido).</p>
                 <p style={{ fontWeight: '700', color: '#2D3748' }}>Recuerda que puedes cancelar tu membresía en cualquier momento.</p>
             </div>
 
@@ -251,14 +251,14 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                         </p>
                         {showFullLegal && (
                             <div className={styles.legalFullText}>
-                                <p>(uso de Plataforma y cobros); (b) el Aviso de Privacidad aplicable; (c) el Convenio de Adhesión con CLUB PATA AMIGA, A.C. (modalidad de Asociado Adherente y reglas asociativas); (d) el Reglamento del Fondo Solidario; y (e) el Reglamento de Integridad (Antifraude, PLD y Anticorrupción).</p>
+                                <p>(uso de Plataforma y cobros); (b) el Aviso de Privacidad aplicable; (c) el Convenio de Adhesión con CLUB PATA AMIGA, A.C. (modalidad de Asociado Adherente y reglas asociativas); (d) el Reglamento del Apoyo Económico; y (e) el Reglamento de Integridad (Antifraude, PLD y Anticorrupción).</p>
                                 <p><strong>Asimismo, el Titular autoriza expresamente:</strong></p>
                                 <ul>
                                     <li>Cargos recurrentes por la Membresía (mensual o anual), conforme al plan elegido y lo mostrado en la Plataforma al momento de contratar o renovar.</li>
                                     <li>Preautorización/retención temporal del importe total de la Membresía por un plazo no mayor a 48 (cuarenta y ocho) horas, con el único fin de que CLUB PATA AMIGA, A.C. evalúe la solicitud de incorporación como Asociado Adherente. Si dentro de dicho plazo la A.C. no acepta la solicitud o no emite determinación, la operación no se perfecciona y la retención deberá liberarse conforme a las reglas del emisor/adquirente/pasarela de pagos, sin que el importe se considere cobrado.</li>
-                                    <li>En caso de aceptación como Asociado Adherente dentro del plazo, el Titular autoriza que el cargo se haga efectivo y que el pago se distribuya conforme al desglose mostrado en Plataforma: 70% como contraprestación a favor de GIRBAZ, S.A. de C.V. por el uso y operación de la Plataforma, y 30% como Aportación al Fondo Solidario a favor de CLUB PATA AMIGA, A.C.</li>
-                                    <li>Canalización excepcional (mandato/instrucción): únicamente si por causas técnicas no fuera posible la dispersión directa del 30% a la A.C. mediante pasarela, el Titular instruye y autoriza a GIRBAZ a recibir y transferir a la A.C. dicha Aportación al Fondo, sin apropiación, en los términos de los instrumentos aplicables.</li>
-                                    <li>El Titular reconoce que la Membresía no es un seguro, no existe cobertura garantizada, y cualquier Apoyo del Fondo es discrecional, sujeto a Carencia/Tiempo de Espera, validación, límites, exclusiones y Suficiencia del Fondo conforme a los documentos aceptados.</li>
+                                    <li>En caso de aceptación como Asociado Adherente dentro del plazo, el Titular autoriza que el cargo se haga efectivo y que el pago se distribuya conforme al desglose mostrado en Plataforma: 70% como contraprestación a favor de GIRBAZ, S.A. de C.V. por el uso y operación de la Plataforma, y 30% como Aportación al Apoyo Económico a favor de CLUB PATA AMIGA, A.C.</li>
+                                    <li>Canalización excepcional (mandato/instrucción): únicamente si por causas técnicas no fuera posible la dispersión directa del 30% a la A.C. mediante pasarela, el Titular instruye y autoriza a GIRBAZ a recibir y transferir a la A.C. dicha Aportación al Apoyo Económico, sin apropiación, en los términos de los instrumentos aplicables.</li>
+                                    <li>El Titular reconoce que la Membresía no es un seguro, no existe cobertura garantizada, y cualquier Apoyo Económico es discrecional, sujeto a Carencia/Tiempo de Espera, validación, límites, exclusiones y Suficiencia del Apoyo Económico conforme a los documentos aceptados.</li>
                                     <li>El Titular acepta que GIRBAZ conservará evidencia de esta aceptación electrónica (incluyendo fecha/hora, versión, IP, ID de Cuenta y registro de aceptación) como constancia del consentimiento.</li>
                                 </ul>
                             </div>

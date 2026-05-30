@@ -107,7 +107,7 @@ El panel utiliza los siguientes custom fields de Memberstack:
 
             <!-- Información de días restantes -->
             <p class="days-info" data-pet-info="days-text">
-                Faltan <span data-pet-info="days-remaining">53</span> días para activar tu fondo solidario completo
+                Faltan <span data-pet-info="days-remaining">53</span> días para activar tu apoyo económico completo
             </p>
 
             <!-- Barra de progreso -->
@@ -157,7 +157,7 @@ El panel utiliza los siguientes custom fields de Memberstack:
         </div>
         <div class="info-text">
             <p data-pet-info="additional-message">
-                ¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.
+                ¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al apoyo económico. Contáctanos para validar tus documentos.
             </p>
         </div>
     </div>

@@ -14,7 +14,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
     title: 'Registro de Membresía - Protección para tu Mascota',
-    description: 'Únete a nuestra manada y protege a tu mascota con beneficios exclusivos y fondo solidario',
+    description: 'Únete a nuestra manada y protege a tu mascota con beneficios exclusivos y apoyo económico',
     keywords: ['mascotas', 'membresía', 'seguro mascotas', 'protección animal', 'veterinaria'],
     authors: [{ name: 'Pet Membership' }],
     openGraph: {

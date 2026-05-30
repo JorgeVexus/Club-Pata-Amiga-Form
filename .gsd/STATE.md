@@ -7,10 +7,12 @@ Completed Phase 5 Plan 3: Bypass de Período de Carencia para Super Admins:
 - Completed all type checks, lint checks, and pushed code to GitHub.
 
 ## Current Context
-The carencia bypass feature is fully implemented and accessible under the configuration settings tab for super admins.
+Phase 6 is defined to replace all user-facing mentions of 'Fondo Solidario' with 'Apoyo Económico' to align with the new brand nomenclature across the system.
 
 ## Next Steps
-- Verify solidarity requests can be made immediately on Webflow widgets after bypassing a pet's carencia.
+1. Run the plan checker to validate Phase 6 execution plans.
+2. Execute Phase 6 plans.
 
 ## Blocks & Risks
-- None currently identified.
+- Ensuring all Webflow script endpoints and element IDs remain intact to avoid breaking existing integrations.
+

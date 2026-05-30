@@ -318,7 +318,7 @@ pet-1-replaced-date: ""
 
 2. **Archivos**: Los archivos NO se suben a Memberstack. Se suben a Supabase y solo las URLs se guardan en Memberstack
 
-3. **Período de carencia**: El sistema calcula automáticamente 90 días desde la fecha de registro para activar el fondo solidario
+3. **Período de carencia**: El sistema calcula automáticamente 90 días desde la fecha de registro para activar el apoyo económico
 
 4. **Validación**: La validación se hace en el frontend antes de enviar a Memberstack
 

@@ -39,3 +39,18 @@
 - [ ] SEPOMEX Cache validation.
 - [ ] Traffic redirection from `/usuarios/registro` to `/registro-v2`.
 - [ ] Final end-to-end UAT.
+
+### Phase 5: Email Visualizer & Super Admin Bypass
+**Status**: ✅ Completed
+**Objective**: Email previewing capabilities and admin bypass of waiting periods.
+- [x] Integrate email visualizer in admin dashboard.
+- [x] Build email previewer component.
+- [x] Super admin carencia waiting period bypass mechanism.
+
+### Phase 6: Reemplazo Apoyo Económico
+**Status**: ⬜ Not Started
+**Objective**: Reemplazar todas las menciones visuales de Fondo Solidario por Apoyo Económico.
+- [ ] Reemplazo en términos legales y checks de registro.
+- [ ] Reemplazo en componentes y menú lateral del Admin Dashboard.
+- [ ] Reemplazo en los scripts y vistas HTML de widgets públicos de Webflow.
+
