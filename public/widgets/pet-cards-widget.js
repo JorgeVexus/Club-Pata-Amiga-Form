@@ -1160,7 +1160,7 @@
                                 if (carencia.daysRemaining <= 0) {
                                     return `
                                         <div class="pata-progress-container-v2" style="text-align: center; padding: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;">
-                                            <p style="margin: 0; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px; text-align: center;"><strong>${pet.name}</strong> ya puede acceder al fondo solidario.</p>
+                                            <p style="margin: 0; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px; text-align: center;"><strong>${pet.name}</strong> ya puede acceder al apoyo económico.</p>
                                             <a href="https://www.pataamiga.mx/miembros/fondo-solidario" class="pata-btn" style="background: var(--pata-btn-primary); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); width: 100%; text-align: center; font-size: 14px; box-shadow: 4px 4px 0 rgba(0,0,0,1); display: inline-block; padding: 12px 0;">Utiliza tus beneficios</a>
                                         </div>
                                     `;
@@ -1266,9 +1266,9 @@
                                     </div>
                                     ${pet.status === 'approved' ? `
                                         <div class="pata-info-item">
-                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Fecha de activación del fondo"></div>
+                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Fecha de activación del apoyo económico"></div>
                                             <div class="pata-info-texts">
-                                                <span class="pata-info-label">Fecha de activación del fondo</span>
+                                                <span class="pata-info-label">Fecha de activación del apoyo económico</span>
                                                 <span class="pata-info-value">${activationDate}</span>
                                             </div>
                                         </div>

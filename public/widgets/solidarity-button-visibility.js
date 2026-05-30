@@ -152,7 +152,7 @@
 
                         const matchesId = id.toLowerCase().includes('fondo');
                         const matchesClass = typeof classes === 'string' && classes.toLowerCase().includes('fondo');
-                        const matchesText = text.toLowerCase().includes('solidario') && text.trim().length < 60;
+                        const matchesText = (text.toLowerCase().includes('solidario') || text.toLowerCase().includes('apoyo')) && text.trim().length < 60;
 
                         if (matchesId || matchesClass || matchesText) {
                             found.push({

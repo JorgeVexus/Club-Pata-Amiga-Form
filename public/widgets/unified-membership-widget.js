@@ -5180,7 +5180,7 @@
                             <span class="pata-banner-icon-new"></span>
                             <div class="pata-banner-content-new">
                                 <strong>¿Adoptaste a alguno de tus compañeros?</strong><br/>
-                                Puedes acelerar tu acceso al fondo. Contáctanos a miembros@pataamiga.mx para validar tus documentos.
+                                Puedes acelerar tu acceso al apoyo económico. Contáctanos a miembros@pataamiga.mx para validar tus documentos.
                             </div>
                         </div>
                     ` : ''}
@@ -5193,14 +5193,14 @@
                             
                             <div class="pata-approved-progress-box">
                                 ${carencia.daysRemaining <= 0 ? `
-                                    <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Fondo Activado</h3>
-                                    <p style="margin-bottom: 20px; font-family: var(--font-body); color: var(--pata-text-dark);"><strong>${pet.name}</strong> ya puede acceder al fondo solidario y utilizar todos sus beneficios.</p>
+                                    <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Apoyo Económico Activado</h3>
+                                    <p style="margin-bottom: 20px; font-family: var(--font-body); color: var(--pata-text-dark);"><strong>${pet.name}</strong> ya puede acceder al apoyo económico y utilizar todos sus beneficios.</p>
                                     <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-accent); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 16px; font-weight: bold; padding: 12px 20px; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
                                 ` : `
                                     <p class="pata-approved-progress-msg">${statusMessage}</p>
                                     
                                     <p class="pata-approved-days-left">
-                                        faltan <strong>${carencia.daysRemaining} días</strong> para activar tu fondo completo
+                                        faltan <strong>${carencia.daysRemaining} días</strong> para activar tu apoyo económico completo
                                     </p>
                                     
                                     <div class="pata-approved-progress-labels-top">
@@ -5849,7 +5849,7 @@
                 { label: 'Color Ojos', value: pet.eye_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-ojos.png' },
                 { label: 'Color Nariz', value: pet.nose_color || '---', icon: 'https://app.pataamiga.mx/Icons/color-nariz.png' },
                 { label: 'Fecha de ingreso a la manada', value: registrationDate, icon: 'https://app.pataamiga.mx/Icons/ingreso.png' },
-                ...(pet.status === 'approved' ? [{ label: 'Fecha de activación del fondo', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
+                ...(pet.status === 'approved' ? [{ label: 'Fecha de activación del apoyo económico', value: activationDate, icon: 'https://app.pataamiga.mx/Icons/activacion.png' }] : [])
             ];
 
             const infoGridHtml = infoItems.map(item => {
@@ -5903,8 +5903,8 @@
                                     if (carencia.daysRemaining <= 0) {
                                         return `
                                         <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); text-align: center;">
-                                            <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Fondo Activado</h3>
-                                            <p style="margin-bottom: 15px; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px;"><strong>${pet.name}</strong> ya puede acceder al fondo solidario.</p>
+                                            <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Apoyo Económico Activado</h3>
+                                            <p style="margin-bottom: 15px; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px;"><strong>${pet.name}</strong> ya puede acceder al apoyo económico.</p>
                                             <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-btn-primary, #FE8F15); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 14px; font-weight: bold; padding: 12px 0; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
                                         </div>
                                         `;

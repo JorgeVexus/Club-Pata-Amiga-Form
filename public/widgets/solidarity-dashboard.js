@@ -876,22 +876,22 @@ class SolidarityDashboard {
             <div class="pata-dashboard-wrapper">
                 <header class="pata-header">
                     <h1>mi manada</h1>
-                    <p>Administra a tus peludos y su acceso al Fondo Solidario</p>
+                    <p>Administra a tus peludos y su acceso al Apoyo Económico</p>
                 </header>
 
                 <main>
                     <section class="pata-main-card">
                         <h2 class="pata-status-title">
-                            ${this.data.stats.active > 0 ? 'fondo solidario activo' : 'fondo solidario en espera'}
+                            ${this.data.stats.active > 0 ? 'apoyo económico activo' : 'apoyo económico en espera'}
                         </h2>
                         <p class="pata-status-subtitle">
-                            La protección es para toda la manada. Consulta el estado del fondo solidario que acompaña a tus compañeros de cuatro patas.
+                            La protección es para toda la manada. Consulta el estado del apoyo económico que acompaña a tus compañeros de cuatro patas.
                         </p>
 
                         <div class="pata-stats-grid">
                             <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.1s;">
                                 <span class="pata-stat-number">${this.data.stats.active}</span>
-                                <span class="pata-stat-label">Mascotas con acceso al Fondo Solidario.</span>
+                                <span class="pata-stat-label">Mascotas con acceso al Apoyo Económico.</span>
                             </div>
                             <div class="pata-stat-box pata-animate-entry" style="animation-delay: 0.2s;">
                                 <span class="pata-stat-number">${this.data.stats.pending}</span>
@@ -908,7 +908,7 @@ class SolidarityDashboard {
                         </div>
 
                         <div class="pata-benefits-summary">
-                            <p style="font-weight: 600; font-size: 14px; margin-bottom: 20px;">Cantidades disponibles en tus fondos</p>
+                            <p style="font-weight: 600; font-size: 14px; margin-bottom: 20px;">Cantidades disponibles en tus apoyos</p>
                             <div class="pata-benefits-grid">
                                 <div class="pata-benefit-item">
                                     <img src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg" class="pata-benefit-icon">
@@ -1018,7 +1018,7 @@ class SolidarityDashboard {
                                     <div style="width: ${carencia.percentage}%; height: 100%; background: #FE8F15; border-radius: 10px;"></div>
                                 </div>
                             ` : `
-                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ ${pet.name} ya puede acceder al fondo</p>
+                                <p style="color: #10B981; font-weight: 700; font-size: 13px;">✅ ${pet.name} ya puede acceder al apoyo económico</p>
                                 <button class="pata-btn" 
                                         style="margin-top: 10px; font-size: 12px; padding: 10px 20px; background: var(--pata-turquoise); color: white; border: 2px solid var(--pata-black); border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase;" 
                                         onclick="window.location.href='https://www.pataamiga.mx/miembros/fondo-solidario'">

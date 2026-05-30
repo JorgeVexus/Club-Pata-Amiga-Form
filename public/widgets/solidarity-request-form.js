@@ -531,7 +531,7 @@ class SolidarityRequestForm {
                             const photoUrl = pet.photo_url || pet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
 
                             // Determine status label and class
-                            let statusLabel = 'Fondo activo';
+                            let statusLabel = 'Apoyo activo';
                             let statusClass = '';
                             if (!isApproved) {
                                 statusLabel = 'Pendiente aprobación';
@@ -698,7 +698,7 @@ class SolidarityRequestForm {
                                     </div>
                                 </div>
                                 <div class="pata-exp-field">
-                                    <label for="pata-amount">Monto solicitado al fondo</label>
+                                    <label for="pata-amount">Monto solicitado de apoyo económico</label>
                                     <div class="pata-exp-input-wrap">
                                         <input type="number" id="pata-amount" placeholder="$0.00" value="${this.state.formData.requestedAmount}">
                                         <span class="suffix">MXN</span>
@@ -816,7 +816,7 @@ class SolidarityRequestForm {
                     ` : `
                         ${!isEmergency ? `
                             <div class="pata-field">
-                                <label class="pata-label" for="pata-amount">Monto solicitado al fondo</label>
+                                <label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label>
                                 <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
                             </div>
                         ` : ''}
@@ -830,7 +830,7 @@ class SolidarityRequestForm {
                                 <input type="number" class="pata-input" id="pata-total-paid" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.totalPaidAmount}">
                             </div>
                             <div class="pata-field">
-                                <label class="pata-label" for="pata-amount">Monto solicitado al fondo</label>
+                                <label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label>
                                 <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
                             </div>
                             <div class="pata-field full">

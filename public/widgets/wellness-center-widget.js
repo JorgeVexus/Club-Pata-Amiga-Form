@@ -573,7 +573,7 @@
                     </div>
 
                     <div class="wc-card">
-                        <h2 class="wc-title" style="font-size:1.5rem;">Fondo Solidario</h2>
+                        <h2 class="wc-title" style="font-size:1.5rem;">Apoyo Económico</h2>
                         <p>Beneficios económicos y pagos recibidos.</p>
                         <button id="btn-view-payments" class="wc-btn wc-btn-secondary">Ver Historial</button>
                     </div>
@@ -722,7 +722,7 @@
         const paymentsList = (center.payments || []).map(p => `
             <tr>
                 <td>${new Date(p.paid_at || p.created_at).toLocaleDateString()}</td>
-                <td>Pago de Fondo Solidario</td>
+                <td>Pago de Apoyo Económico</td>
                 <td class="wc-amount">$${p.amount.toFixed(2)}</td>
                 <td><span class="wc-status-badge status-approved">${p.status}</span></td>
             </tr>
@@ -731,7 +731,7 @@
         overlay.innerHTML = `
             <div class="wc-modal">
                 <div class="wc-modal-header">
-                    <h2 class="wc-title">Historial de Pagos (Fondo Solidario)</h2>
+                    <h2 class="wc-title">Historial de Pagos (Apoyo Económico)</h2>
                     <button class="wc-close-btn">&times;</button>
                 </div>
                 <p>Estos son los pagos que Pata Amiga ha realizado a tu centro por servicios a nuestros miembros.</p>

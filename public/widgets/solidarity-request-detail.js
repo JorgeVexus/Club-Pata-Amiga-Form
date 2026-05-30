@@ -314,7 +314,7 @@ class SolidarityRequestDetail {
                 badge: 'rechazada',
                 icon: `${this.baseUrl}/Icons/rechazada.png`,
                 color: '#FF0066',
-                msg: `Lamentablemente, tu solicitud no cumple con todos los requisitos del fondo en esta ocasión.\n\nRevisa el historial de mensajes para conocer los detalles del rechazo. Si crees que hay un error, puedes iniciar un proceso de apelación.`
+                msg: `Lamentablemente, tu solicitud no cumple con todos los requisitos del apoyo económico en esta ocasión.\n\nRevisa el historial de mensajes para conocer los detalles del rechazo. Si crees que hay un error, puedes iniciar un proceso de apelación.`
             },
             needs_info: {
                 label: 'acción requerida',

@@ -253,7 +253,7 @@ function renderPanel() {
     // Actualizar información de días
     updateElement('[data-pet-info="days-remaining"]', progress.daysRemaining);
     updateElement('[data-pet-info="days-text"]',
-        `Faltan ${progress.daysRemaining} días para activar tu fondo solidario completo`
+        `Faltan ${progress.daysRemaining} días para activar tu apoyo económico completo`
     );
 
     // Actualizar barra de progreso
@@ -307,7 +307,7 @@ function updateAdditionalMessage(pet) {
     if (pet.isAdopted) {
         message = '¡Genial! Tu mascota tiene un período de carencia reducido de 90 días por ser adoptada.';
     } else {
-        message = '¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al fondo. Contáctanos para validar tus documentos.';
+        message = '¿Adoptaste a alguno de tus compañeros? Puedes acelerar tu acceso al apoyo económico. Contáctanos para validar tus documentos.';
     }
 
     updateElement('[data-pet-info="additional-message"]', message);
