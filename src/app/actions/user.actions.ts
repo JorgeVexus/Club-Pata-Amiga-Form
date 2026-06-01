@@ -313,15 +313,50 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
 
     try {
         // 1. Obtener el ID interno del usuario en Supabase (UUID)
-        const { data: userData, error: userError } = await supabase
+        let { data: userData, error: userError } = await supabase
             .from('users')
             .select('id')
             .eq('memberstack_id', memberstackId)
-            .single();
+            .maybeSingle();
 
-        if (userError || !userData) {
-            console.error(`❌ [Server Action] Usuario no encontrado en Supabase para MS_ID: ${memberstackId}. Error:`, userError);
-            return { success: false, error: 'Usuario no encontrado' };
+        if (userError) {
+            console.error(`❌ [Server Action] Error buscando usuario para MS_ID: ${memberstackId}. Error:`, userError);
+        }
+
+        if (!userData) {
+            console.log(`⚠️ [Server Action] Usuario con MS_ID ${memberstackId} no encontrado en Supabase. Creándolo preventivamente...`);
+            // Obtener email desde Memberstack para mantener consistencia
+            let email = '';
+            try {
+                const msResult = await getMemberDetails(memberstackId);
+                if (msResult && msResult.success && msResult.data) {
+                    email = msResult.data.auth?.email || '';
+                }
+            } catch (e) {
+                console.error('⚠️ [Server Action] Error al obtener email de Memberstack:', e);
+            }
+
+            const { data: newUser, error: createError } = await supabase
+                .from('users')
+                .insert({
+                    memberstack_id: memberstackId,
+                    email: email || `${memberstackId}@placeholder.com`,
+                    first_name: '',
+                    last_name: '',
+                    mother_last_name: '',
+                    registration_step: 2,
+                    membership_status: 'pending'
+                })
+                .select('id')
+                .single();
+
+            if (createError) {
+                console.error(`❌ [Server Action] Error al crear usuario preventivo:`, createError);
+                return { success: false, error: `No se pudo crear el usuario preventivo: ${createError.message}` };
+            }
+            
+            userData = newUser;
+            console.log(`✅ [Server Action] Usuario preventivo creado en Supabase con ID: ${userData.id}`);
         }
 
         // 2. Preparar los datos de las mascotas
