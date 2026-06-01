@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
+import { getRegistrationIssue } from '@/utils/registration-completeness';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -159,13 +160,27 @@ export async function GET(request: NextRequest) {
             // Extract payment status from the first plan connection
             const plan = member.planConnections?.[0];
             const paymentStatus = plan?.status?.toLowerCase() || 'none';
+            const petCount = enriched?.petCount || 0;
+            const hasActivePlan = paymentStatus === 'active' || paymentStatus === 'trialing';
+            const customFields = member.customFields || {};
+            const hasBasicPetFields = Boolean(
+                customFields['pet-1-name'] ||
+                customFields['pet-name'] ||
+                Number(customFields['total-pets'] || 0) > 0
+            );
+            const registrationIssue = getRegistrationIssue({
+                hasActivePlan,
+                petCount,
+                hasValidPetBasic: hasBasicPetFields,
+            });
 
             return {
                 ...member,
-                petCount: enriched?.petCount || 0,
+                petCount,
                 pendingPetCount: enriched?.pendingPetCount || 0,
-                infoStatus: enriched?.infoStatus || 'complete',
+                infoStatus: enriched?.infoStatus || (registrationIssue ? 'incomplete' : 'complete'),
                 paymentStatus: paymentStatus,
+                registrationIssue,
                 supabaseFirstName: enriched?.firstName,
                 supabaseLastName: enriched?.lastName
             };

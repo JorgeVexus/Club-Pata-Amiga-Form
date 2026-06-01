@@ -31,6 +31,10 @@ import Toast from '@/components/UI/Toast';
 import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
 import { calculateWaitingPeriod } from '@/services/pet.service';
+import {
+    clampRequestedRegistrationStep,
+    hasValidPetBasic,
+} from '@/utils/registration-completeness';
 
 // Tipos
 import type { RegistrationProgress } from '@/types/registration.types';
@@ -130,6 +134,7 @@ export default function NewRegistrationFlow() {
                 // ────────────────────────────────────────────────────────────
                 const nativeParams = new URLSearchParams(window.location.search);
                 const magicToken = nativeParams.get('mt');
+                const initialReason = nativeParams.get('reason') || '';
                 let magicData: {
                     memberstackId: string;
                     email: string;
@@ -187,7 +192,7 @@ export default function NewRegistrationFlow() {
                             isPaymentSuccess 
                         });
 
-                        if (hasActivePlan && !isPaymentSuccess) {
+                        if (hasActivePlan && !isPaymentSuccess && initialReason !== 'finish_onboarding') {
                             console.log('🔍 [loadSavedState] Miembro con plan activo detectado, redirigiendo...');
                             handlePaidMemberRedirect();
                             return;
@@ -332,9 +337,7 @@ export default function NewRegistrationFlow() {
 
                         // Si la URL especifica un paso, lo respetamos siempre que no sea superior al progreso real
                         // o si es una recuperación de pago
-                        if (urlStep > 0 && urlStep <= 5) {
-                            finalStep = urlStep;
-                        }
+                        // Requested URL step is clamped below after payment and pet checks.
 
                         // Caso especial: Recuperación de pago (desde email o Stripe back)
                         const paymentStatus = currentMember.customFields?.['payment-status'];
@@ -344,8 +347,9 @@ export default function NewRegistrationFlow() {
                         // 🍎 iOS FIX: useSearchParams() puede ser vacío en iOS Safari (pre-hidratación).
                         // Leemos 'reason' directamente desde window.location.search para garantizar
                         // que el parámetro sea detectado en TODOS los navegadores (incluyendo iOS Safari).
-                        const nativeParams = new URLSearchParams(typeof window !== 'undefined' ? window.location.search : '');
-                        const isRecoveryFlag = nativeParams.get('reason') === 'complete_payment';
+                        const nativeReason = nativeParams.get('reason') || '';
+                        const isRecoveryFlag = nativeReason === 'complete_payment';
+                        const finishOnboarding = nativeReason === 'finish_onboarding';
                         setIsRecovery(isRecoveryFlag);
 
                         console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, isCheckoutPending, isRecovery: isRecoveryFlag, finalStep, msStep, dbStep });
@@ -397,6 +401,15 @@ export default function NewRegistrationFlow() {
                         }
 
                         console.log(`📊 Progreso final: MS(${msStep}), DB(${dbStep}), URL(${urlStep}), Pending(${isCheckoutPending}) -> Paso Actual(${finalStep})`);
+                        finalStep = clampRequestedRegistrationStep({
+                            requestedStep: urlStep,
+                            computedStep: finalStep,
+                            hasValidPetBasic: hasValidPetBasic(loadedData.petBasic),
+                            hasPetsInDb: hasPetsInDB,
+                            paymentCompleted: isPaymentSuccess || paymentStatus === 'completed' || hasActivePlan,
+                            finishOnboarding,
+                        });
+
                         goToStep(finalStep, true); // replaceState para el paso inicial
                     } else {
                         // 👤 No hay sesión activa en Memberstack.
@@ -897,6 +910,13 @@ export default function NewRegistrationFlow() {
 
         // Paso 3: Seleccionar plan y proceder a pago
     const handleStep3Complete = async (planId: string, termsAcceptance?: any, referralCode?: string) => {
+        if (!hasValidPetBasic(registrationData.petBasic)) {
+            console.warn('[Checkout] Blocked: missing valid pet basic data');
+            showToast('Antes de pagar necesitamos registrar al menos una mascota.', 'error');
+            goToStep(2);
+            return;
+        }
+
         let updatedPetBasic = registrationData.petBasic;
 
         // Si hay código de referido, recalcular carencia de todas las mascotas

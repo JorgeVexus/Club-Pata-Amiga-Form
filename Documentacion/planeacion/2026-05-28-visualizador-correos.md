@@ -1,4 +1,4 @@
-# Plan de Implementación: Visualizador de Correos en Dashboard de Administración
+gsd# Plan de Implementación: Visualizador de Correos en Dashboard de Administración
 
 Este plan propone añadir una nueva sección en el panel de administración ("Plantillas de Correo") que permite a los administradores previsualizar en tiempo real el diseño y contenido de todos los correos electrónicos que el sistema envía, organizados por categoría (Miembros, Embajadores, Centros de Bienestar) y permitiendo parametrizar los datos para ver cómo lucirían.
 

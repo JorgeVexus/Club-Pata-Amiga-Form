@@ -744,6 +744,18 @@
 
                 // Ejecutar compra/update vía Memberstack
                 // Esto abrirá el modal de Stripe de Memberstack automáticamente
+                const customFields = member.data.customFields || {};
+                const hasPetFields = Boolean(
+                    customFields['pet-1-name'] ||
+                    customFields['pet-name'] ||
+                    Number(customFields['total-pets'] || 0) > 0
+                );
+
+                if (!hasPetFields) {
+                    window.location.href = 'https://app.pataamiga.mx/registro';
+                    return;
+                }
+
                 const result = await window.$memberstackDom.purchasePlansWithCheckout({
                     priceId: this.selectedPlan,
                     successUrl: window.location.origin + '/payment-success',

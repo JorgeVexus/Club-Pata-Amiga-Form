@@ -83,6 +83,19 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
             console.log('🛒 Iniciando checkout con plan:', selectedPlanId);
 
             // Lanzar el checkout de Stripe a través de Memberstack
+            const { data: currentMember } = await window.$memberstackDom.getCurrentMember();
+            const customFields = currentMember?.customFields || {};
+            const hasPetFields = Boolean(
+                customFields['pet-1-name'] ||
+                customFields['pet-name'] ||
+                Number(customFields['total-pets'] || 0) > 0
+            );
+
+            if (!currentMember || !hasPetFields) {
+                window.location.href = '/registro';
+                return;
+            }
+
             const result = await window.$memberstackDom.purchasePlansWithCheckout({
                 priceId: selectedPlanId,
                 successUrl: window.location.origin + '/payment-success',

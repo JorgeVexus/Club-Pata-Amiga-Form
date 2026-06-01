@@ -1,112 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import StepIndicator from '@/components/UI/StepIndicator';
-import PlanSelection from '@/components/PlanSelection/PlanSelection';
-import { getRegistrationProgress, markStepComplete, canAccessStep, getCompletedSteps, resetRegistrationProgress } from '@/utils/registration-progress';
-import HelpSection from '@/components/UI/HelpSection';
 import BrandLogo from '@/components/UI/BrandLogo';
 import styles from './page.module.css';
 
 export default function PlanSelectionContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const [completedSteps, setCompletedSteps] = useState<number[]>([]);
-    const [isCompletingPayment, setIsCompletingPayment] = useState(false);
 
     useEffect(() => {
-        // Detectar si viene de login sin pagar y redirigir al nuevo flujo V2
+        const params = new URLSearchParams();
         const reason = searchParams.get('reason');
-        if (reason === 'complete_payment') {
-            router.push('/registro?reason=complete_payment');
-            return;
+        const recuperar = searchParams.get('recuperar');
+
+        if (reason === 'complete_payment' || recuperar === '1') {
+            params.set('reason', 'complete_payment');
         }
 
-        // Verificar si puede acceder a este paso (solo en producción o si no es localhost)
-        if (window.location.hostname !== 'localhost' && !canAccessStep(3)) {
-            const progress = getRegistrationProgress();
-            if (!progress.step1Complete) {
-                router.push('/completar-perfil');
-            } else if (!progress.step2Complete) {
-                router.push('/registrar-mascotas');
-            }
-            return;
-        }
-
-        // Cargar pasos completados
-        const completed = getCompletedSteps();
-        setCompletedSteps(completed);
+        const target = params.toString() ? `/registro?${params.toString()}` : '/registro';
+        router.replace(target);
     }, [router, searchParams]);
-
-    const handleStepClick = (step: number) => {
-        const progress = getRegistrationProgress();
-
-        if (step === 1) {
-            router.push('/completar-perfil');
-        } else if (step === 2 && progress.step1Complete) {
-            router.push('/registrar-mascotas');
-        } else if (step === 3 && progress.step1Complete && progress.step2Complete) {
-            router.push('/seleccion-plan');
-        }
-    };
-
-    const handlePlanSuccess = () => {
-        // Marcar paso 3 como completo
-        markStepComplete(3);
-
-        // Limpiar progreso ya que el registro está completo
-        resetRegistrationProgress();
-
-        // Redirigir a página de éxito o dashboard
-        // router.push('/registro-exitoso');
-        console.log('¡Registro completo!');
-    };
-
-    const handleGoBack = () => {
-        router.push('/registrar-mascotas');
-    };
 
     return (
         <div className={styles.pageBackground}>
             <BrandLogo />
             <div className={styles.whiteCard}>
-                {/* Imagen decorativa de las patas */}
-                <img
-                    src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6990ae4a1602b7aad2a19aa3_pagos%20img.png"
-                    alt=""
-                    className={styles.decorativeImage}
-                    aria-hidden
-                />
-
-                <h1 className={styles.mainTitle}>
-                    {isCompletingPayment ? 'Completa tu membresía 🐾' : 'Únete a la manada'}
-                </h1>
-
-                {isCompletingPayment && (
-                    <div className={styles.paymentAlert}>
-                        <p>👋 ¡Hola de nuevo! Vimos que aún no has completado el pago de tu membresía.</p>
-                        <p>Selecciona un plan para activar todos los beneficios de la manada.</p>
-                    </div>
-                )}
-
-                {!isCompletingPayment && (
-                    <StepIndicator
-                        currentStep={3}
-                        completedSteps={completedSteps}
-                        onStepClick={handleStepClick}
-                    />
-                )}
-
-                <div className={styles.contentLayout}>
-                    <div className={styles.formColumn}>
-                        <PlanSelection
-                            onSuccess={handlePlanSuccess}
-                            onBack={isCompletingPayment ? undefined : handleGoBack}
-                        />
-                        <HelpSection />
-                    </div>
-                </div>
+                <h1 className={styles.mainTitle}>Redirigiendo al registro</h1>
             </div>
         </div>
     );

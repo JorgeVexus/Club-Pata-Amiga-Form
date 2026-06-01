@@ -9,6 +9,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import TermsModalEnhanced from '../TermsModalEnhanced';
 import styles from './Step3PlanSelection.module.css';
 import { trackEvent } from '@/components/Analytics/MetaPixel';
+import { hasValidPetBasic, normalizePetBasicList } from '@/utils/registration-completeness';
 
 // Reusable SVG Components for branding
 const CheckIcon = () => (
@@ -94,8 +95,10 @@ export default function Step3PlanSelection({
     const [isCodeValidated, setIsCodeValidated] = useState(false);
 
     // Resumen de mascota
-    const petName = data?.petBasic?.petName || 'tu mascota';
-    const petType = data?.petBasic?.petType === 'gato' ? 'gato' : 'perro';
+    const primaryPet = normalizePetBasicList(data?.petBasic)[0];
+    const petName = primaryPet?.petName || 'tu mascota';
+    const petType = primaryPet?.petType === 'gato' ? 'gato' : 'perro';
+    const canCheckout = hasValidPetBasic(data?.petBasic);
 
     const handleSelectPlan = (planId: string) => {
         setSelectedPlan(planId);
@@ -189,6 +192,12 @@ export default function Step3PlanSelection({
     };
 
     const handleContinue = async () => {
+        if (!canCheckout) {
+            showToast('Antes de pagar necesitamos registrar al menos una mascota.', 'error');
+            onBack();
+            return;
+        }
+
         if (!selectedPlan) {
             showToast('⚠️ ¡No te quedes sin plan! Elige uno para continuar.', 'error');
             setShowValidationHint(true);
@@ -400,7 +409,7 @@ export default function Step3PlanSelection({
                                 type="button"
                                 className={styles.primaryButton}
                                 onClick={handleContinue}
-                                disabled={isProcessing}
+                                disabled={isProcessing || !canCheckout}
                             >
                                 {isProcessing ? 'Procesando...' : 'Continuar al pago →'}
                             </button>
@@ -422,13 +431,18 @@ export default function Step3PlanSelection({
                                 className={styles.secondaryButton}
                                 style={{ marginTop: '1rem', background: 'transparent !important', color: '#E65100 !important', borderStyle: 'dashed' }}
                                 onClick={() => {
+                                    if (!canCheckout) {
+                                        showToast('Antes de pagar necesitamos registrar al menos una mascota.', 'error');
+                                        onBack();
+                                        return;
+                                    }
                                     if (!selectedPlan || !termsAccepted) {
                                         showToast('Selecciona un plan y acepta los términos primero', 'warning');
                                         return;
                                     }
                                     onSkipPayment?.(selectedPlan, termsAccepted);
                                 }}
-                                disabled={isProcessing}
+                                disabled={isProcessing || !canCheckout}
                             >
                                 Omitir pago (Test)
                             </button>

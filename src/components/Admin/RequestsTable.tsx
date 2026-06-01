@@ -14,6 +14,7 @@ interface MemberRequest {
     petCount?: number;
     pendingPetCount?: number;
     paymentStatus?: string;
+    registrationIssue?: 'paid_without_pets' | 'paid_without_complete_pet_rows' | null;
     type: 'member' | 'ambassador' | 'wellness-center';
     roles: ('member' | 'ambassador' | 'wellness-center')[];
 }
@@ -299,6 +300,7 @@ export default function RequestsTable({
                     pendingPetCount: member.pendingPetCount || 0,
                     infoStatus: member.infoStatus || 'complete',
                     paymentStatus: member.paymentStatus || 'none',
+                    registrationIssue: member.registrationIssue || null,
                     type: 'member',
                     roles: roles
                 });
@@ -777,6 +779,24 @@ export default function RequestsTable({
                                         {request.type === 'member' ? (
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                 <span>🐶 {request.petCount || 0} Mascotas</span>
+                                                {request.registrationIssue === 'paid_without_pets' && (
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        color: '#B91C1C',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        Pago sin mascotas
+                                                    </span>
+                                                )}
+                                                {request.registrationIssue === 'paid_without_complete_pet_rows' && (
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        color: '#92400E',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        Mascota por recuperar
+                                                    </span>
+                                                )}
                                                 {request.status === 'approved' && request.pendingPetCount! > 0 && (
                                                     <span style={{ 
                                                         fontSize: '0.75rem', 
