@@ -3,6 +3,8 @@ import { getMemberDetails, updateMemberData, triggerVerificationEmail, membersta
 import { getUserDataByMemberstackId, updateUserEmailInSupabase } from '@/app/actions/user.actions';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 import { commService } from '@/services/comm.service';
+import { supabaseAdmin } from '@/lib/supabase';
+import { getRegistrationIssue } from '@/utils/registration-completeness';
 
 export async function GET(
     request: NextRequest,
@@ -46,6 +48,15 @@ export async function GET(
             const supabaseResult = await getUserDataByMemberstackId(memberId);
             if (supabaseResult.success && supabaseResult.userData) {
                 const userData = supabaseResult.userData;
+                let petCount = 0;
+
+                if (supabaseAdmin && userData.id) {
+                    const { count } = await supabaseAdmin
+                        .from('pets')
+                        .select('id', { count: 'exact', head: true })
+                        .eq('owner_id', userData.id);
+                    petCount = count || 0;
+                }
 
                 // Mapear campos de Supabase a customFields de Memberstack para compatibilidad con el modal
                 member.customFields = {
@@ -60,6 +71,22 @@ export async function GET(
                     'ine-front-url': userData.ine_front_url || member.customFields['ine-front-url'],
                     'ine-back-url': userData.ine_back_url || member.customFields['ine-back-url'],
                 };
+
+                const plan = member.planConnections?.[0];
+                const paymentStatus = plan?.status?.toLowerCase() || 'none';
+                const hasActivePlan = paymentStatus === 'active' || paymentStatus === 'trialing';
+                const hasBasicPetFields = Boolean(
+                    member.customFields['pet-1-name'] ||
+                    member.customFields['pet-name'] ||
+                    Number(member.customFields['total-pets'] || 0) > 0
+                );
+
+                (member as any).petCount = petCount;
+                (member as any).registrationIssue = getRegistrationIssue({
+                    hasActivePlan,
+                    petCount,
+                    hasValidPetBasic: hasBasicPetFields,
+                });
 
                 console.log(`✅ Datos de Supabase combinados para ${memberId}`);
             }

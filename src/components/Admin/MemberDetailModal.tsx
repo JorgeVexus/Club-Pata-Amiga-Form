@@ -93,6 +93,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [loadingStripe, setLoadingStripe] = useState(false);
     const [isSyncingCRM, setIsSyncingCRM] = useState(false);
     const [showRejectForm, setShowRejectForm] = useState<Record<string, boolean>>({});
+    const [sendingPetRecoveryLink, setSendingPetRecoveryLink] = useState(false);
 
     // States for Editing
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -538,9 +539,36 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         }
     }
 
+    async function sendPetRecoveryLink() {
+        if (sendingPetRecoveryLink) return;
+        setSendingPetRecoveryLink(true);
+
+        try {
+            const response = await adminFetch(`/api/admin/members/${member.id}/pet-recovery-link`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                alert(`Link enviado correctamente. ${data.message || ''}`);
+                onDataChange?.();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo enviar el link'));
+            }
+        } catch (error) {
+            console.error('Pet recovery link error:', error);
+            alert('Error de conexion al enviar el link.');
+        } finally {
+            setSendingPetRecoveryLink(false);
+        }
+    }
+
     if (!isOpen || !member) return null;
 
     const fields = member.customFields || {};
+    const registrationIssue = member.registrationIssue as string | null | undefined;
+    const needsPetRecovery = registrationIssue === 'paid_without_pets' || registrationIssue === 'paid_without_complete_pet_rows';
 
     // 🆕 Lógica reforzada para detectar extranjeros
     const nationalityValue = (supabaseUser?.nationality || fields['nationality'] || '').toLowerCase();
@@ -1162,6 +1190,33 @@ return (
                             <p style={{ fontSize: '0.85rem', color: '#666', marginTop: '10px', fontStyle: 'italic' }}>
                                 💡 Responde a cada mascota individualmente en su tarjeta de abajo.
                             </p>
+                        </div>
+                    )}
+
+                    {needsPetRecovery && (
+                        <div className={styles.section} style={{ border: '2px solid #FCA5A5', background: '#FEF2F2' }}>
+                            <h3 className={styles.sectionTitle}>Mascota por recuperar</h3>
+                            <p style={{ margin: '0 0 16px', color: '#7F1D1D', lineHeight: 1.5 }}>
+                                Este miembro tiene membresia activa o pagada, pero no tiene mascotas completas en el expediente.
+                                Puedes enviarle un enlace seguro para completar los pasos de mascota del Registro V2.
+                            </p>
+                            <button
+                                type="button"
+                                style={{
+                                    background: '#FE8F15',
+                                    color: '#fff',
+                                    border: '2px solid #000',
+                                    borderRadius: '50px',
+                                    padding: '12px 24px',
+                                    fontWeight: 700,
+                                    cursor: sendingPetRecoveryLink ? 'not-allowed' : 'pointer',
+                                    opacity: sendingPetRecoveryLink ? 0.7 : 1
+                                }}
+                                onClick={sendPetRecoveryLink}
+                                disabled={sendingPetRecoveryLink}
+                            >
+                                {sendingPetRecoveryLink ? 'Enviando...' : 'Enviar link para completar mascota'}
+                            </button>
                         </div>
                     )}
 

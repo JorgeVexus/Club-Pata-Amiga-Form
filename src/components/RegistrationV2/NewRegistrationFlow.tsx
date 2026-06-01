@@ -122,6 +122,16 @@ export default function NewRegistrationFlow() {
     // Toast
     const [toast, setToast] = useState<{ message: string; type: 'error' | 'success' | 'warning'; isVisible: boolean }>({ message: '', type: 'error', isVisible: false });
 
+    const memberHasPetBasicFields = (candidate: any) => {
+        const cf = candidate?.customFields || {};
+        return hasValidPetBasic([{
+            petName: cf['pet-1-name'] || cf['pet-name'],
+            petType: cf['pet-1-type'] || cf['pet-type'],
+            petAge: cf['pet-1-age'] || cf['pet-age'],
+            petAgeUnit: cf['pet-1-age-unit'] || cf['pet-age-unit'],
+        }]);
+    };
+
     // Cargar estado guardado al montar
     useEffect(() => {
         const loadSavedState = async () => {
@@ -192,7 +202,7 @@ export default function NewRegistrationFlow() {
                             isPaymentSuccess 
                         });
 
-                        if (hasActivePlan && !isPaymentSuccess && initialReason !== 'finish_onboarding') {
+                        if (hasActivePlan && !isPaymentSuccess && initialReason !== 'finish_onboarding' && initialReason !== 'complete_pet_info') {
                             console.log('🔍 [loadSavedState] Miembro con plan activo detectado, redirigiendo...');
                             handlePaidMemberRedirect();
                             return;
@@ -350,6 +360,7 @@ export default function NewRegistrationFlow() {
                         const nativeReason = nativeParams.get('reason') || '';
                         const isRecoveryFlag = nativeReason === 'complete_payment';
                         const finishOnboarding = nativeReason === 'finish_onboarding';
+                        const petRecovery = nativeReason === 'complete_pet_info' || magicData?.intent === 'complete_pet_info';
                         setIsRecovery(isRecoveryFlag);
 
                         console.log('💳 Verificación de pago:', { paymentStatus, isPaymentSuccess, isCheckoutPending, isRecovery: isRecoveryFlag, finalStep, msStep, dbStep });
@@ -408,6 +419,7 @@ export default function NewRegistrationFlow() {
                             hasPetsInDb: hasPetsInDB,
                             paymentCompleted: isPaymentSuccess || paymentStatus === 'completed' || hasActivePlan,
                             finishOnboarding,
+                            petRecovery,
                         });
 
                         goToStep(finalStep, true); // replaceState para el paso inicial
@@ -582,16 +594,17 @@ export default function NewRegistrationFlow() {
                 ? sessionStorage.getItem('pata_login_intent')
                 : null;
             const hasRecoveryIntent = savedIntent === 'complete_payment';
+            const hasPetRecoveryIntent = savedIntent === 'complete_pet_info';
 
             // Si ya hay usuario logueado con ese email, simplemente avanzar
             if (member && member.auth?.email === data.email) {
                 console.log('🔄 Usuario ya logueado, reanudando registro...');
 
                 // Si hay intent de recuperación de pago, ir al paso 3
-                const targetStep = hasRecoveryIntent ? 3 : ((currentStep && currentStep > 1) ? currentStep : 2);
-                if (hasRecoveryIntent) {
+                const targetStep = hasPetRecoveryIntent ? (memberHasPetBasicFields(member) ? 5 : 2) : hasRecoveryIntent ? 3 : ((currentStep && currentStep > 1) ? currentStep : 2);
+                if (hasRecoveryIntent || hasPetRecoveryIntent) {
                     sessionStorage.removeItem('pata_login_intent');
-                    console.log('🍎 iOS: intent recuperado, enviando al paso 3');
+                    console.log('🍎 iOS: intent recuperado, enviando al paso', targetStep);
                 }
 
                 // Asegurarnos de que el paso esté sincronizado
@@ -657,17 +670,19 @@ export default function NewRegistrationFlow() {
                         paymentStatusField
                     });
 
-                    if (hasActivePlan) {
+                    if (hasActivePlan && !hasPetRecoveryIntent) {
                         handlePaidMemberRedirect();
                         return;
                     }
 
-                    if (hasRecoveryIntent || isCheckoutPending) {
+                    if (hasPetRecoveryIntent) {
+                        loginTargetStep = (userHasPets || memberHasPetBasicFields(memberToVerify)) ? 5 : 2;
+                    } else if (hasRecoveryIntent || isCheckoutPending) {
                         if (paymentStatus !== 'completed') loginTargetStep = 3;
                     }
-                    if (paymentStatus === 'completed' && loginTargetStep < 4) loginTargetStep = 4;
+                    if (!hasPetRecoveryIntent && paymentStatus === 'completed' && loginTargetStep < 4) loginTargetStep = 4;
 
-                    if (hasRecoveryIntent) sessionStorage.removeItem('pata_login_intent');
+                    if (hasRecoveryIntent || hasPetRecoveryIntent) sessionStorage.removeItem('pata_login_intent');
 
                     console.log(`✅ Login directo exitoso. Paso final: ${loginTargetStep}`);
 
@@ -759,10 +774,10 @@ export default function NewRegistrationFlow() {
             );
 
             // 🍎 Intent de recuperación de pago: ir al paso 3 en lugar del 2
-            const finalTargetStep = hasRecoveryIntent ? 3 : 2;
-            if (hasRecoveryIntent) {
+            const finalTargetStep = hasPetRecoveryIntent ? 2 : hasRecoveryIntent ? 3 : 2;
+            if (hasRecoveryIntent || hasPetRecoveryIntent) {
                 sessionStorage.removeItem('pata_login_intent');
-                console.log('🍎 iOS: intent recuperado post-signup, enviando al paso 3');
+                console.log('🍎 iOS: intent recuperado post-signup, enviando al paso', finalTargetStep);
             }
 
             setRegistrationData(prev => ({ ...prev, account: data }));
@@ -796,6 +811,7 @@ export default function NewRegistrationFlow() {
                             ? sessionStorage.getItem('pata_login_intent')
                             : null;
                         const hasRecoveryIntent2 = savedIntent2 === 'complete_payment';
+                        const hasPetRecoveryIntent2 = savedIntent2 === 'complete_pet_info';
 
                         const msStep = Number(loggedMember.customFields?.['registration-step'] || 1);
                         const paymentStatus = loggedMember.customFields?.['payment-status'];
@@ -803,6 +819,8 @@ export default function NewRegistrationFlow() {
                             loggedMember.customFields?.['checkout-pending'] === true;
 
                         let loginTargetStep = Math.max(msStep, 2);
+                        const petsCheckResult2 = await getPetsByUserId(msId);
+                        const userHasPets2 = petsCheckResult2.success && Array.isArray((petsCheckResult2 as any).pets) && (petsCheckResult2 as any).pets.length > 0;
 
                         // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual - Email existente)
                         // Forzamos un refresco para obtener planes actualizados
@@ -825,21 +843,23 @@ export default function NewRegistrationFlow() {
                             paymentStatusField2
                         });
 
-                        if (hasActivePlan) {
+                        if (hasActivePlan && !hasPetRecoveryIntent2) {
                             handlePaidMemberRedirect();
                             return;
                         }
 
-                        if (hasRecoveryIntent2 || isCheckoutPending) {
+                        if (hasPetRecoveryIntent2) {
+                            loginTargetStep = (userHasPets2 || memberHasPetBasicFields(memberToVerify2)) ? 5 : 2;
+                        } else if (hasRecoveryIntent2 || isCheckoutPending) {
                             if (paymentStatus !== 'completed') {
                                 loginTargetStep = 3;
                             }
                         }
-                        if (paymentStatus === 'completed' && loginTargetStep < 4) {
+                        if (!hasPetRecoveryIntent2 && paymentStatus === 'completed' && loginTargetStep < 4) {
                             loginTargetStep = 4;
                         }
 
-                        if (hasRecoveryIntent2) {
+                        if (hasRecoveryIntent2 || hasPetRecoveryIntent2) {
                             sessionStorage.removeItem('pata_login_intent');
                         }
 
@@ -867,6 +887,10 @@ export default function NewRegistrationFlow() {
     const handleStep2Complete = async (pets: Array<{ petType: 'perro' | 'gato'; petName: string; petAge: number; petAgeUnit: 'years' | 'months' }>) => {
         const newData = { ...registrationData, petBasic: pets };
         setRegistrationData(newData);
+        const savedIntent = typeof window !== 'undefined' ? sessionStorage.getItem('pata_login_intent') : null;
+        const currentReason = typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('reason') : null;
+        const isPetRecovery = savedIntent === 'complete_pet_info' || currentReason === 'complete_pet_info';
+        const nextStep = isPetRecovery ? 5 : 3;
 
         // Backup inmediato en localStorage (sobrevive redirect de Stripe)
         try {
@@ -874,13 +898,12 @@ export default function NewRegistrationFlow() {
             console.log('💾 [Step2] petBasic guardado en localStorage:', pets.length, 'mascotas');
         } catch (e) { /* localStorage no disponible */ }
 
-        // Guardar en Supabase - Siguiente paso es el 3
-        await saveProgress(3, newData);
+        await saveProgress(nextStep, newData);
 
         // Actualizar Memberstack (incluir datos de mascota como backup para sobrevivir el redirect de Stripe)
         if (member && window.$memberstackDom) {
             const customFields: Record<string, any> = {
-                'registration-step': 3,
+                'registration-step': nextStep,
                 'total-pets': String(pets.length)
             };
 
@@ -905,7 +928,11 @@ export default function NewRegistrationFlow() {
             if (updatedMember) setMember(updatedMember);
         }
 
-        goToStep(3);
+        if (isPetRecovery) {
+            sessionStorage.removeItem('pata_login_intent');
+        }
+
+        goToStep(nextStep);
     };
 
         // Paso 3: Seleccionar plan y proceder a pago

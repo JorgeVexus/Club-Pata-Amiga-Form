@@ -12,6 +12,7 @@ export interface ClampRegistrationStepInput {
   hasPetsInDb: boolean;
   paymentCompleted: boolean;
   finishOnboarding: boolean;
+  petRecovery?: boolean;
 }
 
 export type RegistrationIssue =

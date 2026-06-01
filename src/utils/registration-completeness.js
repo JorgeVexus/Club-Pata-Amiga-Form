@@ -34,6 +34,7 @@ function clampRequestedRegistrationStep({
   hasPetsInDb,
   paymentCompleted,
   finishOnboarding,
+  petRecovery,
 }) {
   const safeComputedStep = Number.isFinite(Number(computedStep)) ? Number(computedStep) : 1;
   const safeRequestedStep = Number.isFinite(Number(requestedStep)) ? Number(requestedStep) : 0;
@@ -44,6 +45,10 @@ function clampRequestedRegistrationStep({
   }
 
   const hasAnyPetEvidence = Boolean(validPetBasic || hasPetsInDb);
+
+  if (paymentCompleted && petRecovery) {
+    return hasAnyPetEvidence ? 5 : 2;
+  }
 
   if (!hasAnyPetEvidence && !paymentCompleted && finalStep >= 3) {
     return 2;

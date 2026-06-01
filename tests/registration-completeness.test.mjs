@@ -71,6 +71,34 @@ test('clampRequestedRegistrationStep sends paid finish-onboarding users to profi
   assert.equal(result, 4);
 });
 
+test('clampRequestedRegistrationStep sends paid pet-recovery users without pet basics to step 2', () => {
+  const result = clampRequestedRegistrationStep({
+    requestedStep: 0,
+    computedStep: 4,
+    hasValidPetBasic: false,
+    hasPetsInDb: false,
+    paymentCompleted: true,
+    finishOnboarding: false,
+    petRecovery: true,
+  });
+
+  assert.equal(result, 2);
+});
+
+test('clampRequestedRegistrationStep sends paid pet-recovery users with pet basics to step 5', () => {
+  const result = clampRequestedRegistrationStep({
+    requestedStep: 0,
+    computedStep: 4,
+    hasValidPetBasic: true,
+    hasPetsInDb: false,
+    paymentCompleted: true,
+    finishOnboarding: false,
+    petRecovery: true,
+  });
+
+  assert.equal(result, 5);
+});
+
 test('getRegistrationIssue detects paid member without pets', () => {
   assert.equal(
     getRegistrationIssue({

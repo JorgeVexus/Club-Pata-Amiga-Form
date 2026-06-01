@@ -74,6 +74,7 @@ export default function RequestsTable({
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const [infoFilter, setInfoFilter] = useState<'all' | 'complete' | 'incomplete' | 'requested'>('all');
     const [paymentFilter, setPaymentFilter] = useState<'all' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'none'>('all');
+    const [issueFilter, setIssueFilter] = useState<'all' | 'pet_recovery'>('all');
     const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
     
     const [stats, setStats] = useState({
@@ -88,7 +89,7 @@ export default function RequestsTable({
 
     useEffect(() => {
         loadRequests();
-    }, [sortFilter, requestType, infoFilter, paymentFilter, refreshKey]);
+    }, [sortFilter, requestType, infoFilter, paymentFilter, issueFilter, refreshKey]);
 
     useEffect(() => {
         loadStats();
@@ -349,6 +350,10 @@ export default function RequestsTable({
             return req.infoStatus === infoFilter;
         })
         .filter(req => {
+            if (issueFilter === 'all') return true;
+            return req.registrationIssue === 'paid_without_pets' || req.registrationIssue === 'paid_without_complete_pet_rows';
+        })
+        .filter(req => {
             if (paymentFilter === 'all') return true;
             if (paymentFilter === 'active') return req.paymentStatus === 'active' || req.paymentStatus === 'trialing';
             if (paymentFilter === 'past_due') return req.paymentStatus === 'past_due' || req.paymentStatus === 'unpaid';
@@ -589,23 +594,24 @@ export default function RequestsTable({
                             >
                                 <span>
                                     <span className={styles.filterLabel}>Filtros Extra:</span>
-                                    {infoFilter !== 'all' ? 'Info' : paymentFilter !== 'all' ? 'Pago' : 'Seleccionar'}
+                                    {issueFilter !== 'all' ? 'Mascotas por recuperar' : infoFilter !== 'all' ? 'Info' : paymentFilter !== 'all' ? 'Pago' : 'Seleccionar'}
                                 </span>
                                 <span className={styles.dropdownArrow}>▼</span>
                             </button>
                             <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
                                 <div className={styles.dropdownSectionTitle}>Estado de Información</div>
-                                <button className={`${styles.dropdownOption} ${infoFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIsDropdownOpen(false); }}>📋 Todos</button>
-                                <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIsDropdownOpen(false); }}>✅ Completa</button>
-                                <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIsDropdownOpen(false); }}>🟡 Incompleta</button>
-                                <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIsDropdownOpen(false); }}>🔵 Solicitada</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'all' && issueFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Todos</button>
+                                <button className={`${styles.dropdownOption} ${issueFilter === 'pet_recovery' ? styles.selected : ''}`} onClick={() => { setIssueFilter('pet_recovery'); setInfoFilter('all'); setPaymentFilter('all'); setIsDropdownOpen(false); }}>Mascotas por recuperar</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Completa</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Incompleta</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Solicitada</button>
                                 
                                 <div className={styles.dropdownDivider}></div>
                                 <div className={styles.dropdownSectionTitle}>Estado de Pago</div>
-                                <button className={`${styles.dropdownOption} ${paymentFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIsDropdownOpen(false); }}>📋 Todos</button>
-                                <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIsDropdownOpen(false); }}>💳 Activo</button>
-                                <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIsDropdownOpen(false); }}>🔴 Moroso</button>
-                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIsDropdownOpen(false); }}>⚪ Suspendido</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'all' && issueFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Todos</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Activo</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Moroso</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Suspendido</button>
                             </div>
                         </div>
                     )}
