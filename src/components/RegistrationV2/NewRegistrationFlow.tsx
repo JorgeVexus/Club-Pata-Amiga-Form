@@ -74,6 +74,18 @@ interface RegistrationData {
     referralCode?: string;
 }
 
+// Helper para extraer ID de miembro de forma robusta
+function getMemberId(m: any): string {
+    if (!m) return "";
+    return m.id || 
+           m.memberId || 
+           m.member?.id || 
+           m.data?.id || 
+           m.data?.member?.id ||
+           (m.auth && m.auth.id) ||
+           "";
+}
+
 export default function NewRegistrationFlow() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState<number | null>(null); // null mientras carga inicial
@@ -208,8 +220,8 @@ export default function NewRegistrationFlow() {
                             return;
                         }
 
-                        setMember(currentMember);
-                        const msId = currentMember.id || (currentMember as any).memberId;
+                        const msId = getMemberId(currentMember);
+                        setMember({ id: msId, ...(currentMember || {}) });
                         console.log('📥 Cargando datos desde Supabase para ID:', msId);
 
                         // 🐾 Consultar datos de usuario Y mascotas en paralelo para no añadir latencia
@@ -515,9 +527,9 @@ export default function NewRegistrationFlow() {
 
     // Guardar progreso en Supabase
     const saveProgress = useCallback(async (step: number, data: any) => {
-        const memberId = member?.id || member?.memberId;
+        const memberId = getMemberId(member);
         if (!memberId) {
-            console.warn(`⚠️ [saveProgress] member es null, no se puede guardar step ${step}. Datos NO guardados en Supabase.`);
+            console.warn(`⚠️ [saveProgress] member es null o no tiene ID, no se puede guardar step ${step}. Datos NO guardados en Supabase.`);
             return;
         }
 
@@ -629,8 +641,8 @@ export default function NewRegistrationFlow() {
 
                 if (loginResult.data) {
                     const loggedMember = loginResult.data;
-                    setMember(loggedMember);
-                    const msId = loggedMember.id || (loggedMember as any).memberId;
+                    const msId = getMemberId(loggedMember);
+                    setMember({ id: msId, ...(loggedMember || {}) });
 
                     const msStep = Number(loggedMember.customFields?.['registration-step'] || 1);
                     const paymentStatus = loggedMember.customFields?.['payment-status'];
@@ -749,7 +761,7 @@ export default function NewRegistrationFlow() {
                 throw new Error('No se pudo establecer el ID de usuario. Por favor, intenta recargar la página.');
             }
 
-            setMember(signupData || { id: msId });
+            setMember({ id: msId, ...(signupData || {}) });
 
             // Guardar en Supabase (estado inicial)
             // IMPORTANTE: Ahora el servidor se encarga de todo, enviamos el ID correcto
@@ -803,8 +815,8 @@ export default function NewRegistrationFlow() {
 
                     if (loginResult.data) {
                         const loggedMember = loginResult.data;
-                        setMember(loggedMember);
-                        const msId = loggedMember.id || (loggedMember as any).memberId;
+                        const msId = getMemberId(loggedMember);
+                        setMember({ id: msId, ...(loggedMember || {}) });
 
                         // 🍎 Leer intent guardado + campos de Memberstack para determinar paso
                         const savedIntent2 = typeof sessionStorage !== 'undefined'
@@ -901,10 +913,26 @@ export default function NewRegistrationFlow() {
         await saveProgress(nextStep, newData);
 
         // Guardar preliminarmente las mascotas básicas en la tabla 'pets' de Supabase
-        const memberId = member?.id || (member as any)?.memberId;
+        let memberId = getMemberId(member);
+        
+        // Fallback robusto: si member en el state es null, intentar recuperarlo de la sesión activa
+        if (!memberId && typeof window !== 'undefined' && window.$memberstackDom) {
+            try {
+                console.log('🐾 [Step2] memberId no encontrado en el estado, consultando sesión activa...');
+                const session = await window.$memberstackDom.getCurrentMember();
+                memberId = getMemberId(session?.data);
+                if (memberId) {
+                    console.log('✅ [Step2] memberId recuperado de la sesión activa:', memberId);
+                    setMember({ id: memberId, ...(session.data || {}) });
+                }
+            } catch (e) {
+                console.error('❌ [Step2] Fallo al recuperar sesión de Memberstack en fallback:', e);
+            }
+        }
+
         if (memberId) {
             try {
-                console.log('🐾 [Step2] Guardando preliminarmente mascotas básicas en Supabase...');
+                console.log('🐾 [Step2] Guardando preliminarmente mascotas básicas en Supabase para ID:', memberId);
                 const petsToRegister = pets.map(p => ({
                     petName: p.petName,
                     petType: p.petType,
@@ -922,6 +950,8 @@ export default function NewRegistrationFlow() {
             } catch (err) {
                 console.error('⚠️ [Step2] Error guardando mascotas básicas en la tabla pets:', err);
             }
+        } else {
+            console.error('❌ [Step2] No se pudo obtener el ID del miembro. Saltando inserción en Supabase.');
         }
 
         // Actualizar Memberstack (incluir datos de mascota como backup para sobrevivir el redirect de Stripe)
@@ -949,7 +979,10 @@ export default function NewRegistrationFlow() {
             const { data: updatedMember } = await window.$memberstackDom.updateMember({
                 customFields
             });
-            if (updatedMember) setMember(updatedMember);
+            if (updatedMember) {
+                const msId = memberId || getMemberId(updatedMember);
+                setMember({ id: msId, ...(updatedMember || {}) });
+            }
         }
 
         if (isPetRecovery) {
@@ -1028,6 +1061,7 @@ export default function NewRegistrationFlow() {
                 // 🔥 NUEVO: Verificación robusta de planes tras el checkout
                 // Esto previene falsos positivos si el modal se cierra sin pagar
                 const { data: memberData } = await window.$memberstackDom.getCurrentMember();
+                const memberId = getMemberId(member) || getMemberId(memberData);
                 const planConnections = memberData?.planConnections || [];
                 const hasActivePlan = planConnections.some((p: any) => 
                     (p.planId === planId || p.priceId === planId) && 
@@ -1053,11 +1087,12 @@ export default function NewRegistrationFlow() {
                         'checkout-pending': false
                     },
                 });
-                if (updatedMember) setMember(updatedMember);
+                if (updatedMember && memberId) {
+                    setMember({ id: memberId, ...(updatedMember || {}) });
+                }
 
                 // Notificar a CRM de pago exitoso para remover carrito abandonado
                 try {
-                    const memberId = member?.id || member?.memberId;
                     if (memberId) {
                         const { notifyCheckoutCompletedToCRM } = await import('@/app/actions/user.actions');
                         notifyCheckoutCompletedToCRM(memberId).catch(err => {
@@ -1102,7 +1137,8 @@ export default function NewRegistrationFlow() {
             await saveProgress(4, newData);
 
             // Actualizar Memberstack
-            if (member && window.$memberstackDom) {
+            const memberId = getMemberId(member);
+            if (member && window.$memberstackDom && memberId) {
                 const { data: updatedMember } = await window.$memberstackDom.updateMember({
                     customFields: {
                         'registration-step': 4,
@@ -1111,7 +1147,7 @@ export default function NewRegistrationFlow() {
                         'approval-status': 'pending'
                     },
                 });
-                if (updatedMember) setMember(updatedMember);
+                if (updatedMember) setMember({ id: memberId, ...(updatedMember || {}) });
             }
 
             goToStep(4);
@@ -1144,13 +1180,13 @@ export default function NewRegistrationFlow() {
                 customFields: msUpdateFields,
             });
 
-            if (msResult.data) {
-                setMember(msResult.data);
+            const memberId = getMemberId(member) || getMemberId(msResult.data);
+            if (msResult.data && memberId) {
+                setMember({ id: memberId, ...(msResult.data || {}) });
             }
 
             // Sincronizar con CRM Lynsales - Paso 4
             const { syncCRMAction } = await import('@/app/actions/user.actions');
-            const memberId = member?.id || (member as any)?.memberId;
             if (memberId) {
                 syncCRMAction(memberId, 'step4', profileData).catch(err =>
                     console.error('⚠️ Error sincronizando con CRM (No crítico):', err)
@@ -1171,7 +1207,12 @@ export default function NewRegistrationFlow() {
         setIsLoading(true);
         try {
             console.log(`🚀 Iniciando guardado final de mascotas (total: ${petsData.length})...`);
-            const memberId = member?.id || (member as any)?.memberId;
+            const memberId = getMemberId(member);
+            if (!memberId) {
+                showToast('Sesión vencida. Por favor, recarga la página o inicia sesión nuevamente.', 'error');
+                setIsLoading(false);
+                return;
+            }
             const processedPets = [];
 
             for (let i = 0; i < petsData.length; i++) {
