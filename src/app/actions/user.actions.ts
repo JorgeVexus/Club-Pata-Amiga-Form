@@ -371,27 +371,52 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
         // 🔍 DEBUG: Ver exactamente qué se inserta en la tabla pets
         console.log('🐾 [Server Action] Datos de mascota a insertar:', JSON.stringify(petsToInsert, null, 2));
 
-        // 3. Insertar mascotas
-        const { data: insertedPets, error: insertError } = await supabase
-            .from('pets')
-            .insert(petsToInsert)
-            .select();
+        // 3. Registrar o actualizar mascotas una por una (Upsert inteligente basado en owner_id y memberstack_slot)
+        const insertedPets: any[] = [];
+        for (const petToSave of petsToInsert) {
+            // Buscar si ya existe una mascota registrada en este slot para el usuario
+            const { data: existingPet } = await supabase
+                .from('pets')
+                .select('id, created_at')
+                .eq('owner_id', petToSave.owner_id)
+                .eq('memberstack_slot', petToSave.memberstack_slot)
+                .maybeSingle();
 
-        if (insertError) {
-            console.error('❌ [Server Action] Error insertando mascotas:', insertError);
-            return { success: false, error: insertError.message };
+            if (existingPet) {
+                console.log(`🔄 [Server Action] Actualizando mascota existente en slot ${petToSave.memberstack_slot} (ID: ${existingPet.id})`);
+                // Omitimos created_at para mantener la fecha original de registro de la mascota
+                const { created_at, ...updateData } = petToSave;
+                const { data: updatedPet, error: updateError } = await supabase
+                    .from('pets')
+                    .update(updateData)
+                    .eq('id', existingPet.id)
+                    .select()
+                    .single();
+
+                if (updateError) {
+                    console.error(`❌ [Server Action] Error actualizando mascota en slot ${petToSave.memberstack_slot}:`, updateError);
+                    return { success: false, error: updateError.message };
+                }
+                
+                insertedPets.push(updatedPet);
+            } else {
+                console.log(`🆕 [Server Action] Insertando nueva mascota en slot ${petToSave.memberstack_slot}`);
+                const { data: newPet, error: insertError } = await supabase
+                    .from('pets')
+                    .insert(petToSave)
+                    .select()
+                    .single();
+
+                if (insertError) {
+                    console.error(`❌ [Server Action] Error insertando mascota en slot ${petToSave.memberstack_slot}:`, insertError);
+                    return { success: false, error: insertError.message };
+                }
+
+                insertedPets.push(newPet);
+            }
         }
 
-        console.log('✅ [Server Action] Mascota insertada:', {
-            id: insertedPets?.[0]?.id,
-            name: insertedPets?.[0]?.name,
-            pet_type: insertedPets?.[0]?.pet_type,
-            breed: insertedPets?.[0]?.breed,
-            gender: insertedPets?.[0]?.gender,
-            age_value: insertedPets?.[0]?.age_value,
-            coat_color: insertedPets?.[0]?.coat_color,
-        });
-
+        console.log('✅ [Server Action] Mascotas procesadas con éxito:', insertedPets.length);
         return { success: true };
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado en registerPets:', error);

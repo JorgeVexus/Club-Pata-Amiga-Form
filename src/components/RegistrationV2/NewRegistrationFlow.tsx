@@ -900,6 +900,27 @@ export default function NewRegistrationFlow() {
 
         await saveProgress(nextStep, newData);
 
+        // Guardar preliminarmente las mascotas básicas en la tabla 'pets' de Supabase
+        const memberId = member?.id || (member as any)?.memberId;
+        if (memberId) {
+            try {
+                console.log('🐾 [Step2] Guardando preliminarmente mascotas básicas en Supabase...');
+                const petsToRegister = pets.map(p => ({
+                    petName: p.petName,
+                    petType: p.petType,
+                    petAge: p.petAge,
+                    petAgeUnit: p.petAgeUnit,
+                    status: 'pending',
+                    isComplete: false
+                }));
+                const { registerPetsInSupabase } = await import('@/app/actions/user.actions');
+                await registerPetsInSupabase(memberId, petsToRegister);
+                console.log('✅ [Step2] Mascotas básicas guardadas en la tabla pets');
+            } catch (err) {
+                console.error('⚠️ [Step2] Error guardando mascotas básicas en la tabla pets:', err);
+            }
+        }
+
         // Actualizar Memberstack (incluir datos de mascota como backup para sobrevivir el redirect de Stripe)
         if (member && window.$memberstackDom) {
             const customFields: Record<string, any> = {
