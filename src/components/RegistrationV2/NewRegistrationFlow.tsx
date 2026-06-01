@@ -28,7 +28,7 @@ import NavbarRedesign from './NavbarRedesign';
 import Toast from '@/components/UI/Toast';
 
 // Servicios
-import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId } from '@/app/actions/user.actions';
+import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId, registerPetsInSupabase } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
 import { calculateWaitingPeriod } from '@/services/pet.service';
 import {
@@ -913,9 +913,12 @@ export default function NewRegistrationFlow() {
                     status: 'pending',
                     isComplete: false
                 }));
-                const { registerPetsInSupabase } = await import('@/app/actions/user.actions');
-                await registerPetsInSupabase(memberId, petsToRegister);
-                console.log('✅ [Step2] Mascotas básicas guardadas en la tabla pets');
+                const result = await registerPetsInSupabase(memberId, petsToRegister);
+                if (result && result.success) {
+                    console.log('✅ [Step2] Mascotas básicas guardadas en la tabla pets');
+                } else {
+                    console.error('❌ [Step2] Error de la Server Action al guardar mascotas:', result?.error || 'Error desconocido');
+                }
             } catch (err) {
                 console.error('⚠️ [Step2] Error guardando mascotas básicas en la tabla pets:', err);
             }
