@@ -8,6 +8,7 @@ export type SolidarityRequestStatus =
     | 'needs_info'        // solicitando información
     | 'approved'          // aprobado
     | 'rejected'          // rechazado
+    | 'cancelled'         // cancelado
     | 'paid'              // pagado (solo para reembolsos)
     | 'scheduled'         // agendado (solo para citas)
     | 'completed';        // finalizado
@@ -111,6 +112,7 @@ export const SOLIDARITY_STATUS_LABELS: Record<SolidarityRequestStatus, string> =
     needs_info: 'Acción Requerida',
     approved: 'Aprobado',
     rejected: 'Rechazado',
+    cancelled: 'Cancelado',
     paid: 'Pagado',
     scheduled: 'Agendado',
     completed: 'Completado',

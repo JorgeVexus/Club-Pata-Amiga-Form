@@ -10,7 +10,7 @@ interface SolidarityRequest {
     pet_id: string;
     benefit_type: 'medical_emergency' | 'annual_vaccination' | 'death';
     type: 'direct_payment' | 'reimbursement';
-    status: 'new' | 'in_review' | 'needs_info' | 'approved' | 'rejected' | 'paid' | 'completed';
+    status: 'new' | 'in_review' | 'needs_info' | 'approved' | 'rejected' | 'cancelled' | 'paid' | 'scheduled' | 'completed';
     requested_amount: number;
     clinic_name?: string;
     case_title: string;
@@ -121,7 +121,9 @@ export default function SolidarityDashboard({ onViewDetail, initialFilter }: Sol
             needs_info: { bg: '#FEE2E2', color: '#991B1B', label: 'Acción Req.' },
             approved: { bg: '#D1FAE5', color: '#065F46', label: 'Aprobado' },
             rejected: { bg: '#FEE2E2', color: '#991B1B', label: 'Rechazado' },
+            cancelled: { bg: '#F3F4F6', color: '#6B7280', label: 'Cancelado' },
             paid: { bg: '#DBEAFE', color: '#1E40AF', label: 'Pagado' },
+            scheduled: { bg: '#E0F2FE', color: '#0369A1', label: 'Agendado' },
             completed: { bg: '#DEF7EC', color: '#03543F', label: 'Completado' }
         };
         const s = styles_map[status] || styles_map.new;
