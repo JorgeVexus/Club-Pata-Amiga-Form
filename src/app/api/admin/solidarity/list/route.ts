@@ -32,6 +32,10 @@ export async function GET(request: NextRequest) {
         if (status && status !== 'all') {
             if (status === 'in_process') {
                 query = query.in('status', ['in_review', 'needs_info']);
+            } else if (status === 'approved') {
+                query = query.in('status', ['approved', 'paid', 'scheduled', 'completed']);
+            } else if (status === 'rejected') {
+                query = query.in('status', ['rejected', 'cancelled']);
             } else {
                 query = query.eq('status', status);
             }

@@ -76,8 +76,10 @@ export async function POST(request: NextRequest) {
             'needs_info': 'requiere más información',
             'approved': 'ha sido aprobada',
             'rejected': 'ha sido rechazada',
+            'cancelled': 'ha sido cancelada',
             'paid': 'ha sido pagada',
-            'scheduled': 'ha sido agendada'
+            'scheduled': 'ha sido agendada',
+            'completed': 'ha sido finalizada'
         };
 
         const statusText = statusMap[status] || status;

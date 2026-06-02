@@ -36,12 +36,13 @@ export async function GET(request: NextRequest) {
         const currentYear = new Date().getFullYear();
         const startOfYear = `${currentYear}-01-01T00:00:00Z`;
 
-        // Obtener todas las solicitudes de este pet en el año actual que no hayan sido rechazadas
+        // Obtener todas las solicitudes de este pet en el año actual que no hayan sido rechazadas ni canceladas
         const { data: requests, error } = await supabaseAdmin
             .from('solidarity_requests')
             .select('benefit_type, requested_amount, approved_amount, status')
             .eq('pet_id', petId)
             .neq('status', 'rejected')
+            .neq('status', 'cancelled')
             .gte('created_at', startOfYear);
 
         if (error) throw error;
