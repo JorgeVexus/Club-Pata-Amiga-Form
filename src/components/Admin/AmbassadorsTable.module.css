@@ -283,6 +283,11 @@
     color: #1565C0;
 }
 
+.statusCancelled {
+    background: #F1F3F4;
+    color: #555555;
+}
+
 /* Date Cell */
 .dateCell {
     color: #888;

@@ -114,7 +114,8 @@ export async function POST(request: NextRequest) {
             reason = `Centro de bienestar con status: ${result.checks.wellness_center.status}`;
         } else if (result.checks.ambassador?.found && 
                    result.checks.ambassador.status !== 'rejected' && 
-                   result.checks.ambassador.status !== 'suspended') {
+                   result.checks.ambassador.status !== 'suspended' && 
+                   result.checks.ambassador.status !== 'cancelled') {
             finalRole = 'ambassador';
             reason = `Embajador con status: ${result.checks.ambassador.status}`;
         }

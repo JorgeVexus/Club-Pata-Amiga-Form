@@ -163,7 +163,8 @@ export default function AmbassadorsTable({ onViewDetails, refreshKey }: Ambassad
             pending: { label: 'Pendiente', class: styles.statusPending },
             approved: { label: 'Aprobado', class: styles.statusApproved },
             rejected: { label: 'Rechazado', class: styles.statusRejected },
-            suspended: { label: 'Suspendido', class: styles.statusSuspended }
+            suspended: { label: 'Suspendido', class: styles.statusSuspended },
+            cancelled: { label: 'Cancelado', class: styles.statusCancelled }
         };
         const s = statusMap[status] || statusMap.pending;
         return <span className={`${styles.statusBadge} ${s.class}`}>{s.label}</span>;

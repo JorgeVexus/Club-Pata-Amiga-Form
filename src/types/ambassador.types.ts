@@ -7,7 +7,7 @@
 // EMBAJADOR
 // ============================================
 
-export type AmbassadorStatus = 'pending' | 'approved' | 'rejected' | 'suspended';
+export type AmbassadorStatus = 'pending' | 'approved' | 'rejected' | 'suspended' | 'cancelled';
 export type Gender = 'male' | 'female' | 'not_specified';
 export type PaymentMethod = 'card' | 'clabe' | 'pending';
 
@@ -92,6 +92,7 @@ export interface Ambassador {
     created_at: string;
     updated_at: string;
     last_login_at?: string;
+    cancelled_at?: string;
 }
 
 // Para la lista en el admin

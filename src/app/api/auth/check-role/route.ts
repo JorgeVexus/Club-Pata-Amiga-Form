@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
             .maybeSingle();
         console.log(`[Check-Role] Supabase Ambassador Check: ${memberstackId} took ${Date.now() - ambassadorStart}ms`);
 
-        if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended') {
+        if (ambassador && ambassador.status !== 'rejected' && ambassador.status !== 'suspended' && ambassador.status !== 'cancelled') {
             console.log(`🔍 [Check-Role] Embajador encontrado para ID ${memberstackId}:`, ambassador);
             return NextResponse.json({
                 success: true,

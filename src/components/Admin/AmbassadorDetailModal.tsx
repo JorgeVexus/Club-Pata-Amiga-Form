@@ -169,7 +169,8 @@ export default function AmbassadorDetailModal({
             pending: styles.statusPending,
             approved: styles.statusApproved,
             rejected: styles.statusRejected,
-            suspended: styles.statusSuspended
+            suspended: styles.statusSuspended,
+            cancelled: styles.statusCancelled
         };
         return map[status] || styles.statusPending;
     };
@@ -201,7 +202,8 @@ export default function AmbassadorDetailModal({
                                 <span className={`${styles.statusBadge} ${getStatusClass(amb.status)}`}>
                                     {amb.status === 'pending' ? 'Pendiente' :
                                         amb.status === 'approved' ? 'Aprobado' :
-                                            amb.status === 'rejected' ? 'Rechazado' : 'Suspendido'}
+                                            amb.status === 'rejected' ? 'Rechazado' :
+                                                amb.status === 'cancelled' ? 'Cancelado' : 'Suspendido'}
                                 </span>
                                 <span className={styles.code}>{amb.referral_code}</span>
                             </div>
@@ -276,6 +278,16 @@ export default function AmbassadorDetailModal({
                                     <span>Fecha de nacimiento:</span>
                                     <span>{amb.birth_date ? formatDate(amb.birth_date) : 'No especificada'}</span>
                                 </div>
+                                <div className={styles.infoRow}>
+                                    <span>Fecha de registro:</span>
+                                    <span>{amb.created_at ? formatDate(amb.created_at) : 'No especificada'}</span>
+                                </div>
+                                {amb.status === 'cancelled' && amb.cancelled_at && (
+                                    <div className={styles.infoRow}>
+                                        <span>Fecha de baja:</span>
+                                        <span>{formatDate(amb.cancelled_at)}</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.section}>
@@ -358,6 +370,13 @@ export default function AmbassadorDetailModal({
                                 <div className={`${styles.section} ${styles.fullWidth} ${styles.rejectionSection}`}>
                                     <h4>❌ Motivo de Rechazo</h4>
                                     <p>{amb.rejection_reason}</p>
+                                </div>
+                            )}
+                            
+                            {amb.status === 'cancelled' && (
+                                <div className={`${styles.section} ${styles.fullWidth} ${styles.cancelledSection}`}>
+                                    <h4>⚪ Cuenta Cancelada / Dada de Baja</h4>
+                                    <p>Este embajador solicitó su baja voluntaria del programa{amb.cancelled_at ? ` el ${formatDate(amb.cancelled_at)}` : ''}.</p>
                                 </div>
                             )}
 

@@ -120,6 +120,11 @@
     color: white;
 }
 
+.statusCancelled {
+    background: #e5e7eb;
+    color: #374151;
+}
+
 .code {
     background: rgba(255, 255, 255, 0.2);
     padding: 4px 10px;
@@ -281,6 +286,15 @@
 
 .rejectionSection h4 {
     color: #C62828;
+}
+
+.cancelledSection {
+    background: #F3F4F6;
+    border-left: 4px solid #9CA3AF;
+}
+
+.cancelledSection h4 {
+    color: #4B5563;
 }
 
 /* Referrals List */
