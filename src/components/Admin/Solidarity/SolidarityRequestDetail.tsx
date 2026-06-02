@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './SolidarityRequestDetail.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
-import { SOLIDARITY_BENEFIT_LABELS, SOLIDARITY_STATUS_LABELS } from '@/types/solidarity.types';
+import { SOLIDARITY_BENEFIT_LABELS, SOLIDARITY_STATUS_LABELS, SolidarityRequestStatus } from '@/types/solidarity.types';
 
 interface Message {
     id: string;
@@ -17,6 +17,7 @@ interface SolidarityRequest {
     id: string;
     user_id: string;
     pet_id: string;
+    type: string;
     benefit_type: string;
     status: string;
     requested_amount: number;
@@ -29,6 +30,7 @@ interface SolidarityRequest {
     created_at: string;
     pet?: any;
     user?: any;
+    approved_amount?: number;
 }
 
 interface Props {
@@ -167,7 +169,7 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         }
     }
 
-    async function handleUpdateStatus(newStatus: string, message?: string) {
+    async function handleUpdateStatus(newStatus: string, message?: string, approvedAmount?: number) {
         setUpdatingStatus(true);
         try {
             const res = await adminFetch(`/api/admin/solidarity/update`, {
@@ -177,12 +179,17 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                     status: newStatus,
                     adminId: adminMemberstackId,
                     adminName: 'Administrador',
-                    message: message // Pass optional message
+                    message: message,
+                    approvedAmount: approvedAmount
                 })
             });
             const data = await res.json();
             if (data.success) {
-                setRequest(prev => prev ? { ...prev, status: newStatus } : null);
+                setRequest(prev => prev ? { 
+                    ...prev, 
+                    status: newStatus,
+                    approved_amount: approvedAmount !== undefined ? approvedAmount : prev.approved_amount
+                } : null);
                 loadMessages();
             } else {
                 alert('Error: ' + (data.error || 'No se pudo actualizar el estado'));
@@ -201,6 +208,11 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         if (Array.isArray(msgData)) setMessages(msgData);
     }
 
+    async function handleStartReview() {
+        if (!request || updatingStatus) return;
+        await handleUpdateStatus('in_review', 'La solicitud ha comenzado a ser revisada por el comité.');
+    }
+
     async function handleRequestMoreInfo() {
         if (updatingStatus) return;
         
@@ -208,6 +220,73 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
         if (infoMessage === null) return; // Cancelled
 
         await handleUpdateStatus('needs_info', infoMessage);
+    }
+
+    async function handleApproveRequest() {
+        if (!request || updatingStatus) return;
+        
+        const amountStr = prompt('Ingresa el monto aprobado para esta solicitud:', request.requested_amount.toString());
+        if (amountStr === null) return; // Cancelado
+        
+        const amount = parseFloat(amountStr);
+        if (isNaN(amount) || amount <= 0) {
+            alert('Monto inválido. Debe ser un número mayor a 0.');
+            return;
+        }
+
+        const msg = `Solicitud aprobada por un monto de $${amount.toFixed(2)}.`;
+        await handleUpdateStatus('approved', msg, amount);
+    }
+
+    async function handleRejectRequest() {
+        if (!request || updatingStatus) return;
+        
+        const reason = prompt('Especifica el motivo del rechazo de la solicitud:');
+        if (reason === null) return; // Cancelado
+        
+        if (!reason.trim()) {
+            alert('El motivo del rechazo es obligatorio.');
+            return;
+        }
+
+        const msg = `Solicitud rechazada. Motivo: ${reason}`;
+        await handleUpdateStatus('rejected', msg);
+    }
+
+    async function handleCancelRequest() {
+        if (!request || updatingStatus) return;
+        
+        const reason = prompt('Especifica el motivo de la cancelación de la solicitud:');
+        if (reason === null) return; // Cancelado
+        
+        if (!reason.trim()) {
+            alert('El motivo de la cancelación es obligatorio.');
+            return;
+        }
+
+        const msg = `Solicitud cancelada. Motivo: ${reason}`;
+        await handleUpdateStatus('cancelled', msg);
+    }
+
+    async function handleMarkAsPaid() {
+        if (!request || updatingStatus) return;
+        if (!confirm('¿Estás seguro de marcar esta solicitud como Reembolsada / Pagada?')) return;
+        
+        await handleUpdateStatus('paid', 'El reembolso ha sido procesado y pagado.');
+    }
+
+    async function handleScheduleAppointment() {
+        if (!request || updatingStatus) return;
+        if (!confirm('¿Estás seguro de marcar esta solicitud de cita como Agendada?')) return;
+        
+        await handleUpdateStatus('scheduled', 'Tu cita en el centro aliado ha sido agendada.');
+    }
+
+    async function handleCompleteRequest() {
+        if (!request || updatingStatus) return;
+        if (!confirm('¿Estás seguro de marcar esta solicitud como Finalizada y cerrar el caso?')) return;
+        
+        await handleUpdateStatus('completed', 'El caso de apoyo solidario ha sido finalizado.');
     }
 
     const openDocument = (doc: any) => {
@@ -249,23 +328,9 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                         </div>
                     </div>
                     <div className={styles.statusActions}>
-                        <button 
-                            onClick={handleRequestMoreInfo}
-                            className={styles.infoBtn}
-                            disabled={updatingStatus}
-                        >
-                            Solicitar Información
-                        </button>
-                        <select 
-                            value={request.status} 
-                            onChange={(e) => handleUpdateStatus(e.target.value)}
-                            disabled={updatingStatus}
-                            className={styles.statusSelect}
-                        >
-                            {Object.entries(SOLIDARITY_STATUS_LABELS).map(([value, label]) => (
-                                <option key={value} value={value}>{label}</option>
-                            ))}
-                        </select>
+                        <span className={styles.statusDisplay}>
+                            Estado: <strong className={styles.statusTextBadge}>{SOLIDARITY_STATUS_LABELS[request.status as SolidarityRequestStatus] || request.status}</strong>
+                        </span>
                     </div>
                 </header>
 
@@ -285,9 +350,15 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 <span>{(SOLIDARITY_BENEFIT_LABELS as any)[request.benefit_type] || request.benefit_type}</span>
                             </div>
                             <div className={styles.detailItem}>
-                                <label>Monto</label>
+                                <label>Monto Solicitado</label>
                                 <span>${request.requested_amount}</span>
                             </div>
+                            {request.approved_amount !== undefined && request.approved_amount !== null && (
+                                <div className={styles.detailItem}>
+                                    <label>Monto Aprobado</label>
+                                    <span className={styles.approvedAmountText}>${request.approved_amount}</span>
+                                </div>
+                            )}
                             <div className={styles.detailItem}>
                                 <label>Clínica</label>
                                 <span>{request.clinic_name || 'N/A'}</span>
@@ -355,6 +426,80 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                 </div>
                             </div>
                         )}
+
+                        {/* Panel de Acciones del Administrador */}
+                        <div className={styles.adminActionsCard}>
+                            <label className={styles.adminActionsLabel}>Panel de Control Administrativo</label>
+                            <div className={styles.actionButtonGroup}>
+                                {request.status === 'new' && (
+                                    <>
+                                        <button onClick={handleStartReview} className={styles.btnStartReview} disabled={updatingStatus}>
+                                            🔍 Iniciar Revisión
+                                        </button>
+                                        <button onClick={handleRejectRequest} className={styles.btnReject} disabled={updatingStatus}>
+                                            ❌ Rechazar
+                                        </button>
+                                        <button onClick={handleCancelRequest} className={styles.btnCancel} disabled={updatingStatus}>
+                                            🚫 Cancelar
+                                        </button>
+                                    </>
+                                )}
+
+                                {(request.status === 'in_review' || request.status === 'needs_info') && (
+                                    <>
+                                        <button onClick={handleRequestMoreInfo} className={styles.btnRequestInfo} disabled={updatingStatus}>
+                                            ❓ Solicitar Info
+                                        </button>
+                                        <button onClick={handleApproveRequest} className={styles.btnApprove} disabled={updatingStatus}>
+                                            ✅ Aprobar Apoyo
+                                        </button>
+                                        <button onClick={handleRejectRequest} className={styles.btnReject} disabled={updatingStatus}>
+                                            ❌ Rechazar
+                                        </button>
+                                        <button onClick={handleCancelRequest} className={styles.btnCancel} disabled={updatingStatus}>
+                                            🚫 Cancelar
+                                        </button>
+                                    </>
+                                )}
+
+                                {request.status === 'approved' && (
+                                    <>
+                                        {request.type === 'allied_center_appointment' ? (
+                                            <button onClick={handleScheduleAppointment} className={styles.btnSchedule} disabled={updatingStatus}>
+                                                📅 Agendar Cita
+                                            </button>
+                                        ) : (
+                                            <button onClick={handleMarkAsPaid} className={styles.btnPaid} disabled={updatingStatus}>
+                                                💵 Registrar Reembolso
+                                            </button>
+                                        )}
+                                        <button onClick={handleCompleteRequest} className={styles.btnComplete} disabled={updatingStatus}>
+                                            ✓ Finalizar Caso
+                                        </button>
+                                        <button onClick={handleCancelRequest} className={styles.btnCancel} disabled={updatingStatus}>
+                                            🚫 Cancelar
+                                        </button>
+                                    </>
+                                )}
+
+                                {(request.status === 'paid' || request.status === 'scheduled') && (
+                                    <>
+                                        <button onClick={handleCompleteRequest} className={styles.btnComplete} disabled={updatingStatus}>
+                                            ✓ Finalizar Caso
+                                        </button>
+                                        <button onClick={handleCancelRequest} className={styles.btnCancel} disabled={updatingStatus}>
+                                            🚫 Cancelar
+                                        </button>
+                                    </>
+                                )}
+
+                                {['completed', 'rejected', 'cancelled'].includes(request.status) && (
+                                    <div className={styles.closedRequestMsg}>
+                                        🔒 Caso cerrado (<strong>{SOLIDARITY_STATUS_LABELS[request.status as SolidarityRequestStatus] || request.status}</strong>)
+                                    </div>
+                                )}
+                            </div>
+                        </div>
                     </section>
 
                     <section className={styles.chatSection}>

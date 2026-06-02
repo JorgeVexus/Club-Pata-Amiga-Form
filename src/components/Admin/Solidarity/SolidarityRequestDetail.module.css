@@ -603,3 +603,130 @@
     transform: translateY(-1px);
 }
 
+/* Admin Actions Panel */
+.adminActionsCard {
+    margin-top: 30px;
+    padding: 20px;
+    background: #FFF9F2;
+    border: 2px solid #000;
+    border-radius: 20px;
+    box-shadow: 4px 4px 0px #000;
+}
+
+.adminActionsLabel {
+    display: block !important;
+    font-size: 11px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    color: #FE8F15 !important;
+    margin-bottom: 12px !important;
+}
+
+.actionButtonGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.actionButtonGroup button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 2px solid #000;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 800;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0px #000;
+    transition: all 0.15s;
+    text-align: center;
+}
+
+.actionButtonGroup button:hover:not(:disabled) {
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0px #000;
+}
+
+.actionButtonGroup button:active:not(:disabled) {
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #000;
+}
+
+.actionButtonGroup button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+/* Individual Button Colors (Neo-Brutalist contrast) */
+.btnStartReview {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+.btnRequestInfo {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+.btnApprove {
+    background: #D1FAE5;
+    color: #047857;
+}
+
+.btnSchedule {
+    background: #E0F2FE;
+    color: #0369A1;
+}
+
+.btnPaid {
+    background: #DBEAFE;
+    color: #1D4ED8;
+}
+
+.btnComplete {
+    background: #00BBB4;
+    color: white;
+}
+
+.btnReject {
+    background: #FEE2E2;
+    color: #B91C1C;
+}
+
+.btnCancel {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.closedRequestMsg {
+    padding: 12px;
+    background: #F3F4F6;
+    border: 2px dashed #9CA3AF;
+    border-radius: 12px;
+    color: #4B5563;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.statusDisplay {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 12px;
+    border-radius: 20px;
+}
+
+.statusTextBadge {
+    text-transform: uppercase;
+}
+
+.approvedAmountText {
+    color: #10B981;
+    font-weight: 800;
+    font-size: 20px;
+}
+
