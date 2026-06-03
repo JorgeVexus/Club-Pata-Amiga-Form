@@ -32,9 +32,6 @@ export default function RootLayout({
     return (
         <html lang="es" className={outfit.variable} suppressHydrationWarning>
             <head>
-                {/* Google Tag Manager - Lo más arriba posible */}
-                <GoogleTagManager gtmId="GTM-N3WV4GPT" />
-
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"
@@ -54,6 +51,7 @@ export default function RootLayout({
                 />
 
                 <MetaPixel />
+                <GoogleTagManager gtmId="GTM-N3WV4GPT" />
                 {children}
             </body>
         </html>
