@@ -278,6 +278,24 @@ Si consideras que esto es un error o deseas apelar esta decisión, por favor con
                 audience: 'general'
             });
         }
+    },
+    {
+        id: 'member-pet-recovery',
+        name: 'Recuperar Mascota (Magic Link)',
+        icon: '🔗',
+        description: 'Email enviado a miembros que pagaron su suscripción pero no completaron el registro de sus mascotas. Incluye un enlace seguro para completar los datos.',
+        defaultSubject: 'Completa los datos de tu mascota',
+        defaultRecipient: 'miembro@pataamiga.mx',
+        params: [
+            { key: 'userName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge Cerna' },
+            { key: 'recoveryUrl', label: 'Enlace de Recuperación', type: 'text', defaultValue: 'https://app.pataamiga.mx/registro?mt=ejemplo-token&reason=complete_pet_info' }
+        ],
+        render: ({ userName, recoveryUrl }) => {
+            const firstName = userName || 'Hola';
+            const TOKEN_EXPIRY_MINUTES = 60;
+
+            return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Completa la informacion de tu mascota</title></head><body style="margin:0;padding:0;background-color:#F7F8FA;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8FA;padding:40px 20px;"><tr><td align="center"><table width="100%" style="max-width:580px;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:#7DD8D5;padding:36px 40px;text-align:center;"><img src="https://app.pataamiga.mx/Identidad/logo-pata-amiga-azul.png" alt="Club Pata Amiga" height="44" style="display:block;margin:0 auto 16px;"/><p style="margin:0;color:#2D3748;font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Accion requerida</p></td></tr><tr><td style="padding:40px 40px 24px;"><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#2D3748;line-height:1.3;">${firstName}, necesitamos los datos de tu mascota</h1><p style="margin:0 0 20px;font-size:16px;color:#4A5568;line-height:1.7;">Tu membresia ya aparece en nuestro sistema, pero aun falta completar la informacion de tu mascota para que el equipo pueda revisar tu expediente.</p><div style="background:#FFFBF5;border:1.5px solid #FEE4C4;border-radius:16px;padding:20px;margin-bottom:28px;"><p style="margin:0;font-size:14px;color:#4A5568;line-height:1.6;">El enlace te llevara al registro de mascota y despues a la ficha completa de la mascota. No tendras que seleccionar plan ni volver a pagar.</p></div><div style="text-align:center;margin-bottom:28px;"><a href="${recoveryUrl}" style="display:inline-block;background:#FE8F15;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;border:2px solid #000000;box-shadow:0 4px 14px rgba(254,143,21,0.35);">Completar datos de mi mascota</a></div><p style="margin:0 0 8px;font-size:13px;color:#718096;text-align:center;line-height:1.6;">Este enlace es seguro y vence en ${TOKEN_EXPIRY_MINUTES} minutos.</p><p style="margin:0;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">Si el boton no abre, usa este enlace: <a href="${recoveryUrl}" style="color:#00BBB4;font-weight:600;text-decoration:none;">completar mascota</a></p></td></tr><tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #EDF2F7;margin:0;"/></td></tr><tr><td style="padding:24px 40px 36px;text-align:center;"><p style="margin:0 0 8px;font-size:13px;color:#718096;">Con carino, <strong style="color:#2D3748;">El equipo de Club Pata Amiga</strong></p><p style="margin:0;font-size:11px;color:#A0AEC0;">Si tienes dudas, responde este correo y te ayudamos.</p></td></tr></table></td></tr></table></body></html>`;
+        }
     }
 ];
 
