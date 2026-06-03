@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { getMissingCompletePetFields } from '@/utils/pet-required-fields';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -201,9 +202,26 @@ export async function POST(
             updateData.birth_year = parseInt(birthYear, 10) || null;
         }
 
-        // Marcar info complementaria como completada si se está enviando
-        if (gender || coatColor || breed || photo1Url) {
+        const mergedForCompleteness = {
+            ...pet,
+            ...updateData,
+            name: pet.name,
+            petType: pet.pet_type,
+            ageValue: pet.age_value,
+            ageUnit: pet.age_unit,
+            gender: updateData.gender ?? pet.gender,
+            breed: updateData.breed ?? pet.breed,
+            isMixedBreed: updateData.is_mixed_breed ?? pet.is_mixed_breed,
+            coatColor: updateData.coat_color ?? pet.coat_color,
+        };
+        const missingRequiredFields = getMissingCompletePetFields(mergedForCompleteness);
+
+        // Solo marcamos como completa si la mascota, al combinar estado actual + cambios, ya cumple
+        if (missingRequiredFields.length === 0) {
+            updateData.basic_info_completed = true;
             updateData.complementary_info_completed = true;
+        } else if (gender || coatColor || breed || photo1Url) {
+            updateData.complementary_info_completed = false;
         }
 
         if (Object.keys(updateData).length === 0 && !message) {

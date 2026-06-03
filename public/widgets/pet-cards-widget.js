@@ -1911,10 +1911,36 @@
             document.addEventListener('click', (e) => { if (!input.contains(e.target) && !suggestions.contains(e.target)) suggestions.classList.remove('active'); });
         }
 
+        normalizePetType(value) {
+            const normalized = String(value || '').trim().toLowerCase();
+            if (normalized === 'perro' || normalized === 'dog') return 'perro';
+            if (normalized === 'gato' || normalized === 'cat') return 'gato';
+            return '';
+        }
+
+        formatMissingFields(fields) {
+            const labels = {
+                petType: 'especie',
+                age: 'edad',
+                gender: 'sexo',
+                breed: 'raza',
+                breedType: 'tipo de raza',
+                coatColor: 'color de pelo',
+                photo: 'foto principal',
+                vetCert: 'certificado veterinario',
+            };
+
+            return (Array.isArray(fields) ? fields : [])
+                .map(field => labels[field] || field)
+                .join(', ');
+        }
+
         async submitNewPet(isSenior) {
             const btn = document.getElementById('pata-save-btn');
             this.saveStep2Fields();
             const d = this.addFormData;
+            if (!this.normalizePetType(d.petType)) return alert('Selecciona la especie');
+            if (!(parseInt(d.ageValue, 10) > 0)) return alert('Ingresa una edad vÃ¡lida');
             if (!d.gender) return alert('Selecciona el sexo');
             if (d.breedType === 'raza' && !d.breed) return alert('Selecciona una raza');
             if (!d.coatColor) return alert('Ingresa el color de pelo');
@@ -1948,7 +1974,8 @@
                     document.getElementById('pata-add-modal').remove();
                     this.init();
                 } else {
-                    alert('Error: ' + (data.error || 'No se pudo guardar'));
+                    const missingFields = this.formatMissingFields(data.missingFields);
+                    alert(missingFields ? `Faltan datos obligatorios: ${missingFields}` : ('Error: ' + (data.error || 'No se pudo guardar')));
                     btn.disabled = false;
                     btn.innerText = 'Registrar mascota ✓';
                 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateWaitingPeriod } from '@/services/pet.service';
 import { enrichPetsWithLifecycle, getAvailablePetSlot, getRegistrationActivePetCount } from '@/utils/pet-lifecycle';
+import { getMissingCompletePetFields } from '@/utils/pet-required-fields';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,6 +33,14 @@ export async function POST(request: NextRequest) {
 
         if (!memberstackId || !petData) {
             return NextResponse.json({ error: 'Missing required data' }, { status: 400, headers: corsHeaders });
+        }
+
+        const missingRequiredFields = getMissingCompletePetFields(petData);
+        if (missingRequiredFields.length > 0) {
+            return NextResponse.json({
+                error: 'Faltan campos obligatorios de la mascota',
+                missingFields: missingRequiredFields,
+            }, { status: 400, headers: corsHeaders });
         }
 
         if (!MEMBERSTACK_ADMIN_KEY) {

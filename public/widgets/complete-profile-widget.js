@@ -420,15 +420,39 @@
 
 
 
+        normalizePetType(value) {
+            const normalized = String(value || '').trim().toLowerCase();
+            if (normalized === 'perro' || normalized === 'dog') return 'perro';
+            if (normalized === 'gato' || normalized === 'cat') return 'gato';
+            return '';
+        }
+
+        formatMissingFields(fields) {
+            const labels = {
+                petType: 'especie',
+                age: 'edad',
+                gender: 'sexo',
+                breed: 'raza',
+                breedType: 'tipo de raza',
+                coatColor: 'color de pelo',
+                photo: 'foto principal',
+                vetCert: 'certificado veterinario',
+            };
+
+            return (Array.isArray(fields) ? fields : [])
+                .map(field => labels[field] || field)
+                .join(', ');
+        }
+
         getMissingFields(pet) {
             const missing = [];
+            if (!this.normalizePetType(pet.pet_type || pet.petType)) missing.push('petType');
+            if (!(Number(pet.age_value || pet.ageValue) > 0)) missing.push('age');
             if (!pet.gender || (pet.gender !== 'macho' && pet.gender !== 'hembra')) missing.push('gender');
             const hasBreed = pet.is_mixed_breed || (pet.breed && pet.breed.trim() !== '' && pet.breed !== 'Mestizo' && pet.breed !== 'Doméstico');
             if (!pet.is_mixed_breed && !hasBreed) missing.push('breed');
             if (pet.is_mixed_breed === undefined || pet.is_mixed_breed === null) missing.push('breedType');
             if (!pet.coat_color || pet.coat_color.trim() === '') missing.push('coatColor');
-            if (!pet.nose_color || pet.nose_color.trim() === '') missing.push('noseColor');
-            if (!pet.eye_color || pet.eye_color.trim() === '') missing.push('eyeColor');
             if (!(pet.primary_photo_url || pet.photo_url)) missing.push('photo');
             if (pet.is_senior && !pet.vet_certificate_url) missing.push('vetCert');
             return missing;
@@ -581,6 +605,35 @@
             const isMixed = pet.is_mixed_breed !== undefined ? pet.is_mixed_breed : true;
 
             let fieldsHtml = '';
+
+            if (missing.includes('petType')) {
+                fieldsHtml += `
+                    <div class="ppa-form-group">
+                        <label class="ppa-label">Especie</label>
+                        <select name="petType" id="ppa-complete-pet-type" class="ppa-input" required>
+                            <option value="" selected>Selecciona la especie</option>
+                            <option value="perro">Perro</option>
+                            <option value="gato">Gato</option>
+                        </select>
+                    </div>`;
+            }
+
+            if (missing.includes('age')) {
+                fieldsHtml += `
+                    <div class="ppa-row">
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Edad</label>
+                            <input type="number" name="ageValue" class="ppa-input" placeholder="0" min="1" required>
+                        </div>
+                        <div class="ppa-form-group">
+                            <label class="ppa-label">Unidad</label>
+                            <select name="ageUnit" class="ppa-input">
+                                <option value="years">Años</option>
+                                <option value="months">Meses</option>
+                            </select>
+                        </div>
+                    </div>`;
+            }
 
             // Gender
             if (missing.includes('gender')) {
@@ -936,8 +989,14 @@
 
                 // Breed autocomplete in complete form
                 const pet = this.pets.find(p => p.id === this.incompletePetId);
-                const petType = pet ? (pet.pet_type === 'dog' ? 'perro' : pet.pet_type === 'cat' ? 'gato' : pet.pet_type) : 'perro';
-                this.setupBreedAutocomplete('ppa-complete-breed-input', 'ppa-complete-breed-list', null, petType);
+                const petType = pet ? this.normalizePetType(pet.pet_type) : 'perro';
+                const completePetTypeField = document.getElementById('ppa-complete-pet-type');
+                this.setupBreedAutocomplete(
+                    'ppa-complete-breed-input',
+                    'ppa-complete-breed-list',
+                    completePetTypeField ? 'ppa-complete-pet-type' : null,
+                    completePetTypeField ? null : petType
+                );
 
                 // File uploads (only present if those fields are missing)
                 const petPhotoBox = document.getElementById('up-pet-photo');
@@ -1161,6 +1220,32 @@
             data.memberstackId = this.member.id;
             data.primaryPhotoUrl = this.formData.primaryPhotoUrl;
             data.vetCertificateUrl = this.formData.vetCertificateUrl;
+            data.ageValue = Number(data.ageValue || 0);
+
+            if (!this.normalizePetType(data.petType)) {
+                this.showError('Selecciona la especie de tu mascota');
+                return;
+            }
+
+            if (!(data.ageValue > 0)) {
+                this.showError('Indica una edad válida para tu mascota');
+                return;
+            }
+
+            if (!data.gender) {
+                this.showError('Selecciona el sexo de tu mascota');
+                return;
+            }
+
+            if (!data.isMixed && !String(data.breed || '').trim()) {
+                this.showError('Selecciona la raza de tu mascota');
+                return;
+            }
+
+            if (!String(data.coatColor || '').trim()) {
+                this.showError('Ingresa el color de pelo de tu mascota');
+                return;
+            }
 
             if (!data.primaryPhotoUrl) {
                 this.showError('Debes subir una foto de tu mascota');
@@ -1183,7 +1268,8 @@
                 if (res.success) {
                     this.nextStep();
                 } else {
-                    this.showError(res.error || 'Error al registrar mascota');
+                    const missingFields = this.formatMissingFields(res.missingFields);
+                    this.showError(missingFields ? `Faltan datos obligatorios: ${missingFields}` : (res.error || 'Error al registrar mascota'));
                 }
             } catch (err) {
                 this.showError('Error de conexión');
@@ -1207,6 +1293,10 @@
                 }
             }
             
+            if (data.ageValue !== undefined) {
+                data.ageValue = Number(data.ageValue || 0);
+            }
+
             // Set additional required values, merging existing pet data with form data
             data.userId = this.member.id;
             data.petId = this.incompletePetId;
@@ -1222,6 +1312,16 @@
 
             if (missing.includes('vetCert') && !data.vetCertificateUrl) {
                 this.showError('Debes subir el certificado veterinario para mascotas senior');
+                return;
+            }
+
+            if (missing.includes('petType') && !this.normalizePetType(data.petType)) {
+                this.showError('Selecciona la especie de tu mascota');
+                return;
+            }
+
+            if (missing.includes('age') && !(data.ageValue > 0)) {
+                this.showError('Indica una edad vÃ¡lida para tu mascota');
                 return;
             }
 

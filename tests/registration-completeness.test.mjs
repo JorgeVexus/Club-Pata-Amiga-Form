@@ -99,6 +99,20 @@ test('clampRequestedRegistrationStep sends paid pet-recovery users with pet basi
   assert.equal(result, 5);
 });
 
+test('clampRequestedRegistrationStep does not treat incomplete DB pet rows as valid pet recovery evidence', () => {
+  const result = clampRequestedRegistrationStep({
+    requestedStep: 0,
+    computedStep: 4,
+    hasValidPetBasic: false,
+    hasPetsInDb: true,
+    paymentCompleted: true,
+    finishOnboarding: false,
+    petRecovery: true,
+  });
+
+  assert.equal(result, 2);
+});
+
 test('getRegistrationIssue detects paid member without pets', () => {
   assert.equal(
     getRegistrationIssue({

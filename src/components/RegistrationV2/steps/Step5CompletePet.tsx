@@ -9,7 +9,6 @@ import React, { useState, useEffect } from 'react';
 import SelectWithInfo from '@/components/FormFields/SelectWithInfo';
 import BreedAutocomplete from '@/components/FormFields/BreedAutocomplete';
 import ColorAutocomplete from '@/components/FormFields/ColorAutocomplete';
-import TextInput from '@/components/FormFields/TextInput';
 import PetTypeSelector from '../PetTypeSelector';
 import AgeInput from '../AgeInput';
 import styles from './Step5CompletePet.module.css';
@@ -32,6 +31,8 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
     const [errors, setErrors] = useState<Record<string, Record<string, string>>>({});
     const [isLoading, setIsLoading] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const isValidPetType = (value: any): value is 'perro' | 'gato' => value === 'perro' || value === 'gato';
+    const hasValidAge = (value: any) => Number.isFinite(Number(value)) && Number(value) > 0;
 
     // Inicializar mascotas basadas en Step 2
     useEffect(() => {
@@ -52,7 +53,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                     return {
                         name: basic.petName || '',
-                        petType: basic.petType || 'perro',
+                        petType: isValidPetType(basic.petType) ? basic.petType : '',
                         age: basic.petAge || 0,
                         ageUnit: basic.petAgeUnit || 'years',
                         gender: completedData.gender || '',
@@ -155,6 +156,8 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
         pets.forEach((pet, index) => {
             const petErrors: Record<string, string> = {};
             
+            if (!isValidPetType(pet.petType)) petErrors.petType = 'Selecciona la especie';
+            if (!hasValidAge(pet.age)) petErrors.age = 'Indica una edad vÃ¡lida';
             if (!pet.gender) petErrors.gender = 'Selecciona el sexo';
             if (!pet.coatColor) petErrors.coatColor = 'Selecciona el color';
             if (!pet.isMixedBreed && !pet.breed) petErrors.breed = 'Selecciona la raza';
@@ -214,6 +217,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                 <form onSubmit={handleSubmit} className={styles.formBody}>
                     {pets.map((pet, index) => {
                         const isSenior = pet.ageUnit === 'years' ? pet.age >= 10 : pet.age >= 120;
+                        const displayPetType = pet.petType === 'gato' ? 'gato' : 'perro';
                         
                         return (
                             <div key={index} className={`${styles.petSection} ${styles.fadeIn}`}>
@@ -225,6 +229,23 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
 
                                 <div className={styles.section}>
                                     <h3 className={styles.sectionTitle}>Información general</h3>
+
+                                    {!isValidPetType(pet.petType) && (
+                                        <PetTypeSelector
+                                            value={pet.petType}
+                                            onChange={(value) => updatePetData(index, { petType: value })}
+                                            error={errors[index]?.petType}
+                                        />
+                                    )}
+
+                                    {!hasValidAge(pet.age) && (
+                                        <AgeInput
+                                            value={Number(pet.age) || 0}
+                                            unit={pet.ageUnit}
+                                            onChange={(value, unit) => updatePetData(index, { age: value, ageUnit: unit })}
+                                            error={errors[index]?.age}
+                                        />
+                                    )}
 
                                     <SelectWithInfo
                                         label="Sexo"
@@ -278,7 +299,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                         <BreedAutocomplete
                                             label="Raza"
                                             name={`breed-${index}`}
-                                            petType={pet.petType}
+                                            petType={displayPetType}
                                             value={pet.breed}
                                             onChange={(value) => {
                                                 updatePetData(index, {
@@ -346,7 +367,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                             label="Color de pelo"
                                             name={`coatColor-${index}`}
                                             category="coat"
-                                            petType={pet.petType}
+                                            petType={displayPetType}
                                             value={pet.coatColor}
                                             onChange={(value) => updatePetData(index, { coatColor: value })}
                                             error={errors[index]?.coatColor}
@@ -357,7 +378,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                             label="Color de nariz"
                                             name={`noseColor-${index}`}
                                             category="nose"
-                                            petType={pet.petType}
+                                            petType={displayPetType}
                                             value={pet.noseColor}
                                             onChange={(value) => updatePetData(index, { noseColor: value })}
                                         />
@@ -367,7 +388,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                         label="Color de ojos"
                                         name={`eyeColor-${index}`}
                                         category="eye"
-                                        petType={pet.petType}
+                                        petType={displayPetType}
                                         value={pet.eyeColor}
                                         onChange={(value) => updatePetData(index, { eyeColor: value })}
                                     />

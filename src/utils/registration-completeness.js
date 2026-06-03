@@ -31,7 +31,6 @@ function clampRequestedRegistrationStep({
   requestedStep,
   computedStep,
   hasValidPetBasic: validPetBasic,
-  hasPetsInDb,
   paymentCompleted,
   finishOnboarding,
   petRecovery,
@@ -44,7 +43,7 @@ function clampRequestedRegistrationStep({
     finalStep = safeRequestedStep;
   }
 
-  const hasAnyPetEvidence = Boolean(validPetBasic || hasPetsInDb);
+  const hasAnyPetEvidence = Boolean(validPetBasic);
 
   if (paymentCompleted && petRecovery) {
     return hasAnyPetEvidence ? 5 : 2;

@@ -86,6 +86,40 @@ function getMemberId(m: any): string {
            "";
 }
 
+function normalizePetType(value: any): 'perro' | 'gato' | undefined {
+    const normalized = String(value || '').trim().toLowerCase();
+    if (normalized === 'perro' || normalized === 'dog') return 'perro';
+    if (normalized === 'gato' || normalized === 'cat') return 'gato';
+    return undefined;
+}
+
+function buildPetBasicFromDbPets(petsFromDb: any): any[] | undefined {
+    if (!Array.isArray(petsFromDb)) {
+        return undefined;
+    }
+
+    const normalizedPets = petsFromDb
+        .map((pet) => {
+            const petType = normalizePetType(pet?.pet_type || pet?.petType);
+            const petAge = Number(pet?.age_value ?? pet?.petAge ?? pet?.age ?? 0);
+            const petAgeUnit = String(pet?.age_unit || pet?.petAgeUnit || pet?.ageUnit || 'years').trim() === 'months'
+                ? 'months'
+                : 'years';
+
+            return {
+                petName: String(pet?.name || pet?.pet_name || '').trim(),
+                petType,
+                petAge,
+                petAgeUnit,
+                isAdopted: Boolean(pet?.is_adopted),
+                isMixed: pet?.is_mixed_breed,
+            };
+        })
+        .filter((pet) => pet.petName || pet.petType || pet.petAge);
+
+    return normalizedPets.length > 0 ? normalizedPets : undefined;
+}
+
 export default function NewRegistrationFlow() {
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState<number | null>(null); // null mientras carga inicial
@@ -232,6 +266,7 @@ export default function NewRegistrationFlow() {
 
                         const hasPetsInDB = petsResult.success && Array.isArray((petsResult as any).pets) && (petsResult as any).pets.length > 0;
                         const petsCount = hasPetsInDB ? (petsResult as any).pets.length : 0;
+                        const petBasicFromDb = buildPetBasicFromDbPets((petsResult as any).pets);
                         console.log('🐾 [loadSavedState] Mascotas en DB:', petsCount);
 
                         let userData: any = null;
@@ -252,6 +287,10 @@ export default function NewRegistrationFlow() {
                                 },
                                 // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
                                 petBasic: (() => {
+                                    if (hasValidPetBasic(petBasicFromDb)) {
+                                        return petBasicFromDb;
+                                    }
+
                                     const pets: any[] = [];
                                     const cf = currentMember.customFields || {};
 
@@ -326,6 +365,10 @@ export default function NewRegistrationFlow() {
                         }
 
                         // Si petBasic no se recuperó de DB/MS, intentar desde localStorage
+                        if (!hasValidPetBasic(loadedData.petBasic) && hasValidPetBasic(petBasicFromDb)) {
+                            loadedData.petBasic = petBasicFromDb;
+                        }
+
                         if (!loadedData.petBasic) {
                             try {
                                 const backup = localStorage.getItem('petBasicBackup');
@@ -338,6 +381,7 @@ export default function NewRegistrationFlow() {
                         }
 
                         setRegistrationData(loadedData);
+                        const hasValidPetBasicData = hasValidPetBasic(loadedData.petBasic);
 
                         // Verificar estado de registro (Comparar Memberstack vs Supabase)
                         const msStep = Number(currentMember.customFields?.['registration-step'] || 1);
@@ -352,7 +396,7 @@ export default function NewRegistrationFlow() {
 
                         // 🐾 ROBUSTO: Si ya tiene mascotas en la DB, saltamos directo al Paso 3 (Selección de Plan)
                         // Usamos la tabla 'pets' (fuente de verdad) en lugar de campos del usuario
-                        if (hasPetsInDB && finalStep < 3) {
+                        if (hasValidPetBasicData && finalStep < 3) {
                             console.log(`🐾 [loadSavedState] ${petsCount} mascota(s) detectada(s) en DB, saltando al paso 3`);
                             finalStep = 3;
                         }
@@ -427,7 +471,7 @@ export default function NewRegistrationFlow() {
                         finalStep = clampRequestedRegistrationStep({
                             requestedStep: urlStep,
                             computedStep: finalStep,
-                            hasValidPetBasic: hasValidPetBasic(loadedData.petBasic),
+                            hasValidPetBasic: hasValidPetBasicData,
                             hasPetsInDb: hasPetsInDB,
                             paymentCompleted: isPaymentSuccess || paymentStatus === 'completed' || hasActivePlan,
                             finishOnboarding,
@@ -654,8 +698,9 @@ export default function NewRegistrationFlow() {
                     // 🐾 ROBUSTO: Consultar tabla 'pets' directamente (fuente de verdad)
                     // No dependemos de campos del usuario que pueden estar vacíos
                     const petsCheckResult = await getPetsByUserId(msId);
-                    const userHasPets = petsCheckResult.success && Array.isArray((petsCheckResult as any).pets) && (petsCheckResult as any).pets.length > 0;
-                    if (userHasPets && loginTargetStep < 3) {
+                    const dbPetBasic = buildPetBasicFromDbPets((petsCheckResult as any).pets);
+                    const userHasValidPetBasic = hasValidPetBasic(dbPetBasic);
+                    if (userHasValidPetBasic && loginTargetStep < 3) {
                         const count = (petsCheckResult as any).pets.length;
                         console.log(`🐾 [handleStep1Complete] ${count} mascota(s) en DB, saltando al paso 3`);
                         loginTargetStep = 3;
@@ -688,7 +733,7 @@ export default function NewRegistrationFlow() {
                     }
 
                     if (hasPetRecoveryIntent) {
-                        loginTargetStep = (userHasPets || memberHasPetBasicFields(memberToVerify)) ? 5 : 2;
+                        loginTargetStep = (userHasValidPetBasic || memberHasPetBasicFields(memberToVerify)) ? 5 : 2;
                     } else if (hasRecoveryIntent || isCheckoutPending) {
                         if (paymentStatus !== 'completed') loginTargetStep = 3;
                     }
@@ -832,7 +877,8 @@ export default function NewRegistrationFlow() {
 
                         let loginTargetStep = Math.max(msStep, 2);
                         const petsCheckResult2 = await getPetsByUserId(msId);
-                        const userHasPets2 = petsCheckResult2.success && Array.isArray((petsCheckResult2 as any).pets) && (petsCheckResult2 as any).pets.length > 0;
+                        const dbPetBasic2 = buildPetBasicFromDbPets((petsCheckResult2 as any).pets);
+                        const userHasValidPetBasic2 = hasValidPetBasic(dbPetBasic2);
 
                         // 💰 REDIRECCIÓN PARA MIEMBROS YA PAGADOS (Login Manual - Email existente)
                         // Forzamos un refresco para obtener planes actualizados
@@ -861,7 +907,7 @@ export default function NewRegistrationFlow() {
                         }
 
                         if (hasPetRecoveryIntent2) {
-                            loginTargetStep = (userHasPets2 || memberHasPetBasicFields(memberToVerify2)) ? 5 : 2;
+                            loginTargetStep = (userHasValidPetBasic2 || memberHasPetBasicFields(memberToVerify2)) ? 5 : 2;
                         } else if (hasRecoveryIntent2 || isCheckoutPending) {
                             if (paymentStatus !== 'completed') {
                                 loginTargetStep = 3;

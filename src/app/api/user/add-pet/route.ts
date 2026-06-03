@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { enrichPetsWithLifecycle, getActivePetCount } from '@/utils/pet-lifecycle';
+import { getMissingCompletePetFields } from '@/utils/pet-required-fields';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -63,9 +64,31 @@ export async function POST(request: NextRequest) {
         } = body;
 
         // 1. Validar campos requeridos
-        if (!memberstackId || !name || !petType) {
+        if (!memberstackId) {
             return NextResponse.json(
-                { success: false, error: 'Faltan campos requeridos: memberstackId, name, petType' },
+                { success: false, error: 'Falta memberstackId' },
+                { status: 400, headers: corsHeaders }
+            );
+        }
+
+        const missingRequiredFields = getMissingCompletePetFields({
+            name,
+            petType,
+            ageValue,
+            ageUnit,
+            gender,
+            breed,
+            isMixed,
+            coatColor,
+        });
+
+        if (missingRequiredFields.length > 0) {
+            return NextResponse.json(
+                {
+                    success: false,
+                    error: 'Faltan campos obligatorios de la mascota',
+                    missingFields: missingRequiredFields,
+                },
                 { status: 400, headers: corsHeaders }
             );
         }

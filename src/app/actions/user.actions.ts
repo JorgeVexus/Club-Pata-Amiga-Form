@@ -6,6 +6,10 @@ import Stripe from 'stripe'
 import { getMemberDetails } from '@/services/memberstack-admin.service'
 import { upsertContact, updateContact, updateContactAsActive, type ContactData } from '@/services/crm.service'
 import { enrichPetsWithLifecycle } from '@/utils/pet-lifecycle'
+import {
+    getMissingCompletePetFields,
+    hasValidBasicPetFields,
+} from '@/utils/pet-required-fields'
 
 // Inicializar cliente seguro para operaciones de administración
 const getServiceRoleClient = () => {
@@ -359,6 +363,18 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
             console.log(`✅ [Server Action] Usuario preventivo creado en Supabase con ID: ${userData.id}`);
         }
 
+        for (const pet of pets) {
+            if (pet.isComplete === true) {
+                const missingRequiredFields = getMissingCompletePetFields(pet)
+                if (missingRequiredFields.length > 0) {
+                    return {
+                        success: false,
+                        error: `Faltan campos obligatorios de mascota: ${missingRequiredFields.join(', ')}`,
+                    }
+                }
+            }
+        }
+
         // 2. Preparar los datos de las mascotas
         const petsToInsert = pets.map((pet, index) => ({
             owner_id: userData.id,
@@ -398,8 +414,8 @@ export async function registerPetsInSupabase(memberstackId: string, pets: any[])
 
             // Tracking
             status: pet.status || 'pending',
-            basic_info_completed: true,
-            complementary_info_completed: pet.isComplete || false,
+            basic_info_completed: hasValidBasicPetFields(pet),
+            complementary_info_completed: pet.isComplete === true && getMissingCompletePetFields(pet).length === 0,
             created_at: new Date().toISOString()
         }));
 
