@@ -172,6 +172,12 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             terms_version: userData.terms_version || userData.termsVersion || '1.0',
             // Referidos
             ambassador_code: userData.referralCode || userData.ambassadorCode || userData.ambassador_code,
+            // UTM Tracking
+            utm_source: userData.utm_source || userData.utmSource,
+            utm_medium: userData.utm_medium || userData.utmMedium,
+            utm_campaign: userData.utm_campaign || userData.utmCampaign,
+            utm_term: userData.utm_term || userData.utmTerm,
+            utm_content: userData.utm_content || userData.utmContent,
         };
 
         // Filtrar campos undefined y null para no sobreescribir datos existentes

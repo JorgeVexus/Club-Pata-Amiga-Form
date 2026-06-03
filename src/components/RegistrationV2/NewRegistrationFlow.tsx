@@ -30,6 +30,7 @@ import Toast from '@/components/UI/Toast';
 // Servicios
 import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId, registerPetsInSupabase } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
+import { trackGTMPurchase } from '@/components/Analytics/GoogleTagManager';
 import { calculateWaitingPeriod } from '@/services/pet.service';
 import {
     clampRequestedRegistrationStep,
@@ -451,6 +452,42 @@ export default function NewRegistrationFlow() {
                             // Si venimos específicamente de la URL de éxito, activamos la animación de confeti/éxito
                             if (isPaymentSuccess) {
                                 setIsPaymentSuccessTransition(true);
+                                
+                                // GA4/GTM + Meta Pixel E-commerce Purchase Tracking
+                                try {
+                                    const activePlan = activePlans[0];
+                                    const transactionId = activePlan?.payment?.stripeSubscriptionId || activePlan?.id || `ms_${msId}_${Date.now()}`;
+                                    const trackingKey = `gtm_purchase_tracked_${transactionId}`;
+                                    
+                                    if (typeof window !== 'undefined' && !sessionStorage.getItem(trackingKey)) {
+                                        const planId = loadedData.planId || currentMember.planIds?.[0] || '';
+                                        const isAnnual = planId.toLowerCase().includes('anual') || planId.toLowerCase().includes('year') || planId.toLowerCase().includes('ann');
+                                        const planName = isAnnual ? 'Anual' : 'Mensual';
+                                        const price = isAnnual ? 1699 : 159;
+                                        
+                                        // 1. Google Analytics 4 (GTM DataLayer)
+                                        trackGTMPurchase({
+                                            transactionId,
+                                            value: price,
+                                            planName: `Plan ${planName}`,
+                                            referralCode: currentMember.customFields?.['ambassador-code'] || loadedData.referralCode || '',
+                                        });
+
+                                        // 2. Meta Pixel
+                                        trackEvent('Purchase', { 
+                                            value: price, 
+                                            currency: 'MXN',
+                                            content_name: `Plan ${planName}`,
+                                            content_category: 'subscription',
+                                            transaction_id: transactionId
+                                        });
+                                        
+                                        sessionStorage.setItem(trackingKey, 'true');
+                                        console.log('✅ Purchase tracked on redirection:', { transactionId, planName, price });
+                                    }
+                                } catch (e) {
+                                    console.error('❌ Error tracking purchase in loadSavedState:', e);
+                                }
                             }
 
                             // Sincronización preventiva: si la URL dice éxito pero Memberstack no, actualizamos Memberstack
@@ -754,6 +791,13 @@ export default function NewRegistrationFlow() {
                 throw new Error('Login fallido: no se recibieron datos del member');
             }
 
+            // Obtener UTMs de localStorage/sessionStorage para atribución de tráfico
+            const utmSource = typeof window !== 'undefined' ? localStorage.getItem('utm_source') || sessionStorage.getItem('utm_source') || '' : '';
+            const utmMedium = typeof window !== 'undefined' ? localStorage.getItem('utm_medium') || sessionStorage.getItem('utm_medium') || '' : '';
+            const utmCampaign = typeof window !== 'undefined' ? localStorage.getItem('utm_campaign') || sessionStorage.getItem('utm_campaign') || '' : '';
+            const utmTerm = typeof window !== 'undefined' ? localStorage.getItem('utm_term') || sessionStorage.getItem('utm_term') || '' : '';
+            const utmContent = typeof window !== 'undefined' ? localStorage.getItem('utm_content') || sessionStorage.getItem('utm_content') || '' : '';
+
             // Crear usuario en Memberstack
             const result = await window.$memberstackDom.signupMemberEmailPassword({
                 email: data.email,
@@ -762,6 +806,11 @@ export default function NewRegistrationFlow() {
                     'registration-step': 2,
                     'pre-payment-completed': false,
                     'payment-status': 'pending',
+                    'utm-source': utmSource,
+                    'utm-medium': utmMedium,
+                    'utm-campaign': utmCampaign,
+                    'utm-term': utmTerm,
+                    'utm-content': utmContent,
                 },
             });
 
@@ -814,7 +863,12 @@ export default function NewRegistrationFlow() {
                 {
                     email: data.email,
                     registration_step: 2,
-                    membership_status: 'pending'
+                    membership_status: 'pending',
+                    utmSource,
+                    utmMedium,
+                    utmCampaign,
+                    utmTerm,
+                    utmContent,
                 },
                 msId
             );
@@ -1149,15 +1203,42 @@ export default function NewRegistrationFlow() {
                     console.warn('⚠️ No se pudo notificar éxito de pago al CRM', e);
                 }
 
-                // Tracking Pixel - Purchase
+                // Tracking Pixel - Purchase (GA4/GTM + Meta Pixel E-commerce)
                 const plan = planId.includes('anual') ? 'Anual' : 'Mensual';
                 const price = plan === 'Anual' ? 1699 : 159;
-                trackEvent('Purchase', { 
-                    value: price, 
-                    currency: 'MXN',
-                    content_name: `Plan ${plan}`,
-                    content_category: 'subscription'
-                });
+                
+                try {
+                    const activePlan = planConnections.find((p: any) => 
+                        (p.planId === planId || p.priceId === planId) && 
+                        (p.status?.toUpperCase() === 'ACTIVE' || p.status?.toLowerCase() === 'trialing')
+                    );
+                    const transactionId = activePlan?.payment?.stripeSubscriptionId || activePlan?.id || `ms_${memberId}_${Date.now()}`;
+                    const trackingKey = `gtm_purchase_tracked_${transactionId}`;
+                    
+                    if (typeof window !== 'undefined' && !sessionStorage.getItem(trackingKey)) {
+                        // 1. Google Analytics 4 (GTM DataLayer)
+                        trackGTMPurchase({
+                            transactionId,
+                            value: price,
+                            planName: `Plan ${plan}`,
+                            referralCode: referralCode || '',
+                        });
+
+                        // 2. Meta Pixel
+                        trackEvent('Purchase', { 
+                            value: price, 
+                            currency: 'MXN',
+                            content_name: `Plan ${plan}`,
+                            content_category: 'subscription',
+                            transaction_id: transactionId
+                        });
+                        
+                        sessionStorage.setItem(trackingKey, 'true');
+                        console.log('✅ Purchase tracked in handleStep3Complete:', { transactionId, plan, price });
+                    }
+                } catch (e) {
+                    console.error('❌ Error tracking purchase in handleStep3Complete:', e);
+                }
 
                 // Guardar progreso del pago en Supabase
                 await saveProgress(4, completedData);
