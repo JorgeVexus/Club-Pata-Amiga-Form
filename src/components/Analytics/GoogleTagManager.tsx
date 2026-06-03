@@ -24,6 +24,7 @@ export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
                 const utmFields = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+                let hasUrlParams = false;
 
                 utmFields.forEach(field => {
                     const value = urlParams.get(field);
@@ -31,8 +32,56 @@ export default function GoogleTagManager({ gtmId }: GoogleTagManagerProps) {
                         localStorage.setItem(field, value);
                         sessionStorage.setItem(field, value);
                         console.log(`📡 [UTM Capture] ${field} = ${value}`);
+                        hasUrlParams = true;
                     }
                 });
+
+                // Si no hay parámetros UTM en la URL, y no hay UTMs guardadas previamente, detectamos Orgánico / Social / Referido / Directo
+                if (!hasUrlParams && !localStorage.getItem('utm_source')) {
+                    const referrer = document.referrer;
+                    let source = 'direct';
+                    let medium = 'none';
+                    let campaign = 'organic_fallback';
+
+                    if (referrer) {
+                        try {
+                            const refUrl = new URL(referrer);
+                            const host = refUrl.hostname.toLowerCase();
+
+                            // Ignorar visitas desde el propio dominio para evitar auto-referidos
+                            const currentHost = window.location.hostname.toLowerCase();
+                            if (host !== currentHost) {
+                                // Detectar buscadores comunes
+                                if (host.includes('google.') || host.includes('bing.') || host.includes('yahoo.') || host.includes('duckduckgo.') || host.includes('baidu.')) {
+                                    source = host.replace('www.', '').split('.')[0]; // google, bing, etc.
+                                    medium = 'organic';
+                                } else if (host.includes('facebook.') || host.includes('instagram.') || host.includes('t.co') || host.includes('twitter.') || host.includes('linkedin.') || host.includes('pinterest.')) {
+                                    // Redes sociales orgánicas
+                                    source = host.replace('www.', '');
+                                    medium = 'social';
+                                } else {
+                                    // Cualquier otro sitio de referencia
+                                    source = host.replace('www.', '');
+                                    medium = 'referral';
+                                }
+                            } else {
+                                // Es navegación interna, no hacemos nada para no sobreescribir la sesión inicial
+                                return;
+                            }
+                        } catch (e) {
+                            // Error al parsear referrer
+                        }
+                    }
+
+                    localStorage.setItem('utm_source', source);
+                    sessionStorage.setItem('utm_source', source);
+                    localStorage.setItem('utm_medium', medium);
+                    sessionStorage.setItem('utm_medium', medium);
+                    localStorage.setItem('utm_campaign', campaign);
+                    sessionStorage.setItem('utm_campaign', campaign);
+
+                    console.log(`📡 [UTM Fallback] source = ${source}, medium = ${medium}, campaign = ${campaign}`);
+                }
             } catch (err) {
                 console.warn('❌ Error capturing UTM parameters:', err);
             }
