@@ -3,7 +3,8 @@ import TextInput from '@/components/FormFields/TextInput';
 import DatePicker from '@/components/FormFields/DatePicker';
 import NationalitySelect from '../NationalitySelect';
 import ColonyAutocomplete from '@/components/FormFields/ColonyAutocomplete';
-import { checkCurpAvailability } from '@/app/actions/user.actions';
+import PhoneInput from '@/components/FormFields/PhoneInput';
+import { checkCurpAvailability, registerUserInSupabase } from '@/app/actions/user.actions';
 import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
 import styles from './Step4CompleteProfile.module.css';
 import { getCDMXAlcaldia } from '@/utils/postalCodeUtils';
@@ -24,7 +25,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         birthDate: '',
         nationality: '',
         nationalityCode: '',
-        phone: data?.account?.phone || '',
+        phone: data?.profile?.phone || data?.account?.phone || member?.customFields?.phone || '',
         email: member?.auth?.email || data?.account?.email || '',
         curp: '',
         postalCode: '',
@@ -94,6 +95,52 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
     const handleCurpBlur = () => {
         if (formData.curp.length === 18) {
             verifyCurp(formData.curp);
+        }
+    };
+
+    const handlePhoneBlur = async () => {
+        const cleanPhone = formData.phone.replace(/\s/g, '');
+        if (cleanPhone === '') {
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors.phone;
+                return newErrors;
+            });
+            return;
+        }
+
+        if (cleanPhone.length !== 10) {
+            setErrors(prev => ({ ...prev, phone: 'El teléfono debe tener 10 dígitos' }));
+            return;
+        }
+
+        setErrors(prev => {
+            const newErrors = { ...prev };
+            delete newErrors.phone;
+            return newErrors;
+        });
+
+        const msId = member?.id || member?.memberId;
+        if (!msId) return;
+        
+        console.log('📞 Guardando teléfono de inmediato:', formData.phone);
+        try {
+            // 1. Guardar en Supabase
+            await registerUserInSupabase({
+                phone: formData.phone,
+            }, msId);
+            
+            // 2. Guardar en Memberstack
+            if (window.$memberstackDom) {
+                await window.$memberstackDom.updateMember({
+                    customFields: {
+                        phone: formData.phone,
+                    }
+                });
+            }
+            console.log('✅ Teléfono guardado de inmediato en Paso 4.');
+        } catch (error) {
+            console.error('❌ Error al guardar teléfono en Paso 4:', error);
         }
     };
 
@@ -189,6 +236,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                 birthDate: profile.birthDate || '',
                 nationality: profile.nationality || '',
                 nationalityCode: profile.nationalityCode || '',
+                phone: profile.phone || prev.phone || data?.account?.phone || member?.customFields?.phone || '',
                 email: profile.email || prev.email,
                 curp: profile.curp || '',
                 postalCode: profile.postalCode || '',
@@ -297,6 +345,13 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
         if (!formData.postalCode || formData.postalCode.length !== 5) newErrors.postalCode = 'CP inválido';
         if (!formData.city.trim()) newErrors.city = 'Requerido';
         if (!formData.colony.trim()) newErrors.colony = 'Requerido';
+
+        if (formData.phone) {
+            const cleanPhone = formData.phone.replace(/\s/g, '');
+            if (cleanPhone.length !== 10) {
+                newErrors.phone = 'El teléfono debe tener 10 dígitos';
+            }
+        }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -532,7 +587,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>Contacto</h3>
 
-<TextInput
+                        <TextInput
                             label="Correo electrónico"
                             name="email"
                             type="email"
@@ -541,6 +596,15 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                             error={errors.email}
                             required
                             readOnly
+                        />
+
+                        <PhoneInput
+                            label="Número de teléfono"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                            onBlur={handlePhoneBlur}
+                            error={errors.phone}
                         />
                     </div>
 

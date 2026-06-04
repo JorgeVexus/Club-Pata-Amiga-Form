@@ -11,6 +11,7 @@ interface PhoneInputProps {
     name: string;
     value: string;
     onChange: (value: string) => void;
+    onBlur?: () => void;
     error?: string;
     helpText?: string;
     required?: boolean;
@@ -22,6 +23,7 @@ export default function PhoneInput({
     name,
     value,
     onChange,
+    onBlur,
     error,
     helpText,
     required = false,
@@ -68,6 +70,7 @@ export default function PhoneInput({
                     type="tel"
                     value={value}
                     onChange={handleChange}
+                    onBlur={onBlur}
                     placeholder="123 123 1234"
                     className={`${styles.input} ${error ? 'input-error' : ''}`}
                     required={required}

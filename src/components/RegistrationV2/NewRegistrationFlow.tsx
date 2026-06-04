@@ -56,6 +56,7 @@ interface RegistrationData {
     account?: {
         email: string;
         password?: string;
+        phone?: string;
     };
     petBasic?: Array<{
         petType: 'perro' | 'gato';
@@ -274,6 +275,7 @@ export default function NewRegistrationFlow() {
                         let loadedData: RegistrationData = {
                             account: {
                                 email: currentMember.auth?.email,
+                                phone: currentMember.customFields?.['phone'] || '',
                             }
                         };
 
@@ -285,6 +287,7 @@ export default function NewRegistrationFlow() {
                             loadedData = {
                                 account: {
                                     email: currentMember.auth?.email || userData.email,
+                                    phone: currentMember.customFields?.['phone'] || userData.phone || '',
                                 },
                                 // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
                                 petBasic: (() => {
@@ -343,6 +346,7 @@ export default function NewRegistrationFlow() {
                                     firstName: currentMember.customFields['first-name'],
                                     paternalLastName: currentMember.customFields['last-name'] || '',
                                     email: currentMember.auth?.email,
+                                    phone: currentMember.customFields?.['phone'] || '',
                                 } : undefined),
                             };
                         } else if (result.success && !result.userData) {
@@ -355,6 +359,7 @@ export default function NewRegistrationFlow() {
                                     firstName: currentMember.customFields['first-name'],
                                     paternalLastName: currentMember.customFields['last-name'] || '',
                                     email: currentMember.auth?.email,
+                                    phone: currentMember.customFields?.['phone'] || '',
                                 };
                             }
 
@@ -806,6 +811,7 @@ export default function NewRegistrationFlow() {
                     'registration-step': 2,
                     'pre-payment-completed': false,
                     'payment-status': 'pending',
+                    'phone': data.phone || '',
                     'utm-source': utmSource,
                     'utm-medium': utmMedium,
                     'utm-campaign': utmCampaign,
@@ -862,6 +868,7 @@ export default function NewRegistrationFlow() {
             const supabaseResult = await registerUserInSupabase(
                 {
                     email: data.email,
+                    phone: data.phone,
                     registration_step: 2,
                     membership_status: 'pending',
                     utmSource,

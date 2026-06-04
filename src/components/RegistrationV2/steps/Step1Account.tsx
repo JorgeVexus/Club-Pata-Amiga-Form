@@ -429,7 +429,6 @@ export default function Step1Account({
                                     name="phone"
                                     value={formData.phone}
                                     onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
-                                    helpText="Déjanos tu teléfono si necesitas que te llamemos."
                                 />
 
                                 <button
