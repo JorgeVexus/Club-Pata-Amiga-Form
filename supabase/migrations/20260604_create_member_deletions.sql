@@ -14,3 +14,13 @@ CREATE INDEX IF NOT EXISTS idx_member_deletions_created_at ON member_deletions(c
 
 -- Add comment for documentation
 COMMENT ON TABLE member_deletions IS 'Logs for member deletions by admins.';
+
+-- Enable RLS
+ALTER TABLE member_deletions ENABLE ROW LEVEL SECURITY;
+
+-- Policy for full service_role access
+CREATE POLICY "Service role full access member_deletions" 
+ON member_deletions 
+FOR ALL 
+TO service_role 
+USING (true);
