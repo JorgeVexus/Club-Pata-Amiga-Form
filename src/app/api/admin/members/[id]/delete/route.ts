@@ -25,15 +25,41 @@ export async function DELETE(
     try {
         console.log(`🗑️ [BACKEND] Iniciando eliminación total del miembro: ${id}`);
 
-        // 1. Buscar usuario en Supabase para obtener su UUID interno y datos de Stripe
+        // 1. Buscar usuario en Supabase por memberstack_id o por id (UUID interno)
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, role, stripe_customer_id, email')
-            .eq('memberstack_id', id)
+            .select('id, role, stripe_customer_id, email, first_name, last_name, mother_last_name, memberstack_id')
+            .or(`memberstack_id.eq.${id},id.eq.${id}`)
             .maybeSingle();
 
         if (userError) {
             console.error('Error buscando usuario en Supabase:', userError);
+        }
+
+        // Obtener nombre y correo para el registro de auditoría antes del borrado
+        const userName = user 
+            ? `${user.first_name || ''} ${user.last_name || ''} ${user.mother_last_name || ''}`.trim() 
+            : 'Usuario Desconocido';
+        const userEmail = user?.email || 'email@desconocido.com';
+        
+        const adminName = adminUser.full_name || 'Admin';
+        const adminId = adminUser.memberstack_id;
+
+        console.log(`📝 Registrando eliminación de ${userName} (${userEmail}) en logs...`);
+        const { error: logError } = await supabaseAdmin
+            .from('member_deletions')
+            .insert({
+                member_id: id,
+                member_name: userName,
+                member_email: userEmail,
+                deleted_by_name: adminName,
+                deleted_by_id: adminId
+            });
+
+        if (logError) {
+            console.error('⚠️ Error al registrar eliminación en member_deletions:', logError);
+        } else {
+            console.log('✅ Eliminación registrada con éxito en member_deletions');
         }
 
         if (user) {
@@ -159,13 +185,27 @@ export async function DELETE(
             console.error('❌ [CRÍTICO] Error cancelando suscripciones en Stripe:', stripeError.message);
         }
 
-        // 6. Borrar de Memberstack
-        console.log('📤 Eliminando de Memberstack...');
-        const msResult = await memberstackAdmin.deleteMember(id);
+        // 6. Borrar de Memberstack (tolerante a errores 404)
+        const msIdToDelete = user?.memberstack_id || id;
+        if (msIdToDelete) {
+            console.log(`📤 Eliminando de Memberstack con ID: ${msIdToDelete}...`);
+            const msResult = await memberstackAdmin.deleteMember(msIdToDelete);
 
-        if (!msResult.success) {
-            console.error('❌ Error eliminando de Memberstack:', msResult.error);
-            return NextResponse.json({ error: msResult.error }, { status: 500 });
+            if (!msResult.success) {
+                const isNotFoundError = msResult.error?.includes('404') || 
+                                      msResult.error?.toLowerCase().includes('not found') ||
+                                      msResult.error?.toLowerCase().includes('no encontrado') ||
+                                      msResult.error?.toLowerCase().includes('member_not_found');
+                
+                if (isNotFoundError) {
+                    console.log('ℹ️ Miembro no encontrado en Memberstack (ya eliminado o nunca existió), procediendo...');
+                } else {
+                    console.error('❌ Error eliminando de Memberstack:', msResult.error);
+                    return NextResponse.json({ error: msResult.error }, { status: 500 });
+                }
+            } else {
+                console.log('✅ Eliminado de Memberstack con éxito');
+            }
         }
 
         console.log('✅ Eliminación completada con éxito');

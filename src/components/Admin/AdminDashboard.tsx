@@ -394,7 +394,7 @@ function DashboardContent() {
                         <RequestsTable
                             filter={(subFilter as any) || 'all'}
                             isSuperAdmin={isAdminSuper}
-                            requestType={activeFilter === 'all-members' ? 'all' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
+                            requestType={activeFilter === 'all-members' ? 'all-members' : (activeFilter === 'terminate-users' ? 'terminate-users' : activeFilter as any)}
                             mode={activeFilter === 'terminate-users' ? 'termination' : 'default'}
                             refreshKey={refreshKey}
                             onViewDetails={(id, type, petId) => {
@@ -453,6 +453,32 @@ function DashboardContent() {
                                     if (res.ok) { alert('Eliminado correctamente'); triggerInPlaceRefresh(); }
                                     else alert('Error al eliminar');
                                 } catch (e) { console.error(e); }
+                            }}
+                            onBulkDelete={async (ids: string[], type: any) => {
+                                if (!confirm(`¿Estás seguro de eliminar permanentemente ${ids.length} registros?`)) return;
+                                try {
+                                    if (type === 'ambassador') {
+                                        for (const id of ids) {
+                                            await adminFetch(`/api/ambassadors/${id}`, { method: 'DELETE' });
+                                        }
+                                        alert('Registros eliminados correctamente');
+                                        triggerInPlaceRefresh();
+                                    } else {
+                                        const res = await adminFetch('/api/admin/members/bulk-delete', {
+                                            method: 'POST',
+                                            headers: { 'Content-Type': 'application/json' },
+                                            body: JSON.stringify({ ids })
+                                        });
+                                        if (res.ok) {
+                                            alert('Registros eliminados correctamente');
+                                            triggerInPlaceRefresh();
+                                        } else {
+                                            alert('Error al eliminar algunos registros');
+                                        }
+                                    }
+                                } catch (e) {
+                                    console.error('Error in bulk delete:', e);
+                                }
                             }}
                             onTerminate={(member) => {
                                 setCommPrefill({ recipientId: member.id, templateSearch: 'Baja', isTermination: true });

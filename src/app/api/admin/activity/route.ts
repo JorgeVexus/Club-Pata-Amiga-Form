@@ -174,6 +174,34 @@ export async function POST(request: NextRequest) {
             }
         });
 
+        // --- 🆕 Procesar Eliminaciones de Miembros (Supabase) ---
+        const { data: deletions, error: deletionsError } = await supabase
+            .from('member_deletions')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (deletionsError) {
+            console.error('Error fetching member deletions:', deletionsError);
+        }
+
+        (deletions || []).forEach((del: any) => {
+            const isPersonal = del.deleted_by_name === adminName || del.deleted_by_id === memberstackId;
+            
+            if (isSuperAdmin || isPersonal) {
+                activityLogs.push({
+                    id: `member-del-${del.id}`,
+                    type: 'deleted',
+                    category: 'member',
+                    title: 'Usuario Eliminado',
+                    description: `Eliminó permanentemente al usuario ${del.member_name} (${del.member_email})`,
+                    timestamp: del.created_at,
+                    adminName: del.deleted_by_name || 'Admin',
+                    targetName: del.member_name,
+                    role: 'Miembro'
+                });
+            }
+        });
+
         // 4. Ordenar por fecha descendente
         activityLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 

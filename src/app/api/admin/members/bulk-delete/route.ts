@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -14,6 +15,13 @@ const supabaseAdmin = createClient(
  */
 export async function POST(request: NextRequest) {
     try {
+        // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
+        const adminName = adminUser.full_name || 'Admin';
+        const adminId = adminUser.memberstack_id;
+
         const body = await request.json();
         const { ids } = body;
 
@@ -21,7 +29,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Se requiere un array de IDs' }, { status: 400 });
         }
 
-        console.log(`🚀 [BULK] Iniciando eliminación masiva de ${ids.length} usuarios`);
+        console.log(`🚀 [BULK] Iniciando eliminación masiva de ${ids.length} usuarios por admin ${adminName}`);
 
         const results = {
             successCount: 0,
@@ -30,15 +38,31 @@ export async function POST(request: NextRequest) {
         };
 
         // Procesar en lotes o secuencialmente para evitar timeouts pesados
-        // Para pruebas, secuencial está bien por ahora
         for (const msId of ids) {
             try {
                 // 1. Lógica de Supabase
                 const { data: user } = await supabaseAdmin
                     .from('users')
-                    .select('id, stripe_customer_id, email')
-                    .eq('memberstack_id', msId)
+                    .select('id, stripe_customer_id, email, first_name, last_name, mother_last_name, memberstack_id')
+                    .or(`memberstack_id.eq.${msId},id.eq.${msId}`)
                     .maybeSingle();
+
+                // Obtener nombre y correo para auditoría antes de la eliminación
+                const userName = user 
+                    ? `${user.first_name || ''} ${user.last_name || ''} ${user.mother_last_name || ''}`.trim() 
+                    : 'Usuario Desconocido';
+                const userEmail = user?.email || 'email@desconocido.com';
+
+                // Registrar en logs de eliminación
+                await supabaseAdmin
+                    .from('member_deletions')
+                    .insert({
+                        member_id: msId,
+                        member_name: userName,
+                        member_email: userEmail,
+                        deleted_by_name: adminName,
+                        deleted_by_id: adminId
+                    });
 
                 if (user) {
                     // 1.5. Borrar dependencias directas para evitar Foreign Key constraints

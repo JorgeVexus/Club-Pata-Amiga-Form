@@ -87,11 +87,57 @@ export default function RequestsTable({
     // Checkbox selection
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+    const [searchEmail, setSearchEmail] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
+
+    async function performSearch(email: string) {
+        try {
+            setIsSearching(true);
+            setHasSearched(true);
+            setLoading(true);
+            const res = await adminFetch(`/api/admin/members/search?email=${encodeURIComponent(email)}`);
+            const data = await res.json();
+            if (data.success && data.members) {
+                setRequests(data.members);
+            } else {
+                setRequests([]);
+            }
+        } catch (err) {
+            console.error('Error in database search:', err);
+        } finally {
+            setIsSearching(false);
+            setLoading(false);
+        }
+    }
+
+    async function handleDatabaseSearch(e?: React.FormEvent) {
+        if (e) e.preventDefault();
+        if (!searchEmail.trim()) {
+            alert('Por favor, ingresa un correo para buscar.');
+            return;
+        }
+        performSearch(searchEmail.trim());
+    }
+
     useEffect(() => {
-        loadRequests();
+        if (requestType === 'all-members') {
+            if (hasSearched && searchEmail.trim()) {
+                performSearch(searchEmail.trim());
+            } else {
+                setRequests([]);
+                setLoading(false);
+            }
+        } else {
+            loadRequests();
+        }
     }, [sortFilter, requestType, infoFilter, paymentFilter, issueFilter, refreshKey]);
 
     useEffect(() => {
+        if (requestType === 'all-members') {
+            setStats({ total: 0, pending: 0, approved: 0, rejected: 0 });
+            return;
+        }
         loadStats();
     }, [requestType, refreshKey]);
 
@@ -481,7 +527,7 @@ export default function RequestsTable({
     return (
         <div className={styles.requestsContainer}>
             {/* Stats Grid */}
-            {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all' || requestType === 'all-members') && (
+            {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all') && (
                 <div className={styles.statsGrid}>
                     <div className={styles.statCard}>
                         <div className={styles.statIcon}>🎯</div>
@@ -526,7 +572,8 @@ export default function RequestsTable({
                             {requestType === 'ambassador' ? 'Gestión de Embajadores' : 
                              requestType === 'wellness-center' ? 'Gestión de Centros de Bienestar' : 
                              requestType === 'appeals' ? 'Gestión de Apelaciones' : 
-                             requestType === 'terminate-users' ? 'Baja de Usuarios' : 'Gestión de Miembros'}
+                             requestType === 'terminate-users' ? 'Baja de Usuarios' : 
+                             requestType === 'all-members' ? 'Buscador de Usuarios (Base de Datos)' : 'Gestión de Miembros'}
                         </h2>
                         {selectedIds.size > 0 && (
                             <button 
@@ -543,7 +590,7 @@ export default function RequestsTable({
                     </div>
 
                     {/* Tab Filters (Standardized) */}
-                    {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all' || requestType === 'all-members') && (
+                    {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all') && (
                         <div className={styles.tabFilters}>
                             <button
                                 className={`${styles.tabBtn} ${sortFilter === 'all' ? styles.active : ''}`}
@@ -574,19 +621,51 @@ export default function RequestsTable({
                 </div>
 
                 <div className={styles.requestsControls}>
-                    <div className={styles.searchBox}>
-                        <span className={styles.searchIcon}>🔍</span>
-                        <input
-                            type="text"
-                            className={styles.searchInput}
-                            placeholder="Buscar..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </div>
+                    {requestType === 'all-members' ? (
+                        <form onSubmit={handleDatabaseSearch} style={{ display: 'flex', gap: '8px', flex: 1, maxWidth: '500px' }}>
+                            <div className={styles.searchBox} style={{ margin: 0, flex: 1 }}>
+                                <span className={styles.searchIcon}>🔍</span>
+                                <input
+                                    type="email"
+                                    className={styles.searchInput}
+                                    placeholder="Buscar por correo en la base de datos..."
+                                    value={searchEmail}
+                                    onChange={(e) => setSearchEmail(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className={styles.viewButton}
+                                style={{
+                                    margin: 0,
+                                    padding: '0 20px',
+                                    borderRadius: '50px',
+                                    background: 'var(--color-primary, #7DD8D5)',
+                                    color: '#000',
+                                    border: '2px solid #000',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer'
+                                }}
+                                disabled={isSearching}
+                            >
+                                {isSearching ? 'Buscando...' : 'Buscar'}
+                            </button>
+                        </form>
+                    ) : (
+                        <div className={styles.searchBox}>
+                            <span className={styles.searchIcon}>🔍</span>
+                            <input
+                                type="text"
+                                className={styles.searchInput}
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    )}
 
                     {/* Secondary Filters for Members and General view */}
-                    {(requestType === 'member' || requestType === 'all-members' || requestType === 'all') && (
+                    {(requestType === 'member' || requestType === 'all') && (
                         <div className={styles.filterDropdown}>
                             <button
                                 className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
@@ -710,13 +789,33 @@ export default function RequestsTable({
                     )}
                 </>
             ) : filteredRequests.length === 0 ? (
-                <div className={styles.emptyState}>
-                    <div className={styles.emptyIcon}>📋</div>
-                    <div className={styles.emptyText}>No hay solicitudes</div>
-                    <div className={styles.emptySubtext}>
-                        {searchQuery ? 'Intenta con otro término de búsqueda' : 'Las nuevas solicitudes aparecerán aquí'}
+                requestType === 'all-members' ? (
+                    !hasSearched ? (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>🔍</div>
+                            <div className={styles.emptyText}>Buscador de usuarios</div>
+                            <div className={styles.emptySubtext}>
+                                Ingresa un correo electrónico arriba y presiona Buscar para encontrar un miembro en la base de datos.
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>🤷‍♂️</div>
+                            <div className={styles.emptyText}>No se encontraron resultados</div>
+                            <div className={styles.emptySubtext}>
+                                No se encontró ningún usuario con el correo "{searchEmail}" (excluyendo administradores).
+                            </div>
+                        </div>
+                    )
+                ) : (
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📋</div>
+                        <div className={styles.emptyText}>No hay solicitudes</div>
+                        <div className={styles.emptySubtext}>
+                            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Las nuevas solicitudes aparecerán aquí'}
+                        </div>
                     </div>
-                </div>
+                )
             ) : (
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
