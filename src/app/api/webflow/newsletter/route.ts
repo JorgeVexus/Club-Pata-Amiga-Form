@@ -22,6 +22,31 @@ export async function POST(request: NextRequest) {
             body = Object.fromEntries(formData.entries());
         }
         
+        // Map common Webflow field names to expected fields
+        // Webflow uses the exact field name from the form builder (case-sensitive)
+        const fieldMap: Record<string, string[]> = {
+            email: ['email', 'Email', 'Email Address', 'email_address', 'correo', 'Correo', 'Correo electrónico'],
+            first_name: ['first_name', 'First Name', 'firstName', 'Nombre', 'nombre', 'Nombre(s)', 'Nombre y apellido', 'Name', 'name'],
+            phone: ['phone', 'Phone', 'Teléfono', 'telefono', 'Telefono', 'phone_number', 'phoneNumber'],
+        };
+        
+        // Normalize body keys
+        const normalizedBody: any = {};
+        for (const [key, value] of Object.entries(body)) {
+            let mapped = false;
+            for (const [standardKey, variations] of Object.entries(fieldMap)) {
+                if (variations.includes(key)) {
+                    normalizedBody[standardKey] = value;
+                    mapped = true;
+                    break;
+                }
+            }
+            if (!mapped) {
+                normalizedBody[key] = value; // Keep original if no mapping
+            }
+        }
+        body = normalizedBody;
+        
         // Validaciones básicas
         if (!body.email) {
             return NextResponse.json(

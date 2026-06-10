@@ -22,6 +22,48 @@ export async function POST(request: NextRequest) {
             body = Object.fromEntries(formData.entries());
         }
         
+        // Map common Webflow field names to expected fields
+        // Webflow uses the exact field name from the form builder (case-sensitive)
+        const fieldMap: Record<string, string[]> = {
+            contact_name: ['contact_name', 'Name', 'name', 'Contact Name', 'contactName', 'full_name', 'fullName', 'nombre', 'Nombre', 'Nombre completo'],
+            email: ['email', 'Email', 'Email Address', 'email_address', 'correo', 'Correo', 'Correo electrónico'],
+            phone: ['phone', 'Phone', 'Teléfono', 'telefono', 'Telefono', 'phone_number', 'phoneNumber'],
+            establishment_name: ['establishment_name', 'Establishment Name', 'establishmentName', 'Business Name', 'business_name', 'businessName', 'Nombre del establecimiento', 'nombre establecimiento'],
+            contact_role: ['contact_role', 'Contact Role', 'contactRole', 'Role', 'role', 'Cargo', 'cargo', 'Puesto'],
+            services: ['services', 'Services', 'Tipo de establecimiento', 'tipo_establecimiento', 'tipoEstablecimiento', 'Establecimiento'],
+            city: ['city', 'City', 'Ciudad', 'ciudad'],
+            state: ['state', 'State', 'Estado', 'estado'],
+            address: ['address', 'Address', 'Dirección', 'direccion', 'Direccion'],
+            whatsapp: ['whatsapp', 'WhatsApp', 'Whats App'],
+            website: ['website', 'Website', 'Sitio web', 'sitio_web', 'sitioWeb'],
+            instagram: ['instagram', 'Instagram'],
+            facebook: ['facebook', 'Facebook'],
+            tiktok: ['tiktok', 'TikTok', 'Tik Tok'],
+            description: ['description', 'Description', 'Descripción', 'descripcion', 'Descripcion'],
+            monthly_pets_estimate: ['monthly_pets_estimate', 'Monthly Pets Estimate', 'monthlyPetsEstimate', 'Mascotas mensuales', 'mascotas_mensuales'],
+            has_vet: ['has_vet', 'Has Vet', 'hasVet', 'Tiene veterinario', 'tiene_veterinario', 'tieneVeterinario'],
+            has_grooming: ['has_grooming', 'Has Grooming', 'hasGrooming', 'Tiene grooming', 'tiene_grooming'],
+            has_hotel: ['has_hotel', 'Has Hotel', 'hasHotel', 'Tiene hotel', 'tiene_hotel'],
+            has_shop: ['has_shop', 'Has Shop', 'hasShop', 'Tiene tienda', 'tiene_tienda'],
+        };
+        
+        // Normalize body keys
+        const normalizedBody: any = {};
+        for (const [key, value] of Object.entries(body)) {
+            let mapped = false;
+            for (const [standardKey, variations] of Object.entries(fieldMap)) {
+                if (variations.includes(key)) {
+                    normalizedBody[standardKey] = value;
+                    mapped = true;
+                    break;
+                }
+            }
+            if (!mapped) {
+                normalizedBody[key] = value; // Keep original if no mapping
+            }
+        }
+        body = normalizedBody;
+        
         // Validaciones básicas
         if (!body.email || !body.contact_name) {
             return NextResponse.json(
