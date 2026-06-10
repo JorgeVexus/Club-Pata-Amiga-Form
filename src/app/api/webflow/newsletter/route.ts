@@ -10,7 +10,17 @@ const supabase = (supabaseUrl && supabaseServiceKey)
 
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
+        // Handle both JSON and form-encoded (Webflow) payloads
+        const contentType = request.headers.get('content-type') || '';
+        let body: any = {};
+        
+        if (contentType.includes('application/json')) {
+            body = await request.json();
+        } else {
+            // Parse form data (application/x-www-form-urlencoded or multipart/form-data)
+            const formData = await request.formData();
+            body = Object.fromEntries(formData.entries());
+        }
         
         // Validaciones básicas
         if (!body.email) {
