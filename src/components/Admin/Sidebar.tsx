@@ -5,7 +5,7 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations';
+    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations' | 'newsletter' | 'wellness-leads';
     activeSubStatus?: string | null;
     onFilterChange: (filter: any) => void;
     pendingCounts: Record<string, number>;
@@ -108,6 +108,15 @@ export default function Sidebar({
             icon: '📜',
             items: [
                 { id: 'registered-centers', label: 'Ver Directorio', icon: '✅' },
+            ]
+        },
+        {
+            id: 'webflow-leads',
+            title: 'Leads Webflow',
+            icon: '🌐',
+            items: [
+                { id: 'newsletter', label: 'Newsletter', icon: '📧' },
+                { id: 'wellness-leads', label: 'Centros Bienestar', icon: '🏥' },
             ]
         },
         {

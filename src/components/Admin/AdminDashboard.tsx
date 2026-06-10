@@ -32,12 +32,14 @@ import CancellationsTable from './CancellationsTable';
 import WellnessCentersTable from './WellnessCentersTable';
 import WellnessCenterDetailModal from './WellnessCenterDetailModal';
 import { WellnessCenter } from '@/types/wellness.types';
+import NewsletterSubscribersTable from './NewsletterSubscribersTable';
+import WellnessLeadsTable from './WellnessLeadsTable';
 
 function DashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings'>('all-members');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
 
@@ -61,6 +63,8 @@ function DashboardContent() {
         'appeals': 0,
         'all-members': 0,
         'terminate-users': 0,
+        'newsletter': 0,
+        'wellness-leads': 0,
     });
 
     const [subFilter, setSubFilter] = useState<string | null>(null);
@@ -295,6 +299,16 @@ function DashboardContent() {
             const wellnessRes = await adminFetch('/api/admin/wellness?status=pending');
             const wellnessData = await wellnessRes.json();
             if (wellnessData.success) setPendingCounts(prev => ({ ...prev, 'wellness-center': wellnessData.data?.length || 0 }));
+
+            // Newsletter active subscribers
+            const newsletterRes = await adminFetch('/api/admin/newsletter?status=active&limit=1');
+            const newsletterData = await newsletterRes.json();
+            if (newsletterData.success) setPendingCounts(prev => ({ ...prev, 'newsletter': newsletterData.total || 0 }));
+
+            // Wellness leads pending
+            const wellnessLeadsRes = await adminFetch('/api/admin/wellness-leads?status=new&limit=1');
+            const wellnessLeadsData = await wellnessLeadsRes.json();
+            if (wellnessLeadsData.success) setPendingCounts(prev => ({ ...prev, 'wellness-leads': wellnessLeadsData.total || 0 }));
         } catch (error) { console.error(error); }
     }
 
@@ -384,6 +398,10 @@ function DashboardContent() {
             case 'wellness-center':
             case 'registered-centers':
                 return <WellnessCentersTable onViewDetails={(center) => setSelectedWellnessCenter(center)} refreshKey={refreshKey} />;
+            case 'newsletter':
+                return <NewsletterSubscribersTable refreshKey={refreshKey} />;
+            case 'wellness-leads':
+                return <WellnessLeadsTable refreshKey={refreshKey} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
             case 'cancellations':
