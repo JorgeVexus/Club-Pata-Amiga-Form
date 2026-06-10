@@ -23,12 +23,15 @@ export async function POST(request: NextRequest) {
         }
         
         // Validaciones básicas
-        if (!body.email || !body.establishment_name) {
+        if (!body.email || !body.contact_name) {
             return NextResponse.json(
-                { success: false, error: 'Email y nombre del establecimiento son requeridos' },
+                { success: false, error: 'Email y nombre de contacto son requeridos' },
                 { status: 400 }
             );
         }
+        
+        // Usar contact_name como establishment_name si no viene explícito
+        const establishmentName = body.establishment_name?.trim() || body.contact_name?.trim();
 
         if (!supabase) {
             console.error('❌ Supabase client not initialized');
@@ -49,9 +52,6 @@ export async function POST(request: NextRequest) {
         const source = body.source || 'webflow';
         const referrer = body.referrer || '';
         
-        // Detectar si viene de formulario Webflow nativo (para redirigir en lugar de JSON)
-        const isWebflowNativeForm = !contentType.includes('application/json');
-        
         // IP y User Agent
         const ipAddress = request.headers.get('x-forwarded-for') || 
                          request.headers.get('x-real-ip') || 
@@ -67,12 +67,12 @@ export async function POST(request: NextRequest) {
 
         if (existing) {
             // Si ya existe, actualizar datos y marcar como duplicate si es diferente establecimiento
-            const isDuplicate = existing.establishment_name !== body.establishment_name.trim();
+            const isDuplicate = existing.establishment_name !== establishmentName;
             
             const { error: updateError } = await supabase
                 .from('wellness_center_leads')
                 .update({
-                    establishment_name: body.establishment_name.trim(),
+                    establishment_name: establishmentName,
                     services: body.services ? body.services.split(',').map((s: string) => s.trim()) : [],
                     contact_name: body.contact_name?.trim() || null,
                     contact_role: body.contact_role?.trim() || null,
@@ -109,17 +109,10 @@ export async function POST(request: NextRequest) {
 
             if (updateError) {
                 console.error('❌ Error actualizando lead:', updateError);
-                if (isWebflowNativeForm && pageUrl) {
-                    return NextResponse.redirect(`${pageUrl}?lead=updated`, 302);
-                }
                 return NextResponse.json(
                     { success: false, error: 'Error al actualizar el lead' },
                     { status: 500 }
                 );
-            }
-
-            if (isWebflowNativeForm && pageUrl) {
-                return NextResponse.redirect(`${pageUrl}?lead=updated`, 302);
             }
 
             return NextResponse.json({
@@ -147,7 +140,7 @@ export async function POST(request: NextRequest) {
         const { data: lead, error } = await supabase
             .from('wellness_center_leads')
             .insert({
-                establishment_name: body.establishment_name.trim(),
+                establishment_name: establishmentName,
                 services: services,
                 contact_name: body.contact_name?.trim() || null,
                 contact_role: body.contact_role?.trim() || null,
@@ -188,9 +181,6 @@ export async function POST(request: NextRequest) {
             console.error('❌ Error guardando lead:', error);
             
             if (error.code === '23505') {
-                if (isWebflowNativeForm && pageUrl) {
-                    return NextResponse.redirect(`${pageUrl}?lead=already`, 302);
-                }
                 return NextResponse.json({
                     success: true,
                     message: 'Este lead ya existe',
@@ -217,10 +207,6 @@ export async function POST(request: NextRequest) {
             });
         } catch (notifError) {
             console.error('⚠️ Error creando notificación:', notifError);
-        }
-
-        if (isWebflowNativeForm && pageUrl) {
-            return NextResponse.redirect(`${pageUrl}?lead=success`, 302);
         }
 
         return NextResponse.json({
