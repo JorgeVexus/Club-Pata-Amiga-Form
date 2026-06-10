@@ -817,6 +817,7 @@ export default function NewRegistrationFlow() {
                     'utm-campaign': utmCampaign,
                     'utm-term': utmTerm,
                     'utm-content': utmContent,
+                    'registration-source': 'Membresía',
                 },
             });
 
@@ -1457,6 +1458,7 @@ export default function NewRegistrationFlow() {
                     'registration-step': 6,
                     'registration-completed': true,
                     'approval-status': 'pending',
+                    'registration-source': 'Membresía',
                 },
             });
 

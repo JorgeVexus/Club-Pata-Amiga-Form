@@ -73,7 +73,7 @@ async function createMemberstackAmbassador(
                 'ambassador-status': 'pending',
                 'ambassador-code': ambassadorCode,
                 'approval-status': 'pending',
-                'registration-source': 'ambassador-form'
+                'registration-source': 'Embajador'
             }
         })
     });
@@ -128,7 +128,7 @@ async function updateMemberstackAmbassador(
                 'ambassador-status': 'pending',
                 'ambassador-code': ambassadorCode,
                 'approval-status': 'pending',
-                'registration-source': 'ambassador-form'
+                'registration-source': 'Embajador'
             }
         })
     });

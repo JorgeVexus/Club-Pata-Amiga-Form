@@ -36,7 +36,7 @@ async function createMemberstackUser(email: string, password?: string, name?: st
                 'role': 'wellness-center',
                 'is-wellness-center': 'true',
                 'approval-status': 'pending',
-                'registration-source': 'wellness-form'
+                'registration-source': 'Centro de Bienestar'
             }
         })
     });

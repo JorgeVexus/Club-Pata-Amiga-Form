@@ -184,7 +184,7 @@ function mapFormDataToCustomFields(formData: RegistrationFormData, fileUrls: any
         'submitted-at': new Date().toISOString(),
 
         // Origen del registro
-        'registration-source': 'member-form',
+        'registration-source': 'Membresía',
     };
 }
 
