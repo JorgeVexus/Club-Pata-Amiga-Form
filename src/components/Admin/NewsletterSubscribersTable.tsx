@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import styles from './NewsletterSubscribersTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 interface NewsletterSubscriber {
     id: string;
@@ -57,7 +58,7 @@ export default function NewsletterSubscribersTable({ refreshKey }: NewsletterSub
             if (sourceFilter !== 'all') params.append('source', sourceFilter);
             if (exportFormat) params.append('export', exportFormat);
 
-            const response = await fetch(`/api/admin/newsletter?${params}`);
+            const response = await adminFetch(`/api/admin/newsletter?${params}`);
             const data = await response.json();
 
             if (exportFormat) {

@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import styles from './WellnessLeadsTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
 
 interface WellnessLead {
     id: string;
@@ -74,7 +75,7 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
             if (cityFilter) params.append('city', cityFilter);
             if (exportFormat) params.append('export', exportFormat);
 
-            const response = await fetch(`/api/admin/wellness-leads?${params}`);
+            const response = await adminFetch(`/api/admin/wellness-leads?${params}`);
             const data = await response.json();
 
             if (exportFormat) {
@@ -128,7 +129,7 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
 
     const handleStatusChange = async (leadId: string, newStatus: WellnessLead['status']) => {
         try {
-            const response = await fetch('/api/admin/wellness-leads', {
+            const response = await adminFetch('/api/admin/wellness-leads', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: leadId, status: newStatus })
@@ -147,7 +148,7 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
 
     const handleAssignChange = async (leadId: string, adminName: string | null) => {
         try {
-            const response = await fetch('/api/admin/wellness-leads', {
+            const response = await adminFetch('/api/admin/wellness-leads', {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ id: leadId, assigned_to: adminName })

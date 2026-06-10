@@ -49,6 +49,9 @@ export async function POST(request: NextRequest) {
         const source = body.source || 'webflow';
         const referrer = body.referrer || '';
         
+        // Detectar si viene de formulario Webflow nativo (para redirigir en lugar de JSON)
+        const isWebflowNativeForm = !contentType.includes('application/json');
+        
         // IP y User Agent
         const ipAddress = request.headers.get('x-forwarded-for') || 
                          request.headers.get('x-real-ip') || 
@@ -106,10 +109,17 @@ export async function POST(request: NextRequest) {
 
             if (updateError) {
                 console.error('❌ Error actualizando lead:', updateError);
+                if (isWebflowNativeForm && pageUrl) {
+                    return NextResponse.redirect(`${pageUrl}?lead=updated`, 302);
+                }
                 return NextResponse.json(
                     { success: false, error: 'Error al actualizar el lead' },
                     { status: 500 }
                 );
+            }
+
+            if (isWebflowNativeForm && pageUrl) {
+                return NextResponse.redirect(`${pageUrl}?lead=updated`, 302);
             }
 
             return NextResponse.json({
@@ -178,6 +188,9 @@ export async function POST(request: NextRequest) {
             console.error('❌ Error guardando lead:', error);
             
             if (error.code === '23505') {
+                if (isWebflowNativeForm && pageUrl) {
+                    return NextResponse.redirect(`${pageUrl}?lead=already`, 302);
+                }
                 return NextResponse.json({
                     success: true,
                     message: 'Este lead ya existe',
@@ -204,6 +217,10 @@ export async function POST(request: NextRequest) {
             });
         } catch (notifError) {
             console.error('⚠️ Error creando notificación:', notifError);
+        }
+
+        if (isWebflowNativeForm && pageUrl) {
+            return NextResponse.redirect(`${pageUrl}?lead=success`, 302);
         }
 
         return NextResponse.json({

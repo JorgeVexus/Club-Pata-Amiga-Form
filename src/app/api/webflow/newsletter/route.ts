@@ -48,6 +48,9 @@ export async function POST(request: NextRequest) {
         const pageUrl = body.page_url || request.headers.get('referer') || '';
         const source = body.source || 'webflow';
         
+        // Detectar si viene de formulario Webflow nativo (para redirigir en lugar de JSON)
+        const isWebflowNativeForm = !contentType.includes('application/json');
+        
         // IP y User Agent
         const ipAddress = request.headers.get('x-forwarded-for') || 
                          request.headers.get('x-real-ip') || 
@@ -85,12 +88,18 @@ export async function POST(request: NextRequest) {
 
                 if (updateError) {
                     console.error('❌ Error reactivando suscripción:', updateError);
+                    if (isWebflowNativeForm && pageUrl) {
+                        return NextResponse.redirect(`${pageUrl}?subscribed=reactivated`, 302);
+                    }
                     return NextResponse.json(
                         { success: false, error: 'Error al reactivar suscripción' },
                         { status: 500 }
                     );
                 }
 
+                if (isWebflowNativeForm && pageUrl) {
+                    return NextResponse.redirect(`${pageUrl}?subscribed=reactivated`, 302);
+                }
                 return NextResponse.json({
                     success: true,
                     message: 'Suscripción reactivada correctamente',
@@ -99,6 +108,9 @@ export async function POST(request: NextRequest) {
             }
 
             // Ya existe y está activo
+            if (isWebflowNativeForm && pageUrl) {
+                return NextResponse.redirect(`${pageUrl}?subscribed=already`, 302);
+            }
             return NextResponse.json({
                 success: true,
                 message: 'Este email ya está suscrito',
@@ -157,6 +169,10 @@ export async function POST(request: NextRequest) {
             });
         } catch (notifError) {
             console.error('⚠️ Error creando notificación:', notifError);
+        }
+
+        if (isWebflowNativeForm && pageUrl) {
+            return NextResponse.redirect(`${pageUrl}?subscribed=true`, 302);
         }
 
         return NextResponse.json({
