@@ -1332,8 +1332,9 @@ return (
 
                                 // 🆕 Detectar cancelación desde Stripe
                                 const isCancelled = stripeDetails?.subscription?.cancel_at_period_end === true;
-                                const cancelledAt = stripeDetails?.subscription?.canceled_at ? new Date(stripeDetails.subscription.canceled_at * 1000) : null;
-                                const cancelledAtFormatted = cancelledAt ? cancelledAt.toLocaleDateString('es-MX', {
+                                const cancelledAtRaw = stripeDetails?.subscription?.canceled_at;
+                                const cancelledAt = cancelledAtRaw ? new Date(cancelledAtRaw) : null;
+                                const cancelledAtFormatted = cancelledAt && !isNaN(cancelledAt.getTime()) ? cancelledAt.toLocaleDateString('es-MX', {
                                     day: '2-digit',
                                     month: 'long',
                                     year: 'numeric'
