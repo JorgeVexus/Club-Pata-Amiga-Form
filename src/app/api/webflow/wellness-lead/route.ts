@@ -94,6 +94,9 @@ export async function POST(request: NextRequest) {
         const source = body.source || 'webflow';
         const referrer = body.referrer || '';
         
+        // Detectar si viene de formulario Webflow nativo (para redirigir en lugar de JSON)
+        const isWebflowNativeForm = !contentType.includes('application/json');
+        
         // IP y User Agent
         const ipAddress = request.headers.get('x-forwarded-for') || 
                          request.headers.get('x-real-ip') || 
@@ -249,6 +252,10 @@ export async function POST(request: NextRequest) {
             });
         } catch (notifError) {
             console.error('⚠️ Error creando notificación:', notifError);
+        }
+
+        if (isWebflowNativeForm && pageUrl) {
+            return NextResponse.redirect(`${pageUrl}?lead=success`, 302);
         }
 
         return NextResponse.json({
