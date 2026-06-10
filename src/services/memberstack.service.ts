@@ -182,6 +182,9 @@ function mapFormDataToCustomFields(formData: RegistrationFormData, fileUrls: any
         // Estado de aprobación (NUEVO)
         'approval-status': 'pending',
         'submitted-at': new Date().toISOString(),
+
+        // Origen del registro
+        'registration-source': 'member-form',
     };
 }
 
