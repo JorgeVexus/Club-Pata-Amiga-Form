@@ -228,7 +228,7 @@ export default function RequestsTable({
             if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'terminate-users') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
                 promises.push(
-                    adminFetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}`)
+                    adminFetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}&includeCancelled=true`)
                         .then(res => res.json())
                         .then(data => ({ type: 'member', data }))
                 );
@@ -452,7 +452,7 @@ export default function RequestsTable({
             trialing: 'En prueba',
             past_due: 'Moroso',
             unpaid: 'Impago',
-            canceled: 'Suspendido',
+            canceled: 'Cancelado',
             incomplete: 'Pendiente',
             none: 'Sin Plan'
         };
@@ -690,7 +690,7 @@ export default function RequestsTable({
                                 <button className={`${styles.dropdownOption} ${paymentFilter === 'all' && issueFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Todos</button>
                                 <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Activo</button>
                                 <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Moroso</button>
-                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Suspendido</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Cancelado</button>
                             </div>
                         </div>
                     )}

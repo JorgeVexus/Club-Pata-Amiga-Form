@@ -952,6 +952,9 @@ export async function getMemberStripeDetails(memberstackId: string) {
             stripeData.subscription = {
                 id: sub.id,
                 status: sub.status,
+                // 🆕 Cancelación: detectar si el usuario canceló desde Stripe Portal
+                cancel_at_period_end: sub.cancel_at_period_end === true,
+                canceled_at: sub.canceled_at ? new Date(sub.canceled_at * 1000).toISOString() : null,
                 // Mejorar detección de intervalo
                 interval: (sub.items?.data[0]?.plan?.interval === 'year' || 
                           sub.items?.data[0]?.plan?.amount > 100000 || // > 1000 MXN (en centavos)

@@ -433,8 +433,8 @@
 }
 
 .paymentStatusBadge.canceled {
-    background: #F3F4F6;
-    color: #374151;
+    background: #FEE2E2;
+    color: #991B1B;
 }
 
 .paymentStatusBadge.incomplete {

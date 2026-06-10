@@ -114,7 +114,12 @@ export async function GET(request: NextRequest) {
             plan_name: null,
             plan_cost: null,
             interval: null,
-            _debug_sub: null
+            _debug_sub: null,
+            // 🆕 Cancelación (para detectar si el usuario canceló desde Stripe Portal)
+            is_cancelled: false,
+            cancelled_at: null,
+            membership_end_date: null,
+            cancel_at_period_end: false,
         };
 
         // 3. Buscar la suscripción activa para obtener detalles de la membresía
@@ -204,6 +209,18 @@ export async function GET(request: NextRequest) {
                     const intervalRaw = item.price.recurring?.interval;
                     safePaymentInfo.interval = intervalRaw === 'year' ? 'Anual' : 'Mensual';
                     safePaymentInfo.plan_name = safePaymentInfo.interval;
+                }
+
+                // 🆕 Detectar cancelación (cancel_at_period_end = true significa que el usuario canceló desde Stripe Portal)
+                if (sub.cancel_at_period_end === true) {
+                    safePaymentInfo.is_cancelled = true;
+                    safePaymentInfo.cancel_at_period_end = true;
+                    safePaymentInfo.cancelled_at = sub.canceled_at ? new Date(sub.canceled_at * 1000).toISOString() : null;
+                    // La fecha de fin de membresía es el current_period_end (cuando termina el periodo pagado)
+                    if (periodEnd) {
+                        safePaymentInfo.membership_end_date = new Date(periodEnd * 1000).toISOString();
+                    }
+                    console.log(`[PAYMENT-METHOD] Suscripción cancelada detectada. Fin de cobertura: ${safePaymentInfo.membership_end_date}`);
                 }
             }
         } catch (subErr) {

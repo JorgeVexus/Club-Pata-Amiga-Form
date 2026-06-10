@@ -833,11 +833,19 @@
         getActivePlanInfo() {
             // Prioridad 1: Datos frescos desde la API custom de Stripe (vía backend)
             if (this.paymentMethod) {
+                const isCancelled = this.paymentMethod.is_cancelled === true;
+                const membershipEndDate = this.paymentMethod.membership_end_date;
+                const cancelledAt = this.paymentMethod.cancelled_at;
+                
                 return {
                     name: this.paymentMethod.plan_name || 'Plan Club Pata Amiga',
                     amount: this.paymentMethod.plan_cost ? this.paymentMethod.plan_cost.toFixed(2) : '0.00',
                     currency: 'MXN',
-                    nextPayment: fmtDate(this.paymentMethod.next_payment_date)
+                    nextPayment: fmtDate(this.paymentMethod.next_payment_date),
+                    // 🆕 Cancelación
+                    isCancelled,
+                    membershipEndDate,
+                    cancelledAt
                 };
             }
 
@@ -869,7 +877,11 @@
                 name: activePlan.planName || 'Plan Club Pata Amiga',
                 amount,
                 currency,
-                nextPayment
+                nextPayment,
+                // 🆕 Cancelación (Memberstack no tiene estos campos, por eso false/null)
+                isCancelled: false,
+                membershipEndDate: null,
+                cancelledAt: null
             };
         }
 
@@ -877,6 +889,28 @@
             const plan = this.getActivePlanInfo();
             if (!plan) {
                 return this.renderItem('Administrar suscripción', 'payment', 'payment');
+            }
+
+            // 🆕 Si está cancelada, mostrar mensaje especial
+            if (plan.isCancelled) {
+                const endDate = plan.membershipEndDate ? fmtDate(plan.membershipEndDate) : '—';
+                return `
+                    <div class="pata-subscription-card" style="border: 2px solid #E53E3E; background: #FEF2F2;">
+                        <div class="pata-sub-header">
+                            <div class="pata-sub-icon" style="background: #E53E3E;">${ICONS.payment}</div>
+                            <div class="pata-sub-details">
+                                <span class="pata-sub-name">${plan.name}</span>
+                                <span class="pata-sub-cost" style="color: #E53E3E;">$${plan.amount} ${plan.currency} / mes</span>
+                            </div>
+                        </div>
+                        <div class="pata-sub-footer">
+                            <span class="pata-sub-next" style="color: #E53E3E; font-weight: 700;">
+                                🠗 Membresía cancelada · Cobertura hasta: <strong>${endDate}</strong>
+                            </span>
+                            <button class="pata-sub-manage" data-action="payment" style="opacity: 0.6; pointer-events: none;">Cancelada · No renovará</button>
+                        </div>
+                    </div>
+                `;
             }
 
             return `
@@ -1058,12 +1092,15 @@
 
                 try {
                     const memberId = this.member.id;
-                    const response = await fetch('/api/user/deactivate', {
+                    const response = await fetch(`${CONFIG.apiUrl}/api/user/deactivate`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ memberstackId: memberId })
+                        body: JSON.stringify({ 
+                            memberstackId: memberId,
+                            reason: 'no_longer_needed'
+                        })
                     });
 
                     const data = await response.json();

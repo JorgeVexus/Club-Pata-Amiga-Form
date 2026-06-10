@@ -307,11 +307,29 @@
                 next_date: pm?.next_payment_date,
                 plan: pm?.plan_name,
                 cost: pm?.plan_cost,
-                debug: pm?._debug_sub
+                debug: pm?._debug_sub,
+                is_cancelled: pm?.is_cancelled,
+                membership_end_date: pm?.membership_end_date,
+                cancelled_at: pm?.cancelled_at
             });
+            
+            // 🆕 Verificar si la membresía está cancelada
+            const isCancelled = pm?.is_cancelled === true;
+            const membershipEndDate = pm?.membership_end_date;
+            
             const planName = pm?.interval || u.plan_name || (pm ? 'Plan activo' : 'Sin plan');
             const planCost = pm?.plan_cost ? '$' + pm.plan_cost.toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
-            const nextPay = fmtDate(pm?.next_payment_date);
+            
+            // 🆕 Si está cancelada, mostrar "Cobertura hasta" en lugar de "Próximo pago"
+            let nextPayLabel = 'Próximo pago';
+            let nextPayValue = fmtDate(pm?.next_payment_date);
+            if (isCancelled && membershipEndDate) {
+                nextPayLabel = 'Membresía cancelada · Cobertura hasta';
+                nextPayValue = fmtDate(membershipEndDate);
+            } else if (!pm?.next_payment_date || !isCancelled) {
+                nextPayValue = fmtDate(pm?.next_payment_date);
+            }
+
             const pmHtml = pm ? `
                 <div class="ppa-payment-top">
                     <div class="ppa-payment-left">
@@ -338,12 +356,12 @@
                 <div class="ppa-pata-float">🐾</div>
                 <h2 class="ppa-section-title-wh">información de<br>membresía</h2>
                 <div class="ppa-stats-row">
-                    <div class="ppa-stat-card"><p class="ppa-stat-label">Membresía activa</p><p class="ppa-stat-value">${planName}</p></div>
+                    <div class="ppa-stat-card"><p class="ppa-stat-label">${isCancelled ? 'Membresía cancelada' : 'Membresía activa'}</p><p class="ppa-stat-value" style="color:${isCancelled ? '#E53E3E' : 'inherit'}">${planName}</p></div>
                     <div class="ppa-stat-card"><p class="ppa-stat-label">Costo</p><p class="ppa-stat-value">${planCost}</p></div>
-                    <div class="ppa-stat-card"><p class="ppa-stat-label">Próximo pago</p><p class="ppa-stat-value" style="font-size:20px">${nextPay}</p></div>
+                    <div class="ppa-stat-card"><p class="ppa-stat-label">${nextPayLabel}</p><p class="ppa-stat-value" style="font-size:20px; color:${isCancelled ? '#E53E3E' : 'inherit'}">${nextPayValue}</p></div>
                 </div>
                 <div class="ppa-payment-box">${pmHtml}</div>
-                <div class="ppa-cancel-link"><button class="ppa-cancel-btn" id="ppa-cancel-btn">Cancelar membresía</button></div>
+                <div class="ppa-cancel-link"><button class="ppa-cancel-btn" id="ppa-cancel-btn" ${isCancelled ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>${isCancelled ? 'Ya cancelada · No renovará' : 'Cancelar membresía'}</button></div>
             </div>`;
         }
         renderSection3() {

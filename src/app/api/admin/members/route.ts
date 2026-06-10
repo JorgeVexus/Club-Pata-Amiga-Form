@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { listPendingMembers, listAppealedMembers, memberstackAdmin } from '@/services/memberstack-admin.service';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { getRegistrationIssue } from '@/utils/registration-completeness';
-
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+import Stripe from 'stripe';
 
 // Usar el cliente administrativo centralizado
 const supabaseAdminClient = supabaseAdmin;
 
 /**
- * GET /api/admin/members?status=pending
- * Lista miembros según su estado de aprobación
- */
+* GET /api/admin/members?status=pending
+* Lista miembros según su estado de aprobación
+*/
 export async function GET(request: NextRequest) {
     try {
         // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
@@ -30,6 +30,9 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const status = searchParams.get('status');
 
+        // 🆕 Nuevo parámetro para incluir miembros con suscripción cancelada (cancel_at_period_end)
+        const includeCancelled = searchParams.get('includeCancelled') === 'true';
+        
         let result;
 
         // Por defecto, solo mostrar miembros con plan pagado en el dashboard
@@ -153,13 +156,73 @@ export async function GET(request: NextRequest) {
             }
         }
 
+        // 🆕 Detectar suscripciones canceladas (cancel_at_period_end) desde Stripe
+        let cancelledMemberMap = new Map<string, { isCancelled: boolean; cancelledAt: string | null; membershipEndDate: string | null }>();
+        
+        if (includeCancelled && process.env.STRIPE_SECRET_KEY) {
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+            
+            // Filtrar miembros que tienen plan activo y stripeSubscriptionId
+            const membersWithSubId = filteredMembers.filter(member => {
+                const plan = member.planConnections?.[0];
+                const subId = plan?.payment?.stripeSubscriptionId;
+                const hasActivePlan = plan?.status?.toLowerCase() === 'active' || plan?.status?.toLowerCase() === 'trialing';
+                return hasActivePlan && subId;
+            });
+
+            if (membersWithSubId.length > 0) {
+                console.log(`[API] Verificando cancelación en Stripe para ${membersWithSubId.length} miembros...`);
+                
+                // Fetch en paralelo (máximo 10 a la vez para no saturar Stripe)
+                const batches = [];
+                for (let i = 0; i < membersWithSubId.length; i += 10) {
+                    batches.push(membersWithSubId.slice(i, i + 10));
+                }
+
+                for (const batch of batches) {
+                    const results = await Promise.allSettled(batch.map(async (member) => {
+                        const plan = member.planConnections?.[0];
+                        const subId = plan?.payment?.stripeSubscriptionId;
+                        if (!subId) return null;
+                        
+                        try {
+                            const sub = await stripe.subscriptions.retrieve(subId) as any;
+                            if (sub.cancel_at_period_end === true) {
+                                return {
+                                    memberId: member.id,
+                                    isCancelled: true,
+                                    cancelledAt: sub.canceled_at ? new Date(sub.canceled_at * 1000).toISOString() : null,
+                                    membershipEndDate: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null
+                                };
+                            }
+                        } catch (e) {
+                            console.warn(`[API] Error fetching Stripe sub ${subId}:`, e);
+                        }
+                        return null;
+                    }));
+
+                    for (const result of results) {
+                        if (result.status === 'fulfilled' && result.value) {
+                            cancelledMemberMap.set(result.value.memberId, {
+                                isCancelled: result.value.isCancelled,
+                                cancelledAt: result.value.cancelledAt,
+                                membershipEndDate: result.value.membershipEndDate
+                            });
+                        }
+                    }
+                }
+                
+                console.log(`[API] Miembros con cancelación detectada: ${cancelledMemberMap.size}`);
+            }
+        }
+
         // Attach enriched data to members
         const membersWithCounts = filteredMembers.map(member => {
             const enriched = memberDataMap.get(member.id);
             
             // Extract payment status from the first plan connection
             const plan = member.planConnections?.[0];
-            const paymentStatus = plan?.status?.toLowerCase() || 'none';
+            let paymentStatus = plan?.status?.toLowerCase() || 'none';
             const petCount = enriched?.petCount || 0;
             const hasActivePlan = paymentStatus === 'active' || paymentStatus === 'trialing';
             const customFields = member.customFields || {};
@@ -174,6 +237,12 @@ export async function GET(request: NextRequest) {
                 hasValidPetBasic: hasBasicPetFields,
             });
 
+            // 🆕 Aplicar info de cancelación si está disponible
+            const cancelledInfo = cancelledMemberMap.get(member.id);
+            if (cancelledInfo?.isCancelled) {
+                paymentStatus = 'canceled';
+            }
+
             return {
                 ...member,
                 petCount,
@@ -182,7 +251,11 @@ export async function GET(request: NextRequest) {
                 paymentStatus: paymentStatus,
                 registrationIssue,
                 supabaseFirstName: enriched?.firstName,
-                supabaseLastName: enriched?.lastName
+                supabaseLastName: enriched?.lastName,
+                // 🆕 Campos de cancelación
+                isCancelled: cancelledInfo?.isCancelled || false,
+                cancelledAt: cancelledInfo?.cancelledAt || null,
+                membershipEndDate: cancelledInfo?.membershipEndDate || null
             };
         });
 

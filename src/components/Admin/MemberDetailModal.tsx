@@ -1330,6 +1330,15 @@ return (
                                 const membershipCost = isAnual ? '$1,699' : '$159';
                                 let finalRenewalDate: Date | null = null;
 
+                                // 🆕 Detectar cancelación desde Stripe
+                                const isCancelled = stripeDetails?.subscription?.cancel_at_period_end === true;
+                                const cancelledAt = stripeDetails?.subscription?.canceled_at ? new Date(stripeDetails.subscription.canceled_at * 1000) : null;
+                                const cancelledAtFormatted = cancelledAt ? cancelledAt.toLocaleDateString('es-MX', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                }) : null;
+
                                 // Prioridad 1: Stripe (Directo del API)
                                 if (stripeDetails?.subscription?.currentPeriodEnd) {
                                     finalRenewalDate = new Date(stripeDetails.subscription.currentPeriodEnd);
@@ -1364,8 +1373,9 @@ return (
                                     <>
                                         <div className={styles.field}>
                                             <span className={styles.label}>Plan Actual</span>
-                                            <span className={styles.value} style={{ fontWeight: 700, color: '#0088BD' }}>
+                                            <span className={styles.value} style={{ fontWeight: 700, color: isCancelled ? '#E53E3E' : '#0088BD' }}>
                                                 {plan.planName || plan.planId || 'Membresía Activa'}
+                                                {isCancelled && <span style={{ marginLeft: '8px', fontSize: '0.75em', background: '#E53E3E', color: '#fff', padding: '2px 8px', borderRadius: '50px' }}>CANCELADA</span>}
                                             </span>
                                         </div>
                                         <div className={styles.field}>
@@ -1383,19 +1393,36 @@ return (
                                         <div className={styles.field}>
                                             <span className={styles.label}>Estado de Pago</span>
                                             <span className={`${styles.paymentStatus} ${styles[plan.status?.toLowerCase() || 'none']}`}>
-                                                {plan.status || 'Desconocido'}
+                                                {isCancelled ? 'Cancelada (fin de periodo)' : (plan.status || 'Desconocido')}
                                             </span>
                                         </div>
                                         <div className={styles.field}>
                                             <span className={styles.label}>Fecha de Activación</span>
                                             <span className={styles.value}>{activationDateFormatted}</span>
                                         </div>
-                                        <div className={styles.field}>
-                                            <span className={styles.label}>Próxima Renovación</span>
-                                            <span className={styles.value} style={{ fontWeight: 600 }}>
-                                                {renewalDateFormatted}
-                                            </span>
-                                        </div>
+                                        {isCancelled ? (
+                                            <>
+                                                <div className={styles.field}>
+                                                    <span className={styles.label}>Fecha de Cancelación</span>
+                                                    <span className={styles.value} style={{ fontWeight: 600, color: '#E53E3E' }}>
+                                                        {cancelledAtFormatted || 'No disponible'}
+                                                    </span>
+                                                </div>
+                                                <div className={styles.field}>
+                                                    <span className={styles.label}>Cobertura hasta</span>
+                                                    <span className={styles.value} style={{ fontWeight: 600, color: '#E53E3E', fontSize: '1.1em' }}>
+                                                        {renewalDateFormatted}
+                                                    </span>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>Próxima Renovación</span>
+                                                <span className={styles.value} style={{ fontWeight: 600 }}>
+                                                    {renewalDateFormatted}
+                                                </span>
+                                            </div>
+                                        )}
                                         {stripeDetails?.payments?.length > 0 && (
                                             <div className={styles.field}>
                                                 <span className={styles.label}>Último Pago</span>
