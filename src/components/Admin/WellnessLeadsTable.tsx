@@ -76,10 +76,10 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
             if (exportFormat) params.append('export', exportFormat);
 
             const response = await adminFetch(`/api/admin/wellness-leads?${params}`);
-            const data = await response.json();
 
             if (exportFormat) {
-                const blob = new Blob([JSON.stringify(data)], { type: exportFormat === 'csv' ? 'text/csv' : 'application/json' });
+                // Handle file download - API returns blob, not JSON
+                const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -89,8 +89,11 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
                 setExporting(false);
+                setLoading(false);
                 return;
             }
+
+            const data = await response.json();
 
             if (data.success) {
                 setLeads(data.data);

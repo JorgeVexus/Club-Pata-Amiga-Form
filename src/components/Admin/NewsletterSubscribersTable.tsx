@@ -59,11 +59,10 @@ export default function NewsletterSubscribersTable({ refreshKey }: NewsletterSub
             if (exportFormat) params.append('export', exportFormat);
 
             const response = await adminFetch(`/api/admin/newsletter?${params}`);
-            const data = await response.json();
 
             if (exportFormat) {
-                // Handle file download
-                const blob = new Blob([JSON.stringify(data)], { type: exportFormat === 'csv' ? 'text/csv' : 'application/json' });
+                // Handle file download - API returns blob, not JSON
+                const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
@@ -73,8 +72,11 @@ export default function NewsletterSubscribersTable({ refreshKey }: NewsletterSub
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
                 setExporting(false);
+                setLoading(false);
                 return;
             }
+
+            const data = await response.json();
 
             if (data.success) {
                 setSubscribers(data.data);
