@@ -357,8 +357,14 @@
       formData.append('page_url', window.location.href);
       
       try {
-        console.log('[PA Wellness] Sending to API...');
-        const response = await fetch('/api/webflow/wellness-lead', { method: 'POST', body: formData });
+              console.log('[PA Wellness] Sending to API...');
+              const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: {
+                  'X-Webflow-Embed': 'true'
+                },
+                body: formData
+              });
         console.log('[PA Wellness] Response:', response.status);
         const data = await response.json();
         console.log('[PA Wellness] Data:', data);

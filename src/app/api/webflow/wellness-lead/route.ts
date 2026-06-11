@@ -95,7 +95,9 @@ export async function POST(request: NextRequest) {
         const referrer = body.referrer || '';
         
         // Detectar si viene de formulario Webflow nativo (para redirigir en lugar de JSON)
-        const isWebflowNativeForm = !contentType.includes('application/json');
+        // NO redirigir si viene del embed (X-Webflow-Embed header)
+        const isWebflowNativeForm = !contentType.includes('application/json') && 
+          !request.headers.get('x-webflow-embed');
         
         // IP y User Agent
         const ipAddress = request.headers.get('x-forwarded-for') || 
