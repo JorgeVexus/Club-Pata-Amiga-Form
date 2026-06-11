@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Centro de Bienestar - Pata Amiga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --lime: #7DD8D5;
+            --lime-dark: #00BBB4;
+            --lime-light: #E0F7F6;
+            --lime-bg: #F0FDFD;
+            --text-dark: #2D3748;
+            --text-light: #718096;
+            --white: #FFFFFF;
+            --border: #CBD5E0;
+            --error: #E53E3E;
+            --success: #38A169;
+        }
+
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--lime);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0, 187, 180, 0.15);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .form-header p {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.6;
+            max-width: 90%;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 560px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 500;
+            font-size: 14px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"] {
+            width: 100%;
+            padding: 16px 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-dark);
+            background: var(--white);
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        input::placeholder {
+            color: var(--text-light);
+        }
+
+        input:focus {
+            border-color: var(--lime-dark);
+            box-shadow: 0 0 0 4px var(--lime-light);
+        }
+
+        input.error {
+            border-color: var(--error);
+        }
+
+        input.valid {
+            border-color: var(--success);
+        }
+
+        .phone-input {
+            display: flex;
+            gap: 8px;
+        }
+
+        .phone-input .country-code {
+            width: 100px;
+            padding: 16px 12px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            font-size: 16px;
+            font-family: inherit;
+            color: var(--text-dark);
+            background: var(--white);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .phone-input .country-code:focus {
+            border-color: var(--lime-dark);
+            box-shadow: 0 0 0 4px var(--lime-light);
+        }
+
+        .phone-input input[type="tel"] {
+            flex: 1;
+        }
+
+        /* Checkbox Styles */
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--lime-bg);
+            border: 2px solid var(--lime-light);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-item:hover {
+            background: var(--lime-light);
+            border-color: var(--lime-dark);
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--lime-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .checkbox-item span {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--text-dark);
+        }
+
+        .checkbox-item input[type="checkbox"]:focus-visible {
+            outline: 2px solid var(--lime-dark);
+            outline-offset: 2px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 18px 32px;
+            background: var(--white);
+            border: 3px solid var(--text-dark);
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--lime-dark);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            background: var(--lime-dark);
+            color: var(--white);
+            border-color: var(--lime-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 187, 180, 0.3);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-submit.loading {
+            position: relative;
+            color: transparent;
+        }
+
+        .btn-submit.loading::after {
+            content: "";
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            top: 50%;
+            left: 50%;
+            margin-left: -12px;
+            margin-top: -12px;
+            border: 3px solid var(--lime-dark);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            z-index: 1000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        .toast.success {
+            background: var(--success);
+            color: white;
+        }
+
+        .toast.error {
+            background: var(--error);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Focus visible for accessibility */
+        *:focus-visible {
+            outline: 2px solid var(--lime-dark);
+            outline-offset: 2px;
+        }
+
+        /* Error message */
+        .error-message {
+            color: var(--error);
+            font-size: 13px;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .error-message.visible {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <p>Únete a la manada. Por ahora, esta función aún no está habilitada, pero queremos saber de ti.</p>
+        </div>
+
+        <form id="wellnessForm" novalidate>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="contact_name">Nombre(s) y apellido <span aria-hidden="true">*</span></label>
+                    <input type="text" id="contact_name" name="contact_name" placeholder="Nombre(s) y apellido" required autocomplete="name">
+                    <div class="error-message" id="error-contact_name">El nombre es requerido</div>
+                </div>
+                <div class="form-group">
+                    <label for="email">Correo electrónico <span aria-hidden="true">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Correo electrónico" required autocomplete="email">
+                    <div class="error-message" id="error-email">Email válido requerido</div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="phone">Número de teléfono</label>
+                    <div class="phone-input">
+                        <select class="country-code" id="country_code" name="country_code" aria-label="Código de país">
+                            <option value="+52" selected>MX +52</option>
+                            <option value="+1">US +1</option>
+                            <option value="+54">AR +54</option>
+                            <option value="+56">CL +56</option>
+                            <option value="+57">CO +57</option>
+                            <option value="+593">EC +593</option>
+                        </select>
+                        <input type="tel" id="phone" name="phone" placeholder="123 123 1234" autocomplete="tel">
+                    </div>
+                    <div class="error-message" id="error-phone">Formato: 10 dígitos</div>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de establecimiento <span aria-hidden="true">*</span></label>
+                    <div class="checkbox-group" id="servicesGroup" role="group" aria-label="Tipo de establecimiento">
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Clínica veterinaria">
+                            <span>Clínica veterinaria</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Hospital 24/7">
+                            <span>Hospital 24/7</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Tienda de mascotas">
+                            <span>Tienda de mascotas</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Hotel">
+                            <span>Hotel</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Paseador de perros">
+                            <span>Paseador de perros</span>
+                        </label>
+                    </div>
+                    <div class="error-message" id="error-services">Selecciona al menos un tipo</div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">Registrar mi centro</button>
+        </form>
+    </div>
+
+    <script>
+        (function() {
+            const form = document.getElementById('wellnessForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const API_ENDPOINT = '/api/webflow/wellness-lead';
+
+            // Validation helpers
+            function showError(fieldId, message) {
+                const errorEl = document.getElementById(`error-${fieldId}`);
+                const inputEl = document.getElementById(fieldId);
+                if (errorEl) {
+                    errorEl.textContent = message;
+                    errorEl.classList.add('visible');
+                }
+                if (inputEl) inputEl.classList.add('error');
+            }
+
+            function clearError(fieldId) {
+                const errorEl = document.getElementById(`error-${fieldId}`);
+                const inputEl = document.getElementById(fieldId);
+                if (errorEl) errorEl.classList.remove('visible');
+                if (inputEl) inputEl.classList.remove('error');
+            }
+
+            function clearAllErrors() {
+                document.querySelectorAll('.error-message.visible').forEach(el => el.classList.remove('visible'));
+                document.querySelectorAll('input.error, select.error').forEach(el => el.classList.remove('error'));
+            }
+
+            function showToast(message, type = 'success') {
+                const existing = document.querySelector('.toast');
+                if (existing) existing.remove();
+
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(20px)';
+                    setTimeout(() => toast.remove(), 300);
+                }, 4000);
+            }
+
+            function setLoading(isLoading) {
+                if (isLoading) {
+                    submitBtn.classList.add('loading');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Registrando...';
+                } else {
+                    submitBtn.classList.remove('loading');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Registrar mi centro';
+                }
+            }
+
+            function validateForm() {
+                clearAllErrors();
+                let isValid = true;
+
+                // Contact name
+                const contactName = document.getElementById('contact_name');
+                if (!contactName.value.trim()) {
+                    showError('contact_name', 'El nombre es requerido');
+                    isValid = false;
+                }
+
+                // Email
+                const email = document.getElementById('email');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+                    showError('email', 'Correo electrónico válido requerido');
+                    isValid = false;
+                }
+
+                // At least one service
+                const servicesChecked = document.querySelectorAll('input[name="services"]:checked');
+                if (servicesChecked.length === 0) {
+                    showError('services', 'Selecciona al menos un tipo de establecimiento');
+                    isValid = false;
+                }
+
+                // Phone (optional but validate if provided)
+                const phone = document.getElementById('phone');
+                if (phone.value.trim()) {
+                    const digitsOnly = phone.value.replace(/\D/g, '');
+                    if (digitsOnly.length < 10) {
+                        showError('phone', 'El teléfono debe tener al menos 10 dígitos');
+                        isValid = false;
+                    }
+                }
+
+                return isValid;
+            }
+
+            // Real-time validation clearing
+            ['contact_name', 'email', 'phone'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', () => clearError(id));
+                    el.addEventListener('blur', () => {
+                        if (id === 'email') {
+                            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                            if (el.value.trim() && !emailRegex.test(el.value.trim())) {
+                                showError('email', 'Correo electrónico válido requerido');
+                            }
+                        }
+                        if (id === 'phone' && el.value.trim()) {
+                            const digitsOnly = el.value.replace(/\D/g, '');
+                            if (digitsOnly.length < 10) {
+                                showError('phone', 'El teléfono debe tener al menos 10 dígitos');
+                            }
+                        }
+                    });
+                });
+            });
+
+            // Checkboxes - clear error on change
+            document.querySelectorAll('input[name="services"]').forEach(cb => {
+                cb.addEventListener('change', () => clearError('services'));
+            });
+
+            // Form submit
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                if (!validateForm()) {
+                    showToast('Por favor corrige los errores', 'error');
+                    return;
+                }
+
+                setLoading(true);
+
+                // Build FormData
+                const formData = new FormData(form);
+
+                // Convert checkboxes to comma-separated string for API
+                const services = Array.from(document.querySelectorAll('input[name="services"]:checked'))
+                    .map(cb => cb.value)
+                    .join(',');
+
+                // Replace services in formData
+                formData.delete('services');
+                formData.append('services', services);
+
+                // Add source and page_url
+                formData.append('source', 'webflow-custom');
+                formData.append('page_url', window.location.href);
+
+                try {
+                    const response = await fetch(API_ENDPOINT, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast('¡Gracias por tu interés! Te contactaremos pronto.', 'success');
+                        form.reset();
+                    } else {
+                        // Check if it's a redirect response (Webflow native form behavior)
+                        if (data.message && data.message.includes('reactivated')) {
+                            showToast('Suscripción reactivada', 'success');
+                        } else if (data.message && data.message.includes('already')) {
+                            showToast('Este centro ya está registrado', 'error');
+                        } else {
+                            showToast(data.error || data.message || 'Error al registrar', 'error');
+                        }
+                    }
+                } catch (err) {
+                    console.error('Error:', err);
+                    showToast('Error de conexión. Intenta de nuevo.', 'error');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            // Phone formatting
+            const phoneInput = document.getElementById('phone');
+            phoneInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 10) value = value.slice(0, 10);
+                // Format as XXX XXX XXXX
+                if (value.length > 6) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1 $2 $3');
+                } else if (value.length > 3) {
+                    value = value.replace(/(\d{3})(\d{0,3})/, '$1 $2');
+                }
+                e.target.value = value;
+            });
+        })();
+    </script>
+</body>
+</html>
