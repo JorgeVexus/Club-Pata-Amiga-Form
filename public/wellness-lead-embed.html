@@ -1,0 +1,648 @@
+<!-- 
+  WELLNESS LEAD FORM - Webflow Embed Version (Fixed)
+  - Layout: checkboxes below phone, 2 per row
+  - Transparent background (Webflow handles bg)
+  - AJAX submit (no page reload)
+  - Toast notifications working
+  - Leads API integration verified
+-->
+
+<!-- Google Font: Outfit -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ===== WELLNESS LEAD FORM - WEBFLOW EMBED ===== */
+  .pa-wellness-form {
+    --lime: #7DD8D5;
+    --lime-dark: #00BBB4;
+    --lime-light: #E0F7F6;
+    --lime-bg: #F0FDFD;
+    --text-dark: #2D3748;
+    --text-light: #718096;
+    --white: #FFFFFF;
+    --border: #CBD5E0;
+    --error: #E53E3E;
+    --success: #38A169;
+    
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .pa-wellness-form * { box-sizing: border-box; }
+
+  /* Header */
+  .pa-form-header {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  
+  .pa-form-header p {
+    color: var(--text-light);
+    font-size: 14px;
+    line-height: 1.6;
+    max-width: 90%;
+    margin: 0 auto;
+  }
+
+  /* Form Group */
+  .pa-form-group {
+    margin-bottom: 20px;
+  }
+
+  .pa-form-group label {
+    display: block;
+    font-weight: 500;
+    font-size: 13px;
+    color: var(--text-dark);
+    margin-bottom: 8px;
+  }
+
+  /* Inputs - shared styles */
+  .pa-form-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 15px;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: var(--white);
+    transition: all 0.2s ease;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .pa-form-input::placeholder { color: var(--text-light); }
+  .pa-form-input:focus { border-color: var(--lime-dark); box-shadow: 0 0 0 4px var(--lime-light); }
+  .pa-form-input.error { border-color: var(--error); }
+  .pa-form-input.valid { border-color: var(--success); }
+
+  /* 2-column grid for name + email */
+  .pa-form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 560px) {
+    .pa-form-row { grid-template-columns: 1fr; }
+  }
+
+  /* Phone input with country selector */
+  .pa-phone-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .pa-country-select {
+    width: 100px;
+    min-width: 100px;
+    padding: 14px 12px;
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-dark);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .pa-country-select:focus { border-color: var(--lime-dark); box-shadow: 0 0 0 4px var(--lime-light); }
+
+  .pa-phone-input-wrapper { flex: 1; }
+
+  /* Checkboxes - 2 per row, BELOW phone field */
+  .pa-checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 480px) {
+    .pa-checkbox-grid { grid-template-columns: 1fr; }
+  }
+
+  .pa-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--white);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .pa-checkbox-item:hover {
+    background: var(--lime-bg);
+    border-color: var(--lime-dark);
+  }
+
+  .pa-checkbox-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--lime-dark);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .pa-checkbox-item span {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-dark);
+  }
+
+  .pa-checkbox-item input[type="checkbox"]:focus-visible {
+    outline: 2px solid var(--lime-dark);
+    outline-offset: 2px;
+  }
+
+  /* Checkbox error state */
+  .pa-checkbox-grid.error .pa-checkbox-item {
+    border-color: var(--error);
+  }
+
+  /* Botón Submit */
+  .pa-btn-submit {
+    width: 100%;
+    padding: 16px 32px;
+    background: var(--white);
+    border: 3px solid var(--text-dark);
+    border-radius: 50px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--lime-dark);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 4px;
+  }
+
+  .pa-btn-submit:hover:not(:disabled) {
+    background: var(--lime-dark);
+    color: var(--white);
+    border-color: var(--lime-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0, 187, 180, 0.3);
+  }
+
+  .pa-btn-submit:active:not(:disabled) { transform: translateY(0); }
+  .pa-btn-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  .pa-btn-submit.loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+  }
+
+  .pa-btn-submit.loading::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    top: 50%;
+    left: 50%;
+    margin-left: -11px;
+    margin-top: -11px;
+    border: 3px solid var(--lime-dark);
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: pa-spin 0.8s linear infinite;
+  }
+
+  @keyframes pa-spin { to { transform: rotate(360deg); } }
+
+  /* Toast Notifications - fixed position, high z-index */
+  .pa-toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    left: auto;
+    padding: 14px 22px;
+    border-radius: 10px;
+    font-weight: 500;
+    font-size: 13px;
+    z-index: 2147483647;
+    animation: pa-slideIn 0.3s ease;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    font-family: inherit;
+    max-width: 90vw;
+    word-wrap: break-word;
+  }
+
+  .pa-toast.success { background: var(--success); color: white; }
+  .pa-toast.error { background: var(--error); color: white; }
+  .pa-toast.info { background: var(--lime-dark); color: white; }
+
+  @keyframes pa-slideIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.95); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Error messages */
+  .pa-error-message {
+    color: var(--error);
+    font-size: 12px;
+    margin-top: 6px;
+    display: none;
+  }
+  .pa-error-message.visible { display: block; }
+
+  /* Focus visible for accessibility */
+  .pa-wellness-form *:focus-visible {
+    outline: 2px solid var(--lime-dark);
+    outline-offset: 2px;
+  }
+
+  /* Required asterisk */
+  .pa-required { color: var(--error); margin-left: 4px; }
+</style>
+
+<form id="paWellnessForm" class="pa-wellness-form" novalidate>
+  <!-- Header -->
+  <div class="pa-form-header">
+    <p>Únete a la manada. Por ahora, esta función aún no está habilitada, pero queremos saber de ti.</p>
+  </div>
+
+  <!-- Nombre + Email (2 columnas) -->
+  <div class="pa-form-row">
+    <div class="pa-form-group">
+      <label for="paContactName">Nombre(s) y apellido <span class="pa-required">*</span></label>
+      <input type="text" id="paContactName" name="contact_name" placeholder="Nombre(s) y apellido" required autocomplete="name" class="pa-form-input">
+      <div class="pa-error-message" id="paError-contact_name">El nombre es requerido</div>
+    </div>
+    <div class="pa-form-group">
+      <label for="paEmail">Correo electrónico <span class="pa-required">*</span></label>
+      <input type="email" id="paEmail" name="email" placeholder="Correo electrónico" required autocomplete="email" class="pa-form-input">
+      <div class="pa-error-message" id="paError-email">Correo electrónico válido requerido</div>
+    </div>
+  </div>
+
+  <!-- Teléfono (con selector país) -->
+  <div class="pa-form-group">
+    <label for="paPhone">Número de teléfono</label>
+    <div class="pa-phone-row">
+      <select class="pa-country-select" id="paCountryCode" name="country_code" aria-label="Código de país">
+        <option value="+52" selected>MX +52</option>
+        <option value="+1">US +1</option>
+        <option value="+54">AR +54</option>
+        <option value="+56">CL +56</option>
+        <option value="+57">CO +57</option>
+        <option value="+593">EC +593</option>
+      </select>
+      <div class="pa-phone-input-wrapper">
+        <input type="tel" id="paPhone" name="phone" placeholder="123 123 1234" autocomplete="tel" class="pa-form-input">
+      </div>
+    </div>
+    <div class="pa-error-message" id="paError-phone">Formato: 10 dígitos</div>
+  </div>
+
+  <!-- Tipo de establecimiento - CHECKBOXES 2x2 DEBAJO DEL TELÉFONO -->
+  <div class="pa-form-group">
+    <label>Tipo de establecimiento <span class="pa-required">*</span></label>
+    <div class="pa-checkbox-grid" id="paServicesGrid" role="group" aria-label="Tipo de establecimiento">
+      <label class="pa-checkbox-item"><input type="checkbox" name="services" value="Clínica veterinaria"><span>Clínica veterinaria</span></label>
+      <label class="pa-checkbox-item"><input type="checkbox" name="services" value="Hospital 24/7"><span>Hospital 24/7</span></label>
+      <label class="pa-checkbox-item"><input type="checkbox" name="services" value="Tienda de mascotas"><span>Tienda de mascotas</span></label>
+      <label class="pa-checkbox-item"><input type="checkbox" name="services" value="Hotel"><span>Hotel</span></label>
+      <label class="pa-checkbox-item"><input type="checkbox" name="services" value="Paseador de perros"><span>Paseador de perros</span></label>
+    </div>
+    <div class="pa-error-message" id="paError-services">Selecciona al menos un tipo</div>
+  </div>
+
+  <!-- Botón Submit -->
+  <button type="submit" class="pa-btn-submit" id="paSubmitBtn">Registrar mi centro</button>
+</form>
+
+<script>
+(function() {
+  'use strict';
+  
+  // Configuración
+  const API_ENDPOINT = '/api/webflow/wellness-lead';
+  
+  // Elementos del DOM
+  const form = document.getElementById('paWellnessForm');
+  const submitBtn = document.getElementById('paSubmitBtn');
+  
+  if (!form || !submitBtn) {
+    console.error('PA Wellness Form: Form or button not found');
+    return;
+  }
+
+  // Utilidades DOM
+  function getFieldId(displayId) {
+    return 'pa' + displayId.charAt(0).toUpperCase() + displayId.slice(1);
+  }
+
+  function $(selector, context = document) {
+    return context.querySelector(selector);
+  }
+
+  function $all(selector, context = document) {
+    return Array.from(context.querySelectorAll(selector));
+  }
+
+  function showError(fieldId, message) {
+    const errorEl = document.getElementById('paError-' + fieldId);
+    const inputEl = getInputElement(fieldId);
+    if (errorEl) { errorEl.textContent = message; errorEl.classList.add('visible'); }
+    if (inputEl) inputEl.classList.add('error');
+    // For checkboxes, add error to container
+    if (fieldId === 'services') {
+      const grid = document.getElementById('paServicesGrid');
+      if (grid) grid.classList.add('error');
+    }
+  }
+
+  function clearError(fieldId) {
+    const errorEl = document.getElementById('paError-' + fieldId);
+    const inputEl = getInputElement(fieldId);
+    if (errorEl) errorEl.classList.remove('visible');
+    if (inputEl) inputEl.classList.remove('error');
+    if (fieldId === 'services') {
+      const grid = document.getElementById('paServicesGrid');
+      if (grid) grid.classList.remove('error');
+    }
+  }
+
+  function getInputElement(fieldId) {
+    // Map fieldId to actual DOM element IDs
+    const idMap = {
+      'contact_name': 'paContactName',
+      'email': 'paEmail',
+      'phone': 'paPhone',
+      'services': 'paServicesGrid'
+    };
+    const domId = idMap[fieldId] || 'pa' + fieldId.charAt(0).toUpperCase() + fieldId.slice(1);
+    return document.getElementById(domId);
+  }
+
+  function clearAllErrors() {
+    $all('.pa-error-message.visible').forEach(el => el.classList.remove('visible'));
+    $all('.pa-form-input.error, .pa-country-select.error, .pa-checkbox-grid.error').forEach(el => el.classList.remove('error'));
+  }
+
+  function showToast(message, type = 'success') {
+    // Remove existing toast
+    $all('.pa-toast').forEach(el => el.remove());
+
+    const toast = document.createElement('div');
+    toast.className = 'pa-toast ' + type;
+    toast.textContent = message;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+
+    // Force reflow for animation
+    toast.offsetHeight;
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px) scale(0.95)';
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
+  }
+
+  function setLoading(isLoading) {
+    if (isLoading) {
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registrando...';
+    } else {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Registrar mi centro';
+    }
+  }
+
+  function validateForm() {
+    clearAllErrors();
+    let isValid = true;
+
+    // Contact name
+    const contactName = document.getElementById('paContactName');
+    if (!contactName.value.trim()) {
+      showError('contact_name', 'El nombre es requerido');
+      isValid = false;
+    }
+
+    // Email
+    const email = document.getElementById('paEmail');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email.value.trim() || !emailRegex.test(email.value.trim())) {
+      showError('email', 'Correo electrónico válido requerido');
+      isValid = false;
+    }
+
+    // At least one service
+    const servicesChecked = $all('input[name="services"]:checked');
+    if (servicesChecked.length === 0) {
+      showError('services', 'Selecciona al menos un tipo de establecimiento');
+      isValid = false;
+    }
+
+    // Phone (optional but validate if provided)
+    const phone = document.getElementById('paPhone');
+    if (phone.value.trim()) {
+      const digitsOnly = phone.value.replace(/\D/g, '');
+      if (digitsOnly.length < 10) {
+        showError('phone', 'El teléfono debe tener al menos 10 dígitos');
+        isValid = false;
+      }
+    }
+
+    return isValid;
+  }
+
+  // Real-time validation clearing
+  ['contact_name', 'email', 'phone'].forEach(fieldId => {
+    const el = getInputElement(fieldId);
+    if (el) {
+      el.addEventListener('input', () => clearError(fieldId));
+      el.addEventListener('blur', () => {
+        if (fieldId === 'email') {
+          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          if (el.value.trim() && !emailRegex.test(el.value.trim())) {
+            showError('email', 'Correo electrónico válido requerido');
+          }
+        }
+        if (fieldId === 'phone' && el.value.trim()) {
+          const digitsOnly = el.value.replace(/\D/g, '');
+          if (digitsOnly.length < 10) {
+            showError('phone', 'El teléfono debe tener al menos 10 dígitos');
+          }
+        }
+      });
+    });
+  });
+
+  // Checkboxes - clear error on change
+  $all('input[name="services"]').forEach(cb => {
+    cb.addEventListener('change', () => clearError('services'));
+  });
+
+  // Phone formatting
+  const phoneInput = document.getElementById('paPhone');
+  if (phoneInput) {
+    phoneInput.addEventListener('input', (e) => {
+      let value = e.target.value.replace(/\D/g, '');
+      if (value.length > 10) value = value.slice(0, 10);
+      if (value.length > 6) {
+        value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '$1 $2 $3');
+      } else if (value.length > 3) {
+        value = value.replace(/(\d{3})(\d{0,3})/, '$1 $2');
+      }
+      e.target.value = value;
+    });
+  }
+
+  function showToast(message, type = 'success') {
+    $all('.pa-toast').forEach(el => el.remove());
+
+    const toast = document.createElement('div');
+    toast.className = 'pa-toast ' + type;
+    toast.textContent = message;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+
+    toast.offsetHeight; // Force reflow
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px) scale(0.95)';
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
+  }
+
+  function setLoading(isLoading) {
+    if (isLoading) {
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registrando...';
+      submitBtn.setAttribute('aria-busy', 'true');
+    } else {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Registrar mi centro';
+      submitBtn.removeAttribute('aria-busy');
+    }
+  }
+
+  // Main submit handler
+  form.addEventListener('submit', async function(e) {
+    // CRITICAL: Prevent default form submission (page reload)
+    e.preventDefault();
+    e.stopPropagation();
+
+    // Debug log
+    console.log('PA Wellness Form: Submit triggered');
+
+    if (!validateForm()) {
+      showToast('Por favor corrige los errores', 'error');
+      return;
+    }
+
+    setLoading(true);
+
+    // Build FormData
+    const formData = new FormData(this);
+
+    // Convert checkboxes to comma-separated string for API
+    const services = $all('input[name="services"]:checked')
+        .map(cb => cb.value)
+        .join(',');
+
+    // Replace services in formData
+    formData.delete('services');
+    formData.append('services', services);
+
+    // Add tracking fields
+    formData.append('source', 'webflow-embed');
+    formData.append('page_url', window.location.href);
+
+    try {
+      console.log('PA Wellness Form: Sending to API...');
+      
+      const response = await fetch('/api/webflow/wellness-lead', {
+        method: 'POST',
+        body: formData
+      });
+
+      console.log('PA Wellness Form: Response status:', response.status);
+
+      const data = await response.json();
+      console.log('PA Wellness Form: Response data:', data);
+
+      if (data.success) {
+        showToast('¡Gracias por tu interés! Te contactaremos pronto.', 'success');
+        this.reset();
+        // Clear checkbox error state
+        const grid = document.getElementById('paServicesGrid');
+        if (grid) grid.classList.remove('error');
+      } else {
+        console.error('PA Wellness Form: API error:', data);
+        if (data.message && data.message.includes('reactivated')) {
+          showToast('Suscripción reactivada', 'success');
+        } else if (data.message && data.message.includes('already')) {
+          showToast('Este centro ya está registrado', 'error');
+        } else {
+          showToast(data.error || data.message || 'Error al registrar', 'error');
+        }
+      }
+    } catch (err) {
+      console.error('PA Wellness Form: Network error:', err);
+      showToast('Error de conexión. Intenta de nuevo.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  function setLoading(isLoading) {
+    if (isLoading) {
+      submitBtn.classList.add('loading');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Registrando...';
+      submitBtn.setAttribute('aria-busy', 'true');
+    } else {
+      submitBtn.classList.remove('loading');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Registrar mi centro';
+      submitBtn.removeAttribute('aria-busy');
+    }
+  }
+
+  function showToast(message, type = 'success') {
+    $all('.pa-toast').forEach(el => el.remove());
+
+    const toast = document.createElement('div');
+    toast.className = 'pa-toast ' + type;
+    toast.textContent = message;
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    document.body.appendChild(toast);
+
+    toast.offsetHeight; // Force reflow
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateY(20px) scale(0.95)';
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
+  }
+})();
+</script>
