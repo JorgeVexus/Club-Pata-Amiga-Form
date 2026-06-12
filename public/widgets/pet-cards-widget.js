@@ -2233,6 +2233,12 @@
 
                 if (data.success) {
                     confirmModal.remove();
+                    // Cerrar modal de detalles actual antes de recargar
+                    const detailsModal = document.getElementById('pata-details-modal');
+                    if (detailsModal) {
+                        detailsModal.remove();
+                        document.body.style.overflow = '';
+                    }
                     // Recargar datos y volver a abrir el modal de detalles
                     await this.init();
                     this.showDetails(petId);
