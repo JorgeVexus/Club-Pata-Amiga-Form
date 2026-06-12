@@ -2207,7 +2207,7 @@
             document.body.appendChild(miniModal);
         }
 
-        /** Elimina una foto de la mascota via API */
+        /** Elimina una foto de la mascota via API y actualiza el DOM en tiempo real */
         async deletePetPhoto(petId, photoType, confirmModal) {
             const btn = confirmModal.querySelector('.pata-confirm-btn-delete');
             const originalBtnText = btn.innerText;
@@ -2233,15 +2233,30 @@
 
                 if (data.success) {
                     confirmModal.remove();
-                    // Cerrar modal de detalles actual antes de recargar
-                    const detailsModal = document.getElementById('pata-details-modal');
-                    if (detailsModal) {
-                        detailsModal.remove();
-                        document.body.style.overflow = '';
+                    
+                    // Actualizar el DOM directamente - reemplazar la foto con el cuadro de subida
+                    const uploadBoxId = `modal-photo-upload-${photoType.replace('photo', '')}`;
+                    const uploadBox = document.getElementById(uploadBoxId);
+                    if (uploadBox) {
+                        uploadBox.innerHTML = `
+                            <input type="file" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
+                                onchange="window.ManadaWidget.handleModalFileUpload('${petId}', '${photoType}', this.files[0], '${uploadBoxId}')" aria-label="Subir foto ${photoType.replace('photo', '')}">
+                            <span class="material-symbols-outlined" style="font-size:24px; color:#666">add_a_photo</span>
+                            <span style="font-size:9px; font-weight:800; color:#666; text-transform:uppercase; margin-top:4px">Foto ${photoType.replace('photo', '')}</span>
+                        `;
+                        uploadBox.style.borderStyle = 'dashed';
+                        uploadBox.style.cursor = 'pointer';
                     }
-                    // Recargar datos y volver a abrir el modal de detalles
-                    await this.init();
-                    this.showDetails(petId);
+
+                    // Actualizar datos locales para mantener consistencia
+                    const petIndex = this.pets.findIndex(p => p.id === petId);
+                    if (petIndex !== -1) {
+                        const pet = this.pets[petIndex];
+                        if (photoType === 'photo2') pet.photo2_url = null;
+                        if (photoType === 'photo3') pet.photo3_url = null;
+                        if (photoType === 'photo4') pet.photo4_url = null;
+                        if (photoType === 'photo5') pet.photo5_url = null;
+                    }
                 } else {
                     throw new Error(data.error || 'Error eliminando foto');
                 }
