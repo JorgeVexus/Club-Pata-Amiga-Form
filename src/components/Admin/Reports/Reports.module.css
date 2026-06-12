@@ -789,3 +789,9 @@
     transform: none;
 }
 
+.badge.noPlan {
+    background: #e2e8f0;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+

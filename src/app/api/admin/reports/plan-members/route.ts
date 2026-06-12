@@ -3,6 +3,44 @@ import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
+async function fetchMembersWithKey(apiKey: string): Promise<any[]> {
+    let allMembers: any[] = [];
+    let currentCursor: string | null = null;
+    let pageCount = 0;
+    const maxPages = 20;
+
+    do {
+        let url = `https://admin.memberstack.com/members?limit=100`;
+        if (currentCursor) {
+            url += `&after=${currentCursor}`;
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-API-KEY': apiKey
+            }
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+        }
+
+        const data = await response.json();
+        const members = data.data || [];
+        allMembers = allMembers.concat(members);
+        pageCount++;
+
+        const hasMore = data.hasNextPage || false;
+        currentCursor = hasMore && data.endCursor ? data.endCursor : null;
+
+    } while (currentCursor && pageCount < maxPages);
+
+    return allMembers;
+}
+
 export async function GET(request: NextRequest) {
     try {
         // 🔒 SEGURIDAD: Validar que el usuario es admin en el servidor
@@ -19,8 +57,12 @@ export async function GET(request: NextRequest) {
         }
 
         const planIdToFilter = 'pln_club-pata-amiga-9o2k00j6m';
+        const mainKey = process.env.MEMBERSTACK_ADMIN_SECRET_KEY || '';
+        const isMainKeyTest = mainKey.startsWith('sk_sb_');
 
-        // 1. Obtener todos los miembros desde Memberstack (incluyendo no pagados o cancelados)
+        let rawMsMembers: any[] = [];
+
+        // 1. Obtener todos los miembros desde el entorno principal de Memberstack
         const msResult = await memberstackAdmin.listMembers(undefined, { paidOnly: false });
 
         if (!msResult.success || !msResult.data) {
@@ -31,10 +73,37 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        // 2. Filtrar únicamente los miembros que tengan el plan de Pata Amiga
-        const filteredMembers = msResult.data.filter(m => 
-            m.planConnections?.some(pc => pc.planId === planIdToFilter)
-        );
+        rawMsMembers = msResult.data.map(m => ({
+            ...m,
+            isTest: isMainKeyTest
+        }));
+
+        // 2. Si la clave principal es de producción (Live), consultar también el entorno de Sandbox (Pruebas)
+        if (!isMainKeyTest) {
+            const testKey = process.env.MEMBERSTACK_TEST_ADMIN_SECRET_KEY || 'sk_sb_4bd4a70ab26be68d67c5';
+            try {
+                console.log('📡 Consultando miembros del entorno Sandbox de Memberstack...');
+                const testMembers = await fetchMembersWithKey(testKey);
+                console.log(`📊 Se encontraron ${testMembers.length} miembros de Sandbox.`);
+                
+                // Evitar duplicados por ID (si los hubiera)
+                const mainIds = new Set(rawMsMembers.map(m => m.id));
+                const uniqueTestMembers = testMembers.filter(m => !mainIds.has(m.id));
+                
+                rawMsMembers = [
+                    ...rawMsMembers,
+                    ...uniqueTestMembers.map((m: any) => ({
+                        ...m,
+                        isTest: true
+                    }))
+                ];
+            } catch (err) {
+                console.error('⚠️ Error no crítico consultando miembros de Sandbox:', err);
+            }
+        }
+
+        // 3. No filtramos por tener el plan de Pata Amiga. Se procesan todos.
+        const filteredMembers = rawMsMembers;
 
         if (filteredMembers.length === 0) {
             return NextResponse.json({
@@ -146,7 +215,7 @@ export async function GET(request: NextRequest) {
             const cancellation = cancellationsMap.get(m.id);
             
             // Datos de conexión al plan
-            const planConnection = m.planConnections?.find(pc => pc.planId === planIdToFilter);
+            const planConnection = m.planConnections?.find((pc: any) => pc.planId === planIdToFilter);
             let paymentStatus = planConnection?.status?.toLowerCase() || 'none';
 
             // Si hay un registro de cancelación explícito, forzar estatus cancelado
@@ -225,6 +294,7 @@ export async function GET(request: NextRequest) {
         let activeCount = 0;
         let cancelledCount = 0;
         let requiresPaymentCount = 0;
+        let noPlanCount = 0;
         let testCount = 0;
         let productionCount = 0;
         let mrr = 0;
@@ -261,6 +331,8 @@ export async function GET(request: NextRequest) {
                 cancelledCount++;
             } else if (m.status === 'past_due') {
                 requiresPaymentCount++;
+            } else if (m.status === 'none') {
+                noPlanCount++;
             }
         });
 
@@ -276,6 +348,7 @@ export async function GET(request: NextRequest) {
             activeCount,
             cancelledCount,
             requiresPaymentCount,
+            noPlanCount,
             mrr: Math.round(mrr),
             arr: Math.round(arr),
             testCount,

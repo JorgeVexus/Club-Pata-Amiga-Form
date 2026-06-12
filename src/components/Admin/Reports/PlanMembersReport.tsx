@@ -256,7 +256,7 @@ export default function PlanMembersReport() {
             `"${m.name.replace(/"/g, '""')}"`,
             m.email,
             formatDate(m.registeredAt),
-            m.status === 'active' ? 'Activo' : m.status === 'canceled' ? 'Cancelado' : m.status === 'past_due' ? 'Moroso / Requiere Pago' : 'Desconocido',
+            m.status === 'active' ? 'Activo' : m.status === 'canceled' ? 'Cancelado' : m.status === 'past_due' ? 'Moroso / Requiere Pago' : m.status === 'none' ? 'Sin Plan' : 'Desconocido',
             m.amount,
             m.isAnnual ? 'Anual' : 'Mensual',
             m.origin,
@@ -315,12 +315,14 @@ export default function PlanMembersReport() {
     const getStatusBadgeClass = (status: string) => {
         if (status === 'active') return styles.active;
         if (status === 'canceled') return styles.canceled;
+        if (status === 'none') return styles.noPlan;
         return styles.past_due; // past_due
     };
 
     const getStatusLabel = (status: string) => {
         if (status === 'active') return 'Activo';
         if (status === 'canceled') return 'Cancelado';
+        if (status === 'none') return 'Sin Plan';
         return 'Requiere Pago';
     };
 
@@ -366,6 +368,16 @@ export default function PlanMembersReport() {
                                 {filteredMembers.filter(m => m.status === 'canceled').length}
                             </div>
                             <div className={styles.kpiLabel}>Membresías Canceladas</div>
+                        </div>
+                    </div>
+
+                    <div className={styles.kpiCard}>
+                        <div className={styles.kpiIcon} style={{ background: '#fef3c7' }}>⚪</div>
+                        <div className={styles.kpiInfo}>
+                            <div className={styles.kpiValue}>
+                                {filteredMembers.filter(m => m.status === 'none').length}
+                            </div>
+                            <div className={styles.kpiLabel}>Sin Suscripción / Plan</div>
                         </div>
                     </div>
 
@@ -426,6 +438,7 @@ export default function PlanMembersReport() {
                         <option value="active">Activo</option>
                         <option value="past_due">Requiere Pago (Mora)</option>
                         <option value="canceled">Cancelado</option>
+                        <option value="none">Sin Plan</option>
                     </select>
                 </div>
 
