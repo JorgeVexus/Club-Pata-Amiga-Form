@@ -1233,7 +1233,7 @@
                         <section class="pata-modal-gallery hide-scrollbar" style="border-right: var(--pata-border-thick);">
                             <div class="pata-photo-wrapper" id="modal-photo-upload-1" style="aspect-ratio:1; border-radius:20px; overflow:hidden; border: var(--pata-border-thick); background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
                                 ${(photoSlots[0] && photoSlots[0].startsWith('http')) ? `
-                                    <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy" class="${pet.is_active === false ? 'pata-grayscale' : ''}">
+                                    <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy" class="${pet.is_active === false ? 'pata-grayscale' : ''}" style="width:100%; height:100%; object-fit:cover;">
                                     <div class="pata-gallery-label">
                                         <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
                                         <span>Foto Principal</span>
