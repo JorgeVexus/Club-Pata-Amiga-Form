@@ -643,6 +643,41 @@
         .pata-photo-delete-btn:active {
             transform: scale(0.95);
         }
+
+        /* Photo Replace Button (for main photo) */
+        .pata-photo-replace-btn {
+            position: absolute;
+            bottom: 6px;
+            right: 6px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--pata-primary);
+            color: #fff;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+            font-size: 18px;
+            line-height: 1;
+            opacity: 0;
+            box-shadow: 0 2px 8px rgba(0, 187, 180, 0.3);
+        }
+        .pata-photo-wrapper:hover .pata-photo-replace-btn {
+            opacity: 1;
+        }
+        .pata-photo-replace-btn:hover {
+            background: var(--pata-action);
+            transform: scale(1.1);
+            border-color: #fff;
+        }
+        .pata-photo-replace-btn:active {
+            transform: scale(0.95);
+        }
+
         .pata-photo-wrapper {
             position: relative;
         }
@@ -1196,13 +1231,18 @@
                 <div class="pata-modal-box">
                     <main class="pata-modal-main">
                         <section class="pata-modal-gallery hide-scrollbar" style="border-right: var(--pata-border-thick);">
-                            <div class="pata-gallery-main" id="modal-photo-upload-1" style="border: var(--pata-border-thick);">
+                            <div class="pata-photo-wrapper" id="modal-photo-upload-1" style="aspect-ratio:1; border-radius:20px; overflow:hidden; border: var(--pata-border-thick); background:#fff; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
                                 ${(photoSlots[0] && photoSlots[0].startsWith('http')) ? `
                                     <img src="${photoSlots[0]}" alt="${pet.name}" onerror="this.src='${CONFIG.placeholderDog}'" loading="lazy" class="${pet.is_active === false ? 'pata-grayscale' : ''}">
                                     <div class="pata-gallery-label">
                                         <span class="material-symbols-outlined" style="font-size:14px">photo_camera</span>
                                         <span>Foto Principal</span>
                                     </div>
+                                    <button class="pata-photo-replace-btn" onclick="document.getElementById('photo1-replace-input').click()" aria-label="Reemplazar foto principal" title="Reemplazar foto">
+                                        <span class="material-symbols-outlined">swap_horiz</span>
+                                    </button>
+                                    <input type="file" id="photo1-replace-input" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
+                                        onchange="window.ManadaWidget.handleModalFileUpload('${pet.id}', 'photo1', this.files[0], 'modal-photo-upload-1')" aria-label="Reemplazar foto principal">
                                 ` : `
                                     <div class="pata-modal-upload-box" style="width:100%; height:100%; border:none;">
                                         <input type="file" accept="image/*" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"
