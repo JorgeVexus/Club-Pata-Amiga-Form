@@ -320,11 +320,11 @@
             const planName = pm?.interval || u.plan_name || (pm ? 'Plan activo' : 'Sin plan');
             const planCost = pm?.plan_cost ? '$' + pm.plan_cost.toLocaleString('es-MX') : (u.plan_cost ? '$'+u.plan_cost : '—');
             
-            // 🆕 Si está cancelada, mostrar "Cobertura hasta" en lugar de "Próximo pago"
+            // 🆕 Si está cancelada, mostrar "Apoyo hasta" en lugar de "Próximo pago"
             let nextPayLabel = 'Próximo pago';
             let nextPayValue = fmtDate(pm?.next_payment_date);
             if (isCancelled && membershipEndDate) {
-                nextPayLabel = 'Membresía cancelada · Cobertura hasta';
+                nextPayLabel = 'Membresía cancelada · Apoyo hasta';
                 nextPayValue = fmtDate(membershipEndDate);
             } else if (!pm?.next_payment_date || !isCancelled) {
                 nextPayValue = fmtDate(pm?.next_payment_date);

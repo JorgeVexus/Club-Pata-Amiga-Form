@@ -905,7 +905,7 @@
                         </div>
                         <div class="pata-sub-footer">
                             <span class="pata-sub-next" style="color: #E53E3E; font-weight: 700;">
-                                🠗 Membresía cancelada · Cobertura hasta: <strong>${endDate}</strong>
+                                🠗 Membresía cancelada · Apoyo hasta: <strong>${endDate}</strong>
                             </span>
                             <button class="pata-sub-manage" data-action="payment" style="opacity: 0.6; pointer-events: none;">Cancelada · No renovará</button>
                         </div>

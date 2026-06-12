@@ -1455,7 +1455,7 @@ return (
                                                     </>
                                                 )}
                                                 <div className={styles.field}>
-                                                    <span className={styles.label}>Cobertura hasta</span>
+                                                    <span className={styles.label}>Apoyo hasta</span>
                                                     <span className={styles.value} style={{ fontWeight: 600, color: '#E53E3E', fontSize: '1.1em' }}>
                                                         {renewalDateFormatted}
                                                     </span>
