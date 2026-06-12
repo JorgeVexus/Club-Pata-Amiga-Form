@@ -611,6 +611,125 @@
         .pata-adoption-checkbox { cursor: pointer; transition: transform 0.2s; }
         .pata-adoption-checkbox:active { transform: scale(0.9); }
 
+        /* Photo Delete Button */
+        .pata-photo-delete-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 2px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 10;
+            font-size: 16px;
+            line-height: 1;
+            opacity: 0;
+        }
+        .pata-photo-wrapper:hover .pata-photo-delete-btn {
+            opacity: 1;
+        }
+        .pata-photo-delete-btn:hover {
+            background: #E53E3E;
+            transform: scale(1.1);
+            border-color: #fff;
+        }
+        .pata-photo-delete-btn:active {
+            transform: scale(0.95);
+        }
+        .pata-photo-wrapper {
+            position: relative;
+        }
+
+        /* Confirmation Mini-Modal */
+        .pata-confirm-mini-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 200000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            animation: pataFadeIn 0.2s ease-out;
+        }
+        .pata-confirm-box {
+            background: #fff;
+            border: var(--pata-border-thick);
+            border-radius: 24px;
+            padding: 28px 32px;
+            max-width: 360px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: pataSlideDown 0.3s var(--pata-spring);
+        }
+        .pata-confirm-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #FFF5F5;
+            border: 2px solid #FEB2B2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            color: #E53E3E;
+            font-size: 24px;
+        }
+        .pata-confirm-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: #1A1A1A;
+            margin: 0 0 8px;
+            text-transform: lowercase;
+        }
+        .pata-confirm-text {
+            font-size: 14px;
+            color: #4A5568;
+            margin: 0 0 24px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+        .pata-confirm-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        .pata-confirm-btn {
+            padding: 12px 28px;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: var(--pata-border-thin);
+        }
+        .pata-confirm-btn-cancel {
+            background: #fff;
+            color: #4A5568;
+        }
+        .pata-confirm-btn-cancel:hover {
+            background: #F7FAFC;
+        }
+        .pata-confirm-btn-delete {
+            background: #E53E3E;
+            color: #fff;
+        }
+        .pata-confirm-btn-delete:hover {
+            background: #C53030;
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 rgba(229, 62, 62, 0.2);
+        }
+
         /* Utils */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -1098,8 +1217,9 @@
                                     const num = i + 2;
                                     if (url && url.startsWith('http')) {
                                         return `
-                                            <div style="aspect-ratio:1; border-radius:16px; overflow:hidden; border:var(--pata-border-thin); box-shadow:4px 4px 0 rgba(0,0,0,0.05);">
+                                            <div class="pata-photo-wrapper" style="aspect-ratio:1; border-radius:16px; overflow:hidden; border:var(--pata-border-thin); box-shadow:4px 4px 0 rgba(0,0,0,0.05);">
                                                 <img src="${url}" style="width:100%; height:100%; object-fit:cover;" class="${pet.is_active === false ? 'pata-grayscale' : ''}" loading="lazy">
+                                                <button class="pata-photo-delete-btn" onclick="window.ManadaWidget.showDeletePhotoConfirm('${pet.id}', 'photo${num}', this)" aria-label="Eliminar foto ${num}" title="Eliminar foto">×</button>
                                             </div>`;
                                     } else {
                                         return `
@@ -2055,6 +2175,75 @@
             } catch (err) {
                 console.error('Modal upload error:', err); alert('No se pudo subir: ' + err.message);
                 container.innerHTML = originalContent; container.style.pointerEvents = 'auto';
+            }
+        }
+
+        /** Muestra mini-modal de confirmación para eliminar una foto */
+        showDeletePhotoConfirm(petId, photoType, _deleteBtn) {
+            // Evitar múltiples modales
+            if (document.querySelector('.pata-confirm-mini-modal')) return;
+
+            const miniModal = document.createElement('div');
+            miniModal.className = 'pata-confirm-mini-modal';
+            miniModal.innerHTML = `
+                <div class="pata-confirm-box">
+                    <div class="pata-confirm-icon">
+                        <span class="material-symbols-outlined">delete_outline</span>
+                    </div>
+                    <h3 class="pata-confirm-title">¿Eliminar esta foto?</h3>
+                    <p class="pata-confirm-text">La foto se eliminará permanentemente y no se podrá recuperar. El espacio quedará libre para subir una nueva imagen.</p>
+                    <div class="pata-confirm-actions">
+                        <button class="pata-confirm-btn pata-confirm-btn-cancel" onclick="this.closest('.pata-confirm-mini-modal').remove()">Cancelar</button>
+                        <button class="pata-confirm-btn pata-confirm-btn-delete" onclick="window.ManadaWidget.deletePetPhoto('${petId}', '${photoType}', this.closest('.pata-confirm-mini-modal'))">Eliminar</button>
+                    </div>
+                </div>
+            `;
+
+            // Cerrar al hacer click fuera
+            miniModal.onclick = (e) => {
+                if (e.target === miniModal) miniModal.remove();
+            };
+
+            document.body.appendChild(miniModal);
+        }
+
+        /** Elimina una foto de la mascota via API */
+        async deletePetPhoto(petId, photoType, confirmModal) {
+            const btn = confirmModal.querySelector('.pata-confirm-btn-delete');
+            const originalBtnText = btn.innerText;
+            btn.disabled = true;
+            btn.innerText = 'Eliminando...';
+
+            try {
+                const updateData = { userId: this.member.id };
+                
+                // Enviar null para eliminar la foto
+                if (photoType === 'photo1') updateData.photo1Url = null;
+                if (photoType === 'photo2') updateData.photo2Url = null;
+                if (photoType === 'photo3') updateData.photo3Url = null;
+                if (photoType === 'photo4') updateData.photo4Url = null;
+                if (photoType === 'photo5') updateData.photo5Url = null;
+
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    confirmModal.remove();
+                    // Recargar datos y volver a abrir el modal de detalles
+                    await this.init();
+                    this.showDetails(petId);
+                } else {
+                    throw new Error(data.error || 'Error eliminando foto');
+                }
+            } catch (err) {
+                console.error('Error eliminando foto:', err);
+                alert('No se pudo eliminar la foto: ' + err.message);
+                btn.disabled = false;
+                btn.innerText = originalBtnText;
             }
         }
 
