@@ -28,7 +28,8 @@ export type RequestType =
     | 'finance-commissions'
     | 'reports-interactive'
     | 'communications-emails'
-    | 'registered-centers';
+    | 'registered-centers'
+    | 'emergency-report';
 
 // Estados de solicitud
 export type RequestStatus = 'pending' | 'approved' | 'rejected' | 'appealed' | 'in_review' | 'new';
@@ -152,6 +153,7 @@ export const REQUEST_TYPE_COLORS: Record<RequestType, string> = {
     'reports-interactive': BRAND_COLORS.green,
     'communications-emails': BRAND_COLORS.orange,
     'registered-centers': BRAND_COLORS.orange,
+    'emergency-report': BRAND_COLORS.pink,
 };
 
 // Mapeo de colores por estado
@@ -189,6 +191,7 @@ export const REQUEST_TYPE_LABELS: Record<RequestType, string> = {
     'reports-interactive': 'Gráficas interactivas',
     'communications-emails': 'Plantillas de Correo',
     'registered-centers': 'Centros registrados',
+    'emergency-report': 'Reporte Botón Emergencia',
 };
 
 export const REQUEST_STATUS_LABELS: Record<RequestStatus, string> = {

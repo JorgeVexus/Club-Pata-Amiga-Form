@@ -5,7 +5,7 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations' | 'newsletter' | 'wellness-leads';
+    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations' | 'newsletter' | 'wellness-leads' | 'emergency-report';
     activeSubStatus?: string | null;
     onFilterChange: (filter: any) => void;
     pendingCounts: Record<string, number>;
@@ -136,6 +136,7 @@ export default function Sidebar({
             icon: '📈',
             items: [
                 { id: 'reports-interactive', label: 'Gráficas interactivas', icon: '📊' },
+                { id: 'emergency-report', label: 'Botón Emergencia', icon: '🚨' },
             ]
         }
     ];
