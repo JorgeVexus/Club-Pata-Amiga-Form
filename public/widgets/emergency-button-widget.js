@@ -40,7 +40,7 @@
             font-family: 'Outfit', sans-serif;
             position: fixed;
             bottom: 30px;
-            right: 30px;
+            left: 30px;
             z-index: 9999;
             display: none;
         }
