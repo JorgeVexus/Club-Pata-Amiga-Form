@@ -744,10 +744,26 @@
                     <div class="pata-settings-list" style="margin-bottom: 20px;">
                         ${this.renderSubscriptionInfo()}
                     </div>
-                    <button class="pata-btn-deactivate" id="pata-btn-deactivate">
-                        ${ICONS.xCircle}
-                        Desactivar cuenta
-                    </button>
+                    ${(() => {
+                        const isCancelled = this.paymentMethod?.is_cancelled === true;
+                        if (isCancelled) {
+                            return `
+                                <div style="padding: 20px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 16px; display: flex; align-items: center; gap: 12px; color: #B91C1C;">
+                                    ${ICONS.xCircle}
+                                    <div>
+                                        <strong style="font-size: 16px;">Cuenta desactivada</strong>
+                                        <p style="margin: 4px 0 0; font-size: 14px; color: #DC2626;">Tu suscripción está cancelada. Mantienes acceso hasta la fecha de fin de tu periodo pagado.</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return `
+                            <button class="pata-btn-deactivate" id="pata-btn-deactivate">
+                                ${ICONS.xCircle}
+                                Desactivar cuenta
+                            </button>
+                        `;
+                    })()}
                 </div>
 
                 <!-- Modal Custom para Contraseña -->
@@ -1106,12 +1122,12 @@
                     const data = await response.json();
 
                     if (data.success) {
-                        alert('Tu cuenta ha sido desactivada y tus suscripciones han sido canceladas exitosamente.');
-                        // Cerrar sesión en Memberstack y redirigir
-                        if (window.$memberstackDom) {
-                            await window.$memberstackDom.logout();
-                            window.location.href = '/';
-                        }
+                        alert('Tu suscripción ha sido cancelada exitosamente. Mantienes acceso hasta la fecha de fin de tu periodo pagado.');
+                        // Recargar método de pago para mostrar estado cancelado
+                        await this.loadPaymentMethod();
+                        this.renderSubscriptionInfo();
+                        // Renderizar de nuevo la sección completa para ocultar botón desactivar
+                        this.render();
                     } else {
                         throw new Error(data.error || 'Error desconocido');
                     }
