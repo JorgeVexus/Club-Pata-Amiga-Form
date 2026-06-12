@@ -131,31 +131,58 @@ export async function POST(
             updateData.status = 'pending';
         }
 
-        // Actualizar URLs
-        if (isValidUrl(photo1Url)) {
-            updateData.photo_url = photo1Url;
-            updateData.primary_photo_url = photo1Url;
+        // Actualizar URLs - permitir borrado explícito con null o ""
+        if (photo1Url !== undefined) {
+            if (isValidUrl(photo1Url)) {
+                updateData.photo_url = photo1Url;
+                updateData.primary_photo_url = photo1Url;
+            } else {
+                // null o "" = borrar la foto
+                updateData.photo_url = null;
+                updateData.primary_photo_url = null;
+            }
             console.log('📷 URL Foto 1:', photo1Url);
         }
-        if (isValidUrl(photo2Url)) {
-            updateData.photo2_url = photo2Url;
+        if (photo2Url !== undefined) {
+            if (isValidUrl(photo2Url)) {
+                updateData.photo2_url = photo2Url;
+            } else {
+                updateData.photo2_url = null;
+            }
             console.log('📷 URL Foto 2:', photo2Url);
         }
-        if (isValidUrl(photo3Url)) {
-            updateData.photo3_url = photo3Url;
+        if (photo3Url !== undefined) {
+            if (isValidUrl(photo3Url)) {
+                updateData.photo3_url = photo3Url;
+            } else {
+                updateData.photo3_url = null;
+            }
             console.log('📷 URL Foto 3:', photo3Url);
         }
-        if (isValidUrl(photo4Url)) {
-            updateData.photo4_url = photo4Url;
+        if (photo4Url !== undefined) {
+            if (isValidUrl(photo4Url)) {
+                updateData.photo4_url = photo4Url;
+            } else {
+                updateData.photo4_url = null;
+            }
             console.log('📷 URL Foto 4:', photo4Url);
         }
-        if (isValidUrl(photo5Url)) {
-            updateData.photo5_url = photo5Url;
+        if (photo5Url !== undefined) {
+            if (isValidUrl(photo5Url)) {
+                updateData.photo5_url = photo5Url;
+            } else {
+                updateData.photo5_url = null;
+            }
             console.log('📷 URL Foto 5:', photo5Url);
         }
-        if (isValidUrl(vetCertificateUrl)) {
-            updateData.vet_certificate_url = vetCertificateUrl;
-            updateData.vet_certificate_uploaded = true;
+        if (vetCertificateUrl !== undefined) {
+            if (isValidUrl(vetCertificateUrl)) {
+                updateData.vet_certificate_url = vetCertificateUrl;
+                updateData.vet_certificate_uploaded = true;
+            } else {
+                updateData.vet_certificate_url = null;
+                updateData.vet_certificate_uploaded = false;
+            }
             console.log('📜 URL Certificado:', vetCertificateUrl);
         }
         
@@ -235,7 +262,7 @@ export async function POST(
             .from('pets')
             .update(updateData)
             .eq('id', petId);
-            
+           
         // Si el error es PGRST204 significa que alguna columna no existe (ej. photo3_url)
         if (updateError && updateError.code === 'PGRST204') {
             console.warn('⚠️ [PetUpdate] Columnas extendidas no existen. Reintentando sin fotos adicionales...');
@@ -269,12 +296,12 @@ export async function POST(
                 type: 'user_update',
                 message: message || 'El usuario actualizó la información de su mascota',
                 metadata: {
-                    photo1_updated: isValidUrl(photo1Url),
-                    photo2_updated: isValidUrl(photo2Url),
-                    photo3_updated: isValidUrl(photo3Url),
-                    photo4_updated: isValidUrl(photo4Url),
-                    photo5_updated: isValidUrl(photo5Url),
-                    vet_certificate_updated: isValidUrl(vetCertificateUrl)
+                    photo1_updated: photo1Url !== undefined,
+                    photo2_updated: photo2Url !== undefined,
+                    photo3_updated: photo3Url !== undefined,
+                    photo4_updated: photo4Url !== undefined,
+                    photo5_updated: photo5Url !== undefined,
+                    vet_certificate_updated: vetCertificateUrl !== undefined
                 },
                 created_at: new Date().toISOString()
             });
