@@ -11,6 +11,7 @@ export interface MemberstackMember {
     };
     customFields: Record<string, any>;
     createdAt: string;
+    isTest?: boolean;
     planConnections?: {
         id?: string;
         active?: boolean;
