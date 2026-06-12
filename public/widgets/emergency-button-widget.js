@@ -232,18 +232,52 @@
         @media (max-width: 480px) {
             .emergency-btn {
                 bottom: 20px;
-                right: 20px;
+                left: 20px;
                 padding: 14px 20px;
                 font-size: 14px;
             }
             
             .emergency-modal {
-                padding: 30px 24px;
-                max-width: 90vw;
+                padding: 24px 20px;
+                max-width: 92vw;
+                border-radius: 24px;
             }
             
-            .emergency-modal-title { font-size: 24px; }
-            .emergency-modal-phone { font-size: 16px; padding: 12px 16px; }
+            .emergency-modal-icon {
+                width: 60px;
+                height: 60px;
+                margin: 0 auto 16px;
+                border-width: 2px;
+            }
+            
+            .emergency-modal-title { 
+                font-size: 22px; 
+                margin-bottom: 10px;
+            }
+            
+            .emergency-modal-message { 
+                font-size: 15px; 
+                line-height: 1.5;
+                margin-bottom: 20px;
+            }
+            
+            .emergency-modal-phone { 
+                font-size: 17px; 
+                padding: 14px 18px;
+                gap: 8px;
+            }
+            
+            .emergency-modal-actions {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .emergency-modal-btn {
+                padding: 14px 20px;
+                font-size: 16px;
+                border-radius: 14px;
+                min-height: 48px;
+            }
         }
     `;
 
