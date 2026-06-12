@@ -94,6 +94,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [isSyncingCRM, setIsSyncingCRM] = useState(false);
     const [showRejectForm, setShowRejectForm] = useState<Record<string, boolean>>({});
     const [sendingPetRecoveryLink, setSendingPetRecoveryLink] = useState(false);
+    // 🆕 Cancellation data
+    const [cancellationData, setCancellationData] = useState<any>(null);
+    const [loadingCancellation, setLoadingCancellation] = useState(false);
 
     // States for Editing
     const [isEditingEmail, setIsEditingEmail] = useState(false);
@@ -111,6 +114,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             loadSupabaseUserData();
             loadBillingDetails();
             loadStripeDetails();
+            loadCancellationData();
             // Reset editing states
             setIsEditingEmail(false);
             setEditingEmailValue(member?.auth?.email || member?.email || '');
@@ -160,6 +164,24 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             console.error('Error loading stripe details:', error);
         } finally {
             setLoadingStripe(false);
+        }
+    }
+
+    async function loadCancellationData() {
+        if (!member) return;
+        setLoadingCancellation(true);
+        try {
+            const response = await adminFetch(`/api/admin/members/${member.id}/cancellation-data`);
+            if (response.ok) {
+                const data = await response.json();
+                if (data.success && data.cancellation) {
+                    setCancellationData(data.cancellation);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading cancellation data:', error);
+        } finally {
+            setLoadingCancellation(false);
         }
     }
 
@@ -1409,6 +1431,29 @@ return (
                                                         {cancelledAtFormatted || 'No disponible'}
                                                     </span>
                                                 </div>
+                                                {cancellationData && (
+                                                    <>
+                                                        <div className={styles.field}>
+                                                            <span className={styles.label}>Razón de Cancelación</span>
+                                                            <span className={styles.value} style={{ fontWeight: 600, color: '#E53E3E' }}>
+                                                                {cancellationData.cancellation_reason_label}
+                                                                {cancellationData.reason_other_text && (
+                                                                    <span style={{ marginLeft: '8px', fontSize: '0.9em', fontWeight: 400, color: '#718096' }}>
+                                                                        ({cancellationData.reason_other_text})
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        </div>
+                                                        {cancellationData.comments && (
+                                                            <div className={styles.field}>
+                                                                <span className={styles.label}>Comentarios</span>
+                                                                <span className={styles.value} style={{ fontSize: '0.9em', color: '#4A5568' }}>
+                                                                    {cancellationData.comments}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </>
+                                                )}
                                                 <div className={styles.field}>
                                                     <span className={styles.label}>Cobertura hasta</span>
                                                     <span className={styles.value} style={{ fontWeight: 600, color: '#E53E3E', fontSize: '1.1em' }}>
