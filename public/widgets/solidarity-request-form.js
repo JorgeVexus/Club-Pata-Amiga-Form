@@ -574,7 +574,7 @@ class SolidarityRequestForm {
                             if (!selectedPet) return '';
                             const photoUrl = selectedPet.photo_url || selectedPet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
                             return `
-                                <div class="pata-pet-card selected" data-id="${selectedPet.id}" style="max-width: 400px; margin: 0 auto;">
+                                <div class="pata-pet-card selected" data-id="${selectedPet.id}">
                                     <div class="pata-pet-img-wrap">
                                         <img src="${photoUrl}" alt="${selectedPet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
                                     </div>
@@ -583,7 +583,7 @@ class SolidarityRequestForm {
                                         <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                                         Mascota seleccionada
                                     </div>
-                                    <button type="button" class="pata-btn pata-btn-secondary pata-change-pet-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                                    <button type="button" class="pata-btn pata-btn-secondary pata-scroll-to-type-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
                                         Cambiar de mascota
                                     </button>
                                 </div>
@@ -948,8 +948,8 @@ class SolidarityRequestForm {
             card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } };
         });
 
-        // Cambiar mascota button
-        this.container.querySelectorAll('.pata-change-pet-btn').forEach(btn => {
+        // Cambiar mascota button (deselecciona y muestra todas las mascotas de nuevo)
+        this.container.querySelectorAll('.pata-scroll-to-type-btn').forEach(btn => {
             btn.onclick = () => {
                 this.state.ui.showAllPets = true;
                 this.state.selection.petId = null;
