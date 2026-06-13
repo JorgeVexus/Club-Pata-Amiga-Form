@@ -748,12 +748,18 @@
                         const isCancelled = this.paymentMethod?.is_cancelled === true;
                         if (isCancelled) {
                             return `
-                                <div style="padding: 20px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 16px; display: flex; align-items: center; gap: 12px; color: #B91C1C;">
-                                    ${ICONS.xCircle}
-                                    <div>
-                                        <strong style="font-size: 16px;">Cuenta desactivada</strong>
-                                        <p style="margin: 4px 0 0; font-size: 14px; color: #DC2626;">Tu suscripción está cancelada. Mantienes acceso hasta la fecha de fin de tu periodo pagado.</p>
+                                <div style="padding: 20px; background: #FEF2F2; border: 1px solid #FECACA; border-radius: 16px; display: flex; flex-direction: column; gap: 12px; color: #B91C1C;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        ${ICONS.xCircle}
+                                        <div>
+                                            <strong style="font-size: 16px;">Cuenta desactivada</strong>
+                                            <p style="margin: 4px 0 0; font-size: 14px; color: #DC2626;">Tu suscripción está cancelada. Mantienes acceso hasta la fecha de fin de tu periodo pagado.</p>
+                                        </div>
                                     </div>
+                                    <button class="pata-btn-reactivate" id="pata-btn-reactivate" style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 16px; background: ${CONFIG.brandColor}; color: #FFFFFF; border: none; border-radius: 50px; font-weight: 700; font-size: 16px; font-family: 'Fraiche', sans-serif; cursor: pointer; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 0.5px;">
+                                        ${ICONS.shield}
+                                        Reactivar membresía
+                                    </button>
                                 </div>
                             `;
                         }
@@ -971,6 +977,12 @@
                 btnDeactivate.addEventListener('click', () => this.handleDeactivate());
             }
 
+            // Reactivar membresía
+            const btnReactivate = this.container.querySelector('#pata-btn-reactivate');
+            if (btnReactivate) {
+                btnReactivate.addEventListener(click, () => this.handleReactivate());
+            }
+
             // Password Modal Events
             const pwdModal = this.container.querySelector('#pata-password-modal');
             const closePwdBtn = this.container.querySelector('#pata-close-password');
@@ -1139,6 +1151,54 @@
                         btnDeactivate.innerHTML = originalText;
                         btnDeactivate.disabled = false;
                         btnDeactivate.style.opacity = '1';
+
+        async handleReactivate() {
+            if (!confirm('¿Estás seguro de que deseas reactivar tu membresía? Se restablecerá el cobro automático en tu próximo periodo de facturación.')) {
+                return;
+            }
+            
+            const btnReactivate = this.container.querySelector('#pata-btn-reactivate');
+            const originalText = btnReactivate.innerHTML;
+            
+            if (btnReactivate) {
+                btnReactivate.innerHTML = 'Reactivando...';
+                btnReactivate.disabled = true;
+                btnReactivate.style.opacity = '0.7';
+                btnReactivate.style.cursor = 'not-allowed';
+            }
+
+            try {
+                const memberId = this.member.id;
+                const response = await fetch(`'${CONFIG.apiUrl}/api/user/reactivate'`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ memberstackId: memberId })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    alert('Tu membresía ha sido reactivada exitosamente. El cobro automático se restablecerá en tu próximo periodo.');
+                    // Recargar método de pago para mostrar estado activo
+                    await this.loadPaymentMethod();
+                    this.render();
+                } else {
+                    throw new Error(data.error || 'Error desconocido');
+                }
+            } catch (error) {
+                console.error('❌ [SETTINGS] Error reactivando membresía:', error);
+                alert('Hubo un problema al intentar reactivar tu membresía: ' + error.message);
+                
+                if (btnReactivate) {
+                    btnReactivate.innerHTML = originalText;
+                    btnReactivate.disabled = false;
+                    btnReactivate.style.opacity = '1';
+                    btnReactivate.style.cursor = 'pointer';
+                }
+            }
+        }
                         btnDeactivate.style.cursor = 'pointer';
                     }
                 }
