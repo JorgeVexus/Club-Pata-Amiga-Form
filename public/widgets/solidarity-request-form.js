@@ -34,6 +34,9 @@ class SolidarityRequestForm {
                 requestType: null, // 'reimbursement' | 'allied_center_appointment'
                 benefitType: null, // 'medical_emergency' | 'annual_vaccination' | 'death'
             },
+            ui: {
+                showAllPets: true, // Controla si muestra todas las mascotas o solo la seleccionada
+            },
             formData: {
                 caseTitle: '',
                 caseDescription: '',
@@ -320,10 +323,19 @@ class SolidarityRequestForm {
             /* Utilities */
             .pata-spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--pata-orange); border-radius: 50%; width: 40px; height: 40px; animation: pata-spin 1s linear infinite; margin: 0 auto; }
             @keyframes pata-spin { to { transform: rotate(360deg); } }
+
+            /* Pulse animation for selected pet */
+            @keyframes pata-pulse {
+                0%, 100% { box-shadow: 0 0 0 0 rgba(21, 190, 178, 0.6); }
+                50% { box-shadow: 0 0 0 12px rgba(21, 190, 178, 0); }
+            }
+            .pata-pet-card.selected { position: relative; animation: pata-pulse 2s ease-in-out infinite; }
             
             .pata-btn { font-family: 'Fraiche', sans-serif; padding: 15px 30px; border-radius: 50px; border: 2px solid black; cursor: pointer; font-size: 18px; transition: all 0.2s; }
             .pata-btn-primary { background: var(--pata-orange); color: white; box-shadow: 4px 4px 0px black; }
             .pata-btn-primary:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px black; }
+            .pata-btn-secondary { background: transparent; color: var(--pata-black); box-shadow: 4px 4px 0px var(--pata-black); }
+            .pata-btn-secondary:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--pata-black); background: var(--pata-lime); }
 
             .pata-form-loading, .pata-form-error { padding: 100px; text-align: center; font-family: 'Outfit', sans-serif; width: 100%; }
         `;
@@ -506,8 +518,6 @@ class SolidarityRequestForm {
             document.body.style.paddingRight = '';
         }
 
-        const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
-
         this.container.innerHTML = `
             <div class="pata-form-page">
                 <!-- Section 1: Pet Selection -->
@@ -517,8 +527,7 @@ class SolidarityRequestForm {
                         <p>Selecciona la mascota que necesite apoyo</p>
                     </div>
                     <div class="pata-pet-grid">
-                        ${this.state.pets.map(pet => {
-                            const now = new Date();
+                        ${this.state.ui.showAllPets ? this.state.pets.map(pet => {
                             const isApproved = pet.status === 'approved';
                             const carencia = this.calculateCarencia(pet);
                             const hasFinishedWaiting = !carencia.isWaiting;
@@ -560,7 +569,26 @@ class SolidarityRequestForm {
                                     </div>
                                 </div>
                             `;
-                        }).join('')}
+                        }).join('') : (() => {
+                            const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
+                            if (!selectedPet) return '';
+                            const photoUrl = selectedPet.photo_url || selectedPet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
+                            return `
+                                <div class="pata-pet-card selected" data-id="${selectedPet.id}" style="max-width: 400px; margin: 0 auto;">
+                                    <div class="pata-pet-img-wrap">
+                                        <img src="${photoUrl}" alt="${selectedPet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
+                                    </div>
+                                    <h4 style="text-align: center; margin-left: 0;">${selectedPet.name}</h4>
+                                    <div class="pata-pet-badge-pill" style="background: var(--pata-lime);">
+                                        <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                                        Mascota seleccionada
+                                    </div>
+                                    <button type="button" class="pata-btn pata-btn-secondary pata-change-pet-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
+                                        Cambiar de mascota
+                                    </button>
+                                </div>
+                            `;
+                        })()}
                     </div>
                 </div>
 
@@ -890,9 +918,18 @@ class SolidarityRequestForm {
     attachEventListeners() {
         const handlePetSelection = (id) => { 
             this.state.selection.petId = id; 
+            this.state.ui.showAllPets = false; // Ocultar otras mascotas
             this.state.balances = null; // Reset balances while loading
             this.fetchBalances(id);
             this.render(); 
+            
+            // Auto-scroll a la sección "Tipo de solicitud" después del render
+            setTimeout(() => {
+                const typeSection = this.container.querySelector('.pata-reveal.visible');
+                if (typeSection) {
+                    typeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }, 100);
         };
         const handleTypeSelection = (type) => { this.state.selection.requestType = type; this.render(); };
         const handleBenefitSelection = (id) => { 
@@ -909,6 +946,19 @@ class SolidarityRequestForm {
             const select = () => handlePetSelection(card.dataset.id);
             card.onclick = select;
             card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } };
+        });
+
+        // Cambiar mascota button
+        this.container.querySelectorAll('.pata-change-pet-btn').forEach(btn => {
+            btn.onclick = () => {
+                this.state.ui.showAllPets = true;
+                this.state.selection.petId = null;
+                this.state.selection.requestType = null;
+                this.state.selection.benefitType = null;
+                this.state.balances = null;
+                this.render();
+            };
+            btn.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); } };
         });
 
         // Request type
