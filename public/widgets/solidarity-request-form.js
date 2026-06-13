@@ -574,7 +574,7 @@ class SolidarityRequestForm {
                             if (!selectedPet) return '';
                             const photoUrl = selectedPet.photo_url || selectedPet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
                             return `
-                                <div class="pata-pet-card selected" data-id="${selectedPet.id}">
+                                <div class="pata-pet-card selected" data-id="${selectedPet.id}" style="max-width: 250px;">
                                     <div class="pata-pet-img-wrap">
                                         <img src="${photoUrl}" alt="${selectedPet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
                                     </div>
@@ -950,7 +950,8 @@ class SolidarityRequestForm {
 
         // Cambiar mascota button (deselecciona y muestra todas las mascotas de nuevo)
         this.container.querySelectorAll('.pata-scroll-to-type-btn').forEach(btn => {
-            btn.onclick = () => {
+            btn.onclick = (e) => {
+                e.stopPropagation(); // Evita que el click burbujee al pet-card y vuelva a seleccionar
                 this.state.ui.showAllPets = true;
                 this.state.selection.petId = null;
                 this.state.selection.requestType = null;
@@ -958,7 +959,7 @@ class SolidarityRequestForm {
                 this.state.balances = null;
                 this.render();
             };
-            btn.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); } };
+            btn.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); e.stopPropagation(); btn.click(); } };
         });
 
         // Request type
