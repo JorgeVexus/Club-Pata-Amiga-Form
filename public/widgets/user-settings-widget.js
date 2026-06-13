@@ -583,7 +583,7 @@
 
         async init() {
             this.injectStyles();
-            this.createContainer();
+            await this.createContainer();
             await this.loadMember();
             if (this.member) {
                 // Cargar datos en paralelo para mejor performance
@@ -603,7 +603,7 @@
             document.head.appendChild(styleTag);
         }
 
-        createContainer() {
+        async createContainer() {
             const div = document.createElement('div');
             div.className = 'pata-settings-widget';
             div.id = 'pata-settings-widget-inner';
@@ -620,19 +620,19 @@
                 target.appendChild(div);
                 this.container = div;
             } else {
-                console.warn('⚠️ [SETTINGS] No se encontró contenedor (#pata-settings). Usando fallback al body.');
-                // Intentar de nuevo tras un pequeño delay por si Webflow es lento cargando el DOM
-                setTimeout(() => {
-                    target = findTarget();
-                    if (target) {
-                        target.appendChild(div);
-                        this.container = div;
-                        if (this.member) this.render();
-                    } else {
-                        document.body.appendChild(div);
-                        this.container = div;
-                    }
-                }, 1000);
+                console.warn('⚠️ [SETTINGS] No se encontró contenedor (#pata-settings). Reintentando...');
+                // Esperar a que Webflow cargue el DOM
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                target = findTarget();
+                if (target) {
+                    target.appendChild(div);
+                    this.container = div;
+                } else {
+                    console.warn('⚠️ [SETTINGS] Contenedor no encontrado tras reintento. Usando fallback al body.');
+                    document.body.appendChild(div);
+                    this.container = div;
+                }
             }
         }
 
