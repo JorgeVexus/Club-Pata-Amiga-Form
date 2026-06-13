@@ -279,7 +279,7 @@ class SolidarityRequestForm {
             .pata-textarea { min-height: 140px; resize: none; border-radius: 25px; padding-top: 20px; }
 
             /* File Boxes */
-            .pata-file-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 35px; width: 100%; }
+            .pata-file-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-bottom: 35px; width: 100%; }
             @media (max-width: 768px) {
                 .pata-file-grid { grid-template-columns: 1fr; gap: 15px; }
                 .pata-file-box { flex-direction: column; padding: 30px 20px; text-align: center; min-height: 180px; }
