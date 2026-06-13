@@ -119,7 +119,7 @@ class SolidarityRequestForm {
                 --pata-input-bg-alt: #FFD2A1;
             }
 
-            #${this.containerId} { max-width: 900px; margin: 0 auto; width: 100%; position: relative; min-height: 400px; }
+            #${this.containerId} { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; min-height: 400px; }
             @media (max-width: 768px) {
                 #${this.containerId} { margin: 0; padding: 0; width: 100%; min-height: 100px; display: flex; flex-direction: column; align-items: center; }
                 .pata-form-page { display: flex; flex-direction: column; align-items: center; padding: 10px; width: 100%; }
