@@ -980,7 +980,7 @@
             // Reactivar membresía
             const btnReactivate = this.container.querySelector('#pata-btn-reactivate');
             if (btnReactivate) {
-                btnReactivate.addEventListener(click, () => this.handleReactivate());
+                btnReactivate.addEventListener('click', () => this.handleReactivate());
             }
 
             // Password Modal Events
@@ -1120,7 +1120,7 @@
 
                 try {
                     const memberId = this.member.id;
-                    const response = await fetch(`${CONFIG.apiUrl}/api/user/deactivate`, {
+                    const response = await fetch(CONFIG.apiUrl + '/api/user/deactivate', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -1135,10 +1135,8 @@
 
                     if (data.success) {
                         alert('Tu suscripción ha sido cancelada exitosamente. Mantienes acceso hasta la fecha de fin de tu periodo pagado.');
-                        // Recargar método de pago para mostrar estado cancelado
                         await this.loadPaymentMethod();
                         this.renderSubscriptionInfo();
-                        // Renderizar de nuevo la sección completa para ocultar botón desactivar
                         this.render();
                     } else {
                         throw new Error(data.error || 'Error desconocido');
@@ -1151,6 +1149,11 @@
                         btnDeactivate.innerHTML = originalText;
                         btnDeactivate.disabled = false;
                         btnDeactivate.style.opacity = '1';
+                        btnDeactivate.style.cursor = 'pointer';
+                    }
+                }
+            }
+        }
 
         async handleReactivate() {
             if (!confirm('¿Estás seguro de que deseas reactivar tu membresía? Se restablecerá el cobro automático en tu próximo periodo de facturación.')) {
@@ -1169,7 +1172,7 @@
 
             try {
                 const memberId = this.member.id;
-                const response = await fetch(`'${CONFIG.apiUrl}/api/user/reactivate'`, {
+                const response = await fetch(CONFIG.apiUrl + '/api/user/reactivate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -1181,7 +1184,6 @@
 
                 if (data.success) {
                     alert('Tu membresía ha sido reactivada exitosamente. El cobro automático se restablecerá en tu próximo periodo.');
-                    // Recargar método de pago para mostrar estado activo
                     await this.loadPaymentMethod();
                     this.render();
                 } else {
@@ -1199,12 +1201,6 @@
                 }
             }
         }
-                        btnDeactivate.style.cursor = 'pointer';
-                    }
-                }
-            }
-        }
-
         async openLegalModal() {
             this.showLegalModal = true;
             const modal = this.container.querySelector('#pata-legal-modal-overlay');
