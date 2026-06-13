@@ -188,7 +188,7 @@ class SolidarityRequestForm {
             }
             .pata-type-icon img { width: 100%; height: 100%; object-fit: contain; }
             .pata-type-card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 8px 8px 0px var(--pata-black); }
-            .pata-type-card.selected { background: var(--pata-orange); transform: scale(1.02); z-index: 5; }
+            .pata-type-card.selected { background: var(--pata-lime); transform: scale(1.02); z-index: 5; animation: pata-pulse 2s ease-in-out infinite; }
             .pata-type-card.selected .pata-type-icon { background: var(--pata-turquoise); transform: rotate(10deg) scale(1.1); }
 
             /* Step 3: Benefit Cards */
