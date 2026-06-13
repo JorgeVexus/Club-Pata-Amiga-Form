@@ -191,6 +191,18 @@ class SolidarityRequestForm {
             .pata-type-card.selected { background: var(--pata-lime); transform: scale(1.02); z-index: 5; animation: pata-pulse 2s ease-in-out infinite; }
             .pata-type-card.selected .pata-type-icon { background: var(--pata-turquoise); transform: rotate(10deg) scale(1.1); }
 
+            /* Reimbursement Badge */
+            .pata-reimbursement-badge { display: flex; align-items: flex-start; gap: 16px; margin-top: 20px; padding: 20px 24px; background: var(--pata-input-bg-alt); border: var(--pata-border); border-radius: 30px; box-shadow: 4px 4px 0px var(--pata-black); animation: pata-slide-in 0.4s ease-out; }
+            @keyframes pata-slide-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+            @media (max-width: 768px) {
+                .pata-reimbursement-badge { padding: 16px 20px; gap: 12px; border-radius: 24px; }
+            }
+            .pata-badge-icon { width: 40px; height: 40px; background: var(--pata-orange); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid var(--pata-black); box-shadow: 2px 2px 0px var(--pata-black); }
+            .pata-badge-icon svg { width: 22px; height: 22px; color: white; }
+            .pata-badge-text { flex: 1; min-width: 0; color: var(--pata-black); line-height: 1.5; }
+            .pata-badge-text strong { display: block; font-family: 'Fraiche', sans-serif; font-size: 17px; margin-bottom: 6px; }
+            .pata-badge-text span { font-size: 14px; font-weight: 500; opacity: 0.9; }
+
             /* Step 3: Benefit Cards */
             .pata-benefit-list { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; padding-bottom: 30px; width: 100%; }
             .pata-benefit-card { background: var(--pata-turquoise); border-radius: 50px; padding: 20px 40px; color: white; cursor: pointer; display: flex; flex-wrap: wrap; align-items: center; gap: 25px; border: var(--pata-border); transition: all 0.3s; box-shadow: 4px 4px 0px var(--pata-black); outline: none; }
@@ -622,6 +634,17 @@ class SolidarityRequestForm {
                             </div>
                         </div>
                     </div>
+                    ${this.state.selection.requestType === 'reimbursement' ? `
+                        <div class="pata-reimbursement-badge" role="alert">
+                            <div class="pata-badge-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                            </div>
+                            <div class="pata-badge-text">
+                                <strong>¡Importante para tu seguridad!</strong>
+                                Recuerda que el titular de la cuenta bancaria debe ser el mismo que registraste en tu membresía. Hacemos esto por tu seguridad: si los datos no coinciden, el movimiento no podrá procesarse y el depósito no se realizará, incluso si la solicitud ya fue aprobada por nuestro equipo. ¡Ayúdanos a cuidar tu cuenta!
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>
 
                 <!-- Section 3: Benefit Type -->
