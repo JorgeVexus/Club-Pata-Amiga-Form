@@ -241,8 +241,6 @@ class SolidarityDashboard {
         if (this.formWidget && typeof this.formWidget.show === 'function') {
             this.formWidget.show();
         }
-        // Disparar evento para que el form sepa que se mostró
-        window.dispatchEvent(new CustomEvent('pata:dashboard:form-show'));
     }
 
     hideForm() {

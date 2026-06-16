@@ -103,8 +103,8 @@ class SolidarityRequestForm {
                 detail: { widget: this } 
             }));
             
-            // Listen for show event from dashboard
-            window.addEventListener('pata:dashboard:form-show', () => this.show());
+            // NOTE: Do NOT listen for pata:dashboard:form-show here.
+            // The dashboard explicitly calls formWidget.show() directly to avoid double-invocation.
         } catch (error) {
             console.error('❌ SolidarityRequestForm Init Error:', error);
             this.renderError(error.message);
