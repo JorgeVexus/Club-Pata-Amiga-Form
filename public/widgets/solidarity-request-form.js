@@ -1,6 +1,7 @@
 /**
 * 🐾 Club Pata Amiga — Solidarity Request Form Widget (Progressive Disclosure)
 * Single-page interactive form with progressive revealing of sections.
+* Supports inline mode (embedded in dashboard) and standalone mode.
 * Optimized: Frontend Design Refinement (Spacing, Layout, Rhythm).
 */
 
@@ -20,6 +21,10 @@ class SolidarityRequestForm {
         // Environment Config
         this.apiUrl = options.apiUrl || window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx';
         this.baseUrl = options.baseUrl || window.PATA_AMIGA_CONFIG?.baseUrl || 'https://app.pataamiga.mx';
+
+        // Mode: 'standalone' (full page) | 'inline' (embedded in dashboard)
+        this.mode = options.mode || 'standalone';
+        this.inline = this.mode === 'inline';
 
         // Form State
         this.state = {
@@ -59,12 +64,14 @@ class SolidarityRequestForm {
             files: {
                 evidencePhoto: null,
                 prescription: null,
-                receipt: null
+                receipt: null,
+                seniorCertificate: null
             },
             previews: {
                 evidencePhoto: null,
                 prescription: null,
-                receipt: null
+                receipt: null,
+                seniorCertificate: null
             },
             error: null,
             success: false,
@@ -82,7 +89,7 @@ class SolidarityRequestForm {
     }
 
     async init() {
-        this.renderStyles(); 
+        this.renderStyles();
         this.renderLoading();
         try {
             if (!this.useMock) {
@@ -90,10 +97,54 @@ class SolidarityRequestForm {
             }
             await this.fetchData();
             this.render();
+            
+            // Emit ready event for dashboard communication
+            window.dispatchEvent(new CustomEvent('pata:form:ready', { 
+                detail: { widget: this } 
+            }));
+            
+            // Listen for show event from dashboard
+            window.addEventListener('pata:dashboard:form-show', () => this.show());
         } catch (error) {
             console.error('❌ SolidarityRequestForm Init Error:', error);
             this.renderError(error.message);
         }
+    }
+
+    // Public API: Show form (for inline mode)
+    show() {
+        if (!this.inline) return;
+        this.resetFormState();
+        this.container.style.display = 'block';
+        this.render();
+        // Scroll into view
+        this.container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Public API: Hide form (for inline mode)
+    hide() {
+        if (!this.inline) return;
+        this.container.style.display = 'none';
+        this.resetFormState();
+    }
+
+    // Reset form to initial state
+    resetFormState() {
+        this.state.selection = { petId: null, requestType: null, benefitType: null };
+        this.state.ui.showAllPets = true;
+        this.state.formData = {
+            caseTitle: '', caseDescription: '', incidentDate: new Date().toISOString().substring(0, 10),
+            requestedAmount: '', totalPaidAmount: '', alliedCenterId: '', preferredAppointmentTime: '',
+            clinicName: '', clinicPostalCode: '', clinicState: '', clinicCity: '', clinicAddress: '',
+            vetName: '', vetLicense: '', bankName: '', bankClabe: '', bankHolder: ''
+        };
+        this.state.files = { evidencePhoto: null, prescription: null, receipt: null, seniorCertificate: null };
+        this.state.previews = { evidencePhoto: null, prescription: null, receipt: null, seniorCertificate: null };
+        this.state.balances = null;
+        this.state.error = null;
+        this.state.success = false;
+        this.state.successData = null;
+        this.state.submitting = false;
     }
 
     renderStyles() {
@@ -103,6 +154,7 @@ class SolidarityRequestForm {
         style.id = 'pata-solidarity-form-styles';
         style.innerHTML = `
             @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Fraiche&display=swap');
 
             :root {
                 --pata-turquoise: #15BEB2;
@@ -119,9 +171,17 @@ class SolidarityRequestForm {
                 --pata-input-bg-alt: #FFD2A1;
             }
 
-            #${this.containerId} { max-width: 1200px; margin: 0 auto; width: 100%; position: relative; min-height: 400px; }
+            /* Container adjustments for inline mode */
+            #${this.containerId} { 
+                max-width: 1200px; 
+                margin: 0 auto; 
+                width: 100%; 
+                position: relative; 
+                min-height: 400px; 
+                ${this.inline ? 'display: none;' : ''}
+            }
             @media (max-width: 768px) {
-                #${this.containerId} { margin: 0; padding: 0; width: 100%; min-height: 100px; display: flex; flex-direction: column; align-items: center; }
+                #${this.containerId} { margin: 0; padding: 0; width: 100%; min-height: 100px; }
                 .pata-form-page { display: flex; flex-direction: column; align-items: center; padding: 10px; width: 100%; }
                 .pata-section-header { text-align: center; }
                 .pata-section-header h2 { font-size: 26px; }
@@ -133,6 +193,10 @@ class SolidarityRequestForm {
             .pata-section-header { margin: 60px 0 30px 0; width: 100%; }
             .pata-section-header h2 { font-family: 'Fraiche', sans-serif; font-size: 32px; margin: 0 0 8px 0; line-height: 1.1; }
             .pata-section-header p { font-size: 18px; color: #718096; margin: 0; font-weight: 500; }
+
+            @media (max-width: 768px) {
+                .pata-section-header { margin: 40px 0 25px 0; }
+            }
 
             /* Progressive Sections */
             .pata-reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), height 0s 0.5s; pointer-events: none; height: 0; overflow: hidden; padding: 0 50px; width: 100%; }
@@ -158,6 +222,7 @@ class SolidarityRequestForm {
             .pata-pet-card:hover { transform: translateY(-5px); }
             .pata-pet-card.selected { background: var(--pata-orange); border-color: var(--pata-black); transform: scale(1.05); z-index: 10; }
             .pata-pet-card.selected h4 { color: white; }
+            .pata-pet-card.disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
 
             .pata-pet-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 35px; overflow: hidden; margin-bottom: 15px; border: 2.5px solid var(--pata-black); background: #E2E8F0; }
             .pata-pet-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
@@ -216,12 +281,16 @@ class SolidarityRequestForm {
             }
             .pata-benefit-card:hover { transform: translateX(8px); background: var(--pata-turquoise-dark); }
             .pata-benefit-card.selected { background: var(--pata-orange); transform: scale(1.01); }
+            .pata-benefit-card.exhausted { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
             .pata-benefit-icon { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid var(--pata-black); flex-shrink: 0; padding: 10px; }
             .pata-benefit-icon img { width: 100%; height: 100%; object-fit: contain; }
             .pata-benefit-info { flex: 1; min-width: 250px; }
             .pata-benefit-info h3 { font-family: 'Fraiche', sans-serif; font-size: 26px; margin: 0 0 4px 0; }
             .pata-benefit-info p { font-size: 14px; margin: 0; opacity: 0.9; line-height: 1.3; }
             .pata-benefit-amount { text-align: right; }
+            @media (max-width: 768px) {
+                .pata-benefit-amount { text-align: center; width: 100%; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px; }
+            }
             .pata-benefit-amount .val { font-family: 'Fraiche', sans-serif; font-size: 24px; display: block; line-height: 1; }
             .pata-benefit-amount .sub { font-size: 13px; opacity: 0.8; font-weight: 700; }
 
@@ -241,6 +310,7 @@ class SolidarityRequestForm {
             .pata-exp-input-wrap input { background: transparent; border: none; width: 100%; padding: 18px 0; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--pata-black); font-size: 18px; outline: none; }
             .pata-exp-input-wrap .suffix { font-weight: 800; opacity: 0.7; font-size: 14px; }
             .pata-exp-sub { font-size: 12px; font-weight: 800; margin-top: 8px; text-align: right; color: rgba(24,28,28,0.7); }
+            @media (max-width: 768px) { .pata-exp-sub { text-align: center; } }
 
             /* Step 4: Form Container */
             .pata-form-container { background: var(--pata-turquoise); border-radius: 60px; padding: 50px; margin-top: 20px; border: var(--pata-border); box-shadow: 6px 6px 0px var(--pata-black); width: 100%; }
@@ -287,8 +357,8 @@ class SolidarityRequestForm {
                 .pata-file-box .icon-up { margin: 0 0 15px 0; }
             }
             .pata-file-box { background: var(--pata-input-bg); border-radius: 40px; padding: 25px; text-align: center; cursor: pointer; display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; border: 2.5px dashed rgba(255,255,255,0.4); min-height: 110px; transition: all 0.3s; outline: none; }
-            .pata-file-box:focus-visible { border-style: solid; border-color: white; }
             .pata-benefit-expansion .pata-file-box { background: var(--pata-input-bg-alt); border-style: dashed; border-color: rgba(24,28,28,0.2); }
+            .pata-file-box:focus-visible { border-style: solid; border-color: white; }
             .pata-file-box:hover, .pata-file-box.drag-over { border-color: var(--pata-white); transform: translateY(-3px) scale(1.02); border-style: solid; }
             .pata-file-box.has-file { background: white !important; border-style: solid; border-color: var(--pata-lime); }
             .pata-file-box .icon-up { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 2px solid var(--pata-black); box-shadow: 3px 3px 0px var(--pata-black); z-index: 2; }
@@ -429,15 +499,13 @@ class SolidarityRequestForm {
                 <div style="font-size: 64px; margin-bottom: 20px;">⚠️</div>
                 <h3 style="font-family: 'Fraiche', sans-serif; font-size: 32px; margin-bottom: 10px;">¡Ups! Algo salió mal</h3>
                 <p style="color: #718096; margin-bottom: 30px;">${message}</p>
-                <button onclick="location.reload()" class="pata-btn pata-btn-primary">REINTENTAR</button>
+                <button onclick="${this.inline ? 'window.PataSolidarityForm.hide()' : 'location.reload()'}" class="pata-btn pata-btn-primary">${this.inline ? 'CERRAR' : 'REINTENTAR'}</button>
             </div>
         `;
     }
 
     calculateCarencia(pet) {
         const now = new Date();
-        
-        // Handle potentially invalid or missing dates
         let start = now;
         if (pet.waiting_period_start) {
             const parsed = new Date(pet.waiting_period_start);
@@ -446,12 +514,9 @@ class SolidarityRequestForm {
             const parsed = new Date(pet.created_at);
             if (!isNaN(parsed.getTime())) start = parsed;
         }
-        
+
         let totalDays = 180;
-        
-        // Robust check for boolean-ish properties (Supabase, Memberstack, etc.)
         const isTrue = (val) => val === true || val === 'true' || val === 1 || val === '1';
-        
         const isAdopted = isTrue(pet.is_adopted) || isTrue(pet['is-adopted']) || isTrue(pet.isAdopted);
         const isMixed = isTrue(pet.is_mixed_breed) || isTrue(pet['is-mixed-breed']) || isTrue(pet.is_mixed) || isTrue(pet.isMixed);
 
@@ -496,22 +561,22 @@ class SolidarityRequestForm {
         if (!d.caseDescription) return false;
         if (!f.evidencePhoto) return false;
 
-        if (this.state.selection.requestType === 'allied_center_appointment') {
+        const isAppointment = this.state.selection.requestType === 'allied_center_appointment';
+        const isEmergency = this.state.selection.benefitType === 'medical_emergency';
+
+        if (isAppointment) {
             return !!(d.incidentDate && d.preferredAppointmentTime && d.caseTitle);
         } else {
-            // Check balance limits
             if (this.state.balances && this.state.selection.benefitType) {
                 const balance = this.state.balances[this.state.selection.benefitType];
                 const requested = parseFloat(d.requestedAmount || 0);
                 if (requested > balance.available || requested <= 0) return false;
             }
-
             if (this.state.selection.requestType === 'reimbursement') {
                 if (!d.bankName || !d.bankClabe || !d.bankHolder) return false;
                 if (d.bankClabe.length !== 18) return false;
             }
-
-            if (this.state.selection.benefitType === 'medical_emergency') {
+            if (isEmergency) {
                 return !!(d.totalPaidAmount && d.clinicName && d.clinicPostalCode && d.clinicAddress && d.vetName);
             }
             return true;
@@ -521,13 +586,15 @@ class SolidarityRequestForm {
     render() {
         if (!this.container) return;
 
-        // Toggle Scroll Lock
-        if (this.state.success) {
-            document.body.style.overflow = 'hidden';
-            document.body.style.paddingRight = '0px'; 
-        } else {
-            document.body.style.overflow = '';
-            document.body.style.paddingRight = '';
+        // Toggle Scroll Lock only in standalone mode
+        if (!this.inline) {
+            if (this.state.success) {
+                document.body.style.overflow = 'hidden';
+                document.body.style.paddingRight = '0px'; 
+            } else {
+                document.body.style.overflow = '';
+                document.body.style.paddingRight = '';
+            }
         }
 
         this.container.innerHTML = `
@@ -543,25 +610,13 @@ class SolidarityRequestForm {
                             const isApproved = pet.status === 'approved';
                             const carencia = this.calculateCarencia(pet);
                             const hasFinishedWaiting = !carencia.isWaiting;
-                            
-                            // Only eligible if approved AND finished waiting period
                             const isEligible = isApproved && hasFinishedWaiting;
                             const isSelected = this.state.selection.petId === pet.id;
-                            
-                            // Photo logic from pet-cards-widget.js
                             const photoUrl = pet.photo_url || pet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
-
-                            // Determine status label and class
                             let statusLabel = 'Apoyo activo';
                             let statusClass = '';
-                            if (!isApproved) {
-                                statusLabel = 'Pendiente aprobación';
-                                statusClass = 'waiting';
-                            } else if (!hasFinishedWaiting) {
-                                statusLabel = 'En espera';
-                                statusClass = 'waiting';
-                            }
-
+                            if (!isApproved) { statusLabel = 'Pendiente aprobación'; statusClass = 'waiting'; }
+                            else if (!hasFinishedWaiting) { statusLabel = 'En espera'; statusClass = 'waiting'; }
                             return `
                                 <div class="pata-pet-card ${isSelected ? 'selected' : ''} ${!isEligible ? 'disabled' : ''}" 
                                      data-id="${pet.id}" 
@@ -569,9 +624,7 @@ class SolidarityRequestForm {
                                      tabindex="${!isEligible ? '-1' : '0'}" 
                                      aria-pressed="${isSelected}"
                                      style="${!isEligible ? 'opacity: 0.7; cursor: not-allowed;' : ''}">
-                                    <div class="pata-pet-img-wrap">
-                                        <img src="${photoUrl}" alt="${pet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
-                                    </div>
+                                    <div class="pata-pet-img-wrap"><img src="${photoUrl}" alt="${pet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'"></div>
                                     <h4>${pet.name}</h4>
                                     <div class="pata-pet-badge-pill ${statusClass}">
                                         <div class="check-icon" style="${!isEligible ? 'background: #718096;' : ''}">
@@ -587,17 +640,13 @@ class SolidarityRequestForm {
                             const photoUrl = selectedPet.photo_url || selectedPet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
                             return `
                                 <div class="pata-pet-card selected" data-id="${selectedPet.id}" style="max-width: 250px;">
-                                    <div class="pata-pet-img-wrap">
-                                        <img src="${photoUrl}" alt="${selectedPet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'">
-                                    </div>
+                                    <div class="pata-pet-img-wrap"><img src="${photoUrl}" alt="${selectedPet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'"></div>
                                     <h4 style="text-align: center; margin-left: 0;">${selectedPet.name}</h4>
                                     <div class="pata-pet-badge-pill" style="background: var(--pata-lime);">
                                         <div class="check-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                                         Mascota seleccionada
                                     </div>
-                                    <button type="button" class="pata-btn pata-btn-secondary pata-scroll-to-type-btn" style="margin-top: 15px; width: 100%; justify-content: center;">
-                                        Cambiar de mascota
-                                    </button>
+                                    <button type="button" class="pata-btn pata-btn-secondary pata-scroll-to-type-btn" style="margin-top: 15px; width: 100%; justify-content: center;">Cambiar de mascota</button>
                                 </div>
                             `;
                         })()}
@@ -708,13 +757,12 @@ class SolidarityRequestForm {
         const benefits = [
             { id: 'medical_emergency', title: 'emergencia médica', desc: 'Para situaciones inesperadas que requieren atención veterinaria urgente.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg', amount: 3000 },
             { id: 'annual_vaccination', title: 'vacunación anual', desc: 'Apoyo para cubrir la vacuna anual de una de tus mascotas.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/Icon-vacuna_ybuall.svg', amount: 300 },
-            { id: 'death', title: 'Fallecimiento', desc: 'Te acompañamos en un momento difícil con un apoyo para gastos de despedida.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png', amount: 2000 }
+            { id: 'death', title: 'fallecimiento', desc: 'Te acompañamos en un momento difícil con un apoyo para gastos de despedida.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png', amount: 2000 }
         ];
 
         return benefits.map(b => {
             const isSelected = this.state.selection.benefitType === b.id;
             const isEmergency = b.id === 'medical_emergency';
-            
             const balance = this.state.balances ? this.state.balances[b.id] : null;
             const available = balance ? balance.available : b.amount;
             const isExhausted = balance && balance.available <= 0;
@@ -763,13 +811,8 @@ class SolidarityRequestForm {
                                 <label>Comprobante de pago (ticket/factura)</label>
                                 <div class="pata-file-box ${this.state.files.receipt ? 'has-file' : ''}" data-field="receipt" role="button" tabindex="0">
                                     ${this.state.previews.receipt ? (this.state.files.receipt.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.receipt}" class="pata-preview">`) : ''}
-                                    <div class="icon-up">
-                                        <img src="${this.baseUrl}/Icons/upload.svg">
-                                    </div>
-                                    <div>
-                                        <p>Arrastra y suelta archivos tus imagenes aquí o <u>explora</u></p>
-                                        <span>PDF, JPG o PNG - Máx. 10MB</span>
-                                    </div>
+                                    <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
+                                    <div><p>Arrastra y suelta archivos tus imagenes aquí o <u>explora</u></p><span>PDF, JPG o PNG - Máx. 10MB</span></div>
                                     <input type="file" hidden accept="image/*,application/pdf">
                                 </div>
                             </div>
@@ -799,49 +842,29 @@ class SolidarityRequestForm {
                 <div class="pata-file-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                     <div class="pata-file-box ${this.state.files.evidencePhoto ? 'has-file' : ''}" data-field="evidencePhoto" role="button" tabindex="0">
                         ${this.state.previews.evidencePhoto ? (this.state.files.evidencePhoto.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.evidencePhoto}" class="pata-preview">`) : ''}
-                        <div class="icon-up">
-                            <img src="${this.baseUrl}/Icons/upload.svg">
-                        </div>
-                        <div>
-                            <p>Evidencia (Foto)</p>
-                            <span>PDF, JPG o PNG</span>
-                        </div>
+                        <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
+                        <div><p>Evidencia (Foto)</p><span>PDF, JPG o PNG</span></div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
                     <div class="pata-file-box ${this.state.files.prescription ? 'has-file' : ''}" data-field="prescription" role="button" tabindex="0">
                         ${this.state.previews.prescription ? (this.state.files.prescription.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.prescription}" class="pata-preview">`) : ''}
-                        <div class="icon-up">
-                            <img src="${this.baseUrl}/Icons/upload.svg">
-                        </div>
-                        <div>
-                            <p>Informe/Receta</p>
-                            <span>PDF, JPG o PNG</span>
-                        </div>
+                        <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
+                        <div><p>Informe/Receta</p><span>PDF, JPG o PNG</span></div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
                     ${!isAppointment ? `
                         <div class="pata-file-box ${this.state.files.receipt ? 'has-file' : ''}" data-field="receipt" role="button" tabindex="0">
                             ${this.state.previews.receipt ? (this.state.files.receipt.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.receipt}" class="pata-preview">`) : ''}
-                            <div class="icon-up">
-                                <img src="${this.baseUrl}/Icons/upload.svg">
-                            </div>
-                            <div>
-                                <p>Comprobante/Factura</p>
-                                <span>PDF, JPG o PNG</span>
-                            </div>
+                            <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
+                            <div><p>Comprobante/Factura</p><span>PDF, JPG o PNG</span></div>
                             <input type="file" hidden accept="image/*,application/pdf">
                         </div>
                     ` : ''}
                     ${selectedPet?.needsSeniorCertificate ? `
                         <div class="pata-file-box ${this.state.files.seniorCertificate ? 'has-file' : ''}" data-field="seniorCertificate" role="button" tabindex="0" style="border-color: #FE8F15;">
                             ${this.state.previews.seniorCertificate ? (this.state.files.seniorCertificate.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.seniorCertificate}" class="pata-preview">`) : ''}
-                            <div class="icon-up" style="background: #FE8F15;">
-                                <img src="${this.baseUrl}/Icons/upload.svg">
-                            </div>
-                            <div>
-                                <p>Certificado Senior *</p>
-                                <span style="color: #FE8F15; font-weight: 800;">Requerido por edad</span>
-                            </div>
+                            <div class="icon-up" style="background: #FE8F15;"><img src="${this.baseUrl}/Icons/upload.svg"></div>
+                            <div><p>Certificado Senior *</p><span style="color: #FE8F15; font-weight: 800;">Requerido por edad</span></div>
                             <input type="file" hidden accept="image/*,application/pdf">
                         </div>
                     ` : ''}
@@ -849,78 +872,31 @@ class SolidarityRequestForm {
 
                 <div class="pata-form-grid">
                     ${isAppointment ? `
-                        <div class="pata-field">
-                            <label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label>
-                            <input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}">
-                        </div>
-                        <div class="pata-field">
-                            <label class="pata-label" for="pata-pref-time">Disponibilidad de horario</label>
-                            <input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}">
-                        </div>
-                        <div class="pata-field">
-                            <label class="pata-label" for="pata-center">Elige dónde quieres ser atendido</label>
-                            <select class="pata-select" id="pata-center">
-                                <option value="">Seleccione un centro veterinario</option>
-                                ${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}
-                            </select>
-                        </div>
+                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-pref-time">Disponibilidad de horario</label><input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-center">Elige dónde quieres ser atendido</label><select class="pata-select" id="pata-center"><option value="">Seleccione un centro veterinario</option>${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
                     ` : `
                         ${!isEmergency ? `
-                            <div class="pata-field">
-                                <label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label>
-                                <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
-                            </div>
+                            <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
                         ` : ''}
-                        <div class="pata-field">
-                            <label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label>
-                            <input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}">
-                        </div>
+                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
                         ${isEmergency ? `
-                            <div class="pata-field">
-                                <label class="pata-label" for="pata-total-paid">Monto total pagado</label>
-                                <input type="number" class="pata-input" id="pata-total-paid" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.totalPaidAmount}">
-                            </div>
-                            <div class="pata-field">
-                                <label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label>
-                                <input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}">
-                            </div>
-                            <div class="pata-field full">
-                                <label class="pata-label" for="pata-clinic-name">Escribe el nombre del consultorio o veterinaria</label>
-                                <input type="text" class="pata-input" id="pata-clinic-name" placeholder="¿Dónde fue atendido tu peludo?" value="${this.state.formData.clinicName}">
-                            </div>
-                            <div class="pata-field">
-                                <label class="pata-label" for="pata-cp">Código postal</label>
-                                <input type="text" class="pata-input" id="pata-cp" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="5 dígitos" value="${this.state.formData.clinicPostalCode}">
-                            </div>
+                            <div class="pata-field"><label class="pata-label" for="pata-total-paid">Monto total pagado</label><input type="number" class="pata-input" id="pata-total-paid" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.totalPaidAmount}"></div>
+                            <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
+                            <div class="pata-field full"><label class="pata-label" for="pata-clinic-name">Escribe el nombre del consultorio o veterinaria</label><input type="text" class="pata-input" id="pata-clinic-name" placeholder="¿Dónde fue atendido tu peludo?" value="${this.state.formData.clinicName}"></div>
+                            <div class="pata-field"><label class="pata-label" for="pata-cp">Código postal</label><input type="text" class="pata-input" id="pata-cp" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="5 dígitos" value="${this.state.formData.clinicPostalCode}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-state">Estado</label><input type="text" class="pata-input" id="pata-state" value="${this.state.formData.clinicState}"></div>
                             <div class="pata-field full"><label class="pata-label" for="pata-address">Dirección</label><input type="text" class="pata-input" id="pata-address" value="${this.state.formData.clinicAddress}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-city">Ciudad</label><input type="text" class="pata-input" id="pata-city" value="${this.state.formData.clinicCity}"></div>
-                            <div class="pata-field full">
-                                <label class="pata-label">Sobre el veterinario que atendió a tu mascota</label>
-                                <div style="display:flex;gap:20px">
-                                    <input type="text" class="pata-input" id="pata-vet-name" aria-label="Nombre médico" placeholder="Nombre médico" value="${this.state.formData.vetName}">
-                                    <input type="text" class="pata-input" id="pata-vet-license" aria-label="Cédula" placeholder="Cédula" value="${this.state.formData.vetLicense}">
-                                </div>
-                            </div>
+                            <div class="pata-field full"><label class="pata-label">Sobre el veterinario que atendió a tu mascota</label><div style="display:flex;gap:20px"><input type="text" class="pata-input" id="pata-vet-name" aria-label="Nombre médico" placeholder="Nombre médico" value="${this.state.formData.vetName}"><input type="text" class="pata-input" id="pata-vet-license" aria-label="Cédula" placeholder="Cédula" value="${this.state.formData.vetLicense}"></div></div>
                         ` : ''}
-
                         ${!isAppointment ? `
                             <div class="pata-field full" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 30px;">
                                 <label class="pata-label" style="font-size: 20px; margin-bottom: 20px; color: var(--pata-black); background: var(--pata-white); display: inline-block; padding: 5px 20px; border-radius: 20px; border: 2px solid var(--pata-black);">Datos para tu reembolso</label>
                                 <div class="pata-form-grid">
-                                    <div class="pata-field">
-                                        <label class="pata-label" for="pata-bank-name">Banco</label>
-                                        <input type="text" class="pata-input" id="pata-bank-name" placeholder="Nombre del banco" value="${this.state.formData.bankName}">
-                                    </div>
-                                    <div class="pata-field">
-                                        <label class="pata-label" for="pata-bank-holder">Titular de la cuenta</label>
-                                        <input type="text" class="pata-input" id="pata-bank-holder" placeholder="Nombre completo" value="${this.state.formData.bankHolder}">
-                                    </div>
-                                    <div class="pata-field full">
-                                        <label class="pata-label" for="pata-bank-clabe">CLABE Interbancaria (18 dígitos)</label>
-                                        <input type="text" class="pata-input" id="pata-bank-clabe" inputmode="numeric" maxlength="18" placeholder="000000000000000000" value="${this.state.formData.bankClabe}">
-                                        <p style="color: white; font-size: 12px; margin-top: 8px; font-weight: 700; opacity: 0.8;">Asegúrate de que los 18 dígitos sean correctos para evitar retrasos.</p>
-                                    </div>
+                                    <div class="pata-field"><label class="pata-label" for="pata-bank-name">Banco</label><input type="text" class="pata-input" id="pata-bank-name" placeholder="Nombre del banco" value="${this.state.formData.bankName}"></div>
+                                    <div class="pata-field"><label class="pata-label" for="pata-bank-holder">Titular de la cuenta</label><input type="text" class="pata-input" id="pata-bank-holder" placeholder="Nombre completo" value="${this.state.formData.bankHolder}"></div>
+                                    <div class="pata-field full"><label class="pata-label" for="pata-bank-clabe">CLABE Interbancaria (18 dígitos)</label><input type="text" class="pata-input" id="pata-bank-clabe" inputmode="numeric" maxlength="18" placeholder="000000000000000000" value="${this.state.formData.bankClabe}"><p style="color: white; font-size: 12px; margin-top: 8px; font-weight: 700; opacity: 0.8;">Asegúrate de que los 18 dígitos sean correctos para evitar retrasos.</p></div>
                                 </div>
                             </div>
                         ` : ''}
@@ -941,23 +917,19 @@ class SolidarityRequestForm {
     attachEventListeners() {
         const handlePetSelection = (id) => { 
             this.state.selection.petId = id; 
-            this.state.ui.showAllPets = false; // Ocultar otras mascotas
-            this.state.balances = null; // Reset balances while loading
+            this.state.ui.showAllPets = false; 
+            this.state.balances = null; 
             this.fetchBalances(id);
             this.render(); 
-            
-            // Auto-scroll a la sección "Tipo de solicitud" después del render
+
             setTimeout(() => {
                 const typeSection = this.container.querySelector('.pata-reveal.visible');
-                if (typeSection) {
-                    typeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }
+                if (typeSection) typeSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
         };
         const handleTypeSelection = (type) => { this.state.selection.requestType = type; this.render(); };
         const handleBenefitSelection = (id) => { 
             this.state.selection.benefitType = id; 
-            // Set default amounts for fixed benefits
             if (id === 'annual_vaccination') this.state.formData.requestedAmount = '300';
             else if (id === 'death') this.state.formData.requestedAmount = '2000';
             else if (id === 'medical_emergency') this.state.formData.requestedAmount = '';
@@ -971,10 +943,10 @@ class SolidarityRequestForm {
             card.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); } };
         });
 
-        // Cambiar mascota button (deselecciona y muestra todas las mascotas de nuevo)
+        // Cambiar mascota button
         this.container.querySelectorAll('.pata-scroll-to-type-btn').forEach(btn => {
             btn.onclick = (e) => {
-                e.stopPropagation(); // Evita que el click burbujee al pet-card y vuelva a seleccionar
+                e.stopPropagation();
                 this.state.ui.showAllPets = true;
                 this.state.selection.petId = null;
                 this.state.selection.requestType = null;
@@ -1013,13 +985,10 @@ class SolidarityRequestForm {
             if (el) {
                 el.oninput = () => {
                     let value = el.value;
-                    
-                    // Specific numeric filters
                     if (id === 'cp' || id === 'bank-clabe') value = value.replace(/[^0-9]/g, '');
                     if (id === 'cp') value = value.substring(0, 5);
                     if (id === 'bank-clabe') {
                         value = value.substring(0, 18);
-                        // Autocomplete Bank Name from CLABE (First 3 digits)
                         if (value.length >= 3) {
                             const bankCode = value.substring(0, 3);
                             const bankName = MEXICAN_BANKS[bankCode];
@@ -1032,32 +1001,9 @@ class SolidarityRequestForm {
                     }
                     if (id === 'amount' || id === 'total-paid') value = value.replace(/[^0-9.]/g, '');
 
-                    // Map UI IDs to state keys
-                    const mapping = {
-                        'case-desc': 'caseDescription',
-                        'case-title': 'caseTitle',
-                        'incident-date': 'incidentDate',
-                        'pref-time': 'preferredAppointmentTime',
-                        'amount': 'requestedAmount',
-                        'total-paid': 'totalPaidAmount',
-                        'clinic-name': 'clinicName',
-                        'cp': 'clinicPostalCode',
-                        'state': 'clinicState',
-                        'city': 'clinicCity',
-                        'address': 'clinicAddress',
-                        'vet-name': 'vetName',
-                        'vet-license': 'vetLicense',
-                        'center': 'alliedCenterId',
-                        'bank-name': 'bankName',
-                        'bank-clabe': 'bankClabe',
-                        'bank-holder': 'bankHolder'
-                    };
-
+                    const mapping = { 'case-desc': 'caseDescription', 'case-title': 'caseTitle', 'incident-date': 'incidentDate', 'pref-time': 'preferredAppointmentTime', 'amount': 'requestedAmount', 'total-paid': 'totalPaidAmount', 'clinic-name': 'clinicName', 'cp': 'clinicPostalCode', 'state': 'clinicState', 'city': 'clinicCity', 'address': 'clinicAddress', 'vet-name': 'vetName', 'vet-license': 'vetLicense', 'center': 'alliedCenterId', 'bank-name': 'bankName', 'bank-clabe': 'bankClabe', 'bank-holder': 'bankHolder' };
                     const stateKey = mapping[id];
-                    if (stateKey) {
-                        this.state.formData[stateKey] = value;
-                        if (id === 'cp' || id === 'bank-clabe') el.value = value; // Force clean value in UI
-                    }
+                    if (stateKey) { this.state.formData[stateKey] = value; if (id === 'cp' || id === 'bank-clabe') el.value = value; }
                     this.updateSubmitStatus();
                 };
             }
@@ -1073,7 +1019,6 @@ class SolidarityRequestForm {
             
             input.onchange = (e) => this.handleFileChange(field, e.target.files[0]);
 
-            // Drag & Drop
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 box.addEventListener(eventName, (e) => { e.preventDefault(); e.stopPropagation(); }, false);
             });
@@ -1098,12 +1043,28 @@ class SolidarityRequestForm {
         if (submitBtn) submitBtn.onclick = () => this.handleSubmit();
 
         const cancelBtn = this.container.querySelector('#pata-cancel-btn');
-        if (cancelBtn) cancelBtn.onclick = () => { if (confirm('¿Deseas cancelar la solicitud?')) location.reload(); };
+        if (cancelBtn) {
+            cancelBtn.onclick = () => { 
+                if (confirm('¿Deseas cancelar la solicitud?')) {
+                    if (this.inline) {
+                        window.dispatchEvent(new CustomEvent('pata:form:cancel'));
+                        this.hide();
+                    } else {
+                        location.reload();
+                    }
+                }
+            };
+        }
 
         const closeSuccess = this.container.querySelector('#pata-close-success');
         if (closeSuccess) {
             closeSuccess.onclick = () => { 
-                window.location.href = '/miembros/fondo-solidario';
+                if (this.inline) {
+                    window.dispatchEvent(new CustomEvent('pata:form:cancel'));
+                    this.hide();
+                } else {
+                    window.location.href = '/miembros/fondo-solidario';
+                }
             };
             closeSuccess.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); closeSuccess.click(); } };
         }
@@ -1124,13 +1085,13 @@ class SolidarityRequestForm {
 
     updateSubmitStatus() {
         const btn = this.container.querySelector('#pata-submit-btn');
-        if (btn) btn.disabled = !this.validateForm();
+        if (btn) btn.disabled = !this.validateForm() || this.state.submitting;
     }
 
     async handleSubmit() {
         if (this.state.submitting) return;
         this.state.submitting = true;
-        this.render();
+        this.updateSubmitStatus();
 
         try {
             const memberstackId = this.state.member.id;
@@ -1140,10 +1101,7 @@ class SolidarityRequestForm {
                     const formData = new FormData();
                     formData.append('file', file);
                     formData.append('userId', memberstackId);
-                    const mapping = {
-                        evidencePhoto: 'evidence_photo',
-                        seniorCertificate: 'senior_certificate'
-                    };
+                    const mapping = { evidencePhoto: 'evidence_photo', seniorCertificate: 'senior_certificate' };
                     formData.append('docType', mapping[key] || key);
 
                     const uploadRes = await fetch(`${this.apiUrl}/api/upload/solidarity-document`, {
@@ -1185,6 +1143,13 @@ class SolidarityRequestForm {
                 this.state.successData = data.request;
                 this.state.success = true;
                 this.render();
+                
+                // Emit success event for dashboard
+                setTimeout(() => {
+                    window.dispatchEvent(new CustomEvent('pata:form:success', { 
+                        detail: { request: data.request, widget: this } 
+                    }));
+                }, 1500);
             } else {
                 throw new Error(data.error || 'No se pudo crear la solicitud.');
             }
@@ -1193,10 +1158,10 @@ class SolidarityRequestForm {
             alert('❌ ' + error.message);
         } finally {
             this.state.submitting = false;
-            this.render();
+            this.updateSubmitStatus();
         }
     }
 }
 
-// Export for module systems if needed, but here we just keep it as a global class
+// Export for module systems if needed
 window.SolidarityRequestForm = SolidarityRequestForm;
