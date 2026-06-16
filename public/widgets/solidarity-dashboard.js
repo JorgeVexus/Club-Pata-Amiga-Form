@@ -494,6 +494,7 @@ class SolidarityDashboard {
     }
 
     getStyles() {
+        const scope = `#${this.containerId} `;
         return `
             @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap');
             @import url('https://fonts.googleapis.com/css2?family=Fraiche&display=swap');
@@ -512,125 +513,125 @@ class SolidarityDashboard {
                 --pata-border: 2px solid var(--pata-black);
             }
 
-            * { box-sizing: border-box; }
+            ${scope} * { box-sizing: border-box; }
 
-            #${this.containerId} { width: 100%; max-width: 1400px; margin: 0 auto; position: relative; min-height: 400px; }
-            .pata-dashboard-wrapper { font-family: 'Outfit', sans-serif; color: var(--pata-black); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 50px; }
+            ${scope} { width: 100%; max-width: 1400px; margin: 0 auto; position: relative; min-height: 400px; }
+            ${scope} .pata-dashboard-wrapper { font-family: 'Outfit', sans-serif; color: var(--pata-black); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 50px; }
 
             /* Header */
-            .pata-header { width: 100%; max-width: 1400px; padding: 60px 40px 120px 40px; border-radius: 0 0 50px 50px; text-align: left; margin-bottom: -80px; background: var(--pata-turquoise); }
-            .pata-header h1 { font-family: 'Fraiche', sans-serif; font-weight: 900; font-size: 64px; color: var(--pata-white); margin: 0; line-height: 1; }
-            .pata-header p { font-size: 20px; color: var(--pata-white); opacity: 0.9; margin-top: 10px; }
+            ${scope} .pata-header { width: 100%; max-width: 1400px; padding: 60px 40px 120px 40px; border-radius: 0 0 50px 50px; text-align: left; margin-bottom: -80px; background: var(--pata-turquoise); }
+            ${scope} .pata-header h1 { font-family: 'Fraiche', sans-serif; font-weight: 900; font-size: 64px; color: var(--pata-white); margin: 0; line-height: 1; }
+            ${scope} .pata-header p { font-size: 20px; color: var(--pata-white); opacity: 0.9; margin-top: 10px; }
 
             /* Main Card (Stats + Benefits) */
-            .pata-main-card { background: var(--pata-white); border-radius: 50px; padding: 40px; margin: 20px auto; width: calc(100% - 40px); max-width: 1400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; z-index: 10; border: var(--pata-border); }
-            .pata-status-title { font-weight: 900; font-size: 40px; margin: 0; color: var(--pata-black); font-family: 'Fraiche', sans-serif; }
-            .pata-status-subtitle { font-size: 16px; color: var(--pata-gray); margin: 10px 0 30px 0; }
-            .pata-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
-            .pata-stat-box { background: var(--pata-red); border-radius: 30px; padding: 30px 20px; color: var(--pata-white); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; border: var(--pata-border); box-shadow: 4px 4px 0px var(--pata-black); }
-            .pata-stat-number { font-weight: 900; font-size: 64px; line-height: 1; margin-bottom: 5px; }
-            .pata-stat-label { font-size: 14px; font-weight: 600; line-height: 1.2; }
-            .pata-benefits-summary { border-top: 1px solid #edf2f7; padding-top: 30px; }
-            .pata-benefits-grid { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px; justify-content: space-around; }
-            .pata-benefit-item { display: flex; align-items: center; gap: 15px; }
-            .pata-benefit-icon { width: 40px; height: 40px; }
-            .pata-benefit-info h4 { font-size: 14px; margin: 0; color: var(--pata-gray); }
-            .pata-benefit-info p { font-size: 24px; font-weight: 900; margin: 0; }
-            .pata-btn { padding: 12px 30px; border-radius: 50px; font-weight: 800; font-family: 'Fraiche', sans-serif; cursor: pointer; transition: all 0.2s; border: var(--pata-border); box-shadow: 4px 4px 0px var(--pata-black); text-decoration: none; display: inline-block; text-align: center; text-transform: uppercase; }
-            .pata-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--pata-black); }
-            .pata-btn-primary { background: var(--pata-red); color: white; font-size: 18px; padding: 15px 40px; }
-            .pata-btn-orange { background: var(--pata-orange); color: var(--pata-black); font-size: 18px; padding: 15px 40px; }
-            .pata-btn-orange:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--pata-black); }
-            .pata-btn-turquoise { background: var(--pata-turquoise); color: white; }
-            .pata-cta-row { text-align: center; margin-top: 20px; }
+            ${scope} .pata-main-card { background: var(--pata-white); border-radius: 50px; padding: 40px; margin: 20px auto; width: calc(100% - 40px); max-width: 1400px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); position: relative; z-index: 10; border: var(--pata-border); }
+            ${scope} .pata-status-title { font-weight: 900; font-size: 40px; margin: 0; color: var(--pata-black); font-family: 'Fraiche', sans-serif; }
+            ${scope} .pata-status-subtitle { font-size: 16px; color: var(--pata-gray); margin: 10px 0 30px 0; }
+            ${scope} .pata-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+            ${scope} .pata-stat-box { background: var(--pata-red); border-radius: 30px; padding: 30px 20px; color: var(--pata-white); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; border: var(--pata-border); box-shadow: 4px 4px 0px var(--pata-black); }
+            ${scope} .pata-stat-number { font-weight: 900; font-size: 64px; line-height: 1; margin-bottom: 5px; }
+            ${scope} .pata-stat-label { font-size: 14px; font-weight: 600; line-height: 1.2; }
+            ${scope} .pata-benefits-summary { border-top: 1px solid #edf2f7; padding-top: 30px; }
+            ${scope} .pata-benefits-grid { display: flex; flex-wrap: wrap; gap: 40px; margin-top: 20px; justify-content: space-around; }
+            ${scope} .pata-benefit-item { display: flex; align-items: center; gap: 15px; }
+            ${scope} .pata-benefit-icon { width: 40px; height: 40px; }
+            ${scope} .pata-benefit-info h4 { font-size: 14px; margin: 0; color: var(--pata-gray); }
+            ${scope} .pata-benefit-info p { font-size: 24px; font-weight: 900; margin: 0; }
+            ${scope} .pata-btn { padding: 12px 30px; border-radius: 50px; font-weight: 800; font-family: 'Fraiche', sans-serif; cursor: pointer; transition: all 0.2s; border: var(--pata-border); box-shadow: 4px 4px 0px var(--pata-black); text-decoration: none; display: inline-block; text-align: center; text-transform: uppercase; }
+            ${scope} .pata-btn:active { transform: translate(2px, 2px); box-shadow: 2px 2px 0px var(--pata-black); }
+            ${scope} .pata-btn-primary { background: var(--pata-red); color: white; font-size: 18px; padding: 15px 40px; }
+            ${scope} .pata-btn-orange { background: var(--pata-orange); color: var(--pata-black); font-size: 18px; padding: 15px 40px; }
+            ${scope} .pata-btn-orange:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0px var(--pata-black); }
+            ${scope} .pata-btn-turquoise { background: var(--pata-turquoise); color: white; }
+            ${scope} .pata-cta-row { text-align: center; margin-top: 20px; }
 
             /* Layout: Pets + History */
-            .pata-content-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; padding: 100px 35px; background-color: #eaeaea; width: 100%; box-sizing: border-box; }
-            @media (max-width: 991px) { .pata-content-layout { grid-template-columns: 1fr; } .pata-header h1 { font-size: 48px; } }
-            .pata-section-title { font-family: 'Fraiche', sans-serif; font-weight: 900; font-size: 100px; color: var(--pata-red); margin-bottom: 30px; text-transform: uppercase; }
-            .pata-history-title { font-size: 50px; color: var(--pata-white) !important; }
-            @media (max-width: 767px) { .pata-history-title { font-size: 32px; } .pata-section-title { font-size: 48px; } }
-            @media (max-width: 480px) { .pata-history-title { font-size: 20px !important; } .pata-section-title { font-size: 36px; } }
+            ${scope} .pata-content-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; padding: 100px 35px; background-color: #eaeaea; width: 100%; box-sizing: border-box; }
+            @media (max-width: 991px) { ${scope} .pata-content-layout { grid-template-columns: 1fr; } ${scope} .pata-header h1 { font-size: 48px; } }
+            ${scope} .pata-section-title { font-family: 'Fraiche', sans-serif; font-weight: 900; font-size: 100px; color: var(--pata-red); margin-bottom: 30px; text-transform: uppercase; }
+            ${scope} .pata-history-title { font-size: 50px; color: var(--pata-white) !important; }
+            @media (max-width: 767px) { ${scope} .pata-history-title { font-size: 32px; } ${scope} .pata-section-title { font-size: 48px; } }
+            @media (max-width: 480px) { ${scope} .pata-history-title { font-size: 20px !important; } ${scope} .pata-section-title { font-size: 36px; } }
 
             /* Pet Cards */
-            .pata-pet-list { display: flex; flex-direction: column; gap: 24px; width: 100%; }
-            .pata-pet-card { background: #FFFFFF; border-radius: 35px; padding: 24px; display: flex; gap: 28px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,0.06); transition: transform 0.3s; position: relative; border: var(--pata-border); max-width: 100%; box-sizing: border-box; cursor: pointer; }
-            .pata-pet-card.pata-inactive-card { background: #F1F3F4 !important; }
-            .pata-pet-photo { width: 150px; height: 150px; border-radius: 30px; object-fit: cover; border: var(--pata-border); flex-shrink: 0; }
-            .pata-pet-photo.pata-grayscale { filter: grayscale(100%) !important; opacity: 0.7 !important; transition: all 0.5s ease; }
-            .pata-pet-name { font-weight: 900; font-size: 32px; color: var(--pata-turquoise); margin: 0; font-family: 'Fraiche', sans-serif; }
-            .pata-pet-badge-new { position: absolute; top: 20px; right: 20px; background: #FEE2E2; color: var(--pata-red); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid var(--pata-red); }
-            .pata-pet-info { flex: 1; }
-            .pata-pet-info p { font-size: 14px; margin: 5px 0; color: var(--pata-gray); font-weight: 600; }
-            .pata-pet-info button { margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise); border: var(--pata-border); border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; color: var(--pata-black); width: fit-content; }
-            .pata-pet-info button.pata-btn-orange { background: var(--pata-orange); color: var(--pata-black); }
+            ${scope} .pata-pet-list { display: flex; flex-direction: column; gap: 24px; width: 100%; }
+            ${scope} .pata-pet-card { background: #FFFFFF; border-radius: 35px; padding: 24px; display: flex; gap: 28px; align-items: center; box-shadow: 0 8px 30px rgba(0,0,0,0.06); transition: transform 0.3s; position: relative; border: var(--pata-border); max-width: 100%; box-sizing: border-box; cursor: pointer; }
+            ${scope} .pata-pet-card.pata-inactive-card { background: #F1F3F4 !important; }
+            ${scope} .pata-pet-photo { width: 150px; height: 150px; border-radius: 30px; object-fit: cover; border: var(--pata-border); flex-shrink: 0; }
+            ${scope} .pata-pet-photo.pata-grayscale { filter: grayscale(100%) !important; opacity: 0.7 !important; transition: all 0.5s ease; }
+            ${scope} .pata-pet-name { font-weight: 900; font-size: 32px; color: var(--pata-turquoise); margin: 0; font-family: 'Fraiche', sans-serif; }
+            ${scope} .pata-pet-badge-new { position: absolute; top: 20px; right: 20px; background: #FEE2E2; color: var(--pata-red); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid var(--pata-red); }
+            ${scope} .pata-pet-info { flex: 1; }
+            ${scope} .pata-pet-info p { font-size: 14px; margin: 5px 0; color: var(--pata-gray); font-weight: 600; }
+            ${scope} .pata-pet-info button { margin-top: 10px; font-size: 12px; padding: 8px 15px; background: var(--pata-light-turquoise); border: var(--pata-border); border-radius: 50px; font-weight: 800; cursor: pointer; text-transform: uppercase; color: var(--pata-black); width: fit-content; }
+            ${scope} .pata-pet-info button.pata-btn-orange { background: var(--pata-orange); color: var(--pata-black); }
 
             /* History Panel */
-            .pata-history-panel { background: var(--pata-turquoise); border-radius: 40px; padding: 35px; color: white; border: var(--pata-border); box-shadow: 6px 6px 0px var(--pata-black); }
-            .pata-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 20px; flex-wrap: wrap; }
-            .pata-history-header input, .pata-history-header select { background: white; border: var(--pata-border); padding: 12px 24px; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 16px; outline: none; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black) !important; min-width: 200px; }
-            .pata-history-header input { flex: 1; }
-            .pata-history-header select { min-width: 180px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A1A1A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto; }
+            ${scope} .pata-history-panel { background: var(--pata-turquoise); border-radius: 40px; padding: 35px; color: white; border: var(--pata-border); box-shadow: 6px 6px 0px var(--pata-black); }
+            ${scope} .pata-history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; gap: 20px; flex-wrap: wrap; }
+            ${scope} .pata-history-header input, ${scope} .pata-history-header select { background: white; border: var(--pata-border); padding: 12px 24px; border-radius: 50px; font-family: inherit; font-weight: 600; font-size: 16px; outline: none; box-shadow: 4px 4px 0px var(--pata-black); color: var(--pata-black) !important; min-width: 200px; }
+            ${scope} .pata-history-header input { flex: 1; }
+            ${scope} .pata-history-header select { min-width: 180px; cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%231A1A1A%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 20px top 50%; background-size: 12px auto; }
 
-            .pata-history-item { background: white; border-radius: 25px; padding: 20px 25px; color: var(--pata-black); display: grid; grid-template-columns: 1.5fr 1.5fr 1fr; gap: 20px; align-items: center; border: var(--pata-border); margin-bottom: 15px; cursor: pointer; }
-            .pata-history-item:hover { transform: scale(1.02); }
-            .pata-history-id { font-family: 'Fraiche', sans-serif; font-size: 20px; color: var(--pata-black); margin: 0; text-transform: uppercase; }
-            .pata-history-pet { font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 20px; margin: 0; color: var(--pata-gray); }
-            .pata-badge-type { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 14px 0 37px; border-radius: 50px; border: var(--pata-border); font-family: 'Fraiche', sans-serif; font-size: 14px; position: relative; width: fit-content; }
-            .pata-badge-type-icon { position: absolute; left: -2px; top: -2px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-            .pata-badge-type-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
-            .pata-history-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
-            .pata-row-icon { width: 28px; height: 28px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-            .pata-row-icon img { width: 16px; height: 16px; }
-            .pata-row-text { font-family: 'Fraiche', sans-serif; font-size: 14px; color: black; }
-            .pata-status-badge { display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px 0 35px; border-radius: 50px; font-family: 'Fraiche', sans-serif; font-size: 14px; position: relative; width: fit-content; color: black; }
-            .pata-status-badge-icon { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: black; display: flex; align-items: center; justify-content: center; }
-            .pata-status-badge-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+            ${scope} .pata-history-item { background: white; border-radius: 25px; padding: 20px 25px; color: var(--pata-black); display: grid; grid-template-columns: 1.5fr 1.5fr 1fr; gap: 20px; align-items: center; border: var(--pata-border); margin-bottom: 15px; cursor: pointer; }
+            ${scope} .pata-history-item:hover { transform: scale(1.02); }
+            ${scope} .pata-history-id { font-family: 'Fraiche', sans-serif; font-size: 20px; color: var(--pata-black); margin: 0; text-transform: uppercase; }
+            ${scope} .pata-history-pet { font-family: 'Outfit', sans-serif; font-weight: 500; font-size: 20px; margin: 0; color: var(--pata-gray); }
+            ${scope} .pata-badge-type { display: flex; align-items: center; gap: 10px; height: 34px; padding: 0 14px 0 37px; border-radius: 50px; border: var(--pata-border); font-family: 'Fraiche', sans-serif; font-size: 14px; position: relative; width: fit-content; }
+            ${scope} .pata-badge-type-icon { position: absolute; left: -2px; top: -2px; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+            ${scope} .pata-badge-type-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
+            ${scope} .pata-history-row { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+            ${scope} .pata-row-icon { width: 28px; height: 28px; background: black; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+            ${scope} .pata-row-icon img { width: 16px; height: 16px; }
+            ${scope} .pata-row-text { font-family: 'Fraiche', sans-serif; font-size: 14px; color: black; }
+            ${scope} .pata-status-badge { display: flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px 0 35px; border-radius: 50px; font-family: 'Fraiche', sans-serif; font-size: 14px; position: relative; width: fit-content; color: black; }
+            ${scope} .pata-status-badge-icon { position: absolute; left: 0; top: 0; width: 28px; height: 28px; border-radius: 50%; background: black; display: flex; align-items: center; justify-content: center; }
+            ${scope} .pata-status-badge-icon img { width: 100%; height: 100%; object-fit: contain; display: block; }
 
             /* Animations */
-            .pata-spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--pata-orange); border-radius: 50%; width: 40px; height: 40px; animation: pata-spin 1s linear infinite; margin: 0 auto; }
+            ${scope} .pata-spinner { border: 4px solid rgba(0,0,0,0.1); border-left-color: var(--pata-orange); border-radius: 50%; width: 40px; height: 40px; animation: pata-spin 1s linear infinite; margin: 0 auto; }
             @keyframes pata-spin { to { transform: rotate(360deg); } }
             @keyframes pataFadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-            .pata-animate-entry { animation: pataFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-            .pata-pet-card:hover, .pata-history-item:hover { border-color: var(--pata-turquoise); transform: translateY(-4px) scale(1.01); box-shadow: 8px 8px 0px var(--pata-black); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
-            .pata-status-badge { transition: transform 0.2s; }
-            .pata-status-badge:hover { transform: scale(1.05); }
+            ${scope} .pata-animate-entry { animation: pataFadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+            ${scope} .pata-pet-card:hover, ${scope} .pata-history-item:hover { border-color: var(--pata-turquoise); transform: translateY(-4px) scale(1.01); box-shadow: 8px 8px 0px var(--pata-black); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+            ${scope} .pata-status-badge { transition: transform 0.2s; }
+            ${scope} .pata-status-badge:hover { transform: scale(1.05); }
 
             /* Responsive */
             @media (max-width: 768px) {
-                .pata-dashboard-wrapper { gap: 30px; }
-                .pata-header { padding: 40px 20px 80px 20px; text-align: center; margin-bottom: -60px; }
-                .pata-header h1 { font-size: 40px; }
-                .pata-main-card { padding: 25px 20px; border-radius: 30px; margin: 10px; }
-                .pata-status-title { font-size: 28px; }
-                .pata-stat-number { font-size: 48px; }
-                .pata-benefits-grid { flex-direction: column; gap: 20px; align-items: flex-start; }
-                .pata-benefit-item { width: 100%; }
-                .pata-pet-list { gap: 16px; }
-                .pata-pet-card { flex-direction: column; text-align: center; padding: 20px; gap: 15px; width: 100%; }
-                .pata-pet-photo { width: 120px; height: 120px; margin: 0 auto; flex-shrink: 0; }
-                .pata-pet-name { font-size: 24px; word-wrap: break-word; overflow-wrap: break-word; }
-                .pata-pet-info { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-                .pata-pet-info p { max-width: 100%; word-wrap: break-word; }
-                .pata-pet-info button { width: 100%; max-width: 280px; white-space: normal; word-wrap: break-word; }
-                .pata-pet-badge-new { position: static; display: inline-block; margin-bottom: 10px; }
-                .pata-history-panel { padding: 20px; border-radius: 30px; }
-                .pata-history-header { flex-direction: column; align-items: stretch; gap: 15px; }
-                .pata-history-header input { width: 100% !important; margin: 0 !important; }
-                .pata-history-header select { width: 100% !important; margin: 0 !important; }
-                .pata-history-item { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px; }
-                .pata-history-item > div { width: 100% !important; flex-shrink: 1 !important; padding: 0 !important; }
-                .pata-history-item > div:last-child { align-items: flex-start !important; border-top: 1px solid #eee; padding-top: 15px; }
+                ${scope} .pata-dashboard-wrapper { gap: 30px; }
+                ${scope} .pata-header { padding: 40px 20px 80px 20px; text-align: center; margin-bottom: -60px; }
+                ${scope} .pata-header h1 { font-size: 40px; }
+                ${scope} .pata-main-card { padding: 25px 20px; border-radius: 30px; margin: 10px; }
+                ${scope} .pata-status-title { font-size: 28px; }
+                ${scope} .pata-stat-number { font-size: 48px; }
+                ${scope} .pata-benefits-grid { flex-direction: column; gap: 20px; align-items: flex-start; }
+                ${scope} .pata-benefit-item { width: 100%; }
+                ${scope} .pata-pet-list { gap: 16px; }
+                ${scope} .pata-pet-card { flex-direction: column; text-align: center; padding: 20px; gap: 15px; width: 100%; }
+                ${scope} .pata-pet-photo { width: 120px; height: 120px; margin: 0 auto; flex-shrink: 0; }
+                ${scope} .pata-pet-name { font-size: 24px; word-wrap: break-word; overflow-wrap: break-word; }
+                ${scope} .pata-pet-info { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+                ${scope} .pata-pet-info p { max-width: 100%; word-wrap: break-word; }
+                ${scope} .pata-pet-info button { width: 100%; max-width: 280px; white-space: normal; word-wrap: break-word; }
+                ${scope} .pata-pet-badge-new { position: static; display: inline-block; margin-bottom: 10px; }
+                ${scope} .pata-history-panel { padding: 20px; border-radius: 30px; }
+                ${scope} .pata-history-header { flex-direction: column; align-items: stretch; gap: 15px; }
+                ${scope} .pata-history-header input { width: 100% !important; margin: 0 !important; }
+                ${scope} .pata-history-header select { width: 100% !important; margin: 0 !important; }
+                ${scope} .pata-history-item { display: flex; flex-direction: column; align-items: flex-start; gap: 15px; padding: 20px; }
+                ${scope} .pata-history-item > div { width: 100% !important; flex-shrink: 1 !important; padding: 0 !important; }
+                ${scope} .pata-history-item > div:last-child { align-items: flex-start !important; border-top: 1px solid #eee; padding-top: 15px; }
             }
             @media (max-width: 480px) {
-                .pata-header { padding: 30px 15px 60px 15px; }
-                .pata-header h1 { font-size: 32px; }
-                .pata-main-card { padding: 20px 15px; border-radius: 20px; margin: 5px; }
-                .pata-pet-card { padding: 15px; border-radius: 25px; }
-                .pata-pet-photo { width: 100px; height: 100px; }
-                .pata-pet-name { font-size: 20px; }
-                .pata-pet-info button { font-size: 11px; padding: 8px 12px; max-width: 100%; }
-                .pata-section-title { font-size: 20px !important; }
+                ${scope} .pata-header { padding: 30px 15px 60px 15px; }
+                ${scope} .pata-header h1 { font-size: 32px; }
+                ${scope} .pata-main-card { padding: 20px 15px; border-radius: 20px; margin: 5px; }
+                ${scope} .pata-pet-card { padding: 15px; border-radius: 25px; }
+                ${scope} .pata-pet-photo { width: 100px; height: 100px; }
+                ${scope} .pata-pet-name { font-size: 20px; }
+                ${scope} .pata-pet-info button { font-size: 11px; padding: 8px 12px; max-width: 100%; }
+                ${scope} .pata-section-title { font-size: 20px !important; }
             }
         `;
     }
