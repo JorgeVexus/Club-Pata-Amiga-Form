@@ -211,15 +211,20 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.2);
             font-family: 'Outfit', sans-serif;
             overflow: hidden;
+            height: 90vh;
             max-height: 90vh;
             border: var(--pata-border-thick);
             animation: pataSlideDown 0.4s var(--pata-spring);
+            display: flex;
+            flex-direction: column;
         }
 
         .pata-modal-main {
             display: flex;
             width: 100%;
-            height: 100%;
+            flex: 1;
+            overflow: hidden;
+            min-height: 0;
         }
 
         /* Left Section: Gallery */
@@ -778,8 +783,10 @@
             .pata-modal-box { 
                 max-width: 98%; 
                 width: 650px; 
-                max-height: 90vh; /* Reduced to avoid clipping */
+                height: 90vh;
+                max-height: 90vh;
                 margin: 0 auto;
+                /* overflow-y auto on the box for mobile single-column layout */
                 overflow-y: auto;
                 display: flex;
                 flex-direction: column;
@@ -807,7 +814,8 @@
             .pata-modal-overlay { padding: 12px; }
             .pata-modal-box { 
                 border-radius: 24px;
-                max-height: 88vh; /* Further reduced for small devices */
+                height: 88vh;
+                max-height: 88vh;
             }
             .pata-modal-gallery { 
                 padding: 12px; 
