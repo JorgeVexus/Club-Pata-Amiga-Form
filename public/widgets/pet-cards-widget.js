@@ -786,7 +786,6 @@
                 height: 90vh;
                 max-height: 90vh;
                 margin: 0 auto;
-                /* overflow-y auto on the box for mobile single-column layout */
                 overflow-y: auto;
                 display: flex;
                 flex-direction: column;
@@ -816,6 +815,15 @@
                 border-radius: 24px;
                 height: 88vh;
                 max-height: 88vh;
+                /* Ensure scroll works on small mobile */
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+            }
+            .pata-modal-main {
+                display: block;
+                height: auto;
+                flex: 1;
             }
             .pata-modal-gallery { 
                 padding: 12px; 
