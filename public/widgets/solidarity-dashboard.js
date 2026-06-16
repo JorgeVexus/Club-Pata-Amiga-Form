@@ -102,27 +102,9 @@ class SolidarityDashboard {
             this.data.requests = historyRes.requests || [];
         }
 
-        // Fetch pet unsubscriptions
-        try {
-            const unsubRes = await fetch(`${this.apiUrl}/api/pet-unsubscriptions?memberstackId=${memberstackId}`);
-            const unsubData = await unsubRes.json();
-
-            if (unsubData.success && unsubData.unsubscriptions) {
-                const unsubMap = new Map();
-                unsubData.unsubscriptions.forEach(unsub => unsubMap.set(unsub.pet_id, unsub));
-
-                this.data.pets = this.data.pets.map(pet => {
-                    if (unsubMap.has(pet.id)) {
-                        return { ...pet, is_active: false, isInactive: true };
-                    }
-                    return pet;
-                });
-
-                this.calculateStats();
-            }
-        } catch (error) {
-            console.warn('⚠️ Could not fetch pet unsubscriptions:', error.message);
-        }
+        // Las unsubscriptions ya vienen incluidas en el response de /api/solidarity/stats
+        // (se consultan en el servidor y se marcan en lifecycleSummary.pets)
+        // No necesitamos llamada adicional
 
         this.data.filteredRequests = [...this.data.requests];
     }
@@ -212,18 +194,19 @@ class SolidarityDashboard {
 
     // ===== INIT FORM WIDGET (inline, hidden) =====
     initFormWidget() {
-        // El form widget se auto-inicializa al encontrar su contenedor
-        // Solo nos guardamos la referencia cuando esté listo
-        const checkFormWidget = setInterval(() => {
-            if (window.PataSolidarityForm) {
-                this.formWidget = window.PataSolidarityForm;
-                clearInterval(checkFormWidget);
-                console.log('✅ SolidarityDashboard: Form widget connected');
-            }
-        }, 100);
-        
-        // Timeout safety
-        setTimeout(() => clearInterval(checkFormWidget), 5000);
+        // Crear explícitamente el form widget con el contenedor correcto y modo inline
+        try {
+            this.formWidget = new SolidarityRequestForm('pata-solidarity-form', {
+                apiUrl: this.apiUrl,
+                baseUrl: this.baseUrl,
+                mode: 'inline'
+            });
+            // Registrar en global para evitar double-init por auto-init del form widget
+            window.PataSolidarityForm = this.formWidget;
+            console.log('✅ SolidarityDashboard: Form widget initialized in inline mode');
+        } catch (error) {
+            console.error('❌ Failed to initialize form widget:', error);
+        }
     }
 
     setupFormCommunication() {
@@ -249,7 +232,7 @@ class SolidarityDashboard {
     }
 
     showForm() {
-        const formContainer = this.container.querySelector('#pata-solidarity-form-container');
+        const formContainer = this.container.querySelector('#pata-solidarity-form');
         if (formContainer) {
             formContainer.style.display = 'block';
             // Scroll suave al formulario
@@ -263,7 +246,7 @@ class SolidarityDashboard {
     }
 
     hideForm() {
-        const formContainer = this.container.querySelector('#pata-solidarity-form-container');
+        const formContainer = this.container.querySelector('#pata-solidarity-form');
         if (formContainer) {
             formContainer.style.display = 'none';
         }
@@ -297,20 +280,8 @@ class SolidarityDashboard {
                 this.data.requests = historyRes.requests || [];
             }
 
-            // Re-fetch unsubscriptions
-            try {
-                const unsubRes = await fetch(`${this.apiUrl}/api/pet-unsubscriptions?memberstackId=${memberstackId}`);
-                const unsubData = await unsubRes.json();
-                if (unsubData.success && unsubData.unsubscriptions) {
-                    const unsubMap = new Map();
-                    unsubData.unsubscriptions.forEach(unsub => unsubMap.set(unsub.pet_id, unsub));
-                    this.data.pets = this.data.pets.map(pet => {
-                        if (unsubMap.has(pet.id)) return { ...pet, is_active: false, isInactive: true };
-                        return pet;
-                    });
-                    this.calculateStats();
-                }
-            } catch (e) { console.warn('⚠️ Unsubscriptions refresh failed:', e); }
+            // Las unsubscriptions ya vienen incluidas en el response de /api/solidarity/stats
+            // No necesitamos llamada adicional
 
             this.data.filteredRequests = [...this.data.requests];
             
@@ -489,7 +460,7 @@ class SolidarityDashboard {
                     </section>
 
                     <!-- 🔥 CONTENEDOR INLINE PARA FORMULARIO (OCULTO POR DEFECTO) -->
-                    <div id="pata-solidarity-form-container" style="display: none; width: 100%; max-width: 1400px; margin: 0 auto;"></div>
+                    <div id="pata-solidarity-form" style="display: none; width: 100%; max-width: 1400px; margin: 0 auto;"></div>
 
                     <div class="pata-content-layout">
                         <section>
