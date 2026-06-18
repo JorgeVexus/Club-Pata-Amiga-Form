@@ -120,7 +120,20 @@ export async function POST(request: NextRequest) {
                 .from('wellness_center_leads')
                 .update({
                     establishment_name: establishmentName,
-                    services: body.services ? body.services.split(',').map((s: string) => s.trim()) : [],
+                    services: (() => {
+                        let svc: string[] = [];
+                        if (body.services) {
+                            if (Array.isArray(body.services)) {
+                                svc = body.services.map((s: string) => s.trim()).filter(Boolean);
+                            } else if (typeof body.services === 'string') {
+                                svc = body.services.split(',').map((s: string) => s.trim()).filter(Boolean);
+                            }
+                        }
+                        if (body.other_service && typeof body.other_service === 'string' && body.other_service.trim()) {
+                            svc.push(`Otro: ${body.other_service.trim()}`);
+                        }
+                        return svc;
+                    })(),
                     contact_name: body.contact_name?.trim() || null,
                     contact_role: body.contact_role?.trim() || null,
                     phone: body.phone?.trim() || null,
@@ -180,8 +193,20 @@ export async function POST(request: NextRequest) {
         if (body.instagram || body.facebook) leadScore += 10;
         if (body.utm_campaign) leadScore += 5;
 
-        // Parse services from form data (comma-separated string)
-        const services = body.services ? body.services.split(',').map((s: string) => s.trim()) : [];
+        // Parse services from form data - can be comma-separated string OR array (multiple checkbox values)
+        let services: string[] = [];
+        if (body.services) {
+            if (Array.isArray(body.services)) {
+                services = body.services.map((s: string) => s.trim()).filter(Boolean);
+            } else if (typeof body.services === 'string') {
+                services = body.services.split(',').map((s: string) => s.trim()).filter(Boolean);
+            }
+        }
+        
+        // Handle "other_service" free text field - append to services array if provided
+        if (body.other_service && typeof body.other_service === 'string' && body.other_service.trim()) {
+            services.push(`Otro: ${body.other_service.trim()}`);
+        }
 
         // Insertar nuevo lead
         const { data: lead, error } = await supabase

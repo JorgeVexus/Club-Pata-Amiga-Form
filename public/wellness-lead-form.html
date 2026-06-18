@@ -357,6 +357,14 @@
                             <input type="checkbox" name="services" value="Paseador de perros">
                             <span>Paseador de perros</span>
                         </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" name="services" value="Otro">
+                            <span>Otro</span>
+                        </label>
+                    </div>
+                    <div class="form-group" id="otherServiceGroup" style="display: none; margin-top: 12px;">
+                        <label for="other_service">Especificar otro tipo</label>
+                        <input type="text" id="other_service" name="other_service" placeholder="Ej: Guardería, Adiestramiento, etc." autocomplete="off">
                     </div>
                     <div class="error-message" id="error-services">Selecciona al menos un tipo</div>
                 </div>
@@ -449,6 +457,16 @@
                     isValid = false;
                 }
 
+                // Validate "Otro" field if checked
+                const otherCheckbox = document.querySelector('input[name="services"][value="Otro"]');
+                const otherServiceInput = document.getElementById('other_service');
+                if (otherCheckbox && otherCheckbox.checked && otherServiceInput) {
+                    if (!otherServiceInput.value.trim()) {
+                        showError('services', 'Por favor especifica el tipo de establecimiento');
+                        isValid = false;
+                    }
+                }
+
                 // Phone (optional but validate if provided)
                 const phone = document.getElementById('phone');
                 if (phone.value.trim()) {
@@ -489,6 +507,24 @@
                 cb.addEventListener('change', () => clearError('services'));
             });
 
+            // Show/hide "Otro" field
+            const otherCheckbox = document.querySelector('input[name="services"][value="Otro"]');
+            const otherServiceGroup = document.getElementById('otherServiceGroup');
+            const otherServiceInput = document.getElementById('other_service');
+            
+            if (otherCheckbox && otherServiceGroup && otherServiceInput) {
+                otherCheckbox.addEventListener('change', () => {
+                    if (otherCheckbox.checked) {
+                        otherServiceGroup.style.display = 'block';
+                        otherServiceInput.required = true;
+                    } else {
+                        otherServiceGroup.style.display = 'none';
+                        otherServiceInput.required = false;
+                        otherServiceInput.value = '';
+                    }
+                });
+            }
+
             // Form submit
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -500,17 +536,15 @@
 
                 setLoading(true);
 
-                // Build FormData
+                // Build FormData - checkboxes with same name will be sent as array automatically
                 const formData = new FormData(form);
-
-                // Convert checkboxes to comma-separated string for API
-                const services = Array.from(document.querySelectorAll('input[name="services"]:checked'))
-                    .map(cb => cb.value)
-                    .join(',');
-
-                // Replace services in formData
-                formData.delete('services');
-                formData.append('services', services);
+                
+                // Ensure "Otro" value is properly sent - if checked, include other_service
+                // If "Otro" is not checked, make sure other_service is not sent
+                const otherCheckbox = document.querySelector('input[name="services"][value="Otro"]');
+                if (otherCheckbox && !otherCheckbox.checked) {
+                    formData.delete('other_service');
+                }
 
                 // Add source and page_url
                 formData.append('source', 'webflow-custom');

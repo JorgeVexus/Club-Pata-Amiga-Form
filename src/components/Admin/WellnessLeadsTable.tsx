@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './WellnessLeadsTable.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
 
@@ -55,6 +55,8 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
     const [exporting, setExporting] = useState(false);
     const [sources, setSources] = useState<string[]>([]);
     const [assignedAdmins, setAssignedAdmins] = useState<string[]>([]);
+    const [selectedLead, setSelectedLead] = useState<WellnessLead | null>(null);
+    const [leadDetailLoading, setLeadDetailLoading] = useState(false);
 
     const LIMIT = 50;
 
@@ -78,7 +80,6 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
             const response = await adminFetch(`/api/admin/wellness-leads?${params}`);
 
             if (exportFormat) {
-                // Handle file download - API returns blob, not JSON
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -99,10 +100,10 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
                 setLeads(data.data);
                 setTotal(data.total || 0);
                 setTotalPages(data.totalPages || 1);
-                
+
                 const uniqueSources: string[] = [...new Set(data.data.map((l: WellnessLead) => l.source))].filter(Boolean) as string[];
                 setSources(uniqueSources);
-                
+
                 const uniqueAdmins = Array.from(new Set(data.data.map((l: WellnessLead) => l.assigned_to))).filter(Boolean) as string[];
                 setAssignedAdmins(uniqueAdmins);
             } else {
@@ -165,6 +166,28 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
         }
     };
 
+    const fetchLeadDetail = async (leadId: string) => {
+        setLeadDetailLoading(true);
+        try {
+            const response = await adminFetch(`/api/admin/wellness-leads?id=${leadId}`);
+            const data = await response.json();
+            if (data.success) {
+                setSelectedLead(data.data);
+            } else {
+                alert('Error al cargar detalles: ' + data.error);
+            }
+        } catch (err) {
+            console.error('Error fetching lead detail:', err);
+            alert('Error de conexión');
+        } finally {
+            setLeadDetailLoading(false);
+        }
+    };
+
+    const closeDetailModal = () => {
+        setSelectedLead(null);
+    };
+
     const formatDate = (dateStr: string | null) => {
         if (!dateStr) return '-';
         return new Date(dateStr).toLocaleDateString('es-MX', {
@@ -174,18 +197,6 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
             hour: '2-digit',
             minute: '2-digit'
         });
-    };
-
-    const getStatusBadgeClass = (status: string) => {
-        switch (status) {
-            case 'new': return styles.badgeNew;
-            case 'contacted': return styles.badgeContacted;
-            case 'qualified': return styles.badgeQualified;
-            case 'converted': return styles.badgeConverted;
-            case 'lost': return styles.badgeLost;
-            case 'duplicate': return styles.badgeDuplicate;
-            default: return styles.badgeDefault;
-        }
     };
 
     const getStatusLabel = (status: string) => {
@@ -256,14 +267,14 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
                     <span className={styles.count}>{total} leads</span>
                 </div>
                 <div className={styles.headerRight}>
-                    <button 
+                    <button
                         className={`${styles.exportBtn} ${exporting ? styles.loading : ''}`}
                         onClick={() => handleExport('csv')}
                         disabled={exporting || loading}
                     >
                         📥 CSV
                     </button>
-                    <button 
+                    <button
                         className={`${styles.exportBtn} ${exporting ? styles.loading : ''}`}
                         onClick={() => handleExport('json')}
                         disabled={exporting || loading}
@@ -370,7 +381,7 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
                                 </tr>
                             ) : (
                                 leads.map((lead) => (
-                                    <tr key={lead.id} className={lead.status === 'new' ? styles.rowNew : ''}>
+                                    <tr key={lead.id} className={`${lead.status === 'new' ? styles.rowNew : ''} ${styles.clickableRow}`} onClick={() => fetchLeadDetail(lead.id)}>
                                         <td className={styles.nameCell}>
                                             <div className={styles.establishmentName}>{lead.establishment_name}</div>
                                             {lead.description && (
@@ -437,6 +448,186 @@ export default function WellnessLeadsTable({ refreshKey }: WellnessLeadsTablePro
                     >
                         Siguiente →
                     </button>
+                </div>
+            )}
+
+            {/* Detail Modal */}
+            {selectedLead && (
+                <div className={styles.modalOverlay} onClick={closeDetailModal}>
+                    <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                        <div className={styles.modalHeader}>
+                            <h3 className={styles.modalTitle}>{selectedLead.establishment_name}</h3>
+                            <button className={styles.modalClose} onClick={closeDetailModal} aria-label="Cerrar">
+                                ×
+                            </button>
+                        </div>
+
+                        {leadDetailLoading && <div className={styles.modalLoading}>Cargando detalles...</div>}
+
+                        {!leadDetailLoading && (
+                            <div className={styles.modalBody}>
+                                <div className={styles.detailSection}>
+                                    <h4 className={styles.detailSectionTitle}>📋 Información del Establecimiento</h4>
+                                    <div className={styles.detailGrid}>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Nombre</span>
+                                            <span className={styles.detailValue}>{selectedLead.establishment_name}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Servicios</span>
+                                            <span className={styles.detailValue}>
+                                                {Array.isArray(selectedLead.services)
+                                                    ? selectedLead.services.join(', ')
+                                                    : selectedLead.services || '—'}
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Dirección</span>
+                                            <span className={styles.detailValue}>
+                                                {selectedLead.address || '—'}
+                                                {selectedLead.city && `, ${selectedLead.city}`}
+                                                {selectedLead.state && `, ${selectedLead.state}`}
+                                                {selectedLead.postal_code && ` ${selectedLead.postal_code}`}
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Mascotas estimadas/mes</span>
+                                            <span className={styles.detailValue}>{selectedLead.monthly_pets_estimate ? selectedLead.monthly_pets_estimate.toLocaleString() : '—'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.detailSection}>
+                                    <h4 className={styles.detailSectionTitle}>👤 Contacto</h4>
+                                    <div className={styles.detailGrid}>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Nombre</span>
+                                            <span className={styles.detailValue}>{selectedLead.contact_name || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Rol</span>
+                                            <span className={styles.detailValue}>{selectedLead.contact_role || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Email</span>
+                                            <span className={styles.detailValue}>{selectedLead.email}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Teléfono</span>
+                                            <span className={styles.detailValue}>{selectedLead.phone || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>WhatsApp</span>
+                                            <span className={styles.detailValue}>{selectedLead.whatsapp || '—'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.detailSection}>
+                                    <h4 className={styles.detailSectionTitle}>🌐 Redes Sociales y Web</h4>
+                                    <div className={styles.detailGrid}>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Sitio web</span>
+                                            <span className={styles.detailValue}>{selectedLead.website || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Instagram</span>
+                                            <span className={styles.detailValue}>{selectedLead.instagram || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Facebook</span>
+                                            <span className={styles.detailValue}>{selectedLead.facebook || '—'}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>TikTok</span>
+                                            <span className={styles.detailValue}>{selectedLead.tiktok || '—'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className={styles.detailSection}>
+                                    <h4 className={styles.detailSectionTitle}>🏷️ Servicios Disponibles</h4>
+                                    <div className={styles.serviceTags}>
+                                        {selectedLead.has_vet && <span className={`${styles.serviceTag} ${styles.serviceTagVet}`}>🏥 Veterinaria</span>}
+                                        {selectedLead.has_grooming && <span className={`${styles.serviceTag} ${styles.serviceTagGrooming}`}>✂️ Grooming</span>}
+                                        {selectedLead.has_hotel && <span className={`${styles.serviceTag} ${styles.serviceTagHotel}`}>🏨 Hotel</span>}
+                                        {selectedLead.has_shop && <span className={`${styles.serviceTag} ${styles.serviceTagShop}`}>🛍️ Tienda</span>}
+                                        {!selectedLead.has_vet && !selectedLead.has_grooming && !selectedLead.has_hotel && !selectedLead.has_shop && (
+                                            <span className={styles.serviceTagNone}>No especificado</span>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {selectedLead.description && (
+                                    <div className={styles.detailSection}>
+                                        <h4 className={styles.detailSectionTitle}>📝 Descripción</h4>
+                                        <p className={styles.detailDescription}>{selectedLead.description}</p>
+                                    </div>
+                                )}
+
+                                <div className={styles.detailSection}>
+                                    <h4 className={styles.detailSectionTitle}>📊 Información del Lead</h4>
+                                    <div className={styles.detailGrid}>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Fuente</span>
+                                            <span className={styles.detailValue}>{getSourceLabel(selectedLead.source)}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Estado</span>
+                                            <span className={styles.detailValue}>
+                                                <select
+                                                    className={styles.statusSelect}
+                                                    value={selectedLead.status}
+                                                    onChange={(e) => handleStatusChange(selectedLead.id, e.target.value as WellnessLead['status'])}
+                                                >
+                                                    <option value="new">🆕 Nuevo</option>
+                                                    <option value="contacted">📞 Contactado</option>
+                                                    <option value="qualified">✅ Calificado</option>
+                                                    <option value="converted">🎉 Convertido</option>
+                                                    <option value="lost">❌ Perdido</option>
+                                                    <option value="duplicate">🔄 Duplicado</option>
+                                                </select>
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Score</span>
+                                            <span className={styles.detailValue}>{selectedLead.lead_score}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Asignado a</span>
+                                            <span className={styles.detailValue}>
+                                                <select
+                                                    className={styles.assignedSelect}
+                                                    value={selectedLead.assigned_to || ''}
+                                                    onChange={(e) => handleAssignChange(selectedLead.id, e.target.value || null)}
+                                                >
+                                                    <option value="">— Sin asignar —</option>
+                                                    {assignedAdmins.map(admin => (
+                                                        <option key={admin} value={admin}>{admin}</option>
+                                                    ))}
+                                                </select>
+                                            </span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Creado</span>
+                                            <span className={styles.detailValue}>{formatDate(selectedLead.created_at)}</span>
+                                        </div>
+                                        <div className={styles.detailItem}>
+                                            <span className={styles.detailLabel}>Actualizado</span>
+                                            <span className={styles.detailValue}>{formatDate(selectedLead.updated_at)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {selectedLead.notes && (
+                                    <div className={styles.detailSection}>
+                                        <h4 className={styles.detailSectionTitle}>📌 Notas</h4>
+                                        <p className={styles.detailDescription}>{selectedLead.notes}</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

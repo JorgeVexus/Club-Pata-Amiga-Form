@@ -95,6 +95,25 @@ export async function GET(request: NextRequest) {
             );
         }
 
+        // If ID is provided, return single lead for detail view
+        const leadId = searchParams.get('id');
+        if (leadId && !exportFormat) {
+            const { data: lead, error: leadError } = await supabase
+                .from('wellness_center_leads')
+                .select('*')
+                .eq('id', leadId)
+                .single();
+            
+            if (leadError) {
+                return NextResponse.json(
+                    { success: false, error: 'Lead no encontrado' },
+                    { status: 404, headers: corsHeaders() }
+                );
+            }
+            
+            return NextResponse.json({ success: true, data: lead }, { headers: corsHeaders() });
+        }
+
         if (exportFormat === 'csv') {
             const csv = convertToCSV(data || []);
             return new NextResponse(csv, {
