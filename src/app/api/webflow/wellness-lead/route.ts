@@ -19,7 +19,19 @@ export async function POST(request: NextRequest) {
         } else {
             // Parse form data (application/x-www-form-urlencoded or multipart/form-data)
             const formData = await request.formData();
-            body = Object.fromEntries(formData.entries());
+            // Handle multiple values for same key (e.g., checkboxes with same name)
+            body = {};
+            for (const [key, value] of formData.entries()) {
+                if (key in body) {
+                    // If key already exists, convert to array
+                    if (!Array.isArray(body[key])) {
+                        body[key] = [body[key]];
+                    }
+                    body[key].push(value);
+                } else {
+                    body[key] = value;
+                }
+            }
         }
         
         // Map common Webflow field names to expected fields
