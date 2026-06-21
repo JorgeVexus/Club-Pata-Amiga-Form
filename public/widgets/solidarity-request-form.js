@@ -214,6 +214,7 @@ class SolidarityRequestForm {
                 gap: 25px !important;
                 margin-top: 20px !important;
                 width: 100% !important;
+                padding-bottom: 50px !important;
             }
             #${this.containerId} .pata-pet-card {
                 background: #FFFFFF !important;
@@ -242,6 +243,7 @@ class SolidarityRequestForm {
                 border-color: var(--pata-black) !important;
                 transform: scale(1.05) !important;
                 z-index: 10 !important;
+                max-width: 300px !important;
             }
             #${this.containerId} .pata-pet-card.selected h4 {
                 color: white !important;
