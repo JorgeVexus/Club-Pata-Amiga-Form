@@ -3618,6 +3618,31 @@
                 box-shadow: 6px 6px 0 #000;
                 background: #ff9f35 !important;
             }
+
+            @media (max-width: 600px) {
+                .pata-tabs-new {
+                    display: grid !important;
+                    grid-template-columns: repeat(2, 1fr) !important;
+                    gap: 8px !important;
+                    margin-bottom: 20px !important;
+                }
+                .pata-tab-new {
+                    min-width: 0 !important;
+                    width: 100% !important;
+                    padding: 4px 8px !important;
+                    gap: 6px !important;
+                    height: 44px !important;
+                    justify-content: flex-start !important;
+                }
+                .pata-tab-name-new {
+                    font-size: 14px !important;
+                    margin-left: 4px !important;
+                }
+                .pata-tab-icon-new {
+                    width: 28px !important;
+                    height: 28px !important;
+                }
+            }
             `;
 
     class UnifiedWidget {
