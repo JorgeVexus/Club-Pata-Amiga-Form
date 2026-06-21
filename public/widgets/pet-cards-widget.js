@@ -787,47 +787,56 @@
                 max-height: 90vh;
                 margin: 0 auto;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 display: flex;
                 flex-direction: column;
             }
             .pata-modal-main { 
                 display: block;
                 height: auto;
-                flex: 1;
+                flex: none;
+                overflow: visible;
             }
             .pata-modal-gallery { 
                 width: 100%; 
                 border-right: none !important; 
                 border-bottom: var(--pata-border-thick); 
                 padding: 15px;
+                overflow-y: visible;
+                overflow: visible;
             }
             .pata-modal-info { 
                 width: 100%; 
                 padding: 24px 20px;
+                overflow-y: visible;
+                overflow: visible;
             }
             .pata-pet-name { font-size: 32px; }
             .pata-modal-story { margin-top: 24px; padding-top: 20px; }
         }
 
         @media (max-width: 600px) {
-            .pata-modal-overlay { padding: 12px; }
+            .pata-modal-overlay { padding: 0; align-items: flex-end; }
             .pata-modal-box { 
-                border-radius: 24px;
-                height: 88vh;
-                max-height: 88vh;
-                /* Ensure scroll works on small mobile */
+                border-radius: 24px 24px 0 0;
+                height: 92vh;
+                max-height: 92vh;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
                 display: flex;
                 flex-direction: column;
             }
             .pata-modal-main {
                 display: block;
                 height: auto;
-                flex: 1;
+                flex: none;
+                overflow: visible;
             }
             .pata-modal-gallery { 
                 padding: 12px; 
-                gap: 8px; 
+                gap: 8px;
+                overflow: visible;
+                overflow-y: visible;
             }
             .pata-gallery-main { 
                 aspect-ratio: 16/9; 
@@ -838,7 +847,9 @@
                 gap: 6px; 
             }
             .pata-modal-info { 
-                padding: 16px 12px; 
+                padding: 16px 12px;
+                overflow: visible;
+                overflow-y: visible;
             }
             .pata-info-grid { 
                 grid-template-columns: 1fr; 
