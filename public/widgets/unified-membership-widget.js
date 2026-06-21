@@ -5249,8 +5249,8 @@
         }
 
         renderRejectedContent(pet) {
-            const rejectionReason = pet.rejection_reason || 'No se especificó un motivo.';
-            const petPhoto = pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
+            const rejectionReason = pet.rejection_reason || pet.admin_notes || pet.last_admin_response || 'No se especificó un motivo.';
+            const petPhoto = pet.photo_url || pet.primary_photo_url || pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
 
             return `
                 <div class="pata-rejected-view-new">
@@ -5280,8 +5280,8 @@
         }
 
         renderActionRequiredContent(pet) {
-            const adminMsg = pet.last_admin_response || pet['action-required-details'] || 'Por favor revisa la información solicitada en el chat.';
-            const petPhoto = pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
+            const adminMsg = pet.last_admin_response || pet.admin_notes || pet['action-required-details'] || 'Por favor revisa la información solicitada en el chat.';
+            const petPhoto = pet.photo_url || pet.primary_photo_url || pet.pet_photo_url || 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5e779839f5517dc2ded_pata-amiga-logo.png';
 
             return `
                 <div class="pata-action-required-view-new">

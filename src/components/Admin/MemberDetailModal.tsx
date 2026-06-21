@@ -947,6 +947,27 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                             </div>
                                         )}
 
+                                        {/* Motivo de Rechazo / Solicitud de Información */}
+                                        {(pet.status === 'rejected' || pet.status === 'action_required') && pet.admin_notes && (
+                                            <div style={{
+                                                background: pet.status === 'rejected' ? 'linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%)' : 'linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%)',
+                                                padding: '15px',
+                                                borderRadius: '12px',
+                                                marginBottom: '15px',
+                                                border: pet.status === 'rejected' ? '1px solid #EF9A9A' : '1px solid #90CAF9'
+                                            }}>
+                                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+                                                    <span style={{ fontSize: '18px' }}>{pet.status === 'rejected' ? '❌' : '📋'}</span>
+                                                    <strong style={{ color: pet.status === 'rejected' ? '#C62828' : '#1565C0' }}>
+                                                        {pet.status === 'rejected' ? 'Motivo del Rechazo:' : 'Información Solicitada:'}
+                                                    </strong>
+                                                </div>
+                                                <p style={{ margin: 0, color: pet.status === 'rejected' ? '#B71C1C' : '#0D47A1', fontWeight: 600 }}>
+                                                    "{pet.admin_notes}"
+                                                </p>
+                                            </div>
+                                        )}
+
                                         {/* Pet Photo Section - Premium Editorial Layout */}
                                         <div className={styles.petPhotosSection}>
                                             <div className={styles.premiumGallery}>
