@@ -351,7 +351,8 @@
         }
 
         isEligible() {
-            // Solo mostrar si tiene membresía activa (pagada) Y no está cancelada
+            // Solo mostrar si tiene membresía activa (pagada)
+            // Si canceló pero su cobertura aún no expira, seguir mostrando
             if (!this.member) return false;
             
             // Verificar en Memberstack
@@ -369,6 +370,17 @@
 
             // Verificar en nuestra API (más preciso - detecta cancelaciones Stripe)
             if (this.paymentMethod && this.paymentMethod.is_cancelled === true) {
+                // Si canceló pero su periodo pagado aún no termina, seguir mostrando
+                var endDate = this.paymentMethod.membership_end_date;
+                if (endDate) {
+                    var coverageEnd = new Date(endDate);
+                    var now = new Date();
+                    if (coverageEnd > now) {
+                        console.log('🚨 [EMERGENCY] Membresía cancelada pero cobertura vigente hasta:', endDate);
+                        return true;
+                    }
+                }
+                // Cobertura expirada o sin fecha de fin → no mostrar
                 return false;
             }
 
