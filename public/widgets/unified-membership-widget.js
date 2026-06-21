@@ -3642,6 +3642,27 @@
                     width: 28px !important;
                     height: 28px !important;
                 }
+                .pata-pet-info-list {
+                    flex-direction: row !important;
+                    flex-wrap: wrap !important;
+                    gap: 8px !important;
+                    margin-bottom: 15px !important;
+                    justify-content: flex-start !important;
+                }
+                .pata-pet-info-list li {
+                    font-size: 14px !important;
+                    gap: 4px !important;
+                }
+                .pata-pet-info-list li::before {
+                    display: none !important;
+                }
+                .pata-pet-info-list li:not(:first-child)::before {
+                    content: "|" !important;
+                    display: inline-block !important;
+                    margin-right: 4px !important;
+                    color: rgba(0, 0, 0, 0.3) !important;
+                    font-size: 14px !important;
+                }
             }
             `;
 
