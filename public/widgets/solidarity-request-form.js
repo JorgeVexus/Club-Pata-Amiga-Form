@@ -207,32 +207,143 @@ class SolidarityRequestForm {
                 .pata-section-header { margin: 40px 0 25px 0; }
             }
 
-            /* Step 1: Pet Grid */
-            .pata-pet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 25px; margin-top: 20px; width: 100%; }
-            @media (max-width: 768px) {
-                .pata-pet-grid { grid-template-columns: 1fr; gap: 20px; margin: 0; justify-items: center; }
-                .pata-pet-card { padding: 15px; border-radius: 40px; width: 100%; max-width: 280px; }
-                .pata-pet-card.selected { width: 100% !important; max-width: 300px; transform: scale(1.02); }
-                .pata-pet-card h4 { font-size: 24px; text-align: center; margin-left: 0; }
-                .pata-pet-badge-pill { padding: 8px 16px; font-size: 12px; width: 100%; justify-content: center; }
-                .pata-pet-img-wrap { width: 100% !important; margin: 0 auto 15px auto !important; max-width: 220px; }
+            /* Step 1: Pet Grid & Card Styling Overrides (unifying widgets & preventing selector pollution) */
+            #${this.containerId} .pata-pet-grid {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) !important;
+                gap: 25px !important;
+                margin-top: 20px !important;
+                width: 100% !important;
             }
-            .pata-pet-card { position: relative; cursor: pointer; transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); padding: 15px; border-radius: 45px; border: 2px solid transparent; outline: none; }
-            .pata-pet-card:focus-visible { border-color: var(--pata-black); box-shadow: 0 0 0 4px var(--pata-turquoise); }
-            .pata-pet-card:hover { transform: translateY(-5px); }
-            .pata-pet-card.selected { background: var(--pata-orange); border-color: var(--pata-black); transform: scale(1.05); z-index: 10; }
-            .pata-pet-card.selected h4 { color: white; }
-            .pata-pet-card.disabled { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
+            #${this.containerId} .pata-pet-card {
+                background: #FFFFFF !important;
+                border-radius: 45px !important;
+                padding: 24px 20px !important;
+                border: 2px solid var(--pata-black) !important;
+                box-shadow: none !important;
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                cursor: pointer !important;
+                transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+                position: relative !important;
+                transform: none !important;
+                gap: 0 !important;
+            }
+            #${this.containerId} .pata-pet-card:hover {
+                transform: translateY(-5px) !important;
+            }
+            #${this.containerId} .pata-pet-card.selected {
+                background: var(--pata-orange) !important;
+                border-color: var(--pata-black) !important;
+                transform: scale(1.05) !important;
+                z-index: 10 !important;
+            }
+            #${this.containerId} .pata-pet-card.selected h4 {
+                color: white !important;
+            }
+            #${this.containerId} .pata-pet-card.disabled {
+                opacity: 0.6 !important;
+                cursor: not-allowed !important;
+                border-color: #A0AEC0 !important;
+            }
+            #${this.containerId} .pata-pet-img-wrap {
+                width: 100% !important;
+                aspect-ratio: 1 !important;
+                border-radius: 35px !important;
+                overflow: hidden !important;
+                margin: 0 auto 15px auto !important;
+                border: 2.5px solid var(--pata-black) !important;
+                background: #E2E8F0 !important;
+                max-width: 200px !important;
+            }
+            #${this.containerId} .pata-pet-img-wrap img {
+                width: 100% !important;
+                height: 100% !important;
+                object-fit: cover !important;
+            }
+            #${this.containerId} .pata-pet-card h4 {
+                font-family: 'Fraiche', sans-serif !important;
+                font-size: 28px !important;
+                margin: 0 auto 12px auto !important;
+                font-weight: 900 !important;
+                letter-spacing: -0.5px !important;
+                text-align: center !important;
+                color: var(--pata-black) !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill {
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                gap: 10px !important;
+                background: var(--pata-lime) !important;
+                color: var(--pata-black) !important;
+                padding: 10px 20px !important;
+                border-radius: 35px !important;
+                border: 2px solid var(--pata-black) !important;
+                font-size: 14px !important;
+                font-weight: 800 !important;
+                box-shadow: 2px 2px 0px var(--pata-black) !important;
+                width: auto !important;
+                max-width: 100% !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill.waiting {
+                background: #E2E8F0 !important;
+                color: #718096 !important;
+                border-color: #A0AEC0 !important;
+                box-shadow: none !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill .check-icon {
+                width: 20px !important;
+                height: 20px !important;
+                background: var(--pata-black) !important;
+                border-radius: 50% !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                flex-shrink: 0 !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill.waiting .check-icon {
+                background: #718096 !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill .check-icon svg {
+                width: 12px !important;
+                height: 12px !important;
+                color: var(--pata-lime) !important;
+            }
+            #${this.containerId} .pata-pet-badge-pill.waiting .check-icon svg {
+                color: white !important;
+            }
 
-            .pata-pet-img-wrap { width: 100%; aspect-ratio: 1; border-radius: 35px; overflow: hidden; margin-bottom: 15px; border: 2.5px solid var(--pata-black); background: #E2E8F0; }
-            .pata-pet-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
-
-            .pata-pet-card h4 { font-family: 'Fraiche', sans-serif; font-size: 28px; margin: 0 0 12px 10px; font-weight: 900; letter-spacing: -0.5px; }
-
-            .pata-pet-badge-pill { display: inline-flex; align-items: center; gap: 10px; background: var(--pata-lime); color: var(--pata-black); padding: 10px 20px; border-radius: 35px; border: 2px solid var(--pata-black); font-size: 14px; font-weight: 800; box-shadow: 2px 2px 0px var(--pata-black); }
-            .pata-pet-badge-pill.waiting { background: #CBD5E0; opacity: 0.7; box-shadow: none; }
-            .pata-pet-badge-pill .check-icon { width: 20px; height: 20px; background: var(--pata-black); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-            .pata-pet-badge-pill .check-icon svg { width: 12px; height: 12px; color: var(--pata-lime); }
+            @media (max-width: 768px) {
+                #${this.containerId} .pata-pet-grid {
+                    grid-template-columns: 1fr 1fr !important;
+                    gap: 15px !important;
+                    justify-items: center !important;
+                }
+                #${this.containerId} .pata-pet-card {
+                    padding: 15px 10px !important;
+                    border-radius: 35px !important;
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                #${this.containerId} .pata-pet-img-wrap {
+                    border-radius: 25px !important;
+                    margin-bottom: 10px !important;
+                }
+                #${this.containerId} .pata-pet-card h4 {
+                    font-size: 20px !important;
+                    margin-bottom: 8px !important;
+                }
+                #${this.containerId} .pata-pet-badge-pill {
+                    padding: 8px 12px !important;
+                    font-size: 11px !important;
+                }
+            }
 
             /* Step 2: Request Type */
             .pata-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px; padding-bottom: 30px; width: 100%; }
@@ -441,6 +552,43 @@ class SolidarityRequestForm {
         });
     }
 
+    sortPets(pets) {
+        if (!Array.isArray(pets)) return [];
+        return [...pets].sort((a, b) => {
+            const getGroup = (pet) => {
+                const isAct = !(pet.is_active === false || pet.is_active === 'false' || pet.is_active === 0 || pet.is_active === '0' || (typeof pet.is_active === 'string' && pet.is_active.toLowerCase() === 'false'));
+                if (!isAct) return 3; // Group 3: Mascotas dadas de baja
+
+                const isApproved = pet.status === 'approved';
+                const carencia = this.calculateCarencia(pet);
+                const hasFinishedWaiting = !carencia.isWaiting;
+
+                if (isApproved && hasFinishedWaiting) {
+                    return 1; // Group 1: Mascotas con acceso al apoyo
+                } else {
+                    return 2; // Group 2: Mascotas con tiempo de espera / pendiente aprobación
+                }
+            };
+
+            const groupA = getGroup(a);
+            const groupB = getGroup(b);
+
+            if (groupA !== groupB) {
+                return groupA - groupB;
+            }
+
+            if (groupA === 2) {
+                const carenciaA = this.calculateCarencia(a);
+                const carenciaB = this.calculateCarencia(b);
+                return carenciaA.daysRemaining - carenciaB.daysRemaining;
+            }
+
+            const nameA = (a.name || '').toLowerCase();
+            const nameB = (b.name || '').toLowerCase();
+            return nameA.localeCompare(nameB);
+        });
+    }
+
     async fetchData() {
         if (this.useMock) {
             this.loadMockData();
@@ -461,7 +609,7 @@ class SolidarityRequestForm {
             const statsData = await statsRes.json();
 
             if (statsData.success) {
-                this.state.pets = statsData.pets || [];
+                this.state.pets = this.sortPets(statsData.pets || []);
             } else {
                 throw new Error(statsData.error || 'Error al cargar información de tus mascotas.');
             }
@@ -478,11 +626,12 @@ class SolidarityRequestForm {
     }
 
     loadMockData() {
-        this.state.pets = [
+        const mockPets = [
             { id: 'p1', name: 'spike', breed: 'Schnauzer', primary_photo_url: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=300', waiting_period_end: new Date(Date.now() - 86400000).toISOString() },
             { id: 'p2', name: 'Luna', breed: 'Siamés', primary_photo_url: 'https://images.unsplash.com/photo-1513245543132-31f507417b26?w=300', waiting_period_end: new Date(Date.now() + 86400000 * 30).toISOString() },
             { id: 'p3', name: 'Coco', breed: 'Pug', primary_photo_url: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=300', waiting_period_end: new Date(Date.now() - 86400000 * 10).toISOString() }
         ];
+        this.state.pets = this.sortPets(mockPets);
         this.state.alliedCenters = [
             { id: 'c1', name: 'Hospital Veterinario Pata Amiga Centro' },
             { id: 'c2', name: 'Clínica ProPet' }
@@ -607,7 +756,8 @@ class SolidarityRequestForm {
                     </div>
                     <div class="pata-pet-grid">
                         ${this.state.ui.showAllPets ? this.state.pets.map(pet => {
-                            const isApproved = pet.status === 'approved';
+                            const isInactive = pet.is_active === false || pet.is_active === 'false' || pet.is_active === 0 || pet.is_active === '0' || (typeof pet.is_active === 'string' && pet.is_active.toLowerCase() === 'false');
+                            const isApproved = pet.status === 'approved' && !isInactive;
                             const carencia = this.calculateCarencia(pet);
                             const hasFinishedWaiting = !carencia.isWaiting;
                             const isEligible = isApproved && hasFinishedWaiting;
@@ -615,10 +765,11 @@ class SolidarityRequestForm {
                             const photoUrl = pet.photo_url || pet.primary_photo_url || 'https://app.pataamiga.mx/Assets/placeholder-pet.png';
                             let statusLabel = 'Apoyo activo';
                             let statusClass = '';
-                            if (!isApproved) { statusLabel = 'Pendiente aprobación'; statusClass = 'waiting'; }
+                            if (isInactive) { statusLabel = 'Dada de baja'; statusClass = 'waiting'; }
+                            else if (!isApproved) { statusLabel = 'Pendiente aprobación'; statusClass = 'waiting'; }
                             else if (!hasFinishedWaiting) { statusLabel = 'En espera'; statusClass = 'waiting'; }
                             return `
-                                <div class="pata-pet-card ${isSelected ? 'selected' : ''} ${!isEligible ? 'disabled' : ''}" 
+                                <div class="pata-pet-card ${isSelected ? 'selected' : ''} ${!isEligible ? 'disabled' : ''} ${isInactive ? 'inactive' : ''}" 
                                      data-id="${pet.id}" 
                                      role="button" 
                                      tabindex="${!isEligible ? '-1' : '0'}" 
@@ -627,7 +778,7 @@ class SolidarityRequestForm {
                                     <div class="pata-pet-img-wrap"><img src="${photoUrl}" alt="${pet.name}" onerror="this.src='https://app.pataamiga.mx/Assets/placeholder-pet.png'"></div>
                                     <h4>${pet.name}</h4>
                                     <div class="pata-pet-badge-pill ${statusClass}">
-                                        <div class="check-icon" style="${!isEligible ? 'background: #718096;' : ''}">
+                                        <div class="check-icon">
                                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                         </div>
                                         ${statusLabel}
