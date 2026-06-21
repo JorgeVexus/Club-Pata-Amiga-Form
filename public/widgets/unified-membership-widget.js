@@ -4385,7 +4385,7 @@
                             <div class="pata-rejected-card-new">
                                 <div class="pata-rejected-card-main-new">
                                     <h2 class="pata-rejected-card-title-new" data-od-id="main-status">tu solicitud no fue aprobada</h2>
-                                    <p class="pata-rejected-card-intro-new">Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.</p>
+                                    <p class="pata-rejected-card-intro-new">Lamentamos informarte que la solicitud de ${pet?.name || 'tu mascota'} no pudo ser aprobada en esta ocasión. Con el compromiso de mantener una total transparencia en nuestro proceso, te compartimos la razón detallada a continuación:</p>
                                 </div>
                                 <div class="pata-rejected-card-details-new">
                                     <span class="pata-rejected-detail-label-new">Motivo del rechazo:</span>
@@ -5255,7 +5255,7 @@
             return `
                 <div class="pata-rejected-view-new">
                     <h2 class="pata-rejected-title-new">La solicitud de ${pet.name} no fue aceptada</h2>
-                    <p class="pata-rejected-subtitle-new">Sabemos que este no es el resultado que esperabas y queremos explicarte el motivo con toda transparencia.</p>
+                    <p class="pata-rejected-subtitle-new">Lamentamos informarte que la solicitud de ${pet.name} no pudo ser aprobada en esta ocasión. Con el compromiso de mantener una total transparencia en nuestro proceso, te compartimos la razón detallada a continuación:</p>
                     
                     <div class="pata-rejected-grid-new">
                         <div class="pata-rejected-photo-new">
