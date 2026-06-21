@@ -4244,7 +4244,7 @@
                                 <h2 class="pata-member-pending-title-new">tu membresía está en revisión</h2>
                                 <p class="pata-member-pending-subtitle-new">
                                     Recibimos tu solicitud y ya estamos revisando la información para poder continuar con tu proceso. 
-                                    En un máximo de 24-48 horas te notificaremos por correo el resultado.
+                                    En un máximo de 24-48 horas te notificaremos el resultado.
                                 </p>
                                 
                                 <div class="pata-action-required-progress-container" style="margin-bottom: 40px;">
@@ -4479,7 +4479,7 @@
                             <div class="pata-header-sub-new">
                                 ${isMemberApproved
                     ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>'
-                    : '<p>Gracias por tu paciencia. <br> En un máximo de 24-48 horas te notificaremos por correo el resultado.<br> Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>'}
+                    : '<p>Gracias por tu paciencia. <br> En un máximo de 24-48 horas te notificaremos el resultado.<br> Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>'}
                             </div>
                         </header>
 
@@ -4602,7 +4602,7 @@
                             <h1>¡hola, ${firstName}!</h1>
                             <div class="pata-pending-header-sub">
                                 <p>Gracias por tu paciencia</p>
-                                <p>En un máximo de 24-48 horas te notificaremos por correo el resultado. Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>
+                                <p>En un máximo de 24-48 horas te notificaremos el resultado. Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>
                             </div>
                         </header>
 
