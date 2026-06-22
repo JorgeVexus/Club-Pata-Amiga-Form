@@ -517,7 +517,7 @@ class SolidarityDashboard {
             ${scope} .pata-dashboard-wrapper { font-family: 'Outfit', sans-serif; color: var(--pata-black); width: 100%; display: flex; flex-direction: column; align-items: center; gap: 50px; }
 
             /* Header */
-            ${scope} .pata-header { width: 100%; max-width: 1400px; padding: 60px 40px 120px 40px; border-radius: 0 0 50px 50px; text-align: left; margin-bottom: -80px; background: var(--pata-turquoise); }
+            ${scope} .pata-header { width: 100%; max-width: 1400px; padding: 60px 40px 120px 40px; border-radius: 0 0 50px 50px; text-align: left; margin-bottom: -80px; background: transparent; }
             ${scope} .pata-header h1 { font-family: 'Fraiche', sans-serif; font-weight: 900; font-size: 64px; color: var(--pata-white); margin: 0; line-height: 1; }
             ${scope} .pata-header p { font-size: 20px; color: var(--pata-white); opacity: 0.9; margin-top: 10px; }
 

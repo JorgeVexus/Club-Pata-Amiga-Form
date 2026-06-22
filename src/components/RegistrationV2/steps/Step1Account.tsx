@@ -36,7 +36,7 @@ export default function Step1Account({
         email: defaultEmail || data?.account?.email || '',
         password: '',
         confirmPassword: '',
-        phone: ''
+        phone: data?.account?.phone || member?.customFields?.phone || ''
     });
 
     const [mode, setMode] = useState<'register' | 'login'>(autoLoginMode ? 'login' : 'register');
@@ -52,7 +52,11 @@ export default function Step1Account({
 
     useEffect(() => {
         if (member?.auth?.email) {
-            setFormData(prev => ({ ...prev, email: member.auth.email }));
+            setFormData(prev => ({ 
+                ...prev, 
+                email: member.auth.email,
+                phone: prev.phone || member.customFields?.phone || ''
+            }));
         } else if (defaultEmail) {
             setFormData(prev => ({ ...prev, email: defaultEmail }));
         }
@@ -123,6 +127,17 @@ export default function Step1Account({
 
         if (mode === 'register' && formData.password !== formData.confirmPassword) {
             newErrors.confirmPassword = 'Las contraseñas no coinciden';
+        }
+
+        if (mode === 'register') {
+            if (!formData.phone) {
+                newErrors.phone = 'Teléfono es requerido';
+            } else {
+                const cleanPhone = formData.phone.replace(/\D/g, '');
+                if (cleanPhone.length !== 10) {
+                    newErrors.phone = 'El teléfono debe tener 10 dígitos';
+                }
+            }
         }
 
         setErrors(newErrors);
@@ -423,12 +438,19 @@ export default function Step1Account({
                                     </>
                                 )}
 
-                                {/* Teléfono opcional */}
+                                {/* Teléfono obligatorio */}
                                 <PhoneInput
                                     label="Número de teléfono"
                                     name="phone"
                                     value={formData.phone}
-                                    onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
+                                    onChange={(value) => {
+                                        setFormData(prev => ({ ...prev, phone: value }));
+                                        if (errors.phone) {
+                                            setErrors(prev => ({ ...prev, phone: '' }));
+                                        }
+                                    }}
+                                    error={errors.phone}
+                                    required
                                 />
 
                                 <button

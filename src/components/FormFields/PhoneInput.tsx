@@ -16,6 +16,8 @@ interface PhoneInputProps {
     helpText?: string;
     required?: boolean;
     memberstackField?: string;
+    readOnly?: boolean;
+    disabled?: boolean;
 }
 
 export default function PhoneInput({
@@ -28,6 +30,8 @@ export default function PhoneInput({
     helpText,
     required = false,
     memberstackField,
+    readOnly = false,
+    disabled = false,
 }: PhoneInputProps) {
     const formatPhoneNumber = (input: string): string => {
         // Remover todo excepto números
@@ -58,7 +62,7 @@ export default function PhoneInput({
                 {required && <span className={styles.required}> *</span>}
             </label>
 
-            <div className={styles.inputWrapper}>
+            <div className={`${styles.inputWrapper} ${readOnly ? styles.readOnly : ''} ${disabled ? styles.disabled : ''}`}>
                 <div className={styles.prefix}>
                     <span className={styles.flag}>🇲🇽</span>
                     <span className={styles.code}>+52</span>
@@ -75,6 +79,8 @@ export default function PhoneInput({
                     className={`${styles.input} ${error ? 'input-error' : ''}`}
                     required={required}
                     data-ms-member={memberstackField}
+                    readOnly={readOnly}
+                    disabled={disabled}
                 />
             </div>
 

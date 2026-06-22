@@ -74,6 +74,40 @@
     border-color: var(--color-error);
 }
 
+.inputWrapper.readOnly {
+    background: rgba(248, 249, 250, 0.8);
+    cursor: default;
+}
+
+.inputWrapper.readOnly:hover {
+    background: rgba(248, 249, 250, 0.8);
+    border-color: #E2E8F0;
+}
+
+.inputWrapper.disabled {
+    background: rgba(248, 249, 250, 0.8);
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.inputWrapper.disabled:hover {
+    background: rgba(248, 249, 250, 0.8);
+    border-color: #E2E8F0;
+}
+
+.inputWrapper.readOnly .prefix,
+.inputWrapper.disabled .prefix {
+    background: rgba(125, 216, 213, 0.1);
+}
+
+.input:disabled {
+    cursor: not-allowed;
+}
+
+.input[readonly] {
+    cursor: default;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;

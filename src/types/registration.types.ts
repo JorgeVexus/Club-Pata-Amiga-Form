@@ -13,6 +13,7 @@ export interface Step1AccountData {
     email: string;
     password: string;
     confirmPassword?: string;
+    phone?: string;
 }
 
 /** Paso 2: Datos básicos de mascota - Solo 3 campos */

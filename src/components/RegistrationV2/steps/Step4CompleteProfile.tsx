@@ -605,6 +605,7 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                             onChange={(value) => setFormData(prev => ({ ...prev, phone: value }))}
                             onBlur={handlePhoneBlur}
                             error={errors.phone}
+                            readOnly
                         />
                     </div>
 

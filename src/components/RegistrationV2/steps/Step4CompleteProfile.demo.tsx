@@ -33,7 +33,7 @@ export default function Step4CompleteProfileDemo({ data, member, onNext, showToa
         birthDate: '',
         nationality: '',
         nationalityCode: '',
-        phone: '',
+        phone: data?.profile?.phone || data?.account?.phone || member?.customFields?.phone || '',
         email: member?.auth?.email || data?.account?.email || '',
         curp: '',
         postalCode: '',
@@ -58,7 +58,7 @@ export default function Step4CompleteProfileDemo({ data, member, onNext, showToa
                 birthDate: profile.birthDate || '',
                 nationality: profile.nationality || '',
                 nationalityCode: profile.nationalityCode || '',
-                phone: profile.phone || '',
+                phone: profile.phone || data?.account?.phone || member?.customFields?.phone || '',
                 email: profile.email || prev.email,
                 curp: profile.curp || '',
                 postalCode: profile.postalCode || '',
@@ -272,6 +272,7 @@ export default function Step4CompleteProfileDemo({ data, member, onNext, showToa
                         onChange={(value) => setFormData({ ...formData, phone: value })}
                         error={errors.phone}
                         required
+                        readOnly
                     />
 
                     <TextInput
