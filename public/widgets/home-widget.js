@@ -1307,7 +1307,7 @@
                     <!-- 1. Hero Section -->
                     <div class="pata-container pata-hero-section">
                         <div class="pata-hero-content pata-animate-on-scroll">
-                            <h1 class="pata-h1">Plan de Salud<br><span class="green-text">para tu mascota</span></h1>
+                            <h1 class="pata-h1">Membresía de Salud<br><span class="green-text">para tu mascota</span></h1>
                             
                             <div class="pata-hero-grid">
                                 <div class="pata-hero-bullet">

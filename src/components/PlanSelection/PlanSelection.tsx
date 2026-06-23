@@ -61,7 +61,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
 
     const handleNext = useCallback(async () => {
         if (!selectedPlanId) {
-            setError('⚠️ ¡No te quedes sin plan! Elige mensualidad o anualidad para continuar.');
+            setError('⚠️ ¡No te quedes sin membresía! Elige mensualidad o anualidad para continuar.');
             return;
         }
 
@@ -127,9 +127,9 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
         <div className={styles.container}>
             {/* Header */}
             <div className={styles.header}>
-                <h1 className={styles.title}>Ya casi! Elige el plan que más te funcione 😊</h1>
+                <h1 className={styles.title}>Ya casi! Elige la membresía que más te funcione 😊</h1>
                 <p className={styles.subtitle}>
-                    Ambos planes incluyen el mismo cariño y respaldo para ti y tu peludo 🐾❤️
+                    Ambas membresías incluyen el mismo cariño y respaldo para ti y tu mascota 🐾❤️
                 </p>
             </div>
 
@@ -196,7 +196,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
 
             {/* Footer Info */}
             <div className={styles.footerInfo}>
-                <p>Todos los planes incluyen acceso a beneficios, chat veterinario y apoyo económico.</p>
+                <p>Todas las membresías incluyen acceso a beneficios, chat veterinario y apoyo económico.</p>
                 <p>El apoyo económico se activa a partir del 6° mes (o antes si tu compañero es adoptado o llegas con código referido).</p>
                 <p style={{ fontWeight: '700', color: '#2D3748' }}>Recuerda que puedes cancelar tu membresía en cualquier momento.</p>
             </div>

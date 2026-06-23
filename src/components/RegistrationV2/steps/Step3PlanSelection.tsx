@@ -24,7 +24,7 @@ const PLANS = [
         id: 'prc_mensual-452k30jah',
         name: 'Mensual',
         price: 159,
-        priceDisplay: '$159',
+        priceDisplay: '$159 MXN',
         description: 'Toda la protección mes a mes',
         features: [
             'Vacunación anual (Hasta $300)',
@@ -38,7 +38,7 @@ const PLANS = [
         id: 'prc_anual-o9d101ta',
         name: 'Anual',
         price: 1699,
-        priceDisplay: '$1,699',
+        priceDisplay: '$1,699 MXN',
         description: 'Ahorra 209 pesos',
         popular: true,
         features: [
@@ -206,7 +206,7 @@ export default function Step3PlanSelection({
         }
 
         if (!selectedPlan) {
-            showToast('⚠️ ¡No te quedes sin plan! Elige uno para continuar.', 'error');
+            showToast('⚠️ ¡No te quedes sin membresía! Elige una para continuar.', 'error');
             setShowValidationHint(true);
             setTimeout(() => setShowValidationHint(false), 800);
             return;
@@ -277,7 +277,7 @@ export default function Step3PlanSelection({
 
                     <div className={styles.formHeader}>
                         <h2 className={styles.formTitle}>
-                            {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu plan'}
+                            {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu membresía'}
                         </h2>
                         <p className={styles.formSubtitle}>
                             Protegiendo a <strong>{petName}</strong> ({petType})
@@ -444,7 +444,7 @@ export default function Step3PlanSelection({
                                         return;
                                     }
                                     if (!selectedPlan || !termsAccepted) {
-                                        showToast('Selecciona un plan y acepta los términos primero', 'warning');
+                                        showToast('Selecciona una membresía y acepta los términos primero', 'warning');
                                         return;
                                     }
                                     onSkipPayment?.(selectedPlan, termsAccepted);
