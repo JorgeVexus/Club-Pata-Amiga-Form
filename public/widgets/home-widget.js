@@ -1684,7 +1684,7 @@
                     try {
                         await window.$memberstackDom.purchasePlansWithCheckout({
                             priceId: priceId,
-                            successUrl: window.location.origin + '/completar-perfil',
+                            successUrl: `${CONFIG.apiUrl}/completar-perfil`,
                             cancelUrl: window.location.href
                         });
                     } catch (err) {
@@ -1692,7 +1692,7 @@
                         alert('Hubo un error al iniciar el checkout. Inténtalo de nuevo.');
                     }
                 } else {
-                    window.location.href = `/registro?step=1&plan=${planType}`;
+                    window.location.href = `${CONFIG.apiUrl}/registro?step=1&plan=${planType}`;
                 }
             };
 
