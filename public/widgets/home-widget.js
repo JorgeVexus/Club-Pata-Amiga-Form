@@ -1415,7 +1415,7 @@
                                         <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba555c21a920f934c1a_emergencias.svg" alt="Emergencias" class="pata-service-img-icon">
                                     </div>
                                     <h3 class="pata-service-title">Emergencias</h3>
-                                    <p class="pata-service-desc">Reintegro de hasta 3,000 pesos para urgencias, análisis y estudios, cirugía y hospitalización.</p>
+                                    <p class="pata-service-desc">Reintegro de hasta $3,000 MXN para urgencias, análisis y estudios, cirugía y hospitalización.</p>
                                 </div>
 
                                 <!-- Prevención -->
@@ -1424,7 +1424,7 @@
                                         <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba529ac04b87511dc4c_prevencion.svg" alt="Prevención" class="pata-service-img-icon">
                                     </div>
                                     <h3 class="pata-service-title">Prevención</h3>
-                                    <p class="pata-service-desc">Reintegro de hasta 300 pesos para sus vacunas anuales.</p>
+                                    <p class="pata-service-desc">Reintegro de hasta $300 MXN para sus vacunas anuales.</p>
                                 </div>
 
                                 <!-- Apoyo por Fallecimiento -->
@@ -1433,7 +1433,7 @@
                                         <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba51de4757f932ce432_apoyo%20por%20fallecimiento.svg" alt="Apoyo por fallecimiento" class="pata-service-img-icon">
                                     </div>
                                     <h3 class="pata-service-title">Apoyo por fallecimiento</h3>
-                                    <p class="pata-service-desc">Reintegro de hasta 2,000 pesos en caso de fallecimiento, para su despedida digna.</p>
+                                    <p class="pata-service-desc">Reintegro de hasta $2,000 MXN en caso de fallecimiento, para su despedida digna.</p>
                                 </div>
 
                             </div>

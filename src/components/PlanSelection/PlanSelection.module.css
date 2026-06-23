@@ -83,6 +83,14 @@
     margin-right: 2px;
 }
 
+.currencyName {
+    font-size: 0.3em;
+    align-self: flex-end;
+    margin-left: 8px;
+    margin-bottom: 0.8rem;
+    font-weight: 700;
+}
+
 .planName {
     font-family: 'Fraiche', sans-serif;
     font-size: 3rem;

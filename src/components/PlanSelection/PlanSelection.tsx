@@ -141,7 +141,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     onClick={() => handleSelectPlan(PLANS.MONTHLY.id)}
                 >
                     <div className={styles.price}>
-                        <span className={styles.currencySymbol}>$</span>{PLANS.MONTHLY.price}
+                        <span className={styles.currencySymbol}>$</span>{PLANS.MONTHLY.price} <span className={styles.currencyName}>MXN</span>
                     </div>
                     <div className={styles.planName}>{PLANS.MONTHLY.name}</div>
                     <div className={styles.description}>
@@ -170,7 +170,7 @@ export default function PlanSelection({ onSuccess, onBack }: PlanSelectionProps 
                     onClick={() => handleSelectPlan(PLANS.ANNUAL.id)}
                 >
                     <div className={styles.price}>
-                        <span className={styles.currencySymbol}>$</span>{PLANS.ANNUAL.price}
+                        <span className={styles.currencySymbol}>$</span>{PLANS.ANNUAL.price} <span className={styles.currencyName}>MXN</span>
                     </div>
                     <div className={styles.planName}>{PLANS.ANNUAL.name}</div>
                     <div className={styles.description}>
