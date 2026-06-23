@@ -26,7 +26,7 @@
                 questions: [
                     {
                         q: '¿Qué es Pata Amiga?',
-                        a: 'Somos una comunidad mexicana que cuida de tu peludo como familia. Con tu membresía, cada contribución se suma a nuestro apoyo económico para que tengas tranquilidad y tu compañero de cuatro patas tenga respaldo económico cuando más lo necesite.<br><br>Nuestro apoyo económico no cubre la totalidad de los gastos veterinarios, pero sí es un respaldo económico real que te acompaña y te ayuda a enfrentar esos momentos con menos peso.<br><br>Puedes registrar hasta 3 peludos y cuentas con:<br>• Apoyo económico de emergencia.<br>• Atención veterinaria 24/7.<br>• Programas de salud y vacunación.'
+                        a: 'Somos una comunidad mexicana que cuida de tu mascota como familia. Con tu membresía, cada contribución se suma a nuestro apoyo económico para que tengas tranquilidad y tu compañero de cuatro patas tenga respaldo económico cuando más lo necesite.<br><br>Nuestro apoyo económico no cubre la totalidad de los gastos veterinarios, pero sí es un respaldo económico real que te acompaña y te ayuda a enfrentar esos momentos con menos peso.<br><br>Puedes registrar hasta 3 mascotas y cuentas con:<br>• Apoyo económico de emergencia.<br>• Atención veterinaria 24/7.<br>• Programas de salud y vacunación.'
                     }
                 ]
             },
@@ -35,11 +35,11 @@
                 questions: [
                     {
                         q: '¿Cuántas membresías existen?',
-                        a: 'Una sola, pensada para que sea sencilla. La puedes adquirir de forma mensual o anual, según lo que mejor funcione para ti y tu peludo.'
+                        a: 'Una sola, pensada para que sea sencilla. La puedes adquirir de forma mensual o anual, según lo que mejor funcione para ti y tu mascota.'
                     },
                     {
                         q: '¿Cuánto dura la membresía?',
-                        a: 'Tu membresía tiene vigencia de un mes o un año y se renueva automáticamente para que tu peludo nunca se quede sin respaldo.'
+                        a: 'Tu membresía tiene vigencia de un mes o un año y se renueva automáticamente para que tu mascota nunca se quede sin respaldo.'
                     },
                     {
                         q: '¿Qué formas de contribución aceptan?',
@@ -52,20 +52,20 @@
                 questions: [
                     {
                         q: '¿Con qué cuento al ser parte de la manada?',
-                        a: 'Al unirte a Pata Amiga, tú y hasta 3 peludos cuentan con:<br>• Chat veterinario 24/7.<br>• Apoyo económico de emergencia.<br>• Respaldo económico en vacunación.<br>• Acompañamiento en caso de despedida.<br>• Donaciones a refugios por cada 1,000 miembros que se suman a la comunidad.'
+                        a: 'Al unirte a Pata Amiga, tú y hasta 3 mascotas cuentan con:<br>• Chat veterinario 24/7.<br>• Apoyo económico de emergencia.<br>• Respaldo económico en vacunación.<br>• Acompañamiento en caso de despedida.<br>• Donaciones a refugios por cada 1,000 miembros que se suman a la comunidad.'
                     }
                 ]
             },
             {
-                category: 'Sobre tus peludos',
+                category: 'Sobre tus mascotas',
                 questions: [
                     {
-                        q: '¿Puedo registrar cualquier tipo de compañero peludo?',
+                        q: '¿Puedo registrar cualquier tipo de compañero mascota?',
                         a: 'Por el momento nuestra manada recibe únicamente perros y gatos.'
                     },
                     {
-                        q: '¿Cuántos peludos puedo registrar?',
-                        a: 'Hasta 3 peludos por membresía.'
+                        q: '¿Cuántas mascotas puedo registrar?',
+                        a: 'Hasta 3 mascotas por membresía.'
                     }
                 ]
             },
@@ -74,7 +74,7 @@
                 questions: [
                     {
                         q: '¿Quiénes son los embajadores?',
-                        a: 'Personas y refugios que se unen a la comunidad y reciben incentivos económicos para ayudar a difundir el proyecto y lograr que más familias y peludos estén protegidos.'
+                        a: 'Personas y refugios que se unen a la comunidad y reciben incentivos económicos para ayudar a difundir el proyecto y lograr que más familias y mascotas estén protegidas.'
                     }
                 ]
             },
@@ -416,7 +416,7 @@
             background-image: url('data:image/svg+xml;utf8,<svg width="17" height="17" viewBox="0 0 17 17" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 8.5L6.5 12.5L14 3.5" stroke="%231b1b1b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>');
         }
 
-        /* 3. Todo lo que tu peludo necesita Section */
+        /* 3. Todo lo que tu mascota necesita Section */
         .pata-services-section {
             background: var(--pata-white);
         }
@@ -1307,7 +1307,7 @@
                     <!-- 1. Hero Section -->
                     <div class="pata-container pata-hero-section">
                         <div class="pata-hero-content pata-animate-on-scroll">
-                            <h1 class="pata-h1">Plan de Salud<br><span class="green-text">para tu peludo</span></h1>
+                            <h1 class="pata-h1">Plan de Salud<br><span class="green-text">para tu mascota</span></h1>
                             
                             <div class="pata-hero-grid">
                                 <div class="pata-hero-bullet">
@@ -1320,7 +1320,7 @@
                                 </div>
                                 <div class="pata-hero-bullet">
                                     <div class="pata-bullet-check"></div>
-                                    <span>Incluye hasta 3 peludos</span>
+                                    <span>Incluye hasta 3 mascotas</span>
                                 </div>
                                 <div class="pata-hero-bullet">
                                     <div class="pata-bullet-check"></div>
@@ -1341,7 +1341,7 @@
 
                         <div class="pata-hero-image-container pata-animate-on-scroll">
                             <div class="pata-hero-image-wrapper">
-                                <img src="${CONFIG.images.hero}" alt="Peludo feliz con su dueño" class="pata-hero-img">
+                                <img src="${CONFIG.images.hero}" alt="Mascota feliz con su dueño" class="pata-hero-img">
                             </div>
                         </div>
                     </div>
@@ -1350,7 +1350,7 @@
                     <div class="pata-pricing-section" id="pricing-section">
                         <div class="pata-container pata-animate-on-scroll">
                             <h2 class="pata-h2">Suscríbete</h2>
-                            <p class="pata-section-subtitle">Elige el plan que mejor se adapte a ti y a tu peludo</p>
+                            <p class="pata-section-subtitle">Elige la membresía que mejor se adapte a ti y a tu mascota</p>
                             
                             <div class="pata-pricing-grid">
                                 
@@ -1401,12 +1401,11 @@
                         </div>
                     </div>
 
-                    <!-- 3. Todo lo que tu peludo necesita Section -->
+                    <!-- 3. Todo lo que tu mascota necesita Section -->
                     <div class="pata-services-section">
                         <div class="pata-container pata-animate-on-scroll">
                             <p style="text-transform:uppercase; text-align:center; font-weight:800; color:#3f6900; letter-spacing:1px; margin:0 0 12px 0">reintegro</p>
-                            <h2 class="pata-h2">Todo lo que tu peludo necesita</h2>
-                            <p class="pata-section-subtitle">Acompañamiento económico y de salud en cada etapa</p>
+                            <h2 class="pata-h2">Todo lo que tu mascota necesita</h2>
                             
                             <div class="pata-services-grid">
                                 
@@ -1508,7 +1507,7 @@
                             <div class="pata-wellness-info">
                                 <div class="pata-wellness-tag">PRÓXIMAMENTE 2026</div>
                                 <h2 class="pata-wellness-heading">centros de <br><span class="green-text">bienestar</span></h2>
-                                <h3 class="pata-wellness-subtitle">La red más grande de apoyo para peludos</h3>
+                                <h3 class="pata-wellness-subtitle">La red más grande de apoyo para mascotas</h3>
                                 <p class="pata-wellness-desc">
                                     Estamos construyendo una red de clínicas veterinarias, hospitales y negocios pet-friendly que compartan nuestros valores de cuidado, empatía y responsabilidad. Muy pronto podrás registrar tu centro y recibir solicitudes de apoyo de miembros de la manada.
                                 </p>
@@ -1550,9 +1549,9 @@
                                                 <span class="pata-checkbox-pill-text">Hospital 24/7</span>
                                             </label>
                                             <label class="pata-checkbox-pill-label">
-                                                <input type="checkbox" name="services" value="Tienda para peludos" class="pata-checkbox-pill-input">
+                                                <input type="checkbox" name="services" value="Tienda de mascotas" class="pata-checkbox-pill-input">
                                                 <span class="pata-checkbox-pill-circle"></span>
-                                                <span class="pata-checkbox-pill-text">Tienda para peludos</span>
+                                                <span class="pata-checkbox-pill-text">Tienda de mascotas</span>
                                             </label>
                                             <label class="pata-checkbox-pill-label">
                                                 <input type="checkbox" name="services" value="Hotel" class="pata-checkbox-pill-input">
