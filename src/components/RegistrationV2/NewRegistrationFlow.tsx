@@ -193,6 +193,16 @@ export default function NewRegistrationFlow() {
                 const nativeParams = new URLSearchParams(window.location.search);
                 const magicToken = nativeParams.get('mt');
                 const initialReason = nativeParams.get('reason') || '';
+
+                // Parse plan query parameter if present
+                const urlPlan = nativeParams.get('plan') || '';
+                let matchedPlan = '';
+                if (urlPlan) {
+                    matchedPlan = urlPlan.toLowerCase() === 'yearly' || urlPlan.toLowerCase() === 'anual'
+                        ? 'prc_anual-o9d101ta'
+                        : 'prc_mensual-452k30jah';
+                    setRegistrationData(prev => ({ ...prev, planId: matchedPlan }));
+                }
                 let magicData: {
                     memberstackId: string;
                     email: string;
@@ -276,7 +286,8 @@ export default function NewRegistrationFlow() {
                             account: {
                                 email: currentMember.auth?.email,
                                 phone: currentMember.customFields?.['phone'] || '',
-                            }
+                            },
+                            planId: matchedPlan || undefined
                         };
 
                         if (result.success && result.userData) {
@@ -289,6 +300,7 @@ export default function NewRegistrationFlow() {
                                     email: currentMember.auth?.email || userData.email,
                                     phone: currentMember.customFields?.['phone'] || userData.phone || '',
                                 },
+                                planId: matchedPlan || userData.plan_id || userData.planId || undefined,
                                 // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
                                 petBasic: (() => {
                                     if (hasValidPetBasic(petBasicFromDb)) {

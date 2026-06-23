@@ -79,7 +79,14 @@ export default function Step3PlanSelection({
     onSkipPayment,
     isRecovery = false
 }: Step3PlanSelectionProps) {
-    const [selectedPlan, setSelectedPlan] = useState<string>('');
+    const [selectedPlan, setSelectedPlan] = useState<string>(data?.planId || '');
+
+    // Sync selected plan from registration data
+    useEffect(() => {
+        if (data?.planId && !selectedPlan) {
+            setSelectedPlan(data.planId);
+        }
+    }, [data?.planId]);
     const [showTermsModal, setShowTermsModal] = useState(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [showValidationHint, setShowValidationHint] = useState(false);
