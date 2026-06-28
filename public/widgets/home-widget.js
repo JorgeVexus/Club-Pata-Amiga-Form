@@ -15,7 +15,7 @@
             yearly: 'prc_anual-o9d101ta'
         },
         images: {
-            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6973fb775a955c70459d3aa6_e6fab0f953bf34efaf58adc386fd5bbb_Group%2031.webp',
+            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a40649077d7309f23cff70d_Pata%20amiga%20home%20hero.webp',
             appMockup: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb79cbd8d3381436e73_image%203.avif',
             wellness: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb85db9290fb77ead38_xd%201.avif',
             logo: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6930687c8f64d3b129a9cece_PATA_AMIGA_LOGOTIPO_EDITABLE-02.webp'
@@ -191,6 +191,16 @@
             box-shadow: 0px 4px 6px -1px rgba(0,0,0,0.1), 0px 2px 4px -1px rgba(0,0,0,0.06);
         }
 
+        .pata-btn:focus-visible,
+        .pata-btn-green-wellness:focus-visible,
+        .pata-faq-summary:focus-visible,
+        .pata-nav-item a:focus-visible,
+        .pata-contact-link:focus-visible,
+        .pata-social-icon:focus-visible {
+            outline: 3px solid rgba(0, 187, 180, 0.65);
+            outline-offset: 4px;
+        }
+
         .pata-btn-black {
             background: var(--pata-black);
             color: var(--pata-white);
@@ -283,7 +293,7 @@
             border-radius: 40px;
             overflow: hidden;
             box-shadow: 0px 25px 50px -12px rgba(0, 0, 0, 0.25);
-            aspect-ratio: 584/730;
+            aspect-ratio: 1441/1466;
         }
 
         .pata-hero-img {
@@ -1062,6 +1072,27 @@
         }
 
         @media (max-width: 600px) {
+            .pata-container {
+                padding: 56px 18px;
+            }
+
+            .pata-h1 {
+                font-size: clamp(34px, 12vw, 46px);
+                line-height: 1.08;
+            }
+
+            .pata-btn,
+            .pata-btn-green-wellness {
+                width: 100%;
+                max-width: 340px;
+                min-height: 52px;
+                padding-inline: 22px;
+                white-space: normal;
+            }
+
+            .pata-hero-image-wrapper {
+                border-radius: 28px;
+            }
 
             .pata-pricing-card {
                 padding: 32px 24px;
@@ -1103,6 +1134,17 @@
             display: flex;
             gap: 12px;
             align-items: center;
+        }
+
+        @media (max-width: 420px) {
+            .pata-phone-input-row {
+                flex-wrap: wrap;
+            }
+
+            .pata-phone-prefix,
+            .pata-phone-input-row .pata-form-input {
+                width: 100%;
+            }
         }
 
         .pata-phone-prefix {
@@ -1341,7 +1383,7 @@
 
                         <div class="pata-hero-image-container pata-animate-on-scroll">
                             <div class="pata-hero-image-wrapper">
-                                <img src="${CONFIG.images.hero}" alt="Mascota feliz con su dueño" class="pata-hero-img">
+                                <img src="${CONFIG.images.hero}" alt="Mascota feliz con su dueño" class="pata-hero-img" width="1441" height="1466" loading="eager" fetchpriority="high" decoding="async" referrerpolicy="no-referrer">
                             </div>
                         </div>
                     </div>
@@ -1412,7 +1454,7 @@
                                 <!-- Emergencias -->
                                 <div class="pata-service-card">
                                     <div class="pata-service-icon-bg" style="background: rgba(132, 212, 0, 0.1)">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba555c21a920f934c1a_emergencias.svg" alt="Emergencias" class="pata-service-img-icon">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba555c21a920f934c1a_emergencias.svg" alt="Emergencias" class="pata-service-img-icon" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </div>
                                     <h3 class="pata-service-title">Emergencias</h3>
                                     <p class="pata-service-desc">Reintegro de hasta $3,000 MXN para urgencias, análisis y estudios, cirugía y hospitalización.</p>
@@ -1421,7 +1463,7 @@
                                 <!-- Prevención -->
                                 <div class="pata-service-card">
                                     <div class="pata-service-icon-bg" style="background: rgba(255, 189, 0, 0.1)">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba529ac04b87511dc4c_prevencion.svg" alt="Prevención" class="pata-service-img-icon">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba529ac04b87511dc4c_prevencion.svg" alt="Prevención" class="pata-service-img-icon" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </div>
                                     <h3 class="pata-service-title">Prevención</h3>
                                     <p class="pata-service-desc">Reintegro de hasta $300 MXN para sus vacunas anuales.</p>
@@ -1430,7 +1472,7 @@
                                 <!-- Apoyo por Fallecimiento -->
                                 <div class="pata-service-card">
                                     <div class="pata-service-icon-bg" style="background: rgba(254, 143, 21, 0.1)">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba51de4757f932ce432_apoyo%20por%20fallecimiento.svg" alt="Apoyo por fallecimiento" class="pata-service-img-icon">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a2ba51de4757f932ce432_apoyo%20por%20fallecimiento.svg" alt="Apoyo por fallecimiento" class="pata-service-img-icon" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </div>
                                     <h3 class="pata-service-title">Apoyo por fallecimiento</h3>
                                     <p class="pata-service-desc">Reintegro de hasta $2,000 MXN en caso de fallecimiento, para su despedida digna.</p>
@@ -1444,7 +1486,7 @@
                     <div class="pata-container pata-how-section pata-animate-on-scroll">
                         <div class="pata-how-image-container">
                             <div class="pata-how-image-wrapper">
-                                <img src="${CONFIG.images.appMockup}" alt="Aplicación de Pata Amiga" class="pata-how-img">
+                                <img src="${CONFIG.images.appMockup}" alt="Aplicación de Pata Amiga" class="pata-how-img" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                             </div>
                         </div>
 
@@ -1480,7 +1522,7 @@
                                 <div class="pata-faq-list">
                                     ${CONFIG.faqs.map((cat, idx) => `
                                         <div class="pata-faq-item" data-index="${idx}">
-                                            <div class="pata-faq-summary">
+                                            <div class="pata-faq-summary" role="button" tabindex="0" aria-expanded="false">
                                                 <h3 class="pata-faq-title">${cat.category}</h3>
                                                 <div class="pata-faq-arrow"></div>
                                             </div>
@@ -1580,7 +1622,7 @@
 
                         <div class="pata-wellness-image-column">
                             <div class="pata-wellness-img-wrapper">
-                                <img src="${CONFIG.images.wellness}" alt="Centros de bienestar Pata Amiga" class="pata-wellness-img">
+                                <img src="${CONFIG.images.wellness}" alt="Centros de bienestar Pata Amiga" class="pata-wellness-img" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                             </div>
                         </div>
                     </div>
@@ -1592,19 +1634,19 @@
                                 <h2 class="pata-footer-title">Contáctanos</h2>
                                 <div class="pata-contact-item">
                                     <div class="pata-contact-icon-bg">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a3350c708e1ff5594a139_mail%20icon.svg" alt="Email" style="width: 24px; height: 24px; object-fit: contain;">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a3350c708e1ff5594a139_mail%20icon.svg" alt="Email" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </div>
                                     <a href="mailto:soporte@pataamiga.mx" class="pata-contact-link">soporte@pataamiga.mx</a>
                                 </div>
                                 <div class="pata-socials">
                                     <a href="https://www.instagram.com/pataamigamx" target="_blank" rel="noopener noreferrer" class="pata-social-icon">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31dfc45e778d44da0d1_ig%202.svg" alt="Instagram" style="width: 24px; height: 24px; object-fit: contain;">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31dfc45e778d44da0d1_ig%202.svg" alt="Instagram" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </a>
                                     <a href="https://www.facebook.com/share/14YQRpe9WzS/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" class="pata-social-icon">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31df02487238b780583_fb%202.svg" alt="Facebook" style="width: 24px; height: 24px; object-fit: contain;">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31df02487238b780583_fb%202.svg" alt="Facebook" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </a>
-                                    <a href="http://www.tiktok.com/@pataamigamx" target="_blank" rel="noopener noreferrer" class="pata-social-icon">
-                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31d1b1b4de158a1ffb9_tiktok%202.svg" alt="TikTok" style="width: 24px; height: 24px; object-fit: contain;">
+                                    <a href="https://www.tiktok.com/@pataamigamx" target="_blank" rel="noopener noreferrer" class="pata-social-icon">
+                                        <img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/698ba31d1b1b4de158a1ffb9_tiktok%202.svg" alt="TikTok" style="width: 24px; height: 24px; object-fit: contain;" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                                     </a>
                                 </div>
                             </div>
@@ -1701,16 +1743,27 @@
             // FAQ Accordion toggles
             this.container.querySelectorAll('.pata-faq-item').forEach(item => {
                 const summary = item.querySelector('.pata-faq-summary');
-                summary.onclick = () => {
+                const toggleFaq = () => {
                     const isOpen = item.classList.contains('open');
                     
                     // Close others
                     this.container.querySelectorAll('.pata-faq-item').forEach(other => {
                         other.classList.remove('open');
+                        const otherSummary = other.querySelector('.pata-faq-summary');
+                        if (otherSummary) otherSummary.setAttribute('aria-expanded', 'false');
                     });
 
                     if (!isOpen) {
                         item.classList.add('open');
+                        summary.setAttribute('aria-expanded', 'true');
+                    }
+                };
+
+                summary.onclick = toggleFaq;
+                summary.onkeydown = (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        toggleFaq();
                     }
                 };
             });
