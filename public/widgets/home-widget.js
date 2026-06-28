@@ -15,7 +15,7 @@
             yearly: 'prc_anual-o9d101ta'
         },
         images: {
-            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a40649077d7309f23cff70d_ffe04c86f93c03e33898f02a95fec846_Pata%20amiga%20home%20hero.webp',
+            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a417b7bd9af6793d0e35237_nuevo%20hero%20pata%20amiga.avif',
             appMockup: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb79cbd8d3381436e73_image%203.avif',
             wellness: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb85db9290fb77ead38_xd%201.avif',
             logo: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6930687c8f64d3b129a9cece_PATA_AMIGA_LOGOTIPO_EDITABLE-02.webp'
