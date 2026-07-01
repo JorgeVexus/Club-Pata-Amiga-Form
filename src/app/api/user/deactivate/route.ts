@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { syncMembership, removeContactTags, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import {
     calculateDaysRemaining,
     formatDateForStorage,
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
 
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, stripe_customer_id, email')
+            .select('id, stripe_customer_id, email, crm_contact_id')
             .eq('memberstack_id', memberstackId)
             .maybeSingle();
 
@@ -138,6 +139,19 @@ export async function POST(request: NextRequest) {
 
         if (!msResult.success) {
             console.error('[DEACTIVATE] Error actualizando Memberstack:', msResult.error);
+        }
+
+        // Sincronizar cancelación con el CRM (no bloqueante): estatus cancelado + quitar tag
+        if (user.crm_contact_id) {
+            try {
+                await syncMembership(user.crm_contact_id, { status: 'cancelado' });
+                await removeContactTags(user.crm_contact_id, [CRM_ACTIVE_TAG]);
+                console.log('[DEACTIVATE] CRM: membresia marcada como cancelada');
+            } catch (crmError) {
+                console.error('[DEACTIVATE] Error no critico actualizando CRM:', crmError);
+            }
+        } else {
+            console.warn('[DEACTIVATE] Usuario sin crm_contact_id, omitiendo sync CRM');
         }
 
         return NextResponse.json({

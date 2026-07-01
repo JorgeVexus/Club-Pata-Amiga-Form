@@ -5,10 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import Stripe from 'stripe';
 import { approveMemberApplication, getMemberDetails } from '@/services/memberstack-admin.service';
 import { registerUserInSupabase } from '@/app/actions/user.actions';
 import { createServerNotification } from '@/app/actions/notification.actions';
-import { updateContactAsActive } from '@/services/crm.service';
+import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
+import { getStripeMembershipFields } from '@/lib/stripe-membership';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -77,10 +79,11 @@ export async function POST(
             if (user?.crm_contact_id) {
                 // 1. Obtener detalles del plan desde Memberstack
                 const memberDetails = await getMemberDetails(memberId);
-                
+
                 // Fallbacks jerárquicos: Body (Frontend) > Supabase > Default
                 let planType = membershipType || user.membership_type || 'Mensual';
                 let planCost = membershipCost || user.membership_cost || '$159';
+                let subscriptionId: string | undefined;
 
                 console.log(`💳 CRM: Metadata recibida del frontend: Type=${membershipType}, Cost=${membershipCost}`);
 
@@ -89,6 +92,7 @@ export async function POST(
                     const priceId = activePlan.priceId;
                     const planName = (activePlan.planName || '').toLowerCase();
                     const amount = activePlan.payment?.amount || 0;
+                    subscriptionId = (activePlan as any).payment?.stripeSubscriptionId;
 
                     // Lógica idéntica a la del Dashboard Admin (stripe-data/route.ts)
                     const isAnnualKeyword = planName.includes('anual') || 
@@ -111,11 +115,22 @@ export async function POST(
                 }
 
 
-                const crmResult = await updateContactAsActive(
-                    user.crm_contact_id,
-                    planType,
-                    planCost
-                );
+                // 2. Obtener método de pago y fechas reales desde Stripe (best-effort)
+                let stripeFields = {};
+                if (subscriptionId && process.env.STRIPE_SECRET_KEY) {
+                    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+                    stripeFields = await getStripeMembershipFields(stripe, subscriptionId);
+                    console.log('💳 CRM: Campos de Stripe:', stripeFields);
+                }
+
+                // 3. Sincronizar membresía completa: estatus activo + tag + tipo/costo + fechas/método
+                const crmResult = await syncMembership(user.crm_contact_id, {
+                    status: 'activo',
+                    type: planType,
+                    cost: planCost,
+                    addTags: [CRM_ACTIVE_TAG],
+                    ...stripeFields,
+                });
                 console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
             } else {
                 console.warn('⚠️ Usuario sin crm_contact_id, omitiendo sync CRM');

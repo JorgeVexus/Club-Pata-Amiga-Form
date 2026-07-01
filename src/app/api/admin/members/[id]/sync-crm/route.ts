@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import Stripe from 'stripe';
 import { getMemberDetails } from '@/services/memberstack-admin.service';
-import { updateContactAsActive } from '@/services/crm.service';
+import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
+import { getStripeMembershipFields } from '@/lib/stripe-membership';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
@@ -106,11 +108,14 @@ export async function POST(
 
         console.log(`💳 CRM Resync: Metadata inicial: Type=${planType}, Cost=${planCost}`);
 
+        let subscriptionId: string | undefined;
+
         if (memberDetails.success && memberDetails.data?.planConnections?.length) {
             const activePlan = memberDetails.data.planConnections.find(p => p.status === 'ACTIVE') || memberDetails.data.planConnections[0];
             const priceId = activePlan.priceId;
             const planName = (activePlan.planName || '').toLowerCase();
             const amount = activePlan.payment?.amount || 0;
+            subscriptionId = (activePlan as any).payment?.stripeSubscriptionId;
 
             // Lógica idéntica a la del Dashboard Admin (stripe-data/route.ts)
             const isAnnualKeyword = planName.includes('anual') || 
@@ -133,13 +138,22 @@ export async function POST(
         }
 
 
-        console.log(`💳 CRM Resync: Enviando Type=${planType}, Cost=${planCost}`);
+        // Obtener método de pago y fechas reales desde Stripe (best-effort)
+        let stripeFields = {};
+        if (subscriptionId && process.env.STRIPE_SECRET_KEY) {
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+            stripeFields = await getStripeMembershipFields(stripe, subscriptionId);
+        }
 
-        const crmResult = await updateContactAsActive(
-            user.crm_contact_id,
-            planType,
-            planCost
-        );
+        console.log(`💳 CRM Resync: Enviando Type=${planType}, Cost=${planCost}`, stripeFields);
+
+        const crmResult = await syncMembership(user.crm_contact_id, {
+            status: 'activo',
+            type: planType,
+            cost: planCost,
+            addTags: [CRM_ACTIVE_TAG],
+            ...stripeFields,
+        });
 
         if (!crmResult.success) {
             return NextResponse.json({ 

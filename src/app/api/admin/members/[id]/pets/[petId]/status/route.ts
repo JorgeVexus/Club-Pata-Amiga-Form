@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
-import { updateContactAsActive } from '@/services/crm.service';
+import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { getPetCarenciaDate } from '@/utils/carencia.utils';
 import { buildAdminPetLookupAttempts } from '@/utils/admin-pet-lookup';
@@ -242,11 +242,12 @@ export async function POST(
                     .single();
 
                 if (userForCrm?.crm_contact_id) {
-                    const crmResult = await updateContactAsActive(
-                        userForCrm.crm_contact_id,
-                        userForCrm.membership_type || 'Mensual',
-                        userForCrm.membership_cost || '$159'
-                    );
+                    const crmResult = await syncMembership(userForCrm.crm_contact_id, {
+                        status: 'activo',
+                        type: userForCrm.membership_type || 'Mensual',
+                        cost: userForCrm.membership_cost || '$159',
+                        addTags: [CRM_ACTIVE_TAG],
+                    });
                     console.log('[Pet Status] CRM: Miembro marcado como activo:', crmResult.success);
                 } else {
                     console.warn('[Pet Status] Usuario sin crm_contact_id, omitiendo sync CRM');
