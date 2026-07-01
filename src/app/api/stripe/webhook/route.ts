@@ -92,9 +92,18 @@ export async function POST(request: NextRequest) {
                 }
 
                 const paidAt = toCrmDate(invoice.status_transitions?.paid_at || invoice.created);
+
+                // El campo de suscripción cambió de lugar según la versión de API de Stripe:
+                // versiones nuevas usan invoice.parent.subscription_details.subscription.
+                const subscriptionId =
+                    invoice.subscription ||
+                    invoice.parent?.subscription_details?.subscription ||
+                    invoice.lines?.data?.[0]?.subscription ||
+                    invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
+
                 let stripeFields = {};
-                if (invoice.subscription) {
-                    stripeFields = await getStripeMembershipFields(stripe, invoice.subscription);
+                if (subscriptionId) {
+                    stripeFields = await getStripeMembershipFields(stripe, subscriptionId);
                 }
 
                 await syncMembership(contactId, {
