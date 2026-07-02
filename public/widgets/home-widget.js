@@ -1127,7 +1127,7 @@
             }
 
             .pata-hero-image-wrapper {
-                width: 180px;
+                width: 230px;
                 margin: 0 auto;
                 border-radius: 28px;
                 box-shadow: 0px 16px 32px -16px rgba(0, 0, 0, 0.28);

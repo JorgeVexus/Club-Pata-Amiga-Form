@@ -25,6 +25,7 @@ import Step6Success from './steps/Step6Success';
 import StepIndicator from './StepIndicator';
 import BenefitsBanner from './BenefitsBanner';
 import NavbarRedesign from './NavbarRedesign';
+import RegistrationPromoMarquee from './RegistrationPromoMarquee';
 import Toast from '@/components/UI/Toast';
 
 // Servicios
@@ -1539,6 +1540,7 @@ export default function NewRegistrationFlow() {
 
     return (
         <div className={styles.container}>
+            <RegistrationPromoMarquee />
             <NavbarRedesign onLogout={handleLogout} member={member} showLogout={true} />
 
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}

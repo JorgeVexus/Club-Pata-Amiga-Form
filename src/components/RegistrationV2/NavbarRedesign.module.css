@@ -6,7 +6,7 @@
     border-bottom: 1px solid rgba(0, 0, 0, 0.10);
     backdrop-filter: blur(6px);
     position: sticky;
-    top: 0;
+    top: var(--registration-promo-height, 0);
     z-index: 1000;
     display: flex;
     justify-content: center;
