@@ -9,7 +9,11 @@
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(graphify update *)"
+      "Bash(graphify update *)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" -X POST https://app.pataamiga.mx/api/stripe/webhook -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
