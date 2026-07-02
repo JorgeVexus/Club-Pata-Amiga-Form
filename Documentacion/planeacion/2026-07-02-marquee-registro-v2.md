@@ -16,3 +16,8 @@ Integrar un banner tipo marquee al inicio del flujo de registro V2 para mostrar 
 - Ejecutar `npm run build`.
 - Ejecutar `npm run type-check`.
 - Ejecutar `npm run lint`.
+
+## Ajuste adicional
+
+- Mantener la barra blanca de beneficios fija debajo del stack formado por el marquee amarillo y el navbar verde.
+- Usar variables CSS de altura para evitar que las barras sticky se encimen durante el scroll.
