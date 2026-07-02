@@ -15,7 +15,7 @@
             yearly: 'prc_anual-o9d101ta'
         },
         images: {
-            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a417b7bd9af6793d0e35237_nuevo%20hero%20pata%20amiga.avif',
+            hero: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a45d84c9f38a75a73cf3608_Group%202.avif',
             appMockup: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb79cbd8d3381436e73_image%203.avif',
             wellness: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6a3a1eb85db9290fb77ead38_xd%201.avif',
             logo: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6930687c8f64d3b129a9cece_PATA_AMIGA_LOGOTIPO_EDITABLE-02.webp'
@@ -1006,7 +1006,7 @@
             .pata-hero-section {
                 flex-direction: column;
                 text-align: center;
-                gap: 48px;
+                gap: 32px;
             }
 
             .pata-hero-content {
@@ -1018,7 +1018,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 max-width: 290px;
-                margin: 0 auto 32px auto;
+                margin: 0 auto 24px auto;
                 gap: 12px;
             }
 
@@ -1073,12 +1073,48 @@
 
         @media (max-width: 600px) {
             .pata-container {
-                padding: 56px 18px;
+                padding: 38px 16px;
             }
 
             .pata-h1 {
-                font-size: clamp(34px, 12vw, 46px);
+                font-size: 29px;
                 line-height: 1.08;
+                margin-bottom: 14px;
+            }
+
+            .pata-h2 {
+                font-size: clamp(28px, 9vw, 38px);
+                margin-bottom: 10px;
+            }
+
+            .pata-section-subtitle {
+                font-size: 15px;
+                margin-bottom: 28px;
+            }
+
+            .pata-hero-section {
+                gap: 24px;
+                padding-top: 30px;
+                padding-bottom: 34px;
+            }
+
+            .pata-hero-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                max-width: 330px;
+                margin-bottom: 16px;
+                gap: 7px 10px;
+            }
+
+            .pata-hero-bullet {
+                gap: 7px;
+                font-size: 12px;
+                line-height: 1.18;
+            }
+
+            .pata-bullet-check {
+                width: 15px;
+                height: 13px;
             }
 
             .pata-btn,
@@ -1091,11 +1127,83 @@
             }
 
             .pata-hero-image-wrapper {
+                width: 180px;
+                margin: 0 auto;
                 border-radius: 28px;
+                box-shadow: 0px 16px 32px -16px rgba(0, 0, 0, 0.28);
+            }
+
+            .pata-pricing-grid {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 12px;
+                width: 100%;
             }
 
             .pata-pricing-card {
-                padding: 32px 24px;
+                min-width: 0;
+                max-width: none;
+                padding: 22px 12px 14px;
+                gap: 13px;
+                border-radius: 18px;
+            }
+
+            .pata-discount-tag {
+                top: -12px;
+                font-size: 9px;
+                padding: 6px 12px;
+                letter-spacing: 0.5px;
+            }
+
+            .pata-card-badge {
+                font-size: 9px;
+                padding: 5px 9px;
+                letter-spacing: 0.5px;
+            }
+
+            .pata-card-title {
+                font-size: 15px;
+                line-height: 1.1;
+            }
+
+            .pata-price-row {
+                flex-wrap: wrap;
+                gap: 2px 5px;
+                margin-top: -4px;
+            }
+
+            .pata-price-amount {
+                font-size: 20px;
+                line-height: 1.05;
+            }
+
+            .pata-price-period {
+                font-size: 12px;
+            }
+
+            .pata-card-features {
+                gap: 10px;
+            }
+
+            .pata-feature-row {
+                align-items: flex-start;
+                gap: 8px;
+                font-size: 12px;
+                line-height: 1.25;
+            }
+
+            .pata-feature-row .check-icon {
+                width: 13px;
+                height: 13px;
+                margin-top: 1px;
+                flex: 0 0 13px;
+            }
+
+            .pata-pricing-card .pata-btn {
+                min-height: 42px;
+                padding: 10px 8px;
+                font-size: 10px;
+                letter-spacing: 0.5px;
             }
 
             .pata-form-grid {
