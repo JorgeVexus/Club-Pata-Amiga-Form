@@ -33,6 +33,20 @@ export const CRM_FIELD_IDS = {
     estatusMembresia: 'yq0LzNIgIWcU7rzWJwm8',
 } as const;
 
+/**
+ * fieldName exacto de cada campo, según lo confirmado por la agencia.
+ * El formato requerido en el PUT es { id, fieldValue, fieldName }.
+ */
+export const CRM_FIELD_NAMES: Record<keyof typeof CRM_FIELD_IDS, string> = {
+    metodoPago: 'Metodo pago',
+    fechaPago: 'Fecha de pago',
+    tipoMembresia: 'Tipo membresia',
+    fechaPagoRenovacion: 'Fecha pago renovacion',
+    fechaRenovacion: 'Fecha renovacion',
+    costoMembresia: 'Costo membresia',
+    estatusMembresia: 'Estatus membresia',
+};
+
 // Tag que identifica a un miembro con membresía vigente
 export const CRM_ACTIVE_TAG = 'miembro activo';
 
@@ -140,62 +154,21 @@ export async function upsertContact(data: ContactData): Promise<UpsertResponse> 
 
 /**
  * Actualiza un contacto como "miembro activo"
- * Usado cuando el admin aprueba al miembro
+ * Usado cuando el admin aprueba al miembro.
+ * @deprecated Usar `syncMembership` directamente. Se mantiene por compatibilidad
+ * y delega en `syncMembership` para respetar el formato { id, fieldValue, fieldName }.
  */
 export async function updateContactAsActive(
     contactId: string,
     membershipType: string = 'Mensual',
     membershipCost: string = '$159'
 ): Promise<UpdateResponse> {
-    try {
-        if (!API_KEY) {
-            console.error('[CRM] Falta API_KEY');
-            return { success: false, error: 'Configuración de CRM incompleta' };
-        }
-
-        const payload = {
-            tags: ['miembro activo'],
-            customFields: [
-                {
-                    id: 'UDXQDTApGP4lWS7tFrOa',
-                    value: membershipType
-                },
-                {
-                    id: 'oRTpCwaPnVxwYgAN5WlJ',
-                    value: membershipCost
-                }
-            ]
-        };
-        console.log(`[CRM] 🔄 Payload para ${contactId}:`, JSON.stringify(payload, null, 2));
-
-        const response = await fetch(`${API_URL}/contacts/${contactId}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json',
-                'Authorization': `Bearer ${API_KEY}`,
-                'Version': '2021-07-28'
-            },
-            body: JSON.stringify(payload)
-        });
-
-        const result = await response.json();
-        
-        if (!response.ok) {
-            console.error(`[CRM] ❌ Error en PUT /contacts/${contactId}:`, result);
-            return { success: false, error: result.message || 'Error en actualización' };
-        }
-
-        console.log(`[CRM] ✅ Respuesta exitosa para ${contactId}:`, JSON.stringify(result, null, 2));
-        return { success: true, data: result };
-
-    } catch (error: any) {
-        console.error('[CRM] Error actualizando contacto:', error);
-        return {
-            success: false,
-            error: error.message || 'Error de conexión con CRM'
-        };
-    }
+    return syncMembership(contactId, {
+        status: 'activo',
+        type: membershipType,
+        cost: membershipCost,
+        addTags: [CRM_ACTIVE_TAG],
+    });
 }
 
 /**
@@ -215,18 +188,23 @@ export interface MembershipSyncData {
 }
 
 /**
- * Construye el array customFields con formato { id, value }
- * a partir de los datos de membresía presentes.
+ * Construye el array customFields con formato { id, fieldValue, fieldName }
+ * (confirmado por la agencia) a partir de los datos de membresía presentes.
  */
 function buildMembershipCustomFields(data: MembershipSyncData) {
-    const fields: Array<{ id: string; value: string }> = [];
-    if (data.status !== undefined) fields.push({ id: CRM_FIELD_IDS.estatusMembresia, value: data.status });
-    if (data.type !== undefined) fields.push({ id: CRM_FIELD_IDS.tipoMembresia, value: data.type });
-    if (data.cost !== undefined) fields.push({ id: CRM_FIELD_IDS.costoMembresia, value: data.cost });
-    if (data.paymentDate !== undefined) fields.push({ id: CRM_FIELD_IDS.fechaPago, value: data.paymentDate });
-    if (data.paymentMethod !== undefined) fields.push({ id: CRM_FIELD_IDS.metodoPago, value: data.paymentMethod });
-    if (data.renewalDate !== undefined) fields.push({ id: CRM_FIELD_IDS.fechaRenovacion, value: data.renewalDate });
-    if (data.renewalPaymentDate !== undefined) fields.push({ id: CRM_FIELD_IDS.fechaPagoRenovacion, value: data.renewalPaymentDate });
+    const fields: Array<{ id: string; fieldValue: string; fieldName: string }> = [];
+    const add = (key: keyof typeof CRM_FIELD_IDS, value: string | undefined) => {
+        if (value !== undefined) {
+            fields.push({ id: CRM_FIELD_IDS[key], fieldValue: value, fieldName: CRM_FIELD_NAMES[key] });
+        }
+    };
+    add('estatusMembresia', data.status);
+    add('tipoMembresia', data.type);
+    add('costoMembresia', data.cost);
+    add('fechaPago', data.paymentDate);
+    add('metodoPago', data.paymentMethod);
+    add('fechaRenovacion', data.renewalDate);
+    add('fechaPagoRenovacion', data.renewalPaymentDate);
     return fields;
 }
 

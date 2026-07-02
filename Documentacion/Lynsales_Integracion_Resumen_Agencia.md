@@ -47,7 +47,8 @@ una acción manual.
 ## 3. Custom Fields (formato usado)
 
 Enviamos los custom fields en el array `customFields` usando el formato
-**`{ id, value }`** con los IDs que nos proporcionaron:
+**`{ id, fieldValue, fieldName }`** (confirmado por la agencia) con los IDs
+que nos proporcionaron:
 
 | Campo | ID | Valores |
 |-------|-----|---------|
@@ -87,12 +88,12 @@ las actualizaciones posteriores.
 {
   "tags": ["miembro activo"],
   "customFields": [
-    { "id": "yq0LzNIgIWcU7rzWJwm8", "value": "activo" },
-    { "id": "UDXQDTApGP4lWS7tFrOa", "value": "Mensual" },
-    { "id": "oRTpCwaPnVxwYgAN5WlJ", "value": "$159" },
-    { "id": "NFqMDDHf23gkgILiC8HM", "value": "2026-06-30" },
-    { "id": "DABr8Ws9zawyJFnLvZqG", "value": "Tarjeta" },
-    { "id": "lHLm0zKABjYVH8hlPbE4", "value": "2026-07-30" }
+    { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "activo", "fieldName": "Estatus membresia" },
+    { "id": "UDXQDTApGP4lWS7tFrOa", "fieldValue": "Mensual", "fieldName": "Tipo membresia" },
+    { "id": "oRTpCwaPnVxwYgAN5WlJ", "fieldValue": "$159", "fieldName": "Costo membresia" },
+    { "id": "NFqMDDHf23gkgILiC8HM", "fieldValue": "2026-06-30", "fieldName": "Fecha de pago" },
+    { "id": "DABr8Ws9zawyJFnLvZqG", "fieldValue": "Tarjeta", "fieldName": "Metodo pago" },
+    { "id": "lHLm0zKABjYVH8hlPbE4", "fieldValue": "2026-07-30", "fieldName": "Fecha renovacion" }
   ]
 }
 ```
@@ -101,17 +102,17 @@ las actualizaciones posteriores.
 ```json
 {
   "customFields": [
-    { "id": "yq0LzNIgIWcU7rzWJwm8", "value": "activo" },
-    { "id": "gTIQIgFqWWgCPeJEkXte", "value": "2026-07-30" },
-    { "id": "lHLm0zKABjYVH8hlPbE4", "value": "2026-08-30" },
-    { "id": "DABr8Ws9zawyJFnLvZqG", "value": "Tarjeta" }
+    { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "activo", "fieldName": "Estatus membresia" },
+    { "id": "gTIQIgFqWWgCPeJEkXte", "fieldValue": "2026-07-30", "fieldName": "Fecha pago renovacion" },
+    { "id": "lHLm0zKABjYVH8hlPbE4", "fieldValue": "2026-08-30", "fieldName": "Fecha renovacion" },
+    { "id": "DABr8Ws9zawyJFnLvZqG", "fieldValue": "Tarjeta", "fieldName": "Metodo pago" }
   ]
 }
 ```
 
 ### Evento 5 — Fallo de pago (`PUT /contacts/:id`)
 ```json
-{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "value": "pendiente_pago" } ] }
+{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "pendiente_pago", "fieldName": "Estatus membresia" } ] }
 ```
 Si la suscripción termina por falta de pago (churn), enviamos `no_renovado` y
 quitamos el tag (ver evento 6).
@@ -119,7 +120,7 @@ quitamos el tag (ver evento 6).
 ### Evento 6 — Cancelación (`PUT` + `DELETE`)
 ```json
 // PUT /contacts/:id
-{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "value": "cancelado" } ] }
+{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "cancelado", "fieldName": "Estatus membresia" } ] }
 ```
 ```json
 // DELETE /contacts/:id/tags
@@ -141,24 +142,18 @@ quitamos el tag (ver evento 6).
 
 ## 6. Puntos a confirmar con Lynsales
 
-Necesitamos su confirmación en tres puntos para dejar la integración 100% alineada:
+1. **Formato de custom fields.** ✅ **RESUELTO**
+   Confirmado: se usa `{ "id", "fieldValue", "fieldName" }`. Ya implementado.
 
-1. **Formato de custom fields.**
-   Estamos enviando `{ "id": "...", "value": "..." }`. En la documentación que nos
-   compartieron aparece un ejemplo con `{ "id", "fieldValue", "fieldName" }`.
-   ¿Cuál es el formato correcto y soportado por su API en el `PUT`?
-
-2. **Remover un tag.**
+2. **Remover un tag.** ⏳ **PENDIENTE DE RESPUESTA**
    Para el evento de cancelación necesitamos **quitar** el tag `miembro activo`.
    Estamos usando `DELETE /contacts/:id/tags` con body `{ "tags": ["miembro activo"] }`.
    ¿Es este el endpoint/método correcto? Su documentación describe cómo **agregar**
    tags en el `PUT`, pero no cómo removerlos.
 
-3. **Valores exactos del estatus.**
-   Su catálogo (sección 4 del requerimiento) indica los valores en minúsculas:
-   `activo`, `cancelado`, `no_renovado`, `pendiente_pago`. Sin embargo, el ejemplo
-   de `customFields` muestra `"Activa"`. ¿Confirmamos que el valor esperado es
-   exactamente `activo` (minúscula, sin acento)?
+3. **Valores exactos del estatus.** ✅ **RESUELTO**
+   Confirmado: se usan los valores del catálogo (sección 4) en minúsculas:
+   `activo`, `cancelado`, `no_renovado`, `pendiente_pago`. Ya implementado.
 
 ---
 
