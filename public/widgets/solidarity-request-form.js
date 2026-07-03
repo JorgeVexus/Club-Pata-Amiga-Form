@@ -741,16 +741,21 @@ class SolidarityRequestForm {
 
     render() {
         if (!this.container) return;
+        const isReimbursementEmergency = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'medical_emergency';
         const isAlliedEmergency = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'medical_emergency';
         const isAlliedVaccination = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'annual_vaccination';
         const isAlliedDeath = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'death';
         const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination || isAlliedDeath;
-        const formHeading = isAlliedDeath
+        const formHeading = isReimbursementEmergency
+            ? '¿Cuál fue el motivo de la emergencia médica? 🩺'
+            : (isAlliedDeath
             ? 'Te acompañamos en este momento tan difícil 🤍'
-            : (isAlliedCareRequest ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó');
-        const formSubheading = isAlliedDeath
+            : (isAlliedCareRequest ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó'));
+        const formSubheading = isReimbursementEmergency
+            ? 'Escribe aquí los detalles del diagnóstico o atención de tu peludo'
+            : (isAlliedDeath
             ? 'compártenos brevemente la situación'
-            : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *');
+            : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'));
 
         // Toggle Scroll Lock only in standalone mode
         if (!this.inline) {
@@ -920,11 +925,14 @@ class SolidarityRequestForm {
         return benefits.map(b => {
             const isSelected = this.state.selection.benefitType === b.id;
             const isEmergency = b.id === 'medical_emergency';
+            const isReimbursementEmergencyCard = this.state.selection.requestType === 'reimbursement' && isEmergency;
             const balance = this.state.balances ? this.state.balances[b.id] : null;
             const available = balance ? balance.available : b.amount;
             const isExhausted = balance && balance.available <= 0;
             const requested = parseFloat(this.state.formData.requestedAmount || 0);
             const isExceeding = balance && requested > balance.available;
+            const title = isReimbursementEmergencyCard ? 'Registro de atención por emergencia' : b.title;
+            const desc = isReimbursementEmergencyCard ? 'Registra aquí el accidente o malestar agudo que requirió una consulta prioritaria.' : b.desc;
 
             return `
                 <div class="pata-benefit-card ${isSelected ? 'selected' : ''} ${isExhausted ? 'exhausted' : ''}" 
@@ -935,8 +943,8 @@ class SolidarityRequestForm {
                      style="${isExhausted ? 'opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8);' : ''}">
                     <div class="pata-benefit-icon"><img src="${b.icon}"></div>
                     <div class="pata-benefit-info">
-                        <h3>${b.title}</h3>
-                        <p>${isExhausted ? '<span style="color:#FFD2A1; font-weight:800;">Límite anual alcanzado</span>' : b.desc}</p>
+                        <h3>${title}</h3>
+                        <p>${isExhausted ? '<span style="color:#FFD2A1; font-weight:800;">Límite anual alcanzado</span>' : desc}</p>
                     </div>
                     <div class="pata-benefit-amount">
                         <span class="val">$${available.toLocaleString()} MXN</span>
@@ -954,7 +962,7 @@ class SolidarityRequestForm {
                                     </div>
                                 </div>
                                 <div class="pata-exp-field">
-                                    <label for="pata-amount">Monto solicitado de apoyo económico</label>
+                                    <label for="pata-amount">${isReimbursementEmergencyCard ? 'Monto que solicitas reembolsar' : 'Monto solicitado de apoyo económico'}</label>
                                     <div class="pata-exp-input-wrap">
                                         <input type="number" id="pata-amount" placeholder="$0.00" value="${this.state.formData.requestedAmount}">
                                         <span class="suffix">MXN</span>
@@ -984,46 +992,55 @@ class SolidarityRequestForm {
         const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
         const isAppointment = this.state.selection.requestType === 'allied_center_appointment';
         const isEmergency = this.state.selection.benefitType === 'medical_emergency';
+        const isReimbursementEmergency = this.state.selection.requestType === 'reimbursement' && isEmergency;
         const isAlliedEmergency = isAppointment && isEmergency;
         const isAlliedVaccination = isAppointment && this.state.selection.benefitType === 'annual_vaccination';
         const isAlliedDeath = isAppointment && this.state.selection.benefitType === 'death';
         const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination || isAlliedDeath;
         const selectedCenter = this.state.alliedCenters.find(c => c.id === this.state.formData.alliedCenterId);
         const selectedCenterName = selectedCenter?.name || 'la clínica seleccionada';
-        const footerMessage = isAlliedDeath
+        const footerMessage = isReimbursementEmergency
+            ? 'Validaremos tu solicitud de reembolso por emergencia lo antes posible. ♡'
+            : (isAlliedDeath
             ? `El equipo de ${selectedCenterName} revisará tu solicitud con el mayor respeto y empatía, y se comunicará contigo de inmediato. Un abrazo de parte de toda la familia Pata Amiga. 🕊️`
             : (isAlliedCareRequest
             ? 'El equipo médico de la veterinaria elegida revisará tu solicitud con mucho cariño y te responderá muy pronto. 🐾'
-            : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡');
+            : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡'));
         const caseTitleLabel = isAlliedDeath
             ? 'Escribe el nombre de tu amado peludito:'
-            : (isAlliedCareRequest ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?');
+            : (isReimbursementEmergency ? '¿Cómo quieres nombrar esta solicitud?' : (isAlliedCareRequest ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?'));
         const caseTitlePlaceholder = isAlliedDeath
             ? 'Ej. Despedida de Milo'
-            : (isAlliedVaccination ? 'Ej. Refuerzo de vacuna múltiple' : 'Ejem. Fractura de patita');
+            : (isReimbursementEmergency ? 'Ej. Reembolso por consulta de emergencia de Max' : (isAlliedVaccination ? 'Ej. Refuerzo de vacuna múltiple' : 'Ejem. Fractura de patita'));
         const caseDescriptionLabel = isAlliedDeath
             ? 'Detalles de lo ocurrido con tu peludo'
-            : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *');
+            : (isReimbursementEmergency ? '¿Cuál fue el motivo de la consulta o atención?' : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'));
         const caseDescriptionPlaceholder = isAlliedDeath
             ? 'Ej. Necesito apoyo con los servicios de cremación o asistencia en la clínica...'
+            : (isReimbursementEmergency
+            ? 'Ej. Acudí a emergencias por problemas estomacales y se le administró medicamento en la clínica...'
             : (isAlliedVaccination
             ? 'Ejemplo: “Asisto a la clínica para la vacuna séxtuple de mi peludo”'
-            : 'Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...');
+            : 'Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...'));
         const evidenceLabel = isAlliedDeath
             ? 'Foto para recordar a tu peludito'
-            : (isAlliedVaccination ? 'Evidencia en el consultorio/aplicación de vacuna.' : 'Evidencia (Foto)');
+            : (isReimbursementEmergency ? 'Foto de tu mascota en la consulta' : (isAlliedVaccination ? 'Evidencia en el consultorio/aplicación de vacuna.' : 'Evidencia (Foto)'));
         const prescriptionLabel = isAlliedDeath
             ? 'Certificado de defunción / Historial'
-            : (isAlliedVaccination ? 'Foto del carnet' : 'Informe/Receta');
+            : (isReimbursementEmergency ? 'Informe de salud' : (isAlliedVaccination ? 'Foto del carnet' : 'Informe/Receta'));
+        const receiptLabel = isReimbursementEmergency ? 'Factura o recibo de pago' : 'Comprobante/Factura';
         const appointmentDateLabel = isAlliedDeath
             ? '¿En qué fecha ocurrió su partida?'
-            : (isAlliedCareRequest ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?');
+            : (isReimbursementEmergency ? '¿Qué día asististe a la veterinaria?' : (isAlliedCareRequest ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?'));
         const appointmentTimeLabel = isAlliedDeath
             ? '¿A qué hora ocurrió o qué horario prefieres para la atención?'
             : (isAlliedCareRequest ? '¿En qué horario te queda mejor?' : 'Disponibilidad de horario');
         const centerLabel = isAlliedVaccination
             ? 'Selecciona tu clínica/hospital veterinario aliada favorita 🏥'
             : (isAlliedDeath ? 'Selecciona la clínica o centro de atención que te acompaña en este proceso:' : (isAlliedEmergency ? 'Selecciona tu veterinaria aliada favorita 🏥' : 'Elige dónde quieres ser atendido'));
+        const clinicNameLabel = isReimbursementEmergency ? '¿En qué veterinaria, hospital o clínica atendieron a tu peludo?' : 'Escribe el nombre del consultorio o veterinaria';
+        const vetInfoLabel = isReimbursementEmergency ? 'Nombre del médico veterinario que lo atendió' : 'Sobre el veterinario que atendió a tu mascota';
+        const requestedAmountLabel = isReimbursementEmergency ? 'Monto que solicitas reembolsar' : 'Monto solicitado de apoyo económico';
 
         return `
             <div class="pata-form-container">
@@ -1053,7 +1070,7 @@ class SolidarityRequestForm {
                         <div class="pata-file-box ${this.state.files.receipt ? 'has-file' : ''}" data-field="receipt" role="button" tabindex="0">
                             ${this.state.previews.receipt ? (this.state.files.receipt.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.receipt}" class="pata-preview">`) : ''}
                             <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
-                            <div><p>Comprobante/Factura</p><span>PDF, JPG o PNG</span></div>
+                            <div><p>${receiptLabel}</p><span>PDF, JPG o PNG</span></div>
                             <input type="file" hidden accept="image/*,application/pdf">
                         </div>
                     ` : ''}
@@ -1076,16 +1093,16 @@ class SolidarityRequestForm {
                         ${!isEmergency ? `
                             <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
                         ` : ''}
-                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">${appointmentDateLabel}</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
                         ${isEmergency ? `
                             <div class="pata-field"><label class="pata-label" for="pata-total-paid">Monto total pagado</label><input type="number" class="pata-input" id="pata-total-paid" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.totalPaidAmount}"></div>
-                            <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
-                            <div class="pata-field full"><label class="pata-label" for="pata-clinic-name">Escribe el nombre del consultorio o veterinaria</label><input type="text" class="pata-input" id="pata-clinic-name" placeholder="¿Dónde fue atendido tu peludo?" value="${this.state.formData.clinicName}"></div>
+                            <div class="pata-field"><label class="pata-label" for="pata-amount">${requestedAmountLabel}</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
+                            <div class="pata-field full"><label class="pata-label" for="pata-clinic-name">${clinicNameLabel}</label><input type="text" class="pata-input" id="pata-clinic-name" placeholder="¿Dónde fue atendido tu peludo?" value="${this.state.formData.clinicName}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-cp">Código postal</label><input type="text" class="pata-input" id="pata-cp" inputmode="numeric" pattern="[0-9]*" maxlength="5" placeholder="5 dígitos" value="${this.state.formData.clinicPostalCode}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-state">Estado</label><input type="text" class="pata-input" id="pata-state" value="${this.state.formData.clinicState}"></div>
                             <div class="pata-field full"><label class="pata-label" for="pata-address">Dirección</label><input type="text" class="pata-input" id="pata-address" value="${this.state.formData.clinicAddress}"></div>
                             <div class="pata-field"><label class="pata-label" for="pata-city">Ciudad</label><input type="text" class="pata-input" id="pata-city" value="${this.state.formData.clinicCity}"></div>
-                            <div class="pata-field full"><label class="pata-label">Sobre el veterinario que atendió a tu mascota</label><div style="display:flex;gap:20px"><input type="text" class="pata-input" id="pata-vet-name" aria-label="Nombre médico" placeholder="Nombre médico" value="${this.state.formData.vetName}"><input type="text" class="pata-input" id="pata-vet-license" aria-label="Cédula" placeholder="Cédula" value="${this.state.formData.vetLicense}"></div></div>
+                            <div class="pata-field full"><label class="pata-label">${vetInfoLabel}</label><div style="display:flex;gap:20px"><input type="text" class="pata-input" id="pata-vet-name" aria-label="Nombre médico" placeholder="Nombre médico" value="${this.state.formData.vetName}"><input type="text" class="pata-input" id="pata-vet-license" aria-label="Cédula" placeholder="Cédula" value="${this.state.formData.vetLicense}"></div></div>
                         ` : ''}
                         ${!isAppointment ? `
                             <div class="pata-field full" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 30px;">
