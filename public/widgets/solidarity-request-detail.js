@@ -356,6 +356,59 @@ class SolidarityRequestDetail {
         return map[benefit] || map.medical_emergency;
     }
 
+    renderChatSection() {
+        return `
+            <div class="pata-card pata-chat-section">
+                <h3 class="pata-section-title">historial de la solicitud</h3>
+                <p class="pata-section-subtitle">Estamos revisando tu solicitud</p>
+                <div class="pata-chat-messages" id="pata-chat-history">
+                    ${this.state.messages.map(m => `
+                        <div class="pata-bubble ${m.sender_role}">
+                            ${m.message}
+                            ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => {
+                                const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.name) || /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.url);
+                                return `
+                                    <div onclick="window.PataSolidarityDetail.openDocument('${a.url}', '${a.name}')" style="margin-top: 10px; cursor: pointer; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;">
+                                        ${isImage ? `
+                                            <img src="${a.url}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #000;">
+                                        ` : `
+                                            <div style="width: 40px; height: 40px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid #000;">${a.name.endsWith('.pdf') ? '📕' : '📄'}</div>
+                                        `}
+                                        <div style="flex: 1; min-width: 0;">
+                                            <div style="font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit;">${a.name}</div>
+                                            <div style="font-size: 9px; opacity: 0.7; color: inherit;">Clic para ver</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('') : ''}
+                            <div style="font-size: 10px; margin-top: 5px; opacity: 0.6; text-align: right;">
+                                ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="pata-chat-input-row">
+                    <button class="pata-btn-circle pata-msg-file-trigger">
+                        <img src="${this.baseUrl}/Icons/upload.svg" style="width: 20px; filter: invert(1);">
+                    </button>
+                    <input type="text" id="pata-msg-input" class="pata-chat-input" placeholder="Escribe un mensaje..." value="${this.state.newMessage}">
+                    <button id="pata-send-btn" class="pata-btn-circle" ${!this.state.newMessage.trim() && !this.state.files.attachment ? 'disabled' : ''}>
+                        ${this.state.sending ? '...' : '➤'}
+                    </button>
+                    <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf,video/*">
+                </div>
+                ${this.state.files.attachment ? `
+                    <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; background: #f0f0f0; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd;">
+                        <span style="font-size: 16px;">📎</span>
+                        <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.state.files.attachment.name}</span>
+                        <span onclick="window.PataSolidarityDetail.clearFile()" style="cursor: pointer; font-weight: 700; color: #FF0066; padding: 0 5px;">&times;</span>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+    }
+
     render() {
         if (this.state.loading) return;
         
@@ -364,6 +417,7 @@ class SolidarityRequestDetail {
         const statusConfig = this.getStatusConfig(req.status);
         const typeConfig = this.getTypeConfig(req.type);
         const benefitConfig = this.getBenefitConfig(req.benefit_type);
+        const canCancelRequest = ['new', 'in_review', 'needs_info'].includes(req.status);
 
         this.container.innerHTML = `
             <style>
@@ -589,7 +643,7 @@ class SolidarityRequestDetail {
                 .pata-pet-stat label { font-size: 12px; color: rgba(155, 155, 155, 1); display: block; }
                 .pata-pet-stat span { font-family: 'Fraiche', sans-serif; font-size: 18px; }
 
-                /* Card 4: History & Chat */
+                /* Card 4: History */
                 .pata-history-list {
                     margin-top: 30px;
                     display: flex;
@@ -624,9 +678,9 @@ class SolidarityRequestDetail {
 
                 /* Chat Integration */
                 .pata-chat-section {
-                    margin-top: 40px;
-                    border-top: 2px solid #000;
-                    padding-top: 30px;
+                    margin-top: 0;
+                    border-top: none;
+                    padding-top: 50px;
                 }
 
                 .pata-chat-messages {
@@ -837,6 +891,8 @@ class SolidarityRequestDetail {
                     </div>
                 </div>
 
+                ${this.renderChatSection()}
+
                 <!-- Card 2: Application Details -->
                 <div class="pata-card">
                     <h3 class="pata-section-title">detalles de la solicitud</h3>
@@ -957,10 +1013,10 @@ class SolidarityRequestDetail {
                     </div>
                 </div>
 
-                <!-- Card 4: History & Chat -->
+                <!-- Card 4: History -->
                 <div class="pata-card">
-                    <h3 class="pata-section-title">historial de la solicitud</h3>
-                    <p class="pata-section-subtitle">Estamos revisando tu solicitud</p>
+                    <h3 class="pata-section-title">movimientos de la solicitud</h3>
+                    <p class="pata-section-subtitle">Movimientos y cambios de estado</p>
 
                     <div class="pata-history-list">
                         ${(req.history || []).map(h => `
@@ -976,57 +1032,9 @@ class SolidarityRequestDetail {
                             </div>
                         `).join('')}
                     </div>
-
-                    <!-- Chat Section -->
-                    <div class="pata-chat-section">
-                        <div class="pata-chat-messages" id="pata-chat-history">
-                            ${this.state.messages.map(m => `
-                                <div class="pata-bubble ${m.sender_role}">
-                                    ${m.message}
-                                    ${m.attachments && m.attachments.length > 0 ? m.attachments.map(a => {
-                                        const isImage = /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.name) || /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(a.url);
-                                        return `
-                                            <div onclick="window.PataSolidarityDetail.openDocument('${a.url}', '${a.name}')" style="margin-top: 10px; cursor: pointer; background: rgba(0,0,0,0.05); padding: 8px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.1); display: flex; align-items: center; gap: 10px;">
-                                                ${isImage ? `
-                                                    <img src="${a.url}" style="width: 40px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid #000;">
-                                                ` : `
-                                                    <div style="width: 40px; height: 40px; border-radius: 8px; background: #eee; display: flex; align-items: center; justify-content: center; font-size: 20px; border: 1px solid #000;">${a.name.endsWith('.pdf') ? '📕' : '📄'}</div>
-                                                `}
-                                                <div style="flex: 1; min-width: 0;">
-                                                    <div style="font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: inherit;">${a.name}</div>
-                                                    <div style="font-size: 9px; opacity: 0.7; color: inherit;">Clic para ver</div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join('') : ''}
-                                    <div style="font-size: 10px; margin-top: 5px; opacity: 0.6; text-align: right;">
-                                        ${new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </div>
-                                </div>
-                            `).join('')}
-                        </div>
-
-                        <div class="pata-chat-input-row">
-                            <button class="pata-btn-circle pata-msg-file-trigger">
-                                <img src="${this.baseUrl}/Icons/upload.svg" style="width: 20px; filter: invert(1);">
-                            </button>
-                            <input type="text" id="pata-msg-input" class="pata-chat-input" placeholder="Escribe un mensaje..." value="${this.state.newMessage}">
-                            <button id="pata-send-btn" class="pata-btn-circle" ${!this.state.newMessage.trim() && !this.state.files.attachment ? 'disabled' : ''}>
-                                ${this.state.sending ? '...' : '➤'}
-                            </button>
-                            <input type="file" id="pata-msg-file" hidden accept="image/*,application/pdf,video/*">
-                        </div>
-                        ${this.state.files.attachment ? `
-                            <div style="margin-top: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; background: #f0f0f0; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd;">
-                                <span style="font-size: 16px;">📎</span>
-                                <span style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.state.files.attachment.name}</span>
-                                <span onclick="window.PataSolidarityDetail.clearFile()" style="cursor: pointer; font-weight: 700; color: #FF0066; padding: 0 5px;">&times;</span>
-                            </div>
-                        ` : ''}
-                    </div>
                 </div>
 
-                <button class="pata-btn-cancel">Cancelar solicitud</button>
+                ${canCancelRequest ? '<button class="pata-btn-cancel">Cancelar solicitud</button>' : ''}
             </div>
 
             <!-- Modal Viewer -->
