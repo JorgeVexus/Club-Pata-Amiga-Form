@@ -743,24 +743,29 @@ class SolidarityRequestForm {
         if (!this.container) return;
         const isReimbursementEmergency = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'medical_emergency';
         const isReimbursementVaccination = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'annual_vaccination';
+        const isReimbursementDeath = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'death';
         const isAlliedEmergency = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'medical_emergency';
         const isAlliedVaccination = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'annual_vaccination';
         const isAlliedDeath = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'death';
         const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination || isAlliedDeath;
-        const formHeading = isReimbursementVaccination
+        const formHeading = isReimbursementDeath
+            ? 'Apoyo por el fallecimiento de tu peludito 🕊️'
+            : (isReimbursementVaccination
             ? 'Reembolso por vacunación 💉'
             : (isReimbursementEmergency
             ? '¿Cuál fue el motivo de la emergencia médica? 🩺'
             : (isAlliedDeath
             ? 'Te acompañamos en este momento tan difícil 🤍'
-            : (isAlliedCareRequest ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó')));
-        const formSubheading = isReimbursementVaccination
+            : (isAlliedCareRequest ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó'))));
+        const formSubheading = isReimbursementDeath
+            ? 'Detalles de lo ocurrido con tu peludo'
+            : (isReimbursementVaccination
             ? 'Detalles de la vacuna aplicada'
             : (isReimbursementEmergency
             ? 'Escribe aquí los detalles del diagnóstico o atención de tu peludo'
             : (isAlliedDeath
             ? 'compártenos brevemente la situación'
-            : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *')));
+            : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'))));
 
         // Toggle Scroll Lock only in standalone mode
         if (!this.inline) {
@@ -999,13 +1004,16 @@ class SolidarityRequestForm {
         const isEmergency = this.state.selection.benefitType === 'medical_emergency';
         const isReimbursementEmergency = this.state.selection.requestType === 'reimbursement' && isEmergency;
         const isReimbursementVaccination = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'annual_vaccination';
+        const isReimbursementDeath = this.state.selection.requestType === 'reimbursement' && this.state.selection.benefitType === 'death';
         const isAlliedEmergency = isAppointment && isEmergency;
         const isAlliedVaccination = isAppointment && this.state.selection.benefitType === 'annual_vaccination';
         const isAlliedDeath = isAppointment && this.state.selection.benefitType === 'death';
         const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination || isAlliedDeath;
         const selectedCenter = this.state.alliedCenters.find(c => c.id === this.state.formData.alliedCenterId);
         const selectedCenterName = selectedCenter?.name || 'la clínica seleccionada';
-        const footerMessage = isReimbursementVaccination
+        const footerMessage = isReimbursementDeath
+            ? 'Lamentamos profundamente tu pérdida. Nuestro comité revisará tu solicitud con el mayor respeto y te responderemos pronto. No estás solo. ♡'
+            : (isReimbursementVaccination
             ? 'Gracias por mantener protegido a tu peludito. El comité revisará tus comprobantes para responderte pronto. ♡'
             : (isReimbursementEmergency
             ? 'Validaremos tu solicitud de reembolso por emergencia lo antes posible. ♡'
@@ -1013,35 +1021,37 @@ class SolidarityRequestForm {
             ? `El equipo de ${selectedCenterName} revisará tu solicitud con el mayor respeto y empatía, y se comunicará contigo de inmediato. Un abrazo de parte de toda la familia Pata Amiga. 🕊️`
             : (isAlliedCareRequest
             ? 'El equipo médico de la veterinaria elegida revisará tu solicitud con mucho cariño y te responderá muy pronto. 🐾'
-            : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡')));
+            : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡'))));
         const caseTitleLabel = isAlliedDeath
             ? 'Escribe el nombre de tu amado peludito:'
-            : ((isReimbursementEmergency || isReimbursementVaccination) ? '¿Cómo quieres nombrar esta solicitud?' : (isAlliedCareRequest ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?'));
+            : (isReimbursementDeath ? '¿Cómo te gustaría nombrar este espacio?' : ((isReimbursementEmergency || isReimbursementVaccination) ? '¿Cómo quieres nombrar esta solicitud?' : (isAlliedCareRequest ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?')));
         const caseTitlePlaceholder = isAlliedDeath
             ? 'Ej. Despedida de Milo'
-            : (isReimbursementVaccination ? 'Ej. Vacuna de la rabia de Max' : (isReimbursementEmergency ? 'Ej. Reembolso por consulta de emergencia de Max' : (isAlliedVaccination ? 'Ej. Refuerzo de vacuna múltiple' : 'Ejem. Fractura de patita')));
+            : (isReimbursementDeath ? 'Ej. Homenaje a mi querida Luna' : (isReimbursementVaccination ? 'Ej. Vacuna de la rabia de Max' : (isReimbursementEmergency ? 'Ej. Reembolso por consulta de emergencia de Max' : (isAlliedVaccination ? 'Ej. Refuerzo de vacuna múltiple' : 'Ejem. Fractura de patita'))));
         const caseDescriptionLabel = isAlliedDeath
             ? 'Detalles de lo ocurrido con tu peludo'
-            : (isReimbursementVaccination ? 'Detalles de la vacuna aplicada' : (isReimbursementEmergency ? '¿Cuál fue el motivo de la consulta o atención?' : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *')));
+            : (isReimbursementDeath ? 'Breve motivo de la despedida' : (isReimbursementVaccination ? 'Detalles de la vacuna aplicada' : (isReimbursementEmergency ? '¿Cuál fue el motivo de la consulta o atención?' : (isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'))));
         const caseDescriptionPlaceholder = isAlliedDeath
             ? 'Ej. Necesito apoyo con los servicios de cremación o asistencia en la clínica...'
+            : (isReimbursementDeath
+            ? 'Ej. Complicaciones por edad avanzada'
             : (isReimbursementVaccination
             ? 'Ej. Le aplicaron su vacuna quíntuple anual'
             : (isReimbursementEmergency
             ? 'Ej. Acudí a emergencias por problemas estomacales y se le administró medicamento en la clínica...'
             : (isAlliedVaccination
             ? 'Ejemplo: “Asisto a la clínica para la vacuna séxtuple de mi peludo”'
-            : 'Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...')));
+            : 'Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...'))));
         const evidenceLabel = isAlliedDeath
             ? 'Foto para recordar a tu peludito'
-            : (isReimbursementVaccination ? 'Foto de tu peludo en el consultorio aplicándole vacuna' : (isReimbursementEmergency ? 'Foto de tu mascota en la consulta' : (isAlliedVaccination ? 'Evidencia en el consultorio/aplicación de vacuna.' : 'Evidencia (Foto)')));
+            : (isReimbursementDeath ? 'Una foto hermosa de tu peludito' : (isReimbursementVaccination ? 'Foto de tu peludo en el consultorio aplicándole vacuna' : (isReimbursementEmergency ? 'Foto de tu mascota en la consulta' : (isAlliedVaccination ? 'Evidencia en el consultorio/aplicación de vacuna.' : 'Evidencia (Foto)'))));
         const prescriptionLabel = isAlliedDeath
             ? 'Certificado de defunción / Historial'
-            : (isReimbursementVaccination ? 'Cartilla de vacunación con etiqueta correspondiente y firma' : (isReimbursementEmergency ? 'Informe de salud' : (isAlliedVaccination ? 'Foto del carnet' : 'Informe/Receta')));
-        const receiptLabel = isReimbursementVaccination ? 'Factura o recibo del pago' : (isReimbursementEmergency ? 'Factura o recibo de pago' : 'Comprobante/Factura');
+            : (isReimbursementDeath ? 'Certificado de defunción o informe médico.' : (isReimbursementVaccination ? 'Cartilla de vacunación con etiqueta correspondiente y firma' : (isReimbursementEmergency ? 'Informe de salud' : (isAlliedVaccination ? 'Foto del carnet' : 'Informe/Receta'))));
+        const receiptLabel = isReimbursementDeath ? 'Comprobante de gastos funerarios.' : (isReimbursementVaccination ? 'Factura o recibo del pago' : (isReimbursementEmergency ? 'Factura o recibo de pago' : 'Comprobante/Factura'));
         const appointmentDateLabel = isAlliedDeath
             ? '¿En qué fecha ocurrió su partida?'
-            : (isReimbursementVaccination ? '¿Qué día le aplicaron la vacuna?' : (isReimbursementEmergency ? '¿Qué día asististe a la veterinaria?' : (isAlliedCareRequest ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?')));
+            : (isReimbursementDeath ? '¿En qué fecha nos dejó tu peludito?' : (isReimbursementVaccination ? '¿Qué día le aplicaron la vacuna?' : (isReimbursementEmergency ? '¿Qué día asististe a la veterinaria?' : (isAlliedCareRequest ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?'))));
         const appointmentTimeLabel = isAlliedDeath
             ? '¿A qué hora ocurrió o qué horario prefieres para la atención?'
             : (isAlliedCareRequest ? '¿En qué horario te queda mejor?' : 'Disponibilidad de horario');
@@ -1050,7 +1060,7 @@ class SolidarityRequestForm {
             : (isAlliedDeath ? 'Selecciona la clínica o centro de atención que te acompaña en este proceso:' : (isAlliedEmergency ? 'Selecciona tu veterinaria aliada favorita 🏥' : 'Elige dónde quieres ser atendido'));
         const clinicNameLabel = isReimbursementEmergency ? '¿En qué veterinaria, hospital o clínica atendieron a tu peludo?' : 'Escribe el nombre del consultorio o veterinaria';
         const vetInfoLabel = isReimbursementEmergency ? 'Nombre del médico veterinario que lo atendió' : 'Sobre el veterinario que atendió a tu mascota';
-        const requestedAmountLabel = isReimbursementVaccination ? 'Monto solicitado a reembolsar por vacuna' : (isReimbursementEmergency ? 'Monto que solicitas reembolsar' : 'Monto solicitado de apoyo económico');
+        const requestedAmountLabel = isReimbursementDeath ? 'Monto del apoyo solicitado por fallecimiento.' : (isReimbursementVaccination ? 'Monto solicitado a reembolsar por vacuna' : (isReimbursementEmergency ? 'Monto que solicitas reembolsar' : 'Monto solicitado de apoyo económico'));
 
         return `
             <div class="pata-form-container">
