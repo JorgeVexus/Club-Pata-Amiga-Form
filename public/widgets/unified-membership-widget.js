@@ -4191,10 +4191,10 @@
             const species = type.includes('gato') || type.includes('cat') ? 'michi' : 'lomito';
             const adoptedText = isAdopted ? 'adoptado' : 'no adoptado';
             const breedText = isMixed ? (species === 'michi' ? 'dom&eacute;stico' : 'mestizo') : 'de raza';
-            const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
+            const ambassadorText = hasAmbassadorCode ? ' y registrado con c&oacute;digo de embajador' : '';
             const name = this.escapeHtml(pet.name || 'tu mascota');
 
-            return `Recuerda que <strong>${name}</strong> tiene un tiempo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
+            return `Al ser <strong>${name}</strong> un ${species} ${breedText} y ${adoptedText}${ambassadorText}, su periodo de activaci&oacute;n total es de <strong>${carencia.totalDays} d&iacute;as</strong>. Mientras tanto, &iexcl;ya est&aacute;s dentro de la comunidad!`;
         }
 
         isSenior(pet) {
@@ -5246,7 +5246,7 @@
                                     <p class="pata-approved-progress-msg">${statusMessage}</p>
                                     
                                     <p class="pata-approved-days-left">
-                                        faltan <strong>${carencia.daysRemaining} días</strong> para activar tu apoyo económico completo
+                                        faltan <strong>${carencia.daysRemaining} d&iacute;as</strong> para activar tus reintegros completos
                                     </p>
                                     
                                     <div class="pata-approved-progress-labels-top">
@@ -5279,7 +5279,7 @@
                                     <h3>${pet.name.toLowerCase()}</h3>
                                     <ul class="pata-pet-info-list">
                                         <li>${pet.age_value || '?'} ${pet.age_unit === 'years' ? 'años' : 'meses'}</li>
-                                        <li>${(pet.pet_type || '').toLowerCase() === 'dog' ? 'Peludo' : (pet.pet_type || '').toLowerCase() === 'cat' ? 'Michi' : (pet.pet_type || 'mascota').toLowerCase()}</li>
+                                        <li>${(pet.pet_type || '').toLowerCase() === 'dog' || (pet.pet_type || '').toLowerCase() === 'perro' ? 'lomito' : (pet.pet_type || '').toLowerCase() === 'cat' || (pet.pet_type || '').toLowerCase() === 'gato' ? 'michi' : (pet.pet_type || 'mascota').toLowerCase()}</li>
                                         <li>${(pet.breed || 'mestizo').toLowerCase()}</li>
                                     </ul>
                                 </div>
