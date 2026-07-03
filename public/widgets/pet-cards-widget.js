@@ -1031,10 +1031,10 @@
             const species = type.includes('gato') || type.includes('cat') ? 'michi' : 'lomito';
             const adoptedText = isAdopted ? 'adoptado' : 'no adoptado';
             const breedText = isMixed ? (species === 'michi' ? 'dom&eacute;stico' : 'mestizo') : 'de raza';
-            const ambassadorText = hasAmbassadorCode ? ' registrado con c&oacute;digo de embajador' : '';
+            const ambassadorText = hasAmbassadorCode ? ' y registrado con c&oacute;digo de embajador' : '';
             const name = this.escapeHtml(pet.name || 'tu mascota');
 
-            return `Recuerda que <strong>${name}</strong> tiene un tiempo de espera de <strong>${carencia.totalDays} d&iacute;as</strong> debido a que es un ${species} ${adoptedText}, ${breedText}${ambassadorText}.`;
+            return `Nota de la manada: Al ser <strong>${name}</strong> un ${species} ${breedText} y ${adoptedText}${ambassadorText}, su periodo de activaci&oacute;n total es de <strong>${carencia.totalDays} d&iacute;as</strong>. Mientras tanto, &iexcl;ya est&aacute;s dentro de la comunidad!`;
         }
 
         async loadData() {
@@ -1330,7 +1330,7 @@
                                     <button onclick="if(confirm('¿Estás seguro que deseas solicitar la baja de ${pet.name}? Esta acción no se puede deshacer.')) window.ManadaWidget.requestPetUnsubscribe('${pet.id}', ${petIndex}, '${pet.name}')" 
                                             style="background: #fff; color: #E53E3E; border: 1.5px solid #E53E3E; border-radius: 50px; font-family: var(--font-body); font-size: 10px; font-weight: 800; padding: 5px 14px; cursor: pointer; transition: all 0.2s ease; text-transform: uppercase; display: flex; align-items: center; gap: 6px; width: fit-content; box-shadow: 2px 2px 0 rgba(229, 62, 62, 0.1);">
                                         <span class="material-symbols-outlined" style="font-size: 14px;">do_not_disturb_on</span>
-                                        Solicitar baja
+                                        Notificar partida
                                     </button>
                                 ` : `
                                     <div style="color: #718096; font-family: var(--font-body); font-size: 10px; font-weight: 800; text-transform: uppercase; display: flex; align-items: center; gap: 6px; background: #f7f7f7; padding: 5px 14px; border-radius: 50px; border: 1.5px solid #ddd; width: fit-content;">
@@ -1453,9 +1453,9 @@
                                     </div>
                                     ${pet.status === 'approved' ? `
                                         <div class="pata-info-item">
-                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Fecha de activación del apoyo económico"></div>
+                                            <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/activacion.png" alt="Fecha de activaci&oacute;n de reintegros"></div>
                                             <div class="pata-info-texts">
-                                                <span class="pata-info-label">Fecha de activación del apoyo económico</span>
+                                                <span class="pata-info-label">Fecha de activaci&oacute;n de reintegros</span>
                                                 <span class="pata-info-value">${activationDate}</span>
                                             </div>
                                         </div>
