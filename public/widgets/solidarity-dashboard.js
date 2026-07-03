@@ -85,7 +85,7 @@ class SolidarityDashboard {
 
         const memberstackId = member.id;
 
-        const fetchOptions = { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } };
+        const fetchOptions = { cache: 'no-store' };
         const cacheBust = Date.now();
         const [statsRes, historyRes] = await Promise.all([
             fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json()),
@@ -263,7 +263,7 @@ class SolidarityDashboard {
             if (!member) return;
 
             const memberstackId = member.id;
-            const fetchOptions = { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } };
+            const fetchOptions = { cache: 'no-store' };
             const cacheBust = Date.now();
             const [statsRes, historyRes] = await Promise.all([
                 fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json()),
