@@ -741,6 +741,7 @@ class SolidarityRequestForm {
 
     render() {
         if (!this.container) return;
+        const isAlliedEmergency = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'medical_emergency';
 
         // Toggle Scroll Lock only in standalone mode
         if (!this.inline) {
@@ -857,8 +858,8 @@ class SolidarityRequestForm {
                 <!-- Section 4: The Form -->
                 <div class="pata-reveal ${this.state.selection.benefitType ? 'visible' : ''}">
                     <div class="pata-section-header">
-                        <h2>Cuéntanos qué pasó</h2>
-                        <p>Descripción del evento o situación *</p>
+                        <h2>${isAlliedEmergency ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó'}</h2>
+                        <p>${isAlliedEmergency ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</p>
                     </div>
                     ${this.renderForm()}
                 </div>
@@ -974,15 +975,19 @@ class SolidarityRequestForm {
         const selectedPet = this.state.pets.find(p => p.id === this.state.selection.petId);
         const isAppointment = this.state.selection.requestType === 'allied_center_appointment';
         const isEmergency = this.state.selection.benefitType === 'medical_emergency';
+        const isAlliedEmergency = isAppointment && isEmergency;
+        const footerMessage = isAlliedEmergency
+            ? 'El equipo médico de la veterinaria elegida revisará tu solicitud con mucho cariño y te responderá muy pronto. 🐾'
+            : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡';
 
         return `
             <div class="pata-form-container">
                 <div class="pata-field full">
-                    <label class="pata-label" for="pata-case-title">¿Cómo te gustaría identificar este caso?</label>
+                    <label class="pata-label" for="pata-case-title">${isAlliedEmergency ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?'}</label>
                     <input type="text" class="pata-input" id="pata-case-title" placeholder="Ejem. Fractura de patita" value="${this.state.formData.caseTitle}">
                 </div>
                 <div class="pata-field full">
-                    <label for="pata-case-desc" class="pata-label">Descripción del evento o situación *</label>
+                    <label for="pata-case-desc" class="pata-label">${isAlliedEmergency ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</label>
                     <textarea class="pata-textarea" id="pata-case-desc" placeholder="Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...">${this.state.formData.caseDescription}</textarea>
                 </div>
 
@@ -1019,9 +1024,9 @@ class SolidarityRequestForm {
 
                 <div class="pata-form-grid">
                     ${isAppointment ? `
-                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">¿Cuándo ocurrió?</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
-                        <div class="pata-field"><label class="pata-label" for="pata-pref-time">Disponibilidad de horario</label><input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}"></div>
-                        <div class="pata-field"><label class="pata-label" for="pata-center">Elige dónde quieres ser atendido</label><select class="pata-select" id="pata-center"><option value="">Seleccione un centro veterinario</option>${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">${isAlliedEmergency ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?'}</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-pref-time">${isAlliedEmergency ? '¿En qué horario te queda mejor?' : 'Disponibilidad de horario'}</label><input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-center">${isAlliedEmergency ? 'Selecciona tu veterinaria aliada favorita 🏥' : 'Elige dónde quieres ser atendido'}</label><select class="pata-select" id="pata-center"><option value="">Seleccione un centro veterinario</option>${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
                     ` : `
                         ${!isEmergency ? `
                             <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
@@ -1065,7 +1070,7 @@ class SolidarityRequestForm {
                         ${this.state.submitting ? '<div class="pata-spinner"></div>' : 'Enviar solicitud'}
                     </button>
                 </div>
-                <p style="text-align:center; color:white; font-size:13px; margin-top:25px; font-weight:700; opacity: 0.9;">Nuestro comité revisará tu caso con empatía y te responderá pronto ♡</p>
+                <p style="text-align:center; color:white; font-size:13px; margin-top:25px; font-weight:700; opacity: 0.9;">${footerMessage}</p>
             </div>
         `;
     }
