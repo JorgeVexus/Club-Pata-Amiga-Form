@@ -85,9 +85,11 @@ class SolidarityDashboard {
 
         const memberstackId = member.id;
 
+        const fetchOptions = { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } };
+        const cacheBust = Date.now();
         const [statsRes, historyRes] = await Promise.all([
-            fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}`).then(r => r.json()),
-            fetch(`${this.apiUrl}/api/solidarity/history?memberstackId=${memberstackId}`).then(r => r.json())
+            fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json()),
+            fetch(`${this.apiUrl}/api/solidarity/history?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json())
         ]);
 
         if (statsRes.success) {
@@ -261,9 +263,11 @@ class SolidarityDashboard {
             if (!member) return;
 
             const memberstackId = member.id;
+            const fetchOptions = { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } };
+            const cacheBust = Date.now();
             const [statsRes, historyRes] = await Promise.all([
-                fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}`).then(r => r.json()),
-                fetch(`${this.apiUrl}/api/solidarity/history?memberstackId=${memberstackId}`).then(r => r.json())
+                fetch(`${this.apiUrl}/api/solidarity/stats?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json()),
+                fetch(`${this.apiUrl}/api/solidarity/history?memberstackId=${memberstackId}&_=${cacheBust}`, fetchOptions).then(r => r.json())
             ]);
 
             if (statsRes.success) {
@@ -707,7 +711,17 @@ class SolidarityDashboard {
         const pet = this.data.pets.find(p => p.id === req.pet_id);
         const types = { medical_emergency: { label: 'emergencia médica', color: '#ff0063', icon: `${this.baseUrl}/Icons/emergencias.svg` }, annual_vaccination: { label: 'vacunación', color: '#fe8f15', icon: `${this.baseUrl}/Icons/vacuna.svg` }, death: { label: 'fallecimiento', color: '#00BBB4', icon: `${this.baseUrl}/Icons/fallecimiento.svg` } };
         const type = types[req.benefit_type] || types.medical_emergency;
-        const statuses = { new: { label: 'solicitud enviada', color: '#9b9b9b', icon: `${this.baseUrl}/Icons/enviada.png` }, in_review: { label: 'cita agendada', color: '#fefa15', icon: `${this.baseUrl}/Icons/calendario.svg` }, approved: { label: 'aprobada', color: '#10B981', icon: `${this.baseUrl}/Icons/aprovada.png` }, paid: { label: 'reembolso aprobado', color: '#FEF9C3', icon: `${this.baseUrl}/Icons/aprovada.png` }, rejected: { label: 'rechazada', color: '#ff0063', icon: `${this.baseUrl}/Icons/rechazada.png` } };
+        const statuses = {
+            new: { label: 'solicitud enviada', color: '#9b9b9b', icon: `${this.baseUrl}/Icons/enviada.png` },
+            in_review: { label: 'en revisión', color: '#FE8F15', icon: `${this.baseUrl}/Icons/confirmacion.svg` },
+            needs_info: { label: 'acción requerida', color: '#FF0066', icon: `${this.baseUrl}/Icons/confirmacion.svg` },
+            approved: { label: 'aprobada', color: '#10B981', icon: `${this.baseUrl}/Icons/aprovada.png` },
+            paid: { label: 'reembolso pagado', color: '#10B981', icon: `${this.baseUrl}/Icons/aprovada.png` },
+            scheduled: { label: 'cita agendada', color: '#fefa15', icon: `${this.baseUrl}/Icons/calendario.svg` },
+            completed: { label: 'completada', color: '#00BBB4', icon: `${this.baseUrl}/Icons/aprovada.png` },
+            rejected: { label: 'rechazada', color: '#ff0063', icon: `${this.baseUrl}/Icons/rechazada.png` },
+            cancelled: { label: 'cancelada', color: '#718096', icon: `${this.baseUrl}/Icons/rechazada.png` }
+        };
         const status = statuses[req.status] || statuses.new;
 
         return `

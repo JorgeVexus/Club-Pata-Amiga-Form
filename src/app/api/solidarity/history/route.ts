@@ -11,7 +11,12 @@ const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+    'Pragma': 'no-cache',
 };
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
