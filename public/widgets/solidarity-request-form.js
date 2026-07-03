@@ -400,6 +400,9 @@ class SolidarityRequestForm {
             .pata-benefit-card:hover { transform: translateX(8px); background: var(--pata-turquoise-dark); }
             .pata-benefit-card.selected { background: var(--pata-orange); transform: scale(1.01); }
             .pata-benefit-card.exhausted { opacity: 0.6; cursor: not-allowed; filter: grayscale(0.8); }
+            .pata-benefit-change-wrap { display: flex; justify-content: flex-end; margin: -4px 0 4px; }
+            .pata-benefit-change-btn { background: transparent; border: none; color: var(--pata-black); font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 800; text-decoration: underline; cursor: pointer; padding: 6px 4px; opacity: 0.75; }
+            .pata-benefit-change-btn:hover, .pata-benefit-change-btn:focus-visible { opacity: 1; color: var(--pata-orange); outline: none; }
             .pata-benefit-icon { width: 60px; height: 60px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2.5px solid var(--pata-black); flex-shrink: 0; padding: 10px; }
             .pata-benefit-icon img { width: 100%; height: 100%; object-fit: contain; }
             .pata-benefit-info { flex: 1; min-width: 250px; }
@@ -926,13 +929,20 @@ class SolidarityRequestForm {
     }
 
     renderBenefitCards() {
-        const benefits = [
+        const allBenefits = [
             { id: 'medical_emergency', title: 'emergencia médica', desc: 'Para situaciones inesperadas que requieren atención veterinaria urgente.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-emergencias_pbfplq.svg', amount: 3000 },
             { id: 'annual_vaccination', title: 'vacunación anual', desc: 'Apoyo para cubrir la vacuna anual de una de tus mascotas.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/Icon-vacuna_ybuall.svg', amount: 300 },
             { id: 'death', title: 'fallecimiento', desc: 'Te acompañamos en un momento difícil con un apoyo para gastos de despedida.', icon: 'https://res.cloudinary.com/dqy07kgu6/image/upload/v1772904245/icon-fallecimiento_xwqe2g.png', amount: 2000 }
         ];
+        const selectedBenefit = this.state.selection.benefitType;
+        const benefits = selectedBenefit ? allBenefits.filter(b => b.id === selectedBenefit) : allBenefits;
+        const changeButton = selectedBenefit ? `
+            <div class="pata-benefit-change-wrap">
+                <button type="button" class="pata-benefit-change-btn">Cambiar tipo de solicitud</button>
+            </div>
+        ` : '';
 
-        return benefits.map(b => {
+        return changeButton + benefits.map(b => {
             const isSelected = this.state.selection.benefitType === b.id;
             const isEmergency = b.id === 'medical_emergency';
             const isReimbursementEmergencyCard = this.state.selection.requestType === 'reimbursement' && isEmergency;
@@ -1208,6 +1218,16 @@ class SolidarityRequestForm {
         });
 
         // Benefit type
+        this.container.querySelectorAll('.pata-benefit-change-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.state.selection.benefitType = null;
+                this.render();
+            };
+            btn.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); } };
+        });
+
         this.container.querySelectorAll('.pata-benefit-card').forEach(card => {
             const select = (e) => {
                 if (e.target.closest('.pata-benefit-expansion')) return;
