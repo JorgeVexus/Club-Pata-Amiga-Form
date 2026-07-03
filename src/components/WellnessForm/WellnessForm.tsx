@@ -143,10 +143,10 @@ export default function WellnessForm({ onSuccess }: Props) {
                 <p>Tu solicitud como Centro de Bienestar está en revisión.</p>
                 <p>Te enviaremos un correo una vez que hayamos validado tu información.</p>
                 <button 
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
                     className={styles.primaryButton}
                 >
-                    Volver al inicio
+                    Iniciar sesión
                 </button>
             </div>
         );

@@ -71,6 +71,29 @@
             margin: 0 auto;
         }
 
+        .wc-status-screen-wide {
+            max-width: 900px;
+            text-align: left;
+        }
+
+        .wc-pending-review-copy {
+            text-align: center;
+            max-width: 620px;
+            margin: 0 auto;
+        }
+
+        .wc-pending-profile-form-section {
+            margin-top: 30px;
+            padding-top: 24px;
+            border-top: 2px solid #F1F5F9;
+        }
+
+        .wc-status-screen-wide > .wc-status-icon,
+        .wc-status-screen-wide > .wc-title,
+        .wc-status-screen-wide > p {
+            text-align: center;
+        }
+
         .wc-status-icon {
             font-size: 4rem;
             margin-bottom: 20px;
@@ -480,21 +503,127 @@
         `;
     }
 
+    function getCenterDisplayName(center) {
+        return center.establishment_name || center.name || 'tu centro';
+    }
+
+    function renderEditProfileForm(center, options = {}) {
+        const social = center.social_links || {};
+        const title = options.title || 'Editar Perfil del Centro';
+        const formId = options.formId || 'wc-edit-profile-form';
+        const showHeader = options.showHeader !== false;
+        const showCloseButton = options.showCloseButton !== false;
+        const submitText = options.submitText || 'Guardar Cambios';
+
+        return `
+            ${showHeader ? `
+                <div class="wc-modal-header">
+                    <h2 class="wc-title">${title}</h2>
+                    ${showCloseButton ? '<button class="wc-close-btn" type="button">&times;</button>' : ''}
+                </div>
+            ` : ''}
+
+            <form id="${formId}">
+                <h3 class="wc-section-title">Marca y Logo</h3>
+                <div class="wc-logo-preview-container">
+                    <img src="${center.logo_url || 'https://via.placeholder.com/80'}" class="wc-logo-preview" id="logo-preview-img">
+                    <div style="flex:1;">
+                        <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Recomendado: Imagen cuadrada, min 200x200px (PNG o JPG).</p>
+                        <input type="file" id="wc-logo-input" accept="image/*" style="display:none;">
+                        <button type="button" id="btn-select-logo" class="wc-btn wc-btn-secondary" style="padding:8px 15px; font-size:0.9rem;">Seleccionar Imagen</button>
+                    </div>
+                </div>
+
+                <h3 class="wc-section-title">Información de Contacto</h3>
+                <div class="wc-form-group">
+                    <label class="wc-label">Nombre del Establecimiento</label>
+                    <input type="text" name="establishment_name" class="wc-input" value="${center.establishment_name || ''}" placeholder="Ej: Clínica Vet Pata Amiga">
+                </div>
+
+                <div class="wc-form-group">
+                    <label class="wc-label">Teléfono de Contacto</label>
+                    <input type="tel" name="phone" class="wc-input" value="${center.phone || ''}" placeholder="Ej: 5512345678">
+                </div>
+
+                <h3 class="wc-section-title">Ubicación y Geolocalización</h3>
+                <div class="wc-form-group">
+                    <label class="wc-label">Dirección Completa</label>
+                    <textarea name="address" id="wc-address-input" class="wc-input" style="min-height:80px;" placeholder="Calle, número, colonia, CP y ciudad">${center.address || ''}</textarea>
+                </div>
+
+                <div class="wc-input-row">
+                    <div class="wc-form-group">
+                        <label class="wc-label">Latitud</label>
+                        <input type="number" step="any" name="lat" id="wc-lat" class="wc-input" value="${center.lat || ''}" placeholder="Ej: 19.4326">
+                    </div>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Longitud</label>
+                        <input type="number" step="any" name="lng" id="wc-lng" class="wc-input" value="${center.lng || ''}" placeholder="Ej: -99.1332">
+                    </div>
+                </div>
+                <button type="button" id="btn-get-location" class="wc-btn" style="width:100%; margin-bottom:20px; font-size:0.9rem;">📍 Obtener mi ubicación actual</button>
+
+                <h3 class="wc-section-title">Redes Sociales</h3>
+                <div class="wc-input-row">
+                    <div class="wc-form-group">
+                        <label class="wc-label">Instagram (URL)</label>
+                        <input type="url" name="social_instagram" class="wc-input" value="${social.instagram || ''}" placeholder="https://instagram.com/...">
+                    </div>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Facebook (URL)</label>
+                        <input type="url" name="social_facebook" class="wc-input" value="${social.facebook || ''}" placeholder="https://facebook.com/...">
+                    </div>
+                </div>
+                <div class="wc-input-row">
+                    <div class="wc-form-group">
+                        <label class="wc-label">TikTok (URL)</label>
+                        <input type="url" name="social_tiktok" class="wc-input" value="${social.tiktok || ''}" placeholder="https://tiktok.com/@...">
+                    </div>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Sitio Web</label>
+                        <input type="url" name="social_website" class="wc-input" value="${social.website || ''}" placeholder="https://...">
+                    </div>
+                </div>
+
+                <h3 class="wc-section-title">Promoción para Miembros</h3>
+                <div class="wc-form-group">
+                    <label class="wc-label">Descripción del Beneficio</label>
+                    <textarea name="promotion_details" class="wc-input" style="min-height:100px;" placeholder="Ej: 15% de descuento en consultas generales y 10% en farmacia.">${center.promotion_details || ''}</textarea>
+                </div>
+
+                <div style="margin-top:30px;">
+                    <button type="submit" id="btn-save-profile" class="wc-btn wc-btn-primary" style="width:100%;">${submitText}</button>
+                </div>
+            </form>
+        `;
+    }
+
     function renderPending(container, center) {
         container.innerHTML = `
-            <div class="wc-status-screen">
+            <div class="wc-status-screen wc-status-screen-wide">
                 <div class="wc-status-icon">⏳</div>
                 <h1 class="wc-title">Solicitud en Revisión</h1>
-                <p>¡Hola, ${center.name}! Tu solicitud para ser aliado de Pata Amiga está siendo revisada por nuestro equipo.</p>
+                <p>¡Hola, ${getCenterDisplayName(center)}! Tu solicitud para ser aliado de Pata Amiga está siendo revisada por nuestro equipo.</p>
                 <p>Te notificaremos por correo electrónico una vez que hayamos validado tus datos.</p>
                 <div style="margin-top: 30px; padding: 20px; background: #FFFBEB; border-radius: 20px; border: 2px solid #FEF3C7;">
                     <p style="font-size: 0.9rem; color: #92400E;">Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.</p>
-                    <button id="btn-complete-pending" class="wc-btn wc-btn-primary" style="margin-top:15px; width:100%;">Completar mi Perfil</button>
+                </div>
+                <div class="wc-pending-profile-form-section">
+                    ${renderEditProfileForm(center, {
+                        title: 'Completa la información de tu centro',
+                        formId: 'wc-pending-profile-form',
+                        showCloseButton: false,
+                        submitText: 'Guardar información'
+                    })}
                 </div>
             </div>
         `;
 
-        container.querySelector('#btn-complete-pending').addEventListener('click', () => showEditProfileModal(container, center));
+        bindEditProfileForm(container, center, {
+            formSelector: '#wc-pending-profile-form',
+            submitText: 'Guardar información',
+            onSuccess: () => init()
+        });
     }
 
     function renderRejected(container, center) {
@@ -1043,6 +1172,121 @@
             console.error('Error uploading logo:', error);
             return { success: false, error: 'Error de conexión al subir logo' };
         }
+    }
+
+    function bindEditProfileForm(root, center, options = {}) {
+        const form = root.querySelector(options.formSelector || '#wc-edit-profile-form');
+        if (!form) return;
+
+        const submitText = options.submitText || 'Guardar Cambios';
+        const onSuccess = options.onSuccess || (() => init());
+        const locationButton = root.querySelector('#btn-get-location');
+
+        if (locationButton) {
+            locationButton.addEventListener('click', () => {
+                if ("geolocation" in navigator) {
+                    locationButton.innerText = 'Obteniendo...';
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        root.querySelector('#wc-lat').value = position.coords.latitude.toFixed(8);
+                        root.querySelector('#wc-lng').value = position.coords.longitude.toFixed(8);
+                        locationButton.innerText = '✅ Ubicación obtenida';
+                    }, () => {
+                        alert('Error al obtener ubicación. Por favor ingrésala manualmente.');
+                        locationButton.innerText = '📍 Intentar de nuevo';
+                    });
+                } else {
+                    alert('Tu navegador no soporta geolocalización.');
+                }
+            });
+        }
+
+        const logoInput = root.querySelector('#wc-logo-input');
+        const selectLogoButton = root.querySelector('#btn-select-logo');
+        if (logoInput && selectLogoButton) {
+            selectLogoButton.addEventListener('click', () => logoInput.click());
+
+            logoInput.addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const previewImg = root.querySelector('#logo-preview-img');
+                const originalSrc = previewImg.src;
+                previewImg.src = URL.createObjectURL(file);
+
+                const btnSave = root.querySelector('#btn-save-profile');
+                btnSave.disabled = true;
+                btnSave.innerText = 'Subiendo logo...';
+
+                const res = await handleLogoUpload(center, file);
+                if (res.success) {
+                    center.logo_url = res.url;
+                    alert('Logo subido correctamente');
+                } else {
+                    alert('Error al subir logo: ' + res.error);
+                    previewImg.src = originalSrc;
+                }
+                btnSave.disabled = false;
+                btnSave.innerText = submitText;
+            });
+        }
+
+        if (window.google && window.google.maps && window.google.maps.places) {
+            const addressInput = root.querySelector('#wc-address-input');
+            const autocomplete = new google.maps.places.Autocomplete(addressInput);
+            autocomplete.addListener('place_changed', () => {
+                const place = autocomplete.getPlace();
+                if (place.geometry) {
+                    root.querySelector('#wc-lat').value = place.geometry.location.lat().toFixed(8);
+                    root.querySelector('#wc-lng').value = place.geometry.location.lng().toFixed(8);
+                }
+            });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+
+            const updateData = {
+                memberstack_id: center.memberstack_id,
+                establishment_name: formData.get('establishment_name'),
+                phone: formData.get('phone'),
+                address: formData.get('address'),
+                lat: parseFloat(formData.get('lat')) || null,
+                lng: parseFloat(formData.get('lng')) || null,
+                promotion_details: formData.get('promotion_details'),
+                social_links: {
+                    instagram: formData.get('social_instagram'),
+                    facebook: formData.get('social_facebook'),
+                    tiktok: formData.get('social_tiktok'),
+                    website: formData.get('social_website')
+                }
+            };
+
+            const btn = root.querySelector('#btn-save-profile');
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+
+            try {
+                const response = await fetch(`${CONFIG.API_BASE_URL}/api/wellness/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(updateData)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    alert('Perfil actualizado con éxito');
+                    onSuccess();
+                } else {
+                    alert('Error al actualizar: ' + result.error);
+                    btn.disabled = false;
+                    btn.innerText = submitText;
+                }
+            } catch {
+                alert('Error de conexión');
+                btn.disabled = false;
+                btn.innerText = submitText;
+            }
+        });
     }
 
     function showEditProfileModal(container, center) {
