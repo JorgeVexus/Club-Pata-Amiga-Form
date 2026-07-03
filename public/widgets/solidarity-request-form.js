@@ -742,6 +742,8 @@ class SolidarityRequestForm {
     render() {
         if (!this.container) return;
         const isAlliedEmergency = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'medical_emergency';
+        const isAlliedVaccination = this.state.selection.requestType === 'allied_center_appointment' && this.state.selection.benefitType === 'annual_vaccination';
+        const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination;
 
         // Toggle Scroll Lock only in standalone mode
         if (!this.inline) {
@@ -858,8 +860,8 @@ class SolidarityRequestForm {
                 <!-- Section 4: The Form -->
                 <div class="pata-reveal ${this.state.selection.benefitType ? 'visible' : ''}">
                     <div class="pata-section-header">
-                        <h2>${isAlliedEmergency ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó'}</h2>
-                        <p>${isAlliedEmergency ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</p>
+                        <h2>${isAlliedCareRequest ? '¿Cuál es el motivo de tu solicitud hoy? 🐾' : 'Cuéntanos qué pasó'}</h2>
+                        <p>${isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</p>
                     </div>
                     ${this.renderForm()}
                 </div>
@@ -976,32 +978,41 @@ class SolidarityRequestForm {
         const isAppointment = this.state.selection.requestType === 'allied_center_appointment';
         const isEmergency = this.state.selection.benefitType === 'medical_emergency';
         const isAlliedEmergency = isAppointment && isEmergency;
-        const footerMessage = isAlliedEmergency
+        const isAlliedVaccination = isAppointment && this.state.selection.benefitType === 'annual_vaccination';
+        const isAlliedCareRequest = isAlliedEmergency || isAlliedVaccination;
+        const footerMessage = isAlliedCareRequest
             ? 'El equipo médico de la veterinaria elegida revisará tu solicitud con mucho cariño y te responderá muy pronto. 🐾'
             : 'Nuestro comité revisará tu caso con empatía y te responderá pronto ♡';
+        const caseTitlePlaceholder = isAlliedVaccination ? 'Ej. Refuerzo de vacuna múltiple' : 'Ejem. Fractura de patita';
+        const caseDescriptionPlaceholder = isAlliedVaccination
+            ? 'Ejemplo: “Asisto a la clínica para la vacuna séxtuple de mi peludo”'
+            : 'Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...';
+        const centerLabel = isAlliedVaccination
+            ? 'Selecciona tu clínica/hospital veterinario aliada favorita 🏥'
+            : (isAlliedEmergency ? 'Selecciona tu veterinaria aliada favorita 🏥' : 'Elige dónde quieres ser atendido');
 
         return `
             <div class="pata-form-container">
                 <div class="pata-field full">
-                    <label class="pata-label" for="pata-case-title">${isAlliedEmergency ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?'}</label>
-                    <input type="text" class="pata-input" id="pata-case-title" placeholder="Ejem. Fractura de patita" value="${this.state.formData.caseTitle}">
+                    <label class="pata-label" for="pata-case-title">${isAlliedCareRequest ? '¿Cómo identificamos lo que necesita tu peludito hoy?' : '¿Cómo te gustaría identificar este caso?'}</label>
+                    <input type="text" class="pata-input" id="pata-case-title" placeholder="${caseTitlePlaceholder}" value="${this.state.formData.caseTitle}">
                 </div>
                 <div class="pata-field full">
-                    <label for="pata-case-desc" class="pata-label">${isAlliedEmergency ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</label>
-                    <textarea class="pata-textarea" id="pata-case-desc" placeholder="Cuéntanos qué le pasó a tu mascota, qué síntomas presenta o qué tipo de atención necesita...">${this.state.formData.caseDescription}</textarea>
+                    <label for="pata-case-desc" class="pata-label">${isAlliedCareRequest ? 'Danos detalles para ayudarte mejor 💙' : 'Descripción del evento o situación *'}</label>
+                    <textarea class="pata-textarea" id="pata-case-desc" placeholder="${caseDescriptionPlaceholder}">${this.state.formData.caseDescription}</textarea>
                 </div>
 
                 <div class="pata-file-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
                     <div class="pata-file-box ${this.state.files.evidencePhoto ? 'has-file' : ''}" data-field="evidencePhoto" role="button" tabindex="0">
                         ${this.state.previews.evidencePhoto ? (this.state.files.evidencePhoto.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.evidencePhoto}" class="pata-preview">`) : ''}
                         <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
-                        <div><p>Evidencia (Foto)</p><span>PDF, JPG o PNG</span></div>
+                        <div><p>${isAlliedVaccination ? 'Evidencia en el consultorio/aplicación de vacuna.' : 'Evidencia (Foto)'}</p><span>PDF, JPG o PNG</span></div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
                     <div class="pata-file-box ${this.state.files.prescription ? 'has-file' : ''}" data-field="prescription" role="button" tabindex="0">
                         ${this.state.previews.prescription ? (this.state.files.prescription.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.prescription}" class="pata-preview">`) : ''}
                         <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
-                        <div><p>Informe/Receta</p><span>PDF, JPG o PNG</span></div>
+                        <div><p>${isAlliedVaccination ? 'Foto del carnet' : 'Informe/Receta'}</p><span>PDF, JPG o PNG</span></div>
                         <input type="file" hidden accept="image/*,application/pdf">
                     </div>
                     ${!isAppointment ? `
@@ -1024,9 +1035,9 @@ class SolidarityRequestForm {
 
                 <div class="pata-form-grid">
                     ${isAppointment ? `
-                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">${isAlliedEmergency ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?'}</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
-                        <div class="pata-field"><label class="pata-label" for="pata-pref-time">${isAlliedEmergency ? '¿En qué horario te queda mejor?' : 'Disponibilidad de horario'}</label><input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}"></div>
-                        <div class="pata-field"><label class="pata-label" for="pata-center">${isAlliedEmergency ? 'Selecciona tu veterinaria aliada favorita 🏥' : 'Elige dónde quieres ser atendido'}</label><select class="pata-select" id="pata-center"><option value="">Seleccione un centro veterinario</option>${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-incident-date">${isAlliedCareRequest ? '¿Qué día te gustaría agendar?' : '¿Cuándo ocurrió?'}</label><input type="date" class="pata-input" id="pata-incident-date" value="${this.state.formData.incidentDate}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-pref-time">${isAlliedCareRequest ? '¿En qué horario te queda mejor?' : 'Disponibilidad de horario'}</label><input type="time" class="pata-input" id="pata-pref-time" value="${this.state.formData.preferredAppointmentTime}"></div>
+                        <div class="pata-field"><label class="pata-label" for="pata-center">${centerLabel}</label><select class="pata-select" id="pata-center"><option value="">Seleccione un centro veterinario</option>${this.state.alliedCenters.map(c => `<option value="${c.id}" ${this.state.formData.alliedCenterId === c.id ? 'selected' : ''}>${c.name}</option>`).join('')}</select></div>
                     ` : `
                         ${!isEmergency ? `
                             <div class="pata-field"><label class="pata-label" for="pata-amount">Monto solicitado de apoyo económico</label><input type="number" class="pata-input" id="pata-amount" inputmode="decimal" placeholder="$ 0.00" value="${this.state.formData.requestedAmount}"></div>
