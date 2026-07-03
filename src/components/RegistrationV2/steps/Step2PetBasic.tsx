@@ -223,7 +223,7 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                                         />
 
                                         <TextInput
-                                            label={pet.petType === 'gato' ? '¿CÓMO SE LLAMA TU MICHI?' : pet.petType === 'perro' ? '¿CÓMO SE LLAMA TU PELUDO?' : '¿CÓMO SE LLAMA?'}
+                                            label={pet.petType === 'gato' ? '¿CÓMO SE LLAMA TU MICHI?' : pet.petType === 'perro' ? '¿CÓMO SE LLAMA TU LOMITO?' : '¿CÓMO SE LLAMA?'}
                                             name={`petName-${index}`}
                                             value={pet.petName}
                                             onChange={(value) => updatePet(index, 'petName', value)}

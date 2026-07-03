@@ -25,13 +25,12 @@ const PLANS = [
         name: 'Mensual',
         price: 159,
         priceDisplay: '$159 MXN',
-        description: 'Toda la protección mes a mes',
+        description: 'El bienestar de tu peludo mes a mes.',
         features: [
-            'Vacunación anual (Hasta $300)',
-            'Apoyo por fallecimiento (Hasta $2,000)',
-            'Chat veterinario 24/7',
-            'Emergencias médicas (Hasta $3,000)',
-            'Comunidad Pata Amiga'
+            'Emergencias médicas (Reintegro hasta $3,000)',
+            'Vacunación anual (Reintegro hasta $300.)',
+            'Apoyo en caso de fallecimiento (Reintegro hasta $2,000)',
+            'Orientación veterinaria (Chat 24/7).'
         ]
     },
     {
@@ -42,11 +41,10 @@ const PLANS = [
         description: 'Ahorra 209 pesos',
         popular: true,
         features: [
-            'Vacunación anual (Hasta $300)',
-            'Apoyo por fallecimiento (Hasta $2,000)',
-            'Chat veterinario 24/7',
-            'Emergencias médicas (Hasta $3,000)',
-            'Comunidad Pata Amiga'
+            'Emergencias médicas (Reintegro hasta $3,000)',
+            'Vacunación anual (Reintegro hasta $300.)',
+            'Apoyo en caso de fallecimiento (Reintegro hasta $2,000)',
+            'Orientación veterinaria (Chat 24/7).'
         ]
     }
 ];
@@ -105,6 +103,7 @@ export default function Step3PlanSelection({
     const primaryPet = normalizePetBasicList(data?.petBasic)[0];
     const petName = primaryPet?.petName || 'tu mascota';
     const petType = primaryPet?.petType === 'gato' ? 'gato' : 'perro';
+    const petNickname = petType === 'gato' ? 'michi' : 'lomito';
     const canCheckout = hasValidPetBasic(data?.petBasic);
 
     const handleSelectPlan = (planId: string) => {
@@ -280,7 +279,7 @@ export default function Step3PlanSelection({
                             {isRecovery ? 'Completa tu membresía 🐾' : 'Elige tu membresía'}
                         </h2>
                         <p className={styles.formSubtitle}>
-                            Protegiendo a <strong>{petName}</strong> ({petType})
+                            Cuidando juntos a <strong>{petName}</strong> ({petNickname})
                         </p>
                     </div>
 

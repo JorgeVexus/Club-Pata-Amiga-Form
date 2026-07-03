@@ -21,7 +21,7 @@ export default function PetTypeSelector({ value, onChange, error }: PetTypeSelec
     return (
         <div className={styles.container}>
             <label className={styles.label}>
-                ¿Qué mascota quieres proteger?
+                ¿Quién es el peludo que se une a la manada?
             </label>
             <div className={styles.optionsContainer}>
                 {options.map((option) => (

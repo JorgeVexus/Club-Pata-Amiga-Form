@@ -255,8 +255,8 @@ export default function Step1Account({
                                 <div className={styles.benefitIcon}>
                                     <MedicalEmergencyIcon />
                                 </div>
-                                <h2 className={styles.benefitTitle}>emergencias médicas</h2>
-                                <p className={styles.benefitDescription}>Hasta $3,000 al año, porque los sustos no avisan y tu peludo no puede esperar.</p>
+                                <h2 className={styles.benefitTitle}>Emergencias médicas</h2>
+                                <p className={styles.benefitDescription}>Un reintegro de hasta $3,000 al año en tu membresía para que respires tranquilo cuando surja un imprevisto con tu peludo.</p>
                             </div>
 
                             {/* Vacunación Anual */}
@@ -264,8 +264,8 @@ export default function Step1Account({
                                 <div className={styles.benefitIcon}>
                                     <VaccinationIcon />
                                 </div>
-                                <h2 className={styles.benefitTitle}>vacunación anual</h2>
-                                <p className={styles.benefitDescription}>Hasta $300 al año, cuidamos la prevención para mantener al día sus vacunas.</p>
+                                <h2 className={styles.benefitTitle}>Vacunación anual</h2>
+                                <p className={styles.benefitDescription}>Te apoyamos con un reintegro de hasta $300 al año en su esquema de vacunación, porque prevenir es el acto de amor más grande.</p>
                             </div>
 
                             {/* Apoyo Fallecimiento */}
@@ -273,8 +273,8 @@ export default function Step1Account({
                                 <div className={styles.benefitIcon}>
                                     <DeceasedSupportIcon />
                                 </div>
-                                <h2 className={styles.benefitTitle}>apoyo fallecimiento</h2>
-                                <p className={styles.benefitDescription}>Hasta $2,000 al año, cubrimos gastos cuando llega el momento de decir adiós.</p>
+                                <h2 className={styles.benefitTitle}>Apoyo en caso de fallecimiento</h2>
+                                <p className={styles.benefitDescription}>Reintegro de hasta $2,000 al año en gastos funerarios y acompañamiento para honrar la memoria de tu compañero más fiel.</p>
                             </div>
 
                             {/* Chat Veterinario */}
@@ -282,8 +282,8 @@ export default function Step1Account({
                                 <div className={styles.benefitIcon}>
                                     <VetChatIcon />
                                 </div>
-                                <h2 className={styles.benefitTitle}>chat veterinario</h2>
-                                <p className={styles.benefitDescription}>Siempre disponible, consejos y apoyo profesional para cuidar mejor a tu peludo.</p>
+                                <h2 className={styles.benefitTitle}>Orientación Veterinaria</h2>
+                                <p className={styles.benefitDescription}>Chat 24/7 para resolver tus dudas y guiarte en el cuidado diario de tu peludo.</p>
                             </div>
 
                             {/* Community Card */}
@@ -292,8 +292,8 @@ export default function Step1Account({
                                     <CommunityIcon />
                                 </div>
                                 <div className={styles.communityContent}>
-                                    <h2 className={styles.communityTitle}>comunidad pata amiga</h2>
-                                    <p className={styles.communityDescription}>Cada 1000 miembros, destinamos parte del fondo para apoyar refugios y rescates en todo México.</p>
+                                    <h2 className={styles.communityTitle}>Comunidad Pata Amiga</h2>
+                                    <p className={styles.communityDescription}>Por cada 1,000 miembros activos, sumamos esfuerzos y recursos para apoyar directamente a refugios y rescates en todo México.</p>
                                 </div>
                             </div>
                         </div>
