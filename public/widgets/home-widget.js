@@ -26,7 +26,7 @@
                 questions: [
                     {
                         q: '¿Qué es Pata Amiga?',
-                        a: 'Somos una comunidad mexicana que cuida de tu mascota como familia. Con tu membresía, cada contribución se suma a nuestro apoyo económico para que tengas tranquilidad y tu compañero de cuatro patas tenga respaldo económico cuando más lo necesite.<br><br>Nuestro apoyo económico no cubre la totalidad de los gastos veterinarios, pero sí es un respaldo económico real que te acompaña y te ayuda a enfrentar esos momentos con menos peso.<br><br>Puedes registrar hasta 3 mascotas y cuentas con:<br>• Apoyo económico de emergencia.<br>• Atención veterinaria 24/7.<br>• Programas de salud y vacunación.'
+                        a: 'Pata Amiga es una membresía de salud para mascotas creada para que nunca tengas que enfrentar solo los imprevistos con tu peludo.<br><br>Somos una comunidad de personas que comparten el mismo propósito: cuidar a quienes nos acompañan con amor todos los días. Por eso, cuando formas parte de la manada, cuentas con beneficios que te ayudan a cuidar su salud y a tener mayor tranquilidad.<br><br>Con una sola membresía puedes proteger hasta 3 mascotas y disfrutar de beneficios como:<br>• Reintegro en emergencias médicas, para ayudarte con gastos por urgencias, estudios, cirugía u hospitalización.<br>• Reintegro para vacunas, para impulsar el cuidado preventivo de tu peludo.<br>• Reintegro por fallecimiento, para brindarte respaldo económico en uno de los momentos más difíciles.<br>• Orientación veterinaria 24/7, para resolver dudas y recibir guía profesional cuando la necesites, estés donde estés.<br><br>Además, tu membresía tiene alcance en todo México, es 100% digital y tú decides con qué veterinario atender a tu peludo.<br><br>Porque cuando cuidamos juntos, todo se vuelve un poco más fácil.'
                     }
                 ]
             },
@@ -35,15 +35,15 @@
                 questions: [
                     {
                         q: '¿Cuántas membresías existen?',
-                        a: 'Una sola, pensada para que sea sencilla. La puedes adquirir de forma mensual o anual, según lo que mejor funcione para ti y tu mascota.'
+                        a: 'En Pata Amiga solo existe una membresía, diseñada para hacer más fácil el cuidado de tus mascotas.<br><br>Puedes elegir la modalidad que mejor se adapte a ti:<br>• Mensual: desde $159 al mes.<br>• Anual: realiza un solo pago y disfruta de todos los beneficios durante 12 meses.<br><br>Sin importar la modalidad que elijas, tendrás acceso a los mismos beneficios y podrás proteger hasta 3 mascotas con una sola membresía.'
                     },
                     {
                         q: '¿Cuánto dura la membresía?',
-                        a: 'Tu membresía tiene vigencia de un mes o un año y se renueva automáticamente para que tu mascota nunca se quede sin respaldo.'
+                        a: 'Tú decides cómo disfrutar de tu membresía: puedes contratarla en modalidad mensual o anual.<br><br>Ambas opciones cuentan con renovación automática, para que tus mascotas continúen protegidas y sigan disfrutando de todos los beneficios de Pata Amiga sin interrupciones.<br><br>Si en algún momento deseas cancelar tu renovación, puedes hacerlo de acuerdo con los términos de tu membresía.'
                     },
                     {
                         q: '¿Qué formas de contribución aceptan?',
-                        a: 'Por el momento aceptamos tarjetas de crédito y débito. Próximamente se agregarán más opciones de pago.'
+                        a: 'Actualmente puedes adquirir tu membresía con tarjetas de crédito y débito.<br><br>Estamos trabajando para incorporar nuevas formas de pago muy pronto, para que unirte a la manada y proteger a tus mascotas sea cada vez más fácil.'
                     }
                 ]
             },
@@ -52,20 +52,7 @@
                 questions: [
                     {
                         q: '¿Con qué cuento al ser parte de la manada?',
-                        a: 'Al unirte a Pata Amiga, tú y hasta 3 mascotas cuentan con:<br>• Chat veterinario 24/7.<br>• Apoyo económico de emergencia.<br>• Respaldo económico en vacunación.<br>• Acompañamiento en caso de despedida.<br>• Donaciones a refugios por cada 1,000 miembros que se suman a la comunidad.'
-                    }
-                ]
-            },
-            {
-                category: 'Sobre tus mascotas',
-                questions: [
-                    {
-                        q: '¿Puedo registrar cualquier tipo de compañero mascota?',
-                        a: 'Por el momento nuestra manada recibe únicamente perros y gatos.'
-                    },
-                    {
-                        q: '¿Cuántas mascotas puedo registrar?',
-                        a: 'Hasta 3 mascotas por membresía.'
+                        a: 'Al formar parte de Pata Amiga, tú y hasta 3 mascotas podrán disfrutar de beneficios pensados para acompañarlos en cada etapa de su vida.<br><br><strong>Reintegro en emergencias médicas</strong><br>Recibe un reintegro para ayudarte con gastos por urgencias, estudios, cirugía u hospitalización cuando tu peludo más lo necesite.<br><br><strong>Reintegro para vacunas</strong><br>Porque la prevención también es una forma de cuidar. Tu membresía incluye un reintegro para apoyar el esquema de vacunación de tus mascotas.<br><br><strong>Reintegro por fallecimiento</strong><br>En uno de los momentos más difíciles, cuentas con un respaldo económico para ayudarte con los gastos derivados de la despedida de tu compañero.<br><br><strong>Orientación veterinaria 24/7</strong><br>Resuelve tus dudas y recibe guía profesional en cualquier momento, desde donde estés, para tomar las mejores decisiones sobre la salud de tu mascota.<br><br><strong>Ayudamos a más peludos juntos</strong><br>Cada vez que nuestra comunidad crece, también crece el impacto que generamos. Por cada 1,000 nuevos miembros, realizamos una donación a refugios aliados para que más perros y gatos tengan una nueva oportunidad.<br><br>Porque en Pata Amiga no solo cuidas a tus mascotas; también formas parte de una comunidad que ayuda a muchas más.'
                     }
                 ]
             },
@@ -74,16 +61,16 @@
                 questions: [
                     {
                         q: '¿Quiénes son los embajadores?',
-                        a: 'Personas y refugios que se unen a la comunidad y reciben incentivos económicos para ayudar a difundir el proyecto y lograr que más familias y mascotas estén protegidas.'
+                        a: 'Los embajadores de Pata Amiga son personas, creadores de contenido, médicos veterinarios, asociaciones y refugios aliados que comparten nuestra misión de promover el bienestar animal.<br><br>A través de sus redes, comunidades y espacios, nos ayudan a que más familias conozcan Pata Amiga y puedan proteger a sus mascotas. Como parte de este programa, reciben beneficios especiales por impulsar el crecimiento de nuestra comunidad y contribuir a que cada vez más peludos tengan acceso a una mejor calidad de vida.'
                     }
                 ]
             },
             {
-                category: 'Sobre centros de bienestar',
+                category: 'Sobre la red veterinaria y de cuidado',
                 questions: [
                     {
-                        q: '¿Quiénes pueden ser parte de la red de centros de bienestar?',
-                        a: 'Hospitales veterinarios, clínicas, paseadores, etólogos, médicos veterinarios, centros funerarios y otros profesionales que compartan la visión solidaria de Pata Amiga.'
+                        q: '¿Quiénes pueden ser parte de nuestra red de aliados veterinarios?',
+                        a: 'Nuestra red de aliados está abierta a hospitales veterinarios, clínicas, médicos veterinarios, laboratorios, estéticas caninas y felinas, paseadores, etólogos, entrenadores, hoteles para mascotas, centros funerarios y, en general, a todos los profesionales y negocios dedicados al bienestar animal que compartan nuestra misión.<br><br>Si tu trabajo ayuda a mejorar la vida de los perros y gatos, en Pata Amiga siempre habrá un lugar para sumar esfuerzos y seguir cuidando a más peludos juntos.'
                     }
                 ]
             }
@@ -1651,15 +1638,15 @@
                         </div>
                     </div>
 
-                    <!-- 6. Centros de Bienestar Section -->
+                    <!-- 6. Red veterinaria y de cuidado Section -->
                     <div class="pata-wellness-section pata-animate-on-scroll" id="wellness-section">
                         <div class="pata-wellness-form-column">
                             <div class="pata-wellness-info">
                                 <div class="pata-wellness-tag">PRÓXIMAMENTE 2026</div>
-                                <h2 class="pata-wellness-heading">centros de <br><span class="green-text">bienestar</span></h2>
-                                <h3 class="pata-wellness-subtitle">La red más grande de apoyo para mascotas</h3>
+                                <h2 class="pata-wellness-heading">red veterinaria <br><span class="green-text">y de cuidado</span></h2>
+                                <h3 class="pata-wellness-subtitle">La red de cuidado más grande para mascotas</h3>
                                 <p class="pata-wellness-desc">
-                                    Estamos construyendo una red de clínicas veterinarias, hospitales y negocios pet-friendly que compartan nuestros valores de cuidado, empatía y responsabilidad. Muy pronto podrás registrar tu centro y recibir solicitudes de apoyo de miembros de la manada.
+                                    Estamos construyendo una red de clínicas veterinarias, hospitales y negocios pet-friendly que compartan nuestros valores de cuidado, empatía y responsabilidad. Muy pronto podrás registrar tu establecimiento y recibir solicitudes de orientación de miembros de la manada.
                                 </p>
                             </div>
 
@@ -1730,7 +1717,7 @@
 
                         <div class="pata-wellness-image-column">
                             <div class="pata-wellness-img-wrapper">
-                                <img src="${CONFIG.images.wellness}" alt="Centros de bienestar Pata Amiga" class="pata-wellness-img" loading="lazy" decoding="async" referrerpolicy="no-referrer">
+                                <img src="${CONFIG.images.wellness}" alt="Red veterinaria y de cuidado Pata Amiga" class="pata-wellness-img" loading="lazy" decoding="async" referrerpolicy="no-referrer">
                             </div>
                         </div>
                     </div>
