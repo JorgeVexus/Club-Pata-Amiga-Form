@@ -447,7 +447,7 @@ class SolidarityDashboard {
                                 </div>
                             </div>
                             <p style="margin: 30px 0; font-size: 16px; opacity: 0.9; line-height: 1.5; font-weight: 500; text-align: left;">
-                                Elige entre pedir atención en un Centro de Bienestar o solicitar un reembolso si ya cubriste el gasto por tu cuenta. Estamos contigo en cada paso.
+                                Solicita un reembolso si ya cubriste el gasto por tu cuenta. Estamos contigo en cada paso.
                             </p>
                             <div class="pata-cta-row pata-animate-entry" style="animation-delay: 0.6s;">
                                 <button class="pata-btn pata-btn-orange" id="pata-show-form-btn">

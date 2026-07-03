@@ -380,6 +380,11 @@ class SolidarityRequestForm {
             .pata-badge-text { flex: 1; min-width: 0; color: var(--pata-black); line-height: 1.5; }
             .pata-badge-text strong { display: block; font-family: 'Fraiche', sans-serif; font-size: 17px; margin-bottom: 6px; }
             .pata-badge-text span { font-size: 14px; font-weight: 500; opacity: 0.9; }
+            .pata-reimbursement-badge.pata-bank-note { width: 100%; margin: 8px 0 22px 0; padding: 14px 18px; gap: 12px; background: rgba(255, 255, 255, 0.92); border-radius: 22px; box-shadow: 2px 2px 0px var(--pata-black); }
+            .pata-bank-note .pata-badge-icon { width: 30px; height: 30px; box-shadow: 1px 1px 0px var(--pata-black); }
+            .pata-bank-note .pata-badge-icon svg { width: 16px; height: 16px; }
+            .pata-bank-note .pata-badge-text { font-size: 12px; line-height: 1.4; }
+            .pata-bank-note .pata-badge-text strong { font-size: 14px; margin-bottom: 4px; }
 
             /* Step 3: Benefit Cards */
             .pata-benefit-list { display: flex; flex-direction: column; gap: 20px; margin-top: 20px; padding-bottom: 30px; width: 100%; }
@@ -836,17 +841,6 @@ class SolidarityRequestForm {
                             </div>
                         </div>
                     </div>
-                    ${this.state.selection.requestType === 'reimbursement' ? `
-                        <div class="pata-reimbursement-badge" role="alert">
-                            <div class="pata-badge-icon">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                            </div>
-                            <div class="pata-badge-text">
-                                <strong>¡Importante para tu seguridad!</strong>
-                                Recuerda que el titular de la cuenta bancaria debe ser el mismo que registraste en tu membresía. Hacemos esto por tu seguridad: si los datos no coinciden, el movimiento no podrá procesarse y el depósito no se realizará, incluso si la solicitud ya fue aprobada por nuestro equipo. ¡Ayúdanos a cuidar tu cuenta!
-                            </div>
-                        </div>
-                    ` : ''}
                 </div>
 
                 <!-- Section 3: Benefit Type -->
@@ -1046,6 +1040,15 @@ class SolidarityRequestForm {
                         ${!isAppointment ? `
                             <div class="pata-field full" style="margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 30px;">
                                 <label class="pata-label" style="font-size: 20px; margin-bottom: 20px; color: var(--pata-black); background: var(--pata-white); display: inline-block; padding: 5px 20px; border-radius: 20px; border: 2px solid var(--pata-black);">Datos para tu reembolso</label>
+                                <div class="pata-reimbursement-badge pata-bank-note" role="note">
+                                    <div class="pata-badge-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                                    </div>
+                                    <div class="pata-badge-text">
+                                        <strong>¡Importante para tu seguridad!</strong>
+                                        Recuerda que el titular de la cuenta bancaria debe ser el mismo que registraste en tu membresía. Hacemos esto por tu seguridad: si los datos no coinciden, el movimiento no podrá procesarse y el depósito no se realizará, incluso si la solicitud ya fue aprobada por nuestro equipo. ¡Ayúdanos a cuidar tu cuenta!
+                                    </div>
+                                </div>
                                 <div class="pata-form-grid">
                                     <div class="pata-field"><label class="pata-label" for="pata-bank-name">Banco</label><input type="text" class="pata-input" id="pata-bank-name" placeholder="Nombre del banco" value="${this.state.formData.bankName}"></div>
                                     <div class="pata-field"><label class="pata-label" for="pata-bank-holder">Titular de la cuenta</label><input type="text" class="pata-input" id="pata-bank-holder" placeholder="Nombre completo" value="${this.state.formData.bankHolder}"></div>
