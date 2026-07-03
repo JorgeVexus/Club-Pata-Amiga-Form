@@ -108,6 +108,13 @@ export default function WellnessForm({ onSuccess }: Props) {
         setErrors({});
 
         try {
+            const emailCheck = await checkWellnessEmailAvailability(formData.email);
+            setEmailAvailable(emailCheck.available);
+            if (!emailCheck.available) {
+                setErrors({ email: emailCheck.message || 'Este correo ya está registrado' });
+                return;
+            }
+
             const response = await fetch('/api/wellness', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -122,7 +129,7 @@ export default function WellnessForm({ onSuccess }: Props) {
             } else {
                 setErrors({ submit: data.error || 'Ocurrió un error al registrar' });
             }
-        } catch (error) {
+        } catch {
             setErrors({ submit: 'Error de conexión' });
         } finally {
             setIsSubmitting(false);
@@ -185,6 +192,11 @@ export default function WellnessForm({ onSuccess }: Props) {
                         onChange={e => {
                             setFormData({...formData, email: e.target.value});
                             setEmailAvailable(null);
+                            setErrors(prev => {
+                                const next = { ...prev };
+                                delete next.email;
+                                return next;
+                            });
                         }}
                         onBlur={handleEmailBlur}
                         placeholder="contacto@centro.com"

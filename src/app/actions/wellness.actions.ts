@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@supabase/supabase-js'
+import { memberstackResponseContainsEmail } from '@/utils/memberstack-email-availability'
 
 const getServiceRoleClient = () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -60,8 +61,8 @@ export async function checkWellnessEmailAvailability(email: string) {
 
             if (memberstackResponse.ok) {
                 const msData = await memberstackResponse.json();
-                // Si msData.data es un array y tiene elementos, el email está ocupado
-                if (msData.data && msData.data.length > 0) {
+                // Memberstack puede devolver listas amplias; solo bloqueamos coincidencias exactas.
+                if (memberstackResponseContainsEmail(msData, normalizedEmail)) {
                     return { available: false, message: 'Email ya registrado en Memberstack' }
                 }
             } else {
