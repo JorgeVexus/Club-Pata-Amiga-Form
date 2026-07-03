@@ -17,3 +17,11 @@ assert.ok(
   widgetSource.includes('function renderEditProfileForm(center, options = {})'),
   'edit profile form markup should be reusable for modal and inline pending profile section'
 );
+assert.ok(
+  widgetSource.includes('DEFAULT_LOGO_PLACEHOLDER'),
+  'logo preview should use a local embedded placeholder'
+);
+assert.ok(
+  !widgetSource.includes('via.placeholder.com'),
+  'logo preview should not depend on an external placeholder image'
+);

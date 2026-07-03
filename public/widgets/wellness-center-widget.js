@@ -19,6 +19,17 @@
     const FACEBOOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`;
     const TIKTOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>`;
     const WEBSITE_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>`;
+    const DEFAULT_LOGO_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+            <rect width="160" height="160" rx="28" fill="#E8F8F7"/>
+            <circle cx="80" cy="70" r="30" fill="#00BBB4"/>
+            <circle cx="55" cy="45" r="10" fill="#FE8F15"/>
+            <circle cx="80" cy="34" r="11" fill="#FE8F15"/>
+            <circle cx="105" cy="45" r="10" fill="#FE8F15"/>
+            <path d="M48 118c8-22 22-34 32-34s24 12 32 34" fill="#00BBB4"/>
+            <text x="80" y="139" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="700" fill="#1E293B">Pata Amiga</text>
+        </svg>
+    `)}`;
 
     const STYLES = `
         .wellness-widget-container {
@@ -526,7 +537,7 @@
             <form id="${formId}">
                 <h3 class="wc-section-title">Marca y Logo</h3>
                 <div class="wc-logo-preview-container">
-                    <img src="${center.logo_url || 'https://via.placeholder.com/80'}" class="wc-logo-preview" id="logo-preview-img">
+                    <img src="${center.logo_url || DEFAULT_LOGO_PLACEHOLDER}" class="wc-logo-preview" id="logo-preview-img" alt="Logo del centro">
                     <div style="flex:1;">
                         <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Recomendado: Imagen cuadrada, min 200x200px (PNG o JPG).</p>
                         <input type="file" id="wc-logo-input" accept="image/*" style="display:none;">
@@ -1305,7 +1316,7 @@
                 <form id="wc-edit-profile-form">
                     <h3 class="wc-section-title">Marca y Logo</h3>
                     <div class="wc-logo-preview-container">
-                        <img src="${center.logo_url || 'https://via.placeholder.com/80'}" class="wc-logo-preview" id="logo-preview-img">
+                        <img src="${center.logo_url || DEFAULT_LOGO_PLACEHOLDER}" class="wc-logo-preview" id="logo-preview-img" alt="Logo del centro">
                         <div style="flex:1;">
                             <p style="font-size:0.8rem; color:#64748b; margin-bottom:10px;">Recomendado: Imagen cuadrada, min 200x200px (PNG o JPG).</p>
                             <input type="file" id="wc-logo-input" accept="image/*" style="display:none;">
