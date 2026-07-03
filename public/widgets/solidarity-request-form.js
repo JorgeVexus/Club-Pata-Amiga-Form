@@ -415,24 +415,6 @@ class SolidarityRequestForm {
             .pata-benefit-amount .val { font-family: 'Fraiche', sans-serif; font-size: 24px; display: block; line-height: 1; }
             .pata-benefit-amount .sub { font-size: 13px; opacity: 0.8; font-weight: 700; }
 
-            /* Expansion for Medical Emergency */
-            .pata-benefit-expansion { width: 100%; margin-top: 30px; border-top: 1.5px solid rgba(255,255,255,0.25); padding-top: 30px; }
-            .pata-exp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-            @media (max-width: 768px) {
-                .pata-exp-grid { grid-template-columns: 1fr; gap: 20px; }
-                .pata-exp-input-wrap { padding: 0 20px; }
-                .pata-exp-input-wrap input { font-size: 16px; text-align: center; }
-                .pata-exp-field label { font-size: 14px; text-align: center; }
-                .pata-exp-sub { text-align: center; }
-            }
-            .pata-exp-field label { display: block; font-size: 16px; font-weight: 800; margin-bottom: 12px; }
-            .pata-exp-input-wrap { position: relative; background: var(--pata-input-bg-alt); border-radius: 35px; padding: 0 30px; display: flex; align-items: center; border: 2px solid transparent; transition: border 0.2s; }
-            .pata-exp-input-wrap:focus-within { border-color: var(--pata-black); }
-            .pata-exp-input-wrap input { background: transparent; border: none; width: 100%; padding: 18px 0; font-family: 'Outfit', sans-serif; font-weight: 800; color: var(--pata-black); font-size: 18px; outline: none; }
-            .pata-exp-input-wrap .suffix { font-weight: 800; opacity: 0.7; font-size: 14px; }
-            .pata-exp-sub { font-size: 12px; font-weight: 800; margin-top: 8px; text-align: right; color: rgba(24,28,28,0.7); }
-            @media (max-width: 768px) { .pata-exp-sub { text-align: center; } }
-
             /* Step 4: Form Container */
             .pata-form-container { background: var(--pata-turquoise); border-radius: 60px; padding: 50px; margin-top: 20px; border: var(--pata-border); box-shadow: 6px 6px 0px var(--pata-black); width: 100%; }
             .pata-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
@@ -478,7 +460,6 @@ class SolidarityRequestForm {
                 .pata-file-box .icon-up { margin: 0 0 15px 0; }
             }
             .pata-file-box { background: var(--pata-input-bg); border-radius: 40px; padding: 25px; text-align: center; cursor: pointer; display: flex; align-items: center; gap: 20px; position: relative; overflow: hidden; border: 2.5px dashed rgba(255,255,255,0.4); min-height: 110px; transition: all 0.3s; outline: none; }
-            .pata-benefit-expansion .pata-file-box { background: var(--pata-input-bg-alt); border-style: dashed; border-color: rgba(24,28,28,0.2); }
             .pata-file-box:focus-visible { border-style: solid; border-color: white; }
             .pata-file-box:hover, .pata-file-box.drag-over { border-color: var(--pata-white); transform: translateY(-3px) scale(1.02); border-style: solid; }
             .pata-file-box.has-file { background: white !important; border-style: solid; border-color: var(--pata-lime); }
@@ -701,7 +682,9 @@ class SolidarityRequestForm {
     async fetchBalances(petId) {
         if (!petId || this.useMock) return;
         try {
-            const res = await fetch(`${this.apiUrl}/api/solidarity/balance?petId=${petId}`);
+            const params = new URLSearchParams({ petId });
+            if (this.state.member?.id) params.set('memberstackId', this.state.member.id);
+            const res = await fetch(`${this.apiUrl}/api/solidarity/balance?${params.toString()}`);
             const data = await res.json();
             if (data.success) {
                 this.state.balances = data.balances;
@@ -944,13 +927,10 @@ class SolidarityRequestForm {
 
         return changeButton + benefits.map(b => {
             const isSelected = this.state.selection.benefitType === b.id;
-            const isEmergency = b.id === 'medical_emergency';
-            const isReimbursementEmergencyCard = this.state.selection.requestType === 'reimbursement' && isEmergency;
+            const isReimbursementEmergencyCard = this.state.selection.requestType === 'reimbursement' && b.id === 'medical_emergency';
             const balance = this.state.balances ? this.state.balances[b.id] : null;
             const available = balance ? balance.available : b.amount;
             const isExhausted = balance && balance.available <= 0;
-            const requested = parseFloat(this.state.formData.requestedAmount || 0);
-            const isExceeding = balance && requested > balance.available;
             const title = isReimbursementEmergencyCard ? 'Registro de atención por emergencia' : b.title;
             const desc = isReimbursementEmergencyCard ? 'Registra aquí el accidente o malestar agudo que requirió una consulta prioritaria.' : b.desc;
 
@@ -970,39 +950,6 @@ class SolidarityRequestForm {
                         <span class="val">$${available.toLocaleString()} MXN</span>
                         <span class="sub">${this.state.balances ? 'Disponible' : 'Por año'}</span>
                     </div>
-
-                    ${(isSelected && isEmergency) ? `
-                        <div class="pata-benefit-expansion" role="group" aria-label="Detalles de emergencia médica">
-                            <div class="pata-exp-grid">
-                                <div class="pata-exp-field">
-                                    <label for="pata-total-paid">Monto total pagado a la clínica</label>
-                                    <div class="pata-exp-input-wrap">
-                                        <input type="number" id="pata-total-paid" placeholder="$0.00" value="${this.state.formData.totalPaidAmount}">
-                                        <span class="suffix">MXN</span>
-                                    </div>
-                                </div>
-                                <div class="pata-exp-field">
-                                    <label for="pata-amount">${isReimbursementEmergencyCard ? 'Monto que solicitas reembolsar' : 'Monto solicitado de apoyo económico'}</label>
-                                    <div class="pata-exp-input-wrap">
-                                        <input type="number" id="pata-amount" placeholder="$0.00" value="${this.state.formData.requestedAmount}">
-                                        <span class="suffix">MXN</span>
-                                    </div>
-                                    <p class="pata-exp-sub" style="${isExceeding ? 'color:#FE8F15; font-weight:800;' : ''}">
-                                        ${isExceeding ? `⚠️ Excede el disponible ($${available.toLocaleString()})` : `$${available.toLocaleString()} disponibles`}
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="pata-exp-field" style="margin-top:30px">
-                                <label>Comprobante de pago (ticket/factura)</label>
-                                <div class="pata-file-box ${this.state.files.receipt ? 'has-file' : ''}" data-field="receipt" role="button" tabindex="0">
-                                    ${this.state.previews.receipt ? (this.state.files.receipt.type === 'application/pdf' ? '<div style="font-size:30px;z-index:2">📄</div>' : `<img src="${this.state.previews.receipt}" class="pata-preview">`) : ''}
-                                    <div class="icon-up"><img src="${this.baseUrl}/Icons/upload.svg"></div>
-                                    <div><p>Arrastra y suelta archivos tus imagenes aquí o <u>explora</u></p><span>PDF, JPG o PNG - Máx. 10MB</span></div>
-                                    <input type="file" hidden accept="image/*,application/pdf">
-                                </div>
-                            </div>
-                        </div>
-                    ` : ''}
                 </div>
             `;
         }).join('');
@@ -1229,15 +1176,13 @@ class SolidarityRequestForm {
         });
 
         this.container.querySelectorAll('.pata-benefit-card').forEach(card => {
-            const select = (e) => {
-                if (e.target.closest('.pata-benefit-expansion')) return;
+            const select = () => {
                 if (card.classList.contains('exhausted')) return;
                 handleBenefitSelection(card.dataset.id);
             };
             card.onclick = select;
             card.onkeydown = (e) => { 
-                if (e.target.closest('.pata-benefit-expansion')) return;
-                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(e); } 
+                if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
             };
         });
 

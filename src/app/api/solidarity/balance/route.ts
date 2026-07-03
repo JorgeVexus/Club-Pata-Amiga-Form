@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { calculateSolidarityBalances } from '@/utils/solidarity-balance';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -13,13 +14,6 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-// Definición de límites por año
-const BENEFIT_LIMITS: Record<string, number> = {
-    'medical_emergency': 3000,
-    'annual_vaccination': 300,
-    'death': 2000
-};
-
 export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
 }
@@ -28,61 +22,67 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const petId = searchParams.get('petId');
+        const memberstackId = searchParams.get('memberstackId');
 
-        if (!petId) {
-            return NextResponse.json({ error: 'petId es requerido' }, { status: 400, headers: corsHeaders });
+        if (!petId && !memberstackId) {
+            return NextResponse.json({ error: 'petId o memberstackId es requerido' }, { status: 400, headers: corsHeaders });
+        }
+
+        let userId: string | null = null;
+        let resolvedMemberstackId: string | null = memberstackId;
+
+        if (memberstackId) {
+            const { data: user, error: userError } = await supabaseAdmin
+                .from('users')
+                .select('id, memberstack_id')
+                .eq('memberstack_id', memberstackId)
+                .single();
+
+            if (userError || !user) {
+                return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404, headers: corsHeaders });
+            }
+
+            userId = user.id;
+            resolvedMemberstackId = user.memberstack_id;
+        }
+
+        if (petId) {
+            const { data: pet, error: petError } = await supabaseAdmin
+                .from('pets')
+                .select('owner_id')
+                .eq('id', petId)
+                .single();
+
+            if (petError || !pet?.owner_id) {
+                return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+            }
+
+            if (userId && pet.owner_id !== userId) {
+                return NextResponse.json({ error: 'La mascota no pertenece a esta membresía' }, { status: 403, headers: corsHeaders });
+            }
+
+            userId = userId || pet.owner_id;
         }
 
         const currentYear = new Date().getFullYear();
         const startOfYear = `${currentYear}-01-01T00:00:00Z`;
 
-        // Obtener todas las solicitudes de este pet en el año actual que no hayan sido rechazadas ni canceladas
         const { data: requests, error } = await supabaseAdmin
             .from('solidarity_requests')
             .select('benefit_type, requested_amount, approved_amount, status')
-            .eq('pet_id', petId)
-            .neq('status', 'rejected')
-            .neq('status', 'cancelled')
+            .eq('user_id', userId)
             .gte('created_at', startOfYear);
 
         if (error) throw error;
 
-        // Inicializar contadores
-        const usedBalances: Record<string, number> = {
-            'medical_emergency': 0,
-            'annual_vaccination': 0,
-            'death': 0
-        };
-
-        // Calcular sumas
-        requests?.forEach(req => {
-            const type = req.benefit_type;
-            if (usedBalances.hasOwnProperty(type)) {
-                // Usamos el monto aprobado si existe, si no el solicitado (para bloquear el saldo mientras se revisa)
-                const amount = req.approved_amount || req.requested_amount || 0;
-                usedBalances[type] += Number(amount);
-            }
-        });
-
-        // Construir respuesta con límites y disponibles
-        const balances: Record<string, any> = {};
-        Object.keys(BENEFIT_LIMITS).forEach(type => {
-            const limit = BENEFIT_LIMITS[type];
-            const used = usedBalances[type];
-            balances[type] = {
-                used,
-                limit,
-                available: Math.max(0, limit - used)
-            };
-        });
-
         return NextResponse.json({
             success: true,
             petId,
+            memberstackId: resolvedMemberstackId,
+            userId,
             year: currentYear,
-            balances
+            balances: calculateSolidarityBalances(requests || []),
         }, { headers: corsHeaders });
-
     } catch (error: any) {
         console.error('Error en /api/solidarity/balance:', error);
         return NextResponse.json({ error: error.message }, { status: 500, headers: corsHeaders });
