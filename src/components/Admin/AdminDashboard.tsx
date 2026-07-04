@@ -120,6 +120,21 @@ function DashboardContent() {
         } catch (error) { console.error(error); }
     };
 
+    const fetchWellnessCenterDetails = async (id: string) => {
+        try {
+            const response = await adminFetch(`/api/admin/wellness?id=${id}`);
+            const data = await response.json();
+            if (data.success && data.data?.[0]) {
+                setSelectedWellnessCenter(data.data[0]);
+            } else {
+                alert('No se pudo cargar la informaciÃ³n del centro.');
+            }
+        } catch (error) {
+            console.error('Error fetching wellness center details:', error);
+            alert('Error al cargar la informaciÃ³n del centro.');
+        }
+    };
+
     // Escuchar cambios en los parámetros de la URL para navegación profunda (notificaciones, links directos)
     useEffect(() => {
         const tabParam = searchParams.get('tab');
@@ -144,6 +159,12 @@ function DashboardContent() {
         if (ambId) {
             setActiveFilter('ambassadors' as any);
             fetchAmbassadorDetails(ambId);
+        }
+
+        const wellnessCenterId = searchParams.get('wellnessCenterId');
+        if (wellnessCenterId) {
+            setActiveFilter('wellness-center' as any);
+            fetchWellnessCenterDetails(wellnessCenterId);
         }
     }, [searchParams]);
 
@@ -319,6 +340,11 @@ function DashboardContent() {
 
         const requestId = notification.metadata?.requestId;
         const ambassadorId = notification.metadata?.ambassador_id || notification.metadata?.ambassadorId;
+        const wellnessCenterId =
+            notification.metadata?.wellnessCenterId ||
+            notification.metadata?.wellness_center_id ||
+            notification.data?.wellnessCenterId ||
+            notification.data?.wellness_center_id;
 
         if (requestId) {
             setActiveFilter('solidarity-fund');
@@ -328,6 +354,10 @@ function DashboardContent() {
             setActiveFilter('ambassadors' as any);
             fetchAmbassadorDetails(ambassadorId);
             router.push(`/admin/dashboard?tab=ambassadors&ambassadorId=${ambassadorId}`);
+        } else if (wellnessCenterId) {
+            setActiveFilter('wellness-center' as any);
+            fetchWellnessCenterDetails(wellnessCenterId);
+            router.push(`/admin/dashboard?tab=wellness-center&wellnessCenterId=${wellnessCenterId}`);
         } else if (userId) {
             router.push(`/admin/dashboard?tab=member&member=${userId}`);
         }

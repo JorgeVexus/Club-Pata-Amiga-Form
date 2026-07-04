@@ -22,6 +22,7 @@ interface AdminNotification {
     link?: string;
     is_read: boolean;
     created_at: string;
+    data?: any;
     metadata?: any;
 }
 

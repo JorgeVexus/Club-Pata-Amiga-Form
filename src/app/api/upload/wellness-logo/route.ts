@@ -61,6 +61,18 @@ export async function POST(request: NextRequest) {
             console.error('[UPLOAD-WELLNESS-LOGO] DB Update error:', dbError);
         } else if (!updatedCenter) {
             console.warn(`[UPLOAD-WELLNESS-LOGO] No se encontró centro para actualizar: ${memberstackId}`);
+        } else {
+            await supabaseAdmin.from('notifications').insert({
+                user_id: 'admin',
+                type: 'wellness_profile_updated',
+                title: 'Centro actualizó su logo',
+                message: `${updatedCenter.establishment_name} actualizó el logo de su perfil de centro.`,
+                icon: '🏥',
+                link: `/admin/dashboard?tab=wellness-center&wellnessCenterId=${updatedCenter.id}`,
+                data: { wellness_center_id: updatedCenter.id },
+                metadata: { wellnessCenterId: updatedCenter.id },
+                is_read: false
+            });
         }
 
         return NextResponse.json({ success: true, url: publicUrl });
