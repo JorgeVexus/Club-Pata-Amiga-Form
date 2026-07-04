@@ -23,9 +23,10 @@ export async function GET(request: NextRequest) {
         }
 
         // Obtener datos complementarios para el dashboard
-        const [payments, appointments] = await Promise.all([
+        const [payments, appointments, locations] = await Promise.all([
             wellnessService.getPaymentHistory(center.id),
-            wellnessService.getAppointments(center.id)
+            wellnessService.getAppointments(center.id),
+            wellnessService.getLocations(center.id)
         ]);
 
         return NextResponse.json({
@@ -33,7 +34,8 @@ export async function GET(request: NextRequest) {
             data: {
                 ...center,
                 payments,
-                appointments
+                appointments,
+                locations
             }
         });
 

@@ -122,8 +122,69 @@
     gap: var(--spacing-lg);
 }
 
+.profileHeader {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    padding: var(--spacing-md);
+    background: #f8fafc;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+}
+
+.logo {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 2px solid #000;
+    background: white;
+}
+
+.logoPlaceholder {
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    border: 2px solid #000;
+    background: #7DD8D5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #111827;
+}
+
+.profileName {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.profileMeta {
+    color: var(--gray-500);
+    margin-top: 4px;
+}
+
+.socialGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-md);
+}
+
+.linkValue {
+    color: #00BBB4;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
 @media (max-width: 600px) {
     .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .socialGrid {
         grid-template-columns: 1fr;
     }
 }
@@ -266,6 +327,51 @@
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
+}
+
+.locationsList {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.locationsHeading {
+    margin: 0;
+    color: var(--gray-800);
+    font-size: 1rem;
+    font-weight: 800;
+}
+
+.locationCard {
+    padding: var(--spacing-md);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+}
+
+.locationCardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-xs);
+    color: var(--gray-900);
+}
+
+.primaryBadge {
+    padding: 4px 10px;
+    border-radius: 50px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+}
+
+.locationMeta {
+    margin: 6px 0;
+    color: var(--gray-500);
+    font-size: 0.9rem;
 }
 
 .address {

@@ -29,6 +29,7 @@ export interface WellnessCenter {
     address?: string;
     lat?: number;
     lng?: number;
+    locations?: WellnessCenterLocation[];
     
     // Redes Sociales
     social_links: SocialLinks;
@@ -47,6 +48,20 @@ export interface WellnessCenter {
     // Timestamps
     created_at: string;
     updated_at: string;
+}
+
+export interface WellnessCenterLocation {
+    id?: string;
+    wellness_center_id?: string;
+    name?: string;
+    address: string;
+    lat?: number | null;
+    lng?: number | null;
+    phone?: string | null;
+    is_primary?: boolean;
+    sort_order?: number;
+    created_at?: string;
+    updated_at?: string;
 }
 
 // ============================================
@@ -114,6 +129,7 @@ export interface WellnessCenterComplementaryData {
     address?: string;
     lat?: number;
     lng?: number;
+    locations?: WellnessCenterLocation[];
     logo_url?: string;
     social_links: SocialLinks;
     promotion_details?: string;

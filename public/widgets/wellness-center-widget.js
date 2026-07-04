@@ -424,6 +424,97 @@
         .wc-info-maps-btn:hover {
             color: #008882;
         }
+
+        .wc-branches-panel {
+            margin-top: 18px;
+            padding: 18px;
+            border: 2px solid #E2E8F0;
+            border-radius: 18px;
+            background: #F8FAFC;
+        }
+
+        .wc-branch-question {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .wc-branch-toggle-options {
+            display: flex;
+            gap: 8px;
+        }
+
+        .wc-branch-toggle-options label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border: 2px solid #E2E8F0;
+            border-radius: 999px;
+            background: #fff;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .wc-branch-card {
+            padding: 16px;
+            border: 2px solid #E2E8F0;
+            border-radius: 16px;
+            background: #fff;
+            margin-top: 12px;
+        }
+
+        .wc-branch-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .wc-branch-title {
+            margin: 0;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1rem;
+            color: #1E293B;
+        }
+
+        .wc-branch-remove {
+            border: none;
+            background: transparent;
+            color: #E53E3E;
+            font-weight: 800;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .wc-branch-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 12px;
+        }
+
+        .wc-branch-location-btn {
+            padding: 8px 14px;
+            font-size: 0.85rem;
+        }
+
+        .wc-branches-empty {
+            color: #718096;
+            font-size: 0.9rem;
+            font-style: italic;
+            margin: 10px 0 0 0;
+        }
+
+        @media (max-width: 768px) {
+            .wc-branch-question {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
     `;
 
     // ============================================
@@ -518,6 +609,263 @@
         return center.establishment_name || center.name || 'tu centro';
     }
 
+    function normalizeLocationNumber(value) {
+        const numberValue = parseFloat(value);
+        return Number.isFinite(numberValue) ? numberValue : null;
+    }
+
+    function getAdditionalLocations(center) {
+        const locations = Array.isArray(center.locations)
+            ? center.locations
+            : (Array.isArray(center.wellness_center_locations) ? center.wellness_center_locations : []);
+
+        return locations.filter(location => !location.is_primary);
+    }
+
+    function renderBranchCard(location = {}, index = 0) {
+        return `
+            <div class="wc-branch-card" data-location-row>
+                <div class="wc-branch-card-header">
+                    <h4 class="wc-branch-title">Sucursal adicional ${index + 1}</h4>
+                    <button type="button" class="wc-branch-remove" data-remove-location>Eliminar</button>
+                </div>
+                <div class="wc-input-row">
+                    <div class="wc-form-group">
+                        <label class="wc-label">Nombre de sucursal</label>
+                        <input type="text" name="location_name" class="wc-input" value="${location.name || ''}" placeholder="Ej: Sucursal Roma Norte">
+                    </div>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Telefono de sucursal</label>
+                        <input type="tel" name="location_phone" class="wc-input" value="${location.phone || ''}" placeholder="Ej: 5512345678">
+                    </div>
+                </div>
+                <div class="wc-form-group">
+                    <label class="wc-label">Direccion completa</label>
+                    <textarea name="location_address" class="wc-input wc-location-address" style="min-height:70px;" placeholder="Calle, numero, colonia, CP y ciudad">${location.address || ''}</textarea>
+                </div>
+                <div class="wc-input-row">
+                    <div class="wc-form-group">
+                        <label class="wc-label">Latitud</label>
+                        <input type="number" step="any" name="location_lat" class="wc-input wc-location-lat" value="${location.lat || ''}" placeholder="Ej: 19.4326">
+                    </div>
+                    <div class="wc-form-group">
+                        <label class="wc-label">Longitud</label>
+                        <input type="number" step="any" name="location_lng" class="wc-input wc-location-lng" value="${location.lng || ''}" placeholder="Ej: -99.1332">
+                    </div>
+                </div>
+                <div class="wc-branch-actions">
+                    <button type="button" class="wc-btn wc-branch-location-btn" data-get-branch-location>Usar mi ubicacion actual</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function renderBranchesEditor(center) {
+        const branches = getAdditionalLocations(center);
+        const hasBranches = branches.length > 0;
+
+        return `
+            <div class="wc-branches-panel" data-branches-panel>
+                <div class="wc-branch-question">
+                    <div>
+                        <label class="wc-label" style="margin-bottom:4px;">¿Tu negocio cuenta con mas de una sucursal?</label>
+                        <p style="margin:0; color:#718096; font-size:0.9rem;">Los beneficios y servicios se toman del centro principal.</p>
+                    </div>
+                    <div class="wc-branch-toggle-options" data-branch-toggle>
+                        <label><input type="radio" name="has_branches" value="no" ${hasBranches ? '' : 'checked'}> No</label>
+                        <label><input type="radio" name="has_branches" value="yes" ${hasBranches ? 'checked' : ''}> Si</label>
+                    </div>
+                </div>
+                <div data-branches-editor style="${hasBranches ? '' : 'display:none;'}">
+                    <div data-locations-list>
+                        ${branches.length > 0 ? branches.map(renderBranchCard).join('') : '<p class="wc-branches-empty">Agrega las sucursales adicionales que quieras registrar.</p>'}
+                    </div>
+                    <button type="button" id="btn-add-location" class="wc-btn wc-btn-secondary" style="width:100%; margin-top:14px;">+ Agregar sucursal</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function collectWellnessLocations(form) {
+        const primaryAddress = form.querySelector('[name="address"]')?.value || '';
+        const primaryLat = form.querySelector('[name="lat"]')?.value || '';
+        const primaryLng = form.querySelector('[name="lng"]')?.value || '';
+        const primaryPhone = form.querySelector('[name="phone"]')?.value || '';
+        const primaryName = form.querySelector('[name="establishment_name"]')?.value || '';
+
+        const locations = [];
+        if (primaryAddress.trim()) {
+            locations.push({
+                name: primaryName.trim() || 'Sucursal principal',
+                address: primaryAddress.trim(),
+                lat: normalizeLocationNumber(primaryLat),
+                lng: normalizeLocationNumber(primaryLng),
+                phone: primaryPhone.trim() || null,
+                is_primary: true
+            });
+        }
+
+        const hasBranches = form.querySelector('[name="has_branches"]:checked')?.value === 'yes';
+        if (!hasBranches) {
+            return locations;
+        }
+
+        form.querySelectorAll('[data-location-row]').forEach((row, index) => {
+            const address = row.querySelector('[name="location_address"]')?.value || '';
+            if (!address.trim()) return;
+
+            locations.push({
+                name: row.querySelector('[name="location_name"]')?.value?.trim() || `Sucursal ${index + 2}`,
+                address: address.trim(),
+                lat: normalizeLocationNumber(row.querySelector('[name="location_lat"]')?.value || ''),
+                lng: normalizeLocationNumber(row.querySelector('[name="location_lng"]')?.value || ''),
+                phone: row.querySelector('[name="location_phone"]')?.value?.trim() || null,
+                is_primary: false
+            });
+        });
+
+        return locations;
+    }
+
+    function bindWellnessBranchEditor(form) {
+        if (!form) return;
+
+        const branchesEditor = form.querySelector('[data-branches-editor]');
+        const locationsList = form.querySelector('[data-locations-list]');
+        const addLocationButton = form.querySelector('#btn-add-location');
+        const branchToggle = form.querySelector('[data-branch-toggle]');
+
+        const refreshBranchTitles = () => {
+            if (!locationsList) return;
+            const rows = locationsList.querySelectorAll('[data-location-row]');
+            rows.forEach((row, index) => {
+                const title = row.querySelector('.wc-branch-title');
+                if (title) title.innerText = `Sucursal adicional ${index + 1}`;
+            });
+            if (rows.length === 0) {
+                locationsList.innerHTML = '<p class="wc-branches-empty">Agrega las sucursales adicionales que quieras registrar.</p>';
+            }
+        };
+
+        const bindBranchRow = (row) => {
+            const removeButton = row.querySelector('[data-remove-location]');
+            const branchLocationButton = row.querySelector('[data-get-branch-location]');
+
+            if (removeButton && !removeButton.dataset.bound) {
+                removeButton.addEventListener('click', () => {
+                    row.remove();
+                    refreshBranchTitles();
+                });
+                removeButton.dataset.bound = 'true';
+            }
+
+            if (branchLocationButton && !branchLocationButton.dataset.bound) {
+                branchLocationButton.addEventListener('click', () => {
+                    if (!("geolocation" in navigator)) {
+                        alert('Tu navegador no soporta geolocalización.');
+                        return;
+                    }
+
+                    branchLocationButton.innerText = 'Obteniendo...';
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        row.querySelector('.wc-location-lat').value = position.coords.latitude.toFixed(8);
+                        row.querySelector('.wc-location-lng').value = position.coords.longitude.toFixed(8);
+                        branchLocationButton.innerText = 'Ubicación obtenida';
+                    }, () => {
+                        alert('Error al obtener ubicación. Por favor ingrésala manualmente.');
+                        branchLocationButton.innerText = 'Intentar de nuevo';
+                    });
+                });
+                branchLocationButton.dataset.bound = 'true';
+            }
+
+            if (window.google && window.google.maps && window.google.maps.places) {
+                const addressInput = row.querySelector('.wc-location-address');
+                if (addressInput && !addressInput.dataset.autocompleteReady) {
+                    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            row.querySelector('.wc-location-lat').value = place.geometry.location.lat().toFixed(8);
+                            row.querySelector('.wc-location-lng').value = place.geometry.location.lng().toFixed(8);
+                        }
+                    });
+                    addressInput.dataset.autocompleteReady = 'true';
+                }
+            }
+        };
+
+        if (branchToggle && branchesEditor) {
+            branchToggle.querySelectorAll('[name="has_branches"]').forEach(input => {
+                if (input.dataset.bound) return;
+                input.addEventListener('change', () => {
+                    branchesEditor.style.display = input.value === 'yes' && input.checked ? '' : 'none';
+                });
+                input.dataset.bound = 'true';
+            });
+        }
+
+        if (locationsList) {
+            locationsList.querySelectorAll('[data-location-row]').forEach(bindBranchRow);
+        }
+
+        if (addLocationButton && locationsList && !addLocationButton.dataset.bound) {
+            addLocationButton.addEventListener('click', () => {
+                const empty = locationsList.querySelector('.wc-branches-empty');
+                if (empty) empty.remove();
+
+                const index = locationsList.querySelectorAll('[data-location-row]').length;
+                locationsList.insertAdjacentHTML('beforeend', renderBranchCard({}, index));
+                const newRow = locationsList.querySelector('[data-location-row]:last-child');
+                if (newRow) bindBranchRow(newRow);
+            });
+            addLocationButton.dataset.bound = 'true';
+        }
+    }
+
+    function getDisplayLocations(center) {
+        const storedLocations = Array.isArray(center.locations)
+            ? center.locations
+            : (Array.isArray(center.wellness_center_locations) ? center.wellness_center_locations : []);
+
+        if (storedLocations.length > 0) {
+            return storedLocations;
+        }
+
+        if (center.address) {
+            return [{
+                name: 'Sucursal principal',
+                address: center.address,
+                lat: center.lat,
+                lng: center.lng,
+                phone: center.phone,
+                is_primary: true
+            }];
+        }
+
+        return [];
+    }
+
+    function renderLocationsSummary(center) {
+        const locations = getDisplayLocations(center);
+
+        if (locations.length === 0) {
+            return '<span style="color:#718096; font-style:italic;">No registrada</span>';
+        }
+
+        return locations.map((location, index) => `
+            <div style="margin-bottom:${index === locations.length - 1 ? '0' : '12px'};">
+                <strong>${location.is_primary ? 'Sucursal principal' : (location.name || `Sucursal ${index + 1}`)}:</strong>
+                <span>${location.address}</span>
+                ${location.phone ? `<br><span style="color:#718096;">Tel. ${location.phone}</span>` : ''}
+                ${location.lat && location.lng
+                    ? `<br><a href="https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}" target="_blank" class="wc-info-maps-btn">🗺️ Ver en Google Maps</a>`
+                    : ''
+                }
+            </div>
+        `).join('');
+    }
+
     function renderEditProfileForm(center, options = {}) {
         const social = center.social_links || {};
         const title = options.title || 'Editar Perfil del Centro';
@@ -573,6 +921,8 @@
                     </div>
                 </div>
                 <button type="button" id="btn-get-location" class="wc-btn" style="width:100%; margin-bottom:20px; font-size:0.9rem;">📍 Obtener mi ubicación actual</button>
+
+                ${renderBranchesEditor(center)}
 
                 <h3 class="wc-section-title">Redes Sociales</h3>
                 <div class="wc-input-row">
@@ -760,12 +1110,8 @@
                                 <div class="wc-info-item">
                                     <span class="wc-info-icon">🏠</span>
                                     <div>
-                                        <strong>Dirección:</strong> 
-                                        <span>${center.address || '<span style="color:#718096; font-style:italic;">No registrada</span>'}</span>
-                                        ${center.lat && center.lng 
-                                            ? `<br><a href="https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}" target="_blank" class="wc-info-maps-btn">🗺️ Ver en Google Maps</a>` 
-                                            : ''
-                                        }
+                                        <strong>Ubicaciones:</strong>
+                                        ${renderLocationsSummary(center)}
                                     </div>
                                 </div>
                             </div>
@@ -1211,6 +1557,93 @@
             });
         }
 
+        const branchesEditor = form.querySelector('[data-branches-editor]');
+        const locationsList = form.querySelector('[data-locations-list]');
+        const addLocationButton = form.querySelector('#btn-add-location');
+        const branchToggle = form.querySelector('[data-branch-toggle]');
+
+        const refreshBranchTitles = () => {
+            if (!locationsList) return;
+            const rows = locationsList.querySelectorAll('[data-location-row]');
+            rows.forEach((row, index) => {
+                const title = row.querySelector('.wc-branch-title');
+                if (title) title.innerText = `Sucursal adicional ${index + 1}`;
+            });
+            if (rows.length === 0) {
+                locationsList.innerHTML = '<p class="wc-branches-empty">Agrega las sucursales adicionales que quieras registrar.</p>';
+            }
+        };
+
+        const bindBranchRow = (row) => {
+            const removeButton = row.querySelector('[data-remove-location]');
+            const branchLocationButton = row.querySelector('[data-get-branch-location]');
+
+            if (removeButton) {
+                removeButton.addEventListener('click', () => {
+                    row.remove();
+                    refreshBranchTitles();
+                });
+            }
+
+            if (branchLocationButton) {
+                branchLocationButton.addEventListener('click', () => {
+                    if (!("geolocation" in navigator)) {
+                        alert('Tu navegador no soporta geolocalización.');
+                        return;
+                    }
+
+                    branchLocationButton.innerText = 'Obteniendo...';
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        row.querySelector('.wc-location-lat').value = position.coords.latitude.toFixed(8);
+                        row.querySelector('.wc-location-lng').value = position.coords.longitude.toFixed(8);
+                        branchLocationButton.innerText = 'Ubicación obtenida';
+                    }, () => {
+                        alert('Error al obtener ubicación. Por favor ingrésala manualmente.');
+                        branchLocationButton.innerText = 'Intentar de nuevo';
+                    });
+                });
+            }
+
+            if (window.google && window.google.maps && window.google.maps.places) {
+                const addressInput = row.querySelector('.wc-location-address');
+                if (addressInput && !addressInput.dataset.autocompleteReady) {
+                    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            row.querySelector('.wc-location-lat').value = place.geometry.location.lat().toFixed(8);
+                            row.querySelector('.wc-location-lng').value = place.geometry.location.lng().toFixed(8);
+                        }
+                    });
+                    addressInput.dataset.autocompleteReady = 'true';
+                }
+            }
+        };
+
+        if (branchToggle && branchesEditor) {
+            branchToggle.querySelectorAll('[name="has_branches"]').forEach(input => {
+                input.addEventListener('change', () => {
+                    branchesEditor.style.display = input.value === 'yes' && input.checked ? '' : 'none';
+                });
+            });
+        }
+
+        if (locationsList) {
+            locationsList.querySelectorAll('[data-location-row]').forEach(bindBranchRow);
+        }
+
+        if (addLocationButton && locationsList) {
+            addLocationButton.addEventListener('click', () => {
+                const empty = locationsList.querySelector('.wc-branches-empty');
+                if (empty) empty.remove();
+
+                const index = locationsList.querySelectorAll('[data-location-row]').length;
+                locationsList.insertAdjacentHTML('beforeend', renderBranchCard({}, index));
+                const newRow = locationsList.querySelector('[data-location-row]:last-child');
+                if (newRow) bindBranchRow(newRow);
+            });
+        }
+
         const logoInput = root.querySelector('#wc-logo-input');
         const selectLogoButton = root.querySelector('#btn-select-logo');
         if (logoInput && selectLogoButton) {
@@ -1264,6 +1697,7 @@
                 address: formData.get('address'),
                 lat: parseFloat(formData.get('lat')) || null,
                 lng: parseFloat(formData.get('lng')) || null,
+                locations: collectWellnessLocations(form),
                 promotion_details: formData.get('promotion_details'),
                 social_links: {
                     instagram: formData.get('social_instagram'),
@@ -1353,6 +1787,8 @@
                     </div>
                     <button type="button" id="btn-get-location" class="wc-btn" style="width:100%; margin-bottom:20px; font-size:0.9rem;">📍 Obtener mi ubicación actual</button>
 
+                    ${renderBranchesEditor(center)}
+
                     <h3 class="wc-section-title">Redes Sociales</h3>
                     <div class="wc-input-row">
                         <div class="wc-form-group">
@@ -1389,6 +1825,7 @@
         `;
 
         document.body.appendChild(overlay);
+        bindWellnessBranchEditor(overlay.querySelector('#wc-edit-profile-form'));
 
         // Geolocation logic
         overlay.querySelector('#btn-get-location').addEventListener('click', () => {
@@ -1461,6 +1898,7 @@
                 address: formData.get('address'),
                 lat: parseFloat(formData.get('lat')) || null,
                 lng: parseFloat(formData.get('lng')) || null,
+                locations: collectWellnessLocations(e.target),
                 promotion_details: formData.get('promotion_details'),
                 social_links: {
                     instagram: formData.get('social_instagram'),

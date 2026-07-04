@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
-import { WellnessCenterComplementaryData } from '@/types/wellness.types';
+import { WellnessCenterLocation } from '@/types/wellness.types';
+import { wellnessService } from '@/services/wellness.service';
 
 // Usar el cliente administrativo centralizado
 const supabaseAdminClient = supabaseAdmin;
@@ -17,7 +18,21 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { memberstack_id, ...updateData } = body;
+        const { memberstack_id, locations, ...updateData } = body;
+        const profileNotificationFields = [
+            'establishment_name',
+            'phone',
+            'address',
+            'lat',
+            'lng',
+            'locations',
+            'promotion_details',
+            'social_links',
+            'logo_url'
+        ];
+        const shouldNotifyProfileUpdate = profileNotificationFields.some(field =>
+            Object.prototype.hasOwnProperty.call(body, field)
+        );
 
         if (!memberstack_id) {
             return NextResponse.json(
@@ -46,6 +61,16 @@ export async function POST(request: NextRequest) {
                 { success: false, error: 'La cuenta está cancelada. Contacta a soporte.' },
                 { status: 403 }
             );
+        }
+
+        if (Array.isArray(locations)) {
+            const locationSync = await wellnessService.syncLocations(center.id, locations as WellnessCenterLocation[]);
+            if (locationSync.error) {
+                return NextResponse.json(
+                    { success: false, error: 'Error al actualizar las sucursales' },
+                    { status: 500 }
+                );
+            }
         }
 
         // 2. Actualizar datos en Supabase
@@ -78,9 +103,28 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        if (shouldNotifyProfileUpdate && updateData.status !== 'appealed') {
+            await supabaseAdminClient.from('notifications').insert({
+                user_id: 'admin',
+                type: 'wellness_profile_updated',
+                title: 'Centro actualizÃ³ su perfil',
+                message: `${updated.establishment_name} actualizÃ³ datos de su perfil de centro.`,
+                icon: '🏥',
+                link: `/admin/dashboard?tab=wellness-center&wellnessCenterId=${updated.id}`,
+                data: { wellness_center_id: updated.id },
+                metadata: { wellnessCenterId: updated.id },
+                is_read: false
+            });
+        }
+
         return NextResponse.json({
             success: true,
-            data: updated
+            data: {
+                ...updated,
+                locations: Array.isArray(locations)
+                    ? await wellnessService.getLocations(updated.id)
+                    : undefined
+            }
         });
 
     } catch (error: any) {

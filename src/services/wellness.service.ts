@@ -1,5 +1,5 @@
-import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
-import { WellnessCenter, WellnessCenterStatus, WellnessCenterAppointment, WellnessCenterPayment } from '@/types/wellness.types';
+import { supabaseAdmin } from '@/lib/supabase';
+import { WellnessCenter, WellnessCenterAppointment, WellnessCenterPayment, WellnessCenterLocation } from '@/types/wellness.types';
 
 // Usar el cliente administrativo centralizado
 const supabase = supabaseAdmin;
@@ -21,6 +21,68 @@ export const wellnessService = {
         }
 
         return data as WellnessCenter;
+    },
+
+    /**
+     * Obtiene las sucursales de un centro.
+     */
+    async getLocations(wellnessCenterId: string): Promise<WellnessCenterLocation[]> {
+        const { data, error } = await supabase
+            .from('wellness_center_locations')
+            .select('*')
+            .eq('wellness_center_id', wellnessCenterId)
+            .order('is_primary', { ascending: false })
+            .order('sort_order', { ascending: true })
+            .order('created_at', { ascending: true });
+
+        if (error) {
+            console.error('❌ Error fetching wellness center locations:', error);
+            return [];
+        }
+
+        return data as WellnessCenterLocation[];
+    },
+
+    /**
+     * Reemplaza las sucursales de un centro con el payload enviado por el widget.
+     */
+    async syncLocations(wellnessCenterId: string, locations: WellnessCenterLocation[]): Promise<{ error: any }> {
+        const normalized = locations
+            .map((location, index) => ({
+                wellness_center_id: wellnessCenterId,
+                name: location.name?.trim() || null,
+                address: location.address?.trim(),
+                lat: typeof location.lat === 'number' ? location.lat : null,
+                lng: typeof location.lng === 'number' ? location.lng : null,
+                phone: location.phone?.trim() || null,
+                is_primary: index === 0 ? true : Boolean(location.is_primary),
+                sort_order: index
+            }))
+            .filter(location => location.address);
+
+        const { error: deleteError } = await supabase
+            .from('wellness_center_locations')
+            .delete()
+            .eq('wellness_center_id', wellnessCenterId);
+
+        if (deleteError) {
+            console.error('❌ Error deleting wellness center locations:', deleteError);
+            return { error: deleteError };
+        }
+
+        if (normalized.length === 0) {
+            return { error: null };
+        }
+
+        const { error: insertError } = await supabase
+            .from('wellness_center_locations')
+            .insert(normalized);
+
+        if (insertError) {
+            console.error('❌ Error inserting wellness center locations:', insertError);
+        }
+
+        return { error: insertError };
     },
 
     /**
@@ -98,16 +160,55 @@ export const wellnessService = {
     async getAllApprovedLocations(): Promise<Partial<WellnessCenter>[]> {
         const { data, error } = await supabase
             .from('wellness_centers')
-            .select('id, establishment_name, logo_url, address, phone, lat, lng, services, promotion_details, social_links')
+            .select('id, establishment_name, logo_url, address, phone, lat, lng, services, promotion_details, social_links, wellness_center_locations(*)')
             .eq('status', 'approved')
-            .not('lat', 'is', null)
-            .not('lng', 'is', null);
+            .order('establishment_name', { ascending: true });
 
         if (error) {
             console.error('❌ Error fetching wellness center locations:', error);
             return [];
         }
 
-        return data as Partial<WellnessCenter>[];
+        return (data || []).flatMap((center: any) => {
+            const branchLocations = (center.wellness_center_locations || [])
+                .filter((location: WellnessCenterLocation) => location.lat != null && location.lng != null)
+                .map((location: WellnessCenterLocation) => ({
+                    id: location.id,
+                    wellness_center_id: center.id,
+                    establishment_name: location.name || center.establishment_name,
+                    logo_url: center.logo_url,
+                    address: location.address,
+                    phone: location.phone || center.phone,
+                    lat: location.lat,
+                    lng: location.lng,
+                    services: center.services,
+                    promotion_details: center.promotion_details,
+                    social_links: center.social_links,
+                    is_primary: location.is_primary
+                }));
+
+            if (branchLocations.length > 0) {
+                return branchLocations;
+            }
+
+            if (center.lat != null && center.lng != null) {
+                return [{
+                    id: center.id,
+                    wellness_center_id: center.id,
+                    establishment_name: center.establishment_name,
+                    logo_url: center.logo_url,
+                    address: center.address,
+                    phone: center.phone,
+                    lat: center.lat,
+                    lng: center.lng,
+                    services: center.services,
+                    promotion_details: center.promotion_details,
+                    social_links: center.social_links,
+                    is_primary: true
+                }];
+            }
+
+            return [];
+        }) as Partial<WellnessCenter>[];
     }
 };
