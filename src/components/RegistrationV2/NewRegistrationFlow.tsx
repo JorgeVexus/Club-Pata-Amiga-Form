@@ -52,6 +52,9 @@ const STEPS = [
     { id: 5, label: 'Mascota', component: Step5CompletePet },
 ];
 
+// Permite reactivar rapidamente la promo sin volver a integrar el componente.
+const SHOW_REGISTRATION_PROMO = false;
+
 // Tipo para los datos del registro
 interface RegistrationData {
     account?: {
@@ -1540,7 +1543,7 @@ export default function NewRegistrationFlow() {
 
     return (
         <div className={styles.container}>
-            <RegistrationPromoMarquee />
+            {SHOW_REGISTRATION_PROMO ? <RegistrationPromoMarquee /> : null}
             <NavbarRedesign onLogout={handleLogout} member={member} showLogout={true} />
 
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
