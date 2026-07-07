@@ -1947,6 +1947,13 @@
             e.preventDefault();
             const formData = new FormData(e.target);
 
+            const rawClabe = formData.get('bank_clabe') || '';
+            const cleanClabe = String(rawClabe).replace(/\D/g, '');
+            if (rawClabe.trim() && cleanClabe.length !== 18) {
+                alert('La CLABE debe tener exactamente 18 dígitos numéricos.');
+                return;
+            }
+
             const updateData = {
                 memberstack_id: center.memberstack_id,
                 name: formData.get('name'),

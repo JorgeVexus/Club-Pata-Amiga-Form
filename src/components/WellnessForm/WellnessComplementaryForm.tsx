@@ -419,6 +419,12 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
         setIsSubmitting(true);
         setMessage({ text: '', type: '' });
 
+        if (formData.bank_clabe && formData.bank_clabe.length !== 18) {
+            setMessage({ text: 'La CLABE debe tener exactamente 18 dígitos.', type: 'error' });
+            setIsSubmitting(false);
+            return;
+        }
+
         const compiledLocations: WellnessCenterLocation[] = [];
 
         // 1. Agregar sucursal principal si hay dirección
