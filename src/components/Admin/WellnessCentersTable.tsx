@@ -175,15 +175,18 @@ export default function WellnessCentersTable({ onViewDetails, refreshKey }: Prop
                                 filteredCenters.map((center) => (
                                     <tr key={center.id}>
                                         <td>
-                                            <div className={styles.memberName}>
-                                                {center.establishment_name}
+                                            <div className={styles.memberDetails}>
+                                                <span className={styles.memberName}>{center.establishment_name}</span>
                                                 <span className={styles.memberEmail}>{center.email}</span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div className={styles.servicesList}>
-                                                {center.services.slice(0, 2).join(', ')}
-                                                {center.services.length > 2 && '...'}
+                                            <div className={styles.servicesContainer}>
+                                                {center.services.map((service, idx) => (
+                                                    <span key={idx} className={styles.serviceTag}>
+                                                        {service}
+                                                    </span>
+                                                ))}
                                             </div>
                                         </td>
                                         <td>
