@@ -44,6 +44,10 @@ export default function RootLayout({
     window.__pataMemberstackSessionStorageGuard = true;
 
     sessionKeys.forEach(function (key) {
+      var localVal = localStorage.getItem(key);
+      if (localVal && !sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, localVal);
+      }
       localStorage.removeItem(key);
     });
 

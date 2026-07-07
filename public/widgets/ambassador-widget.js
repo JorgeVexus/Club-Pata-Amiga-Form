@@ -15,9 +15,11 @@
             if (window.__pataMemberstackSessionStorageGuard) return;
             window.__pataMemberstackSessionStorageGuard = true;
 
-            const hadPersistentToken = Boolean(localStorage.getItem('_ms-mid') && !sessionStorage.getItem('_ms-mid'));
-
             sessionKeys.forEach(function (key) {
+                const localVal = localStorage.getItem(key);
+                if (localVal && !sessionStorage.getItem(key)) {
+                    sessionStorage.setItem(key, localVal);
+                }
                 localStorage.removeItem(key);
             });
 
@@ -47,19 +49,6 @@
                 }
                 return nativeRemoveItem.call(this, key);
             };
-
-            if (hadPersistentToken) {
-                let attempts = 0;
-                const expireLegacySession = setInterval(function () {
-                    attempts += 1;
-                    if (window.$memberstackDom && typeof window.$memberstackDom.logout === 'function') {
-                        clearInterval(expireLegacySession);
-                        window.$memberstackDom.logout().catch(function () {});
-                    } else if (attempts >= 20) {
-                        clearInterval(expireLegacySession);
-                    }
-                }, 100);
-            }
         } catch (error) {
             console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
         }
