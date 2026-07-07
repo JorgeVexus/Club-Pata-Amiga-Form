@@ -12,40 +12,32 @@
             if (window.__pataMemberstackSessionStorageGuard) return;
             window.__pataMemberstackSessionStorageGuard = true;
 
-            sessionKeys.forEach(function (key) {
-                const localVal = localStorage.getItem(key);
-                if (localVal && !sessionStorage.getItem(key)) {
-                    sessionStorage.setItem(key, localVal);
-                }
-                localStorage.removeItem(key);
-            });
+            const hasSessionCookie = document.cookie.indexOf('pata_session_active=') > -1;
 
-            const nativeGetItem = Storage.prototype.getItem;
-            const nativeSetItem = Storage.prototype.setItem;
-            const nativeRemoveItem = Storage.prototype.removeItem;
+            if (!hasSessionCookie) {
+                const hadPersistentToken = Boolean(localStorage.getItem('_ms-mid'));
 
-            Storage.prototype.getItem = function (key) {
-                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
-                    return nativeGetItem.call(sessionStorage, key);
-                }
-                return nativeGetItem.call(this, key);
-            };
+                sessionKeys.forEach(function (key) {
+                    localStorage.removeItem(key);
+                });
 
-            Storage.prototype.setItem = function (key, value) {
-                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
-                    sessionStorage.setItem(key, value);
-                    nativeRemoveItem.call(localStorage, key);
-                    return;
-                }
-                return nativeSetItem.call(this, key, value);
-            };
+                document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
 
-            Storage.prototype.removeItem = function (key) {
-                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
-                    nativeRemoveItem.call(sessionStorage, key);
+                if (hadPersistentToken) {
+                    let attempts = 0;
+                    const expireLegacySession = setInterval(function () {
+                        attempts += 1;
+                        if (window.$memberstackDom && typeof window.$memberstackDom.logout === 'function') {
+                            clearInterval(expireLegacySession);
+                            window.$memberstackDom.logout().catch(function () {});
+                        } else if (attempts >= 20) {
+                            clearInterval(expireLegacySession);
+                        }
+                    }, 100);
                 }
-                return nativeRemoveItem.call(this, key);
-            };
+            } else {
+                document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
+            }
         } catch (error) {
             console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
         }
