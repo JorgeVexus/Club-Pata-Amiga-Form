@@ -1072,6 +1072,29 @@
                     <input type="tel" name="phone" class="wc-input" value="${center.phone || ''}" placeholder="Ej: 5512345678">
                 </div>
 
+                <div class="wc-form-group">
+                    <label class="wc-label">Servicios ofrecidos</label>
+                    <div class="wc-services-grid" style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; margin-bottom: 15px;">
+                        ${['Tienda', 'Clínica veterinaria', 'Hospital Veterinario', 'Hotel', 'Paseador de perros', 'Funeraria'].map(service => {
+                            const isActive = center.services && center.services.includes(service);
+                            return `
+                                <button type="button" class="wc-service-badge ${isActive ? 'active' : ''}" data-service="${service}" style="
+                                    background: ${isActive ? '#00BBB4' : '#F1F5F9'};
+                                    color: ${isActive ? '#FFFFFF' : '#1E293B'};
+                                    border: 2px solid #000;
+                                    border-radius: 50px;
+                                    padding: 6px 16px;
+                                    font-family: Outfit, sans-serif;
+                                    font-weight: bold;
+                                    font-size: 0.9rem;
+                                    cursor: pointer;
+                                    transition: all 0.2s ease;
+                                ">${service}</button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+
                 <h3 class="wc-section-title">Información para reintegros</h3>
                 <p style="font-size:0.9rem; color:#64748b; margin-top:-5px;">Estos datos se usarán para que Pata Amiga realice reintegros a tu Centro.</p>
                 <div class="wc-form-group">
@@ -1943,6 +1966,14 @@
             });
         }
 
+        root.querySelectorAll('.wc-service-badge').forEach(badge => {
+            badge.addEventListener('click', () => {
+                const isActive = badge.classList.toggle('active');
+                badge.style.background = isActive ? '#00BBB4' : '#F1F5F9';
+                badge.style.color = isActive ? '#FFFFFF' : '#1E293B';
+            });
+        });
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const formData = new FormData(e.target);
@@ -1959,6 +1990,7 @@
                 name: formData.get('name'),
                 establishment_name: formData.get('establishment_name'),
                 phone: formData.get('phone'),
+                services: Array.from(root.querySelectorAll('.wc-service-badge.active')).map(b => b.getAttribute('data-service')),
                 bank_name: formData.get('bank_name'),
                 bank_clabe: String(formData.get('bank_clabe') || '').replace(/\D/g, '').slice(0, 18),
                 bank_holder: formData.get('bank_holder'),

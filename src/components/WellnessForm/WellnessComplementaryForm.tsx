@@ -4,6 +4,15 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './WellnessForm.module.css';
 import { WellnessCenter, SocialLinks, WellnessCenterLocation } from '@/types/wellness.types';
 
+const SERVICES_OPTIONS = [
+    'Tienda',
+    'Clínica veterinaria',
+    'Hospital Veterinario',
+    'Hotel',
+    'Paseador de perros',
+    'Funeraria'
+];
+
 interface Props {
     center: WellnessCenter;
     onUpdate?: (updated: WellnessCenter) => void;
@@ -204,6 +213,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
         establishment_name: center.establishment_name || '',
         logo_url: center.logo_url || '',
         phone: center.phone || '',
+        services: center.services || [],
         bank_name: center.bank_name || '',
         bank_clabe: center.bank_clabe || '',
         bank_holder: center.bank_holder || '',
@@ -236,6 +246,14 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
     const mapRef = useRef<HTMLDivElement>(null);
     const markerRef = useRef<any>(null);
     const logoInputRef = useRef<HTMLInputElement>(null);
+
+    const toggleService = (service: string) => {
+        const currentServices = formData.services;
+        const newServices = currentServices.includes(service)
+            ? currentServices.filter(s => s !== service)
+            : [...currentServices, service];
+        setFormData({ ...formData, services: newServices });
+    };
 
     const updateMarker = useCallback((lat: number, lng: number) => {
         if (markerRef.current) {
@@ -546,6 +564,22 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                         onChange={e => setFormData({...formData, phone: e.target.value})}
                         placeholder="Ej. 5512345678"
                     />
+                </div>
+
+                <div className={styles.field}>
+                    <label>Servicios ofrecidos</label>
+                    <div className={styles.servicesGrid}>
+                        {SERVICES_OPTIONS.map(service => (
+                            <button
+                                key={service}
+                                type="button"
+                                onClick={() => toggleService(service)}
+                                className={`${styles.serviceBadge} ${formData.services.includes(service) ? styles.active : ''}`}
+                            >
+                                {service}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
