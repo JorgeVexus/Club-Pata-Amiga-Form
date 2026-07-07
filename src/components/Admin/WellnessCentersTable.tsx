@@ -155,7 +155,7 @@ export default function WellnessCentersTable({ onViewDetails, refreshKey }: Prop
 
                 <div className={styles.tableWrapper}>
                     <table className={styles.table}>
-                        <thead>
+                        <thead className={styles.tableHeader}>
                             <tr>
                                 <th>Establecimiento</th>
                                 <th>Servicios</th>
@@ -164,7 +164,7 @@ export default function WellnessCentersTable({ onViewDetails, refreshKey }: Prop
                                 <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className={styles.tableBody}>
                             {isLoading ? (
                                 <tr>
                                     <td colSpan={5} className={styles.emptyCell}>
@@ -194,7 +194,11 @@ export default function WellnessCentersTable({ onViewDetails, refreshKey }: Prop
                                                 {center.status.toUpperCase()}
                                             </span>
                                         </td>
-                                        <td>{new Date(center.created_at).toLocaleDateString()}</td>
+                                        <td>
+                                            <span style={{ fontSize: '0.9rem', color: '#4A5568', fontWeight: 500 }}>
+                                                {center.created_at ? new Date(center.created_at).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }).replace('.', '') : '—'}
+                                            </span>
+                                        </td>
                                         <td>
                                             <div className={styles.actionButtons}>
                                                 <button 
