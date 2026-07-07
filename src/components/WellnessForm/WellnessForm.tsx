@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react';
 import styles from './WellnessForm.module.css';
-import { WellnessCenterRegistrationData } from '@/types/wellness.types';
+import { WellnessCenterRegistrationData, WellnessCenter } from '@/types/wellness.types';
 import TermsModalEnhanced from '@/components/RegistrationV2/TermsModalEnhanced';
 import { checkWellnessEmailAvailability } from '@/app/actions/wellness.actions';
+import WellnessComplementaryForm from '@/components/WellnessForm/WellnessComplementaryForm';
 
 interface Props {
     onSuccess?: () => void;
@@ -31,7 +32,8 @@ export default function WellnessForm({ onSuccess }: Props) {
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
+    const [view, setView] = useState<'form' | 'success' | 'complementary' | 'complementary-success'>('form');
+    const [registeredCenter, setRegisteredCenter] = useState<WellnessCenter | null>(null);
     const [showTermsModal, setShowTermsModal] = useState(false);
     
     // Mejoras solicitadas
@@ -124,7 +126,8 @@ export default function WellnessForm({ onSuccess }: Props) {
             const data = await response.json();
 
             if (data.success) {
-                setShowSuccess(true);
+                setRegisteredCenter(data.data);
+                setView('success');
                 onSuccess?.();
             } else {
                 setErrors({ submit: data.error || 'Ocurrió un error al registrar' });
@@ -136,12 +139,59 @@ export default function WellnessForm({ onSuccess }: Props) {
         }
     };
 
-    if (showSuccess) {
+    if (view === 'success') {
         return (
             <div className={styles.successContainer}>
                 <h2>¡Solicitud Enviada!</h2>
                 <p>Tu solicitud como Centro de Bienestar está en revisión.</p>
                 <p>Te enviaremos un correo una vez que hayamos validado tu información.</p>
+                
+                <p className={styles.legendText}>
+                    Por lo mientras te invitamos a contarnos más sobre tu Centro de Bienestar terminando tu registro{' '}
+                    <span 
+                        className={styles.highlightLink} 
+                        onClick={() => setView('complementary')}
+                        role="button"
+                        tabIndex={0}
+                    >
+                        aquí
+                    </span>
+                </p>
+
+                <button 
+                    onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
+                    className={styles.primaryButton}
+                >
+                    Iniciar sesión
+                </button>
+            </div>
+        );
+    }
+
+    if (view === 'complementary' && registeredCenter) {
+        return (
+            <div className={styles.complementaryContainer}>
+                <h3 className={styles.complementaryTitle}>Completa la información de tu centro</h3>
+                <div className={styles.alertBox}>
+                    Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.
+                </div>
+                <WellnessComplementaryForm 
+                    center={registeredCenter} 
+                    onUpdate={(updated) => {
+                        setRegisteredCenter(updated);
+                        setView('complementary-success');
+                    }}
+                />
+            </div>
+        );
+    }
+
+    if (view === 'complementary-success') {
+        return (
+            <div className={styles.successContainer}>
+                <h2>¡Información Completa!</h2>
+                <p>Gracias por contarnos más sobre tu Centro de Bienestar.</p>
+                <p>Tu información complementaria ha sido guardada y será revisada por nuestro equipo para agilizar tu aprobación.</p>
                 <button 
                     onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
                     className={styles.primaryButton}

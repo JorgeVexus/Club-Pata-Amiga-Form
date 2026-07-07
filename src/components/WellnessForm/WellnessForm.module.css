@@ -80,7 +80,7 @@
 }
 
 @media (max-width: 600px) {
-    .row {
+    .row, .socialGrid {
         grid-template-columns: 1fr;
     }
 }
@@ -292,4 +292,172 @@
     background: #FEE2E2;
     color: #991B1B;
     border: 1px solid #FECACA;
+}
+
+.highlightLink {
+    color: var(--color-primary);
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+}
+
+.highlightLink:hover {
+    opacity: 0.8;
+}
+
+.legendText {
+    margin-top: 25px;
+    margin-bottom: 5px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-light);
+    line-height: 1.5;
+}
+
+.complementaryContainer {
+    max-width: 700px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.complementaryTitle {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--color-text-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.complementarySubtitle {
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text-light);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.alertBox {
+    background: #FFFBEB;
+    border: 2px solid #FEF3C7;
+    border-radius: 20px;
+    padding: 15px;
+    margin-bottom: 25px;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: #92400E;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.logoPreviewContainer {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 15px;
+}
+
+.logoPreview {
+    width: 80px;
+    height: 80px;
+    border-radius: 15px;
+    background: #F1F5F9;
+    object-fit: cover;
+    border: 2px solid #E2E8F0;
+}
+
+.secondaryButtonSmall {
+    background: var(--color-primary);
+    color: white;
+    padding: 8px 15px;
+    border-radius: var(--radius-input);
+    border: 2px solid #000000;
+    font-family: var(--font-heading);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.secondaryButtonSmall:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.branchCard {
+    background: #F8FAFC;
+    border-radius: 20px;
+    padding: 20px;
+    border: 2px solid #E2E8F0;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.branchCardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #E2E8F0;
+    padding-bottom: 10px;
+}
+
+.branchTitle {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #1E293B;
+    font-family: var(--font-heading);
+}
+
+.branchRemove {
+    background: none;
+    border: none;
+    color: #EF4444;
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-weight: bold;
+    transition: opacity 0.2s ease;
+}
+
+.branchRemove:hover {
+    opacity: 0.8;
+}
+
+.branchQuestion {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #F8FAFC;
+    padding: 20px;
+    border-radius: 20px;
+    border: 2px solid #E2E8F0;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+@media (max-width: 600px) {
+    .branchQuestion {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+.branchToggleOptions {
+    display: flex;
+    gap: 15px;
+}
+
+.branchToggleOptions label {
+    cursor: pointer;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-body);
+}
+
+.branchesEmpty {
+    color: var(--color-text-light);
+    font-style: italic;
+    text-align: center;
+    margin: 20px 0;
 }
