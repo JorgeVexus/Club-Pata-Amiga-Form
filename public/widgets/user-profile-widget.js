@@ -208,11 +208,19 @@
         async loadData() {
             const id = this.member.id;
             try {
-                const [profRes, pmRes, ambRes] = await Promise.allSettled([
+                const [profRes, pmRes, ambRes, wellRes] = await Promise.allSettled([
                     fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${id}`).then(r=>r.json()),
                     fetch(`${CONFIG.apiUrl}/api/user/payment-method?memberstackId=${id}`).then(r=>r.json()),
-                    fetch(`${CONFIG.apiUrl}/api/ambassadors/by-memberstack?memberstackId=${id}`).then(r=>r.json())
+                    fetch(`${CONFIG.apiUrl}/api/ambassadors/by-memberstack?memberstackId=${id}`).then(r=>r.json()),
+                    fetch(`${CONFIG.apiUrl}/api/wellness/me?memberstack_id=${id}`).then(r=>r.json())
                 ]);
+
+                if (wellRes.status === 'fulfilled' && wellRes.value.success && wellRes.value.data) {
+                    this.isWellnessCenter = true;
+                    this.wellnessCenter = wellRes.value.data;
+                } else {
+                    this.isWellnessCenter = false;
+                }
 
                 if (profRes.status==='fulfilled' && profRes.value.success) {
                     this.user = profRes.value.user;
@@ -224,9 +232,11 @@
                     this.ambassador = ambRes.value.ambassador;
                 }
 
-                // Cargar mascotas del usuario con cache buster
-                const petsRes = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${id}&t=${Date.now()}`).then(r=>r.json()).catch(()=>null);
-                if (petsRes?.success) this.pets = petsRes.pets || [];
+                // Cargar mascotas del usuario con cache buster (solo si no es centro de bienestar)
+                if (!this.isWellnessCenter) {
+                    const petsRes = await fetch(`${CONFIG.apiUrl}/api/user/pets?userId=${id}&t=${Date.now()}`).then(r=>r.json()).catch(()=>null);
+                    if (petsRes?.success) this.pets = petsRes.pets || [];
+                }
 
             } catch(e) {
                 console.error('[ProfileWidget] Error cargando datos:', e);
@@ -239,13 +249,46 @@
             if (!container) return;
             container.innerHTML = `<div class="ppa-widget">
                 ${this.renderSection1()}
-                ${this.renderSection2()}
+                ${this.isWellnessCenter ? '' : this.renderSection2()}
                 ${this.renderSection3()}
             </div>`;
             this.bindEvents();
         }
 
         renderSection1() {
+            if (this.isWellnessCenter) {
+                const c = this.wellnessCenter || {};
+                const name = c.establishment_name || c.name || 'Centro de Bienestar';
+                const since = c.created_at ? 'Aliado desde ' + this.getMonthYear(c.created_at) : 'Bienvenido';
+                const email = c.email || this.member?.auth?.email || '—';
+                const phone = c.phone || '—';
+                const addr = c.address || '—';
+                const photoBase = c.logo_url || CONFIG.placeholderAvatar;
+                const photo = photoBase.includes('supabase.co') ? `${photoBase}?t=${new Date().getTime()}` : photoBase;
+
+                return `<div class="ppa-card">
+                    <div class="ppa-header-row">
+                        <div class="ppa-avatar-wrap" id="ppa-avatar-wrap">
+                            <img class="ppa-avatar" id="ppa-avatar-img" src="${photo}" alt="Logo del centro" onerror="this.src='${CONFIG.placeholderAvatar}'" />
+                            <span class="ppa-avatar-label">📷 Cambiar logo</span>
+                            <input type="file" id="ppa-photo-input" accept="image/*" style="display:none" />
+                        </div>
+                        <div class="ppa-member-info">
+                            <h1 class="ppa-member-name">${name.toLowerCase()}</h1>
+                            <p class="ppa-member-since">${since}</p>
+                        </div>
+                    </div>
+                    <button class="ppa-edit-btn" id="ppa-edit-btn">✏️ editar información</button>
+                    <h2 class="ppa-section-title">datos del centro</h2>
+                    <div class="ppa-data-rows">
+                        ${this.dataRow('✉️','Correo electrónico',email,true)}
+                        ${this.dataRow('📱','Teléfono de contacto',phone)}
+                        ${this.dataRow('📍','Dirección principal',addr)}
+                        ${c.services && c.services.length > 0 ? this.dataRow('🩺','Servicios ofrecidos', c.services.join(', ')) : ''}
+                    </div>
+                </div>`;
+            }
+
             const u = this.user || {};
             const name = [u.first_name, u.last_name, u.mother_last_name].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario';
             const since = u.registration_date ? 'Miembro desde ' + this.getMonthYear(u.registration_date) : 'Bienvenido';
@@ -365,6 +408,57 @@
             </div>`;
         }
         renderSection3() {
+            if (this.isWellnessCenter) {
+                const c = this.wellnessCenter || {};
+                const locations = c.locations || [];
+                const locationCount = locations.length;
+
+                let locationsHtml = '';
+                if (locationCount > 0) {
+                    locationsHtml = `
+                        <div style="margin-top:20px;border-top:1px solid #f0f0f0;padding-top:20px;">
+                            <h3 style="font-family:'Fraiche',sans-serif;font-size:24px;margin:0 0 14px;text-transform:lowercase">sucursales registradas</h3>
+                            <div style="display:flex;flex-direction:column;gap:12px;">
+                                ${locations.map((loc, idx) => `
+                                    <div style="padding:14px 20px;border:2px solid #000;border-radius:20px;background:#f9f9f9;display:flex;align-items:center;gap:12px;">
+                                        <div style="flex:1;">
+                                            <p style="margin:0;font-weight:700;font-size:16px;">${loc.name || `Sucursal ${idx + 1}`}</p>
+                                            <p style="margin:4px 0 0;font-size:14px;color:#666;">📍 ${loc.address}</p>
+                                            ${loc.phone ? `<p style="margin:2px 0 0;font-size:13px;color:#666;">📞 ${loc.phone}</p>` : ''}
+                                        </div>
+                                        ${loc.is_primary ? `<span style="background:#00BBB4;color:#fff;font-size:10px;font-weight:800;padding:4px 10px;border-radius:50px;border:1px solid #000;text-transform:uppercase;margin-left:auto;white-space:nowrap;">Principal</span>` : ''}
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    locationsHtml = `
+                        <div style="margin-top:20px;border-top:1px solid #f0f0f0;padding-top:20px;text-align:center;color:#9b9b9b;">
+                            No tienes sucursales adicionales registradas.
+                        </div>
+                    `;
+                }
+
+                const statusColors = { approved:'#38A169', pending:'#FE8F15', waiting_approval:'#FE8F15', rejected:'#E53E3E', appealed:'#7B1FA2' };
+                const statusLabels = { approved:'Aprobado', pending:'Pendiente de pago', waiting_approval:'En revisión', rejected:'Rechazado', appealed:'Apelado' };
+                const color = statusColors[c.status] || '#9b9b9b';
+                const label = statusLabels[c.status] || c.status;
+
+                return `<div class="ppa-card">
+                    <div class="ppa-pata-float">🐾</div>
+                    <h2 class="ppa-section-title">roles en pata amiga</h2>
+                    <div class="ppa-role-meta" style="margin-bottom:0;">
+                        <p class="ppa-role-type">Establecimiento Aliado</p>
+                        <p class="ppa-role-count">Centro de Bienestar</p>
+                        <div style="margin-top:12px;">
+                            <span style="display:inline-block;padding:6px 16px;border-radius:50px;background:${color};color:#fff;font-size:12px;font-weight:800;border:2px solid #000;text-transform:uppercase;">${label}</span>
+                        </div>
+                    </div>
+                    ${locationsHtml}
+                </div>`;
+            }
+
             const isAmbassador = !!this.ambassador;
             const petCount = this.pets.length;
             const ambSection = isAmbassador ? this.renderAmbassadorView() : '';
@@ -757,10 +851,15 @@
             formData.append('memberstackId', this.member.id);
 
             try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/upload/profile-photo`, { method:'POST', body: formData }).then(r=>r.json());
+                const endpoint = this.isWellnessCenter ? '/api/upload/wellness-logo' : '/api/upload/profile-photo';
+                const res = await fetch(`${CONFIG.apiUrl}${endpoint}`, { method:'POST', body: formData }).then(r=>r.json());
                 if (res.success && res.url) {
                     if (img) img.src = res.url;
-                    if (this.user) this.user.avatar_url = res.url;
+                    if (this.isWellnessCenter) {
+                        if (this.wellnessCenter) this.wellnessCenter.logo_url = res.url;
+                    } else {
+                        if (this.user) this.user.avatar_url = res.url;
+                    }
                 }
             } catch(e) {
                 console.error('[ProfileWidget] Error subiendo foto:', e);
@@ -773,6 +872,32 @@
 
         openEditModal() {
             if (document.getElementById('ppa-modal-overlay')) return;
+            
+            if (this.isWellnessCenter) {
+                const c = this.wellnessCenter || {};
+                const overlay = document.createElement('div');
+                overlay.className = 'ppa-overlay';
+                overlay.id = 'ppa-modal-overlay';
+                overlay.innerHTML = `
+                    <div class="ppa-modal">
+                        <button class="ppa-modal-x" id="ppa-modal-close">✕</button>
+                        <h2 class="ppa-modal-title">editar información</h2>
+                        <div class="ppa-fg"><label class="ppa-fl">Nombre del Establecimiento</label><input class="ppa-fi" id="ef-name" value="${c.establishment_name||c.name||''}" placeholder="Ej: Clínica Vet Pata Amiga" /></div>
+                        <div class="ppa-fg"><label class="ppa-fl">Correo electrónico (no editable)</label><input class="ppa-fi" value="${c.email||this.member?.auth?.email||''}" disabled /></div>
+                        <div class="ppa-fg"><label class="ppa-fl">Teléfono de contacto</label><input class="ppa-fi" id="ef-phone" value="${c.phone||''}" placeholder="Ej: 5512345678" /></div>
+                        <div class="ppa-fg"><label class="ppa-fl">Dirección principal</label><textarea class="ppa-fi" id="ef-address" style="min-height:80px;border-radius:20px;resize:vertical;" placeholder="Calle, número, colonia, CP y ciudad">${c.address||''}</textarea></div>
+                        <button class="ppa-save-btn" id="ppa-save-btn">guardar cambios</button>
+                        <p class="ppa-msg" id="ppa-save-msg"></p>
+                    </div>`;
+                document.body.appendChild(overlay);
+                document.body.style.overflow = 'hidden';
+
+                document.getElementById('ppa-modal-close').addEventListener('click', () => this.closeModal());
+                overlay.addEventListener('click', e => { if(e.target === overlay) this.closeModal(); });
+                document.getElementById('ppa-save-btn').addEventListener('click', () => this.saveWellnessProfile());
+                return;
+            }
+
             const u = this.user || {};
             const overlay = document.createElement('div');
             overlay.className = 'ppa-overlay';
@@ -852,11 +977,76 @@
             }
         }
 
+        async saveWellnessProfile() {
+            const btn = document.getElementById('ppa-save-btn');
+            const msg = document.getElementById('ppa-save-msg');
+            if (!btn || !msg) return;
+
+            btn.disabled = true;
+            btn.textContent = 'guardando...';
+            msg.className = 'ppa-msg';
+            msg.textContent = '';
+
+            const payload = {
+                memberstack_id: this.member.id,
+                establishment_name: document.getElementById('ef-name')?.value?.trim(),
+                phone: document.getElementById('ef-phone')?.value?.trim(),
+                address: document.getElementById('ef-address')?.value?.trim(),
+            };
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/wellness/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).then(r => r.json());
+
+                if (res.success) {
+                    this.wellnessCenter = { ...this.wellnessCenter, ...payload };
+                    msg.className = 'ppa-msg ppa-msg-ok';
+                    msg.textContent = '✅ ¡Cambios guardados correctamente!';
+                    setTimeout(() => {
+                        this.closeModal();
+                        this.render();
+                    }, 1200);
+                } else {
+                    throw new Error(res.error || 'Error al actualizar');
+                }
+            } catch(e) {
+                msg.className = 'ppa-msg ppa-msg-err';
+                msg.textContent = '❌ ' + (e.message || 'No se pudo guardar. Intenta de nuevo.');
+                btn.disabled = false;
+                btn.textContent = 'guardar cambios';
+            }
+        }
+
         // Método para el dev test — permite cambiar el rol
         devSetRole(role) {
             if (role === 'ambassador') {
+                this.isWellnessCenter = false;
                 this.ambassador = { referral_code: 'PATA2025', status: 'active', total_referrals: 12, active_referrals: 8 };
+            } else if (role === 'wellness_center') {
+                this.isWellnessCenter = true;
+                this.ambassador = null;
+                this.wellnessCenter = {
+                    id: 'well_dev_001',
+                    memberstack_id: this.member?.id || 'mem_dev_profile_001',
+                    name: 'Clínica Veterinaria Pata Amiga',
+                    establishment_name: 'Veterinaria Central Pata Amiga',
+                    email: 'contacto@vets.pataamiga.mx',
+                    phone: '5512345678',
+                    address: 'Av. Revolución 100, Col. Centro, CP 01000, CDMX',
+                    logo_url: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?w=150',
+                    status: 'approved',
+                    created_at: '2025-02-10T12:00:00Z',
+                    services: ['Consulta General', 'Vacunas', 'Desparasitación', 'Cirugía'],
+                    locations: [
+                        { name: 'Sucursal Sur', address: 'Av. Insurgentes Sur 1500, CDMX', phone: '5577665544', is_primary: true },
+                        { name: 'Sucursal Norte', address: 'Calzada de Tlalpan 3200, CDMX', phone: '5599887766', is_primary: false }
+                    ]
+                };
             } else {
+                this.isWellnessCenter = false;
                 this.ambassador = null;
             }
             this.render();
