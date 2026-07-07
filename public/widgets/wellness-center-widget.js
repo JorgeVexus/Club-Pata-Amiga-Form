@@ -6,6 +6,64 @@
 (function () {
     'use strict';
 
+    function enforceMemberstackSessionStorage() {
+        try {
+            const sessionKeys = ['_ms-mid', '_ms-mem'];
+            if (window.__pataMemberstackSessionStorageGuard) return;
+            window.__pataMemberstackSessionStorageGuard = true;
+
+            const hadPersistentToken = Boolean(localStorage.getItem('_ms-mid') && !sessionStorage.getItem('_ms-mid'));
+
+            sessionKeys.forEach(function (key) {
+                localStorage.removeItem(key);
+            });
+
+            const nativeGetItem = Storage.prototype.getItem;
+            const nativeSetItem = Storage.prototype.setItem;
+            const nativeRemoveItem = Storage.prototype.removeItem;
+
+            Storage.prototype.getItem = function (key) {
+                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+                    return nativeGetItem.call(sessionStorage, key);
+                }
+                return nativeGetItem.call(this, key);
+            };
+
+            Storage.prototype.setItem = function (key, value) {
+                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+                    sessionStorage.setItem(key, value);
+                    nativeRemoveItem.call(localStorage, key);
+                    return;
+                }
+                return nativeSetItem.call(this, key, value);
+            };
+
+            Storage.prototype.removeItem = function (key) {
+                if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+                    nativeRemoveItem.call(sessionStorage, key);
+                }
+                return nativeRemoveItem.call(this, key);
+            };
+
+            if (hadPersistentToken) {
+                let attempts = 0;
+                const expireLegacySession = setInterval(function () {
+                    attempts += 1;
+                    if (window.$memberstackDom && typeof window.$memberstackDom.logout === 'function') {
+                        clearInterval(expireLegacySession);
+                        window.$memberstackDom.logout().catch(function () {});
+                    } else if (attempts >= 20) {
+                        clearInterval(expireLegacySession);
+                    }
+                }, 100);
+            }
+        } catch (error) {
+            console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
+        }
+    }
+
+    enforceMemberstackSessionStorage();
+
     let currentCenter = null;
     let payments = [];
     let appointments = [];

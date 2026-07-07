@@ -32,6 +32,54 @@ export default function RootLayout({
     return (
         <html lang="es" className={outfit.variable} suppressHydrationWarning>
             <head>
+                <Script
+                    id="memberstack-session-storage-guard"
+                    strategy="beforeInteractive"
+                    dangerouslySetInnerHTML={{
+                        __html: `
+(function () {
+  try {
+    var sessionKeys = ['_ms-mid', '_ms-mem'];
+    if (window.__pataMemberstackSessionStorageGuard) return;
+    window.__pataMemberstackSessionStorageGuard = true;
+
+    sessionKeys.forEach(function (key) {
+      localStorage.removeItem(key);
+    });
+
+    var nativeGetItem = Storage.prototype.getItem;
+    var nativeSetItem = Storage.prototype.setItem;
+    var nativeRemoveItem = Storage.prototype.removeItem;
+
+    Storage.prototype.getItem = function (key) {
+      if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+        return nativeGetItem.call(sessionStorage, key);
+      }
+      return nativeGetItem.call(this, key);
+    };
+
+    Storage.prototype.setItem = function (key, value) {
+      if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+        sessionStorage.setItem(key, value);
+        nativeRemoveItem.call(localStorage, key);
+        return;
+      }
+      return nativeSetItem.call(this, key, value);
+    };
+
+    Storage.prototype.removeItem = function (key) {
+      if (this === localStorage && sessionKeys.indexOf(String(key)) > -1) {
+        nativeRemoveItem.call(sessionStorage, key);
+      }
+      return nativeRemoveItem.call(this, key);
+    };
+  } catch (error) {
+    console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
+  }
+})();
+                        `,
+                    }}
+                />
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"

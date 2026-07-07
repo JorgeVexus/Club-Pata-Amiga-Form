@@ -235,7 +235,7 @@ function DashboardContent() {
                         setIsAdminSuper(data.isSuperAdmin);
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminMemberstackId(currentMemberId);
-                        localStorage.setItem('admin_memberstack_id', currentMemberId);
+                        sessionStorage.setItem('admin_memberstack_id', currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
                         
