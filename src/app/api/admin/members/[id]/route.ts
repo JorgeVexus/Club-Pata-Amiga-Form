@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMemberDetails, updateMemberData, triggerVerificationEmail, memberstackAdmin } from '@/services/memberstack-admin.service';
+import { getMemberDetails, updateMemberData, memberstackAdmin } from '@/services/memberstack-admin.service';
 import { getUserDataByMemberstackId, updateUserEmailInSupabase } from '@/app/actions/user.actions';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 import { commService } from '@/services/comm.service';
@@ -127,9 +127,11 @@ export async function PATCH(
 
         console.log(`🔄 Actualizando email de miembro ${memberId} a: ${email}`);
 
-        // 1. Actualizar en Memberstack
+        // 1. Actualizar en Memberstack y marcar como verificado de inmediato
+        // (corrección de admin, no requiere que el usuario confirme el nuevo correo)
         const msUpdateResult = await updateMemberData(memberId, {
-            auth: { email }
+            auth: { email },
+            verified: true
         });
 
         if (!msUpdateResult.success) {
@@ -139,29 +141,26 @@ export async function PATCH(
             );
         }
 
-        // 2. Disparar email de verificación (opcional pero recomendado tras cambio)
-        await triggerVerificationEmail(memberId);
-
-        // 3. Actualizar en Supabase
+        // 2. Actualizar en Supabase
         const supabaseResult = await updateUserEmailInSupabase(memberId, email);
         
         if (!supabaseResult.success) {
             console.error('⚠️ Desincronización: Email actualizado en MS pero falló en Supabase');
         }
 
-        // 4. Notificar al usuario en el widget
+        // 3. Notificar al usuario en el widget
         await commService.sendInAppNotification({
             user_id: memberId,
             type: 'account',
             title: 'Correo Electrónico Actualizado',
-            message: `Un administrador ha actualizado tu correo electrónico a: ${email}. Se ha enviado un enlace de verificación a tu nueva dirección.`,
+            message: `Un administrador ha actualizado tu correo electrónico a: ${email}.`,
             icon: '📧',
             metadata: { field: 'email', newValue: email }
         });
 
         return NextResponse.json({
             success: true,
-            message: 'Email actualizado y correo de verificación enviado'
+            message: 'Email actualizado y verificado correctamente'
         });
 
     } catch (error: any) {
