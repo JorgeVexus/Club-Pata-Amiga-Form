@@ -161,6 +161,23 @@ export default function WellnessCenterDetailModal({ center, isOpen, onClose, onR
                                             <span className={styles.value}>{center.updated_at ? new Date(center.updated_at).toLocaleString('es-MX') : 'No registrada'}</span>
                                         </div>
                                     </div>
+                                    <div className={styles.bankInfoBox}>
+                                        <h4 className={styles.locationsHeading}>Información para reintegros</h4>
+                                        <div className={styles.grid}>
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>Banco</span>
+                                                <span className={styles.value}>{center.bank_name || 'No registrado'}</span>
+                                            </div>
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>Titular de la cuenta</span>
+                                                <span className={styles.value}>{center.bank_holder || 'No registrado'}</span>
+                                            </div>
+                                            <div className={styles.field}>
+                                                <span className={styles.label}>CLABE</span>
+                                                <span className={styles.value}>{center.bank_clabe || 'No registrada'}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </section>
                             )}
 

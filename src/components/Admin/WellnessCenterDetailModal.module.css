@@ -374,6 +374,14 @@
     font-size: 0.9rem;
 }
 
+.bankInfoBox {
+    margin-top: var(--spacing-lg);
+    padding: var(--spacing-md);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-md);
+    background: #f8fafc;
+}
+
 .locationPhotos {
     margin: var(--spacing-sm) 0;
 }

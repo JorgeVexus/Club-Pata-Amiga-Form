@@ -20,8 +20,12 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         const { memberstack_id, locations, ...updateData } = body;
         const profileNotificationFields = [
+            'name',
             'establishment_name',
             'phone',
+            'bank_name',
+            'bank_clabe',
+            'bank_holder',
             'address',
             'lat',
             'lng',

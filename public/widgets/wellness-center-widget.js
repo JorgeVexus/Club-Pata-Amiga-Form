@@ -197,6 +197,14 @@
             margin-bottom: 20px;
         }
 
+        .wc-modal-description {
+            margin: -8px 0 18px;
+            color: #4B5563;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            text-align: left;
+        }
+
         .wc-close-btn {
             background: none;
             border: none;
@@ -1008,8 +1016,28 @@
                 </div>
 
                 <div class="wc-form-group">
+                    <label class="wc-label">Razón Social / Nombre</label>
+                    <input type="text" name="name" class="wc-input" value="${center.name || ''}" placeholder="Ej: Veterinaria Patitas Felices SA de CV">
+                </div>
+
+                <div class="wc-form-group">
                     <label class="wc-label">Teléfono de Contacto</label>
                     <input type="tel" name="phone" class="wc-input" value="${center.phone || ''}" placeholder="Ej: 5512345678">
+                </div>
+
+                <h3 class="wc-section-title">Información para reintegros</h3>
+                <p style="font-size:0.9rem; color:#64748b; margin-top:-5px;">Estos datos se usarán para que Pata Amiga realice reintegros al Centro de Bienestar.</p>
+                <div class="wc-form-group">
+                    <label class="wc-label">Banco</label>
+                    <input type="text" name="bank_name" class="wc-input" value="${center.bank_name || ''}" placeholder="Ej: BBVA, Santander, Banorte">
+                </div>
+                <div class="wc-form-group">
+                    <label class="wc-label">Titular de la cuenta</label>
+                    <input type="text" name="bank_holder" class="wc-input" value="${center.bank_holder || ''}" placeholder="Nombre como aparece en la cuenta">
+                </div>
+                <div class="wc-form-group">
+                    <label class="wc-label">CLABE interbancaria</label>
+                    <input type="text" inputmode="numeric" maxlength="18" name="bank_clabe" class="wc-input" value="${center.bank_clabe || ''}" placeholder="18 dígitos">
                 </div>
 
                 <h3 class="wc-section-title">Ubicación y Geolocalización</h3>
@@ -1378,6 +1406,8 @@
                     <button class="wc-close-btn">&times;</button>
                 </div>
                 
+                <p class="wc-modal-description">Aquí podrás gestionar las citas veterinarias solicitadas por los miembros de Pata Amiga.</p>
+
                 <div style="display:flex; gap:10px; margin-bottom:20px;">
                     <button class="wc-btn tab-btn active" data-tab="pending">Solicitudes (${pending.length})</button>
                     <button class="wc-btn tab-btn" data-tab="active">Calendario (${active.length})</button>
@@ -1872,8 +1902,12 @@
 
             const updateData = {
                 memberstack_id: center.memberstack_id,
+                name: formData.get('name'),
                 establishment_name: formData.get('establishment_name'),
                 phone: formData.get('phone'),
+                bank_name: formData.get('bank_name'),
+                bank_clabe: String(formData.get('bank_clabe') || '').replace(/\D/g, '').slice(0, 18),
+                bank_holder: formData.get('bank_holder'),
                 address: formData.get('address'),
                 lat: parseFloat(formData.get('lat')) || null,
                 lng: parseFloat(formData.get('lng')) || null,

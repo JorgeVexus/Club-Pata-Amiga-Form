@@ -200,9 +200,13 @@ function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: Bran
 export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
     const primaryLocation = center.locations?.find(location => location.is_primary);
     const [formData, setFormData] = useState({
+        legal_name: center.name || '',
         establishment_name: center.establishment_name || '',
         logo_url: center.logo_url || '',
         phone: center.phone || '',
+        bank_name: center.bank_name || '',
+        bank_clabe: center.bank_clabe || '',
+        bank_holder: center.bank_holder || '',
         address: center.address || '',
         lat: center.lat || '',
         lng: center.lng || '',
@@ -445,12 +449,14 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
         }
 
         try {
+            const { legal_name, ...profileData } = formData;
             const response = await fetch('/api/wellness/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     memberstack_id: center.memberstack_id,
-                    ...formData,
+                    ...profileData,
+                    name: legal_name.trim() || center.name,
                     locations: compiledLocations
                 })
             });
@@ -515,6 +521,16 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                         required
                     />
                 </div>
+
+                <div className={styles.field}>
+                    <label>RazÃ³n social / Nombre</label>
+                    <input
+                        type="text"
+                        value={formData.legal_name}
+                        onChange={e => setFormData({...formData, legal_name: e.target.value})}
+                        placeholder="Ej. Veterinaria Patitas Felices SA de CV"
+                    />
+                </div>
                 
                 <div className={styles.field}>
                     <label>Teléfono de contacto</label>
@@ -523,6 +539,42 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                         value={formData.phone}
                         onChange={e => setFormData({...formData, phone: e.target.value})}
                         placeholder="Ej. 5512345678"
+                    />
+                </div>
+            </div>
+
+            <div className={styles.section}>
+                <h4>InformaciÃ³n para reintegros</h4>
+                <p className={styles.photoHelp}>
+                    Estos datos se usarÃ¡n para que Pata Amiga realice reintegros al Centro de Bienestar.
+                </p>
+                <div className={styles.field}>
+                    <label>Banco</label>
+                    <input
+                        type="text"
+                        value={formData.bank_name}
+                        onChange={e => setFormData({...formData, bank_name: e.target.value})}
+                        placeholder="Ej. BBVA, Santander, Banorte"
+                    />
+                </div>
+                <div className={styles.field}>
+                    <label>Titular de la cuenta</label>
+                    <input
+                        type="text"
+                        value={formData.bank_holder}
+                        onChange={e => setFormData({...formData, bank_holder: e.target.value})}
+                        placeholder="Nombre como aparece en la cuenta"
+                    />
+                </div>
+                <div className={styles.field}>
+                    <label>CLABE interbancaria</label>
+                    <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={18}
+                        value={formData.bank_clabe}
+                        onChange={e => setFormData({...formData, bank_clabe: e.target.value.replace(/\D/g, '').slice(0, 18)})}
+                        placeholder="18 dÃ­gitos"
                     />
                 </div>
             </div>

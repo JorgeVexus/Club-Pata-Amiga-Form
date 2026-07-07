@@ -18,12 +18,16 @@ export interface WellnessCenter {
     memberstack_id?: string;
     
     // Información del establecimiento
+    name?: string;
     establishment_name: string;
     services: string[];
     phone?: string;
     email: string;
     logo_url?: string;
     promotion_details?: string;
+    bank_name?: string;
+    bank_clabe?: string;
+    bank_holder?: string;
     
     // Dirección y Geolocalización
     address?: string;
@@ -126,7 +130,11 @@ export interface WellnessCenterRegistrationData {
 }
 
 export interface WellnessCenterComplementaryData {
+    name?: string;
     phone?: string;
+    bank_name?: string;
+    bank_clabe?: string;
+    bank_holder?: string;
     address?: string;
     lat?: number;
     lng?: number;
