@@ -260,6 +260,44 @@
             border: 2px solid #E2E8F0;
         }
 
+        .wc-location-photos-panel {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 16px;
+            padding: 14px;
+            margin: 12px 0 18px;
+        }
+
+        .wc-location-photos-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .wc-location-photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+            gap: 10px;
+        }
+
+        .wc-location-photo-thumb {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 12px;
+            border: 1px solid #CBD5E1;
+            background: #F8FAFC;
+        }
+
+        .wc-location-photo-help {
+            margin: 0;
+            color: #718096;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
         .wc-section-title {
             font-family: 'Fraiche', sans-serif;
             font-size: 1.2rem;
@@ -622,7 +660,61 @@
         return locations.filter(location => !location.is_primary);
     }
 
+    function getPrimaryLocation(center) {
+        const locations = Array.isArray(center.locations)
+            ? center.locations
+            : (Array.isArray(center.wellness_center_locations) ? center.wellness_center_locations : []);
+
+        return locations.find(location => location.is_primary) || null;
+    }
+
+    function parsePhotoUrls(value) {
+        if (!value) return [];
+        return String(value)
+            .split('|')
+            .map(url => url.trim())
+            .filter(Boolean);
+    }
+
+    function serializePhotoUrls(urls) {
+        return (Array.isArray(urls) ? urls : []).filter(Boolean).join('|');
+    }
+
+    function renderPhotoPreview(urls) {
+        const photoUrls = Array.isArray(urls) ? urls : [];
+        if (photoUrls.length === 0) {
+            return '<p class="wc-location-photo-help">Agrega fotos del exterior, recepcion o areas principales.</p>';
+        }
+
+        return `
+            <div class="wc-location-photo-grid">
+                ${photoUrls.map(url => `<img src="${url}" class="wc-location-photo-thumb" alt="Foto de sucursal">`).join('')}
+            </div>
+        `;
+    }
+
+    async function uploadWellnessLocationPhoto(center, file, locationKey) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('memberstackId', center.memberstack_id);
+            formData.append('locationKey', locationKey);
+
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/upload/wellness-location-photo`, {
+                method: 'POST',
+                body: formData
+            });
+
+            return await response.json();
+        } catch (error) {
+            console.error('Error uploading location photo:', error);
+            return { success: false, error: 'Error de conexion al subir foto' };
+        }
+    }
+
     function renderBranchCard(location = {}, index = 0) {
+        const photoUrls = Array.isArray(location.photo_urls) ? location.photo_urls : [];
+
         return `
             <div class="wc-branch-card" data-location-row>
                 <div class="wc-branch-card-header">
@@ -655,6 +747,17 @@
                 </div>
                 <div class="wc-branch-actions">
                     <button type="button" class="wc-btn wc-branch-location-btn" data-get-branch-location>Usar mi ubicacion actual</button>
+                </div>
+                <div class="wc-location-photos-panel">
+                    <div class="wc-location-photos-header">
+                        <h4 class="wc-branch-title" style="margin:0;">Fotos de sucursal</h4>
+                        <label class="wc-btn wc-btn-secondary" style="padding:8px 14px; font-size:0.85rem;">
+                            + Foto
+                            <input type="file" accept="image/*" data-location-photo-input data-location-key="branch-${index + 1}" style="display:none;">
+                        </label>
+                    </div>
+                    <input type="hidden" name="location_photo_urls" value="${serializePhotoUrls(photoUrls)}">
+                    <div data-location-photo-preview>${renderPhotoPreview(photoUrls)}</div>
                 </div>
             </div>
         `;
@@ -692,6 +795,7 @@
         const primaryLng = form.querySelector('[name="lng"]')?.value || '';
         const primaryPhone = form.querySelector('[name="phone"]')?.value || '';
         const primaryName = form.querySelector('[name="establishment_name"]')?.value || '';
+        const primaryPhotoUrls = parsePhotoUrls(form.querySelector('[name="primary_photo_urls"]')?.value || '');
 
         const locations = [];
         if (primaryAddress.trim()) {
@@ -701,6 +805,7 @@
                 lat: normalizeLocationNumber(primaryLat),
                 lng: normalizeLocationNumber(primaryLng),
                 phone: primaryPhone.trim() || null,
+                photo_urls: primaryPhotoUrls,
                 is_primary: true
             });
         }
@@ -720,6 +825,7 @@
                 lat: normalizeLocationNumber(row.querySelector('[name="location_lat"]')?.value || ''),
                 lng: normalizeLocationNumber(row.querySelector('[name="location_lng"]')?.value || ''),
                 phone: row.querySelector('[name="location_phone"]')?.value?.trim() || null,
+                photo_urls: parsePhotoUrls(row.querySelector('[name="location_photo_urls"]')?.value || ''),
                 is_primary: false
             });
         });
@@ -873,6 +979,8 @@
         const showHeader = options.showHeader !== false;
         const showCloseButton = options.showCloseButton !== false;
         const submitText = options.submitText || 'Guardar Cambios';
+        const primaryLocation = getPrimaryLocation(center);
+        const primaryPhotoUrls = primaryLocation?.photo_urls || [];
 
         return `
             ${showHeader ? `
@@ -921,6 +1029,18 @@
                     </div>
                 </div>
                 <button type="button" id="btn-get-location" class="wc-btn" style="width:100%; margin-bottom:20px; font-size:0.9rem;">📍 Obtener mi ubicación actual</button>
+
+                <div class="wc-location-photos-panel">
+                    <div class="wc-location-photos-header">
+                        <h4 class="wc-branch-title" style="margin:0;">Fotos de Sucursal principal</h4>
+                        <label class="wc-btn wc-btn-secondary" style="padding:8px 14px; font-size:0.85rem;">
+                            + Foto
+                            <input type="file" accept="image/*" data-location-photo-input data-location-key="primary" style="display:none;">
+                        </label>
+                    </div>
+                    <input type="hidden" name="primary_photo_urls" value="${serializePhotoUrls(primaryPhotoUrls)}">
+                    <div data-location-photo-preview>${renderPhotoPreview(primaryPhotoUrls)}</div>
+                </div>
 
                 ${renderBranchesEditor(center)}
 
@@ -1531,6 +1651,55 @@
         }
     }
 
+    function bindLocationPhotoInputs(root, center, submitText = 'Guardar Cambios') {
+        root.querySelectorAll('[data-location-photo-input]').forEach(input => {
+            if (input.dataset.bound) return;
+
+            input.addEventListener('change', async (event) => {
+                const file = event.target.files[0];
+                event.target.value = '';
+                if (!file) return;
+
+                if (!file.type.startsWith('image/')) {
+                    alert('Solo se aceptan imagenes');
+                    return;
+                }
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('La imagen no puede superar 5MB');
+                    return;
+                }
+
+                const panel = input.closest('.wc-location-photos-panel');
+                const hiddenInput = panel?.querySelector('input[type="hidden"]');
+                const preview = panel?.querySelector('[data-location-photo-preview]');
+                const saveButton = root.querySelector('#btn-save-profile');
+                const originalText = saveButton?.innerText || submitText;
+
+                if (saveButton) {
+                    saveButton.disabled = true;
+                    saveButton.innerText = 'Subiendo foto...';
+                }
+
+                const result = await uploadWellnessLocationPhoto(center, file, input.dataset.locationKey || 'location');
+                if (result.success) {
+                    const nextUrls = [...parsePhotoUrls(hiddenInput?.value || ''), result.url];
+                    if (hiddenInput) hiddenInput.value = serializePhotoUrls(nextUrls);
+                    if (preview) preview.innerHTML = renderPhotoPreview(nextUrls);
+                    alert('Foto de sucursal subida correctamente');
+                } else {
+                    alert('Error al subir foto: ' + result.error);
+                }
+
+                if (saveButton) {
+                    saveButton.disabled = false;
+                    saveButton.innerText = originalText;
+                }
+            });
+
+            input.dataset.bound = 'true';
+        });
+    }
+
     function bindEditProfileForm(root, center, options = {}) {
         const form = root.querySelector(options.formSelector || '#wc-edit-profile-form');
         if (!form) return;
@@ -1538,6 +1707,16 @@
         const submitText = options.submitText || 'Guardar Cambios';
         const onSuccess = options.onSuccess || (() => init());
         const locationButton = root.querySelector('#btn-get-location');
+        const closeButton = root.querySelector('.wc-close-btn');
+
+        if (closeButton) {
+            closeButton.addEventListener('click', () => {
+                const overlay = closeButton.closest('.wc-modal-overlay');
+                if (overlay) overlay.remove();
+            });
+        }
+
+        bindLocationPhotoInputs(root, center, submitText);
 
         if (locationButton) {
             locationButton.addEventListener('click', () => {
@@ -1641,6 +1820,7 @@
                 locationsList.insertAdjacentHTML('beforeend', renderBranchCard({}, index));
                 const newRow = locationsList.querySelector('[data-location-row]:last-child');
                 if (newRow) bindBranchRow(newRow);
+                bindLocationPhotoInputs(root, center, submitText);
             });
         }
 
@@ -1737,6 +1917,17 @@
     function showEditProfileModal(container, center) {
         const overlay = document.createElement('div');
         overlay.className = 'wc-modal-overlay';
+
+        overlay.innerHTML = `<div class="wc-modal">${renderEditProfileForm(center)}</div>`;
+        document.body.appendChild(overlay);
+        bindEditProfileForm(overlay, center, {
+            submitText: 'Guardar Cambios',
+            onSuccess: () => {
+                overlay.remove();
+                init();
+            }
+        });
+        return;
         
         const social = center.social_links || {};
 

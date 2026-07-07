@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styles from './WellnessForm.module.css';
 import { WellnessCenter, SocialLinks, WellnessCenterLocation } from '@/types/wellness.types';
 
@@ -27,11 +27,18 @@ interface BranchCardProps {
     location: WellnessCenterLocation;
     onChange: (updated: WellnessCenterLocation) => void;
     onRemove: () => void;
+    onPhotoUpload: (
+        file: File,
+        locationKey: string,
+        currentUrls: string[],
+        onNext: (urls: string[]) => void
+    ) => Promise<void>;
 }
 
-function BranchCard({ index, location, onChange, onRemove }: BranchCardProps) {
+function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: BranchCardProps) {
     const addressInputRef = useRef<HTMLInputElement>(null);
     const [isGettingLocation, setIsGettingLocation] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
     useEffect(() => {
         if (typeof window === 'undefined' || !window.google || !addressInputRef.current) return;
@@ -72,6 +79,18 @@ function BranchCard({ index, location, onChange, onRemove }: BranchCardProps) {
             alert('Error al obtener ubicación. Por favor ingrésala manualmente.');
             setIsGettingLocation(false);
         });
+    };
+
+    const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file) return;
+
+        setIsUploadingPhoto(true);
+        await onPhotoUpload(file, `branch-${index + 1}`, location.photo_urls || [], (urls) => {
+            onChange({ ...location, photo_urls: urls });
+        });
+        setIsUploadingPhoto(false);
     };
 
     return (
@@ -136,6 +155,35 @@ function BranchCard({ index, location, onChange, onRemove }: BranchCardProps) {
                     />
                 </div>
             </div>
+            <div className={styles.locationPhotosPanel}>
+                <div className={styles.branchCardHeader}>
+                    <h5 className={styles.branchTitle}>Fotos de sucursal</h5>
+                    <label className={styles.secondaryButtonSmall}>
+                        {isUploadingPhoto ? 'Subiendo...' : '+ Foto'}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handlePhotoChange}
+                            disabled={isUploadingPhoto}
+                            style={{ display: 'none' }}
+                        />
+                    </label>
+                </div>
+                {(location.photo_urls || []).length > 0 ? (
+                    <div className={styles.locationPhotoGrid}>
+                        {(location.photo_urls || []).map((url, photoIndex) => (
+                            <img
+                                key={`${url}-${photoIndex}`}
+                                src={url}
+                                alt={`Foto de sucursal ${index + 1}`}
+                                className={styles.locationPhotoThumb}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <p className={styles.photoHelp}>Agrega fotos del exterior, recepciÃ³n o Ã¡reas principales.</p>
+                )}
+            </div>
             <button 
                 type="button" 
                 className={styles.secondaryButtonSmall} 
@@ -150,6 +198,7 @@ function BranchCard({ index, location, onChange, onRemove }: BranchCardProps) {
 }
 
 export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
+    const primaryLocation = center.locations?.find(location => location.is_primary);
     const [formData, setFormData] = useState({
         establishment_name: center.establishment_name || '',
         logo_url: center.logo_url || '',
@@ -157,6 +206,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
         address: center.address || '',
         lat: center.lat || '',
         lng: center.lng || '',
+        location_photo_urls: primaryLocation?.photo_urls || [],
         promotion_details: center.promotion_details || '',
         social_links: {
             instagram: center.social_links?.instagram || '',
@@ -175,12 +225,21 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+    const [isUploadingMainPhoto, setIsUploadingMainPhoto] = useState(false);
     const [message, setMessage] = useState({ text: '', type: '' });
     const autocompleteRef = useRef<any>(null);
     const addressInputRef = useRef<HTMLInputElement>(null);
     const mapRef = useRef<HTMLDivElement>(null);
     const markerRef = useRef<any>(null);
     const logoInputRef = useRef<HTMLInputElement>(null);
+
+    const updateMarker = useCallback((lat: number, lng: number) => {
+        if (markerRef.current) {
+            const pos = { lat: Number(lat), lng: Number(lng) };
+            markerRef.current.setPosition(pos);
+            markerRef.current.getMap().panTo(pos);
+        }
+    }, []);
 
     // Inicializar Google Maps Autocomplete y Mapa
     useEffect(() => {
@@ -243,15 +302,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                 setFormData(prev => ({ ...prev, lat: newLat, lng: newLng }));
             });
         }
-    }, [center.lat, center.lng]);
-
-    const updateMarker = (lat: number, lng: number) => {
-        if (markerRef.current) {
-            const pos = { lat: Number(lat), lng: Number(lng) };
-            markerRef.current.setPosition(pos);
-            markerRef.current.getMap().panTo(pos);
-        }
-    };
+    }, [center.lat, center.lng, updateMarker]);
 
     const handleManualLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -310,6 +361,55 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
         }
     };
 
+    const handleLocationPhotoUpload = async (
+        file: File,
+        locationKey: string,
+        currentUrls: string[],
+        onNext: (urls: string[]) => void
+    ) => {
+        if (!file.type.startsWith('image/')) {
+            alert('Solo se aceptan imÃ¡genes');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('La imagen no puede superar 5MB');
+            return;
+        }
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('memberstackId', center.memberstack_id || '');
+        fd.append('locationKey', locationKey);
+
+        try {
+            const response = await fetch('/api/upload/wellness-location-photo', {
+                method: 'POST',
+                body: fd
+            });
+            const result = await response.json();
+            if (result.success) {
+                onNext([...currentUrls, result.url]);
+                setMessage({ text: 'Foto de sucursal subida correctamente', type: 'success' });
+            } else {
+                setMessage({ text: 'Error al subir foto: ' + result.error, type: 'error' });
+            }
+        } catch {
+            setMessage({ text: 'Error de conexiÃ³n al subir foto', type: 'error' });
+        }
+    };
+
+    const handleMainLocationPhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        e.target.value = '';
+        if (!file) return;
+
+        setIsUploadingMainPhoto(true);
+        await handleLocationPhotoUpload(file, 'primary', formData.location_photo_urls, (urls) => {
+            setFormData(prev => ({ ...prev, location_photo_urls: urls }));
+        });
+        setIsUploadingMainPhoto(false);
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
@@ -325,6 +425,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                 lat: formData.lat === '' ? null : Number(formData.lat),
                 lng: formData.lng === '' ? null : Number(formData.lng),
                 phone: formData.phone.trim() || null,
+                photo_urls: formData.location_photo_urls,
                 is_primary: true
             });
         }
@@ -439,6 +540,36 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                     />
                 </div>
 
+                <div className={styles.locationPhotosPanel}>
+                    <div className={styles.branchCardHeader}>
+                        <h5 className={styles.branchTitle}>Fotos de Sucursal principal</h5>
+                        <label className={styles.secondaryButtonSmall}>
+                            {isUploadingMainPhoto ? 'Subiendo...' : '+ Foto'}
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleMainLocationPhotoChange}
+                                disabled={isUploadingMainPhoto}
+                                style={{ display: 'none' }}
+                            />
+                        </label>
+                    </div>
+                    {formData.location_photo_urls.length > 0 ? (
+                        <div className={styles.locationPhotoGrid}>
+                            {formData.location_photo_urls.map((url, photoIndex) => (
+                                <img
+                                    key={`${url}-${photoIndex}`}
+                                    src={url}
+                                    alt="Foto de sucursal principal"
+                                    className={styles.locationPhotoThumb}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className={styles.photoHelp}>Agrega fotos de la sucursal principal para mostrarlas en el mapa y al admin.</p>
+                    )}
+                </div>
+
                 <div className={styles.mapContainer}>
                     <div ref={mapRef} className={styles.map}></div>
                     <p className={styles.mapHelp}>Puedes arrastrar el marcador o hacer clic en el mapa para mayor precisión.</p>
@@ -520,6 +651,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                                         onRemove={() => {
                                             setBranches(branches.filter((_, idx) => idx !== index));
                                         }}
+                                        onPhotoUpload={handleLocationPhotoUpload}
                                     />
                                 ))
                             ) : (
@@ -539,6 +671,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                                         lat: null,
                                         lng: null,
                                         phone: null,
+                                        photo_urls: [],
                                         is_primary: false
                                     }
                                 ]);

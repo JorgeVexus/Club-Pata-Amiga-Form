@@ -461,3 +461,33 @@
     text-align: center;
     margin: 20px 0;
 }
+
+.locationPhotosPanel {
+    background: #FFFFFF;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 14px;
+    margin-top: 12px;
+}
+
+.locationPhotoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+    gap: 10px;
+}
+
+.locationPhotoThumb {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #CBD5E1;
+    background: #F8FAFC;
+}
+
+.photoHelp {
+    margin: 0;
+    color: var(--color-text-light);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}

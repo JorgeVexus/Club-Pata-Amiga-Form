@@ -374,6 +374,36 @@
     font-size: 0.9rem;
 }
 
+.locationPhotos {
+    margin: var(--spacing-sm) 0;
+}
+
+.locationPhotosTitle {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--gray-500);
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.locationPhotoGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+    gap: 8px;
+}
+
+.locationPhoto {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--gray-200);
+    background: #fff;
+    display: block;
+}
+
 .address {
     font-size: 1.1rem;
     color: var(--gray-700);

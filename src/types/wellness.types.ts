@@ -58,6 +58,7 @@ export interface WellnessCenterLocation {
     lat?: number | null;
     lng?: number | null;
     phone?: string | null;
+    photo_urls?: string[];
     is_primary?: boolean;
     sort_order?: number;
     created_at?: string;

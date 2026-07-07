@@ -53,6 +53,22 @@
             border: 2px solid #000;
         }
 
+        .wc-map-photo-strip {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .wc-map-photo {
+            width: 100%;
+            aspect-ratio: 1.4;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #CBD5E1;
+            background: #F8FAFC;
+        }
+
         .wc-map-popup-phone {
             font-size: 0.9rem;
             color: #00BBB4;
@@ -159,10 +175,15 @@
             .slice(0, 3)
             .map(s => `<span class="wc-map-badge">${s}</span>`)
             .join('');
+        const locationPhotosHtml = (center.photo_urls || [])
+            .slice(0, 4)
+            .map(url => `<img src="${url}" class="wc-map-photo" alt="Foto de ${center.establishment_name}">`)
+            .join('');
 
         return `
             <div class="wc-map-popup">
                 ${center.logo_url ? `<img src="${center.logo_url}" class="wc-map-popup-logo" alt="${center.establishment_name}">` : ''}
+                ${locationPhotosHtml ? `<div class="wc-map-photo-strip">${locationPhotosHtml}</div>` : ''}
                 <div class="wc-map-popup-title">${center.establishment_name}</div>
                 <div class="wc-map-popup-address">${center.address || 'Ubicación física'}</div>
                 

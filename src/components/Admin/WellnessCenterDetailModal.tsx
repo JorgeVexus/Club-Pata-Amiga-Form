@@ -171,33 +171,58 @@ export default function WellnessCenterDetailModal({ center, isOpen, onClose, onR
                                         {locations.length > 0 && (
                                             <div className={styles.locationsList}>
                                                 <h4 className={styles.locationsHeading}>Sucursales registradas</h4>
-                                                {locations.map((location, index) => (
-                                                    <div key={location.id || `${location.address}-${index}`} className={styles.locationCard}>
-                                                        <div className={styles.locationCardHeader}>
-                                                            <strong>{location.is_primary ? 'Sucursal principal' : (location.name || `Sucursal ${index + 1}`)}</strong>
-                                                            {location.is_primary && <span className={styles.primaryBadge}>Principal</span>}
-                                                        </div>
-                                                        <p className={styles.address}>{location.address}</p>
-                                                        {location.phone && (
-                                                            <p className={styles.locationMeta}>Telefono: {location.phone}</p>
-                                                        )}
-                                                        {(location.lat && location.lng) && (
-                                                            <div className={styles.coords}>
-                                                                Coordenadas: {location.lat}, {location.lng}
-                                                                <div style={{ marginTop: '10px' }}>
-                                                                    <a
-                                                                        href={`https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`}
-                                                                        target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        style={{ color: '#00BBB4', fontWeight: 600, textDecoration: 'underline' }}
-                                                                    >
-                                                                        Ver en Google Maps
-                                                                    </a>
-                                                                </div>
+                                                {locations.map((location, index) => {
+                                                    const locationPhotos = location.photo_urls || [];
+
+                                                    return (
+                                                        <div key={location.id || `${location.address}-${index}`} className={styles.locationCard}>
+                                                            <div className={styles.locationCardHeader}>
+                                                                <strong>{location.is_primary ? 'Sucursal principal' : (location.name || `Sucursal ${index + 1}`)}</strong>
+                                                                {location.is_primary && <span className={styles.primaryBadge}>Principal</span>}
                                                             </div>
-                                                        )}
-                                                    </div>
-                                                ))}
+                                                            {locationPhotos.length > 0 && (
+                                                                <div className={styles.locationPhotos}>
+                                                                    <span className={styles.locationPhotosTitle}>Fotos de sucursal</span>
+                                                                    <div className={styles.locationPhotoGrid}>
+                                                                        {locationPhotos.map((url, photoIndex) => (
+                                                                            <a
+                                                                                key={`${url}-${photoIndex}`}
+                                                                                href={url}
+                                                                                target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                            >
+                                                                                <img
+                                                                                    src={url}
+                                                                                    alt={`Foto de ${location.name || 'sucursal'}`}
+                                                                                    className={styles.locationPhoto}
+                                                                                />
+                                                                            </a>
+                                                                        ))}
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                            <p className={styles.address}>{location.address}</p>
+                                                            {location.phone && (
+                                                                <p className={styles.locationMeta}>Telefono: {location.phone}</p>
+                                                            )}
+                                                            {(location.lat && location.lng) && (
+                                                                <div className={styles.coords}>
+                                                                    Coordenadas: {location.lat}, {location.lng}
+                                                                    <div style={{ marginTop: '10px' }}>
+                                                                        <a
+                                                                            href={`https://www.google.com/maps/search/?api=1&query=${location.lat},${location.lng}`}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            style={{ color: '#00BBB4', fontWeight: 600, textDecoration: 'underline' }}
+                                                                        >
+                                                                            Ver en Google Maps
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                         <p className={styles.address}>

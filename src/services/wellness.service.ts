@@ -55,6 +55,9 @@ export const wellnessService = {
                 lat: typeof location.lat === 'number' ? location.lat : null,
                 lng: typeof location.lng === 'number' ? location.lng : null,
                 phone: location.phone?.trim() || null,
+                photo_urls: Array.isArray(location.photo_urls)
+                    ? location.photo_urls.filter(url => typeof url === 'string' && url.trim()).map(url => url.trim())
+                    : [],
                 is_primary: index === 0 ? true : Boolean(location.is_primary),
                 sort_order: index
             }))
@@ -179,6 +182,7 @@ export const wellnessService = {
                     logo_url: center.logo_url,
                     address: location.address,
                     phone: location.phone || center.phone,
+                    photo_urls: location.photo_urls || [],
                     lat: location.lat,
                     lng: location.lng,
                     services: center.services,
@@ -199,6 +203,7 @@ export const wellnessService = {
                     logo_url: center.logo_url,
                     address: center.address,
                     phone: center.phone,
+                    photo_urls: [],
                     lat: center.lat,
                     lng: center.lng,
                     services: center.services,
