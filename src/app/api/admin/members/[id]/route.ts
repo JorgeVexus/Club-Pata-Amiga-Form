@@ -129,8 +129,10 @@ export async function PATCH(
 
         // 1. Actualizar en Memberstack y marcar como verificado de inmediato
         // (corrección de admin, no requiere que el usuario confirme el nuevo correo)
+        // NOTA: el email debe ir como campo raíz "email", NO anidado en "auth.email"
+        // (probado contra la API real: "auth: { email }" se ignora silenciosamente y no cambia nada)
         const msUpdateResult = await updateMemberData(memberId, {
-            auth: { email },
+            email,
             verified: true
         });
 

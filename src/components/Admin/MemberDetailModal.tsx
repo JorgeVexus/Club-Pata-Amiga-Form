@@ -201,7 +201,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
             const data = await response.json();
             if (data.success) {
-                alert('✅ Email actualizado correctamente. Se ha enviado un correo de verificación al nuevo email.');
+                alert('✅ Email actualizado y verificado correctamente.');
                 setIsEditingEmail(false);
                 if (onDataChange) onDataChange();
             } else {
