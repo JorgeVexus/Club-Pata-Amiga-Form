@@ -1084,7 +1084,7 @@
                 </div>
 
                 <h3 class="wc-section-title">Información para reintegros</h3>
-                <p style="font-size:0.9rem; color:#64748b; margin-top:-5px;">Estos datos se usarán para que Pata Amiga realice reintegros al Centro de Bienestar.</p>
+                <p style="font-size:0.9rem; color:#64748b; margin-top:-5px;">Estos datos se usarán para que Pata Amiga realice reintegros a tu Centro.</p>
                 <div class="wc-form-group">
                     <label class="wc-label">Banco</label>
                     <input type="text" name="bank_name" class="wc-input" value="${center.bank_name || ''}" placeholder="Ej: BBVA, Santander, Banorte">

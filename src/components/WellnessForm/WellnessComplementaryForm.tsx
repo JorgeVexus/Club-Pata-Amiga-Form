@@ -544,9 +544,9 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
             </div>
 
             <div className={styles.section}>
-                <h4>InformaciÃ³n para reintegros</h4>
+                <h4>Información para reintegros</h4>
                 <p className={styles.photoHelp}>
-                    Estos datos se usarÃ¡n para que Pata Amiga realice reintegros al Centro de Bienestar.
+                    Estos datos se usarán para que Pata Amiga realice reintegros a tu Centro.
                 </p>
                 <div className={styles.field}>
                     <label>Banco</label>

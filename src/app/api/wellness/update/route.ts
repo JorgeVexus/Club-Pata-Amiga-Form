@@ -77,10 +77,39 @@ export async function POST(request: NextRequest) {
             }
         }
 
-        // 2. Actualizar datos en Supabase
+        // 2. Actualizar datos en Supabase (filtrando solo columnas válidas de la tabla)
+        const VALID_COLUMNS = [
+            'name',
+            'establishment_name',
+            'phone',
+            'email',
+            'logo_url',
+            'promotion_details',
+            'address',
+            'lat',
+            'lng',
+            'social_links',
+            'status',
+            'rejection_reason',
+            'appeal_message',
+            'cancellation_reason',
+            'cancelled_at',
+            'welcome_shown',
+            'bank_name',
+            'bank_clabe',
+            'bank_holder'
+        ];
+
+        const filteredUpdateData: any = {};
+        for (const key of Object.keys(updateData)) {
+            if (VALID_COLUMNS.includes(key)) {
+                filteredUpdateData[key] = updateData[key];
+            }
+        }
+
         const { data: updated, error: updateError } = await supabaseAdminClient
             .from('wellness_centers')
-            .update(updateData)
+            .update(filteredUpdateData)
             .eq('memberstack_id', memberstack_id)
             .select()
             .single();
