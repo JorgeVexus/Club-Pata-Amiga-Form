@@ -4,6 +4,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Gender } from '@/types/ambassador.types';
 import { checkAmbassadorAvailability } from '@/app/actions/ambassador.actions';
 import { trackLead, trackCompleteRegistration, trackSubmitApplication } from '@/components/Analytics/MetaPixel';
+import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
+import { calculateAge } from '@/utils/age-validator';
 import SimplifiedStep, { SimplifiedAmbassadorData, TermsAcceptance } from './SimplifiedStep';
 import Step4Success from './Step4Success';
 import styles from './AmbassadorForm.module.css';
@@ -27,7 +29,10 @@ interface Props {
 }
 
 const initialFormData: SimplifiedAmbassadorData = {
-    full_name: '',
+    first_name: '',
+    paternal_surname: '',
+    maternal_surname: '',
+    birth_date: '',
     gender: '',
     curp: '',
     email: '',
@@ -38,37 +43,6 @@ const initialFormData: SimplifiedAmbassadorData = {
     tiktok: '',
     motivation: ''
 };
-
-function buildFullName(preloadedData?: PreloadedMemberData): string {
-    if (!preloadedData) return '';
-
-    return [
-        preloadedData.firstName,
-        preloadedData.paternalLastName,
-        preloadedData.maternalLastName
-    ]
-        .filter(Boolean)
-        .join(' ')
-        .trim();
-}
-
-function splitFullName(fullName: string) {
-    const parts = fullName.trim().replace(/\s+/g, ' ').split(' ');
-
-    if (parts.length === 2) {
-        return {
-            first_name: parts[0],
-            paternal_surname: parts[1],
-            maternal_surname: ''
-        };
-    }
-
-    return {
-        first_name: parts.slice(0, -2).join(' '),
-        paternal_surname: parts[parts.length - 2],
-        maternal_surname: parts[parts.length - 1]
-    };
-}
 
 function normalizePhone(value: string): string {
     return value.replace(/\D/g, '').slice(0, 10);
@@ -114,7 +88,10 @@ export default function AmbassadorForm({
 }: Props) {
     const [formData, setFormData] = useState<SimplifiedAmbassadorData>(() => ({
         ...initialFormData,
-        full_name: buildFullName(preloadedData),
+        first_name: preloadedData?.firstName || '',
+        paternal_surname: preloadedData?.paternalLastName || '',
+        maternal_surname: preloadedData?.maternalLastName || '',
+        birth_date: preloadedData?.customFields?.['birth-date'] || '',
         gender: (preloadedData?.customFields?.gender as Gender) || '',
         curp: normalizeCurp(preloadedData?.customFields?.curp || ''),
         email: preloadedData?.email || '',
@@ -126,6 +103,9 @@ export default function AmbassadorForm({
     const [isLoadingMember, setIsLoadingMember] = useState(!preloadedData);
     const [memberstackId, setMemberstackId] = useState<string | null>(linkedMemberstackId || null);
     const [termsAccepted, setTermsAccepted] = useState<TermsAcceptance | null>(null);
+    const [isCheckingCurp, setIsCheckingCurp] = useState(false);
+    const [curpAvailable, setCurpAvailable] = useState<boolean | null>(null);
+    const [curpCount, setCurpCount] = useState(0);
 
     const hasPreloadedMember = useMemo(() => Boolean(preloadedData || linkedMemberstackId), [linkedMemberstackId, preloadedData]);
 
@@ -189,11 +169,10 @@ export default function AmbassadorForm({
                         setMemberstackId(member.id);
                         setFormData(prev => ({
                             ...prev,
-                            full_name: [
-                                cf['first-name'],
-                                cf['paternal-last-name'],
-                                cf['maternal-last-name']
-                            ].filter(Boolean).join(' ').trim() || prev.full_name,
+                            first_name: cf['first-name'] || prev.first_name,
+                            paternal_surname: cf['paternal-last-name'] || prev.paternal_surname,
+                            maternal_surname: cf['maternal-last-name'] || prev.maternal_surname,
+                            birth_date: cf['birth-date'] || prev.birth_date,
                             gender: (cf.gender as Gender) || prev.gender,
                             curp: normalizeCurp(cf.curp || prev.curp),
                             email: member.auth?.email || prev.email,
@@ -220,6 +199,11 @@ export default function AmbassadorForm({
 
         setFormData(prev => ({ ...prev, [field]: normalizedValue }));
 
+        if (field === 'curp') {
+            setCurpAvailable(null);
+            setCurpCount(0);
+        }
+
         if (errors[field] || errors.submit) {
             setErrors(prev => {
                 const nextErrors = { ...prev };
@@ -227,6 +211,45 @@ export default function AmbassadorForm({
                 delete nextErrors.submit;
                 return nextErrors;
             });
+        }
+    };
+
+    const verifyCurp = async (curp: string) => {
+        const formatValidation = validateCURP(curp);
+        if (!formatValidation.isValid) {
+            setErrors(prev => ({ ...prev, curp: formatValidation.error || 'CURP inválida' }));
+            setCurpAvailable(null);
+            return;
+        }
+
+        const consistencyValidation = validateCurpMatchesData(curp, {
+            firstName: formData.first_name,
+            paternalLastName: formData.paternal_surname,
+            maternalLastName: formData.maternal_surname,
+            birthDate: formData.birth_date
+        });
+
+        if (!consistencyValidation.isConsistent) {
+            setErrors(prev => ({ ...prev, curp: consistencyValidation.message || 'La CURP no coincide con tus datos' }));
+            setCurpAvailable(null);
+            return;
+        }
+
+        setIsCheckingCurp(true);
+        try {
+            const result = await checkAmbassadorAvailability('curp', curp);
+            setCurpAvailable(result.available);
+            setCurpCount(result.count || 0);
+
+            setErrors(prev => {
+                const nextErrors = { ...prev };
+                delete nextErrors.curp;
+                return nextErrors;
+            });
+        } catch (error) {
+            console.error('Error verificando CURP:', error);
+        } finally {
+            setIsCheckingCurp(false);
         }
     };
 
@@ -245,10 +268,22 @@ export default function AmbassadorForm({
 
     const validateForm = () => {
         const nextErrors: Record<string, string> = {};
-        const nameParts = formData.full_name.trim().replace(/\s+/g, ' ').split(' ').filter(Boolean);
 
-        if (nameParts.length < 2) {
-            nextErrors.full_name = 'Escribe tu nombre completo con al menos un apellido';
+        if (!formData.first_name.trim()) {
+            nextErrors.first_name = 'Tu nombre es requerido';
+        }
+
+        if (!formData.paternal_surname.trim()) {
+            nextErrors.paternal_surname = 'Tu apellido paterno es requerido';
+        }
+
+        if (!formData.birth_date) {
+            nextErrors.birth_date = 'La fecha de nacimiento es requerida';
+        } else {
+            const age = calculateAge(formData.birth_date);
+            if (age < 18) {
+                nextErrors.birth_date = `Debes ser mayor de edad para registrarte. Actualmente tienes ${age} años.`;
+            }
         }
 
         if (!formData.gender) {
@@ -257,8 +292,11 @@ export default function AmbassadorForm({
 
         if (!formData.curp.trim()) {
             nextErrors.curp = 'El CURP es requerido';
-        } else if (formData.curp.length !== 18) {
-            nextErrors.curp = 'El CURP debe tener 18 caracteres';
+        } else {
+            const curpValidation = validateCURP(formData.curp);
+            if (!curpValidation.isValid) {
+                nextErrors.curp = curpValidation.error || 'CURP invalida';
+            }
         }
 
         if (!formData.email.trim()) {
@@ -293,24 +331,25 @@ export default function AmbassadorForm({
     };
 
     const handleBlur = async (field: keyof SimplifiedAmbassadorData) => {
-        if (field !== 'curp' && field !== 'email') return;
+        if (field === 'curp') {
+            if (formData.curp.length === 18) {
+                verifyCurp(formData.curp);
+            }
+            return;
+        }
 
-        const value = formData[field].trim();
-        if (!value) return;
+        if (field !== 'email') return;
 
-        if (field === 'curp' && value.length !== 18) return;
-        if (field === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return;
+        const value = formData.email.trim();
+        if (!value || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return;
 
         try {
-            const check = await checkAmbassadorAvailability(field, value);
+            const check = await checkAmbassadorAvailability('email', value);
             if (!check.available) {
-                setErrors(prev => ({
-                    ...prev,
-                    [field]: field === 'curp' ? 'Este CURP ya esta registrado' : 'Este correo ya esta registrado'
-                }));
+                setErrors(prev => ({ ...prev, email: 'Este correo ya esta registrado' }));
             }
         } catch (error) {
-            console.error(`Error verificando ${field}:`, error);
+            console.error('Error verificando email:', error);
         }
     };
 
@@ -334,32 +373,25 @@ export default function AmbassadorForm({
                 source: 'ambassador_registration'
             } : undefined;
 
-            const [curpCheck, emailCheck] = await Promise.all([
-                checkAmbassadorAvailability('curp', formData.curp),
-                checkAmbassadorAvailability('email', formData.email)
-            ]);
+            // El CURP ya no bloquea el envio si esta duplicado, solo el email
+            const emailCheck = await checkAmbassadorAvailability('email', formData.email);
 
-            if (!curpCheck.available || !emailCheck.available) {
-                const availabilityErrors = {
-                    ...(curpCheck.available ? {} : { curp: 'Este CURP ya esta registrado' }),
-                    ...(emailCheck.available ? {} : { email: 'Este correo ya esta registrado' })
-                };
-                setErrors(availabilityErrors);
+            if (!emailCheck.available) {
+                setErrors({ email: 'Este correo ya esta registrado' });
                 setIsSubmitting(false);
-                scrollToField(Object.keys(availabilityErrors)[0]);
+                scrollToField('email');
                 return;
             }
 
-            const nameParts = splitFullName(formData.full_name);
             const response = await fetch('/api/ambassadors', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    first_name: nameParts.first_name,
-                    paternal_surname: nameParts.paternal_surname,
-                    maternal_surname: nameParts.maternal_surname || undefined,
+                    first_name: formData.first_name.trim(),
+                    paternal_surname: formData.paternal_surname.trim(),
+                    maternal_surname: formData.maternal_surname.trim() || undefined,
                     gender: formData.gender || undefined,
-                    birth_date: '',
+                    birth_date: formData.birth_date,
                     curp: formData.curp,
                     email: formData.email.trim(),
                     phone: formData.phone,
@@ -443,7 +475,7 @@ export default function AmbassadorForm({
 
             {hasPreloadedMember && (
                 <div className={styles.memberNotice}>
-                    <strong>Hola, {formData.full_name || formData.email}</strong>
+                    <strong>Hola, {formData.first_name || formData.email}</strong>
                     <span>Usaremos los datos de tu cuenta para vincular tu solicitud.</span>
                 </div>
             )}
@@ -452,6 +484,9 @@ export default function AmbassadorForm({
                 data={formData}
                 errors={errors}
                 isSubmitting={isSubmitting}
+                isCheckingCurp={isCheckingCurp}
+                curpAvailable={curpAvailable}
+                curpCount={curpCount}
                 onBlur={handleBlur}
                 onChange={handleChange}
                 onTermsChange={handleTermsChange}

@@ -253,6 +253,42 @@
     line-height: 1.25;
 }
 
+.curpChecking {
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.curpAvailable {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.35rem 0.65rem;
+    background: #ffffff;
+    color: #009f99;
+    border: 2px solid #000000;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.curpWarning {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    padding: 0.35rem 0.65rem;
+    background: #ffffff;
+    color: #8A5A00;
+    border: 2px solid #000000;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1.35;
+}
+
 .termsSection {
     margin: 0.35rem 0 0;
     padding: 1rem;

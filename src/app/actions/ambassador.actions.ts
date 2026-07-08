@@ -44,12 +44,29 @@ export async function checkAmbassadorAvailability(type: ValidationType, value: s
             return { available: true, error: errorAmbassadors.message };
         }
 
+        // La CURP nunca bloquea el registro: se cuenta el total de ocurrencias
+        // en ambas tablas y se deja que el frontend muestre un aviso informativo.
+        if (type === 'curp') {
+            const { count: countUsers, error: errorUsers } = await supabase
+                .from('users')
+                .select('id', { count: 'exact', head: true })
+                .eq('curp', cleanValue);
+
+            if (errorUsers) {
+                console.error('Error checking user curp:', errorUsers);
+                return { available: true, count: 0, error: errorUsers.message };
+            }
+
+            const totalCount = (countAmbassadors || 0) + (countUsers || 0);
+            return { available: totalCount === 0, count: totalCount };
+        }
+
         if (countAmbassadors && countAmbassadors > 0) {
             return { available: false, source: 'ambassadors' };
         }
 
-        // 2. If it's CURP or Email, also check in users table
-        if (type === 'curp' || type === 'email') {
+        // 2. Si es Email, también revisar en la tabla users
+        if (type === 'email') {
             const { count: countUsers, error: errorUsers } = await supabase
                 .from('users')
                 .select('id', { count: 'exact', head: true })

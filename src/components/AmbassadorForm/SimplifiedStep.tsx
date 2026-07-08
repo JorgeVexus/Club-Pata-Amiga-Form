@@ -6,7 +6,10 @@ import TermsModalEnhanced from '@/components/RegistrationV2/TermsModalEnhanced';
 import styles from './SimplifiedStep.module.css';
 
 export interface SimplifiedAmbassadorData {
-    full_name: string;
+    first_name: string;
+    paternal_surname: string;
+    maternal_surname: string;
+    birth_date: string;
     gender: Gender | '';
     curp: string;
     email: string;
@@ -25,6 +28,9 @@ interface Props {
     errors: Record<string, string>;
     isSubmitting: boolean;
     termsAccepted: TermsAcceptance | null;
+    isCheckingCurp: boolean;
+    curpAvailable: boolean | null;
+    curpCount: number;
     onBlur: (field: keyof SimplifiedAmbassadorData) => void;
     onChange: (field: keyof SimplifiedAmbassadorData, value: string) => void;
     onTermsChange: (acceptance: TermsAcceptance | null) => void;
@@ -42,6 +48,9 @@ export default function SimplifiedStep({
     errors,
     isSubmitting,
     termsAccepted,
+    isCheckingCurp,
+    curpAvailable,
+    curpCount,
     onBlur,
     onChange,
     onTermsChange,
@@ -89,19 +98,60 @@ export default function SimplifiedStep({
             </div>
 
             <div className={styles.fields}>
-                <label className={fieldClassName('full_name')} data-field="full_name">
-                    <span>Nombre completo</span>
+                <label className={fieldClassName('first_name')} data-field="first_name">
+                    <span>Nombre(s)</span>
                     <input
                         className={styles.input}
                         type="text"
-                        value={data.full_name}
-                        onChange={(event) => onChange('full_name', event.target.value)}
-                        placeholder="Nombre y apellidos"
-                        autoComplete="name"
-                        aria-invalid={!!errors.full_name}
-                        aria-describedby={errors.full_name ? 'ambassador-full-name-error' : undefined}
+                        value={data.first_name}
+                        onChange={(event) => onChange('first_name', event.target.value)}
+                        placeholder="Nombre(s)"
+                        autoComplete="given-name"
+                        aria-invalid={!!errors.first_name}
+                        aria-describedby={errors.first_name ? 'ambassador-first-name-error' : undefined}
                     />
-                    {errors.full_name && <small id="ambassador-full-name-error" className={styles.error}>{errors.full_name}</small>}
+                    {errors.first_name && <small id="ambassador-first-name-error" className={styles.error}>{errors.first_name}</small>}
+                </label>
+
+                <label className={fieldClassName('paternal_surname')} data-field="paternal_surname">
+                    <span>Apellido paterno</span>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        value={data.paternal_surname}
+                        onChange={(event) => onChange('paternal_surname', event.target.value)}
+                        placeholder="Apellido paterno"
+                        autoComplete="family-name"
+                        aria-invalid={!!errors.paternal_surname}
+                        aria-describedby={errors.paternal_surname ? 'ambassador-paternal-surname-error' : undefined}
+                    />
+                    {errors.paternal_surname && <small id="ambassador-paternal-surname-error" className={styles.error}>{errors.paternal_surname}</small>}
+                </label>
+
+                <label className={fieldClassName('maternal_surname')} data-field="maternal_surname">
+                    <span>Apellido materno <small>(opcional)</small></span>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        value={data.maternal_surname}
+                        onChange={(event) => onChange('maternal_surname', event.target.value)}
+                        placeholder="Apellido materno"
+                        autoComplete="additional-name"
+                        aria-invalid={!!errors.maternal_surname}
+                    />
+                </label>
+
+                <label className={fieldClassName('birth_date')} data-field="birth_date">
+                    <span>Fecha de nacimiento</span>
+                    <input
+                        className={styles.input}
+                        type="date"
+                        value={data.birth_date}
+                        onChange={(event) => onChange('birth_date', event.target.value)}
+                        aria-invalid={!!errors.birth_date}
+                        aria-describedby={errors.birth_date ? 'ambassador-birth-date-error' : undefined}
+                    />
+                    {errors.birth_date && <small id="ambassador-birth-date-error" className={styles.error}>{errors.birth_date}</small>}
                 </label>
 
                 <fieldset className={radioFieldClassName} data-field="gender" aria-invalid={!!errors.gender}>
@@ -141,6 +191,15 @@ export default function SimplifiedStep({
                         aria-describedby={errors.curp ? 'ambassador-curp-error' : undefined}
                     />
                     {errors.curp && <small id="ambassador-curp-error" className={styles.error}>{errors.curp}</small>}
+                    {isCheckingCurp && <small className={styles.curpChecking}>Verificando...</small>}
+                    {!isCheckingCurp && curpAvailable === true && data.curp.length === 18 && (
+                        <small className={styles.curpAvailable}>✓ Disponible</small>
+                    )}
+                    {!isCheckingCurp && curpAvailable === false && curpCount > 0 && data.curp.length === 18 && (
+                        <small className={styles.curpWarning}>
+                            ⚠️ CURP ya registrada en {curpCount} {curpCount === 1 ? 'cuenta' : 'cuentas'}. Si es tuya, puedes continuar sin problemas.
+                        </small>
+                    )}
                 </label>
 
                 <label className={fieldClassName('email')} data-field="email">

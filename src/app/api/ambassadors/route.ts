@@ -298,19 +298,8 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Verificar CURP único
-        const { data: existingCurp } = await supabase
-            .from('ambassadors')
-            .select('id')
-            .eq('curp', body.curp.toUpperCase())
-            .single();
-
-        if (existingCurp) {
-            return NextResponse.json(
-                { success: false, error: 'Este CURP ya está registrado' },
-                { status: 400, headers: corsHeaders() }
-            );
-        }
+        // Nota: el CURP ya no bloquea el registro si está duplicado (advertencia
+        // informativa manejada en el frontend); solo se valida su unicidad como email.
 
         // Generar código de embajador único (sistema interno)
         let ambassadorCode = generateAmbassadorCode();
