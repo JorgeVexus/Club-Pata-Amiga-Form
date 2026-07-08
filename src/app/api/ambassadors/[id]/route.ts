@@ -103,6 +103,24 @@ export async function GET(
             .eq('ambassador_id', id)
             .order('created_at', { ascending: false });
 
+        // Contar referidos vigentes/activos (miembros aprobados con membresía activa)
+        let activeReferralsCount = 0;
+        if (referrals && referrals.length > 0) {
+            const referredUserIds = referrals.map(r => r.referred_user_id);
+            
+            const { data: users, error: usersError } = await supabase
+                .from('users')
+                .select('memberstack_id, approval_status, membership_status')
+                .in('memberstack_id', referredUserIds);
+
+            if (!usersError && users) {
+                activeReferralsCount = users.filter(u => 
+                    u.approval_status === 'approved' && 
+                    u.membership_status === 'active'
+                ).length;
+            }
+        }
+
         // Obtener historial de pagos
         const { data: payouts } = await supabase
             .from('ambassador_payouts')
@@ -116,6 +134,7 @@ export async function GET(
                 ...ambassador,
                 referrals: referrals || [],
                 referrals_count: referralsCount || 0,
+                active_referrals_count: activeReferralsCount,
                 payouts: payouts || []
             }
         }, { headers: corsHeaders() });

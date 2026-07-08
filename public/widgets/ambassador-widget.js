@@ -700,6 +700,11 @@
             background: #00BCD4;
         }
 
+        .amb-stat-box.active-pata {
+            grid-column: span 2;
+            background: #00BBB4;
+        }
+
         .amb-stat-label {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -2411,6 +2416,7 @@
         const approvedReferrals = toNumber(ambassador.approved_referrals);
         const reviewReferrals = toNumber(ambassador.review_referrals);
         const rejectedReferrals = toNumber(ambassador.rejected_referrals);
+        const activeReferrals = toNumber(ambassador.active_referrals_count);
         
         // Datos de pago
         const hasPaymentMethod = ambassador.payment_method === 'clabe' && !!ambassador.clabe;
@@ -2517,6 +2523,10 @@
                                 <div class="amb-stat-box total">
                                     <span class="amb-stat-label">Total</span>
                                     <span class="amb-stat-num">${totalReferrals}</span>
+                                </div>
+                                <div class="amb-stat-box active-pata">
+                                    <span class="amb-stat-label">Vigentes / Activos</span>
+                                    <span class="amb-stat-num">${activeReferrals}</span>
                                 </div>
                             </div>
                         </div>
