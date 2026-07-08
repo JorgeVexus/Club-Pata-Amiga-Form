@@ -279,6 +279,10 @@ export default function AmbassadorDetailModal({
                                     <span>{amb.birth_date ? formatDate(amb.birth_date) : 'No especificada'}</span>
                                 </div>
                                 <div className={styles.infoRow}>
+                                    <span>Ciudad de nacimiento:</span>
+                                    <span>{amb.birth_city || 'No especificada'}</span>
+                                </div>
+                                <div className={styles.infoRow}>
                                     <span>Fecha de registro:</span>
                                     <span>{amb.created_at ? formatDate(amb.created_at) : 'No especificada'}</span>
                                 </div>

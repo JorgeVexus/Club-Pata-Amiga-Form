@@ -34,6 +34,7 @@ const initialFormData: SimplifiedAmbassadorData = {
     paternal_surname: '',
     maternal_surname: '',
     birth_date: '',
+    birth_city: '',
     gender: '',
     curp: '',
     email: '',
@@ -93,6 +94,7 @@ export default function AmbassadorForm({
         paternal_surname: preloadedData?.paternalLastName || '',
         maternal_surname: preloadedData?.maternalLastName || '',
         birth_date: preloadedData?.customFields?.['birth-date'] || '',
+        birth_city: preloadedData?.customFields?.['birth-city'] || '',
         gender: (preloadedData?.customFields?.gender as Gender) || '',
         curp: normalizeCurp(preloadedData?.customFields?.curp || ''),
         email: preloadedData?.email || '',
@@ -177,6 +179,7 @@ export default function AmbassadorForm({
                             paternal_surname: cf['paternal-last-name'] || prev.paternal_surname,
                             maternal_surname: cf['maternal-last-name'] || prev.maternal_surname,
                             birth_date: cf['birth-date'] || prev.birth_date,
+                            birth_city: cf['birth-city'] || prev.birth_city,
                             gender: (cf.gender as Gender) || prev.gender,
                             curp: normalizeCurp(cf.curp || prev.curp),
                             email: member.auth?.email || prev.email,
@@ -290,6 +293,10 @@ export default function AmbassadorForm({
             }
         }
 
+        if (!formData.birth_city?.trim()) {
+            nextErrors.birth_city = 'La ciudad de nacimiento es requerida';
+        }
+
         if (!formData.gender) {
             nextErrors.gender = 'Selecciona una opcion';
         }
@@ -396,6 +403,7 @@ export default function AmbassadorForm({
                     maternal_surname: formData.maternal_surname.trim() || undefined,
                     gender: formData.gender || undefined,
                     birth_date: formData.birth_date,
+                    birth_city: formData.birth_city.trim() || undefined,
                     curp: formData.curp,
                     email: formData.email.trim(),
                     phone: formData.phone,
@@ -487,7 +495,7 @@ export default function AmbassadorForm({
     return (
         <>
             {!hideHeader && (
-                <h1 className={styles.mainTitle}>se embajador pata amiga</h1>
+                <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>
             )}
 
             {errors.submit && (

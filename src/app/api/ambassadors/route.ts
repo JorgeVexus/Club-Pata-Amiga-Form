@@ -68,6 +68,7 @@ async function createMemberstackAmbassador(
                 'gender': mappedGender || '',
                 'curp': body.curp?.toUpperCase() || '',
                 'phone': body.phone?.trim() || '',
+                'birth-city': body.birth_city?.trim() || '',
                 'role': 'ambassador',
                 'is-ambassador': 'true',
                 'ambassador-status': 'pending',
@@ -123,6 +124,7 @@ async function updateMemberstackAmbassador(
                 'gender': mappedGender || '',
                 'curp': body.curp?.toUpperCase() || '',
                 'phone': body.phone?.trim() || '',
+                'birth-city': body.birth_city?.trim() || '',
                 'role': 'ambassador',
                 'is-ambassador': 'true',
                 'ambassador-status': 'pending',
@@ -361,6 +363,7 @@ export async function POST(request: NextRequest) {
                 maternal_surname: sanitize(body.maternal_surname),
                 gender: mappedGender,
                 birth_date: sanitize(body.birth_date), // Convertir "" a null
+                birth_city: sanitize(body.birth_city), // Guardar ciudad de nacimiento
                 curp: body.curp ? body.curp.toUpperCase() : null, // Opcional para extranjeros
                 ine_front_url: sanitize(body.ine_front_url),
                 ine_back_url: sanitize(body.ine_back_url),

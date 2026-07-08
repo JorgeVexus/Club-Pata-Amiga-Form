@@ -10,6 +10,7 @@ export interface SimplifiedAmbassadorData {
     paternal_surname: string;
     maternal_surname: string;
     birth_date: string;
+    birth_city: string;
     gender: Gender | '';
     curp: string;
     email: string;
@@ -155,6 +156,20 @@ export default function SimplifiedStep({
                     <small className={styles.ageHint}>Recuerda que para ser embajador de Pata Amiga deberás ser mayor de 18 años</small>
                 </label>
 
+                <label className={fieldClassName('birth_city')} data-field="birth_city">
+                    <span>Ciudad de nacimiento</span>
+                    <input
+                        className={styles.input}
+                        type="text"
+                        value={data.birth_city}
+                        onChange={(event) => onChange('birth_city', event.target.value)}
+                        placeholder="Ej. Ciudad de México"
+                        aria-invalid={!!errors.birth_city}
+                        aria-describedby={errors.birth_city ? 'ambassador-birth-city-error' : undefined}
+                    />
+                    {errors.birth_city && <small id="ambassador-birth-city-error" className={styles.error}>{errors.birth_city}</small>}
+                </label>
+
                 <fieldset className={radioFieldClassName} data-field="gender" aria-invalid={!!errors.gender}>
                     <legend>Sexo</legend>
                     <div className={styles.radioGrid}>
@@ -220,14 +235,14 @@ export default function SimplifiedStep({
                 </label>
 
                 <label className={fieldClassName('password')} data-field="password">
-                    <span>Contrasena</span>
+                    <span>Contraseña</span>
                     <div className={styles.passwordInput}>
                         <input
                             className={styles.input}
                             type={showPassword ? 'text' : 'password'}
                             value={data.password}
                             onChange={(event) => onChange('password', event.target.value)}
-                            placeholder="Minimo 8 caracteres"
+                            placeholder="Mínimo 8 caracteres"
                             autoComplete="new-password"
                             aria-invalid={!!errors.password}
                             aria-describedby={errors.password ? 'ambassador-password-error' : undefined}
@@ -236,7 +251,7 @@ export default function SimplifiedStep({
                             type="button"
                             className={styles.passwordToggle}
                             onClick={() => setShowPassword(prev => !prev)}
-                            aria-label={showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'}
+                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                             aria-pressed={showPassword}
                         >
                             <svg aria-hidden="true" viewBox="0 0 24 24" focusable="false">

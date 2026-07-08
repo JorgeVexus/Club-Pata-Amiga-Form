@@ -30,6 +30,7 @@ export interface Ambassador {
     maternal_surname?: string;
     gender?: Gender;
     birth_date: string;
+    birth_city?: string;
     curp: string;
     
     // INE
@@ -201,6 +202,7 @@ export interface AmbassadorStep1Data {
     maternal_surname: string;
     gender: Gender | '';
     birth_date: string;
+    birth_city: string;
     curp: string;
     ine_front: File | null;
     ine_back: File | null;
@@ -249,6 +251,7 @@ export interface CreateAmbassadorRequest {
     maternal_surname?: string;
     gender?: Gender;
     birth_date: string;
+    birth_city?: string;
     curp: string;
     ine_front_url?: string;
     ine_back_url?: string;

@@ -142,7 +142,7 @@ function AmbassadorRegistrationContent() {
           aria-hidden
         />
 
-        <h1 className={styles.mainTitle}>se embajador pata amiga</h1>
+        <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>
 
         {isLoggedIn && memberData && (
           <div className={styles.userGreeting}>
