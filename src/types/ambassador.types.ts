@@ -77,6 +77,7 @@ export interface Ambassador {
     approved_by?: string;
     rejected_at?: string;
     rejected_by?: string;
+    welcome_shown?: boolean;
     
     // Comisiones
     commission_percentage: number;

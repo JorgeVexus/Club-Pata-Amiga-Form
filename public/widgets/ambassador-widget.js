@@ -2044,6 +2044,116 @@
             color: #666;
             line-height: 1.4;
         }
+
+        /* Welcome Modal */
+        .amb-welcome-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+            animation: ambFadeIn 0.3s ease forwards;
+        }
+
+        .amb-welcome-modal {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 550px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+            text-align: center;
+            position: relative;
+            transform: translateY(-20px);
+            animation: ambSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            font-family: 'Outfit', sans-serif;
+            box-sizing: border-box;
+        }
+
+        .amb-welcome-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .amb-welcome-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 28px;
+            color: #333;
+            margin: 0 0 15px 0;
+            line-height: 1.3;
+        }
+
+        .amb-welcome-text {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .amb-welcome-text p {
+            margin: 0 0 15px 0;
+        }
+
+        .amb-welcome-list {
+            margin: 0 0 20px 0;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .amb-welcome-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        .amb-welcome-list li::before {
+            content: "🐾";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            font-size: 1rem;
+        }
+
+        .amb-welcome-btn {
+            background: #FE8F15;
+            color: white;
+            border: 2px solid #000000;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(254, 143, 21, 0.2);
+        }
+
+        .amb-welcome-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(254, 143, 21, 0.3);
+            background: #e57f10;
+        }
+
+        @keyframes ambFadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes ambSlideUp {
+            to { transform: translateY(0); }
+        }
     `;
 
     // ============================================
@@ -3225,6 +3335,53 @@
         }
     }
 
+    function showAmbassadorWelcomeModal(ambassador) {
+        const overlay = document.createElement('div');
+        overlay.className = 'amb-welcome-overlay';
+        overlay.id = 'amb-welcome-modal-overlay';
+        
+        overlay.innerHTML = `
+            <div class="amb-welcome-modal" onclick="event.stopPropagation()">
+                <div class="amb-welcome-icon">🎉</div>
+                <h2 class="amb-welcome-title">¡Felicidades! Tu cuenta de Embajador ha sido aprobada</h2>
+                <div class="amb-welcome-text">
+                    <p>¡Ya eres parte oficial de la manada de Pata Amiga! 🐾</p>
+                    <p>A partir de este momento, tu código de referido está activo. Desde este panel podrás:</p>
+                    <ul class="amb-welcome-list">
+                        <li><strong>Compartir tu código único</strong> para invitar a más familias.</li>
+                        <li><strong>Recibir una comisión del 10%</strong> por cada membresía aprobada que use tu referido.</li>
+                        <li><strong>Dar seguimiento en tiempo real</strong> a tus referidos, comisiones acumuladas y pagos mensuales.</li>
+                        <li><strong>Descargar materiales de difusión</strong> listos para compartir con tus amigos o en redes sociales.</li>
+                    </ul>
+                    <p style="margin-top: 10px; font-size: 0.85rem; color: #777; text-align: center;">
+                        ¡Gracias por sumar tu voz para que más peludos y sus familias estén protegidos!
+                    </p>
+                </div>
+                <button id="btn-welcome-close" class="amb-welcome-btn">Comenzar ahora</button>
+            </div>
+        `;
+
+        const closeModal = async () => {
+            overlay.remove();
+            ambassador.welcome_shown = true;
+            
+            try {
+                await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ welcome_shown: true })
+                });
+            } catch (err) {
+                console.error('[AmbassadorWidget] Error guardando welcome_shown:', err);
+            }
+        };
+
+        overlay.querySelector('#btn-welcome-close').addEventListener('click', closeModal);
+        overlay.addEventListener('click', closeModal);
+
+        document.body.appendChild(overlay);
+    }
+
     async function initWidget() {
         const container = document.getElementById('ambassador-widget');
         if (!container) {
@@ -3299,6 +3456,13 @@
                 </div>
             </div>
         `;
+
+        // Mostrar modal de bienvenida si el embajador está aprobado y welcome_shown es falso
+        if (ambassador && ambassador.status === 'approved' && !ambassador.welcome_shown) {
+            setTimeout(function() {
+                showAmbassadorWelcomeModal(ambassador);
+            }, 300);
+        }
     }
 
     // Initialize when DOM is ready

@@ -209,7 +209,7 @@ export async function PATCH(
             'commission_percentage', 'payment_method', 'bank_name',
             'card_last_digits', 'clabe', 'rfc', 'phone', 'address',
             'instagram', 'facebook', 'tiktok', 'other_social',
-            'motivation', 'profile_photo_url', 'birth_city'
+            'motivation', 'profile_photo_url', 'birth_city', 'welcome_shown'
         ];
 
         allowedFields.forEach(field => {
