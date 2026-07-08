@@ -165,48 +165,49 @@ export default function Step5CompleteProfile({ ambassadorId, initialData, onSave
         );
     }
 
+    const rfcType = formData.rfc && !errors.rfc ? validateRFC(formData.rfc).type : undefined;
+
     return (
         <form onSubmit={handleSubmit} className={styles.pageContainer}>
-            <div className={styles.landingSubtitle}>
+            <div className={styles.profileHeader}>
+                <div className={styles.avatarWrapper}>
+                    <img
+                        src={formData.profile_photo_url || DEFAULT_PHOTO_PLACEHOLDER}
+                        alt="Foto de perfil"
+                        className={styles.avatarImg}
+                    />
+                    <button
+                        type="button"
+                        className={styles.avatarEditButton}
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={isUploadingPhoto}
+                        aria-label="Cambiar foto de perfil"
+                    >
+                        {isUploadingPhoto ? '…' : '📷'}
+                    </button>
+                    <input
+                        type="file"
+                        ref={photoInputRef}
+                        onChange={handlePhotoUpload}
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                    />
+                </div>
                 <h2>Completa tu perfil</h2>
                 <p>Estos datos son opcionales, pero nos ayudan a agilizar el pago de tus comisiones y tu aprobación.</p>
             </div>
 
             <div className={styles.orangeFormBox}>
-                <div className={styles.section}>
-                    <h3 className={styles.sectionTitle}>Foto de perfil</h3>
-                    <div className={styles.photoRow}>
-                        <img
-                            src={formData.profile_photo_url || DEFAULT_PHOTO_PLACEHOLDER}
-                            alt="Foto de perfil"
-                            className={styles.photoPreview}
-                        />
-                        <div>
-                            <input
-                                type="file"
-                                ref={photoInputRef}
-                                onChange={handlePhotoUpload}
-                                accept="image/*"
-                                style={{ display: 'none' }}
-                            />
-                            <button
-                                type="button"
-                                onClick={() => photoInputRef.current?.click()}
-                                className={styles.secondaryButton}
-                                disabled={isUploadingPhoto}
-                            >
-                                {isUploadingPhoto ? 'Subiendo...' : 'Seleccionar imagen'}
-                            </button>
-                        </div>
-                    </div>
+                <div className={styles.formBadge}>
+                    <span>💰</span>
                 </div>
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>
                         RFC
-                        {formData.rfc && !errors.rfc && (
+                        {rfcType && (
                             <span className={styles.rfcTypeBadge}>
-                                {validateRFC(formData.rfc).type === 'physical' ? '👤 Persona Física' : '🏢 Persona Moral'}
+                                {rfcType === 'physical' ? '👤 Persona Física' : '🏢 Persona Moral'}
                             </span>
                         )}
                     </h3>
@@ -220,6 +221,8 @@ export default function Step5CompleteProfile({ ambassadorId, initialData, onSave
                     />
                     {errors.rfc && <small className={styles.error}>{errors.rfc}</small>}
                 </div>
+
+                <div className={styles.divider} />
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Datos bancarios</h3>
@@ -271,33 +274,50 @@ export default function Step5CompleteProfile({ ambassadorId, initialData, onSave
                         </div>
                     )}
                 </div>
+            </div>
+
+            <div className={styles.tealFormBox}>
+                <div className={styles.formBadge}>
+                    <span>💬</span>
+                </div>
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>Redes sociales <small>(opcional)</small></h3>
                     <div className={styles.socialGrid}>
-                        <input
-                            type="text"
-                            value={formData.facebook}
-                            onChange={(e) => setFormData(prev => ({ ...prev, facebook: e.target.value }))}
-                            placeholder="Facebook"
-                            className={styles.input}
-                        />
-                        <input
-                            type="text"
-                            value={formData.instagram}
-                            onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
-                            placeholder="Instagram"
-                            className={styles.input}
-                        />
-                        <input
-                            type="text"
-                            value={formData.tiktok}
-                            onChange={(e) => setFormData(prev => ({ ...prev, tiktok: e.target.value }))}
-                            placeholder="TikTok"
-                            className={styles.input}
-                        />
+                        <div className={styles.socialInputWrapper}>
+                            <span className={styles.socialIcon} style={{ background: '#1877F2' }}>👤</span>
+                            <input
+                                type="text"
+                                value={formData.facebook}
+                                onChange={(e) => setFormData(prev => ({ ...prev, facebook: e.target.value }))}
+                                placeholder="Facebook"
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.socialInputWrapper}>
+                            <span className={styles.socialIcon} style={{ background: 'linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)' }}>📸</span>
+                            <input
+                                type="text"
+                                value={formData.instagram}
+                                onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
+                                placeholder="Instagram"
+                                className={styles.input}
+                            />
+                        </div>
+                        <div className={styles.socialInputWrapper}>
+                            <span className={styles.socialIcon} style={{ background: '#000000' }}>🎵</span>
+                            <input
+                                type="text"
+                                value={formData.tiktok}
+                                onChange={(e) => setFormData(prev => ({ ...prev, tiktok: e.target.value }))}
+                                placeholder="TikTok"
+                                className={styles.input}
+                            />
+                        </div>
                     </div>
                 </div>
+
+                <div className={styles.divider} />
 
                 <div className={styles.section}>
                     <h3 className={styles.sectionTitle}>¿Por qué quieres ser embajador?</h3>
@@ -309,17 +329,18 @@ export default function Step5CompleteProfile({ ambassadorId, initialData, onSave
                         className={styles.textarea}
                     />
                 </div>
-
-                {message.text && (
-                    <div className={`${styles.message} ${message.type === 'error' ? styles.messageError : styles.messageSuccess}`}>
-                        {message.text}
-                    </div>
-                )}
             </div>
+
+            {message.text && (
+                <div className={`${styles.message} ${message.type === 'error' ? styles.messageError : styles.messageSuccess}`}>
+                    {message.text}
+                </div>
+            )}
 
             <div className={styles.buttonsRow}>
                 <button type="submit" className={styles.saveButton} disabled={isSubmitting}>
                     {isSubmitting ? 'Guardando...' : 'Guardar cambios'}
+                    <span className={styles.btnIconCircleWhite}>→</span>
                 </button>
             </div>
         </form>

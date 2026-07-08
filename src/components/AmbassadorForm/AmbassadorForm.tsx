@@ -147,11 +147,12 @@ export default function AmbassadorForm({
         const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement | null;
         const successImage = document.getElementById('embajador-img-exito') as HTMLImageElement | null;
 
+        const showSuccessImage = showSuccess && !showCompleteProfile;
         if (catImage) catImage.style.display = showSuccess ? 'none' : '';
         if (girlImage) girlImage.style.display = 'none';
         if (manImage) manImage.style.display = 'none';
-        if (successImage) successImage.style.display = showSuccess ? '' : 'none';
-    }, [showSuccess]);
+        if (successImage) successImage.style.display = showSuccessImage ? '' : 'none';
+    }, [showSuccess, showCompleteProfile]);
 
     useEffect(() => {
         const loadMemberData = async () => {
