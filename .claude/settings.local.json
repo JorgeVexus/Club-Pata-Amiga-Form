@@ -16,7 +16,13 @@
       "Bash(git push *)",
       "WebSearch",
       "WebFetch(domain:developer.memberstack.com)",
-      "WebFetch(domain:developers.memberstack.com)"
+      "WebFetch(domain:developers.memberstack.com)",
+      "Bash(node -e ' *)",
+      "Bash(node --check public/widgets/ambassador-widget.js)",
+      "Bash(curl -s --max-time 5 \"http://localhost:3000/embajadores/registro\" -o \"C:\\\\Users\\\\JORGEC~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Jorge-Cerna-OneDrive-Desktop-new-project-pet-membership-form\\\\d1b5a4d4-9dd3-412f-a597-0f40dac03e96\\\\scratchpad\\\\reg.html\")",
+      "Bash(curl -s -w \"\\\\nSIZE:%{size_download} CODE:%{http_code}\\\\n\" --max-time 5 \"http://localhost:3000/embajadores/registro\")",
+      "Bash(taskkill //F //PID 39652)",
+      "Bash(taskkill //F //PID 23176)"
     ]
   }
 }

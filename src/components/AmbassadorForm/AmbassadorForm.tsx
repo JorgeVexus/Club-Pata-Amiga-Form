@@ -8,6 +8,7 @@ import { validateCURP, validateCurpMatchesData } from '@/utils/curp-validator';
 import { calculateAge } from '@/utils/age-validator';
 import SimplifiedStep, { SimplifiedAmbassadorData, TermsAcceptance } from './SimplifiedStep';
 import Step4Success from './Step4Success';
+import Step5CompleteProfile from './Step5CompleteProfile';
 import styles from './AmbassadorForm.module.css';
 
 interface PreloadedMemberData {
@@ -106,6 +107,8 @@ export default function AmbassadorForm({
     const [isCheckingCurp, setIsCheckingCurp] = useState(false);
     const [curpAvailable, setCurpAvailable] = useState<boolean | null>(null);
     const [curpCount, setCurpCount] = useState(0);
+    const [showCompleteProfile, setShowCompleteProfile] = useState(false);
+    const [createdAmbassadorId, setCreatedAmbassadorId] = useState<string | null>(null);
 
     const hasPreloadedMember = useMemo(() => Boolean(preloadedData || linkedMemberstackId), [linkedMemberstackId, preloadedData]);
 
@@ -411,6 +414,7 @@ export default function AmbassadorForm({
             const data = await response.json();
 
             if (data.success) {
+                setCreatedAmbassadorId(data.data?.id || null);
                 setShowSuccess(true);
                 onSuccess?.();
                 scrollToTop();
@@ -448,8 +452,26 @@ export default function AmbassadorForm({
         }
     };
 
+    if (showSuccess && showCompleteProfile && createdAmbassadorId) {
+        return (
+            <Step5CompleteProfile
+                ambassadorId={createdAmbassadorId}
+                initialData={{
+                    facebook: formData.facebook,
+                    instagram: formData.instagram,
+                    tiktok: formData.tiktok,
+                    motivation: formData.motivation
+                }}
+            />
+        );
+    }
+
     if (showSuccess) {
-        return <Step4Success />;
+        return (
+            <Step4Success
+                onCompleteProfile={createdAmbassadorId ? () => setShowCompleteProfile(true) : undefined}
+            />
+        );
     }
 
     if (isLoadingMember) {

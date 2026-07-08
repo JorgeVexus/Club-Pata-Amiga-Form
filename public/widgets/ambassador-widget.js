@@ -49,6 +49,13 @@
     enforceMemberstackSessionStorage();
 
     let currentAmbassador = null;
+    const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
+            <rect width="80" height="80" rx="40" fill="#E8F8F7"/>
+            <circle cx="40" cy="31" r="13" fill="#00BBB4"/>
+            <path d="M18 66c4-16 13-24 22-24s18 8 22 24" fill="#00BBB4"/>
+        </svg>
+    `)}`;
     const COMMON_BANK_OPTIONS = [
         'BBVA',
         'Santander',
@@ -1038,6 +1045,116 @@
             transition: border-color 0.2s;
         }
 
+        .amb-form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #E0E0E0;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            transition: border-color 0.2s;
+            resize: vertical;
+            min-height: 90px;
+            box-sizing: border-box;
+        }
+
+        .amb-form-group textarea:focus {
+            outline: none;
+            border-color: #15BEB2;
+        }
+
+        .amb-profile-photo-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .amb-profile-photo-preview {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #333;
+            flex-shrink: 0;
+        }
+
+        .amb-profile-photo-upload-btn {
+            background: #F0FDFC;
+            color: #333;
+            border: 2px solid #15BEB2;
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .amb-profile-section {
+            margin-top: 20px;
+        }
+
+        .amb-profile-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .amb-profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #333;
+            flex-shrink: 0;
+        }
+
+        .amb-profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .amb-profile-name {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .amb-profile-detail {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        .amb-profile-socials {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 4px;
+        }
+
+        .amb-profile-social-badge {
+            background: #E8F8F7;
+            color: #00BBB4;
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
+        .amb-profile-social-badge.empty {
+            background: #F1F1F1;
+            color: #888;
+        }
+
         .amb-form-group input:focus,
         .amb-form-group select:focus {
             outline: none;
@@ -1992,6 +2109,13 @@
                 <p class="ambassador-pending-message">
                     Gracias por querer sumar tu voz a la manada
                 </p>
+
+                <button class="ambassador-btn-retry" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/completar-perfil?ambassadorId=${ambassador.id}'">
+                    📝 Completa tu perfil
+                </button>
+                <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.9;">
+                    Agrega tu RFC, datos bancarios, redes sociales y foto para agilizar tu aprobación.
+                </p>
             </div>
 
             <div class="ambassador-benefits-grid">
@@ -2327,6 +2451,24 @@
                         </button>
                     </div>
                     `}
+                </section>
+
+                <!-- Mi Perfil -->
+                <section class="amb-profile-section">
+                    <div class="amb-profile-card">
+                        <img src="${ambassador.profile_photo_url || DEFAULT_AVATAR_PLACEHOLDER}" alt="Foto de perfil" class="amb-profile-avatar">
+                        <div class="amb-profile-info">
+                            <span class="amb-profile-name">${ambassador.first_name || ''} ${ambassador.paternal_surname || ''}</span>
+                            <span class="amb-profile-detail">${ambassador.rfc ? 'RFC: ' + ambassador.rfc : 'Sin RFC registrado'}</span>
+                            <div class="amb-profile-socials">
+                                ${ambassador.facebook ? `<span class="amb-profile-social-badge">Facebook</span>` : ''}
+                                ${ambassador.instagram ? `<span class="amb-profile-social-badge">Instagram</span>` : ''}
+                                ${ambassador.tiktok ? `<span class="amb-profile-social-badge">TikTok</span>` : ''}
+                                ${!ambassador.facebook && !ambassador.instagram && !ambassador.tiktok ? `<span class="amb-profile-social-badge empty">Sin redes agregadas</span>` : ''}
+                            </div>
+                        </div>
+                        <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()">Editar perfil</button>
+                    </div>
                 </section>
 
                 <!-- Estado de Referidos -->
@@ -2791,6 +2933,170 @@
         } catch (error) {
             console.error('Error eliminando CLABE:', error);
             alert('❌ Hubo un error al eliminar. Por favor intenta más tarde.');
+        }
+    };
+
+    // ============================================
+    // MODAL DE PERFIL (RFC, redes, motivación, foto)
+    // ============================================
+
+    window.editAmbassadorProfile = function () {
+        openProfileModal();
+    };
+
+    function openProfileModal() {
+        const amb = currentAmbassador || {};
+        const modal = document.createElement('div');
+        modal.id = 'amb-profile-modal';
+        modal.innerHTML = `
+            <div class="amb-modal-overlay" onclick="closeProfileModal(event)">
+                <div class="amb-modal-content" onclick="event.stopPropagation()">
+                    <button class="amb-modal-close" onclick="closeProfileModal()">&times;</button>
+                    <h3 class="amb-modal-title">Editar mi perfil</h3>
+                    <form id="amb-profile-form" onsubmit="submitProfileForm(event)">
+                        <div class="amb-profile-photo-row">
+                            <img id="amb-profile-photo-preview" src="${amb.profile_photo_url || DEFAULT_AVATAR_PLACEHOLDER}" alt="Foto de perfil" class="amb-profile-photo-preview">
+                            <div>
+                                <input type="file" id="amb-profile-photo-input" accept="image/*" style="display:none;">
+                                <button type="button" class="amb-profile-photo-upload-btn" onclick="document.getElementById('amb-profile-photo-input').click()">
+                                    Cambiar foto
+                                </button>
+                                <input type="hidden" name="profile_photo_url" id="amb-profile-photo-url" value="${amb.profile_photo_url || ''}">
+                            </div>
+                        </div>
+                        <div class="amb-form-group">
+                            <label>RFC</label>
+                            <input type="text" name="rfc" maxlength="13" placeholder="Ej. ABCD123456EFG" style="text-transform: uppercase;" value="${amb.rfc || ''}">
+                        </div>
+                        <div class="amb-form-group">
+                            <label>Facebook</label>
+                            <input type="text" name="facebook" placeholder="https://facebook.com/..." value="${amb.facebook || ''}">
+                        </div>
+                        <div class="amb-form-group">
+                            <label>Instagram</label>
+                            <input type="text" name="instagram" placeholder="https://instagram.com/..." value="${amb.instagram || ''}">
+                        </div>
+                        <div class="amb-form-group">
+                            <label>TikTok</label>
+                            <input type="text" name="tiktok" placeholder="https://tiktok.com/@..." value="${amb.tiktok || ''}">
+                        </div>
+                        <div class="amb-form-group">
+                            <label>¿Por qué quieres ser embajador?</label>
+                            <textarea name="motivation" placeholder="Cuéntanos tu historia...">${amb.motivation || ''}</textarea>
+                        </div>
+                        <button type="submit" class="amb-btn-primary" style="width: 100%; margin-top: 10px;">
+                            Guardar cambios
+                        </button>
+                    </form>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+
+        const photoInput = modal.querySelector('#amb-profile-photo-input');
+        photoInput?.addEventListener('change', handleProfilePhotoSelect);
+    }
+
+    window.closeProfileModal = function (event) {
+        if (!event || event.target === event.currentTarget) {
+            const modal = document.getElementById('amb-profile-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+        }
+    };
+
+    async function handleProfilePhotoSelect(event) {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+        if (!file || !currentAmbassador?.id) return;
+
+        if (!file.type.startsWith('image/')) {
+            alert('❌ Solo se aceptan imágenes');
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            alert('❌ La imagen no puede superar 5MB');
+            return;
+        }
+
+        const uploadBtn = document.querySelector('.amb-profile-photo-upload-btn');
+        if (uploadBtn) uploadBtn.textContent = 'Subiendo...';
+
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('ambassadorId', currentAmbassador.id);
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/upload/ambassador-photo`, {
+                method: 'POST',
+                body: fd
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const preview = document.getElementById('amb-profile-photo-preview');
+                const urlInput = document.getElementById('amb-profile-photo-url');
+                if (preview) preview.src = data.url;
+                if (urlInput) urlInput.value = data.url;
+            } else {
+                alert('❌ Error al subir foto: ' + (data.error || 'intenta de nuevo'));
+            }
+        } catch (error) {
+            console.error('Error subiendo foto de perfil:', error);
+            alert('❌ Error de conexión al subir la foto');
+        } finally {
+            if (uploadBtn) uploadBtn.textContent = 'Cambiar foto';
+        }
+    }
+
+    window.submitProfileForm = async function (event) {
+        event.preventDefault();
+        const form = event.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Guardando...';
+
+        if (!currentAmbassador?.id) {
+            alert('❌ No se pudo identificar al embajador actual.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar cambios';
+            return;
+        }
+
+        const formData = {
+            rfc: form.rfc.value.trim().toUpperCase() || undefined,
+            facebook: form.facebook.value.trim() || undefined,
+            instagram: form.instagram.value.trim() || undefined,
+            tiktok: form.tiktok.value.trim() || undefined,
+            motivation: form.motivation.value.trim() || undefined,
+            profile_photo_url: form.profile_photo_url.value || undefined
+        };
+
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert('✅ Perfil actualizado correctamente');
+                closeProfileModal();
+                location.reload();
+            } else {
+                alert('❌ ' + (data.error || 'No se pudo guardar el perfil'));
+            }
+        } catch (error) {
+            console.error('Error guardando perfil:', error);
+            alert('❌ Hubo un error. Por favor intenta más tarde.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Guardar cambios';
         }
     };
 

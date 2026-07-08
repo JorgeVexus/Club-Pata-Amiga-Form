@@ -4,7 +4,11 @@ import React from 'react';
 import HelpSection from '@/components/UI/HelpSection';
 import styles from './Step4Success.module.css';
 
-export default function Step4Success() {
+interface Props {
+    onCompleteProfile?: () => void;
+}
+
+export default function Step4Success({ onCompleteProfile }: Props) {
     return (
         <div className={styles.pageContainer}>
             {/* Subtítulo */}
@@ -40,6 +44,18 @@ export default function Step4Success() {
                 </div>
             </div>
 
+            {/* Callout para completar perfil */}
+            {onCompleteProfile && (
+                <button type="button" className={styles.completeProfileCallout} onClick={onCompleteProfile}>
+                    <span className={styles.completeProfileIcon}>📝</span>
+                    <span className={styles.completeProfileText}>
+                        <strong>Completa tus datos dando click aquí</strong>
+                        <span>RFC, datos bancarios, redes sociales y foto de perfil</span>
+                    </span>
+                    <span className={styles.completeProfileArrow}>→</span>
+                </button>
+            )}
+
             {/* Recuadro verde de contacto */}
             <div className={styles.contactBox}>
                 <div className={styles.contactContent}>
@@ -51,7 +67,8 @@ export default function Step4Success() {
 
             {/* Botones */}
             <div className={styles.buttonsRow}>
-                <a 
+                <p className={styles.loginHint}>¿Ya tienes cuenta en Pata Amiga?</p>
+                <a
                     href="https://www.pataamiga.mx/user/inicio-de-sesion"
                     className={styles.loginButton}
                 >

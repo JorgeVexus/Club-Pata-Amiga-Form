@@ -13,6 +13,7 @@ export const STORAGE_BUCKETS = {
     PET_PHOTOS: 'pet-photos',
     VET_CERTIFICATES: 'vet-certificates',
     AMBASSADOR_DOCS: 'ambassador-documents',
+    AMBASSADOR_PHOTOS: 'ambassador-photos',
 } as const;
 
 // Log initialization status (helpful for debugging in Vercel)

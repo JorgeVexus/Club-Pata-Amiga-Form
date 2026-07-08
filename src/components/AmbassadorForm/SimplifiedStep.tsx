@@ -152,6 +152,7 @@ export default function SimplifiedStep({
                         aria-describedby={errors.birth_date ? 'ambassador-birth-date-error' : undefined}
                     />
                     {errors.birth_date && <small id="ambassador-birth-date-error" className={styles.error}>{errors.birth_date}</small>}
+                    <small className={styles.ageHint}>Recuerda que para ser embajador de Pata Amiga deberás ser mayor de 18 años</small>
                 </label>
 
                 <fieldset className={radioFieldClassName} data-field="gender" aria-invalid={!!errors.gender}>

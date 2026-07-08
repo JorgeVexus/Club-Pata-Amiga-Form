@@ -1,0 +1,367 @@
+.pageContainer {
+    position: relative;
+    width: 100%;
+}
+
+.landingSubtitle {
+    text-align: left;
+    margin-bottom: 1.5rem;
+    padding-left: 0.5rem;
+}
+
+.landingSubtitle h2 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #FE8F15;
+    margin: 0 0 8px 0;
+    font-family: 'Fraiche', sans-serif;
+}
+
+.landingSubtitle p {
+    font-size: 1rem;
+    color: #333;
+    margin: 0;
+    font-weight: 500;
+}
+
+.orangeFormBox {
+    position: relative;
+    background: #FE8F15;
+    border-radius: 36px;
+    padding: 2rem;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 1.75rem;
+}
+
+.section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.sectionTitle {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.sectionTitle small {
+    font-size: 0.75rem;
+    font-weight: 600;
+    opacity: 0.85;
+}
+
+.sectionHelp {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    margin: -0.3rem 0 0.2rem;
+}
+
+.rfcTypeBadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.6rem;
+    background: #ffffff;
+    color: #2D3748;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.photoRow {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.photoPreview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #000000;
+    background: #ffffff;
+}
+
+.input,
+.textarea {
+    width: 100%;
+    border: 2px solid transparent;
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.96);
+    color: #2D3748;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.95rem;
+    outline: none;
+    box-sizing: border-box;
+    padding: 0.75rem 1rem;
+    transition: border-color 180ms ease;
+}
+
+.textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.45;
+}
+
+.input:focus,
+.textarea:focus {
+    border-color: #000000;
+}
+
+.inputError {
+    border-color: #A8321C;
+}
+
+.error {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 0.3rem 0.6rem;
+    background: #ffffff;
+    color: #A8321C;
+    border: 2px solid #000000;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.paymentCards {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.paymentCard {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.4rem !important;
+    padding: 0.65rem 1.1rem !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border: 2px solid rgba(255, 255, 255, 0.55) !important;
+    border-radius: 999px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.9rem !important;
+    cursor: pointer !important;
+    transition: all 180ms ease !important;
+}
+
+.paymentCard:hover {
+    border-color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.3) !important;
+}
+
+.paymentCardSelected {
+    background: #ffffff !important;
+    color: #2D3748 !important;
+    border-color: #000000 !important;
+}
+
+.bankFields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.fieldLabel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.fieldLabel span {
+    color: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.socialGrid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.secondaryButton {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0.6rem 1.1rem !important;
+    background: #ffffff !important;
+    color: #2D3748 !important;
+    border: 2px solid #000000 !important;
+    border-radius: 50px !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 0.85rem !important;
+    cursor: pointer !important;
+    transition: transform 180ms ease !important;
+}
+
+.secondaryButton:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.secondaryButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.message {
+    padding: 0.75rem 1rem;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.messageError {
+    background: #ffffff;
+    color: #A8321C;
+    border: 2px solid #000000;
+}
+
+.messageSuccess {
+    background: #ffffff;
+    color: #009f99;
+    border: 2px solid #000000;
+}
+
+.buttonsRow {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 1.5rem;
+}
+
+.saveButton {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 46px !important;
+    padding: 0.75rem 2rem !important;
+    background: #FE8F15 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+    border-radius: 50px !important;
+    font-family: 'Fraiche', sans-serif !important;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    cursor: pointer !important;
+    transition: transform 180ms ease, box-shadow 180ms ease !important;
+}
+
+.saveButton:hover:not(:disabled) {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18) !important;
+}
+
+.saveButton:disabled {
+    cursor: not-allowed !important;
+    opacity: 0.72 !important;
+}
+
+/* ============================================
+   Pantalla de éxito
+   ============================================ */
+
+.successBox {
+    background: #ffffff;
+    border-radius: 36px;
+    padding: 2.5rem 2rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.successIcon {
+    font-size: 3rem;
+}
+
+.successBox h2 {
+    font-family: 'Fraiche', sans-serif;
+    color: #FE8F15;
+    font-size: 1.6rem;
+    margin: 0;
+}
+
+.successBox p {
+    color: #333;
+    font-size: 0.95rem;
+    max-width: 480px;
+    margin: 0 0 0.5rem;
+}
+
+.loginButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    width: 100%;
+    max-width: 360px;
+    padding: 1rem 1.5rem;
+    background: #00BBB4;
+    color: #ffffff;
+    border: 2px solid #000000;
+    border-radius: 50px;
+    font-family: 'Fraiche', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.loginButton:hover {
+    background: #009f99;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 187, 180, 0.4);
+}
+
+.btnIconCircleWhite {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #ffffff;
+    color: #00BBB4;
+    border-radius: 50%;
+    font-size: 0.75rem;
+}
+
+@media (max-width: 768px) {
+    .landingSubtitle h2 {
+        font-size: 1.6rem;
+    }
+
+    .orangeFormBox {
+        padding: 1.5rem;
+        border-radius: 28px;
+    }
+
+    .socialGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .photoRow {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .buttonsRow,
+    .saveButton {
+        width: 100%;
+    }
+
+    .buttonsRow {
+        flex-direction: column;
+    }
+}

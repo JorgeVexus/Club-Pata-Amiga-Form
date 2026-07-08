@@ -253,6 +253,13 @@
     line-height: 1.25;
 }
 
+.ageHint {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
 .curpChecking {
     color: rgba(255, 255, 255, 0.92);
     font-size: 0.8rem;
