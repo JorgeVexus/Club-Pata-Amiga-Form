@@ -402,14 +402,14 @@
             line-height: 1.3;
         }
 
-        /* MODAL DE DETALLES NEO-BRUTALISTA */
+        /* MODAL DE DETALLES LIMPIO Y PREMIUM */
         .rtbell-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             z-index: 200000;
             display: none;
@@ -428,72 +428,64 @@
             background: #FFFFFF;
             width: 90%;
             max-width: 420px;
-            border: 4px solid #000000;
-            border-radius: 20px;
-            padding: 35px 30px;
-            box-shadow: 10px 10px 0px #000000;
+            border: none;
+            border-radius: 30px;
+            padding: 40px 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
             text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(-20px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             position: relative;
             font-family: 'Outfit', sans-serif;
+            box-sizing: border-box;
         }
 
         .rtbell-modal-overlay.open .rtbell-modal {
-            transform: scale(1);
+            transform: translateY(0);
         }
 
         .rtbell-modal-close {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: #FFFFFF;
-            border: 2px solid #000000;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-size: 20px;
-            font-weight: bold;
+            background: transparent;
+            border: none;
+            width: 32px;
+            height: 32px;
+            font-size: 24px;
             cursor: pointer;
-            color: #000000;
+            color: #999999;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 2px 2px 0px #000000;
-            transition: all 0.1s;
+            transition: color 0.2s;
+            outline: none;
+            padding: 0;
+            box-shadow: none !important;
         }
 
         .rtbell-modal-close:hover {
-            background: #FF4444;
-            color: white;
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0px #000000;
-        }
-        
-        .rtbell-modal-close:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px #000000;
+            color: #FF4444;
         }
 
         .rtbell-modal-icon {
             font-size: 56px;
             margin-bottom: 20px;
             display: inline-block;
-            filter: drop-shadow(3px 3px 0px #000000);
         }
 
         .rtbell-modal-title {
             font-size: 22px;
             font-weight: 800;
-            color: #000000;
+            color: #333333;
             margin-bottom: 15px;
             line-height: 1.2;
             font-family: 'Fraiche', 'Outfit', sans-serif;
         }
 
         .rtbell-modal-message {
-            font-size: 16px;
-            color: #333333;
+            font-size: 15px;
+            color: #666666;
             line-height: 1.6;
             margin-bottom: 30px;
             font-weight: 500;
@@ -502,27 +494,24 @@
         .rtbell-modal-btn {
             background: #00BBB4;
             color: #FFFFFF;
-            border: 3px solid #000000;
+            border: 2px solid #000000;
             padding: 14px 24px;
             border-radius: 50px;
             font-size: 16px;
             font-weight: 800;
             cursor: pointer;
             width: 100%;
-            box-shadow: 4px 4px 0px #000000;
-            transition: all 0.1s;
-            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s ease;
+            font-family: 'Fraiche', sans-serif;
+            box-shadow: 0 4px 10px rgba(0, 187, 180, 0.2);
+            box-sizing: border-box;
+            outline: none;
         }
 
         .rtbell-modal-btn:hover {
             background: #00a09a;
-            transform: translate(-2px, -2px);
-            box-shadow: 6px 6px 0px #000000;
-        }
-        
-        .rtbell-modal-btn:active {
-            transform: translate(4px, 4px);
-            box-shadow: 0px 0px 0px #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 187, 180, 0.3);
         }
 
         @media (max-width: 480px) {

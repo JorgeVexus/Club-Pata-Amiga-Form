@@ -78,7 +78,7 @@ function SuccessState({ code }: { code: string }) {
                         onClick={() => window.location.href = 'https://www.pataamiga.mx/embajadores/dashboard'}
                         className={styles.dashboardButton}
                     >
-                        Ir a mi dashboard
+                        Ir a mi perfil
                     </button>
                 </div>
             </div>

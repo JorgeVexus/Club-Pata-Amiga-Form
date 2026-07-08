@@ -82,13 +82,21 @@ export async function sendAdminEmail(params: SendEmailParams) {
             metadata: { resendId: resendData?.id, ...metadata }
         });
 
-        // 3. Crear notificaciÃ³n in-app automÃ¡tica
+        // 3. Crear notificación in-app automática
+        const cleanMessage = content
+            .replace(/<[^>]*>/g, '') // Remover etiquetas HTML
+            .replace(/\s+/g, ' ')    // Colapsar espacios y saltos de línea
+            .trim();
+        const messageToShow = cleanMessage.length > 100 
+            ? cleanMessage.substring(0, 97) + '...' 
+            : cleanMessage;
+
         await commService.sendInAppNotification({
             user_id: userId,
             type: 'announcement',
             title: subject,
-            message: content.length > 100 ? content.substring(0, 97) + '...' : content,
-            icon: 'âœ‰ï¸',
+            message: messageToShow,
+            icon: '✉️',
             metadata: { method: 'automatic-email' }
         });
 
@@ -111,7 +119,7 @@ export async function sendCustomNotification(params: {
     type?: string;
     icon?: string;
 }) {
-    console.log(`ðŸ”” [Server Action] Enviando notificaciÃ³n custom a ${params.userId}`);
+    console.log(`🔔 [Server Action] Enviando notificación custom a ${params.userId}`);
 
     try {
         const res = await commService.sendInAppNotification({
@@ -119,7 +127,7 @@ export async function sendCustomNotification(params: {
             type: params.type || 'announcement',
             title: params.title,
             message: params.message,
-            icon: params.icon || 'ðŸ””',
+            icon: params.icon || '🔔',
             metadata: { admin_id: params.adminId, method: 'manual-custom' }
         });
 
