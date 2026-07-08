@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AmbassadorForm from '@/components/AmbassadorForm/AmbassadorForm';
 import BrandLogo from '@/components/UI/BrandLogo';
+import NavbarRedesign from '@/components/RegistrationV2/NavbarRedesign';
 import styles from './page.module.css';
 
 interface MemberData {
@@ -113,53 +114,60 @@ function AmbassadorRegistrationContent() {
     return <LoadingCard />;
   }
 
+  const handleLogout = async () => {
+    if (typeof window !== 'undefined' && window.$memberstackDom) {
+      await window.$memberstackDom.logout();
+      window.location.reload();
+    }
+  };
+
+  const isSuccessStep = currentStep === 4;
+
   return (
-    <div className={styles.pageBackground}>
-      <BrandLogo />
-      <div className={styles.whiteCard}>
-        <img
-          id="embajador-img-nina"
-          src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771518105/embajadores_step_2_gol1df.png"
-          alt=""
-          className={styles.decorativeImage}
-          style={{ display: 'none' }}
-          aria-hidden
+    <div className={styles.mainWrapper}>
+      {isSuccessStep && (
+        <NavbarRedesign
+          onLogout={handleLogout}
+          member={memberData}
+          showLogout={true}
         />
-        <img
-          id="embajador-img-hombre"
-          src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771530730/embajadores_step_3_oy2cbb.png"
-          alt=""
-          className={styles.decorativeImage}
-          style={{ display: 'none' }}
-          aria-hidden
-        />
-        <img
-          id="embajador-img-exito"
-          src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771533698/Centros_1_oortwx.png"
-          alt=""
-          className={styles.decorativeImage}
-          style={{ display: 'none' }}
-          aria-hidden
-        />
+      )}
+      <div 
+        className={styles.pageBackground}
+        style={isSuccessStep ? { minHeight: 'calc(100vh - 80px)', paddingTop: '1.5rem' } : undefined}
+      >
+        {!isSuccessStep && <BrandLogo />}
+        <div className={styles.whiteCard}>
+          <img
+            id="embajador-img-nina"
+            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771518105/embajadores_step_2_gol1df.png"
+            alt=""
+            className={styles.decorativeImage}
+            style={{ display: 'none' }}
+            aria-hidden
+          />
+          <img
+            id="embajador-img-hombre"
+            src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1771530730/embajadores_step_3_oy2cbb.png"
+            alt=""
+            className={styles.decorativeImage}
+            style={{ display: 'none' }}
+            aria-hidden
+          />
 
-        <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>
+          <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>
 
-        {isLoggedIn && memberData && (
-          <div className={styles.userGreeting}>
-            <span>Hola, <strong>{memberData.firstName || memberData.email}</strong></span>
-            <button
-              onClick={async () => {
-                if (window.$memberstackDom) {
-                  await window.$memberstackDom.logout();
-                  window.location.reload();
-                }
-              }}
-              className={styles.logoutLink}
-            >
-              No eres tu? Cerrar sesion
-            </button>
-          </div>
-        )}
+          {isLoggedIn && memberData && !isSuccessStep && (
+            <div className={styles.userGreeting}>
+              <span>Hola, <strong>{memberData.firstName || memberData.email}</strong></span>
+              <button
+                onClick={handleLogout}
+                className={styles.logoutLink}
+              >
+                No eres tu? Cerrar sesion
+              </button>
+            </div>
+          )}
 
         <AmbassadorStepper currentStep={currentStep} />
 
@@ -183,6 +191,7 @@ function AmbassadorRegistrationContent() {
         </div>
       </div>
     </div>
+  </div>
   );
 }
 

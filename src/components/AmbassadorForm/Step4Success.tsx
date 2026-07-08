@@ -60,14 +60,14 @@ export default function Step4Success({ onCompleteProfile }: Props) {
             <div className={styles.contactBox}>
                 <div className={styles.contactContent}>
                     <h3>¿Tienes dudas? Comunícate con nosotros</h3>
-                    <p className={styles.contactEmail}>embajadores@clubpataamiga.mx</p>
+                    <p className={styles.contactEmail}>contacto@pataamiga.mx</p>
                     <p className={styles.contactNote}>Respondemos tus dudas en menos de 48h</p>
                 </div>
             </div>
 
             {/* Botones */}
             <div className={styles.buttonsRow}>
-                <p className={styles.loginHint}>¿Ya tienes cuenta en Pata Amiga?</p>
+                <p className={styles.loginHint}>Inicia sesión en tu cuenta</p>
                 <a
                     href="https://www.pataamiga.mx/user/inicio-de-sesion"
                     className={styles.loginButton}

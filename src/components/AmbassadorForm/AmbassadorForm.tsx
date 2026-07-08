@@ -147,14 +147,11 @@ export default function AmbassadorForm({
         const catImage = document.getElementById('embajador-img-gato') as HTMLImageElement | null;
         const girlImage = document.getElementById('embajador-img-nina') as HTMLImageElement | null;
         const manImage = document.getElementById('embajador-img-hombre') as HTMLImageElement | null;
-        const successImage = document.getElementById('embajador-img-exito') as HTMLImageElement | null;
 
-        const showSuccessImage = showSuccess && !showCompleteProfile;
         if (catImage) catImage.style.display = showSuccess ? 'none' : '';
         if (girlImage) girlImage.style.display = 'none';
         if (manImage) manImage.style.display = 'none';
-        if (successImage) successImage.style.display = showSuccessImage ? '' : 'none';
-    }, [showSuccess, showCompleteProfile]);
+    }, [showSuccess]);
 
     useEffect(() => {
         const loadMemberData = async () => {

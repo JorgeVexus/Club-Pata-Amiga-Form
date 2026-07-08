@@ -3,6 +3,12 @@
    Fondo verde, card blanco, formulario naranja
    ============================================ */
 
+.mainWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 /* Fondo verde - igual que miembros */
 .pageBackground {
     min-height: 100vh;
