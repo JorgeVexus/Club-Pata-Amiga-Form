@@ -2220,7 +2220,7 @@
                     Gracias por querer sumar tu voz a la manada
                 </p>
 
-                <button class="ambassador-btn-retry" onclick="window.location.href='${CONFIG.API_BASE_URL}/embajadores/completar-perfil?ambassadorId=${ambassador.id}'">
+                <button class="ambassador-btn-retry" onclick="window.editAmbassadorProfile()">
                     📝 Completa tu perfil
                 </button>
                 <p style="margin-top: 10px; font-size: 0.8rem; opacity: 0.9;">
@@ -3195,7 +3195,7 @@
             const data = await response.json();
 
             if (data.success) {
-                alert('✅ Perfil actualizado correctamente');
+                alert('✅ ¡Datos actualizados! Muchas gracias.\nTu información de perfil ha sido guardada.');
                 closeProfileModal();
                 location.reload();
             } else {
