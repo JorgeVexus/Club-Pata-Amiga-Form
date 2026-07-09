@@ -5,6 +5,7 @@ import styles from './CommunicationsHub.module.css';
 import TemplateManager from './TemplateManager';
 import MessageSender from './MessageSender';
 import CommHistory from './CommHistory';
+import AmbassadorMaterialsManager from './AmbassadorMaterialsManager';
 
 interface CommunicationsHubProps {
     adminName: string;
@@ -14,7 +15,7 @@ interface CommunicationsHubProps {
 }
 
 export default function CommunicationsHub({ adminName, isSuperAdmin, prefill, audience = 'general' }: CommunicationsHubProps) {
-    const [activeTab, setActiveTab] = useState<'messaging' | 'templates' | 'history'>('messaging');
+    const [activeTab, setActiveTab] = useState<'messaging' | 'templates' | 'history' | 'materials'>('messaging');
 
     const getAudienceLabel = () => {
         switch (audience) {
@@ -56,6 +57,15 @@ export default function CommunicationsHub({ adminName, isSuperAdmin, prefill, au
                     <span className={styles.tabIcon}>📜</span>
                     Historial
                 </button>
+                {audience === 'ambassador' && (
+                    <button
+                        className={`${styles.tabButton} ${activeTab === 'materials' ? styles.active : ''}`}
+                        onClick={() => setActiveTab('materials')}
+                    >
+                        <span className={styles.tabIcon}>🎁</span>
+                        Materiales
+                    </button>
+                )}
             </div>
 
             {/* Tab Content */}
@@ -64,6 +74,8 @@ export default function CommunicationsHub({ adminName, isSuperAdmin, prefill, au
                     <MessageSender adminName={adminName} prefill={prefill} audience={audience} />
                 ) : activeTab === 'templates' ? (
                     <TemplateManager audience={audience} />
+                ) : activeTab === 'materials' && audience === 'ambassador' ? (
+                    <AmbassadorMaterialsManager />
                 ) : (
                     <CommHistory adminName={adminName} isSuperAdmin={isSuperAdmin} audience={audience} />
                 )}

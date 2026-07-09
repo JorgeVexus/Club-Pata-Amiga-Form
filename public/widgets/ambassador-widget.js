@@ -1435,50 +1435,103 @@
         }
 
         /* ============================================
-           MATERIAL DIGITAL
+           MATERIAL DIGITAL (galería descargable con filtros)
            ============================================ */
         .amb-material-section {
-            position: relative;
-            margin-top: 150px;
-            margin-bottom: 75px;
+            margin-bottom: 30px;
         }
 
         .amb-material-card {
-            border-radius: 68px;
-            background: #FFF;
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .amb-material-header {
+            margin-bottom: 20px;
+        }
+
+        .amb-material-filters {
             display: flex;
-            padding: 13px 21px 23px 50px;
-            flex-direction: column;
-            justify-content: center;
-            align-items: flex-start;
-            gap: 20px;
-            align-self: stretch;
-            position: relative;
-            overflow: visible;
-            min-height: 250px;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 22px;
         }
 
-        .amb-material-content {
-            max-width: 70%;
-        }
-
-        .amb-material-title {
-            color: #000;
-            font-family: 'Fraiche', sans-serif;
-            font-size: 36px;
-            font-weight: 600;
-            line-height: 1.2;
-            margin: 0;
-            white-space: nowrap;
-        }
-
-        .amb-material-text {
-            color: #9B9B9B;
-            font-family: 'Outfit', sans-serif;
-            font-size: 18px;
+        .amb-material-filter-btn {
+            background: #F1F1F1;
+            color: #555;
+            border: none;
+            border-radius: 999px;
+            padding: 8px 18px;
+            font-size: 0.85rem;
             font-weight: 700;
-            line-height: normal;
-            margin: 0;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .amb-material-filter-btn.active {
+            background: #E91E63;
+            color: white;
+        }
+
+        .amb-material-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .amb-material-item {
+            background: #F8F9FA;
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            text-align: center;
+        }
+
+        .amb-material-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 12px;
+            background: white;
+        }
+
+        .amb-material-icon {
+            width: 100%;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            background: white;
+            border-radius: 12px;
+        }
+
+        .amb-material-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            width: 100%;
+        }
+
+        .amb-material-item-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .amb-material-item-desc {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.8rem;
+            color: #888;
         }
 
         .amb-btn-pink {
@@ -1504,63 +1557,23 @@
             transform: translateY(-2px);
         }
 
-        .amb-material-image {
-            position: absolute;
-            right: 0;
-            bottom: 0;
-            width: 320px;
-            height: auto;
-            z-index: 10;
-            object-fit: cover;
-            object-position: top;
+        .amb-material-download {
+            width: 100%;
+            margin: 0;
+            text-decoration: none;
+            box-sizing: border-box;
         }
 
-        @media (max-width: 1200px) {
-            .amb-material-title,
-            .amb-how-title {
-                font-size: 32px;
-            }
+        .amb-material-empty {
+            text-align: center;
+            padding: 30px;
+            color: #999;
+            font-family: 'Outfit', sans-serif;
         }
 
         @media (max-width: 768px) {
-            .amb-material-card {
-                padding: 25px !important;
-                align-items: center !important;
-            }
-            .amb-material-content {
-                max-width: 100% !important;
-                padding-bottom: 0 !important;
-                text-align: center !important;
-                display: flex !important;
-                flex-direction: column !important;
-                align-items: center !important;
-                gap: 20px !important;
-            }
-            .amb-material-title {
-                font-size: 26px;
-                white-space: normal;
-                margin: 0 !important;
-            }
-            .amb-material-text {
-                margin: 0 !important;
-            }
-            .amb-material-image {
-                display: none !important;
-            }
-            .amb-material-content {
-                max-width: 100%;
-                padding-bottom: 20px;
-            }
-            .amb-how-title {
-                font-size: 28px;
-                white-space: normal;
-            }
-            .amb-how-image {
-                display: none;
-            }
-            .amb-how-content {
-                max-width: 100%;
-                padding-bottom: 20px;
+            .amb-material-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
             }
         }
 
@@ -2442,7 +2455,8 @@
     }
 
     // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
-    function renderApproved(ambassador) {
+    function renderApproved(ambassador, materials) {
+        materials = materials || [];
         const toNumber = (value, fallback = 0) => {
             const parsed = Number(value);
             return Number.isFinite(parsed) ? parsed : fallback;
@@ -2799,20 +2813,47 @@
                 <!-- Material Digital -->
                 <section class="amb-material-section">
                     <div class="amb-material-card">
-                        <div class="amb-material-content">
-                            <h2 class="amb-material-title">material digital para compartir</h2>
-                            <p class="amb-material-text">
-                                Lleva el espíritu de <span class="amb-material-highlight">Pata Amiga</span> contigo. Aquí encontrarás imágenes, mensajes y recursos listos para descargar y compartir en tus redes. Úsalos libremente para invitar a más personas a unirse al club y ayudar a que más peludos reciban el apoyo que merecen.
+                        <div class="amb-material-header">
+                            <h2 class="amb-card-title">material digital para compartir</h2>
+                            <p class="amb-card-subtitle">
+                                Descarga imágenes, PDFs y videos listos para usar en tus redes y ayudar a que más peludos reciban el apoyo que merecen.
                             </p>
-                            <p class="amb-material-text">
-                                Comparte tu link, difunde la manada y sigue sumando huellitas. ¡Tu voz también salva!
-                            </p>
-                            <button class="amb-btn-pink" onclick="window.open('/materiales-embajador', '_blank')">
-                                Descargar kit
-                            </button>
                         </div>
-                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036493/perro_imag_shqipi.webp" 
-                             alt="Perro feliz" class="amb-material-image">
+
+                        ${materials.length > 0 ? `
+                        <div class="amb-material-filters">
+                            <button class="amb-material-filter-btn active" data-filter="all" onclick="window.filterAmbassadorMaterials('all')">Todos</button>
+                            ${materials.some(m => m.file_type === 'image') ? `<button class="amb-material-filter-btn" data-filter="image" onclick="window.filterAmbassadorMaterials('image')">Imágenes</button>` : ''}
+                            ${materials.some(m => m.file_type === 'pdf') ? `<button class="amb-material-filter-btn" data-filter="pdf" onclick="window.filterAmbassadorMaterials('pdf')">PDFs</button>` : ''}
+                            ${materials.some(m => m.file_type === 'video') ? `<button class="amb-material-filter-btn" data-filter="video" onclick="window.filterAmbassadorMaterials('video')">Videos</button>` : ''}
+                            ${materials.some(m => m.file_type === 'other') ? `<button class="amb-material-filter-btn" data-filter="other" onclick="window.filterAmbassadorMaterials('other')">Otros</button>` : ''}
+                        </div>
+
+                        <div class="amb-material-grid">
+                            ${materials.map(mat => {
+                                const icon = mat.file_type === 'image' ? '🖼️' : mat.file_type === 'pdf' ? '📄' : mat.file_type === 'video' ? '🎬' : '📎';
+                                const thumb = mat.file_type === 'image'
+                                    ? `<img src="${mat.file_url}" alt="${mat.title}" class="amb-material-thumb">`
+                                    : `<div class="amb-material-icon">${icon}</div>`;
+                                return `
+                                <div class="amb-material-item" data-type="${mat.file_type}">
+                                    ${thumb}
+                                    <div class="amb-material-info">
+                                        <span class="amb-material-item-title">${mat.title}</span>
+                                        ${mat.description ? `<span class="amb-material-item-desc">${mat.description}</span>` : ''}
+                                    </div>
+                                    <a href="${mat.file_url}" download="${mat.file_name}" target="_blank" rel="noopener noreferrer" class="amb-btn-pink amb-material-download">
+                                        Descargar ⬇️
+                                    </a>
+                                </div>
+                                `;
+                            }).join('')}
+                        </div>
+                        ` : `
+                        <div class="amb-material-empty">
+                            <p>Pronto habrá material digital disponible para descargar.</p>
+                        </div>
+                        `}
                     </div>
                 </section>
 
@@ -3489,6 +3530,28 @@
         }
     }
 
+    // Materiales digitales para compartir (imágenes, PDFs, videos subidos por el admin)
+    async function fetchAmbassadorMaterials() {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassador-materials`);
+            if (!response.ok) return [];
+            const data = await response.json();
+            return (data.success && Array.isArray(data.materials)) ? data.materials : [];
+        } catch (error) {
+            console.error('[AmbassadorWidget] Error fetching materials:', error);
+            return [];
+        }
+    }
+
+    window.filterAmbassadorMaterials = function (type) {
+        document.querySelectorAll('.amb-material-item').forEach(function (item) {
+            item.style.display = (type === 'all' || item.dataset.type === type) ? '' : 'none';
+        });
+        document.querySelectorAll('.amb-material-filter-btn').forEach(function (btn) {
+            btn.classList.toggle('active', btn.dataset.filter === type);
+        });
+    };
+
     function showAmbassadorWelcomeModal(ambassador) {
         const overlay = document.createElement('div');
         overlay.className = 'amb-welcome-overlay';
@@ -3581,6 +3644,11 @@
         }
         currentAmbassador = ambassador;
 
+        // Cargar materiales digitales en paralelo (solo se usan si el embajador está aprobado)
+        const materials = (ambassador && ambassador.status === 'approved')
+            ? await fetchAmbassadorMaterials()
+            : [];
+
         // Render based on status
         let content = '';
         if (!ambassador) {
@@ -3590,7 +3658,7 @@
         } else if (ambassador.status === 'rejected') {
             content = renderRejected(ambassador, memberId);
         } else if (ambassador.status === 'approved') {
-            content = renderApproved(ambassador);
+            content = renderApproved(ambassador, materials);
         } else if (ambassador.status === 'suspended') {
             content = `
                 <div class="ambassador-rejected-card">
