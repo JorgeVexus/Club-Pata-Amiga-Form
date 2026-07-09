@@ -1057,21 +1057,6 @@
             cursor: pointer;
         }
 
-        .amb-profile-section {
-            margin-top: 20px;
-        }
-
-        .amb-profile-card {
-            background: white;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
         .amb-profile-avatar {
             width: 64px;
             height: 64px;
@@ -1093,11 +1078,6 @@
             font-family: 'Fraiche', sans-serif;
             font-size: 1.1rem;
             color: #333;
-        }
-
-        .amb-profile-detail {
-            font-size: 0.85rem;
-            color: #718096;
         }
 
         .amb-profile-socials {
@@ -1585,7 +1565,7 @@
         }
 
         /* ============================================
-           MIS DATOS DE REGISTRO
+           MIS DATOS DE REGISTRO (primera sección: identidad del embajador)
            ============================================ */
         .amb-registration-data-section {
             margin-bottom: 30px;
@@ -1599,27 +1579,59 @@
             position: relative;
         }
 
+        .amb-registration-data-identity {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding-bottom: 22px;
+            margin-bottom: 22px;
+            border-bottom: 1px solid #EFEFEF;
+            flex-wrap: wrap;
+        }
+
+        .amb-registration-data-identity .amb-profile-avatar {
+            width: 72px;
+            height: 72px;
+        }
+
+        .amb-registration-data-identity .amb-profile-name {
+            font-size: 1.3rem;
+        }
+
+        .amb-registration-data-approved-badge {
+            background: #E9F9E9;
+            color: #2F9E44;
+            border-radius: 999px;
+            padding: 3px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+
         .amb-registration-data-title {
-            font-family: 'Fraiche', sans-serif;
-            font-size: 50px;
-            font-weight: 600;
-            color: #000;
-            margin: 0 0 10px 0;
-            line-height: 63px;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            margin: 0 0 6px 0;
+            line-height: 1.3;
+            background: none;
+            text-decoration: none;
+            box-shadow: none;
+            padding: 0;
         }
 
         .amb-registration-data-subtitle {
             font-family: 'Outfit', sans-serif;
-            font-size: 18px;
-            color: #9B9B9B;
-            margin: 0 0 25px 0;
-            font-weight: 700;
+            font-size: 0.9rem;
+            color: #888;
+            margin: 0 0 24px 0;
+            font-weight: 500;
         }
 
         .amb-registration-data-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 20px;
+            gap: 14px;
         }
 
         .amb-registration-data-item {
@@ -1627,11 +1639,14 @@
             flex-direction: column;
             gap: 4px;
             min-width: 0;
+            background: #F8F9FA;
+            border-radius: 14px;
+            padding: 12px 16px;
         }
 
         .amb-data-label {
             font-family: 'Outfit', sans-serif;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             color: #888;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -1639,7 +1654,7 @@
 
         .amb-data-value {
             font-family: 'Outfit', sans-serif;
-            font-size: 16px;
+            font-size: 15px;
             color: #333;
             font-weight: 600;
             word-break: break-word;
@@ -1663,9 +1678,17 @@
                 grid-column: span 1;
             }
 
+            .amb-registration-data-identity {
+                gap: 14px;
+            }
+
+            .amb-registration-data-identity .amb-profile-avatar {
+                width: 56px;
+                height: 56px;
+            }
+
             .amb-registration-data-title {
-                font-size: 32px;
-                line-height: 40px;
+                font-size: 1.25rem;
             }
         }
 
@@ -2510,17 +2533,88 @@
                     </div>
                 </header>
 
+                <!-- Mis Datos de Registro (lo primero: quién eres como embajador) -->
+                <section class="amb-registration-data-section">
+                    <div class="amb-registration-data-card">
+                        <div class="amb-registration-data-identity">
+                            <img src="${ambassador.profile_photo_url || DEFAULT_AVATAR_PLACEHOLDER}" alt="Foto de perfil" class="amb-profile-avatar">
+                            <div class="amb-profile-info">
+                                <span class="amb-profile-name">${fullName || 'Embajador'}</span>
+                                <div class="amb-profile-socials">
+                                    <span class="amb-registration-data-approved-badge">✓ Embajador aprobado</span>
+                                    ${ambassador.facebook ? `<span class="amb-profile-social-badge">Facebook</span>` : ''}
+                                    ${ambassador.instagram ? `<span class="amb-profile-social-badge">Instagram</span>` : ''}
+                                    ${ambassador.tiktok ? `<span class="amb-profile-social-badge">TikTok</span>` : ''}
+                                    ${!hasAnySocial ? `<span class="amb-profile-social-badge empty">Sin redes agregadas</span>` : ''}
+                                </div>
+                            </div>
+                        </div>
+
+                        <h2 class="amb-registration-data-title">mis datos de registro</h2>
+                        <p class="amb-registration-data-subtitle">Información que registraste como embajador</p>
+                        <div class="amb-registration-data-grid">
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Nombre completo</span>
+                                <span class="amb-data-value">${fullName || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Correo</span>
+                                <span class="amb-data-value">${ambassador.email || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Celular</span>
+                                <span class="amb-data-value">${formatPhone(ambassador.phone)}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">CURP</span>
+                                <span class="amb-data-value">${ambassador.curp || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">RFC</span>
+                                <span class="amb-data-value">${ambassador.rfc || 'Sin RFC registrado'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Fecha de nacimiento</span>
+                                <span class="amb-data-value">${formatDate(ambassador.birth_date)}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Ciudad de nacimiento</span>
+                                <span class="amb-data-value">${ambassador.birth_city || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Sexo</span>
+                                <span class="amb-data-value">${genderLabel(ambassador.gender)}</span>
+                            </div>
+                            ${hasAddress ? `
+                            <div class="amb-registration-data-item amb-data-full-width">
+                                <span class="amb-data-label">Dirección</span>
+                                <span class="amb-data-value">${addressLine}</span>
+                            </div>
+                            ` : ''}
+                            ${ambassador.motivation ? `
+                            <div class="amb-registration-data-item amb-data-full-width">
+                                <span class="amb-data-label">Por qué quiero ser embajador</span>
+                                <span class="amb-data-value">${ambassador.motivation}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()" style="margin-top: 20px;">
+                            Editar información
+                        </button>
+                    </div>
+                </section>
+
                 <!-- Código de Referido -->
                 <section class="amb-code-section">
                     <div class="amb-code-card">
-                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/gift_icon_wrrk9f.png" 
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/gift_icon_wrrk9f.png"
                              alt="Regalo" class="amb-float-icon gift">
-                        
+
                         <h2 class="amb-card-title">tu código de referido</h2>
                         <p class="amb-card-subtitle">
                             Comparte tu código, invita a más familias y recibe un porcentaje real por cada membresía aprobada con tu referido.
                         </p>
-                        
+
                         <div class="amb-code-box">
                             <span class="amb-code-label">Tu código único</span>
                             <div class="amb-code-value">${referralCode}</div>
@@ -2533,7 +2627,7 @@
                                 </button>
                             </div>
                         </div>
-                        
+
                         <div class="amb-how-it-works-inline">
                             <h3>¿cómo funciona?</h3>
                             <p>Comparte tu código con tus amigos. Si su solicitud es aprobada y pagan su membresía, tú ganas una comisión.</p>
@@ -2545,22 +2639,22 @@
                 <div class="amb-two-columns">
                     <!-- Ganancias -->
                     <section class="amb-earnings-section">
-                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/money_icon_gyxpwi.png" 
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/money_icon_gyxpwi.png"
                              alt="Dinero" class="amb-float-icon money">
                         <div class="amb-earnings-card">
                             <h2 class="amb-card-title">tus ganancias</h2>
                             <p class="amb-card-subtitle">Historial de comisiones</p>
-                            
+
                             <div class="amb-earnings-total">
                                 <span class="amb-earnings-label">Total ganado histórico</span>
                                 <span class="amb-earnings-value">${formatCurrency(totalEarnings)}</span>
                             </div>
-                            
+
                             <div class="amb-earnings-available">
                                 <span class="amb-earnings-label">Disponible para retirar</span>
                                 <span class="amb-earnings-available-value">${formatCurrency(pendingPayout)}</span>
                             </div>
-                            
+
                             <p class="amb-earnings-note">
                                 El día 6 de cada mes, tus ganancias se transfieren de forma automática a tu cuenta bancaria registrada.
                             </p>
@@ -2569,12 +2663,12 @@
 
                     <!-- Estadísticas -->
                     <section class="amb-stats-section">
-                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/estaduisticas_icon_ntslcc.png" 
+                        <img src="${CONFIG.CLOUDINARY_URL}/v1772036421/estaduisticas_icon_ntslcc.png"
                              alt="Estadísticas" class="amb-float-icon stats">
                         <div class="amb-stats-card">
                             <h2 class="amb-card-title">estadísticas</h2>
                             <p class="amb-card-subtitle">Resumen de tus referidos</p>
-                            
+
                             <div class="amb-stats-grid">
                                 <div class="amb-stat-box approved">
                                     <span class="amb-stat-label">Aprobados</span>
@@ -2606,8 +2700,8 @@
                     ${hasPaymentMethod ? `
                     <div class="amb-payment-card">
                         <div class="amb-payment-info">
-                            <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/mastercard_icon.png" 
-                                 alt="CLABE" class="amb-payment-icon" 
+                            <img src="${CONFIG.CLOUDINARY_URL}/v1772036420/mastercard_icon.png"
+                                 alt="CLABE" class="amb-payment-icon"
                                  onerror="this.style.display='none'">
                             <div class="amb-payment-details">
                                 <span class="amb-payment-label">${bankName}</span>
@@ -2639,83 +2733,6 @@
                         </button>
                     </div>
                     `}
-                </section>
-
-                <!-- Mi Perfil -->
-                <section class="amb-profile-section">
-                    <div class="amb-profile-card">
-                        <img src="${ambassador.profile_photo_url || DEFAULT_AVATAR_PLACEHOLDER}" alt="Foto de perfil" class="amb-profile-avatar">
-                        <div class="amb-profile-info">
-                            <span class="amb-profile-name">${ambassador.first_name || ''} ${ambassador.paternal_surname || ''}</span>
-                            <span class="amb-profile-detail">${ambassador.rfc ? 'RFC: ' + ambassador.rfc : 'Sin RFC registrado'}</span>
-                            <div class="amb-profile-socials">
-                                ${ambassador.facebook ? `<span class="amb-profile-social-badge">Facebook</span>` : ''}
-                                ${ambassador.instagram ? `<span class="amb-profile-social-badge">Instagram</span>` : ''}
-                                ${ambassador.tiktok ? `<span class="amb-profile-social-badge">TikTok</span>` : ''}
-                                ${!ambassador.facebook && !ambassador.instagram && !ambassador.tiktok ? `<span class="amb-profile-social-badge empty">Sin redes agregadas</span>` : ''}
-                            </div>
-                        </div>
-                        <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()">Editar perfil</button>
-                    </div>
-                </section>
-
-                <!-- Mis Datos de Registro -->
-                <section class="amb-registration-data-section">
-                    <div class="amb-registration-data-card">
-                        <h2 class="amb-registration-data-title">mis datos de registro</h2>
-                        <p class="amb-registration-data-subtitle">Información que registraste como embajador</p>
-                        <div class="amb-registration-data-grid">
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Nombre completo</span>
-                                <span class="amb-data-value">${fullName || '—'}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Correo</span>
-                                <span class="amb-data-value">${ambassador.email || '—'}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Celular</span>
-                                <span class="amb-data-value">${formatPhone(ambassador.phone)}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">CURP</span>
-                                <span class="amb-data-value">${ambassador.curp || '—'}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Fecha de nacimiento</span>
-                                <span class="amb-data-value">${formatDate(ambassador.birth_date)}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Ciudad de nacimiento</span>
-                                <span class="amb-data-value">${ambassador.birth_city || '—'}</span>
-                            </div>
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Sexo</span>
-                                <span class="amb-data-value">${genderLabel(ambassador.gender)}</span>
-                            </div>
-                            ${hasAddress ? `
-                            <div class="amb-registration-data-item amb-data-full-width">
-                                <span class="amb-data-label">Dirección</span>
-                                <span class="amb-data-value">${addressLine}</span>
-                            </div>
-                            ` : ''}
-                            ${hasAnySocial ? `
-                            <div class="amb-registration-data-item">
-                                <span class="amb-data-label">Redes sociales</span>
-                                <span class="amb-data-value">${socialLinks}</span>
-                            </div>
-                            ` : ''}
-                            ${ambassador.motivation ? `
-                            <div class="amb-registration-data-item amb-data-full-width">
-                                <span class="amb-data-label">Por qué quiero ser embajador</span>
-                                <span class="amb-data-value">${ambassador.motivation}</span>
-                            </div>
-                            ` : ''}
-                        </div>
-                        <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()" style="margin-top: 20px;">
-                            Editar información
-                        </button>
-                    </div>
                 </section>
 
                 <!-- Estado de Referidos -->
