@@ -155,18 +155,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Actualizar pending_payout del embajador
-        const { data: currentAmbassador } = await supabase
-            .from('ambassadors')
-            .select('pending_payout')
-            .eq('id', ambassador.id)
-            .single();
-
-        const currentPending = currentAmbassador?.pending_payout || 0;
-        await supabase
-            .from('ambassadors')
-            .update({ pending_payout: currentPending + commissionAmount })
-            .eq('id', ambassador.id);
+        // Nota: NO sumamos a pending_payout aquí. El referido nace en 'pending' (en revisión);
+        // el saldo del embajador solo se actualiza cuando se aprueba la comisión vía
+        // PATCH /api/referrals/[id], para evitar duplicar el monto cuando pase de pending -> approved.
 
 
         return NextResponse.json({
