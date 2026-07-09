@@ -6,45 +6,6 @@
 (function () {
     'use strict';
 
-    function enforceMemberstackSessionStorage() {
-        try {
-            const sessionKeys = ['_ms-mid', '_ms-mem'];
-            if (window.__pataMemberstackSessionStorageGuard) return;
-            window.__pataMemberstackSessionStorageGuard = true;
-
-            const hasSessionCookie = document.cookie.indexOf('pata_session_active=') > -1;
-
-            if (!hasSessionCookie) {
-                const hadPersistentToken = Boolean(localStorage.getItem('_ms-mid'));
-
-                sessionKeys.forEach(function (key) {
-                    localStorage.removeItem(key);
-                });
-
-                document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
-
-                if (hadPersistentToken) {
-                    let attempts = 0;
-                    const expireLegacySession = setInterval(function () {
-                        attempts += 1;
-                        if (window.$memberstackDom && typeof window.$memberstackDom.logout === 'function') {
-                            clearInterval(expireLegacySession);
-                            window.$memberstackDom.logout().catch(function () {});
-                        } else if (attempts >= 20) {
-                            clearInterval(expireLegacySession);
-                        }
-                    }, 100);
-                }
-            } else {
-                document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
-            }
-        } catch (error) {
-            console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
-        }
-    }
-
-    enforceMemberstackSessionStorage();
-
     let currentCenter = null;
     let payments = [];
     let appointments = [];

@@ -32,50 +32,6 @@ export default function RootLayout({
     return (
         <html lang="es" className={outfit.variable} suppressHydrationWarning>
             <head>
-                <Script
-                    id="memberstack-session-storage-guard"
-                    strategy="beforeInteractive"
-                    dangerouslySetInnerHTML={{
-                        __html: `
-(function () {
-  try {
-    var sessionKeys = ['_ms-mid', '_ms-mem'];
-    if (window.__pataMemberstackSessionStorageGuard) return;
-    window.__pataMemberstackSessionStorageGuard = true;
-
-    var hasSessionCookie = document.cookie.indexOf('pata_session_active=') > -1;
-
-    if (!hasSessionCookie) {
-      var hadPersistentToken = Boolean(localStorage.getItem('_ms-mid'));
-
-      sessionKeys.forEach(function (key) {
-        localStorage.removeItem(key);
-      });
-
-      document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
-
-      if (hadPersistentToken) {
-        var attempts = 0;
-        var expireLegacySession = setInterval(function () {
-          attempts += 1;
-          if (window.$memberstackDom && typeof window.$memberstackDom.logout === 'function') {
-            clearInterval(expireLegacySession);
-            window.$memberstackDom.logout().catch(function () {});
-          } else if (attempts >= 20) {
-            clearInterval(expireLegacySession);
-          }
-        }, 100);
-      }
-    } else {
-      document.cookie = "pata_session_active=true; path=/; SameSite=Lax" + (location.protocol === 'https:' ? '; Secure' : '');
-    }
-  } catch (error) {
-    console.warn('[Pata Amiga] No se pudo activar la politica de sesion temporal.', error);
-  }
-})();
-                        `,
-                    }}
-                />
                 {/* Memberstack Script */}
                 <Script
                     id="memberstack-script"

@@ -88,8 +88,7 @@ export default function Navbar({ onMobileMenuToggle, onNotificationClick }: Navb
                             if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                                 await (window as any).$memberstackDom.logout();
                             }
-                            sessionStorage.removeItem('admin_memberstack_id');
-                            sessionStorage.removeItem('admin_session_active');
+                            localStorage.removeItem('admin_memberstack_id');
                         } catch (e) {
                             console.error('Error logging out:', e);
                         }

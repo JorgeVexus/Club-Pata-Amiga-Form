@@ -202,17 +202,9 @@ function DashboardContent() {
         const fetchAdminRole = async () => {
             if (typeof window !== 'undefined' && (window as any).$memberstackDom) {
                 try {
-                    const sessionActive = sessionStorage.getItem('admin_session_active');
                     const member = await (window as any).$memberstackDom.getCurrentMember();
 
-                    if (member?.data) {
-                        if (!sessionActive) {
-                            console.log('🔄 Sesión nueva detectada (reinicio de navegador). Forzando logout por seguridad.');
-                            await (window as any).$memberstackDom.logout();
-                            window.location.href = '/admin/login?reason=session_expired';
-                            return;
-                        }
-                    } else {
+                    if (!member?.data) {
                         console.log('❌ No hay sesión activa. Redirigiendo...');
                         window.location.href = '/admin/login';
                         return;
@@ -235,12 +227,10 @@ function DashboardContent() {
                         setIsAdminSuper(data.isSuperAdmin);
                         setCurrentAdminId(data.name || 'Admin');
                         setAdminMemberstackId(currentMemberId);
-                        sessionStorage.setItem('admin_memberstack_id', currentMemberId);
+                        localStorage.setItem('admin_memberstack_id', currentMemberId);
                         setAdminName(data.name || 'Admin');
                         setAdminRoleLabel(data.isSuperAdmin ? 'Super Admin' : 'Administrador');
-                        
-                        sessionStorage.setItem('admin_session_active', 'true');
-                        
+
                         loadMetrics(currentMemberId);
                         loadPendingCounts(data.isSuperAdmin, currentMemberId);
                         loadActivityLogs(currentMemberId);
