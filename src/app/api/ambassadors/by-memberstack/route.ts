@@ -6,6 +6,21 @@ const supabase = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
+// Enmascara el nombre del referido para mostrarlo al embajador sin exponer el dato completo.
+// "Efrain Rabago" -> "E***in R***go"
+function maskReferredName(fullName: string | null | undefined): string {
+    if (!fullName || !fullName.trim()) return 'Usuario';
+
+    return fullName
+        .trim()
+        .split(/\s+/)
+        .map((word) => {
+            if (word.length <= 3) return `${word[0]}***`;
+            return `${word[0]}***${word.slice(-2)}`;
+        })
+        .join(' ');
+}
+
 function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
@@ -98,15 +113,41 @@ export async function GET(request: NextRequest) {
                 .select('*', { count: 'exact', head: true })
                 .eq('ambassador_id', ambassador.id);
 
+            // Vigentes/activos: el miembro referido debe estar aprobado Y con membresía activa
+            // (mismo criterio que usa el panel admin en /api/ambassadors/[id]).
+            // Se calcula sobre TODOS los referidos, no solo los últimos 10 que se muestran en la lista.
+            let activeReferralsCount = 0;
+            const { data: allReferrals } = await supabase
+                .from('referrals')
+                .select('referred_user_id')
+                .eq('ambassador_id', ambassador.id);
+
+            const allReferredIds = (allReferrals || []).map(r => r.referred_user_id);
+            if (allReferredIds.length > 0) {
+                const { data: referredUsers } = await supabase
+                    .from('users')
+                    .select('memberstack_id, approval_status, membership_status')
+                    .in('memberstack_id', allReferredIds);
+
+                activeReferralsCount = (referredUsers || []).filter(
+                    u => u.approval_status === 'approved' && u.membership_status === 'active'
+                ).length;
+            }
+
             detailedData = {
                 ...detailedData,
-                recent_referrals: recentReferrals || [],
+                // Nunca exponer nombre/correo completos del referido en este endpoint público (sin auth)
+                recent_referrals: (recentReferrals || []).map(r => ({
+                    ...r,
+                    referred_user_name: maskReferredName(r.referred_user_name),
+                    referred_user_email: undefined,
+                })),
                 total_referrals: totalReferrals || 0,
                 referrals_count: totalReferrals || 0,
                 approved_referrals: approvedCount || 0,
                 review_referrals: reviewCount || 0,
                 rejected_referrals: rejectedCount || 0,
-                active_referrals: approvedCount || 0 // Usamos los aprobados como "activos"
+                active_referrals_count: activeReferralsCount
             };
         }
 
