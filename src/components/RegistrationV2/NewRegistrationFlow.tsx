@@ -1621,7 +1621,10 @@ export default function NewRegistrationFlow() {
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
             {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}
 
-            <div className={(currentStep === 1 || currentStep >= 4) ? styles.contentWide : styles.content}>
+            {/* contentWide no agrega padding lateral propio: cada step ya trae su propio containerCenter
+                con max-width/padding internos. Usar `.content` aquí duplicaba el padding en mobile
+                (step + wrapper), dejando el card visiblemente angosto. */}
+            <div className={styles.contentWide}>
                 {/* Indicador de pasos (Oculto en pasos 1 y 2 ya que tienen su propio indicador interno, y en éxito/transición) */}
                 {/* Indicador de pasos ya no es necesario arriba pues cada paso tiene su propia barra interna */}
 

@@ -616,7 +616,7 @@
 }
 
 @media (max-width: 768px) {
-    .containerCenter { padding: 1rem; }
+    .containerCenter { padding: 1rem; align-items: flex-start; }
     .formCard { border-radius: 32px; padding-bottom: 32px; gap: 24px; }
     .formHeader { padding: 0 24px; }
     .formBody { padding: 0 24px; gap: 24px; }

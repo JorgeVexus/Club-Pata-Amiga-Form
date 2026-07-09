@@ -362,8 +362,9 @@
 @media (max-width: 768px) {
     .containerCenter {
         padding: 1rem;
+        align-items: flex-start;
     }
-    
+
     .formCard {
         border-radius: 32px;
         padding-bottom: 32px;
