@@ -171,8 +171,6 @@ function mapFormDataToCustomFields(formData: RegistrationFormData, fileUrls: any
         'phone': formData.phone,
 
         // URLs de documentos
-        'ine-front-url': fileUrls.ineUrls[0] || '',
-        'ine-back-url': fileUrls.ineUrls[1] || '',
         'proof-of-address-url': fileUrls.proofOfAddressUrl,
 
         // Metadata

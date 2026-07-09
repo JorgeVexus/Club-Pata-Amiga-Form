@@ -33,10 +33,6 @@ export interface Ambassador {
     birth_city?: string;
     curp: string;
     
-    // INE
-    ine_front_url?: string;
-    ine_back_url?: string;
-    
     // Dirección
     postal_code?: string;
     state?: string;
@@ -205,8 +201,6 @@ export interface AmbassadorStep1Data {
     birth_date: string;
     birth_city: string;
     curp: string;
-    ine_front: File | null;
-    ine_back: File | null;
     postal_code: string;
     state: string;
     city: string;
@@ -254,8 +248,6 @@ export interface CreateAmbassadorRequest {
     birth_date: string;
     birth_city?: string;
     curp: string;
-    ine_front_url?: string;
-    ine_back_url?: string;
     postal_code?: string;
     state?: string;
     city?: string;

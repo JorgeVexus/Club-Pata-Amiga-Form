@@ -365,8 +365,6 @@ export async function POST(request: NextRequest) {
                 birth_date: sanitize(body.birth_date), // Convertir "" a null
                 birth_city: sanitize(body.birth_city), // Guardar ciudad de nacimiento
                 curp: body.curp ? body.curp.toUpperCase() : null, // Opcional para extranjeros
-                ine_front_url: sanitize(body.ine_front_url),
-                ine_back_url: sanitize(body.ine_back_url),
                 postal_code: sanitize(body.postal_code),
                 state: sanitize(body.state),
                 city: sanitize(body.city),

@@ -328,8 +328,7 @@ export default function Step3PlanSelection({
                             ))}
                         </div>
 
-                        {/* Referral Section - HIDDEN FOR NOW */}
-                        {/* 
+                        {/* Referral Section */}
                         <div className={styles.referralSection}>
                             <label className={styles.referralLabel}>
                                 🎟️ ¿Tienes un código de Embajador?
@@ -369,7 +368,6 @@ export default function Step3PlanSelection({
                                 <span className={styles.referralError}>❌ {referralError}</span>
                             )}
                         </div>
-                        */}
 
                         {/* Checkbox único de términos */}
                         <div className={styles.termsSection}>

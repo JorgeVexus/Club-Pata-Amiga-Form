@@ -1624,6 +1624,91 @@
         }
 
         /* ============================================
+           MIS DATOS DE REGISTRO
+           ============================================ */
+        .amb-registration-data-section {
+            margin-bottom: 30px;
+        }
+
+        .amb-registration-data-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: relative;
+        }
+
+        .amb-registration-data-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 50px;
+            font-weight: 600;
+            color: #000;
+            margin: 0 0 10px 0;
+            line-height: 63px;
+        }
+
+        .amb-registration-data-subtitle {
+            font-family: 'Outfit', sans-serif;
+            font-size: 18px;
+            color: #9B9B9B;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .amb-registration-data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .amb-registration-data-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            min-width: 0;
+        }
+
+        .amb-data-label {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .amb-data-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            word-break: break-word;
+        }
+
+        .amb-data-value a {
+            color: #00BBB4;
+            text-decoration: underline;
+        }
+
+        .amb-data-full-width {
+            grid-column: span 2;
+        }
+
+        @media (max-width: 900px) {
+            .amb-registration-data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amb-data-full-width {
+                grid-column: span 1;
+            }
+
+            .amb-registration-data-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+        }
+
+        /* ============================================
            CÓMO FUNCIONA
            ============================================ */
         .amb-how-section {
@@ -2385,7 +2470,7 @@
 
         const formatDate = (dateString) => {
             if (!dateString) return '';
-            const date = new Date(dateString);
+            const date = new Date(dateString + 'T00:00:00');
             return date.toLocaleDateString('es-MX', {
                 day: 'numeric',
                 month: 'long',
@@ -2393,9 +2478,31 @@
             });
         };
 
+        const formatPhone = (phone) => {
+            if (!phone) return '—';
+            const cleaned = String(phone).replace(/\D/g, '');
+            if (cleaned.length === 10) {
+                return cleaned.slice(0, 3) + ' ' + cleaned.slice(3, 6) + ' ' + cleaned.slice(6);
+            }
+            return phone;
+        };
+
+        const GENDER_LABELS = { male: 'Hombre', female: 'Mujer', not_specified: 'No especificar' };
+        const genderLabel = (gender) => GENDER_LABELS[gender] || gender || '—';
+
+        const fullName = [ambassador.first_name, ambassador.paternal_surname, ambassador.maternal_surname].filter(Boolean).join(' ');
+        const hasAddress = [ambassador.address, ambassador.city, ambassador.state, ambassador.postal_code].some(Boolean);
+        const addressLine = [ambassador.address, ambassador.neighborhood, ambassador.city, ambassador.state].filter(Boolean).join(', ') + (ambassador.postal_code ? ', CP ' + ambassador.postal_code : '');
+        const hasAnySocial = ambassador.facebook || ambassador.instagram || ambassador.tiktok;
+        const socialLinks = [
+            ambassador.facebook ? `<a href="${ambassador.facebook}" target="_blank" rel="noopener noreferrer">Facebook</a>` : '',
+            ambassador.instagram ? ` · <a href="${ambassador.instagram}" target="_blank" rel="noopener noreferrer">Instagram</a>` : '',
+            ambassador.tiktok ? ` · <a href="${ambassador.tiktok}" target="_blank" rel="noopener noreferrer">TikTok</a>` : ''
+        ].filter(Boolean).join('');
+
         // Verificar si tiene código activo
         // Robustez: si tiene un código que no empieza con TMP, lo consideramos activo
-        const hasActiveCode = ambassador.referral_code && 
+        const hasActiveCode = ambassador.referral_code &&
                              (ambassador.referral_code_status === 'active' || !ambassador.referral_code.startsWith('TMP'));
         
         console.log('[AmbassadorWidget] Referral code check:', { 
@@ -2588,6 +2695,65 @@
                             </div>
                         </div>
                         <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()">Editar perfil</button>
+                    </div>
+                </section>
+
+                <!-- Mis Datos de Registro -->
+                <section class="amb-registration-data-section">
+                    <div class="amb-registration-data-card">
+                        <h2 class="amb-registration-data-title">mis datos de registro</h2>
+                        <p class="amb-registration-data-subtitle">Información que registraste como embajador</p>
+                        <div class="amb-registration-data-grid">
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Nombre completo</span>
+                                <span class="amb-data-value">${fullName || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Correo</span>
+                                <span class="amb-data-value">${ambassador.email || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Celular</span>
+                                <span class="amb-data-value">${formatPhone(ambassador.phone)}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">CURP</span>
+                                <span class="amb-data-value">${ambassador.curp || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Fecha de nacimiento</span>
+                                <span class="amb-data-value">${formatDate(ambassador.birth_date)}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Ciudad de nacimiento</span>
+                                <span class="amb-data-value">${ambassador.birth_city || '—'}</span>
+                            </div>
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Sexo</span>
+                                <span class="amb-data-value">${genderLabel(ambassador.gender)}</span>
+                            </div>
+                            ${hasAddress ? `
+                            <div class="amb-registration-data-item amb-data-full-width">
+                                <span class="amb-data-label">Dirección</span>
+                                <span class="amb-data-value">${addressLine}</span>
+                            </div>
+                            ` : ''}
+                            ${hasAnySocial ? `
+                            <div class="amb-registration-data-item">
+                                <span class="amb-data-label">Redes sociales</span>
+                                <span class="amb-data-value">${socialLinks}</span>
+                            </div>
+                            ` : ''}
+                            ${ambassador.motivation ? `
+                            <div class="amb-registration-data-item amb-data-full-width">
+                                <span class="amb-data-label">Por qué quiero ser embajador</span>
+                                <span class="amb-data-value">${ambassador.motivation}</span>
+                            </div>
+                            ` : ''}
+                        </div>
+                        <button class="amb-btn-bank" onclick="window.editAmbassadorProfile()" style="margin-top: 20px;">
+                            Editar información
+                        </button>
                     </div>
                 </section>
 

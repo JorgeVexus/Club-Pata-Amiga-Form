@@ -9,7 +9,6 @@ interface Step1Props {
     data: AmbassadorStep1Data;
     onChange: (field: keyof AmbassadorStep1Data, value: string | File | null) => void;
     errors: Partial<Record<keyof AmbassadorStep1Data, string>>;
-    onFileUpload: (field: 'ine_front' | 'ine_back', file: File) => void;
     onBlur?: (field: keyof AmbassadorStep1Data) => void;
     onNext?: () => void;
     onBack?: () => void;
@@ -25,15 +24,8 @@ const ESTADOS_MEXICO = [
     'Sonora', 'Tabasco', 'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatan', 'Zacatecas'
 ];
 
-export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload, onBlur, onNext, onBack }: Step1Props) {
+export default function Step1PersonalInfo({ data, onChange, errors, onBlur, onNext, onBack }: Step1Props) {
     const [showPassword, setShowPassword] = useState(false);
-
-    const handleFileChange = (field: 'ine_front' | 'ine_back') => (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            onFileUpload(field, file);
-        }
-    };
 
     // Calc max date for 18 years old
     const maxDate = new Date();
@@ -266,82 +258,9 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                             <span className={styles.inputHint}>Para comunicarnos cuando tengas dudas o buenas noticias sobre tus comisiones</span>
                         </div>
                     </div>
-                </div>
 
-                {/* Upload INE */}
-                <div className={styles.uploadSection}>
-                    <label className={styles.uploadLabel}>Sube tu INE por ambos lados</label>
-                    <span className={styles.uploadHint}>Asegurate de que se vea claro y completa</span>
-                    
-                    <div className={styles.uploadGrid}>
-                        {/* INE Frente */}
-                        <div className={styles.uploadBox}>
-                            <input
-                                type="file"
-                                accept="image/*,.pdf"
-                                onChange={handleFileChange('ine_front')}
-                                style={{ display: 'none' }}
-                                id="ine-front"
-                            />
-                            <label htmlFor="ine-front" className={styles.uploadLabelArea}>
-                                {data.ine_front ? (
-                                    <div className={styles.fileSelected}>
-                                        <div className={styles.uploadIcon}>✓</div>
-                                        <div className={styles.uploadText}>
-                                            <p className={styles.fileName}>{data.ine_front.name}</p>
-                                            <span className={styles.fileStatus}>Frente seleccionado</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className={styles.uploadIcon}>⬆️</div>
-                                        <div className={styles.uploadText}>
-                                            <p><strong>Frente:</strong> Arrastra o <span>explora</span></p>
-                                            <span>PDF, JPG o PNG - Max. 5MB</span>
-                                        </div>
-                                    </>
-                                )}
-                            </label>
-                        </div>
-
-                        {/* INE Reverso */}
-                        <div className={styles.uploadBox}>
-                            <input
-                                type="file"
-                                accept="image/*,.pdf"
-                                onChange={handleFileChange('ine_back')}
-                                style={{ display: 'none' }}
-                                id="ine-back"
-                            />
-                            <label htmlFor="ine-back" className={styles.uploadLabelArea}>
-                                {data.ine_back ? (
-                                    <div className={styles.fileSelected}>
-                                        <div className={styles.uploadIcon}>✓</div>
-                                        <div className={styles.uploadText}>
-                                            <p className={styles.fileName}>{data.ine_back.name}</p>
-                                            <span className={styles.fileStatus}>Reverso seleccionado</span>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className={styles.uploadIcon}>⬆️</div>
-                                        <div className={styles.uploadText}>
-                                            <p><strong>Reverso:</strong> Arrastra o <span>explora</span></p>
-                                            <span>PDF, JPG o PNG - Max. 5MB</span>
-                                        </div>
-                                    </>
-                                )}
-                            </label>
-                        </div>
-                    </div>
-                    
-                    {errors.ine_front && <span className={styles.uploadError}>{errors.ine_front}</span>}
-                    {errors.ine_back && <span className={styles.uploadError}>{errors.ine_back}</span>}
-                </div>
-            </div>
-
-            {/* Botones */}
-            <div className={styles.buttonsRow}>
+                    {/* Botones */}
+                <div className={styles.buttonsRow}>
                 <button 
                     type="button" 
                     className={styles.cancelButton}
@@ -358,6 +277,8 @@ export default function Step1PersonalInfo({ data, onChange, errors, onFileUpload
                     Siguiente
                     <span className={styles.nextIcon}>→</span>
                 </button>
+            </div>
+                </div>
             </div>
 
             {/* Help Section */}
