@@ -1,21 +1,36 @@
 .container {
     min-height: 100vh;
     background: linear-gradient(180deg, #F7FAFC 0%, #EDF2F7 100%);
-    --registration-promo-height: 43px;
+    --registration-promo-height: 0px;
     --registration-navbar-height: 81px;
 }
 
 @media (max-width: 767px) {
     .container {
-        --registration-promo-height: 37px;
         --registration-navbar-height: 53px;
     }
 }
 
 @media (max-width: 480px) {
     .container {
-        --registration-promo-height: 35px;
         --registration-navbar-height: 53px;
+    }
+}
+
+/* Solo cuando el marquee promocional está activo (SHOW_REGISTRATION_PROMO) reservamos su altura */
+.containerWithPromo {
+    --registration-promo-height: 43px;
+}
+
+@media (max-width: 767px) {
+    .containerWithPromo {
+        --registration-promo-height: 37px;
+    }
+}
+
+@media (max-width: 480px) {
+    .containerWithPromo {
+        --registration-promo-height: 35px;
     }
 }
 

@@ -1542,7 +1542,7 @@ export default function NewRegistrationFlow() {
     }
 
     return (
-        <div className={styles.container}>
+        <div className={SHOW_REGISTRATION_PROMO ? `${styles.container} ${styles.containerWithPromo}` : styles.container}>
             {SHOW_REGISTRATION_PROMO ? <RegistrationPromoMarquee /> : null}
             <NavbarRedesign onLogout={handleLogout} member={member} showLogout={true} />
 
