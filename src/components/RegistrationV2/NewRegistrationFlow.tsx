@@ -291,7 +291,9 @@ export default function NewRegistrationFlow() {
                                 email: currentMember.auth?.email,
                                 phone: currentMember.customFields?.['phone'] || '',
                             },
-                            planId: matchedPlan || undefined
+                            planId: matchedPlan || undefined,
+                            // 🎁 Recuperar código de embajador aplicado (sobrevive recargas/redirect de Stripe)
+                            referralCode: currentMember.customFields?.['ambassador-code'] || undefined,
                         };
 
                         if (result.success && result.userData) {
@@ -305,6 +307,8 @@ export default function NewRegistrationFlow() {
                                     phone: currentMember.customFields?.['phone'] || userData.phone || '',
                                 },
                                 planId: matchedPlan || userData.plan_id || userData.planId || undefined,
+                                // 🎁 Prioridad: Supabase (fuente de verdad) -> Memberstack custom field
+                                referralCode: userData.ambassador_code || currentMember.customFields?.['ambassador-code'] || undefined,
                                 // Intentar cargar petBasic desde DB, fallback a Memberstack custom fields
                                 petBasic: (() => {
                                     if (hasValidPetBasic(petBasicFromDb)) {
@@ -505,6 +509,38 @@ export default function NewRegistrationFlow() {
                                         
                                         sessionStorage.setItem(trackingKey, 'true');
                                         console.log('✅ Purchase tracked on redirection:', { transactionId, planName, price });
+
+                                        // 🎁 Registrar el referido AQUÍ: este es el punto real donde se confirma
+                                        // el pago tras el redirect completo de Stripe (handleStep3Complete nunca
+                                        // llega a ejecutar su bloque post-checkout porque la página ya navegó afuera).
+                                        const referralCodeToRegister = loadedData.referralCode;
+                                        if (referralCodeToRegister) {
+                                            const referralKey = `referral_registered_${msId}`;
+                                            if (!sessionStorage.getItem(referralKey)) {
+                                                fetch('/api/referrals', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({
+                                                        referral_code: referralCodeToRegister.toUpperCase(),
+                                                        referred_user_id: msId,
+                                                        referred_user_name: `${userData?.first_name || currentMember.customFields?.['first-name'] || ''} ${userData?.last_name || currentMember.customFields?.['last-name'] || ''}`.trim() || 'Usuario',
+                                                        referred_user_email: currentMember.auth?.email || '',
+                                                        membership_plan: `Plan ${planName}`,
+                                                        membership_amount: price,
+                                                    }),
+                                                }).then(async (res) => {
+                                                    const json = await res.json();
+                                                    if (json.success) {
+                                                        console.log('✅ Referido registrado tras confirmar pago (redirect Stripe)');
+                                                    } else {
+                                                        console.warn('⚠️ No se pudo registrar el referido tras redirect:', json.error);
+                                                    }
+                                                }).catch((err) => {
+                                                    console.error('⚠️ Error registrando referido tras redirect (no crítico):', err);
+                                                });
+                                                sessionStorage.setItem(referralKey, 'true');
+                                            }
+                                        }
                                     }
                                 } catch (e) {
                                     console.error('❌ Error tracking purchase in loadSavedState:', e);
@@ -642,6 +678,11 @@ export default function NewRegistrationFlow() {
                 email: data.account?.email || member.auth?.email,
                 registration_step: step,
             };
+
+            // 🎁 Persistir código de embajador (fuente de verdad para restaurarlo tras recargas/redirect de Stripe)
+            if (data.referralCode) {
+                userData.ambassadorCode = data.referralCode;
+            }
 
             // Agregar datos de mascota (básicos) - Solo la primera para la tabla users principal
             if (data.petBasic && data.petBasic.length > 0) {
@@ -1262,6 +1303,37 @@ export default function NewRegistrationFlow() {
                     }
                 } catch (e) {
                     console.error('❌ Error tracking purchase in handleStep3Complete:', e);
+                }
+
+                // Registrar el referido en el sistema de embajadores justo después del pago,
+                // para que aparezca "en revisión" en el dashboard de admin sin esperar a que
+                // el usuario termine todo el flujo (perfil + mascotas completas).
+                if (referralCode) {
+                    try {
+                        const memberEmail = registrationData.account?.email || member?.auth?.email || '';
+                        const memberFirstName = registrationData.profile?.firstName || member?.customFields?.['first-name'] || '';
+                        const memberLastName = registrationData.profile?.paternalLastName || member?.customFields?.['last-name'] || '';
+                        const referralResponse = await fetch('/api/referrals', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                referral_code: referralCode.toUpperCase(),
+                                referred_user_id: memberId,
+                                referred_user_name: `${memberFirstName} ${memberLastName}`.trim() || 'Usuario',
+                                referred_user_email: memberEmail,
+                                membership_plan: `Plan ${plan}`,
+                                membership_amount: price,
+                            }),
+                        });
+                        const referralResult = await referralResponse.json();
+                        if (referralResult.success) {
+                            console.log('✅ Referido registrado tras pago exitoso');
+                        } else {
+                            console.warn('⚠️ No se pudo registrar el referido tras pago:', referralResult.error);
+                        }
+                    } catch (referralError) {
+                        console.error('⚠️ Error registrando referido tras pago (no crítico):', referralError);
+                    }
                 }
 
                 // Guardar progreso del pago en Supabase
