@@ -173,70 +173,7 @@
             max-width: 600px;
         }
 
-        @media (max-width: 768px) {
-            .amb-header-title {
-                font-size: 40px;
-                line-height: 1.2;
-            }
-            .amb-header-subtitle {
-                font-size: 16px;
-            }
-            .amb-profile-link {
-                font-size: 14px;
-            }
-            .ambassador-widget-content {
-                padding: 15px;
-            }
-            /* Reducir border radius */
-            .amb-code-card,
-            .amb-earnings-card,
-            .amb-stats-card,
-            .amb-material-card,
-            .amb-how-card,
-            .amb-referral-item {
-                border-radius: 20px;
-            }
-            .amb-code-box {
-                border-radius: 20px;
-            }
-            .amb-earnings-available {
-                border-radius: 20px;
-            }
-            .amb-stat-box {
-                border-radius: 20px;
-            }
-            /* Alturas auto */
-            .amb-code-box,
-            .amb-stat-box {
-                height: auto;
-                min-height: auto;
-            }
-            /* Títulos cards */
-            .amb-code-card .amb-card-title,
-            .amb-earnings-card .amb-card-title,
-            .amb-stats-card .amb-card-title {
-                font-size: 30px;
-                line-height: 1.2;
-            }
-            .amb-material-title,
-            .amb-how-title {
-                font-size: 24px;
-                line-height: 1.2;
-                white-space: normal;
-                word-wrap: break-word;
-            }
-            /* Textos */
-            .amb-code-card .amb-card-subtitle,
-            .amb-earnings-card .amb-card-subtitle,
-            .amb-stats-card .amb-card-subtitle,
-            .amb-material-text,
-            .amb-how-item {
-                font-size: 16px;
-            }
-            .amb-referrals-title {
-                font-size: 35px;
-            }
-        }
+        
 
         /* ============================================
            CARDS GENERALES
@@ -292,28 +229,7 @@
             height: 60px;
         }
 
-        @media (max-width: 768px) {
-            .amb-float-icon {
-                width: 45px;
-                height: 45px;
-            }
-            .amb-float-icon.gift {
-                width: 50px;
-                height: 50px;
-                top: -15px;
-            }
-            .amb-float-icon.money {
-                width: 50px;
-                height: 50px;
-                top: -20px;
-                right: 10px;
-            }
-            .amb-float-icon.stats {
-                width: 50px;
-                height: 50px;
-                top: -15px;
-            }
-        }
+        
 
         /* ============================================
            CÓDIGO DE REFERIDO
@@ -361,24 +277,7 @@
             margin: 20px 0;
         }
 
-        @media (max-width: 768px) {
-            .amb-code-box {
-                width: 100%;
-                max-width: 476px;
-                height: auto;
-                min-height: 228px;
-            }
-            .amb-code-card {
-                padding: 25px;
-            }
-            .amb-code-card .amb-card-title {
-                font-size: 32px;
-                line-height: 40px;
-            }
-            .amb-code-card .amb-card-subtitle {
-                font-size: 16px;
-            }
-        }
+        
 
         .amb-code-label {
             font-size: 0.85rem;
@@ -396,12 +295,7 @@
             letter-spacing: 4px;
         }
 
-        @media (max-width: 768px) {
-            .amb-code-value {
-                font-size: 2.5rem;
-                letter-spacing: 2px;
-            }
-        }
+        
 
         .amb-code-buttons {
             display: flex;
@@ -461,12 +355,7 @@
             line-height: 63px;
         }
 
-        @media (max-width: 768px) {
-            .amb-how-it-works-inline h3 {
-                font-size: 32px;
-                line-height: 40px;
-            }
-        }
+        
 
         .amb-how-it-works-inline p {
             font-family: 'Outfit', sans-serif;
@@ -503,11 +392,7 @@
             align-content: center;
         }
 
-        @media (max-width: 900px) {
-            .amb-two-columns {
-                grid-template-columns: 1fr;
-            }
-        }
+        
 
         /* ============================================
            GANANCIAS
@@ -587,16 +472,7 @@
             margin: 0;
         }
 
-        @media (max-width: 768px) {
-            .amb-earnings-value,
-            .amb-earnings-available-value {
-                font-size: 60px;
-            }
-            .amb-earnings-card .amb-card-title {
-                font-size: 32px;
-                line-height: 40px;
-            }
-        }
+        
 
         /* ============================================
            ESTADÍSTICAS
@@ -687,21 +563,7 @@
             line-height: normal;
         }
 
-        @media (max-width: 768px) {
-            .amb-stats-card .amb-card-title {
-                font-size: 32px;
-                line-height: 40px;
-            }
-            .amb-stat-box {
-                width: 100%;
-                height: auto;
-                min-height: 100px;
-                padding: 15px;
-            }
-            .amb-stat-num {
-                font-size: 60px;
-            }
-        }
+        
 
         /* ============================================
            MÉTODO DE PAGO
@@ -1295,38 +1157,9 @@
             color: #EF4444;
         }
 
-        @media (max-width: 768px) {
-            .amb-modal-content {
-                padding: 25px;
-                border-radius: 20px;
-            }
-            .amb-modal-title {
-                font-size: 24px;
-            }
-            .amb-history-item {
-                padding: 12px 15px;
-            }
-        }
+        
 
-        @media (max-width: 768px) {
-            .amb-payment-empty {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-            .amb-bank-alert {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-            .amb-bank-alert-left {
-                flex-direction: column;
-            }
-            .amb-btn-bank {
-                width: 100%;
-                max-width: 252px;
-            }
-        }
+        
 
         /* ============================================
            ESTADO DE REFERIDOS
@@ -1534,45 +1367,7 @@
             z-index: 10;
         }
 
-        @media (max-width: 768px) {
-            .amb-referral-item {
-                padding: 15px 20px;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-            .amb-referral-name {
-                font-size: 22px;
-                line-height: 1.2;
-            }
-            .amb-referral-email {
-                font-size: 14px;
-            }
-            .amb-referral-commission-value {
-                font-size: 36px;
-                line-height: 1;
-            }
-            .amb-referral-center {
-                align-items: flex-start;
-                width: 100%;
-                flex-direction: row;
-                justify-content: space-between;
-                gap: 10px;
-            }
-            .amb-referral-status-wrapper {
-                align-self: flex-start;
-            }
-            .amb-referral-status-badge {
-                width: auto;
-                min-width: 90px;
-                padding: 4px 12px 4px 25px;
-            }
-            .amb-status-icon {
-                width: 20px;
-                height: 20px;
-                left: -10px;
-            }
-        }
+        
 
         /* ============================================
            MATERIAL DIGITAL (galería descargable con filtros)
@@ -1799,21 +1594,7 @@
             background: #E0E0E0;
         }
 
-        @media (max-width: 768px) {
-            .amb-material-grid {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-
-            .amb-newsletter-item {
-                flex-direction: column;
-            }
-
-            .amb-newsletter-image {
-                width: 100%;
-                min-width: 0;
-                height: 160px;
-            }
-        }
+        
 
         /* ============================================
            MIS DATOS DE REGISTRO (primera sección: identidad del embajador)
@@ -1920,28 +1701,7 @@
             grid-column: span 2;
         }
 
-        @media (max-width: 900px) {
-            .amb-registration-data-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .amb-data-full-width {
-                grid-column: span 1;
-            }
-
-            .amb-registration-data-identity {
-                gap: 14px;
-            }
-
-            .amb-registration-data-identity .amb-profile-avatar {
-                width: 56px;
-                height: 56px;
-            }
-
-            .amb-registration-data-title {
-                font-size: 1.25rem;
-            }
-        }
+        
 
         /* ============================================
            CÓMO FUNCIONA
@@ -2017,32 +1777,7 @@
             border-radius: 0 0 68px 0;
         }
 
-        @media (max-width: 768px) {
-            .amb-how-card {
-                padding: 25px !important;
-                min-height: auto !important;
-            }
-            .amb-how-content {
-                max-width: 100% !important;
-                padding-bottom: 0 !important;
-                text-align: center !important;
-            }
-            .amb-how-title {
-                font-size: 24px;
-                line-height: 1.2;
-                text-align: center;
-                margin-bottom: 20px !important;
-            }
-            .amb-how-list {
-                gap: 15px !important;
-            }
-            .amb-how-item {
-                text-align: left;
-            }
-            .amb-how-image {
-                display: none !important;
-            }
-        }
+        
 
         /* ============================================
            ESTADOS: PENDIENTE / RECHAZADO / NO EMBAJADOR
@@ -2129,18 +1864,7 @@
             width: 100px;
         }
 
-        @media (max-width: 768px) {
-            .ambassador-deco-flag,
-            .ambassador-deco-megaphone {
-                display: none;
-            }
-            .ambassador-pending-card {
-                padding: 30px 20px;
-            }
-            .ambassador-pending-title {
-                font-size: 1.6rem;
-            }
-        }
+        
 
         .ambassador-rejected-card {
             background: white;
@@ -2288,17 +2012,9 @@
             margin-top: 20px;
         }
 
-        @media (max-width: 900px) {
-            .ambassador-benefits-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
+        
 
-        @media (max-width: 500px) {
-            .ambassador-benefits-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+        
 
         .ambassador-benefit-card {
             background: white;
@@ -2479,6 +2195,331 @@
         @keyframes ambSlideUp {
             to { transform: translateY(0); }
         }
+
+        /* ============================================
+           MEDIA QUERIES (movidas al final para que siempre
+           tengan prioridad sobre las reglas base, sin
+           importar su posición original en el archivo)
+           ============================================ */
+
+        @media (max-width: 768px) {
+            .amb-header-title {
+                font-size: 40px;
+                line-height: 1.2;
+            }
+            .amb-header-subtitle {
+                font-size: 16px;
+            }
+            .amb-profile-link {
+                font-size: 14px;
+            }
+            .ambassador-widget-content {
+                padding: 15px;
+            }
+            /* Reducir border radius */
+            .amb-code-card,
+            .amb-earnings-card,
+            .amb-stats-card,
+            .amb-material-card,
+            .amb-how-card,
+            .amb-referral-item {
+                border-radius: 20px;
+            }
+            .amb-code-box {
+                border-radius: 20px;
+            }
+            .amb-earnings-available {
+                border-radius: 20px;
+            }
+            .amb-stat-box {
+                border-radius: 20px;
+            }
+            /* Alturas auto */
+            .amb-code-box,
+            .amb-stat-box {
+                height: auto;
+                min-height: auto;
+            }
+            /* Títulos cards */
+            .amb-code-card .amb-card-title,
+            .amb-earnings-card .amb-card-title,
+            .amb-stats-card .amb-card-title {
+                font-size: 30px;
+                line-height: 1.2;
+            }
+            .amb-material-title,
+            .amb-how-title {
+                font-size: 24px;
+                line-height: 1.2;
+                white-space: normal;
+                word-wrap: break-word;
+            }
+            /* Textos */
+            .amb-code-card .amb-card-subtitle,
+            .amb-earnings-card .amb-card-subtitle,
+            .amb-stats-card .amb-card-subtitle,
+            .amb-material-text,
+            .amb-how-item {
+                font-size: 16px;
+            }
+            .amb-referrals-title {
+                font-size: 35px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-float-icon {
+                width: 45px;
+                height: 45px;
+            }
+            .amb-float-icon.gift {
+                width: 50px;
+                height: 50px;
+                top: -15px;
+            }
+            .amb-float-icon.money {
+                width: 50px;
+                height: 50px;
+                top: -20px;
+                right: 10px;
+            }
+            .amb-float-icon.stats {
+                width: 50px;
+                height: 50px;
+                top: -15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-code-box {
+                width: 100%;
+                max-width: 476px;
+                height: auto;
+                min-height: 228px;
+            }
+            .amb-code-card {
+                padding: 25px;
+            }
+            .amb-code-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-code-card .amb-card-subtitle {
+                font-size: 16px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-code-value {
+                font-size: 2.5rem;
+                letter-spacing: 2px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-how-it-works-inline h3 {
+                font-size: 32px;
+                line-height: 40px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .amb-two-columns {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-earnings-value,
+            .amb-earnings-available-value {
+                font-size: 60px;
+            }
+            .amb-earnings-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-stats-card .amb-card-title {
+                font-size: 32px;
+                line-height: 40px;
+            }
+            .amb-stat-box {
+                width: 100%;
+                height: auto;
+                min-height: 100px;
+                padding: 15px;
+            }
+            .amb-stat-num {
+                font-size: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-modal-content {
+                padding: 25px;
+                border-radius: 20px;
+            }
+            .amb-modal-title {
+                font-size: 24px;
+            }
+            .amb-history-item {
+                padding: 12px 15px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-payment-empty {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .amb-bank-alert {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+            .amb-bank-alert-left {
+                flex-direction: column;
+            }
+            .amb-btn-bank {
+                width: 100%;
+                max-width: 252px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-referral-item {
+                padding: 15px 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .amb-referral-name {
+                font-size: 22px;
+                line-height: 1.2;
+            }
+            .amb-referral-email {
+                font-size: 14px;
+            }
+            .amb-referral-commission-value {
+                font-size: 36px;
+                line-height: 1;
+            }
+            .amb-referral-center {
+                align-items: flex-start;
+                width: 100%;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 10px;
+            }
+            .amb-referral-status-wrapper {
+                align-self: flex-start;
+            }
+            .amb-referral-status-badge {
+                width: auto;
+                min-width: 90px;
+                padding: 4px 12px 4px 25px;
+            }
+            .amb-status-icon {
+                width: 20px;
+                height: 20px;
+                left: -10px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-material-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .amb-newsletter-item {
+                flex-direction: column;
+            }
+
+            .amb-newsletter-image {
+                width: 100%;
+                min-width: 0;
+                height: 160px;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .amb-registration-data-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amb-data-full-width {
+                grid-column: span 1;
+            }
+
+            .amb-registration-data-identity {
+                gap: 14px;
+            }
+
+            .amb-registration-data-identity .amb-profile-avatar {
+                width: 56px;
+                height: 56px;
+            }
+
+            .amb-registration-data-title {
+                font-size: 1.25rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .amb-how-card {
+                padding: 25px !important;
+                min-height: auto !important;
+            }
+            .amb-how-content {
+                max-width: 100% !important;
+                padding-bottom: 0 !important;
+                text-align: center !important;
+            }
+            .amb-how-title {
+                font-size: 24px;
+                line-height: 1.2;
+                text-align: center;
+                margin-bottom: 20px !important;
+            }
+            .amb-how-list {
+                gap: 15px !important;
+            }
+            .amb-how-item {
+                text-align: left;
+            }
+            .amb-how-image {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .ambassador-deco-flag,
+            .ambassador-deco-megaphone {
+                display: none;
+            }
+            .ambassador-pending-card {
+                padding: 30px 20px;
+            }
+            .ambassador-pending-title {
+                font-size: 1.6rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .ambassador-benefits-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 500px) {
+            .ambassador-benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
     `;
 
     // ============================================
