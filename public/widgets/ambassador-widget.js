@@ -2591,15 +2591,13 @@
 
     // Estado: Rechazado
     function renderRejected(ambassador, memberId) {
-        const registroUrl = memberId
-            ? `${CONFIG.API_BASE_URL}/embajadores/registro?memberId=${memberId}`
-            : `${CONFIG.API_BASE_URL}/embajadores/registro`;
+        const contactMailto = "mailto:contacto@pataamiga.mx?subject=" + encodeURIComponent('Consulta sobre mi solicitud de embajador');
 
         return `
             <div class="ambassador-rejected-card">
                 <div class="ambassador-rejected-icon">😔</div>
                 <h2 class="ambassador-rejected-title">Tu solicitud no fue aprobada</h2>
-                
+
                 ${ambassador.rejection_reason ? `
                     <div class="ambassador-rejected-reason">
                         <h4>Motivo:</h4>
@@ -2608,12 +2606,12 @@
                 ` : ''}
 
                 <p class="ambassador-rejected-message">
-                    Sabemos que esto puede ser decepcionante. Si crees que hubo un error o 
-                    quieres intentarlo de nuevo con información actualizada, puedes volver a aplicar.
+                    Si crees que esto es un error o quieres intentarlo de nuevo, escríbenos a
+                    <strong>contacto@pataamiga.mx</strong>.
                 </p>
 
-                <button class="ambassador-btn-retry" onclick="window.location.href='${registroUrl}'">
-                    Volver a aplicar
+                <button class="ambassador-btn-retry" onclick="window.location.href='${contactMailto}'">
+                    Escríbenos por correo
                 </button>
             </div>
 

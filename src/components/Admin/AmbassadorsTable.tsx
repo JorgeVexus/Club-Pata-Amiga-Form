@@ -7,10 +7,11 @@ import { Ambassador, AmbassadorStatus } from '@/types/ambassador.types';
 
 interface AmbassadorsTableProps {
     onViewDetails: (ambassador: Ambassador) => void;
+    onRejectClick: (ambassador: Ambassador) => void;
     refreshKey?: number;
 }
 
-export default function AmbassadorsTable({ onViewDetails, refreshKey }: AmbassadorsTableProps) {
+export default function AmbassadorsTable({ onViewDetails, onRejectClick, refreshKey }: AmbassadorsTableProps) {
     const [ambassadors, setAmbassadors] = useState<Ambassador[]>([]);
     const [loading, setLoading] = useState(true);
     const [statusFilter, setStatusFilter] = useState<AmbassadorStatus | 'all'>('all');
@@ -103,32 +104,6 @@ export default function AmbassadorsTable({ onViewDetails, refreshKey }: Ambassad
             }
         } catch (error) {
             console.error('Error approving:', error);
-            alert('Error de conexión');
-        }
-    };
-
-    // Rechazar embajador
-    const handleReject = async (id: string) => {
-        const reason = prompt('Motivo del rechazo:');
-        if (!reason) return;
-
-        try {
-            const response = await adminFetch(`/api/ambassadors/${id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert('Solicitud rechazada');
-                loadAmbassadors();
-                loadStats();
-            } else {
-                alert(data.error || 'Error al rechazar');
-            }
-        } catch (error) {
-            console.error('Error rejecting:', error);
             alert('Error de conexión');
         }
     };
@@ -340,7 +315,7 @@ export default function AmbassadorsTable({ onViewDetails, refreshKey }: Ambassad
                                                     </button>
                                                     <button
                                                         className={styles.btnReject}
-                                                        onClick={() => handleReject(amb.id)}
+                                                        onClick={() => onRejectClick(amb)}
                                                         title="Rechazar"
                                                     >
                                                         ❌

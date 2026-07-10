@@ -26,6 +26,7 @@ const AMBASSADOR_REJECTION_PREFIX = 'El Comité deliberó improcedente tu solici
 interface AmbassadorDetailModalProps {
     ambassador: Ambassador;
     initialTab?: 'info' | 'referrals' | 'payouts' | 'chat';
+    autoOpenReject?: boolean;
     onClose: () => void;
     onRefresh: () => void;
 }
@@ -47,6 +48,7 @@ const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURI
 export default function AmbassadorDetailModal({
     ambassador,
     initialTab,
+    autoOpenReject,
     onClose,
     onRefresh
 }: AmbassadorDetailModalProps) {
@@ -55,7 +57,7 @@ export default function AmbassadorDetailModal({
     const [payouts, setPayouts] = useState<AmbassadorPayout[]>([]);
     const [loading, setLoading] = useState(false);
     const [fullDetails, setFullDetails] = useState<any>(null);
-    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [showRejectModal, setShowRejectModal] = useState(!!autoOpenReject);
     const [chatMessages, setChatMessages] = useState<AmbassadorMessage[]>([]);
     const [chatInput, setChatInput] = useState('');
     const [chatLoading, setChatLoading] = useState(false);

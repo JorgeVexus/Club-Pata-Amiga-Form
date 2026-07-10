@@ -82,6 +82,7 @@ function DashboardContent() {
 
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
     const [ambassadorInitialTab, setAmbassadorInitialTab] = useState<'chat' | undefined>(undefined);
+    const [ambassadorAutoOpenReject, setAmbassadorAutoOpenReject] = useState(false);
     const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
     const [refreshKey, setRefreshKey] = useState(0);
@@ -417,7 +418,13 @@ function DashboardContent() {
                 return <EmailTemplatePreviewer />;
             case 'ambassador':
             case 'ambassadors' as any:
-                return <AmbassadorsTable onViewDetails={(amb) => setSelectedAmbassador(amb)} refreshKey={refreshKey} />;
+                return (
+                    <AmbassadorsTable
+                        onViewDetails={(amb) => { setAmbassadorAutoOpenReject(false); setSelectedAmbassador(amb); }}
+                        onRejectClick={(amb) => { setAmbassadorAutoOpenReject(true); setSelectedAmbassador(amb); }}
+                        refreshKey={refreshKey}
+                    />
+                );
             case 'wellness-center':
             case 'registered-centers':
                 return <WellnessCentersTable onViewDetails={(center) => setSelectedWellnessCenter(center)} refreshKey={refreshKey} />;
@@ -699,9 +706,11 @@ function DashboardContent() {
                 <AmbassadorDetailModal
                     ambassador={selectedAmbassador}
                     initialTab={ambassadorInitialTab}
+                    autoOpenReject={ambassadorAutoOpenReject}
                     onClose={() => {
                         setSelectedAmbassador(null);
                         setAmbassadorInitialTab(undefined);
+                        setAmbassadorAutoOpenReject(false);
                     }}
                     onRefresh={() => {
                         triggerInPlaceRefresh();
