@@ -831,10 +831,9 @@
 
             // 1.5 Notificaciones de chat con administración: abrir el chat directamente
             // en vez de navegar o mostrar el modal genérico (si el widget de chat está en esta página).
-            if (notif.metadata && notif.metadata.notification_kind === 'ambassador_chat' &&
-                typeof window.openAmbassadorChatModal === 'function') {
+            if (notif.metadata && notif.metadata.notification_kind === 'ambassador_chat') {
                 document.querySelectorAll('.rtbell-dropdown').forEach(d => d.classList.remove('open'));
-                window.openAmbassadorChatModal();
+                this.openAmbassadorChatWithRetry(notif);
                 return;
             }
 
@@ -862,6 +861,23 @@
 
             // 3. Fallback: Modal (si no hay link o no se pudo resolver)
             this.showDetailModal(notif);
+        }
+
+        // Espera un poco a que ambassador-widget.js termine de cargar y exponer
+        // window.openAmbassadorChatModal (puede tardar unos instantes según el orden
+        // de carga de scripts en Webflow). Si no aparece, cae al modal genérico.
+        openAmbassadorChatWithRetry(notif, attempts) {
+            attempts = attempts || 0;
+            if (typeof window.openAmbassadorChatModal === 'function') {
+                window.openAmbassadorChatModal();
+                return;
+            }
+            if (attempts >= 10) {
+                console.warn('⚠️ Pata Amiga: openAmbassadorChatModal no disponible tras esperar, mostrando modal genérico.');
+                if (notif) this.showDetailModal(notif);
+                return;
+            }
+            setTimeout(() => this.openAmbassadorChatWithRetry(notif, attempts + 1), 300);
         }
 
         showDetailModal(notif) {
