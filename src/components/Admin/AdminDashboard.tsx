@@ -81,6 +81,7 @@ function DashboardContent() {
     const [skipPaymentEnabled, setSkipPaymentEnabled] = useState(false);
 
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
+    const [ambassadorInitialTab, setAmbassadorInitialTab] = useState<'chat' | undefined>(undefined);
     const [commPrefill, setCommPrefill] = useState<{ recipientId?: string; templateSearch?: string; isTermination?: boolean } | null>(null);
 
     const [refreshKey, setRefreshKey] = useState(0);
@@ -342,6 +343,7 @@ function DashboardContent() {
             router.push(`/admin/dashboard?tab=solidarity-fund&requestId=${requestId}`);
         } else if (ambassadorId) {
             setActiveFilter('ambassadors' as any);
+            setAmbassadorInitialTab(notification.type === 'ambassador_chat' ? 'chat' : undefined);
             fetchAmbassadorDetails(ambassadorId);
             router.push(`/admin/dashboard?tab=ambassadors&ambassadorId=${ambassadorId}`);
         } else if (wellnessCenterId) {
@@ -696,7 +698,11 @@ function DashboardContent() {
             {selectedAmbassador && (
                 <AmbassadorDetailModal
                     ambassador={selectedAmbassador}
-                    onClose={() => setSelectedAmbassador(null)}
+                    initialTab={ambassadorInitialTab}
+                    onClose={() => {
+                        setSelectedAmbassador(null);
+                        setAmbassadorInitialTab(undefined);
+                    }}
                     onRefresh={() => {
                         triggerInPlaceRefresh();
                         fetchAmbassadorDetails(selectedAmbassador.id);

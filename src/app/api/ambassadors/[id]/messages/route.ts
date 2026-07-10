@@ -93,7 +93,7 @@ export async function POST(
 
         const { data: ambassador, error: ambassadorError } = await supabaseAdmin
             .from('ambassadors')
-            .select('id, status, first_name, paternal_surname')
+            .select('id, status, first_name, paternal_surname, linked_memberstack_id')
             .eq('id', id)
             .single();
 
@@ -133,14 +133,16 @@ export async function POST(
 
         if (error) throw error;
 
+        const preview = message.length > 50 ? message.substring(0, 47) + '...' : message;
+        const ambassadorFullName = [ambassador.first_name, ambassador.paternal_surname].filter(Boolean).join(' ');
+
         if (senderRole === 'ambassador') {
-            const preview = message.length > 50 ? message.substring(0, 47) + '...' : message;
             const { error: notifError } = await supabaseAdmin
                 .from('notifications')
                 .insert({
                     user_id: 'admin',
-                    type: 'account',
-                    title: '💬 Nuevo mensaje de embajador',
+                    type: 'ambassador_chat',
+                    title: `💬 Nuevo mensaje de ${ambassadorFullName || 'embajador'}`,
                     message: preview,
                     icon: '💬',
                     link: null,
@@ -149,6 +151,22 @@ export async function POST(
 
             if (notifError) {
                 console.error('❌ Error creando notificación de chat de embajador:', notifError);
+            }
+        } else if (senderRole === 'admin' && ambassador.linked_memberstack_id) {
+            const { error: notifError } = await supabaseAdmin
+                .from('notifications')
+                .insert({
+                    user_id: ambassador.linked_memberstack_id,
+                    type: 'ambassador_chat',
+                    title: '💬 Nuevo mensaje de Club Pata Amiga',
+                    message: preview,
+                    icon: '💬',
+                    link: null,
+                    metadata: { ambassador_id: id }
+                });
+
+            if (notifError) {
+                console.error('❌ Error creando notificación de chat para el embajador:', notifError);
             }
         }
 

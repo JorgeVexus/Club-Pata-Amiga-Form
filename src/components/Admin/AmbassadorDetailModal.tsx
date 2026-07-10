@@ -8,6 +8,7 @@ import { Ambassador, Referral, AmbassadorPayout, AmbassadorMessage } from '@/typ
 
 interface AmbassadorDetailModalProps {
     ambassador: Ambassador;
+    initialTab?: 'info' | 'referrals' | 'payouts' | 'chat';
     onClose: () => void;
     onRefresh: () => void;
 }
@@ -28,10 +29,11 @@ const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURI
 
 export default function AmbassadorDetailModal({
     ambassador,
+    initialTab,
     onClose,
     onRefresh
 }: AmbassadorDetailModalProps) {
-    const [activeTab, setActiveTab] = useState<'info' | 'referrals' | 'payouts' | 'chat'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'referrals' | 'payouts' | 'chat'>(initialTab || 'info');
     const [referrals, setReferrals] = useState<Referral[]>([]);
     const [payouts, setPayouts] = useState<AmbassadorPayout[]>([]);
     const [loading, setLoading] = useState(false);
