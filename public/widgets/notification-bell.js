@@ -37,8 +37,8 @@
     // Configuración
     const DEFAULT_CONFIG = {
         apiUrl: 'https://app.pataamiga.mx',
-        supabaseUrl: 'https://wkeaarptxpierpxzkkql.supabase.co',
-        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndrZWFhcnB0eHBpZXJweHpra3FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzI2NTE2ODUsImV4cCI6MjA0ODIyNzY4NX0.pPMXvwkSnpD-cRMVWpqX_4aEI6i8eqcAMh3_FJ0WQ4Q'
+        supabaseUrl: 'https://hjvhntxjkuuobgfslzlf.supabase.co',
+        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdmhudHhqa3V1b2JnZnNsemxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NTg5NTcsImV4cCI6MjA4MDQzNDk1N30.YnrJ_ECWnqcO_iDP5V-tBkgwd4LdBhJnJ5jdLsowjnA'
     };
 
     // ========== ICONOS ==========
@@ -534,20 +534,43 @@
 
         // 🆕 Reproducir sonido de notificación
         playSound() {
+            // Campanita con armónicos + eco (mismo sonido que usa la campanita del admin)
             try {
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
+                const now = audioContext.currentTime;
 
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
+                [1200, 1800, 2400].forEach(function (freq, i) {
+                    const osc = audioContext.createOscillator();
+                    const gain = audioContext.createGain();
+                    osc.connect(gain);
+                    gain.connect(audioContext.destination);
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    const volume = 0.15 / (i + 1);
+                    gain.gain.setValueAtTime(volume, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.8);
+                    osc.start(now);
+                    osc.stop(now + 0.8);
+                });
 
-                oscillator.frequency.value = 800;
-                oscillator.type = 'sine';
-                gainNode.gain.value = 0.1;
-
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.1);
+                setTimeout(function () {
+                    try {
+                        const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+                        const now2 = ctx2.currentTime;
+                        [1200, 1600].forEach(function (freq, i) {
+                            const osc = ctx2.createOscillator();
+                            const gain = ctx2.createGain();
+                            osc.connect(gain);
+                            gain.connect(ctx2.destination);
+                            osc.type = 'sine';
+                            osc.frequency.value = freq;
+                            gain.gain.setValueAtTime(0.08 / (i + 1), now2);
+                            gain.gain.exponentialRampToValueAtTime(0.001, now2 + 0.5);
+                            osc.start(now2);
+                            osc.stop(now2 + 0.5);
+                        });
+                    } catch (e) { }
+                }, 200);
             } catch (e) {
                 // Ignorar si no hay soporte de audio
             }
