@@ -359,6 +359,11 @@ export default function AmbassadorDetailModal({
                                         <span>{amb.tiktok}</span>
                                     </div>
                                 )}
+                                {!amb.instagram && !amb.facebook && !amb.tiktok && (
+                                    <div className={styles.infoRow}>
+                                        <span>No especificadas</span>
+                                    </div>
+                                )}
                             </div>
 
                             {amb.motivation && (

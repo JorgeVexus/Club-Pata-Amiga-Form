@@ -22,7 +22,24 @@
       "Bash(curl -s --max-time 5 \"http://localhost:3000/embajadores/registro\" -o \"C:\\\\Users\\\\JORGEC~1\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-Jorge-Cerna-OneDrive-Desktop-new-project-pet-membership-form\\\\d1b5a4d4-9dd3-412f-a597-0f40dac03e96\\\\scratchpad\\\\reg.html\")",
       "Bash(curl -s -w \"\\\\nSIZE:%{size_download} CODE:%{http_code}\\\\n\" --max-time 5 \"http://localhost:3000/embajadores/registro\")",
       "Bash(taskkill //F //PID 39652)",
-      "Bash(taskkill //F //PID 23176)"
+      "Bash(taskkill //F //PID 23176)",
+      "mcp__claude-in-chrome__tabs_create_mcp",
+      "mcp__claude-in-chrome__navigate",
+      "mcp__claude-in-chrome__javascript_tool",
+      "mcp__claude-in-chrome__computer",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:3000/registro)",
+      "mcp__claude-in-chrome__read_console_messages",
+      "Bash(npx tsc *)",
+      "Bash(git show *)",
+      "Bash(curl -s \"http://localhost:3000/api/ambassadors/by-memberstack?memberstackId=mem_sb_test_no_existe\")",
+      "Bash(curl -s \"http://localhost:3000/api/ambassadors/by-memberstack?memberstackId=mem_cmrcu4yd10n5h0tqy2x0fd86m\")",
+      "Bash(python3 -m json.tool)",
+      "mcp__claude-in-chrome__tabs_context_mcp",
+      "mcp__claude-in-chrome__resize_window",
+      "Bash(cat next.config.js)",
+      "Bash(cat next.config.mjs)",
+      "Bash(cat next.config.ts)",
+      "Bash(npx supabase *)"
     ]
   }
 }
