@@ -343,7 +343,7 @@ function DashboardContent() {
             router.push(`/admin/dashboard?tab=solidarity-fund&requestId=${requestId}`);
         } else if (ambassadorId) {
             setActiveFilter('ambassadors' as any);
-            setAmbassadorInitialTab(notification.type === 'ambassador_chat' ? 'chat' : undefined);
+            setAmbassadorInitialTab(notification.metadata?.notification_kind === 'ambassador_chat' ? 'chat' : undefined);
             fetchAmbassadorDetails(ambassadorId);
             router.push(`/admin/dashboard?tab=ambassadors&ambassadorId=${ambassadorId}`);
         } else if (wellnessCenterId) {

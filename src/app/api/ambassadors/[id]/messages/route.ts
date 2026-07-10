@@ -141,12 +141,12 @@ export async function POST(
                 .from('notifications')
                 .insert({
                     user_id: 'admin',
-                    type: 'ambassador_chat',
+                    type: 'account',
                     title: `💬 Nuevo mensaje de ${ambassadorFullName || 'embajador'}`,
                     message: preview,
                     icon: '💬',
                     link: null,
-                    metadata: { ambassador_id: id }
+                    metadata: { ambassador_id: id, notification_kind: 'ambassador_chat' }
                 });
 
             if (notifError) {
@@ -157,7 +157,7 @@ export async function POST(
                 .from('notifications')
                 .insert({
                     user_id: ambassador.linked_memberstack_id,
-                    type: 'ambassador_chat',
+                    type: 'account',
                     title: '💬 Nuevo mensaje de Club Pata Amiga',
                     message: preview,
                     icon: '💬',
