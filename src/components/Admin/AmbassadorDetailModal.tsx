@@ -11,6 +11,14 @@ interface AmbassadorDetailModalProps {
     onRefresh: () => void;
 }
 
+const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
+        <rect width="60" height="60" rx="12" fill="rgba(255,255,255,0.2)"/>
+        <circle cx="30" cy="23" r="10" fill="rgba(255,255,255,0.8)"/>
+        <path d="M13 49c3-12 10-18 17-18s14 6 17 18" fill="rgba(255,255,255,0.8)"/>
+    </svg>
+`)}`;
+
 export default function AmbassadorDetailModal({
     ambassador,
     onClose,
@@ -189,9 +197,19 @@ export default function AmbassadorDetailModal({
                 {/* Header */}
                 <div className={styles.modalHeader}>
                     <div className={styles.headerMain}>
-                        <div className={styles.avatar}>
-                            {amb.first_name[0]}{amb.paternal_surname[0]}
-                        </div>
+                        {amb.profile_photo_url ? (
+                            <img
+                                src={amb.profile_photo_url}
+                                alt={`${amb.first_name} ${amb.paternal_surname}`}
+                                className={styles.avatarPhoto}
+                            />
+                        ) : (
+                            <img
+                                src={DEFAULT_AVATAR_PLACEHOLDER}
+                                alt="Sin foto de perfil"
+                                className={styles.avatarPhoto}
+                            />
+                        )}
                         <div>
                             <h2 className={styles.name}>
                                 {amb.first_name} {amb.paternal_surname} {amb.maternal_surname || ''}

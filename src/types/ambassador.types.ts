@@ -50,6 +50,7 @@ export interface Ambassador {
     tiktok?: string;
     other_social?: string;
     motivation?: string;
+    profile_photo_url?: string;
     
     // Datos bancarios
     rfc?: string;
