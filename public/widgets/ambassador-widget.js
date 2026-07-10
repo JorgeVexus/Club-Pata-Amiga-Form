@@ -10,6 +10,9 @@
     'use strict';
 
     let currentAmbassador = null;
+    let chatRealtimeInitialized = false;
+    let chatModalOpen = false;
+    let chatMessagesCache = [];
     const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
             <rect width="80" height="80" rx="40" fill="#E8F8F7"/>
@@ -53,7 +56,9 @@
         API_BASE_URL: 'https://app.pataamiga.mx',
         IMAGES_BASE_URL: 'https://app.pataamiga.mx/embajadores-images',
         CLOUDINARY_URL: 'https://res.cloudinary.com/dqy07kgu6/image/upload',
-        DEBUG: false
+        DEBUG: false,
+        supabaseUrl: 'https://hjvhntxjkuuobgfslzlf.supabase.co',
+        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdmhudHhqa3V1b2JnZnNsemxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NTg5NTcsImV4cCI6MjA4MDQzNDk1N30.YnrJ_ECWnqcO_iDP5V-tBkgwd4LdBhJnJ5jdLsowjnA'
     };
 
     function sanitizeClabeInput(value) {
@@ -985,6 +990,141 @@
             color: #333;
             margin: 0 0 25px 0;
             text-align: center;
+        }
+
+        /* ============================================
+           CHAT CON ADMINISTRACIÓN
+           ============================================ */
+        .amb-chat-bubble {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #00BBB4;
+            color: white;
+            border: none;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+            cursor: pointer;
+            z-index: 998;
+            transition: transform 0.2s;
+        }
+
+        .amb-chat-bubble:hover {
+            transform: scale(1.08);
+        }
+
+        .amb-chat-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            min-width: 22px;
+            height: 22px;
+            padding: 0 5px;
+            border-radius: 11px;
+            background: #FE8F15;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .amb-chat-modal-content {
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .amb-chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 45vh;
+            overflow-y: auto;
+            padding: 4px 4px 10px;
+            margin-bottom: 16px;
+        }
+
+        .amb-chat-empty {
+            text-align: center;
+            color: #888;
+            padding: 30px 10px;
+            font-size: 0.9rem;
+        }
+
+        .amb-chat-msg {
+            max-width: 80%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .amb-chat-msg-self {
+            align-self: flex-end;
+            background: #00BBB4;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .amb-chat-msg-admin {
+            align-self: flex-start;
+            background: #f0f0f0;
+            color: #333;
+            border-bottom-left-radius: 4px;
+        }
+
+        .amb-chat-msg-text {
+            margin: 0;
+            white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            font-size: 0.9rem;
+        }
+
+        .amb-chat-msg-time {
+            font-size: 0.7rem;
+            opacity: 0.7;
+            align-self: flex-end;
+        }
+
+        .amb-chat-input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .amb-chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #eee;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .amb-chat-input:focus {
+            border-color: #00BBB4;
+        }
+
+        .amb-chat-send-btn {
+            padding: 12px 22px;
+            background: #FE8F15;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .amb-chat-send-btn:hover {
+            transform: translateY(-2px);
         }
 
         .amb-form-group {
@@ -3455,6 +3595,223 @@
         }
     }
 
+    // ============================================
+    // CHAT CON ADMINISTRACIÓN (solo embajadores aprobados)
+    // ============================================
+
+    function formatChatTime(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-MX', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str == null ? '' : String(str);
+        return div.innerHTML;
+    }
+
+    function renderChatMessagesHtml(messages) {
+        if (!messages || messages.length === 0) {
+            return '<p class="amb-chat-empty">Aún no hay mensajes. Escribe tu pregunta y el equipo te responderá pronto.</p>';
+        }
+        return messages.map(msg => `
+            <div class="amb-chat-msg ${msg.sender_role === 'ambassador' ? 'amb-chat-msg-self' : 'amb-chat-msg-admin'}">
+                <p class="amb-chat-msg-text">${escapeHtml(msg.message)}</p>
+                <span class="amb-chat-msg-time">${formatChatTime(msg.created_at)}</span>
+            </div>
+        `).join('');
+    }
+
+    function scrollChatToBottom() {
+        const list = document.getElementById('amb-chat-messages');
+        if (list) list.scrollTop = list.scrollHeight;
+    }
+
+    function updateChatBadge(count) {
+        const badge = document.getElementById('amb-chat-badge');
+        if (!badge) return;
+        if (count > 0) {
+            badge.textContent = count > 9 ? '9+' : String(count);
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+
+    async function loadAmbassadorChatMessages() {
+        if (!currentAmbassador) return;
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages?markReadFor=ambassador`);
+            const data = await response.json();
+            chatMessagesCache = Array.isArray(data) ? data : [];
+            const list = document.getElementById('amb-chat-messages');
+            if (list) {
+                list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
+                scrollChatToBottom();
+            }
+            updateChatBadge(0);
+        } catch (error) {
+            console.error('Error cargando mensajes del chat:', error);
+        }
+    }
+
+    window.sendAmbassadorChatMessage = async function () {
+        const input = document.getElementById('amb-chat-input');
+        if (!input || !currentAmbassador) return;
+        const message = input.value.trim();
+        if (!message) return;
+
+        input.disabled = true;
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senderRole: 'ambassador', message })
+            });
+
+            if (response.ok) {
+                const newMessage = await response.json();
+                if (!chatMessagesCache.some(m => m.id === newMessage.id)) {
+                    chatMessagesCache.push(newMessage);
+                }
+                const list = document.getElementById('amb-chat-messages');
+                if (list) {
+                    list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
+                    scrollChatToBottom();
+                }
+                input.value = '';
+            } else {
+                const err = await response.json();
+                alert('Error: ' + (err.error || 'No se pudo enviar el mensaje'));
+            }
+        } catch (error) {
+            console.error('Error enviando mensaje:', error);
+            alert('Hubo un error al enviar tu mensaje. Intenta de nuevo.');
+        } finally {
+            input.disabled = false;
+            input.focus();
+        }
+    };
+
+    function openAmbassadorChatModal() {
+        if (!currentAmbassador) return;
+        chatModalOpen = true;
+
+        const modal = document.createElement('div');
+        modal.id = 'amb-chat-modal';
+        modal.innerHTML = `
+            <div class="amb-modal-overlay" onclick="closeAmbassadorChatModal(event)">
+                <div class="amb-modal-content amb-chat-modal-content" onclick="event.stopPropagation()">
+                    <button class="amb-modal-close" onclick="closeAmbassadorChatModal()">&times;</button>
+                    <h3 class="amb-modal-title">💬 Chat con administración</h3>
+                    <div class="amb-chat-messages" id="amb-chat-messages">
+                        <p class="amb-chat-empty">Cargando mensajes...</p>
+                    </div>
+                    <div class="amb-chat-input-row">
+                        <input
+                            type="text"
+                            id="amb-chat-input"
+                            class="amb-chat-input"
+                            placeholder="Escribe tu pregunta..."
+                            onkeypress="if(event.key === 'Enter'){ sendAmbassadorChatMessage(); }"
+                        />
+                        <button class="amb-chat-send-btn" onclick="sendAmbassadorChatMessage()">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+        loadAmbassadorChatMessages();
+    }
+
+    window.closeAmbassadorChatModal = function (event) {
+        if (!event || event.target === event.currentTarget) {
+            const modal = document.getElementById('amb-chat-modal');
+            if (modal) {
+                modal.remove();
+                document.body.style.overflow = '';
+            }
+            chatModalOpen = false;
+        }
+    };
+
+    window.openAmbassadorChatModal = openAmbassadorChatModal;
+
+    function renderChatBubble() {
+        if (document.getElementById('amb-chat-bubble')) return;
+        const bubble = document.createElement('button');
+        bubble.id = 'amb-chat-bubble';
+        bubble.className = 'amb-chat-bubble';
+        bubble.setAttribute('onclick', 'openAmbassadorChatModal()');
+        bubble.innerHTML = `💬<span id="amb-chat-badge" class="amb-chat-badge" style="display:none">0</span>`;
+        document.body.appendChild(bubble);
+    }
+
+    async function fetchAmbassadorUnreadChatCount(ambassadorId) {
+        try {
+            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/messages?unreadOnly=true&for=ambassador`);
+            const data = await response.json();
+            return data.count || 0;
+        } catch (error) {
+            console.error('Error consultando mensajes no leídos:', error);
+            return 0;
+        }
+    }
+
+    function initAmbassadorChatRealtime(ambassador) {
+        if (chatRealtimeInitialized || !ambassador || ambassador.status !== 'approved') return;
+        chatRealtimeInitialized = true;
+
+        renderChatBubble();
+
+        fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
+
+        if (typeof supabase !== 'undefined' && supabase.createClient && CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+            try {
+                const supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
+                supabaseClient
+                    .channel(`ambassador-chat-${ambassador.id}`)
+                    .on('postgres_changes', {
+                        event: 'INSERT',
+                        schema: 'public',
+                        table: 'ambassador_messages',
+                        filter: `ambassador_id=eq.${ambassador.id}`
+                    }, (payload) => {
+                        const newMessage = payload.new;
+                        if (newMessage.sender_role !== 'admin') return;
+
+                        if (chatModalOpen) {
+                            if (!chatMessagesCache.some(m => m.id === newMessage.id)) {
+                                chatMessagesCache.push(newMessage);
+                            }
+                            const list = document.getElementById('amb-chat-messages');
+                            if (list) {
+                                list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
+                                scrollChatToBottom();
+                            }
+                            fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}/messages?markReadFor=ambassador`).catch(() => {});
+                        } else {
+                            fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
+                        }
+                    })
+                    .subscribe();
+            } catch (error) {
+                console.error('No se pudo iniciar Realtime del chat, usando polling:', error);
+                startChatPolling(ambassador);
+            }
+        } else {
+            startChatPolling(ambassador);
+        }
+    }
+
+    function startChatPolling(ambassador) {
+        setInterval(() => {
+            if (chatModalOpen) return;
+            fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
+        }, 20000);
+    }
+
     window.requestWithdraw = async function (ambassadorId, amount) {
         if (!confirm(`¿Deseas solicitar un retiro de ${new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(amount)}?`)) {
             return;
@@ -3684,6 +4041,11 @@
             setTimeout(function() {
                 showAmbassadorWelcomeModal(ambassador);
             }, 300);
+        }
+
+        // Burbuja de chat con administración (solo embajadores aprobados)
+        if (ambassador && ambassador.status === 'approved') {
+            initAmbassadorChatRealtime(ambassador);
         }
     }
 

@@ -280,6 +280,22 @@ export interface CreateAmbassadorRequest {
 }
 
 // ============================================
+// CHAT (EMBAJADOR ↔ ADMIN)
+// ============================================
+
+export type ChatSenderRole = 'ambassador' | 'admin';
+
+export interface AmbassadorMessage {
+    id: string;
+    ambassador_id: string;
+    sender_role: ChatSenderRole;
+    sender_name?: string;
+    message: string;
+    is_read: boolean;
+    created_at: string;
+}
+
+// ============================================
 // SESIONES Y AUTH
 // ============================================
 

@@ -1,15 +1,22 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import styles from './AmbassadorDetailModal.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
-import { Ambassador, Referral, AmbassadorPayout } from '@/types/ambassador.types';
+import { Ambassador, Referral, AmbassadorPayout, AmbassadorMessage } from '@/types/ambassador.types';
 
 interface AmbassadorDetailModalProps {
     ambassador: Ambassador;
     onClose: () => void;
     onRefresh: () => void;
 }
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+const supabaseClient = (supabaseUrl && supabaseAnonKey)
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null;
 
 const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60">
@@ -24,15 +31,104 @@ export default function AmbassadorDetailModal({
     onClose,
     onRefresh
 }: AmbassadorDetailModalProps) {
-    const [activeTab, setActiveTab] = useState<'info' | 'referrals' | 'payouts'>('info');
+    const [activeTab, setActiveTab] = useState<'info' | 'referrals' | 'payouts' | 'chat'>('info');
     const [referrals, setReferrals] = useState<Referral[]>([]);
     const [payouts, setPayouts] = useState<AmbassadorPayout[]>([]);
     const [loading, setLoading] = useState(false);
     const [fullDetails, setFullDetails] = useState<any>(null);
+    const [chatMessages, setChatMessages] = useState<AmbassadorMessage[]>([]);
+    const [chatInput, setChatInput] = useState('');
+    const [chatLoading, setChatLoading] = useState(false);
+    const [sendingChat, setSendingChat] = useState(false);
+    const chatMessagesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         loadDetails();
     }, [ambassador.id]);
+
+    const amb = fullDetails || ambassador;
+
+    const loadChatMessages = async () => {
+        setChatLoading(true);
+        try {
+            const response = await adminFetch(`/api/ambassadors/${ambassador.id}/messages?markReadFor=admin`);
+            const data = await response.json();
+            if (Array.isArray(data)) {
+                setChatMessages(data);
+            }
+        } catch (error) {
+            console.error('Error loading chat messages:', error);
+        } finally {
+            setChatLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        if (activeTab === 'chat' && amb.status === 'approved') {
+            loadChatMessages();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [activeTab, ambassador.id]);
+
+    useEffect(() => {
+        if (amb.status !== 'approved' || !supabaseClient) return;
+
+        const channel = supabaseClient
+            .channel(`ambassador-chat-${ambassador.id}`)
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'ambassador_messages',
+                    filter: `ambassador_id=eq.${ambassador.id}`
+                },
+                (payload) => {
+                    const newMessage = payload.new as AmbassadorMessage;
+                    setChatMessages(prev => prev.some(m => m.id === newMessage.id) ? prev : [...prev, newMessage]);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabaseClient.removeChannel(channel);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [ambassador.id, amb.status]);
+
+    useEffect(() => {
+        if (chatMessagesRef.current) {
+            chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+        }
+    }, [chatMessages]);
+
+    const handleSendChatMessage = async () => {
+        const trimmed = chatInput.trim();
+        if (!trimmed || sendingChat) return;
+
+        setSendingChat(true);
+        try {
+            const response = await adminFetch(`/api/ambassadors/${ambassador.id}/messages`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ senderRole: 'admin', message: trimmed })
+            });
+
+            if (response.ok) {
+                const newMessage = await response.json();
+                setChatMessages(prev => prev.some(m => m.id === newMessage.id) ? prev : [...prev, newMessage]);
+                setChatInput('');
+            } else {
+                const err = await response.json();
+                alert('Error: ' + (err.error || 'No se pudo enviar el mensaje'));
+            }
+        } catch (error) {
+            console.error('Error sending chat message:', error);
+            alert('Error de conexión al enviar el mensaje');
+        } finally {
+            setSendingChat(false);
+        }
+    };
 
     const loadDetails = async () => {
         setLoading(true);
@@ -189,8 +285,6 @@ export default function AmbassadorDetailModal({
         });
     };
 
-    const amb = fullDetails || ambassador;
-
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -268,6 +362,14 @@ export default function AmbassadorDetailModal({
                     >
                         Pagos ({payouts.length})
                     </button>
+                    {amb.status === 'approved' && (
+                        <button
+                            className={`${styles.tab} ${activeTab === 'chat' ? styles.active : ''}`}
+                            onClick={() => setActiveTab('chat')}
+                        >
+                            💬 Chat
+                        </button>
+                    )}
                 </div>
 
                 {/* Content */}
@@ -459,7 +561,7 @@ export default function AmbassadorDetailModal({
                                 ))
                             )}
                         </div>
-                    ) : (
+                    ) : activeTab === 'payouts' ? (
                         <div className={styles.payoutsList}>
                             {payouts.length === 0 ? (
                                 <div className={styles.empty}>
@@ -495,6 +597,53 @@ export default function AmbassadorDetailModal({
                                     </div>
                                 ))
                             )}
+                        </div>
+                    ) : (
+                        <div className={styles.chatContainer}>
+                            <div className={styles.chatMessages} ref={chatMessagesRef}>
+                                {chatLoading ? (
+                                    <div className={styles.loading}>Cargando mensajes...</div>
+                                ) : chatMessages.length === 0 ? (
+                                    <div className={styles.chatEmpty}>Aún no hay mensajes con este embajador.</div>
+                                ) : (
+                                    chatMessages.map((msg) => (
+                                        <div
+                                            key={msg.id}
+                                            className={`${styles.chatBubble} ${msg.sender_role === 'admin' ? styles.chatBubbleAdmin : styles.chatBubbleAmbassador}`}
+                                        >
+                                            <p className={styles.chatBubbleText}>{msg.message}</p>
+                                            <span className={styles.chatBubbleTime}>
+                                                {new Date(msg.created_at).toLocaleString('es-MX', {
+                                                    day: '2-digit',
+                                                    month: 'short',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                            <div className={styles.chatInputRow}>
+                                <input
+                                    type="text"
+                                    className={styles.chatInput}
+                                    placeholder="Escribe un mensaje..."
+                                    value={chatInput}
+                                    onChange={(e) => setChatInput(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') handleSendChatMessage();
+                                    }}
+                                    disabled={sendingChat}
+                                />
+                                <button
+                                    className={styles.chatSendBtn}
+                                    onClick={handleSendChatMessage}
+                                    disabled={sendingChat || !chatInput.trim()}
+                                >
+                                    Enviar
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>
