@@ -13,7 +13,6 @@
     let chatRealtimeInitialized = false;
     let chatModalOpen = false;
     let chatMessagesCache = [];
-    let currentMaterialsCache = [];
     const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
             <rect width="80" height="80" rx="40" fill="#E8F8F7"/>
@@ -1778,14 +1777,10 @@
             flex-wrap: wrap;
         }
 
-        .amb-newsletter-share,
         .amb-newsletter-download {
             width: auto;
             margin: 0;
             padding: 0 20px;
-        }
-
-        .amb-newsletter-download {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -2700,7 +2695,6 @@
     // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
     function renderApproved(ambassador, materials) {
         materials = materials || [];
-        currentMaterialsCache = materials;
         const toNumber = (value, fallback = 0) => {
             const parsed = Number(value);
             return Number.isFinite(parsed) ? parsed : fallback;
@@ -3086,7 +3080,6 @@
                                             <h3 class="amb-newsletter-title">${mat.title}</h3>
                                             ${mat.description ? `<p class="amb-newsletter-desc">${mat.description}</p>` : ''}
                                             <div class="amb-newsletter-actions">
-                                                <button type="button" class="amb-btn-pink amb-newsletter-share" onclick="window.shareAmbassadorMaterial('${mat.id}')">Compartir 📤</button>
                                                 <a href="${mat.file_url}" download="${mat.file_name}" target="_blank" rel="noopener noreferrer" class="amb-newsletter-download">Descargar ⬇️</a>
                                             </div>
                                         </div>
@@ -4062,38 +4055,6 @@
         document.querySelectorAll('.amb-material-filter-btn').forEach(function (btn) {
             btn.classList.toggle('active', btn.dataset.filter === type);
         });
-    };
-
-    window.shareAmbassadorMaterial = async function (materialId) {
-        const mat = currentMaterialsCache.find(function (m) { return m.id === materialId; });
-        if (!mat) return;
-
-        const shareData = {
-            title: mat.title,
-            text: mat.description || mat.title,
-            url: mat.file_url
-        };
-
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (e) {
-                // Usuario canceló el share o no está disponible en este contexto; no hacer nada.
-            }
-            return;
-        }
-
-        if (navigator.clipboard) {
-            try {
-                await navigator.clipboard.writeText(mat.file_url);
-                alert('🔗 Enlace copiado. ¡Pégalo donde quieras compartirlo!');
-                return;
-            } catch (e) {
-                // Continúa al fallback de abrir en nueva pestaña
-            }
-        }
-
-        window.open(mat.file_url, '_blank');
     };
 
     function showAmbassadorWelcomeModal(ambassador) {
