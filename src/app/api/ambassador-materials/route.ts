@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
         let query = supabaseAdmin
             .from('ambassador_materials')
-            .select('id, title, description, file_url, file_name, file_type, file_size, created_at')
+            .select('id, title, description, file_url, file_name, file_type, file_size, news_date, created_at')
             .eq('is_active', true)
             .order('display_order', { ascending: true })
             .order('created_at', { ascending: false });

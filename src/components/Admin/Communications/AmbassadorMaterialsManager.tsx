@@ -4,7 +4,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { adminFetch } from '@/utils/admin-fetch';
 import { supabase } from '@/lib/supabase';
 
-type FileType = 'image' | 'pdf' | 'video' | 'other';
+type FileType = 'image' | 'pdf' | 'video' | 'other' | 'newsletter';
+type ContentKind = 'material' | 'newsletter';
 
 interface AmbassadorMaterial {
     id: string;
@@ -14,6 +15,7 @@ interface AmbassadorMaterial {
     file_name: string;
     file_type: FileType;
     file_size: number | null;
+    news_date: string | null;
     display_order: number;
     is_active: boolean;
     created_at: string;
@@ -24,6 +26,7 @@ const TYPE_LABELS: Record<FileType, string> = {
     pdf: '📄 PDF',
     video: '🎬 Video',
     other: '📎 Otro',
+    newsletter: '📰 Newsletter',
 };
 
 const TYPE_BADGES: Record<FileType, { bg: string; color: string }> = {
@@ -31,7 +34,14 @@ const TYPE_BADGES: Record<FileType, { bg: string; color: string }> = {
     pdf: { bg: '#ffebee', color: '#c62828' },
     video: { bg: '#f3e5f5', color: '#7b1fa2' },
     other: { bg: '#f5f5f5', color: '#666' },
+    newsletter: { bg: '#fff3e0', color: '#e65100' },
 };
+
+function formatNewsDate(dateString: string | null): string {
+    if (!dateString) return '';
+    const date = new Date(dateString + 'T00:00:00');
+    return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+}
 
 function detectFileType(mimeType: string): FileType {
     if (mimeType.startsWith('image/')) return 'image';
@@ -56,6 +66,8 @@ export default function AmbassadorMaterialsManager() {
     const [newTitle, setNewTitle] = useState('');
     const [newDescription, setNewDescription] = useState('');
     const [showUploadForm, setShowUploadForm] = useState(false);
+    const [contentKind, setContentKind] = useState<ContentKind>('material');
+    const [newsDate, setNewsDate] = useState('');
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -80,6 +92,11 @@ export default function AmbassadorMaterialsManager() {
         const file = fileInputRef.current?.files?.[0];
         if (!file || !newTitle.trim()) {
             alert('Ingresa un título y selecciona un archivo.');
+            return;
+        }
+
+        if (contentKind === 'newsletter' && !newsDate) {
+            alert('Ingresa la fecha de la noticia.');
             return;
         }
 
@@ -120,7 +137,7 @@ export default function AmbassadorMaterialsManager() {
                 .getPublicUrl(urlData.path);
 
             setUploadProgress('Guardando información...');
-            const fileType = detectFileType(file.type || '');
+            const fileType = contentKind === 'newsletter' ? 'newsletter' : detectFileType(file.type || '');
             const metaRes = await adminFetch('/api/admin/ambassador-materials', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -131,6 +148,7 @@ export default function AmbassadorMaterialsManager() {
                     file_name: file.name,
                     file_type: fileType,
                     file_size: file.size,
+                    news_date: contentKind === 'newsletter' ? newsDate : undefined,
                 }),
             });
             const metaData = await metaRes.json();
@@ -141,6 +159,8 @@ export default function AmbassadorMaterialsManager() {
             setMaterials(prev => [...prev, metaData.material]);
             setNewTitle('');
             setNewDescription('');
+            setNewsDate('');
+            setContentKind('material');
             setShowUploadForm(false);
             if (fileInputRef.current) fileInputRef.current.value = '';
             alert('✅ Material subido exitosamente.');
@@ -336,17 +356,63 @@ export default function AmbassadorMaterialsManager() {
             {showUploadForm && (
                 <div style={formContainerStyle}>
                     <h3 style={{ marginBottom: '1rem', fontSize: '1.05rem', fontWeight: 600 }}>Subir nuevo material</h3>
+
+                    <div style={{ display: 'flex', gap: '10px', marginBottom: '1rem' }}>
+                        <button
+                            type="button"
+                            onClick={() => setContentKind('material')}
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '10px',
+                                border: contentKind === 'material' ? '2px solid #FF8C00' : '1px solid #ddd',
+                                background: contentKind === 'material' ? '#fff7ed' : 'white',
+                                fontWeight: 600,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                color: '#333',
+                            }}
+                        >
+                            📎 Material descargable
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setContentKind('newsletter')}
+                            style={{
+                                flex: 1,
+                                padding: '10px',
+                                borderRadius: '10px',
+                                border: contentKind === 'newsletter' ? '2px solid #e65100' : '1px solid #ddd',
+                                background: contentKind === 'newsletter' ? '#fff3e0' : 'white',
+                                fontWeight: 600,
+                                fontSize: '0.9rem',
+                                cursor: 'pointer',
+                                color: '#333',
+                            }}
+                        >
+                            📰 Newsletter / Noticia
+                        </button>
+                    </div>
+
                     <input
                         style={inputStyle}
                         type="text"
-                        placeholder="Título (ej: Flyer redes sociales)"
+                        placeholder={contentKind === 'newsletter' ? 'Título de la noticia (ej: 21 de julio: Día del Perro)' : 'Título (ej: Flyer redes sociales)'}
                         value={newTitle}
                         onChange={(e) => setNewTitle(e.target.value)}
                     />
+                    {contentKind === 'newsletter' && (
+                        <input
+                            style={inputStyle}
+                            type="date"
+                            value={newsDate}
+                            onChange={(e) => setNewsDate(e.target.value)}
+                        />
+                    )}
                     <input
                         style={inputStyle}
                         type="text"
-                        placeholder="Descripción breve (opcional)"
+                        placeholder={contentKind === 'newsletter' ? 'Contenido de la noticia (opcional)' : 'Descripción breve (opcional)'}
                         value={newDescription}
                         onChange={(e) => setNewDescription(e.target.value)}
                     />
@@ -394,6 +460,11 @@ export default function AmbassadorMaterialsManager() {
                                 </td>
                                 <td style={tdStyle}>
                                     <strong>{m.title}</strong>
+                                    {m.file_type === 'newsletter' && m.news_date && (
+                                        <div style={{ color: '#e65100', fontSize: '0.8rem', marginTop: '2px', fontWeight: 600 }}>
+                                            📅 {formatNewsDate(m.news_date)}
+                                        </div>
+                                    )}
                                     {m.description && (
                                         <div style={{ color: '#888', fontSize: '0.8rem', marginTop: '2px' }}>{m.description}</div>
                                     )}

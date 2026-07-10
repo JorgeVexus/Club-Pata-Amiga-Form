@@ -13,6 +13,7 @@
     let chatRealtimeInitialized = false;
     let chatModalOpen = false;
     let chatMessagesCache = [];
+    let currentMaterialsCache = [];
     const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
             <rect width="80" height="80" rx="40" fill="#E8F8F7"/>
@@ -1711,9 +1712,111 @@
             font-family: 'Outfit', sans-serif;
         }
 
+        /* Newsletter: tarjeta destacada de noticias/efemérides, ocupa todo el ancho del grid */
+        .amb-newsletter-item {
+            grid-column: 1 / -1;
+            flex-direction: row;
+            align-items: stretch;
+            text-align: left;
+            padding: 0;
+            overflow: hidden;
+            position: relative;
+            gap: 0;
+        }
+
+        .amb-newsletter-date-badge {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: #FE8F15;
+            color: white;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            border-radius: 999px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            z-index: 1;
+        }
+
+        .amb-newsletter-image {
+            width: 220px;
+            min-width: 220px;
+            height: auto;
+            object-fit: cover;
+            background: white;
+        }
+
+        .amb-newsletter-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding: 20px;
+        }
+
+        .amb-newsletter-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 1.2rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .amb-newsletter-desc {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            color: #666;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .amb-newsletter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: auto;
+            padding-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .amb-newsletter-share,
+        .amb-newsletter-download {
+            width: auto;
+            margin: 0;
+            padding: 0 20px;
+        }
+
+        .amb-newsletter-download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 42px;
+            border-radius: 50px;
+            background: #F1F1F1;
+            color: #333;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            font-family: 'Outfit', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .amb-newsletter-download:hover {
+            background: #E0E0E0;
+        }
+
         @media (max-width: 768px) {
             .amb-material-grid {
                 grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .amb-newsletter-item {
+                flex-direction: column;
+            }
+
+            .amb-newsletter-image {
+                width: 100%;
+                min-width: 0;
+                height: 160px;
             }
         }
 
@@ -2597,6 +2700,7 @@
     // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
     function renderApproved(ambassador, materials) {
         materials = materials || [];
+        currentMaterialsCache = materials;
         const toNumber = (value, fallback = 0) => {
             const parsed = Number(value);
             return Number.isFinite(parsed) ? parsed : fallback;
@@ -2963,6 +3067,7 @@
                         ${materials.length > 0 ? `
                         <div class="amb-material-filters">
                             <button class="amb-material-filter-btn active" data-filter="all" onclick="window.filterAmbassadorMaterials('all')">Todos</button>
+                            ${materials.some(m => m.file_type === 'newsletter') ? `<button class="amb-material-filter-btn" data-filter="newsletter" onclick="window.filterAmbassadorMaterials('newsletter')">📰 Newsletter</button>` : ''}
                             ${materials.some(m => m.file_type === 'image') ? `<button class="amb-material-filter-btn" data-filter="image" onclick="window.filterAmbassadorMaterials('image')">Imágenes</button>` : ''}
                             ${materials.some(m => m.file_type === 'pdf') ? `<button class="amb-material-filter-btn" data-filter="pdf" onclick="window.filterAmbassadorMaterials('pdf')">PDFs</button>` : ''}
                             ${materials.some(m => m.file_type === 'video') ? `<button class="amb-material-filter-btn" data-filter="video" onclick="window.filterAmbassadorMaterials('video')">Videos</button>` : ''}
@@ -2971,6 +3076,23 @@
 
                         <div class="amb-material-grid">
                             ${materials.map(mat => {
+                                if (mat.file_type === 'newsletter') {
+                                    const dateLabel = mat.news_date ? formatDate(mat.news_date) : '';
+                                    return `
+                                    <div class="amb-material-item amb-newsletter-item" data-type="newsletter">
+                                        ${dateLabel ? `<span class="amb-newsletter-date-badge">📰 ${dateLabel}</span>` : ''}
+                                        <img src="${mat.file_url}" alt="${mat.title}" class="amb-newsletter-image">
+                                        <div class="amb-newsletter-content">
+                                            <h3 class="amb-newsletter-title">${mat.title}</h3>
+                                            ${mat.description ? `<p class="amb-newsletter-desc">${mat.description}</p>` : ''}
+                                            <div class="amb-newsletter-actions">
+                                                <button type="button" class="amb-btn-pink amb-newsletter-share" onclick="window.shareAmbassadorMaterial('${mat.id}')">Compartir 📤</button>
+                                                <a href="${mat.file_url}" download="${mat.file_name}" target="_blank" rel="noopener noreferrer" class="amb-newsletter-download">Descargar ⬇️</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    `;
+                                }
                                 const icon = mat.file_type === 'image' ? '🖼️' : mat.file_type === 'pdf' ? '📄' : mat.file_type === 'video' ? '🎬' : '📎';
                                 const thumb = mat.file_type === 'image'
                                     ? `<img src="${mat.file_url}" alt="${mat.title}" class="amb-material-thumb">`
@@ -3940,6 +4062,38 @@
         document.querySelectorAll('.amb-material-filter-btn').forEach(function (btn) {
             btn.classList.toggle('active', btn.dataset.filter === type);
         });
+    };
+
+    window.shareAmbassadorMaterial = async function (materialId) {
+        const mat = currentMaterialsCache.find(function (m) { return m.id === materialId; });
+        if (!mat) return;
+
+        const shareData = {
+            title: mat.title,
+            text: mat.description || mat.title,
+            url: mat.file_url
+        };
+
+        if (navigator.share) {
+            try {
+                await navigator.share(shareData);
+            } catch (e) {
+                // Usuario canceló el share o no está disponible en este contexto; no hacer nada.
+            }
+            return;
+        }
+
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(mat.file_url);
+                alert('🔗 Enlace copiado. ¡Pégalo donde quieras compartirlo!');
+                return;
+            } catch (e) {
+                // Continúa al fallback de abrir en nueva pestaña
+            }
+        }
+
+        window.open(mat.file_url, '_blank');
     };
 
     function showAmbassadorWelcomeModal(ambassador) {

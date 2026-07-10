@@ -39,6 +39,7 @@ export async function PATCH(
         if (body.description !== undefined) updateData.description = body.description || null;
         if (body.is_active !== undefined) updateData.is_active = !!body.is_active;
         if (body.display_order !== undefined) updateData.display_order = Number(body.display_order) || 0;
+        if (body.news_date !== undefined) updateData.news_date = body.news_date || null;
         updateData.updated_at = new Date().toISOString();
 
         const { data, error } = await supabaseAdmin

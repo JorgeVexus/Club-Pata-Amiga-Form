@@ -8,7 +8,7 @@ const supabaseAdmin = createClient(
     { auth: { autoRefreshToken: false, persistSession: false } }
 );
 
-const VALID_FILE_TYPES = ['image', 'pdf', 'video', 'other'];
+const VALID_FILE_TYPES = ['image', 'pdf', 'video', 'other', 'newsletter'];
 
 function corsHeaders() {
     return {
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
 
     try {
         const body = await request.json();
-        const { title, description, file_url, file_name, file_type, file_size } = body;
+        const { title, description, file_url, file_name, file_type, file_size, news_date } = body;
 
         if (!title || !file_url || !file_name) {
             return NextResponse.json(
@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
                 file_type: resolvedType,
                 file_size: file_size || null,
                 display_order: nextOrder,
+                news_date: resolvedType === 'newsletter' ? (news_date || null) : null,
             })
             .select()
             .single();
