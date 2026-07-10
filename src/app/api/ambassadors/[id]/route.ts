@@ -316,6 +316,22 @@ export async function PATCH(
                     console.warn(`⚠️ No se pudo actualizar Memberstack para ${currentAmbassador.email}`);
                 }
             }
+
+            // Enviar email de rechazo
+            if (body.status === 'rejected') {
+                try {
+                    const { notifyAmbassadorRejection } = await import('@/app/actions/ambassador-comm.actions');
+                    await notifyAmbassadorRejection({
+                        userId: currentAmbassador.linked_memberstack_id || currentAmbassador.id,
+                        email: currentAmbassador.email,
+                        name: currentAmbassador.first_name,
+                        reason: updateData.rejection_reason as string
+                    });
+                    console.log(`📧 Email de rechazo enviado a ${currentAmbassador.email}`);
+                } catch (emailError) {
+                    console.error('❌ Error enviando email de rechazo:', emailError);
+                }
+            }
         }
 
         return NextResponse.json({

@@ -307,6 +307,45 @@ export async function notifyAmbassadorApproval(params: {
 }
 
 /**
+ * Notifica al embajador que su solicitud fue rechazada
+ */
+export async function notifyAmbassadorRejection(params: {
+    userId: string;
+    email: string;
+    name: string;
+    reason: string;
+}) {
+    const { userId, email, name, reason } = params;
+
+    const subject = 'Actualización sobre tu solicitud de Embajador';
+
+    const emailContent = createEmailTemplate({
+        title: 'Solicitud no aprobada',
+        greeting: `Hola ${name},`,
+        content: `
+            <p>Gracias por tu interés en ser <strong>Embajador de Club Pata Amiga</strong>.</p>
+
+            <p>Después de revisar tu solicitud, el comité determinó que no es posible aprobarla en este momento.</p>
+
+            <div class="highlight-box">
+                <p style="margin: 0;"><strong>Motivo:</strong><br>${reason}</p>
+            </div>
+
+            <p style="color: #718096; font-size: 14px;">Si consideras que esto es un error o tienes dudas al respecto, puedes contactar a nuestro equipo de soporte.</p>
+        `,
+    });
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content: emailContent.text,
+        html: emailContent.html,
+        metadata: { type: 'ambassador_rejection', reason }
+    });
+}
+
+/**
  * Notifica al embajador que ha ganado una comisión por un referido aprobado
  */
 export async function notifyCommissionEarned(params: {

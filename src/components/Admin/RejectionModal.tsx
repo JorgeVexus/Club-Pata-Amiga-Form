@@ -3,14 +3,22 @@
 import React, { useState } from 'react';
 import styles from './RejectionModal.module.css';
 
+interface PresetReason {
+    value: string;
+    label: string;
+}
+
 interface RejectionModalProps {
     isOpen: boolean;
     onClose: () => void;
     onConfirm: (reason: string) => Promise<void>;
     memberName: string;
+    title?: string;
+    presetReasons?: PresetReason[];
+    defaultPrefix?: string;
 }
 
-const PRESET_REASONS = [
+const DEFAULT_PRESET_REASONS: PresetReason[] = [
     { value: 'maltrato', label: 'Historial comprobado de maltrato o negligencia animal' },
     { value: 'incumplimiento-normas', label: 'Incumplimiento previo de normas de Pata Amiga' },
     { value: 'falta-docs', label: 'Falta de documentación veterinaria requerida' },
@@ -27,8 +35,16 @@ const PRESET_REASONS = [
 
 const DEFAULT_PREFIX = 'El comité deliberó improcedente tu solicitud debido a ';
 
-export default function RejectionModal({ isOpen, onClose, onConfirm, memberName }: RejectionModalProps) {
-    const [reason, setReason] = useState(DEFAULT_PREFIX);
+export default function RejectionModal({
+    isOpen,
+    onClose,
+    onConfirm,
+    memberName,
+    title = 'Rechazar Solicitud',
+    presetReasons = DEFAULT_PRESET_REASONS,
+    defaultPrefix = DEFAULT_PREFIX
+}: RejectionModalProps) {
+    const [reason, setReason] = useState(defaultPrefix);
     const [selectedPreset, setSelectedPreset] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,34 +54,35 @@ export default function RejectionModal({ isOpen, onClose, onConfirm, memberName 
         const val = e.target.value;
         setSelectedPreset(val);
         if (val) {
-            const preset = PRESET_REASONS.find(p => p.value === val);
+            const preset = presetReasons.find(p => p.value === val);
             if (preset) {
-                const formatted = `${DEFAULT_PREFIX}${preset.label.charAt(0).toLowerCase() + preset.label.slice(1)}.`;
+                const formatted = `${defaultPrefix}${preset.label.charAt(0).toLowerCase() + preset.label.slice(1)}.`;
                 setReason(formatted);
             }
         } else {
-            setReason(DEFAULT_PREFIX);
+            setReason(defaultPrefix);
         }
     };
 
     const handleSubmit = async () => {
-        if (!reason.trim() || reason.trim() === DEFAULT_PREFIX.trim()) return;
+        if (!reason.trim() || reason.trim() === defaultPrefix.trim()) return;
 
         try {
             setIsSubmitting(true);
             await onConfirm(reason);
-            setReason(DEFAULT_PREFIX); // Reset on success
+            setReason(defaultPrefix); // Reset on success
             setSelectedPreset('');
             onClose();
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error submitting rejection:', error);
+            alert('Error: ' + (error?.message || 'No se pudo procesar el rechazo'));
         } finally {
             setIsSubmitting(false);
         }
     };
 
     const handleCancel = () => {
-        setReason(DEFAULT_PREFIX);
+        setReason(defaultPrefix);
         setSelectedPreset('');
         onClose();
     };
@@ -74,7 +91,7 @@ export default function RejectionModal({ isOpen, onClose, onConfirm, memberName 
         <div className={styles.overlay} onClick={handleCancel}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
-                    <h2 className={styles.title}>Rechazar Solicitud</h2>
+                    <h2 className={styles.title}>{title}</h2>
                     <button className={styles.closeButton} onClick={handleCancel}>✕</button>
                 </div>
 
@@ -93,7 +110,7 @@ export default function RejectionModal({ isOpen, onClose, onConfirm, memberName 
                         onChange={handlePresetChange}
                     >
                         <option value="">-- Selecciona un motivo predeterminado --</option>
-                        {PRESET_REASONS.map((preset) => (
+                        {presetReasons.map((preset) => (
                             <option key={preset.value} value={preset.value}>
                                 {preset.label}
                             </option>
@@ -127,7 +144,7 @@ export default function RejectionModal({ isOpen, onClose, onConfirm, memberName 
                     <button
                         className={`${styles.button} ${styles.confirmButton}`}
                         onClick={handleSubmit}
-                        disabled={!reason.trim() || reason.trim() === DEFAULT_PREFIX.trim() || isSubmitting}
+                        disabled={!reason.trim() || reason.trim() === defaultPrefix.trim() || isSubmitting}
                     >
                         {isSubmitting ? 'Rechazando...' : 'Confirmar Rechazo'}
                     </button>

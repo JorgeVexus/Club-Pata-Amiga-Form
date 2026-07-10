@@ -5,6 +5,23 @@ import { createClient } from '@supabase/supabase-js';
 import styles from './AmbassadorDetailModal.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
 import { Ambassador, Referral, AmbassadorPayout, AmbassadorMessage } from '@/types/ambassador.types';
+import RejectionModal from './RejectionModal';
+
+const AMBASSADOR_REJECTION_REASONS = [
+    { value: 'maltrato', label: 'Historial comprobado de maltrato o negligencia animal' },
+    { value: 'incumplimiento-normas', label: 'Incumplimiento previo de normas de Pata Amiga' },
+    { value: 'conducta-conflictiva', label: 'Conducta conflictiva, violenta o irrespetuosa del solicitante' },
+    { value: 'info-falsa', label: 'Proporcionar información falsa o incompleta en la solicitud' },
+    { value: 'impago', label: 'Incumplimiento de pagos o antecedentes financieros negativos con el club' },
+    { value: 'uso-indebido', label: 'Uso indebido previo de instalaciones, servicios o beneficios de Pata Amiga' },
+    { value: 'incompatibilidad-animal', label: 'Incompatibilidad del tipo de animal con las políticas de cobertura de Pata Amiga' },
+    { value: 'violaciones-politicas', label: 'Violaciones anteriores a las políticas de Pata Amiga' },
+    { value: 'uso-no-autorizado', label: 'Uso no autorizado de la membresía' },
+    { value: 'quejas', label: 'Quejas reiteradas de otros miembros/centros de bienestar sobre el embajador' },
+    { value: 'requisitos-elegibilidad', label: 'Incumplimiento de requisitos de edad, residencia o elegibilidad' }
+];
+
+const AMBASSADOR_REJECTION_PREFIX = 'El Comité deliberó improcedente tu solicitud como embajador de Pata Amiga debido a ';
 
 interface AmbassadorDetailModalProps {
     ambassador: Ambassador;
@@ -38,6 +55,7 @@ export default function AmbassadorDetailModal({
     const [payouts, setPayouts] = useState<AmbassadorPayout[]>([]);
     const [loading, setLoading] = useState(false);
     const [fullDetails, setFullDetails] = useState<any>(null);
+    const [showRejectModal, setShowRejectModal] = useState(false);
     const [chatMessages, setChatMessages] = useState<AmbassadorMessage[]>([]);
     const [chatInput, setChatInput] = useState('');
     const [chatLoading, setChatLoading] = useState(false);
@@ -164,30 +182,30 @@ export default function AmbassadorDetailModal({
                 alert('Embajador aprobado');
                 onRefresh();
                 onClose();
+            } else {
+                const err = await response.json().catch(() => ({}));
+                alert('Error: ' + (err.error || 'No se pudo aprobar al embajador'));
             }
         } catch (error) {
-            alert('Error al aprobar');
+            console.error('Error approving ambassador:', error);
+            alert('Error de conexión al aprobar');
         }
     };
 
-    const handleReject = async () => {
-        const reason = prompt('Motivo del rechazo:');
-        if (!reason) return;
+    const handleReject = async (reason: string) => {
+        const response = await adminFetch(`/api/ambassadors/${ambassador.id}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
+        });
 
-        try {
-            const response = await adminFetch(`/api/ambassadors/${ambassador.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status: 'rejected', rejection_reason: reason })
-            });
-
-            if (response.ok) {
-                alert('Solicitud rechazada');
-                onRefresh();
-                onClose();
-            }
-        } catch (error) {
-            alert('Error al rechazar');
+        if (response.ok) {
+            alert('Solicitud rechazada');
+            onRefresh();
+            onClose();
+        } else {
+            const err = await response.json().catch(() => ({}));
+            throw new Error(err.error || 'No se pudo rechazar la solicitud');
         }
     };
 
@@ -288,6 +306,7 @@ export default function AmbassadorDetailModal({
     };
 
     return (
+        <>
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                 {/* Header */}
@@ -653,7 +672,7 @@ export default function AmbassadorDetailModal({
                 {/* Actions */}
                 {amb.status === 'pending' && (
                     <div className={styles.actions}>
-                        <button className={styles.btnReject} onClick={handleReject}>
+                        <button className={styles.btnReject} onClick={() => setShowRejectModal(true)}>
                             ❌ Rechazar
                         </button>
                         <button className={styles.btnApprove} onClick={handleApprove}>
@@ -663,5 +682,16 @@ export default function AmbassadorDetailModal({
                 )}
             </div>
         </div>
+
+        <RejectionModal
+            isOpen={showRejectModal}
+            onClose={() => setShowRejectModal(false)}
+            onConfirm={handleReject}
+            memberName={`${amb.first_name} ${amb.paternal_surname}`}
+            title="Rechazar Embajador"
+            presetReasons={AMBASSADOR_REJECTION_REASONS}
+            defaultPrefix={AMBASSADOR_REJECTION_PREFIX}
+        />
+        </>
     );
 }
