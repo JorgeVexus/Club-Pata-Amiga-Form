@@ -2784,7 +2784,7 @@
                 </header>
 
                 <!-- Mis Datos de Registro (lo primero: quién eres como embajador) -->
-                <section class="amb-registration-data-section">
+                <section class="amb-registration-data-section" id="embajador-perfil">
                     <div class="amb-registration-data-card">
                         <div class="amb-registration-data-identity">
                             <img src="${ambassador.profile_photo_url || DEFAULT_AVATAR_PLACEHOLDER}" alt="Foto de perfil" class="amb-profile-avatar">
@@ -2986,7 +2986,7 @@
                 </section>
 
                 <!-- Estado de Referidos -->
-                <section class="amb-referrals-section">
+                <section class="amb-referrals-section" id="embajador-referidos">
                     <div class="amb-referrals-header">
                         <h2 class="amb-referrals-title">estado de tus referidos</h2>
                         <p class="amb-referrals-subtitle">Personas que usaron tu código</p>
@@ -3047,7 +3047,7 @@
                 </section>
 
                 <!-- Material Digital -->
-                <section class="amb-material-section">
+                <section class="amb-material-section" id="embajador-material">
                     <div class="amb-material-card">
                         <div class="amb-material-header">
                             <h2 class="amb-card-title">material digital para compartir</h2>
@@ -4193,6 +4193,38 @@
         if (ambassador && ambassador.status === 'approved') {
             initAmbassadorChatRealtime(ambassador);
         }
+
+        // Si se llegó con un ancla (#perfil, #referidos, #newsletter), hacer scroll a esa sección
+        scrollToAmbassadorSection();
+    }
+
+    // Navega a una sección del dashboard según el hash de la URL.
+    // Enlaces esperados: .../embajadores/dashboard#perfil | #referidos | #newsletter | #material
+    function scrollToAmbassadorSection() {
+        const hash = (window.location.hash || '').replace('#', '').toLowerCase();
+        if (!hash) return;
+
+        const sectionMap = {
+            'perfil': 'embajador-perfil',
+            'referidos': 'embajador-referidos',
+            'material': 'embajador-material',
+            'newsletter': 'embajador-material'
+        };
+
+        const targetId = sectionMap[hash];
+        if (!targetId) return;
+
+        setTimeout(function () {
+            const el = document.getElementById(targetId);
+            if (!el) return;
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            if (hash === 'newsletter' && typeof window.filterAmbassadorMaterials === 'function') {
+                setTimeout(function () {
+                    window.filterAmbassadorMaterials('newsletter');
+                }, 400);
+            }
+        }, 150);
     }
 
     // Initialize when DOM is ready
