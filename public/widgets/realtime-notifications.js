@@ -829,6 +829,15 @@
                 this.markAsRead(notif.id);
             }
 
+            // 1.5 Notificaciones de chat con administración: abrir el chat directamente
+            // en vez de navegar o mostrar el modal genérico (si el widget de chat está en esta página).
+            if (notif.metadata && notif.metadata.notification_kind === 'ambassador_chat' &&
+                typeof window.openAmbassadorChatModal === 'function') {
+                document.querySelectorAll('.rtbell-dropdown').forEach(d => d.classList.remove('open'));
+                window.openAmbassadorChatModal();
+                return;
+            }
+
             // 2. Resolver URL
             const incomingLink = notif.link;
 

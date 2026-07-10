@@ -162,7 +162,7 @@ export async function POST(
                     message: preview,
                     icon: '💬',
                     link: null,
-                    metadata: { ambassador_id: id }
+                    metadata: { ambassador_id: id, notification_kind: 'ambassador_chat' }
                 });
 
             if (notifError) {
