@@ -3759,6 +3759,41 @@
         }
     }
 
+    function waitForSupabaseSdk(maxAttempts, intervalMs) {
+        return new Promise((resolve) => {
+            let attempts = 0;
+            const check = () => {
+                if (typeof supabase !== 'undefined' && supabase.createClient && CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+                    resolve(true);
+                    return;
+                }
+                attempts++;
+                if (attempts >= maxAttempts) {
+                    resolve(false);
+                    return;
+                }
+                setTimeout(check, intervalMs);
+            };
+            check();
+        });
+    }
+
+    function handleIncomingAdminChatMessage(ambassador, newMessage) {
+        if (chatModalOpen) {
+            if (!chatMessagesCache.some(m => m.id === newMessage.id)) {
+                chatMessagesCache.push(newMessage);
+            }
+            const list = document.getElementById('amb-chat-messages');
+            if (list) {
+                list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
+                scrollChatToBottom();
+            }
+            fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}/messages?markReadFor=ambassador`).catch(() => {});
+        } else {
+            fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
+        }
+    }
+
     function initAmbassadorChatRealtime(ambassador) {
         if (chatRealtimeInitialized || !ambassador || ambassador.status !== 'approved') return;
         chatRealtimeInitialized = true;
@@ -3767,7 +3802,16 @@
 
         fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
 
-        if (typeof supabase !== 'undefined' && supabase.createClient && CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
+        // El polling corre siempre como respaldo, incluso si Realtime logra conectar.
+        // Así el chat sigue funcionando aunque el SDK de Supabase no cargue a tiempo
+        // en la página de Webflow (orden de scripts) o la suscripción se caiga.
+        startChatPolling(ambassador);
+
+        waitForSupabaseSdk(10, 300).then((available) => {
+            if (!available) {
+                console.warn('[AmbassadorChat] SDK de Supabase no disponible tras esperar; usando solo polling.');
+                return;
+            }
             try {
                 const supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
                 supabaseClient
@@ -3780,36 +3824,25 @@
                     }, (payload) => {
                         const newMessage = payload.new;
                         if (newMessage.sender_role !== 'admin') return;
-
-                        if (chatModalOpen) {
-                            if (!chatMessagesCache.some(m => m.id === newMessage.id)) {
-                                chatMessagesCache.push(newMessage);
-                            }
-                            const list = document.getElementById('amb-chat-messages');
-                            if (list) {
-                                list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
-                                scrollChatToBottom();
-                            }
-                            fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}/messages?markReadFor=ambassador`).catch(() => {});
-                        } else {
-                            fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
-                        }
+                        handleIncomingAdminChatMessage(ambassador, newMessage);
                     })
-                    .subscribe();
+                    .subscribe((status) => {
+                        console.log('[AmbassadorChat] Estado de suscripción Realtime:', status);
+                    });
             } catch (error) {
-                console.error('No se pudo iniciar Realtime del chat, usando polling:', error);
-                startChatPolling(ambassador);
+                console.error('[AmbassadorChat] No se pudo iniciar Realtime, se mantiene el polling:', error);
             }
-        } else {
-            startChatPolling(ambassador);
-        }
+        });
     }
 
     function startChatPolling(ambassador) {
         setInterval(() => {
-            if (chatModalOpen) return;
-            fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
-        }, 20000);
+            if (chatModalOpen) {
+                loadAmbassadorChatMessages();
+            } else {
+                fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
+            }
+        }, 8000);
     }
 
     window.requestWithdraw = async function (ambassadorId, amount) {
