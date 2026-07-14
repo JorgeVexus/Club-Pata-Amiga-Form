@@ -663,6 +663,23 @@
     height: 24px;
 }
 
+.existingAccountText {
+    text-align: center;
+    color: #2D3748;
+    font-size: 15px;
+    font-family: var(--font-body);
+    line-height: 1.45;
+    margin-top: -8px;
+    padding: 0 12px;
+}
+
+.existingAccountLink {
+    color: var(--color-primary);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
 .footerText {
     text-align: center;
     color: #64748B;

@@ -501,6 +501,18 @@ export default function Step1Account({
                                             GOOGLE
                                         </button>
 
+                                        {mode === 'register' && (
+                                            <div className={styles.existingAccountText}>
+                                                ¿Ya tienes una cuenta?{' '}
+                                                <a
+                                                    href="https://www.pataamiga.mx/user/inicio-de-sesion"
+                                                    className={styles.existingAccountLink}
+                                                >
+                                                    Da click aquí para iniciar sesión
+                                                </a>
+                                            </div>
+                                        )}
+
                                         <div className={styles.footerText}>
                                             {mode === 'register' ? (
                                                 <>
