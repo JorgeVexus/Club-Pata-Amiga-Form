@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { createServerNotification } from '@/app/actions/notification.actions';
 
 const PLAN_PRICE_IDS = {
     mensual: 'prc_mensual-452k30jah',
@@ -130,6 +131,25 @@ export async function POST(request: NextRequest) {
 
         if (!msResult.success) {
             console.error('⚠️ [CHANGE_PLAN] Error actualizando Memberstack:', msResult.error);
+        }
+
+        // 7. Crear notificación para el administrador
+        try {
+            const fullName = [user.first_name, user.last_name].filter(Boolean).join(' ') || user.email || 'Miembro';
+            await createServerNotification({
+                userId: 'admin',
+                type: 'plan_change',
+                title: '🔄 Cambio de Plan',
+                message: `El miembro ${fullName} cambió su plan a ${targetPlanInfo.type}.`,
+                icon: '🔄',
+                link: `/admin/dashboard?tab=member&member=${memberstackId}`,
+                metadata: {
+                    userId: memberstackId
+                }
+            });
+            console.log(`[CHANGE_PLAN] Notificación creada para admin: Cambio de plan de ${fullName}`);
+        } catch (notifErr) {
+            console.error('⚠️ [CHANGE_PLAN] Error creando notificación para admin:', notifErr);
         }
 
         return NextResponse.json({
