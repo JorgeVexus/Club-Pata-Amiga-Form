@@ -437,6 +437,127 @@
             display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;
         }
 
+        .pata-info-card-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .pata-info-card-head .pata-info-card-title {
+            margin-bottom: 0;
+        }
+
+        .pata-edit-info-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: var(--pata-border-thin);
+            border-radius: 999px;
+            background: #fff;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 11px;
+            font-weight: 900;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.08);
+            white-space: nowrap;
+        }
+
+        .pata-edit-info-btn:hover {
+            background: var(--pata-accent);
+            transform: translateY(-2px);
+            box-shadow: 5px 5px 0 rgba(0,0,0,0.1);
+        }
+
+        .pata-complementary-edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .pata-complementary-edit-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .pata-complementary-field {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+            min-width: 0;
+        }
+
+        .pata-complementary-field label {
+            font-size: 10px;
+            font-weight: 900;
+            color: #4A5568;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .pata-complementary-field input,
+        .pata-complementary-field select {
+            width: 100%;
+            min-width: 0;
+            box-sizing: border-box;
+            border: var(--pata-border-thin);
+            border-radius: 18px;
+            background: #fff;
+            color: #000;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 800;
+            padding: 12px 14px;
+            outline: none;
+        }
+
+        .pata-complementary-field input:focus,
+        .pata-complementary-field select:focus {
+            border-color: var(--pata-action);
+            box-shadow: 0 0 0 3px rgba(254,143,21,0.18);
+        }
+
+        .pata-complementary-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .pata-complementary-save,
+        .pata-complementary-cancel {
+            border: var(--pata-border-thin);
+            border-radius: 999px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            padding: 12px 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .pata-complementary-save {
+            background: var(--pata-action);
+            color: #fff;
+        }
+
+        .pata-complementary-cancel {
+            background: #fff;
+            color: #000;
+        }
+
+        .pata-complementary-save:hover,
+        .pata-complementary-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+        }
+
         .pata-info-item {
             display: flex; align-items: center; gap: 12px;
         }
@@ -895,6 +1016,32 @@
             .pata-modal-story p { font-size: 13px; line-height: 1.4; }
         }
 
+        @media (max-width: 640px) {
+            .pata-info-card-head {
+                align-items: stretch;
+                flex-direction: column;
+            }
+            .pata-edit-info-btn {
+                width: 100%;
+                white-space: normal;
+                text-align: center;
+                min-height: 44px;
+            }
+            .pata-complementary-edit-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .pata-complementary-actions {
+                flex-direction: column-reverse;
+                align-items: stretch;
+            }
+            .pata-complementary-save,
+            .pata-complementary-cancel {
+                width: 100%;
+                min-height: 46px;
+            }
+        }
+
         @media (max-width: 750px) {
             .pata-cards-grid { justify-content: center; }
             .pata-pet-card, .pata-add-card { width: 100%; max-width: 300px; height: 300px; }
@@ -1019,6 +1166,176 @@
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
+
+        getMonthName(month) {
+            const months = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            const monthNumber = parseInt(month, 10);
+            return months[monthNumber] || month || '---';
+        }
+
+        parseBirthMonth(value) {
+            const monthVal = String(value || '').trim().toLowerCase();
+            const monthsMap = {
+                'enero': 1, 'febrero': 2, 'marzo': 3, 'abril': 4, 'mayo': 5, 'junio': 6,
+                'julio': 7, 'agosto': 8, 'septiembre': 9, 'octubre': 10, 'noviembre': 11, 'diciembre': 12
+            };
+
+            return monthsMap[monthVal] || parseInt(monthVal, 10);
+        }
+
+        showComplementaryInfoEditor(petId) {
+            const pet = this.pets.find(p => p.id === petId);
+            const card = document.getElementById(`pata-complementary-card-${petId}`);
+            if (!pet || !card) return;
+
+            const currentYear = new Date().getFullYear();
+            const selectedMonth = parseInt(pet.birth_month, 10) || '';
+            const selectedYear = parseInt(pet.birth_year, 10) || '';
+            const monthOptions = [
+                { value: '', label: 'Sin mes' },
+                { value: '1', label: 'Enero' },
+                { value: '2', label: 'Febrero' },
+                { value: '3', label: 'Marzo' },
+                { value: '4', label: 'Abril' },
+                { value: '5', label: 'Mayo' },
+                { value: '6', label: 'Junio' },
+                { value: '7', label: 'Julio' },
+                { value: '8', label: 'Agosto' },
+                { value: '9', label: 'Septiembre' },
+                { value: '10', label: 'Octubre' },
+                { value: '11', label: 'Noviembre' },
+                { value: '12', label: 'Diciembre' }
+            ];
+
+            card.innerHTML = `
+                <div class="pata-info-card-head">
+                    <h3 class="pata-info-card-title">Editar informacion</h3>
+                    <button class="pata-edit-info-btn" type="button" onclick="window.ManadaWidget.cancelComplementaryInfoEditor('${petId}')">
+                        <span class="material-symbols-outlined" style="font-size:16px;">close</span>
+                        Cancelar
+                    </button>
+                </div>
+                <form class="pata-complementary-edit-form" onsubmit="event.preventDefault(); window.ManadaWidget.saveComplementaryInfo('${petId}');">
+                    <div class="pata-complementary-edit-grid">
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-gender-${petId}">Genero</label>
+                            <select id="pata-edit-gender-${petId}">
+                                <option value="" ${!pet.gender ? 'selected' : ''}>No especificado</option>
+                                <option value="macho" ${pet.gender === 'macho' ? 'selected' : ''}>Macho</option>
+                                <option value="hembra" ${pet.gender === 'hembra' ? 'selected' : ''}>Hembra</option>
+                            </select>
+                        </div>
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-coat-${petId}">Color de pelo</label>
+                            <input id="pata-edit-coat-${petId}" type="text" value="${this.escapeHtml(pet.coat_color || '')}" placeholder="Ej. Cafe, negro">
+                        </div>
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-nose-${petId}">Color de nariz</label>
+                            <input id="pata-edit-nose-${petId}" type="text" value="${this.escapeHtml(pet.nose_color || '')}" placeholder="Ej. Negra, rosada">
+                        </div>
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-eye-${petId}">Color de ojos</label>
+                            <input id="pata-edit-eye-${petId}" type="text" value="${this.escapeHtml(pet.eye_color || '')}" placeholder="Ej. Miel, negros">
+                        </div>
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-birth-month-${petId}">Mes de cumpleanos</label>
+                            <select id="pata-edit-birth-month-${petId}">
+                                ${monthOptions.map(month => `<option value="${month.value}" ${String(selectedMonth) === month.value ? 'selected' : ''}>${month.label}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="pata-complementary-field">
+                            <label for="pata-edit-birth-year-${petId}">Ano de cumpleanos</label>
+                            <input id="pata-edit-birth-year-${petId}" type="number" min="1990" max="${currentYear}" value="${selectedYear}" placeholder="Ej. ${currentYear - 3}">
+                        </div>
+                    </div>
+                    <div class="pata-complementary-actions">
+                        <button class="pata-complementary-cancel" type="button" onclick="window.ManadaWidget.cancelComplementaryInfoEditor('${petId}')">Cancelar</button>
+                        <button class="pata-complementary-save" id="pata-save-complementary-${petId}" type="submit">Guardar informacion</button>
+                    </div>
+                </form>
+            `;
+        }
+
+        cancelComplementaryInfoEditor(petId) {
+            const modal = document.getElementById('pata-details-modal');
+            if (modal) this.closeModal(modal);
+            this.showDetails(petId);
+        }
+
+        async saveComplementaryInfo(petId) {
+            const genderInput = document.getElementById(`pata-edit-gender-${petId}`);
+            const coatInput = document.getElementById(`pata-edit-coat-${petId}`);
+            const noseInput = document.getElementById(`pata-edit-nose-${petId}`);
+            const eyeInput = document.getElementById(`pata-edit-eye-${petId}`);
+            const monthInput = document.getElementById(`pata-edit-birth-month-${petId}`);
+            const yearInput = document.getElementById(`pata-edit-birth-year-${petId}`);
+            const btn = document.getElementById(`pata-save-complementary-${petId}`);
+            if (!genderInput || !coatInput || !noseInput || !eyeInput || !monthInput || !yearInput || !btn) return;
+
+            const hasBirthMonth = !!monthInput.value.trim();
+            const hasBirthYear = !!yearInput.value.trim();
+            const birthMonth = hasBirthMonth ? this.parseBirthMonth(monthInput.value) : null;
+            const birthYear = hasBirthYear ? parseInt(yearInput.value, 10) : null;
+
+            if (hasBirthMonth !== hasBirthYear) {
+                alert('Para guardar el cumpleanos, selecciona mes y ano.');
+                return;
+            }
+
+            if (hasBirthMonth && (!birthMonth || birthMonth < 1 || birthMonth > 12)) {
+                alert('Selecciona un mes de cumpleanos valido.');
+                return;
+            }
+
+            const currentYear = new Date().getFullYear();
+            if (hasBirthYear && (!birthYear || birthYear > currentYear || birthYear < 1990)) {
+                alert('Ingresa un ano de cumpleanos valido y que no sea mayor al actual.');
+                return;
+            }
+
+            const payload = {
+                userId: this.member.id,
+                gender: genderInput.value,
+                coatColor: coatInput.value.trim(),
+                noseColor: noseInput.value.trim(),
+                eyeColor: eyeInput.value.trim()
+            };
+
+            if (hasBirthMonth && hasBirthYear) {
+                payload.birthMonth = birthMonth;
+                payload.birthYear = birthYear;
+            }
+
+            btn.disabled = true;
+            btn.innerText = 'Guardando...';
+            btn.style.opacity = '0.7';
+
+            try {
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    alert('Informacion guardada correctamente.');
+                    const modal = document.getElementById('pata-details-modal');
+                    if (modal) this.closeModal(modal);
+                    await this.init();
+                    this.showDetails(petId);
+                } else {
+                    alert('Error al guardar: ' + (data.error || 'Desconocido'));
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Ocurrio un error inesperado al guardar la informacion.');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = 'Guardar informacion';
+                btn.style.opacity = '1';
+            }
         }
 
         getCarenciaExplanation(pet) {
@@ -1370,8 +1687,14 @@
                                 `;
                             })() : ''}
 
-                            <div class="pata-info-card">
-                                <h3 class="pata-info-card-title">Información General</h3>
+                            <div class="pata-info-card" id="pata-complementary-card-${pet.id}">
+                                <div class="pata-info-card-head">
+                                    <h3 class="pata-info-card-title">Información General</h3>
+                                    <button class="pata-edit-info-btn" type="button" onclick="window.ManadaWidget.showComplementaryInfoEditor('${pet.id}')" aria-label="Editar informacion de ${pet.name}">
+                                        <span class="material-symbols-outlined" style="font-size:16px;">edit</span>
+                                        Editar informacion de ${pet.name}
+                                    </button>
+                                </div>
                                 <div class="pata-info-grid">
                                     <div class="pata-info-item">
                                         <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/especie.png" alt="Especie"></div>
@@ -1391,29 +1714,7 @@
                                         <div class="pata-info-icon-wrap"><img src="https://app.pataamiga.mx/Icons/cumpleanos.png" alt="Cumpleaños"></div>
                                         <div class="pata-info-texts">
                                             <span class="pata-info-label">Cumpleaños</span>
-                                            ${pet.birth_month && pet.birth_year ? `
-                                                <span class="pata-info-value">${['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][pet.birth_month] || pet.birth_month} ${pet.birth_year}</span>
-                                            ` : `
-                                                <div style="display:flex; gap:8px; align-items:center; margin-top:4px;">
-                                                    <datalist id="pata-months-list">
-                                                        <option value="Enero">
-                                                        <option value="Febrero">
-                                                        <option value="Marzo">
-                                                        <option value="Abril">
-                                                        <option value="Mayo">
-                                                        <option value="Junio">
-                                                        <option value="Julio">
-                                                        <option value="Agosto">
-                                                        <option value="Septiembre">
-                                                        <option value="Octubre">
-                                                        <option value="Noviembre">
-                                                        <option value="Diciembre">
-                                                    </datalist>
-                                                    <input type="text" id="pata-birth-month-${pet.id}" list="pata-months-list" placeholder="Mes" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:80px;" aria-label="Mes de nacimiento">
-                                                    <input type="number" id="pata-birth-year-${pet.id}" placeholder="Año" max="${new Date().getFullYear()}" style="font-size:12px; padding:4px 8px; border-radius:12px; border:1.5px solid #000; outline:none; font-family:var(--font-body); width:65px;" aria-label="Año de nacimiento">
-                                                    <button id="pata-btn-birthday-${pet.id}" onclick="window.ManadaWidget.saveBirthday('${pet.id}')" style="font-size:10px; padding:4px 10px; border-radius:12px; background:var(--pata-primary); color:#000; border:1.5px solid #000; cursor:pointer; font-weight:800; font-family:var(--font-body); transition:all 0.2s ease;">Guardar</button>
-                                                </div>
-                                            `}
+                                            <span class="pata-info-value">${pet.birth_month && pet.birth_year ? `${this.getMonthName(pet.birth_month)} ${pet.birth_year}` : '---'}</span>
                                         </div>
                                     </div>
                                     <div class="pata-info-item">
