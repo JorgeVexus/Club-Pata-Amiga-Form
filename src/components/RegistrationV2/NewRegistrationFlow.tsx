@@ -1616,7 +1616,7 @@ export default function NewRegistrationFlow() {
     return (
         <div className={SHOW_REGISTRATION_PROMO ? `${styles.container} ${styles.containerWithPromo}` : styles.container}>
             {SHOW_REGISTRATION_PROMO ? <RegistrationPromoMarquee /> : null}
-            <NavbarRedesign onLogout={handleLogout} member={member} showLogout={true} />
+            <NavbarRedesign onLogout={handleLogout} member={member} showLogout={!!member} />
 
             {/* Banner de beneficios (visible en pasos pre-pago 1, 2 y 3) */}
             {currentStep >= 1 && currentStep <= 3 && <BenefitsBanner />}

@@ -1,7 +1,5 @@
 .banner {
-    position: sticky;
-    top: calc(var(--registration-promo-height, 0px) + var(--registration-navbar-height, 0px));
-    z-index: 900;
+    position: relative;
     background: #ffffff;
     padding: 1rem 0;
     overflow: hidden;
