@@ -130,10 +130,8 @@ export async function POST(request: NextRequest) {
 
             case 'customer.subscription.deleted': {
                 const subscription = event.data.object as any;
-                // Solo tratar como "no renovado" el churn por impago;
-                // la cancelación voluntaria ya la maneja /api/user/deactivate (estatus cancelado).
-                const reason = subscription.cancellation_details?.reason;
-                if (reason !== 'payment_failed') break;
+                const cancellationReason = subscription.cancellation_details?.reason;
+                const isVoluntary = cancellationReason !== 'payment_failed';
 
                 const customerId = subscription.customer;
                 let email: string | null = null;
@@ -143,11 +141,43 @@ export async function POST(request: NextRequest) {
                 } catch { /* best-effort */ }
 
                 const contactId = await resolveCrmContactId(customerId, email);
-                if (!contactId) break;
 
-                await syncMembership(contactId, { status: 'no_renovado' });
-                await removeContactTags(contactId, [CRM_ACTIVE_TAG]);
-                console.log('[Stripe Webhook] ⚠️ No renovado (churn) sincronizado con CRM:', contactId);
+                if (isVoluntary) {
+                    // Cancelación voluntaria: el usuario ya estaba en 'pending_cancellation'.
+                    // El período pagado terminó → cerrar el ciclo definitivamente en Supabase.
+                    if (email) {
+                        await supabaseAdmin
+                            .from('users')
+                            .update({
+                                approval_status: 'cancelled',
+                                membership_status: 'cancelled',
+                            })
+                            .eq('email', email);
+                        console.log('[Stripe Webhook] ✅ Cancelación voluntaria completada en Supabase para:', email);
+                    }
+                    // Sync CRM solo si tenemos el contactId
+                    if (contactId) {
+                        await syncMembership(contactId, { status: 'cancelado' });
+                        await removeContactTags(contactId, [CRM_ACTIVE_TAG]);
+                        console.log('[Stripe Webhook] ✅ Cancelación voluntaria sincronizada con CRM:', contactId);
+                    }
+                } else {
+                    // Churn por impago: marcar como no_renovado en CRM
+                    if (!contactId) break;
+                    await syncMembership(contactId, { status: 'no_renovado' });
+                    await removeContactTags(contactId, [CRM_ACTIVE_TAG]);
+                    // También cerrar en Supabase
+                    if (email) {
+                        await supabaseAdmin
+                            .from('users')
+                            .update({
+                                approval_status: 'cancelled',
+                                membership_status: 'cancelled',
+                            })
+                            .eq('email', email);
+                    }
+                    console.log('[Stripe Webhook] ⚠️ No renovado (churn) sincronizado con CRM:', contactId);
+                }
                 break;
             }
 

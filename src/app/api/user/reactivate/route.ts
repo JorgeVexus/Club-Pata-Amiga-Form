@@ -99,6 +99,7 @@ export async function POST(request: NextRequest) {
 
         // 5. Actualizar en nuestra DB (payment_methods.is_cancelled = false)
         if (isSupabaseAdminConfigured() && supabaseAdmin) {
+            // 5a. Tabla payment_methods
             await supabaseAdmin
                 .from('payment_methods')
                 .update({
@@ -109,6 +110,22 @@ export async function POST(request: NextRequest) {
                     updated_at: new Date().toISOString(),
                 })
                 .eq('memberstack_id', memberstackId);
+
+            // 5b. 🔴 BUG FIX: Tabla users — sin esto el usuario queda bloqueado en Supabase
+            // aunque Memberstack lo tenga como 'approved'
+            const { error: userUpdateError } = await supabaseAdmin
+                .from('users')
+                .update({
+                    approval_status: 'approved',
+                    membership_status: 'active',
+                })
+                .eq('memberstack_id', memberstackId);
+
+            if (userUpdateError) {
+                console.warn('⚠️ [REACTIVATE] Error sincronizando users en Supabase:', userUpdateError);
+            } else {
+                console.log(`✅ [REACTIVATE] Supabase users.approval_status = 'approved' para ${memberstackId}`);
+            }
         }
 
         return NextResponse.json({

@@ -136,14 +136,25 @@ export async function GET(request: NextRequest) {
                 amount
             }));
 
-            // Distribución de planes (basado en suscripciones activas)
+            // Distribución de planes — datos reales de Stripe (no hardcodeados)
+            // Price IDs de Club Pata Amiga
             const subscriptions = await stripe.subscriptions.list({ limit: 100, status: 'active' });
-            // Aquí idealmente mapearíamos IDs de producto a nombres de plan
-            results.planDistribution = [
-                { name: 'Plan Básico', value: 45 },
-                { name: 'Plan Estándar', value: 35 },
-                { name: 'Plan Premium', value: 20 },
-            ];
+            const PLAN_PRICE_IDS: Record<string, string> = {
+                'prc_mensual-452k30jah': 'Mensual ($159/mes)',
+                'prc_anual-o9d101ta':    'Anual ($1,699/año)',
+            };
+            const planCounts: Record<string, number> = {};
+            subscriptions.data.forEach((sub: any) => {
+                const priceId = sub.items?.data?.[0]?.price?.id || '';
+                const amount  = sub.items?.data?.[0]?.price?.unit_amount || 0; // en centavos
+                // Fallback por monto: >$1,000 MXN (100000 centavos) → anual
+                const planName = PLAN_PRICE_IDS[priceId]
+                    ?? (amount > 100000 ? 'Anual ($1,699/año)' : amount > 0 ? 'Mensual ($159/mes)' : 'Otro');
+                planCounts[planName] = (planCounts[planName] || 0) + 1;
+            });
+            results.planDistribution = Object.entries(planCounts)
+                .map(([name, value]) => ({ name, value }))
+                .sort((a: any, b: any) => b.value - a.value);
         }
 
         return NextResponse.json({ success: true, data: results });

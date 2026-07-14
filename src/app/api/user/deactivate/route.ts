@@ -118,11 +118,13 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Error guardando la cancelacion' }, { status: 500 });
         }
 
+        // 🔄 Estado intermedio: usuario aún tiene beneficios hasta fin del período de Stripe.
+        // La transición definitiva a 'cancelled' la dispara el webhook cuando Stripe elimina la suscripción.
         const { error: updateError } = await supabaseAdmin
             .from('users')
             .update({
-                approval_status: 'cancelled',
-                rejection_reason: 'Membresia cancelada por el usuario',
+                approval_status: 'pending_cancellation',
+                rejection_reason: 'Membresia cancelada por el usuario (pendiente de vencimiento)',
             })
             .eq('id', user.id);
 
@@ -132,8 +134,8 @@ export async function POST(request: NextRequest) {
         }
 
         const msResult = await memberstackAdmin.updateMemberFields(memberstackId, {
-            'approval-status': 'cancelled',
-            'rejection-reason': 'Membresia cancelada por el usuario',
+            'approval-status': 'cancelled',          // Webflow dashboard lo consume como 'cancelled'
+            'rejection-reason': 'Membresia cancelada por el usuario (pendiente de vencimiento)',
             'membership-end-date': cancellationRecord.membershipEndDate,
         });
 

@@ -17,6 +17,9 @@ interface MemberRequest {
     registrationIssue?: 'paid_without_pets' | 'paid_without_complete_pet_rows' | null;
     type: 'member' | 'ambassador' | 'wellness-center';
     roles: ('member' | 'ambassador' | 'wellness-center')[];
+    // 🔴 Campos de cancelación pendiente (Stripe cancel_at_period_end)
+    isCancelled?: boolean;
+    membershipEndDate?: string | null;
 }
 
 interface AppealedPet {
@@ -349,7 +352,10 @@ export default function RequestsTable({
                     paymentStatus: member.paymentStatus || 'none',
                     registrationIssue: member.registrationIssue || null,
                     type: 'member',
-                    roles: roles
+                    roles: roles,
+                    // 🔴 Cancelación pendiente — viene de la detección de cancel_at_period_end en Stripe
+                    isCancelled: member.isCancelled || false,
+                    membershipEndDate: member.membershipEndDate || null,
                 });
             });
 
@@ -453,6 +459,7 @@ export default function RequestsTable({
             past_due: 'Moroso',
             unpaid: 'Impago',
             canceled: 'Cancelado',
+            cancelled: 'Cancelado',
             incomplete: 'Pendiente',
             none: 'Sin Plan'
         };
@@ -920,9 +927,29 @@ export default function RequestsTable({
                                         )}
                                     </td>
                                     <td data-label="Estado Pago">
-                                        <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
-                                            {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
-                                        </span>
+                                        {request.isCancelled && request.membershipEndDate ? (
+                                            // Cancelación pendiente: mostramos badge especial con fecha de vencimiento
+                                            <span
+                                                className={`${styles.paymentStatusBadge} ${styles.canceled}`}
+                                                title={`Cobertura hasta: ${new Date(request.membershipEndDate).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}`}
+                                            >
+                                                🔴 Cancelado
+                                                <span style={{
+                                                    display: 'block',
+                                                    fontSize: '0.72em',
+                                                    fontWeight: 400,
+                                                    marginTop: '2px',
+                                                    opacity: 0.85,
+                                                    letterSpacing: 0
+                                                }}>
+                                                    hasta {new Date(request.membershipEndDate).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </span>
+                                            </span>
+                                        ) : (
+                                            <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
+                                                {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
+                                            </span>
+                                        )}
                                     </td>
                                     <td data-label="Estado Info">
                                         <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>
