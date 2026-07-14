@@ -542,6 +542,67 @@
             .pata-legal-modal-header { padding: 20px; }
             .pata-legal-modal-body { padding: 20px; }
         }
+
+        /* 🆕 Estilos de plan selector */
+        .pata-plan-option-card {
+            border: 2px solid #E2E8F0;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            background: #FFFFFF;
+            box-sizing: border-box;
+            width: 100%;
+            text-align: left;
+        }
+        .pata-plan-option-card:hover {
+            border-color: #7DD8D5;
+            background: #F0FDFD;
+            transform: translateY(-2px);
+        }
+        .pata-plan-option-card.selected {
+            border-color: #00BBB4;
+            background: #E6FFFA;
+            box-shadow: 0 4px 12px rgba(0, 187, 180, 0.15);
+        }
+        .pata-plan-option-card.selected::after {
+            content: "✓";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            background: #00BBB4;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .pata-plan-option-title {
+            font-family: 'Fraiche', sans-serif;
+            font-size: 18px;
+            color: #2D3748;
+            margin: 0 0 5px 0;
+        }
+        .pata-plan-option-cost {
+            font-size: 15px;
+            font-weight: 700;
+            color: #00BBB4;
+        }
+        .pata-plan-option-desc {
+            font-size: 13px;
+            color: #718096;
+            margin-top: 5px;
+            line-height: 1.4;
+        }
     `;
 
     const ICONS = {
@@ -698,6 +759,9 @@
         }
 
         render() {
+            const planInfo = this.getActivePlanInfo();
+            const currentPlan = planInfo ? (planInfo.name.toLowerCase().includes('anual') ? 'anual' : 'mensual') : 'mensual';
+
             this.container.innerHTML = `
                 <div class="pata-settings-header">
                     <h1 class="pata-settings-title">Centro de configuración</h1>
@@ -796,6 +860,34 @@
                             <div id="pata-pwd-error" style="color: #E53E3E; margin-top: 15px; font-size: 14px; display: none; text-align: center;"></div>
                             <div id="pata-pwd-success" style="color: #38A169; margin-top: 15px; font-size: 14px; display: none; text-align: center; font-weight: bold;">¡Contraseña actualizada con éxito!</div>
                         </form>
+                    </div>
+                </div>
+
+                <!-- 🆕 Modal Custom para Cambiar Plan -->
+                <div class="pata-custom-modal" id="pata-change-plan-modal">
+                    <div class="pata-modal-content" style="max-width: 450px;">
+                        <button class="pata-modal-close" id="pata-close-change-plan">×</button>
+                        <h3 class="pata-modal-title">Cambiar de Plan</h3>
+                        <p style="font-size: 14px; color: ${CONFIG.textLight}; margin: -15px 0 20px;">
+                            Cambia tu plan de Club Pata Amiga de manera inmediata o en tu próximo cobro.
+                        </p>
+                        <div class="pata-plan-option-card ${currentPlan === 'mensual' ? 'selected' : ''}" data-plan="mensual" style="margin-bottom: 12px;">
+                            <div>
+                                <h4 class="pata-plan-option-title">Plan Mensual</h4>
+                                <span class="pata-plan-option-cost">$159 MXN / mes</span>
+                                <p class="pata-plan-option-desc">Ideal para protección continua mes a mes.</p>
+                            </div>
+                        </div>
+                        <div class="pata-plan-option-card ${currentPlan === 'anual' ? 'selected' : ''}" data-plan="anual" style="margin-bottom: 24px;">
+                            <div>
+                                <h4 class="pata-plan-option-title">Plan Anual 🐾</h4>
+                                <span class="pata-plan-option-cost">$1,699 MXN / año</span>
+                                <p class="pata-plan-option-desc">Ahorra con 12 meses de cobertura completa y continua.</p>
+                            </div>
+                        </div>
+                        <button type="button" class="pata-btn-submit" id="pata-btn-confirm-plan" style="width: 100%;">Confirmar Cambio</button>
+                        <div id="pata-plan-error" style="color: #E53E3E; margin-top: 15px; font-size: 14px; display: none; text-align: center; line-height: 1.4;"></div>
+                        <div id="pata-plan-success" style="color: #38A169; margin-top: 15px; font-size: 14px; display: none; text-align: center; font-weight: bold;">¡Plan cambiado con éxito!</div>
                     </div>
                 </div>
 
@@ -944,9 +1036,12 @@
                             <span class="pata-sub-cost">$${plan.amount} ${plan.currency} / mes</span>
                         </div>
                     </div>
-                    <div class="pata-sub-footer">
+                    <div class="pata-sub-footer" style="display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
                         <span class="pata-sub-next">Siguiente pago: <strong>${plan.nextPayment}</strong></span>
-                        <button class="pata-sub-manage" data-action="payment">Administrar suscripción ${ICONS.chevron}</button>
+                        <div style="display: flex; gap: 8px;">
+                            <button class="pata-sub-manage" id="pata-btn-change-plan-trigger" style="background: #FFFFFF; color: #00BBB4; border: 1.5px solid #00BBB4; padding: 6px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;">Cambiar Plan</button>
+                            <button class="pata-sub-manage" data-action="payment">Administrar ${ICONS.chevron}</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -1085,6 +1180,112 @@
                     }
                 });
             }
+
+            // 🆕 Cambiar Plan Modal Events
+            const planModal = this.container.querySelector('#pata-change-plan-modal');
+            const planTrigger = this.container.querySelector('#pata-btn-change-plan-trigger');
+            const closePlanBtn = this.container.querySelector('#pata-close-change-plan');
+            const confirmPlanBtn = this.container.querySelector('#pata-btn-confirm-plan');
+            const planError = this.container.querySelector('#pata-plan-error');
+            const planSuccess = this.container.querySelector('#pata-plan-success');
+            let selectedPlan = this.member.planConnections?.find(p => p.status === 'ACTIVE' || p.status === 'TRIALING')?.planName?.toLowerCase().includes('anual') ? 'anual' : 'mensual';
+
+            if (planTrigger && planModal) {
+                planTrigger.addEventListener('click', () => {
+                    planModal.classList.add('show');
+                });
+            }
+
+            if (closePlanBtn && planModal) {
+                closePlanBtn.addEventListener('click', () => {
+                    planModal.classList.remove('show');
+                    if (planError) planError.style.display = 'none';
+                    if (planSuccess) planSuccess.style.display = 'none';
+                });
+            }
+
+            if (planModal) {
+                planModal.addEventListener('click', (e) => {
+                    if (e.target === planModal) {
+                        planModal.classList.remove('show');
+                        if (planError) planError.style.display = 'none';
+                        if (planSuccess) planSuccess.style.display = 'none';
+                    }
+                });
+            }
+
+            // Seleccionar tarjetas de planes
+            this.container.querySelectorAll('#pata-change-plan-modal .pata-plan-option-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    this.container.querySelectorAll('#pata-change-plan-modal .pata-plan-option-card').forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                    selectedPlan = card.getAttribute('data-plan');
+                });
+            });
+
+            if (confirmPlanBtn) {
+                confirmPlanBtn.addEventListener('click', async () => {
+                    const activePlan = this.member.planConnections?.find(p => p.status === 'ACTIVE' || p.status === 'TRIALING');
+                    const activePlanName = activePlan?.planName?.toLowerCase().includes('anual') ? 'anual' : 'mensual';
+
+                    if (selectedPlan === activePlanName) {
+                        if (planError) {
+                            planError.textContent = 'Ya tienes seleccionado este plan actualmente.';
+                            planError.style.display = 'block';
+                        }
+                        return;
+                    }
+
+                    const isUpgrade = selectedPlan === 'anual';
+                    const confirmMessage = isUpgrade 
+                        ? '¿Confirmar cambio a Plan Anual? Se realizará un cobro prorrateado inmediato en tu tarjeta por la diferencia.'
+                        : '¿Confirmar cambio a Plan Mensual? El cambio se programará y se aplicará al final de tu periodo de cobertura anual actual.';
+
+                    if (!confirm(confirmMessage)) return;
+
+                    confirmPlanBtn.textContent = 'Procesando...';
+                    confirmPlanBtn.disabled = true;
+                    if (planError) planError.style.display = 'none';
+                    if (planSuccess) planSuccess.style.display = 'none';
+
+                    try {
+                        const response = await fetch(CONFIG.apiUrl + '/api/user/change-plan', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                memberstackId: this.member.id,
+                                targetPlan: selectedPlan
+                            })
+                        });
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (planSuccess) planSuccess.style.display = 'block';
+                            alert(`¡Plan cambiado con éxito a ${data.plan}! Costo: ${data.cost}`);
+                            
+                            setTimeout(async () => {
+                                planModal.classList.remove('show');
+                                confirmPlanBtn.textContent = 'Confirmar Cambio';
+                                confirmPlanBtn.disabled = false;
+                                // Recargar datos y refrescar widget
+                                await this.loadPaymentMethod();
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            throw new Error(data.error || 'Error cambiando de plan');
+                        }
+                    } catch (err) {
+                        console.error('❌ [SETTINGS] Error cambiando plan:', err);
+                        if (planError) {
+                            planError.textContent = err.message || 'Error al intentar cambiar de plan.';
+                            planError.style.display = 'block';
+                        }
+                        confirmPlanBtn.textContent = 'Confirmar Cambio';
+                        confirmPlanBtn.disabled = false;
+                    }
+                });
+            }
         }
 
         handleSecurityChange() {
@@ -1186,12 +1387,17 @@
                     alert('Tu membresía ha sido reactivada exitosamente. El cobro automático se restablecerá en tu próximo periodo.');
                     await this.loadPaymentMethod();
                     this.render();
+                } else if (data.code === 'SUBSCRIPTION_EXPIRED') {
+                    alert('Tu suscripción anterior ha expirado por completo y no se puede reactivar. Serás redirigido para seleccionar una nueva membresía.');
+                    window.location.href = CONFIG.apiUrl + '/registro?reason=complete_payment';
                 } else {
                     throw new Error(data.error || 'Error desconocido');
                 }
             } catch (error) {
                 console.error('❌ [SETTINGS] Error reactivando membresía:', error);
-                alert('Hubo un problema al intentar reactivar tu membresía: ' + error.message);
+                if (error.message !== 'Tu suscripción anterior ha expirado por completo y no se puede reactivar. Serás redirigido para seleccionar una nueva membresía.') {
+                    alert('Hubo un problema al intentar reactivar tu membresía: ' + error.message);
+                }
                 
                 if (btnReactivate) {
                     btnReactivate.innerHTML = originalText;

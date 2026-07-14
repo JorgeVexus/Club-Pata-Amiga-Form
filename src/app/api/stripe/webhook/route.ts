@@ -15,6 +15,7 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { syncMembership, removeContactTags, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import { toCrmDate, getStripeMembershipFields } from '@/lib/stripe-membership';
+import { sendRenewalReminderEmail } from '@/app/actions/comm.actions';
 
 // El body debe leerse crudo para verificar la firma
 export const runtime = 'nodejs';
@@ -74,6 +75,45 @@ export async function POST(request: NextRequest) {
 
     try {
         switch (event.type) {
+            case 'invoice.upcoming': {
+                const invoice = event.data.object as any;
+                console.log(`[Stripe Webhook] 🔔 Recordatorio de renovación (invoice.upcoming) para customer: ${invoice.customer}`);
+
+                const { data: user } = await supabaseAdmin
+                    .from('users')
+                    .select('memberstack_id, email, first_name, last_name')
+                    .eq('stripe_customer_id', invoice.customer)
+                    .maybeSingle();
+
+                if (user && user.email) {
+                    const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Miembro';
+                    
+                    let friendlyDate = 'próximamente';
+                    const renewalTimestamp = invoice.next_payment_attempt || invoice.period_end;
+                    if (renewalTimestamp) {
+                        const dateObj = new Date(renewalTimestamp * 1000);
+                        const monthsList = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                        friendlyDate = `${dateObj.getDate()} de ${monthsList[dateObj.getMonth()]} de ${dateObj.getFullYear()}`;
+                    }
+
+                    const amountVal = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : '0.00';
+                    const currencyVal = (invoice.currency || 'mxn').toUpperCase();
+                    const friendlyAmount = `$${amountVal} ${currencyVal}`;
+
+                    await sendRenewalReminderEmail({
+                        userId: user.memberstack_id || '',
+                        email: user.email,
+                        name: fullName,
+                        renewalDate: friendlyDate,
+                        amount: friendlyAmount
+                    });
+                    console.log(`[Stripe Webhook] ✅ Email de recordatorio de renovación enviado a ${user.email}`);
+                } else {
+                    console.warn(`[Stripe Webhook] Usuario no encontrado en BD para customer Stripe ${invoice.customer}, se omite correo.`);
+                }
+                break;
+            }
+
             case 'invoice.payment_succeeded': {
                 const invoice = event.data.object as any;
                 // Solo renovaciones (ciclo/actualización); el primer pago lo maneja la aprobación

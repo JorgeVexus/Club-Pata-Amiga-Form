@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { syncMembership, removeContactTags, CRM_ACTIVE_TAG } from '@/services/crm.service';
+import { sendCancellationEmail } from '@/app/actions/comm.actions';
 import {
     calculateDaysRemaining,
     formatDateForStorage,
@@ -154,6 +155,32 @@ export async function POST(request: NextRequest) {
             }
         } else {
             console.warn('[DEACTIVATE] Usuario sin crm_contact_id, omitiendo sync CRM');
+        }
+
+        // Enviar correo transaccional de confirmación de cancelación
+        try {
+            if (user.email) {
+                const memberName = msResult.data?.customFields?.['first-name'] || 'Miembro';
+                
+                let friendlyEndDate = cancellationRecord.membershipEndDate;
+                try {
+                    const dateObj = new Date(cancellationRecord.membershipEndDate);
+                    if (!isNaN(dateObj.getTime())) {
+                        const monthsList = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+                        friendlyEndDate = `${dateObj.getDate()} de ${monthsList[dateObj.getMonth()]} de ${dateObj.getFullYear()}`;
+                    }
+                } catch {}
+
+                await sendCancellationEmail({
+                    userId: memberstackId,
+                    email: user.email,
+                    name: memberName,
+                    endDate: friendlyEndDate
+                });
+                console.log(`[DEACTIVATE] Email de cancelación enviado a ${user.email}`);
+            }
+        } catch (emailErr) {
+            console.error('[DEACTIVATE] Error enviando email de cancelación (no crítico):', emailErr);
         }
 
         return NextResponse.json({

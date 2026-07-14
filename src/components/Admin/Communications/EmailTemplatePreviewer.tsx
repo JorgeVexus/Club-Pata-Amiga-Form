@@ -296,6 +296,159 @@ Si consideras que esto es un error o deseas apelar esta decisión, por favor con
 
             return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Completa la informacion de tu mascota</title></head><body style="margin:0;padding:0;background-color:#F7F8FA;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8FA;padding:40px 20px;"><tr><td align="center"><table width="100%" style="max-width:580px;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:#7DD8D5;padding:36px 40px;text-align:center;"><img src="https://app.pataamiga.mx/Identidad/logo-pata-amiga-azul.png" alt="Club Pata Amiga" height="44" style="display:block;margin:0 auto 16px;"/><p style="margin:0;color:#2D3748;font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:700;">Accion requerida</p></td></tr><tr><td style="padding:40px 40px 24px;"><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#2D3748;line-height:1.3;">${firstName}, necesitamos los datos de tu mascota</h1><p style="margin:0 0 20px;font-size:16px;color:#4A5568;line-height:1.7;">Tu membresia ya aparece en nuestro sistema, pero aun falta completar la informacion de tu mascota para que el equipo pueda revisar tu expediente.</p><div style="background:#FFFBF5;border:1.5px solid #FEE4C4;border-radius:16px;padding:20px;margin-bottom:28px;"><p style="margin:0;font-size:14px;color:#4A5568;line-height:1.6;">El enlace te llevara al registro de mascota y despues a la ficha completa de la mascota. No tendras que seleccionar plan ni volver a pagar.</p></div><div style="text-align:center;margin-bottom:28px;"><a href="${recoveryUrl}" style="display:inline-block;background:#FE8F15;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;border:2px solid #000000;box-shadow:0 4px 14px rgba(254,143,21,0.35);">Completar datos de mi mascota</a></div><p style="margin:0 0 8px;font-size:13px;color:#718096;text-align:center;line-height:1.6;">Este enlace es seguro y vence en ${TOKEN_EXPIRY_MINUTES} minutos.</p><p style="margin:0;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">Si el boton no abre, usa este enlace: <a href="${recoveryUrl}" style="color:#00BBB4;font-weight:600;text-decoration:none;">completar mascota</a></p></td></tr><tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #EDF2F7;margin:0;"/></td></tr><tr><td style="padding:24px 40px 36px;text-align:center;"><p style="margin:0 0 8px;font-size:13px;color:#718096;">Con carino, <strong style="color:#2D3748;">El equipo de Club Pata Amiga</strong></p><p style="margin:0;font-size:11px;color:#A0AEC0;">Si tienes dudas, responde este correo y te ayudamos.</p></td></tr></table></td></tr></table></body></html>`;
         }
+    },
+    {
+        id: 'member-approved',
+        name: 'Membresía Aprobada',
+        icon: '🎉',
+        description: 'Enviado cuando el administrador aprueba oficialmente la membresía del miembro.',
+        defaultSubject: '¡Tu membresía ha sido aprobada! 🎉',
+        defaultRecipient: 'miembro@pataamiga.mx',
+        params: [
+            { key: 'memberName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge Cerna' }
+        ],
+        render: ({ memberName }) => {
+            const content = `¡Excelentes noticias!
+
+Tu solicitud de membresía en Club Pata Amiga ha sido aprobada oficialmente por nuestro equipo administrativo.
+
+Ya puedes acceder a todos tus beneficios, asistencias médicas y coberturas de emergencia ingresando a tu cuenta.
+
+¡Gracias por unirte a la manada más grande de México! 🐾`;
+            return buildBrandedEmailHtml({
+                memberName,
+                subject: '¡Tu membresía ha sido aprobada! 🎉',
+                content,
+                audience: 'member'
+            });
+        }
+    },
+    {
+        id: 'member-pet-status',
+        name: 'Rechazo/Solicitud de Mascota',
+        icon: '🐾',
+        description: 'Notifica al tutor cuando su mascota es aprobada, rechazada o requiere información adicional.',
+        defaultSubject: '📋 Acción requerida para aprobar a {petName}',
+        defaultRecipient: 'miembro@pataamiga.mx',
+        params: [
+            { key: 'memberName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge' },
+            { key: 'petName', label: 'Nombre de la Mascota', type: 'text', defaultValue: 'Luna' },
+            {
+                key: 'status',
+                label: 'Estado de Mascota',
+                type: 'select',
+                defaultValue: 'action_required',
+                options: [
+                    { label: 'Aprobado', value: 'approved' },
+                    { label: 'Acción Requerida', value: 'action_required' },
+                    { label: 'Rechazado', value: 'rejected' }
+                ]
+            },
+            { key: 'reason', label: 'Notas / Razón', type: 'textarea', defaultValue: 'La foto de la mascota no es clara, por favor sube una donde se vea bien su carita.' }
+        ],
+        render: ({ memberName, petName, status, reason }) => {
+            let subject = '';
+            let content = '';
+
+            if (status === 'approved') {
+                subject = `¡Tu mascota ${petName} ha sido aprobada! 🎉`;
+                content = `¡Excelentes noticias!
+
+Tu mascota ${petName} ha sido aprobada por nuestro equipo veterinario.
+
+Ya forma parte oficial de la familia de Club Pata Amiga. Puedes consultar su credencial y detalles de cobertura desde tu perfil de miembro.
+
+¡Gracias por cuidar tan bien de tu peludo! 🐾`;
+            } else if (status === 'action_required') {
+                subject = `📋 Acción requerida para aprobar a ${petName}`;
+                content = `Hola,
+                
+Necesitamos tu ayuda para completar el registro de ${petName}. Durante la revisión de su expediente, detectamos que se requiere corregir o subir información adicional.
+
+Detalle de la solicitud:
+"${reason}"
+
+Por favor ingresa a tu perfil de miembro para subir los documentos correctos y continuar con la activación. Muchas gracias.`;
+            } else {
+                subject = `❌ Actualización sobre la solicitud de ${petName}`;
+                content = `Hola,
+
+Lamentamos informarte que la solicitud de membresía para tu mascota ${petName} no ha podido ser aprobada por el siguiente motivo:
+
+"${reason}"
+
+Si tienes alguna duda o consideras que esto es un error, puedes iniciar un proceso de apelación desde tu panel de usuario o responder a este correo para apoyarte.`;
+            }
+
+            return buildBrandedEmailHtml({
+                memberName,
+                subject,
+                content,
+                audience: 'member'
+            });
+        }
+    },
+    {
+        id: 'member-cancellation',
+        name: 'Confirmación de Cancelación',
+        icon: '🔴',
+        description: 'Enviado automáticamente cuando un miembro cancela su suscripción, detallando la fecha de fin de cobertura.',
+        defaultSubject: 'Confirmación de cancelación de membresía 🔴',
+        defaultRecipient: 'miembro@pataamiga.mx',
+        params: [
+            { key: 'memberName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge Cerna' },
+            { key: 'endDate', label: 'Fecha Fin de Cobertura', type: 'text', defaultValue: '15 de agosto de 2026' }
+        ],
+        render: ({ memberName, endDate }) => {
+            const content = `Hola,
+
+Lamentamos mucho que tengas que dejarnos. Te confirmamos que tu solicitud de cancelación ha sido procesada correctamente.
+
+Tu cobertura y acceso a los beneficios médicos continuarán activos hasta el fin del periodo pagado el día:
+👉 **${endDate}**
+
+Después de esta fecha, el cobro automático se suspenderá definitivamente y la protección de tus mascotas será desactivada.
+
+Si cambias de opinión, puedes reactivar tu membresía en cualquier momento antes de esta fecha desde tu perfil de usuario. ¡Siempre serás bienvenido!`;
+            return buildBrandedEmailHtml({
+                memberName,
+                subject: 'Confirmación de cancelación de membresía 🔴',
+                content,
+                audience: 'member'
+            });
+        }
+    },
+    {
+        id: 'member-renewal-upcoming',
+        name: 'Recordatorio de Renovación',
+        icon: '⏳',
+        description: 'Enviado automáticamente 3 días antes de renovar la suscripción de Stripe.',
+        defaultSubject: 'Recordatorio de renovación de membresía 🐾',
+        defaultRecipient: 'miembro@pataamiga.mx',
+        params: [
+            { key: 'memberName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge Cerna' },
+            { key: 'renewalDate', label: 'Fecha de Cargo', type: 'text', defaultValue: '28 de julio de 2026' },
+            { key: 'amount', label: 'Monto y Moneda', type: 'text', defaultValue: '$159.00 MXN' }
+        ],
+        render: ({ memberName, renewalDate, amount }) => {
+            const content = `Hola,
+
+Te recordamos que tu membresía de Club Pata Amiga está próxima a renovarse automáticamente.
+
+Detalles de la renovación:
+- **Fecha de cargo:** ${renewalDate}
+- **Monto de cobro:** ${amount}
+
+No tienes que realizar ninguna acción, el cobro se procesará de forma segura a tu método de pago registrado para mantener la protección ininterrumpida de tus mascotas.
+
+Si requieres actualizar tus datos de facturación o cambiar de plan, puedes hacerlo desde tu portal de configuración de cuenta.`;
+            return buildBrandedEmailHtml({
+                memberName,
+                subject: 'Recordatorio de renovación de membresía 🐾',
+                content,
+                audience: 'member'
+            });
+        }
     }
 ];
 

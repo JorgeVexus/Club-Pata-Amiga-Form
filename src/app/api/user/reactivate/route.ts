@@ -63,7 +63,11 @@ export async function POST(request: NextRequest) {
 
         if (relevantSubs.length === 0) {
             return NextResponse.json(
-                { success: false, error: 'No se encontró suscripción activa en Stripe' },
+                { 
+                    success: false, 
+                    code: 'SUBSCRIPTION_EXPIRED', 
+                    error: 'Tu suscripción anterior ha expirado por completo y no se puede reactivar. Por favor contrata una nueva membresía.' 
+                },
                 { status: 400 }
             );
         }

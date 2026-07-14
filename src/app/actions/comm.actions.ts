@@ -543,6 +543,153 @@ Si consideras que esto es un error o deseas apelar esta decisión, por favor con
     });
 }
 
+/**
+ * Envía correo de aprobación de membresía
+ */
+export async function sendMembershipApprovedEmail(params: {
+    userId: string;
+    email: string;
+    name: string;
+}) {
+    const { userId, email, name } = params;
+    const subject = '¡Tu membresía ha sido aprobada! 🎉';
+    const content = `¡Excelentes noticias!
+
+Tu solicitud de membresía en Club Pata Amiga ha sido aprobada oficialmente por nuestro equipo administrativo.
+
+Ya puedes acceder a todos tus beneficios, asistencias médicas y coberturas de emergencia ingresando a tu cuenta.
+
+¡Gracias por unirte a la manada más grande de México! 🐾`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        memberName: name,
+        metadata: { type: 'membership_approved' }
+    });
+}
+
+export async function sendPetStatusEmail(params: {
+    userId: string;
+    email: string;
+    name: string;
+    petName: string;
+    status: 'approved' | 'rejected' | 'action_required';
+    reason: string;
+}) {
+    const { userId, email, name, petName, status, reason } = params;
+    
+    let subject = '';
+    let content = '';
+
+    if (status === 'approved') {
+        subject = `¡Tu mascota ${petName} ha sido aprobada! 🎉`;
+        content = `¡Excelentes noticias!
+
+Tu mascota ${petName} ha sido aprobada por nuestro equipo veterinario.
+
+Ya forma parte oficial de la familia de Club Pata Amiga. Puedes consultar su credencial y detalles de cobertura desde tu perfil de miembro.
+
+¡Gracias por cuidar tan bien de tu peludo! 🐾`;
+    } else if (status === 'action_required') {
+        subject = `📋 Acción requerida para aprobar a ${petName}`;
+        content = `Hola,
+        
+Necesitamos tu ayuda para completar el registro de ${petName}. Durante la revisión de su expediente, detectamos que se requiere corregir o subir información adicional.
+
+Detalle de la solicitud:
+"${reason}"
+
+Por favor ingresa a tu perfil de miembro para subir los documentos correctos y continuar con la activación. Muchas gracias.`;
+    } else {
+        subject = `❌ Actualización sobre la solicitud de ${petName}`;
+        content = `Hola,
+
+Lamentamos informarte que la solicitud de membresía para tu mascota ${petName} no ha podido ser aprobada por el siguiente motivo:
+
+"${reason}"
+
+Si tienes alguna duda o consideras que esto es un error, puedes iniciar un proceso de apelación desde tu panel de usuario o responder a este correo para apoyarte.`;
+    }
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        memberName: name,
+        metadata: { type: `pet_status_${status}`, petName }
+    });
+}
+
+/**
+ * Envía correo de confirmación de cancelación
+ */
+export async function sendCancellationEmail(params: {
+    userId: string;
+    email: string;
+    name: string;
+    endDate: string;
+}) {
+    const { userId, email, name, endDate } = params;
+    const subject = 'Confirmación de cancelación de membresía 🔴';
+    const content = `Hola,
+
+Lamentamos mucho que tengas que dejarnos. Te confirmamos que tu solicitud de cancelación ha sido procesada correctamente.
+
+Tu cobertura y acceso a los beneficios médicos continuarán activos hasta el fin del periodo pagado el día:
+👉 **${endDate}**
+
+Después de esta fecha, el cobro automático se suspenderá definitivamente y la protección de tus mascotas será desactivada.
+
+Si cambias de opinión, puedes reactivar tu membresía en cualquier momento antes de esta fecha desde tu perfil de usuario. ¡Siempre serás bienvenido!`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        memberName: name,
+        metadata: { type: 'membership_cancelled', endDate }
+    });
+}
+
+/**
+ * Envía correo de recordatorio de renovación
+ */
+export async function sendRenewalReminderEmail(params: {
+    userId: string;
+    email: string;
+    name: string;
+    renewalDate: string;
+    amount: string;
+}) {
+    const { userId, email, name, renewalDate, amount } = params;
+    const subject = 'Recordatorio de renovación de membresía 🐾';
+    const content = `Hola,
+
+Te recordamos que tu membresía de Club Pata Amiga está próxima a renovarse automáticamente.
+
+Detalles de la renovación:
+- **Fecha de cargo:** ${renewalDate}
+- **Monto de cobro:** ${amount}
+
+No tienes que realizar ninguna acción, el cobro se procesará de forma segura a tu método de pago registrado para mantener la protección ininterrumpida de tus mascotas.
+
+Si requieres actualizar tus datos de facturación o cambiar de plan, puedes hacerlo desde tu portal de configuración de cuenta.`;
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content,
+        memberName: name,
+        metadata: { type: 'renewal_reminder', renewalDate, amount }
+    });
+}
+
 
 
 

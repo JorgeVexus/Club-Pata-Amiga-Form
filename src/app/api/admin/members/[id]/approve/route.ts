@@ -11,6 +11,7 @@ import { registerUserInSupabase } from '@/app/actions/user.actions';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import { getStripeMembershipFields } from '@/lib/stripe-membership';
+import { sendMembershipApprovedEmail } from '@/app/actions/comm.actions';
 
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
@@ -148,6 +149,22 @@ export async function POST(
             icon: '🎉',
             link: '/dashboard'
         });
+
+        // Enviar correo de aprobación transaccional
+        try {
+            const memberEmail = result.data?.auth?.email;
+            const memberName = result.data?.customFields?.['first-name'] || 'Miembro';
+            if (memberEmail) {
+                await sendMembershipApprovedEmail({
+                    userId: memberId,
+                    email: memberEmail,
+                    name: memberName
+                });
+                console.log(`[Approve] Email de aprobación enviado a ${memberEmail}`);
+            }
+        } catch (emailErr) {
+            console.error('[Approve] Error enviando email de aprobación (no crítico):', emailErr);
+        }
 
         // Actualizar estados en Supabase
         const { error: supabaseError } = await supabaseAdmin

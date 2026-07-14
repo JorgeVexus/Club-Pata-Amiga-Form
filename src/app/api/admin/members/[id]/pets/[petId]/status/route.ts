@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
-import { sendAppealResolutionEmail } from '@/app/actions/comm.actions';
+import { sendAppealResolutionEmail, sendPetStatusEmail } from '@/app/actions/comm.actions';
 import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { getPetCarenciaDate } from '@/utils/carencia.utils';
@@ -304,6 +304,29 @@ export async function POST(
                 }
             } catch (emailError) {
                 console.error('[Pet Status] Error enviando email de apelación (no crítico):', emailError);
+            }
+        } else if (!wasAppealed && (status === 'approved' || status === 'rejected' || status === 'action_required')) {
+            try {
+                const { data: user } = await supabaseAdmin
+                    .from('users')
+                    .select('email, first_name, last_name')
+                    .eq('memberstack_id', memberId)
+                    .single();
+
+                if (user?.email) {
+                    const fullName = `${user.first_name || ''} ${user.last_name || ''}`.trim() || 'Miembro';
+                    await sendPetStatusEmail({
+                        userId: memberId,
+                        email: user.email,
+                        name: fullName,
+                        petName: pet.name,
+                        status: status as 'approved' | 'rejected' | 'action_required',
+                        reason: adminNotes || 'Revisión de expediente de mascota.'
+                    });
+                    console.log(`[Pet Status] Email transaccional de estado (${status}) enviado a ${user.email}`);
+                }
+            } catch (emailError) {
+                console.error('[Pet Status] Error enviando email de estado (no crítico):', emailError);
             }
         }
 
