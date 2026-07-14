@@ -291,11 +291,11 @@ function DashboardContent() {
 
     async function loadPendingCounts(isSuper: boolean = false, overrideId?: string) {
         try {
-            const response = await adminFetch('/api/admin/members?status=pending');
+            const response = await adminFetch('/api/admin/members?status=all');
             const data = await response.json();
             if (data.success && data.members) {
                 const checkIsPaid = (m: any) => m.planConnections?.some((p: any) => p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing');
-                setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m)).length }));
+                setPendingCounts(prev => ({ ...prev, member: data.members.filter((m: any) => checkIsPaid(m) && (m.pendingPetCount || 0) > 0).length }));
             }
             if (isSuper) {
                 const appealRes = await adminFetch('/api/admin/pets/appealed');

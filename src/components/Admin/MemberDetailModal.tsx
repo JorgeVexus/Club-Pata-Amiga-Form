@@ -591,6 +591,11 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const fields = member.customFields || {};
     const registrationIssue = member.registrationIssue as string | null | undefined;
     const needsPetRecovery = registrationIssue === 'paid_without_pets' || registrationIssue === 'paid_without_complete_pet_rows';
+    const hasActiveMembershipPlan = member.planConnections?.some((plan: any) => {
+        const status = String(plan?.status || '').toLowerCase();
+        return status === 'active' || status === 'trialing';
+    });
+    const isMemberApprovedByPayment = hasActiveMembershipPlan && fields['approval-status'] !== 'rejected';
 
     // 🆕 Lógica reforzada para detectar extranjeros
     const nationalityValue = (supabaseUser?.nationality || fields['nationality'] || '').toLowerCase();
@@ -1719,7 +1724,7 @@ return (
                 </div>
 
                 <div className={styles.footer}>
-                    {fields['approval-status'] !== 'approved' && (
+                    {fields['approval-status'] !== 'approved' && !isMemberApprovedByPayment && (
                         <>
                             <button
                                 className={`${styles.actionButton} ${styles.approveButton}`}
@@ -1757,7 +1762,7 @@ return (
                             {isRefunding ? '⏳ Procesando...' : '💳 Reembolsar Pago'}
                         </button>
                     )}
-                    {fields['approval-status'] === 'approved' && (
+                    {(fields['approval-status'] === 'approved' || isMemberApprovedByPayment) && (
                         <button
                             className={`${styles.actionButton}`}
                             style={{

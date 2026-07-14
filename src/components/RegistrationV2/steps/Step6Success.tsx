@@ -9,17 +9,27 @@ import { trackCompleteRegistration } from '@/components/Analytics/MetaPixel';
 
 interface Step6SuccessProps {
     petName: string;
+    petNames?: string[];
     member?: any;
     userEmail?: string;
 }
 
-export default function Step6Success({ petName, member, userEmail }: Step6SuccessProps) {
+function formatPetNames(names: string[]) {
+    const cleanedNames = names.map((name) => name.trim()).filter(Boolean);
+    if (cleanedNames.length === 0) return 'tu mascota';
+    if (cleanedNames.length === 1) return cleanedNames[0];
+    if (cleanedNames.length === 2) return `${cleanedNames[0]} y ${cleanedNames[1]}`;
+    return `${cleanedNames.slice(0, -1).join(', ')} y ${cleanedNames[cleanedNames.length - 1]}`;
+}
+
+export default function Step6Success({ petName, petNames = [], member, userEmail }: Step6SuccessProps) {
     const loginUrl = 'https://www.pataamiga.mx/user/inicio-de-sesion';
     const [isLoggingOut, setIsLoggingOut] = useState(false);
     const [showBillingModal, setShowBillingModal] = useState(false);
     const [wantsBilling, setWantsBilling] = useState(false);
     const [billingSaved, setBillingSaved] = useState(false);
     const [isSavingBilling, setIsSavingBilling] = useState(false);
+    const petsReviewLabel = formatPetNames(petNames.length > 0 ? petNames : [petName]);
 
     // Trackear finalización exitosa al montar
     useEffect(() => {
@@ -99,12 +109,12 @@ export default function Step6Success({ petName, member, userEmail }: Step6Succes
 
                     <div className={styles.formHeader}>
                         <div className={styles.successIcon}>🎉</div>
-                        <h2 className={styles.formTitle}>¡Todo listo!</h2>
+                        <h2 className={styles.formTitle}>Ya estás en la manada</h2>
                         <h3 className={styles.formSubtitle}>
-                            El registro de {petName || 'tu mascota'} ha sido completado.
+                            Tu membresía ya quedó activa.
                         </h3>
                         <p className={styles.formDescription}>
-                            Recibirás una notificación una vez que {petName || 'tu mascota'} sea aprobada.
+                            Revisaremos la información de {petsReviewLabel} y te notificaremos el resultado de cada mascota.
                         </p>
                     </div>
 

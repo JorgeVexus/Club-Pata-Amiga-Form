@@ -4349,8 +4349,9 @@
             }
 
             // 2. Member Pending (Waiting Approval)
-            const isWaitingApproval = this.membershipStatus === 'waiting_approval' || this.membershipStatus === 'pending_approval';
-            if (isWaitingApproval) {
+            const hasPets = this.pets && this.pets.length > 0;
+            const isLegacyMemberReviewStatus = this.membershipStatus === 'waiting_approval' || this.membershipStatus === 'pending_approval';
+            if (isLegacyMemberReviewStatus && !hasPets) {
                 this.container.innerHTML = this.renderMemberPendingView(firstName);
                 this.container.classList.add('show');
                 this.hideGlobalLoaders();
@@ -4359,7 +4360,6 @@
 
             // 3. Dashboard View (Active, Approved)
             const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
-            const hasPets = this.pets && this.pets.length > 0;
 
             console.log(`📊 Unified Widget: Global Status="${this.membershipStatus}", Current Pet="${pet?.name}", PetsCount=${this.pets.length}`);
 

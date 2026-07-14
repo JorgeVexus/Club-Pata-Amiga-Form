@@ -7,8 +7,8 @@ import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
  * POST /api/admin/migrate-payment-status
  *
  * Migra miembros que tienen payment-status: 'completed' pero no tienen
- * approval-status definido. Les establece approval-status: 'pending'
- * para que aparezcan en el dashboard de admin.
+ * approval-status definido. Les establece approval-status: 'approved'
+ * porque el pago confirmado activa la membresia automaticamente.
  *
  * Ejecutar: curl -X POST http://localhost:3000/api/admin/migrate-payment-status
  * o hacer una petición POST desde el navegador/swagger
@@ -61,7 +61,9 @@ export async function POST(request: NextRequest) {
                 console.log(`⏳ Actualizando ${memberId}...`);
 
                 const updateResult = await memberstackAdmin.updateMemberFields(memberId, {
-                    'approval-status': 'pending',
+                    'approval-status': 'approved',
+                    'approved-at': new Date().toISOString(),
+                    'approved-by': 'payment_status_migration',
                     'migrated-at': new Date().toISOString(),
                 });
 

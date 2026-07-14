@@ -232,8 +232,8 @@ async function updateMemberStatusFromPets(memberstackId: string, userId: string)
         await supabaseAdmin
             .from('users')
             .update({
-                membership_status: derivedStatus,
-                approval_status: derivedStatus === 'appealed' ? 'appealed' : undefined
+                membership_status: 'active',
+                approval_status: 'approved'
             })
             .eq('memberstack_id', memberstackId);
 

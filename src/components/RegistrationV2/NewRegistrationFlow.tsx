@@ -29,7 +29,7 @@ import RegistrationPromoMarquee from './RegistrationPromoMarquee';
 import Toast from '@/components/UI/Toast';
 
 // Servicios
-import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId, registerPetsInSupabase } from '@/app/actions/user.actions';
+import { registerUserInSupabase, getUserDataByMemberstackId, getPetsByUserId, registerPetsInSupabase, activateMemberAfterPayment } from '@/app/actions/user.actions';
 import { trackLead, trackCompleteRegistration, trackEvent } from '@/components/Analytics/MetaPixel';
 import { trackGTMPurchase } from '@/components/Analytics/GoogleTagManager';
 import { calculateWaitingPeriod } from '@/services/pet.service';
@@ -554,8 +554,12 @@ export default function NewRegistrationFlow() {
                                     customFields: {
                                         'payment-status': 'completed',
                                         'registration-step': 4,
-                                        'checkout-pending': false
+                                        'checkout-pending': false,
+                                        'approval-status': 'approved'
                                     }
+                                });
+                                activateMemberAfterPayment(msId, 'payment_success_redirect').catch((err) => {
+                                    console.error('⚠️ No se pudo activar miembro tras redirect de pago:', err);
                                 });
                                 saveProgress(4, loadedData);
                             }
@@ -1247,11 +1251,12 @@ export default function NewRegistrationFlow() {
                     customFields: {
                         'payment-status': 'completed',
                         'registration-step': 4,
-                        'approval-status': 'pending',
+                        'approval-status': 'approved',
                         'ambassador-code': referralCode || '',
                         'checkout-pending': false
                     },
                 });
+                await activateMemberAfterPayment(memberId, 'memberstack_checkout');
                 if (updatedMember && memberId) {
                     setMember({ id: memberId, ...(updatedMember || {}) });
                 }
@@ -1367,9 +1372,10 @@ export default function NewRegistrationFlow() {
                         'registration-step': 4,
                         'selected-plan-id': planId,
                         'payment-status': 'completed',
-                        'approval-status': 'pending'
+                        'approval-status': 'approved'
                     },
                 });
+                await activateMemberAfterPayment(memberId, 'skip_payment');
                 if (updatedMember) setMember({ id: memberId, ...(updatedMember || {}) });
             }
 
@@ -1545,7 +1551,7 @@ export default function NewRegistrationFlow() {
                 customFields: {
                     'registration-step': 6,
                     'registration-completed': true,
-                    'approval-status': 'pending',
+                    'approval-status': 'approved',
                     'registration-source': 'Membresía',
                 },
             });
@@ -1711,6 +1717,7 @@ export default function NewRegistrationFlow() {
                                 return (
                                     <Step6Success
                                         petName={Array.isArray(registrationData.petBasic) ? (registrationData.petBasic[0]?.petName || '') : ''}
+                                        petNames={Array.isArray(registrationData.petBasic) ? registrationData.petBasic.map((pet) => pet.petName).filter(Boolean) : []}
                                         member={member}
                                         userEmail={registrationData.account?.email}
                                     />

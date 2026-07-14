@@ -230,8 +230,9 @@ export default function RequestsTable({
 
             if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'terminate-users') {
                 // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
+                const memberStatusParam = requestType === 'member' ? 'all' : statusParam;
                 promises.push(
-                    adminFetch(`/api/admin/members?status=${statusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}&includeCancelled=true`)
+                    adminFetch(`/api/admin/members?status=${memberStatusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}&includeCancelled=true`)
                         .then(res => res.json())
                         .then(data => ({ type: 'member', data }))
                 );
@@ -339,13 +340,15 @@ export default function RequestsTable({
                 const roles: ('member' | 'ambassador' | 'wellness-center')[] = [];
                 if (petCount > 0) roles.push('member'); // Only if has pets
                 if (email && ambassadorEmails.has(email)) roles.push('ambassador');
+                const rawApprovalStatus = member.customFields?.['approval-status'] || 'pending';
+                const memberReviewStatus = isPaid && rawApprovalStatus !== 'rejected' ? 'approved' : rawApprovalStatus;
 
                 combinedRequests.push({
                     id: member.id,
                     name: name || 'Sin nombre',
                     email: member?.auth?.email || 'Sin email',
                     submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
-                    status: member.customFields?.['approval-status'] || 'pending',
+                    status: memberReviewStatus,
                     petCount: petCount,
                     pendingPetCount: member.pendingPetCount || 0,
                     infoStatus: member.infoStatus || 'complete',
@@ -394,7 +397,10 @@ export default function RequestsTable({
         .filter(req => {
             if (sortFilter === 'approved') return req.status === 'approved';
             if (sortFilter === 'rejected') return req.status === 'rejected';
-            if (sortFilter === 'recents' || sortFilter === 'oldest') return req.status === 'pending';
+            if (sortFilter === 'recents' || sortFilter === 'oldest') {
+                if (requestType === 'member') return req.status === 'pending' || (req.pendingPetCount || 0) > 0;
+                return req.status === 'pending';
+            }
             return true;
         })
         .filter(req => {

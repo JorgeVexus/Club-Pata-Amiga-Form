@@ -3,8 +3,8 @@
 import { createClient } from '@supabase/supabase-js'
 
 import Stripe from 'stripe'
-import { getMemberDetails } from '@/services/memberstack-admin.service'
-import { upsertContact, updateContact, updateContactAsActive, type ContactData } from '@/services/crm.service'
+import { getMemberDetails, updateMemberData } from '@/services/memberstack-admin.service'
+import { upsertContact, updateContact, type ContactData } from '@/services/crm.service'
 import { enrichPetsWithLifecycle } from '@/utils/pet-lifecycle'
 import {
     getMissingCompletePetFields,
@@ -161,7 +161,8 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             ine_front_url: userData.ine_front_url || userData.passportUrl,
             // Tracking
             registration_step: userData.registration_step,
-            membership_status: userData.membership_status || 'pending',
+            membership_status: userData.membership_status,
+            approval_status: userData.approval_status,
             // Mascotas (campos temporales en users si se usan para tracking rápido)
             pet_name: userData.pet_name || userData.petName,
             pet_type: userData.pet_type || userData.petType,
@@ -186,8 +187,7 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
             Object.entries(dataToSave).filter(([key, v]) => {
                 // memberstack_id siempre se envía (es la clave de conflicto)
                 if (key === 'memberstack_id') return true;
-                // registration_step y membership_status siempre se envían
-                if (key === 'registration_step' || key === 'membership_status') return true;
+                if (key === 'registration_step') return true;
                 // El resto solo se envía si tiene un valor real
                 return v !== undefined && v !== null && v !== '';
             })
@@ -249,6 +249,59 @@ export async function registerUserInSupabase(userData: any, memberstackId: strin
     } catch (error: any) {
         console.error('❌ [Server Action] Error inesperado:', error)
         return { success: false, error: error.message }
+    }
+}
+
+/**
+ * Activa al usuario como miembro cuando el pago ya fue confirmado.
+ * La revision posterior vive en cada mascota, no en la solicitud global del miembro.
+ */
+export async function activateMemberAfterPayment(memberstackId: string, source: string = 'payment_auto_approval') {
+    console.log('✅ [Membership] Activando miembro por pago confirmado:', { memberstackId, source });
+
+    if (!memberstackId) {
+        return { success: false, error: 'memberstackId requerido' };
+    }
+
+    const supabase = getServiceRoleClient();
+    if (!supabase) {
+        return { success: false, error: 'Configuración de servidor incompleta' };
+    }
+
+    const approvedAt = new Date().toISOString();
+
+    try {
+        const memberstackResult = await updateMemberData(memberstackId, {
+            customFields: {
+                'approval-status': 'approved',
+                'approved-at': approvedAt,
+                'approved-by': source,
+            },
+        });
+
+        if (!memberstackResult.success) {
+            console.warn('⚠️ [Membership] No se pudo actualizar Memberstack:', memberstackResult.error);
+        }
+
+        const { error } = await supabase
+            .from('users')
+            .update({
+                approval_status: 'approved',
+                membership_status: 'active',
+                approved_at: approvedAt,
+                approved_by: source,
+            })
+            .eq('memberstack_id', memberstackId);
+
+        if (error) {
+            console.error('❌ [Membership] Error activando miembro en Supabase:', error);
+            return { success: false, error: error.message };
+        }
+
+        return { success: true };
+    } catch (error: any) {
+        console.error('❌ [Membership] Error inesperado activando miembro:', error);
+        return { success: false, error: error.message };
     }
 }
 
