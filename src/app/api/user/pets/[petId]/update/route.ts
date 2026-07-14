@@ -8,6 +8,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { getMissingCompletePetFields } from '@/utils/pet-required-fields';
+import {
+    buildPetUpdateNotificationMessage,
+    getPetUpdateLabels,
+} from '@/utils/pet-update-notification';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -286,6 +290,8 @@ export async function POST(
             return NextResponse.json({ error: `Error DB (Update): ${updateError.message}` }, { status: 500, headers: corsHeaders });
         }
 
+        const updatedLabels = getPetUpdateLabels(body, pet);
+
         // 5. Registrar en logs
         console.log('✍️ Insertando en appeal_logs...');
         const { error: logError } = await supabaseAdmin
@@ -301,7 +307,8 @@ export async function POST(
                     photo3_updated: photo3Url !== undefined,
                     photo4_updated: photo4Url !== undefined,
                     photo5_updated: photo5Url !== undefined,
-                    vet_certificate_updated: vetCertificateUrl !== undefined
+                    vet_certificate_updated: vetCertificateUrl !== undefined,
+                    updated_fields: updatedLabels
                 },
                 created_at: new Date().toISOString()
             });
@@ -313,6 +320,11 @@ export async function POST(
         // 6. Crear notificación para admins
         console.log('🔔 Creando notificación admin...');
         const ownerName = `${owner.first_name || ''} ${owner.last_name || ''}`.trim() || 'Usuario';
+        const notificationMessage = buildPetUpdateNotificationMessage({
+            ownerName,
+            petName: pet.name,
+            updatedLabels
+        });
         
         const { error: notificationError } = await supabaseAdmin
             .from('notifications')
@@ -320,11 +332,11 @@ export async function POST(
                 user_id: 'admin',
                 type: 'account',
                 title: `📎 ${ownerName} actualizó información`,
-                message: `${ownerName} actualizó las fotos de ${pet.name}.`,
+                message: notificationMessage,
                 icon: '📎',
                 link: `/admin/dashboard?member=${userId}`,
                 is_read: false,
-                metadata: { petId, petName: pet.name, userId, ownerId: owner.id, ownerName },
+                metadata: { petId, petName: pet.name, userId, ownerId: owner.id, ownerName, updatedFields: updatedLabels },
                 created_at: new Date().toISOString()
             });
 
