@@ -39,11 +39,12 @@ export interface StripeMembershipFields {
     paymentDate?: string;    // fecha del último pago procesado (YYYY-MM-DD)
     paymentMethod?: string;  // método de pago mapeado al catálogo de Lynsales
     renewalDate?: string;    // próximo cobro estimado (YYYY-MM-DD)
+    couponCode?: string;     // código de cupón o promoción utilizado (ej. PET10)
 }
 
 /**
  * Dado un subscriptionId de Stripe, devuelve los campos de membresía
- * (método de pago, fecha de pago, fecha de renovación) listos para el CRM.
+ * (método de pago, fecha de pago, fecha de renovación, cupón) listos para el CRM.
  * Best-effort: cualquier campo que no se pueda resolver se omite.
  */
 export async function getStripeMembershipFields(
@@ -52,7 +53,12 @@ export async function getStripeMembershipFields(
 ): Promise<StripeMembershipFields> {
     try {
         const subscription = (await stripe.subscriptions.retrieve(subscriptionId, {
-            expand: ['default_payment_method', 'latest_invoice.payment_intent.payment_method'],
+            expand: [
+                'default_payment_method', 
+                'latest_invoice.payment_intent.payment_method',
+                'discount.promotion_code',
+                'latest_invoice.discount.promotion_code'
+            ],
         })) as any;
 
         // Fecha de renovación = fin del período actual
@@ -66,10 +72,19 @@ export async function getStripeMembershipFields(
             subscription.default_payment_method?.type ||
             subscription.latest_invoice?.payment_intent?.payment_method?.type;
 
+        // Obtener código de cupón / código de promoción si aplica
+        const couponCode = 
+            subscription.discount?.promotion_code?.code || 
+            subscription.discount?.coupon?.id || 
+            subscription.latest_invoice?.discount?.promotion_code?.code ||
+            subscription.latest_invoice?.discount?.coupon?.id ||
+            undefined;
+
         return {
             paymentDate,
             paymentMethod: mapStripePaymentMethod(pmType),
             renewalDate,
+            couponCode,
         };
     } catch (error: any) {
         console.error('[Stripe] Error obteniendo campos de membresía:', error.message);

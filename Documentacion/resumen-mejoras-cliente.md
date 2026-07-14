@@ -28,7 +28,7 @@ Este documento detalla, en un lenguaje sencillo y libre de términos técnicos, 
 
 ### 2. Auto-Gestión para Cambiar de Plan (Upgrade/Downgrade)
 * **Antes**: Un miembro no tenía ninguna forma de cambiar de plan (por ejemplo, pasar de mensual a anual para ahorrar, o viceversa) de manera digital y autónoma.
-* **Ahora**: Se integró la opción de **"Cambiar Plan"** directamente en la tarjeta de membresía del perfil del usuario en Webflow:
+* **Ahora**: Se integró la opción de **"Cambiar Plan"** directamente en la tarjeta de membresía del perfil del usuario en Webflow y en los ajustes de perfil con notificaciones a admins cuando alguien cambia su plan. 
   - **De Mensual a Anual**: Se procesa al instante. Se calcula la diferencia a pagar por los días restantes del mes y se inicia la cobertura anual inmediatamente.
   - **De Anual a Mensual**: Para no perjudicar al usuario cobrándole de más o perdiendo días, el cambio se programa de forma automática para aplicarse únicamente en su próxima fecha de renovación anual.
 

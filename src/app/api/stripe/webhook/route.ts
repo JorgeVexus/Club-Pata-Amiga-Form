@@ -116,21 +116,6 @@ export async function POST(request: NextRequest) {
 
             case 'invoice.payment_succeeded': {
                 const invoice = event.data.object as any;
-                // Solo renovaciones (ciclo/actualización); el primer pago lo maneja la aprobación
-                const isRenewal =
-                    invoice.billing_reason === 'subscription_cycle' ||
-                    invoice.billing_reason === 'subscription_update';
-                if (!isRenewal) break;
-
-                const contactId = await resolveCrmContactId(
-                    invoice.customer,
-                    invoice.customer_email
-                );
-                if (!contactId) {
-                    console.warn('[Stripe Webhook] Renovación sin crm_contact_id, se omite');
-                    break;
-                }
-
                 const paidAt = toCrmDate(invoice.status_transitions?.paid_at || invoice.created);
 
                 // El campo de suscripción cambió de lugar según la versión de API de Stripe:
@@ -141,15 +126,61 @@ export async function POST(request: NextRequest) {
                     invoice.lines?.data?.[0]?.subscription ||
                     invoice.lines?.data?.[0]?.parent?.subscription_item_details?.subscription;
 
-                let stripeFields = {};
+                let stripeFields: any = {};
                 if (subscriptionId) {
                     stripeFields = await getStripeMembershipFields(stripe, subscriptionId);
+                }
+
+                // Guardar en Supabase para todos los pagos (primer pago y renovaciones)
+                try {
+                    const userEmail = invoice.customer_email;
+                    const customerId = invoice.customer;
+
+                    const { data: dbUser } = await supabaseAdmin
+                        .from('users')
+                        .select('id')
+                        .or(`email.eq.${userEmail},stripe_customer_id.eq.${customerId}`)
+                        .maybeSingle();
+
+                    if (dbUser) {
+                        const updateData: any = {
+                            payment_completed_at: paidAt ? new Date(paidAt).toISOString() : new Date().toISOString(),
+                        };
+                        if (stripeFields.couponCode) {
+                            updateData.coupon_code = stripeFields.couponCode;
+                        }
+                        await supabaseAdmin
+                            .from('users')
+                            .update(updateData)
+                            .eq('id', dbUser.id);
+                        console.log('[Stripe Webhook] ✅ Supabase actualizado con fecha de pago y cupón:', updateData);
+                    }
+                } catch (dbErr) {
+                    console.error('[Stripe Webhook] Error actualizando Supabase:', dbErr);
+                }
+
+                // Solo renovaciones (ciclo/actualización); el primer pago lo maneja la aprobación
+                const isRenewal =
+                    invoice.billing_reason === 'subscription_cycle' ||
+                    invoice.billing_reason === 'subscription_update';
+                if (!isRenewal) {
+                    console.log('[Stripe Webhook] Primer pago detectado, omitiendo sync CRM (lo maneja la aprobación)');
+                    break;
+                }
+
+                const contactId = await resolveCrmContactId(
+                    invoice.customer,
+                    invoice.customer_email
+                );
+                if (!contactId) {
+                    console.warn('[Stripe Webhook] Renovación sin crm_contact_id, se omite');
+                    break;
                 }
 
                 await syncMembership(contactId, {
                     status: 'activo',
                     renewalPaymentDate: paidAt,
-                    ...stripeFields, // incluye renewalDate (próximo cobro) y paymentMethod
+                    ...stripeFields, // incluye renewalDate (próximo cobro), paymentMethod y couponCode
                 });
                 console.log('[Stripe Webhook] ✅ Renovación sincronizada con CRM:', contactId);
                 break;
@@ -197,15 +228,20 @@ export async function POST(request: NextRequest) {
                     }
                     // Sync CRM solo si tenemos el contactId
                     if (contactId) {
-                        await syncMembership(contactId, { status: 'cancelado' });
-                        await removeContactTags(contactId, [CRM_ACTIVE_TAG]);
+                        await syncMembership(contactId, { 
+                            status: 'cancelado',
+                            tags: ['miembro inactivo']
+                        });
                         console.log('[Stripe Webhook] ✅ Cancelación voluntaria sincronizada con CRM:', contactId);
                     }
                 } else {
                     // Churn por impago: marcar como no_renovado en CRM
-                    if (!contactId) break;
-                    await syncMembership(contactId, { status: 'no_renovado' });
-                    await removeContactTags(contactId, [CRM_ACTIVE_TAG]);
+                    if (contactId) {
+                        await syncMembership(contactId, { 
+                            status: 'no_renovado',
+                            tags: ['miembro inactivo']
+                        });
+                    }
                     // También cerrar en Supabase
                     if (email) {
                         await supabaseAdmin

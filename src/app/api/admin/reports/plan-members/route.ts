@@ -129,7 +129,7 @@ export async function GET(request: NextRequest) {
         // Consultar información básica del usuario en Supabase (Saltando RLS)
         const { data: dbUsers, error: dbUsersError } = await supabaseAdmin
             .from('users')
-            .select('id, memberstack_id, email, crm_contact_id, ambassador_code, first_name, last_name, created_at')
+            .select('id, memberstack_id, email, crm_contact_id, ambassador_code, first_name, last_name, created_at, payment_completed_at, coupon_code')
             .in('memberstack_id', msIds);
 
         if (dbUsersError) {
@@ -281,6 +281,8 @@ export async function GET(request: NextRequest) {
                 ambassadorName,
                 isTest,
                 crmContactId: dbUser?.crm_contact_id || m.customFields?.['crm-contact-id'] || null,
+                paymentDate: dbUser?.payment_completed_at || null,
+                couponCode: dbUser?.coupon_code || null,
                 cancellationDetails: cancellation ? {
                     cancellationDate: cancellation.cancellation_date,
                     endDate: cancellation.membership_end_date,

@@ -246,7 +246,7 @@ export async function POST(
                         status: 'activo',
                         type: userForCrm.membership_type || 'Mensual',
                         cost: userForCrm.membership_cost || '$159',
-                        addTags: [CRM_ACTIVE_TAG],
+                        tags: [CRM_ACTIVE_TAG],
                     });
                     console.log('[Pet Status] CRM: Miembro marcado como activo:', crmResult.success);
                 } else {

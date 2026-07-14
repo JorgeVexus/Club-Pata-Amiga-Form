@@ -151,7 +151,7 @@ export async function POST(
             status: 'activo',
             type: planType,
             cost: planCost,
-            addTags: [CRM_ACTIVE_TAG],
+            tags: [CRM_ACTIVE_TAG],
             ...stripeFields,
         });
 

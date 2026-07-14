@@ -44,9 +44,8 @@ export async function POST(
                 { error: result.error },
                 { status: 500 }
             );
-        }
-
-        // Sincronizar con CRM - Marcar como "miembro activo"
+        }        // Sincronizar con CRM - Marcar como "miembro activo"
+        let stripeFields: any = {};
         try {
             const memberEmail = result.data?.auth?.email;
             console.log('🔍 CRM Debug: Buscando usuario. memberstack_id:', memberId, 'email:', memberEmail);
@@ -97,9 +96,9 @@ export async function POST(
 
                     // Lógica idéntica a la del Dashboard Admin (stripe-data/route.ts)
                     const isAnnualKeyword = planName.includes('anual') || 
-                                          planName.includes('annual') || 
-                                          planName.includes('year') || 
-                                          planName.includes('año');
+                                           planName.includes('annual') || 
+                                           planName.includes('year') || 
+                                           planName.includes('año');
                     
                     // Si tiene keyword anual O el monto es mayor a 1000 (indicador fuerte de plan anual de 1699 vs 159 mensual)
                     if (priceId === 'prc_anual-o9d101ta' || isAnnualKeyword || amount > 1000) {
@@ -117,7 +116,6 @@ export async function POST(
 
 
                 // 2. Obtener método de pago y fechas reales desde Stripe (best-effort)
-                let stripeFields = {};
                 if (subscriptionId && process.env.STRIPE_SECRET_KEY) {
                     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
                     stripeFields = await getStripeMembershipFields(stripe, subscriptionId);
@@ -129,7 +127,7 @@ export async function POST(
                     status: 'activo',
                     type: planType,
                     cost: planCost,
-                    addTags: [CRM_ACTIVE_TAG],
+                    tags: [CRM_ACTIVE_TAG],
                     ...stripeFields,
                 });
                 console.log('✅ CRM: Miembro marcado como activo:', crmResult.success);
@@ -167,14 +165,23 @@ export async function POST(
         }
 
         // Actualizar estados en Supabase
+        const updatePayload: any = {
+            approval_status: 'approved',
+            membership_status: 'active',
+            approved_at: new Date().toISOString(),
+            approved_by: adminId || 'admin'
+        };
+
+        if (stripeFields.paymentDate) {
+            updatePayload.payment_completed_at = new Date(stripeFields.paymentDate).toISOString();
+        }
+        if (stripeFields.couponCode) {
+            updatePayload.coupon_code = stripeFields.couponCode;
+        }
+
         const { error: supabaseError } = await supabaseAdmin
             .from('users')
-            .update({
-                approval_status: 'approved',
-                membership_status: 'active',
-                approved_at: new Date().toISOString(),
-                approved_by: adminId || 'admin'
-            })
+            .update(updatePayload)
             .eq('memberstack_id', memberId);
 
         if (supabaseError) {

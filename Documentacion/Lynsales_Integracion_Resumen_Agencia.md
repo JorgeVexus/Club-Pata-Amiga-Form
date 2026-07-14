@@ -32,8 +32,8 @@ Mapeamos el ciclo de vida de la membresía a las llamadas de su API así:
 | 2 | Pago exitoso + membresía aprobada | `PUT /contacts/:id` | Tag `miembro activo` + custom fields de membresía |
 | 3 | Membresía aprobada | `PUT /contacts/:id` | `estatus_membresia = activo` (incluido en el mismo PUT del evento 2) |
 | 4 | Renovación exitosa (cobro recurrente) | `PUT /contacts/:id` | `fecha_pago_renovacion` + `fecha_renovacion` |
-| 5 | Fallo de pago / no renovación | `PUT /contacts/:id` | `estatus_membresia = pendiente_pago` o `no_renovado` |
-| 6 | Usuario cancela | `PUT /contacts/:id` + `DELETE /contacts/:id/tags` | `estatus_membresia = cancelado` y quitar tag `miembro activo` |
+| 5 | Fallo de pago / no renovación | `PUT /contacts/:id` | `estatus_membresia = pendiente_pago` o `no_renovado` + Tag `miembro inactivo` |
+| 6 | Usuario cancela | `PUT /contacts/:id` | `estatus_membresia = cancelado` y Tag `miembro inactivo` |
 
 > Regla de negocio respetada: el `PUT /contacts/:id` de activación (eventos 2-3)
 > **solo se llama cuando el pago fue exitoso y la membresía fue aprobada**.
@@ -103,53 +103,64 @@ las actualizaciones posteriores.
 {
   "customFields": [
     { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "activo", "fieldName": "Estatus membresia" },
-    { "id": "gTIQIgFqWWgCPeJEkXte", "fieldValue": "2026-07-30", "fieldName": "Fecha pago renovacion" },
+    { "id": "gTIQIgFqWWgCPeJEkXte", "fieldValue": "2026-07-30", "fieldName": "Fecha pago renovación" },
     { "id": "lHLm0zKABjYVH8hlPbE4", "fieldValue": "2026-08-30", "fieldName": "Fecha renovacion" },
     { "id": "DABr8Ws9zawyJFnLvZqG", "fieldValue": "Tarjeta", "fieldName": "Metodo pago" }
   ]
 }
 ```
 
-### Evento 5 — Fallo de pago (`PUT /contacts/:id`)
+### Evento 5 — Fallo de pago o no renovación (`PUT /contacts/:id`)
+- Si es un fallo temporal:
 ```json
-{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "pendiente_pago", "fieldName": "Estatus membresia" } ] }
+{ 
+  "customFields": [ 
+    { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "pendiente_pago", "fieldName": "Estatus membresia" } 
+  ] 
+}
 ```
-Si la suscripción termina por falta de pago (churn), enviamos `no_renovado` y
-quitamos el tag (ver evento 6).
+- Si la suscripción termina por completo (no renovación / churn):
+```json
+{ 
+  "tags": ["miembro inactivo"],
+  "customFields": [ 
+    { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "no_renovado", "fieldName": "Estatus membresia" } 
+  ] 
+}
+```
 
-### Evento 6 — Cancelación (`PUT` + `DELETE`)
+### Evento 6 — Cancelación (`PUT`)
+Dado que el campo `tags` sobrescribe por completo las etiquetas en LeadConnector, al cancelar la membresía enviamos únicamente `["miembro inactivo"]` en la propiedad `tags` del PUT. Esto elimina automáticamente la etiqueta anterior `miembro activo` sin necesidad de consumir endpoints secundarios.
 ```json
 // PUT /contacts/:id
-{ "customFields": [ { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "cancelado", "fieldName": "Estatus membresia" } ] }
-```
-```json
-// DELETE /contacts/:id/tags
-{ "tags": ["miembro activo"] }
+{ 
+  "tags": ["miembro inactivo"],
+  "customFields": [ 
+    { "id": "yq0LzNIgIWcU7rzWJwm8", "fieldValue": "cancelado", "fieldName": "Estatus membresia" } 
+  ] 
+}
 ```
 
 ---
 
 ## 5. Catálogo de estatus de membresía
 
-| Estatus | Cuándo lo enviamos |
-|---------|--------------------|
-| `activo` | Pago exitoso y membresía aprobada |
-| `cancelado` | El usuario cancela su membresía |
-| `no_renovado` | Venció el período y no se renovó (churn por impago) |
-| `pendiente_pago` | Pago en proceso o con fallo temporal (ej. tarjeta declinada) |
+| Estatus | Cuándo lo enviamos | Tag Enviado |
+|---------|--------------------|-------------|
+| `activo` | Pago exitoso y membresía aprobada | `miembro activo` |
+| `cancelado` | El usuario cancela su membresía | `miembro inactivo` |
+| `no_renovado` | Venció el período y no se renovó (churn por impago) | `miembro inactivo` |
+| `pendiente_pago` | Pago en proceso o con fallo temporal (ej. tarjeta declinada) | *(Se mantiene igual)* |
 
 ---
 
-## 6. Puntos a confirmar con Lynsales
+## 6. Puntos confirmados con Lynsales
 
 1. **Formato de custom fields.** ✅ **RESUELTO**
    Confirmado: se usa `{ "id", "fieldValue", "fieldName" }`. Ya implementado.
 
-2. **Remover un tag.** ⏳ **PENDIENTE DE RESPUESTA**
-   Para el evento de cancelación necesitamos **quitar** el tag `miembro activo`.
-   Estamos usando `DELETE /contacts/:id/tags` con body `{ "tags": ["miembro activo"] }`.
-   ¿Es este el endpoint/método correcto? Su documentación describe cómo **agregar**
-   tags en el `PUT`, pero no cómo removerlos.
+2. **Remover un tag.** ✅ **RESUELTO**
+   Confirmado por la especificación: el envío del campo `tags` en un PUT **sobrescribe completamente** la lista de etiquetas del contacto. Por ende, para remover `miembro activo` y establecer `miembro inactivo` al cancelar o no renovar la membresía, simplemente enviamos `tags: ["miembro inactivo"]` en el PUT de actualización del contacto. No se requiere invocar la ruta DELETE.
 
 3. **Valores exactos del estatus.** ✅ **RESUELTO**
    Confirmado: se usan los valores del catálogo (sección 4) en minúsculas:
@@ -166,5 +177,4 @@ Esto evita que una incidencia del CRM impacte el registro o el pago del usuario.
 
 ---
 
-*Quedamos atentos a sus comentarios sobre los tres puntos de la sección 6 para
-cerrar la integración.*
+*Última actualización de la documentación: 14 de julio de 2026.*

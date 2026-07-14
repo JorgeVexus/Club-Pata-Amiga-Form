@@ -167,7 +167,7 @@ export async function updateContactAsActive(
         status: 'activo',
         type: membershipType,
         cost: membershipCost,
-        addTags: [CRM_ACTIVE_TAG],
+        tags: [CRM_ACTIVE_TAG],
     });
 }
 
@@ -183,8 +183,8 @@ export interface MembershipSyncData {
     paymentMethod?: string;           // contact.metodo_pago ("Tarjeta" | "OXXO" | ...)
     renewalDate?: string;             // contact.fecha_renovacion (YYYY-MM-DD, próximo cobro)
     renewalPaymentDate?: string;      // contact.fecha_pago_renovacion (YYYY-MM-DD)
-    /** Si se envía, agrega estos tags (LeadConnector los suma, no los reemplaza) */
-    addTags?: string[];
+    /** Si se envía, sobrescribe completamente los tags en LeadConnector */
+    tags?: string[];
 }
 
 /**
@@ -226,7 +226,7 @@ export async function syncMembership(
         const payload: Record<string, any> = {
             customFields: buildMembershipCustomFields(data),
         };
-        if (data.addTags?.length) payload.tags = data.addTags;
+        if (data.tags?.length) payload.tags = data.tags;
 
         console.log(`[CRM] 🔄 syncMembership ${contactId}:`, JSON.stringify(payload, null, 2));
 

@@ -16,6 +16,8 @@ interface MemberReportData {
     email: string;
     name: string;
     registeredAt: string;
+    paymentDate: string | null;
+    couponCode: string | null;
     status: 'active' | 'canceled' | 'past_due' | 'none';
     costText: string;
     amount: number;
@@ -235,7 +237,10 @@ export default function PlanMembersReport() {
             'Nombre',
             'Correo',
             'Fecha Registro',
+            'Fecha Pago',
             'Estatus Plan',
+            '¿Utilizo Cupon?',
+            'Cupon Utilizado',
             'Costo',
             'Periodicidad',
             'Origen de Registro',
@@ -256,7 +261,10 @@ export default function PlanMembersReport() {
             `"${m.name.replace(/"/g, '""')}"`,
             m.email,
             formatDate(m.registeredAt),
+            m.paymentDate ? formatDate(m.paymentDate) : '—',
             m.status === 'active' ? 'Activo' : m.status === 'canceled' ? 'Cancelado' : m.status === 'past_due' ? 'Moroso / Requiere Pago' : m.status === 'none' ? 'Sin Plan' : 'Desconocido',
+            m.couponCode ? 'Sí' : 'No',
+            m.couponCode || '—',
             m.amount,
             m.isAnnual ? 'Anual' : 'Mensual',
             m.origin,
@@ -534,9 +542,11 @@ export default function PlanMembersReport() {
                             <tr>
                                 <th>Miembro</th>
                                 <th>F. Registro</th>
+                                <th>F. Pago</th>
                                 <th>Origen</th>
                                 <th>Canal</th>
                                 <th>Estatus Plan</th>
+                                <th>Cupón</th>
                                 <th>Costo / Ciclo</th>
                                 <th>Mascotas</th>
                                 <th>Modo</th>
@@ -557,6 +567,9 @@ export default function PlanMembersReport() {
                                     
                                     {/* F. Registro */}
                                     <td>{formatDate(member.registeredAt)}</td>
+                                    
+                                    {/* F. Pago */}
+                                    <td>{member.paymentDate ? formatDate(member.paymentDate) : <span style={{ color: '#94a3b8' }}>—</span>}</td>
                                     
                                     {/* Origen */}
                                     <td>
@@ -583,6 +596,17 @@ export default function PlanMembersReport() {
                                         <span className={`${styles.badge} ${getStatusBadgeClass(member.status)}`}>
                                             {getStatusLabel(member.status)}
                                         </span>
+                                    </td>
+                                    
+                                    {/* Cupón */}
+                                    <td>
+                                        {member.couponCode ? (
+                                            <span className={styles.couponBadge} title={`Cupón: ${member.couponCode}`}>
+                                                🎟️ {member.couponCode}
+                                            </span>
+                                        ) : (
+                                            <span style={{ color: '#94a3b8' }}>No</span>
+                                        )}
                                     </td>
                                     
                                     {/* Costo / Ciclo */}
