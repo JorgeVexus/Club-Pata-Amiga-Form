@@ -548,7 +548,7 @@ export async function getPetsByUserId(memberstackId: string) {
         try {
             let query = supabase
                 .from('users')
-                .select('id, memberstack_id, first_name, last_name, last_admin_response, action_required_fields, membership_status');
+                .select('id, memberstack_id, first_name, last_name, last_admin_response, action_required_fields, membership_status, welcome_shown');
             
             if (isUuid) {
                 query = query.eq('id', memberstackId);
@@ -664,7 +664,8 @@ export async function getPetsByUserId(memberstackId: string) {
             last_name: userData.last_name,
             last_admin_response: lastAdminMsg,
             action_required_fields: userData.action_required_fields,
-            membership_status: userData.membership_status || 'pending'
+            membership_status: userData.membership_status || 'pending',
+            welcome_shown: userData.welcome_shown === true
         };
     } catch (error: any) {
         return { success: false, error: error.message };

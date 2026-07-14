@@ -491,6 +491,90 @@
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
         }
 
+        .pata-member-welcome-modal {
+            max-width: 560px;
+            padding: 42px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .pata-member-welcome-icon {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            border: var(--pata-border-thick);
+            background: var(--pata-accent);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 38px;
+            margin-bottom: 22px;
+            box-shadow: 8px 8px 0 rgba(0,0,0,0.12);
+        }
+
+        .pata-member-welcome-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: clamp(34px, 8vw, 52px);
+            line-height: 0.95;
+            margin: 0 0 18px;
+            color: #000;
+            text-transform: lowercase;
+        }
+
+        .pata-member-welcome-text {
+            color: #111;
+            font-size: 17px;
+            line-height: 1.45;
+            font-weight: 700;
+            margin: 0 0 22px;
+        }
+
+        .pata-member-welcome-list {
+            text-align: left;
+            display: grid;
+            gap: 12px;
+            margin: 24px 0 30px;
+            padding: 0;
+            list-style: none;
+        }
+
+        .pata-member-welcome-list li {
+            background: #F7FAFA;
+            border: var(--pata-border-thin);
+            border-radius: 18px;
+            padding: 14px 16px;
+            font-weight: 800;
+            color: #111;
+        }
+
+        .pata-member-welcome-btn {
+            width: 100%;
+            border: var(--pata-border-thick);
+            border-radius: 999px;
+            background: var(--pata-action);
+            color: #000;
+            padding: 17px 24px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            font-weight: 950;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 #000;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .pata-member-welcome-btn:hover {
+            transform: translate(2px, 2px);
+            box-shadow: 3px 3px 0 #000;
+        }
+
+        @media (max-width: 600px) {
+            .pata-member-welcome-modal {
+                padding: 30px 22px;
+                border-radius: 30px;
+            }
+        }
+
         @keyframes pataModalSlideUp { 
             from { transform: translateY(40px) scale(0.95); opacity: 0; } 
             to { transform: translateY(0) scale(1); opacity: 1; } 
@@ -3672,6 +3756,7 @@
             this.member = null;
             this.pets = [];
             this.membershipStatus = 'approved';
+            this.memberWelcomeShown = true;
             this.userExtra = { firstName: '', lastName: '', lastAdminResponse: '', actionRequiredFields: [] };
             this.currentIndex = 0;
             this.showAppealForm = false;
@@ -3802,6 +3887,8 @@
                     this.render();
 
                     // 🛠️ Debug Tools for Development
+                    this.maybeShowMemberWelcomeModal();
+
                     window.pataDebug = {
                         // 1. Estado: Pago Pendiente
                         pagoPendiente: () => {
@@ -4043,6 +4130,7 @@
                         }
                     ];
                     this.membershipStatus = 'approved';
+                    this.memberWelcomeShown = false;
                     this.member = this.member || { id: 'test-user', customFields: { 'first-name': 'Jorge' } };
                     this.userExtra = {
                         firstName: 'Jorge',
@@ -4098,6 +4186,7 @@
                 if (data.success) {
                     this.pets = data.pets || [];
                     this.membershipStatus = (data.membership_status || 'approved').toLowerCase();
+                    this.memberWelcomeShown = data.welcome_shown === true;
                     console.log(`📊 Unified Widget: Status="${this.membershipStatus}", Pets=${this.pets.length}`);
                     this.userExtra = {
                         firstName: data.first_name || '',
@@ -4170,6 +4259,61 @@
             endDate.setDate(endDate.getDate() + totalDays);
 
             return { daysRemaining, percentage, totalDays, endDate, isWaiting: daysRemaining > 0 };
+        }
+
+        maybeShowMemberWelcomeModal() {
+            const hasPets = this.pets && this.pets.length > 0;
+            const isMemberReady = this.membershipStatus === 'active' || this.membershipStatus === 'approved' || hasPets;
+            const blockedStatus = ['pending_payment', 'payment_processing', 'canceled_payment'].includes(this.membershipStatus);
+
+            if (!this.member || this.memberWelcomeShown || !isMemberReady || blockedStatus) return;
+
+            setTimeout(() => this.showMemberWelcomeModal(), 300);
+        }
+
+        showMemberWelcomeModal() {
+            if (document.getElementById('pata-member-welcome-modal')) return;
+
+            const firstName = (this.userExtra?.firstName || this.member?.customFields?.['first-name'] || '').trim();
+            const greetingName = firstName ? `, ${firstName}` : '';
+            const overlay = document.createElement('div');
+            overlay.className = 'pata-modal-overlay show';
+            overlay.id = 'pata-member-welcome-modal';
+            overlay.style.zIndex = '1000000';
+            overlay.innerHTML = `
+                <div class="pata-modal pata-member-welcome-modal" onclick="event.stopPropagation()">
+                    <div class="pata-member-welcome-icon">🎉</div>
+                    <h2 class="pata-member-welcome-title">bienvenido${greetingName} a la manada</h2>
+                    <p class="pata-member-welcome-text">
+                        Tu membresía ya está activa. Desde este panel podrás acompañar el proceso de tus mascotas y ver todo lo importante en un solo lugar.
+                    </p>
+                    <ul class="pata-member-welcome-list">
+                        <li>Consulta el estado individual de cada mascota.</li>
+                        <li>Completa información o documentos si el equipo lo solicita.</li>
+                        <li>Revisa beneficios, tiempos de espera y actualizaciones de tu cuenta.</li>
+                    </ul>
+                    <button id="pata-member-welcome-close" class="pata-member-welcome-btn">Comenzar ahora</button>
+                </div>
+            `;
+
+            const closeModal = async () => {
+                overlay.remove();
+                this.memberWelcomeShown = true;
+
+                try {
+                    await fetch(`${CONFIG.apiUrl}/api/user/welcome-shown`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ memberstackId: this.member.id })
+                    });
+                } catch (err) {
+                    console.error('Unified Widget: Error saving member welcome_shown:', err);
+                }
+            };
+
+            overlay.querySelector('#pata-member-welcome-close').addEventListener('click', closeModal);
+            overlay.addEventListener('click', closeModal);
+            document.body.appendChild(overlay);
         }
 
         escapeHtml(value) {

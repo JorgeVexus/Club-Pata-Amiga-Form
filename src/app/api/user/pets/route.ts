@@ -25,7 +25,8 @@ export async function GET(request: NextRequest) {
             last_name: result.last_name,
             last_admin_response: result.last_admin_response,
             action_required_fields: result.action_required_fields,
-            membership_status: result.membership_status
+            membership_status: result.membership_status,
+            welcome_shown: result.welcome_shown
         });
 
     } catch (error: any) {
