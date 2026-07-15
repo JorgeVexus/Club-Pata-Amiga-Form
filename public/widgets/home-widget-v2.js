@@ -1807,7 +1807,7 @@
                                     Estamos construyendo la red de cuidado más grande para mascotas: clínicas veterinarias, hospitales y negocios pet-friendly que comparten nuestros valores de cuidado, empatía y responsabilidad. Explora los centros aliados o registra tu establecimiento hoy mismo.
                                 </p>
                                 <div class="pata-v2-red-actions">
-                                    <a href="https://www.pataamiga.mx/centros" class="pata-v2-btn pata-v2-btn-teal" style="font-size:14px; padding:0 28px;">Explorar centros aliados</a>
+                                    <a href="https://www.pataamiga.mx/centros" class="pata-v2-btn pata-v2-btn-teal" style="display:none; font-size:14px; padding:0 28px;">Explorar centros aliados</a>
                                     <a href="#wellness-partner-form-anchor" class="pata-v2-btn pata-v2-btn-outline" id="scroll-to-partner-form-btn" style="font-size:14px; padding:0 28px;">Registrar mi centro</a>
                                 </div>
                             </div>
