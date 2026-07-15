@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import styles from './WellnessLeadsTable.module.css'; // Reutilizamos estilos del directorio de tablas de leads
+import styles from './RequestsTable.module.css'; // Usamos las clases del RequestsTable para consistencia visual absoluta
 import { adminFetch } from '@/utils/admin-fetch';
 
 interface CampaignLead {
@@ -50,7 +50,7 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                 page: page.toString(),
                 limit: LIMIT.toString(),
                 search: search,
-                campaign: 'regalo' // Por defecto para la campaña regalo
+                campaign: 'regalo'
             });
 
             const res = await adminFetch(`/api/admin/campaign-leads?${params}`);
@@ -128,7 +128,7 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
         try {
             const res = await adminFetch('/api/upload/campaign-pdf', {
                 method: 'POST',
-                body: formData // Form data handles headers dynamically
+                body: formData
             });
             const data = await res.json();
             if (data.success) {
@@ -146,18 +146,21 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
     };
 
     return (
-        <div className={styles.container}>
+        <div className={styles.requestsContainer}>
             {/* Sección de Configuración de Campaña */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+                
                 {/* Caja de Cupón */}
-                <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', border: '2px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        🏷️ Cupón de Descuento (Campaña Regalo)
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>
-                        Ingresa el código del cupón de Stripe que se enviará automáticamente en el correo electrónico.
-                    </p>
-                    <form onSubmit={handleSaveCoupon} style={{ display: 'flex', gap: '12px' }}>
+                <div className={styles.requestsSection} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111827', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            🏷️ Cupón de Descuento (Campaña Regalo)
+                        </h3>
+                        <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: 1.5, marginBottom: '20px' }}>
+                            Ingresa el código del cupón de Stripe que se enviará automáticamente en el correo electrónico de regalo de la membresía.
+                        </p>
+                    </div>
+                    <form onSubmit={handleSaveCoupon} style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                         <input
                             type="text"
                             placeholder="Ej. REGALOPATA10"
@@ -165,11 +168,11 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                             onChange={(e) => setCoupon(e.target.value)}
                             style={{
                                 flex: 1,
-                                height: '42px',
-                                border: '2px solid #E2E8F0',
+                                height: '40px',
+                                border: '1px solid #ccc',
                                 borderRadius: '8px',
                                 padding: '0 12px',
-                                fontSize: '14px',
+                                fontSize: '0.85rem',
                                 outline: 'none'
                             }}
                             required
@@ -179,15 +182,18 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                             disabled={savingCoupon}
                             style={{
                                 background: '#fe8f15',
-                                color: '#white',
-                                border: '2px solid #000',
-                                borderRadius: '8px',
+                                color: 'white',
+                                border: '1px solid #000000',
+                                borderRadius: '50px',
                                 fontWeight: 'bold',
-                                padding: '0 16px',
+                                padding: '0 20px',
                                 cursor: 'pointer',
-                                height: '42px',
-                                boxShadow: '2px 2px 0px #000'
+                                height: '40px',
+                                fontSize: '0.85rem',
+                                transition: 'opacity 0.2s'
                             }}
+                            onMouseOver={(e) => (e.currentTarget.style.opacity = '0.9')}
+                            onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
                         >
                             {savingCoupon ? 'Guardando...' : 'Guardar'}
                         </button>
@@ -195,21 +201,46 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                 </div>
 
                 {/* Caja de PDF */}
-                <div style={{ background: '#fff', padding: '24px', borderRadius: '16px', border: '2px solid #000', boxShadow: '4px 4px 0px #000' }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 'bold', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        📘 PDF del Regalo (Guía de Cuidado)
-                    </h3>
-                    <p style={{ fontSize: '13px', color: '#666', marginBottom: '16px' }}>
-                        Sube el archivo PDF que el usuario descargará al presionar el botón de descarga en el correo de regalo.
-                    </p>
+                <div className={styles.requestsSection} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <div>
+                        <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#111827', marginBottom: '8px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            📘 PDF del Regalo (Guía de Cuidado)
+                        </h3>
+                        <p style={{ fontSize: '0.8rem', color: '#666', lineHeight: 1.5, marginBottom: '20px' }}>
+                            Sube el archivo PDF que el usuario descargará al presionar el botón de descarga en el correo de regalo.
+                        </p>
+                    </div>
+                    
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                            <input
-                                type="file"
-                                accept=".pdf"
-                                onChange={handleFileChange}
-                                style={{ fontSize: '13px' }}
-                            />
+                        {/* File Input Estilizado */}
+                        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                            <label style={{
+                                flex: 1,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                height: '40px',
+                                background: '#F3F4F6',
+                                border: '1px dashed #9CA3AF',
+                                borderRadius: '8px',
+                                cursor: 'pointer',
+                                padding: '0 12px',
+                                fontSize: '0.8rem',
+                                color: '#4B5563',
+                                fontWeight: 500,
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                overflow: 'hidden'
+                            }}>
+                                📁 {selectedFile ? selectedFile.name : 'Seleccionar PDF...'}
+                                <input
+                                    type="file"
+                                    accept=".pdf"
+                                    onChange={handleFileChange}
+                                    style={{ display: 'none' }}
+                                />
+                            </label>
+                            
                             {selectedFile && (
                                 <button
                                     onClick={handleUploadPdf}
@@ -217,33 +248,37 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                     style={{
                                         background: '#00BBB4',
                                         color: 'white',
-                                        border: '2px solid #000',
-                                        borderRadius: '8px',
+                                        border: '1px solid #000000',
+                                        borderRadius: '50px',
                                         fontWeight: 'bold',
                                         padding: '0 16px',
                                         cursor: 'pointer',
-                                        height: '36px',
-                                        boxShadow: '2px 2px 0px #000'
+                                        height: '40px',
+                                        fontSize: '0.85rem',
+                                        transition: 'opacity 0.2s'
                                     }}
+                                    onMouseOver={(e) => (e.currentTarget.style.opacity = '0.9')}
+                                    onMouseOut={(e) => (e.currentTarget.style.opacity = '1')}
                                 >
-                                    {uploadingPdf ? 'Subiendo...' : 'Subir PDF'}
+                                    {uploadingPdf ? 'Subiendo...' : 'Subir'}
                                 </button>
                             )}
                         </div>
+
                         {pdfUrl ? (
-                            <div style={{ fontSize: '13px', color: '#2d3748' }}>
-                                ✅ Archivo cargado en storage.{' '}
+                            <div style={{ fontSize: '0.8rem', color: '#065F46', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600 }}>
+                                <span>✅ Archivo en storage:</span>
                                 <a
                                     href={pdfUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    style={{ color: '#00BBB4', fontWeight: 'bold', textDecoration: 'underline' }}
+                                    style={{ color: '#008B85', textDecoration: 'underline' }}
                                 >
-                                    Descargar / Ver PDF actual
+                                    Descargar PDF actual
                                 </a>
                             </div>
                         ) : (
-                            <div style={{ fontSize: '13px', color: '#e53e3e', fontWeight: 'semibold' }}>
+                            <div style={{ fontSize: '0.8rem', color: '#b91c1c', fontWeight: 600 }}>
                                 ⚠️ Ningún PDF cargado aún.
                             </div>
                         )}
@@ -251,16 +286,16 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                 </div>
             </div>
 
-            {/* Panel de Filtros y Tabla */}
-            <div className={styles.tableCard}>
-                <div className={styles.tableHeader}>
-                    <div className={styles.headerTitleContainer}>
-                        <h2>👥 Leads Registrados</h2>
-                        <span className={styles.tableSubtitle}>Total: {total} leads</span>
+            {/* Tabla de Leads Registrados estilo RequestsTable */}
+            <div className={styles.requestsSection}>
+                <div className={styles.requestsHeader}>
+                    <div className={styles.requestsTitle}>
+                        👥 Leads Registrados ({total})
                     </div>
 
-                    <div className={styles.headerActions}>
-                        <div className={styles.searchWrapper}>
+                    <div className={styles.requestsControls}>
+                        <div className={styles.searchBox}>
+                            <span className={styles.searchIcon}>🔍</span>
                             <input
                                 type="text"
                                 placeholder="Buscar por nombre o email..."
@@ -270,23 +305,19 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                     setPage(1);
                                 }}
                                 className={styles.searchInput}
+                                style={{ paddingLeft: '2.5rem' }}
                             />
-                            {search && (
-                                <button onClick={() => setSearch('')} className={styles.clearSearchBtn}>
-                                    ✕
-                                </button>
-                            )}
                         </div>
                     </div>
                 </div>
 
-                {error && <div className={styles.errorBanner}>⚠️ {error}</div>}
+                {error && <div className={styles.emptyState} style={{ color: '#ef4444' }}>⚠️ {error}</div>}
 
-                <div className={styles.tableContainer}>
-                    <table className={styles.leadsTable}>
-                        <thead>
+                <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                        <thead className={styles.tableHeader}>
                             <tr>
-                                <th>Nombre</th>
+                                <th>Nombre Completo</th>
                                 <th>Email</th>
                                 <th>Teléfono</th>
                                 <th>UTM Source</th>
@@ -296,7 +327,7 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                 <th>Fecha Registro</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody className={styles.tableBody}>
                             {loading ? (
                                 <tr>
                                     <td colSpan={8} className={styles.emptyState}>
@@ -312,15 +343,17 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                             ) : (
                                 leads.map((lead) => (
                                     <tr key={lead.id}>
-                                        <td style={{ fontWeight: 'bold' }}>
+                                        <td style={{ fontWeight: 'bold', color: '#111827' }}>
                                             {lead.first_name} {lead.last_name}
                                         </td>
                                         <td>{lead.email}</td>
                                         <td>{lead.phone}</td>
                                         <td>
-                                            <span className={styles.badge} style={{ background: lead.utm_source ? '#E2E8F0' : 'none' }}>
-                                                {lead.utm_source || '-'}
-                                            </span>
+                                            {lead.utm_source ? (
+                                                <span className={styles.infoStatusBadge} style={{ background: '#E5E7EB', color: '#374151' }}>
+                                                    {lead.utm_source}
+                                                </span>
+                                            ) : '-'}
                                         </td>
                                         <td>{lead.utm_medium || '-'}</td>
                                         <td>{lead.utm_campaign || '-'}</td>
@@ -330,18 +363,19 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                                 style={{
                                                     background:
                                                         lead.gift_email_status === 'sent'
-                                                            ? '#DEF7EC'
+                                                            ? '#D1FAE5'
                                                             : lead.gift_email_status === 'failed'
-                                                            ? '#FDE8E8'
-                                                            : '#FEF08A',
+                                                            ? '#FEE2E2'
+                                                            : '#FEF3C7',
                                                     color:
                                                         lead.gift_email_status === 'sent'
-                                                            ? '#03543F'
+                                                            ? '#065F46'
                                                             : lead.gift_email_status === 'failed'
-                                                            ? '#9B1C1C'
-                                                            : '#713F12'
+                                                            ? '#991B1B'
+                                                            : '#92400E'
                                                 }}
                                             >
+                                                <span className={styles.statusDot}></span>
                                                 {lead.gift_email_status === 'sent'
                                                     ? 'Enviado'
                                                     : lead.gift_email_status === 'failed'
@@ -358,21 +392,23 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                 </div>
 
                 {totalPages > 1 && (
-                    <div className={styles.pagination}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '20px' }}>
                         <button
                             onClick={() => setPage((p) => Math.max(1, p - 1))}
                             disabled={page === 1}
-                            className={styles.pageBtn}
+                            className={styles.tabBtn}
+                            style={{ opacity: page === 1 ? 0.5 : 1 }}
                         >
                             Anterior
                         </button>
-                        <span className={styles.pageIndicator}>
+                        <span style={{ fontSize: '0.85rem', color: '#666', fontWeight: 500 }}>
                             Página {page} de {totalPages}
                         </span>
                         <button
                             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                             disabled={page === totalPages}
-                            className={styles.pageBtn}
+                            className={styles.tabBtn}
+                            style={{ opacity: page === totalPages ? 0.5 : 1 }}
                         >
                             Siguiente
                         </button>
