@@ -35,12 +35,13 @@ import { WellnessCenter } from '@/types/wellness.types';
 import NewsletterSubscribersTable from './NewsletterSubscribersTable';
 import WellnessLeadsTable from './WellnessLeadsTable';
 import EmergencyReportTable from './EmergencyReportTable';
+import CampaignLeadsManager from './CampaignLeadsManager';
 
 function DashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'emergency-report'>('all-members');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report'>('all-members');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
 
@@ -432,6 +433,8 @@ function DashboardContent() {
                 return <NewsletterSubscribersTable refreshKey={refreshKey} />;
             case 'wellness-leads':
                 return <WellnessLeadsTable refreshKey={refreshKey} />;
+            case 'campaign-leads':
+                return <CampaignLeadsManager refreshKey={refreshKey} />;
             case 'legal-docs':
                 return <LegalDocsManager />;
             case 'cancellations':
