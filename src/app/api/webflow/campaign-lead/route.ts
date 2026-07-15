@@ -123,27 +123,10 @@ export async function POST(request: NextRequest) {
         const coupon = couponRow?.value?.trim();
         const pdfUrl = pdfRow?.url;
 
-        // 3. Construir bloques HTML para el correo
-        const couponBlock = coupon
-            ? `<div style="background:#FFF8E1; border:2px dashed #FE8F15; border-radius:14px; padding:20px; text-align:center; margin:24px 0;">
-                <span style="font-size:12px; color:#718096; letter-spacing:0.1em; font-weight:bold;">TU CUPÓN DE DESCUENTO</span><br>
-                <span style="font-size:28px; font-weight:800; color:#2D3748; letter-spacing:0.05em;">${coupon}</span>
-               </div>`
-            : `<div style="background:#F7FAFC; border-radius:14px; padding:16px; text-align:center; margin:20px 0; color:#718096; font-size:14px;">
-                Tu cupón de descuento de membresía está por activarse. ¡Te lo enviaremos muy pronto! 🐾
-               </div>`;
+        const finalCoupon = coupon || 'MANADA10';
+        const finalPdfUrl = pdfUrl || 'https://iddzylyvuhkhuvinvbou.supabase.co/storage/v1/object/public/site-assets/campaign-regalo-pdf-1784071291583.pdf';
 
-        const pdfBlock = pdfUrl
-            ? `<div style="text-align:center; margin:28px 0;">
-                <a href="${pdfUrl}" target="_blank" rel="noopener noreferrer" style="background:#00BBB4; color:#ffffff; padding:16px 32px; border-radius:50px; font-weight:bold; font-size:16px; text-decoration:none; display:inline-block; border: 2px solid #000000; box-shadow: 4px 4px 0px #000000;">
-                  📘 Descargar tu guía de cuidado
-                </a>
-               </div>`
-            : `<p style="text-align:center; color:#718096; font-size:14px; margin:24px 0;">
-                📘 Tu guía de cuidado (PDF) llegará a este mismo correo en los próximos días.
-               </p>`;
-
-        // 4. Enviar email usando Resend
+        // 4. Enviar email usando Resend con el diseño exacto aprobado por el usuario
         let emailStatus = 'failed';
         if (resend) {
             try {
@@ -151,34 +134,69 @@ export async function POST(request: NextRequest) {
                     from: `Club Pata Amiga <${DEFAULT_FROM_EMAIL}>`,
                     to: mail,
                     subject: campaign.emailSubject,
-                    html: `
-                        <div style="font-family:'Outfit',sans-serif,system-ui; max-width:600px; margin:0 auto; padding:24px; border:2px solid #000000; border-radius:24px; background:#FFFFFF; box-shadow: 6px 6px 0px #000000;">
-                            <div style="text-align:center; margin-bottom:24px;">
-                                <span style="font-size:40px;">🎁</span>
-                                <h1 style="color:#2D3748; font-size:26px; font-weight:bold; margin-top:12px; margin-bottom:4px;">¡Tu regalo está aquí!</h1>
-                                <p style="color:#718096; font-size:14px; margin:0;">Club Pata Amiga</p>
-                            </div>
-                            <div style="color:#2D3748; font-size:15px; line-height:1.6; margin-bottom:24px;">
-                                <p>¡Hola, <strong>${fName}</strong>!</p>
-                                <p>Gracias por registrarte para recibir tu regalo de bienvenida en nuestra landing page. Nos alegra mucho darte la bienvenida a nuestra manada de cuidado para mascotas.</p>
-                                
-                                ${couponBlock}
-                                
-                                ${pdfBlock}
-                                
-                                <p>Si estás listo para asegurar la salud de tu peludo con orientación veterinaria 24/7 y reembolsos para sus gastos de salud, puedes darte de alta aquí:</p>
-                                <div style="text-align:center; margin:20px 0;">
-                                    <a href="https://app.pataamiga.mx/registro?step=1" target="_blank" rel="noopener noreferrer" style="background:#FE8F15; color:#ffffff; padding:12px 24px; border-radius:50px; font-weight:bold; text-decoration:none; display:inline-block; border: 2px solid #000000; box-shadow: 3px 3px 0px #000000;">
-                                        Registrar a mi mascota 🐾
-                                    </a>
-                                </div>
-                            </div>
-                            <hr style="border:none; border-top:1px solid #E2E8F0; margin:24px 0;">
-                            <div style="text-align:center; font-size:12px; color:#A0AEC0; line-height:1.5;">
-                                <p>Este correo fue enviado automáticamente por Club Pata Amiga.<br>Si tienes alguna duda, escríbenos a <a href="mailto:soporte@pataamiga.mx" style="color:#00BBB4; text-decoration:none; font-weight:bold;">soporte@pataamiga.mx</a>.</p>
-                            </div>
-                        </div>
-                    `
+                    html: `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Obtén tu regalo — Club Pata Amiga</title></head><body style="margin:0;padding:0;"><!-- Correo "Obtén tu regalo" · Club Pata Amiga -->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F1;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
+  <tr><td align="center">
+    <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
+
+      <!-- Encabezado con logo sobre teal -->
+      <tr><td style="background-color:#1CBCAD;border-radius:20px 20px 0 0;padding:26px 20px;text-align:center;">
+        <img src="https://iddzylyvuhkhuvinvbou.supabase.co/storage/v1/object/public/site-assets/email-header.png" width="180" alt="Club Pata Amiga" style="display:inline-block;width:180px;max-width:60%;height:auto;border-radius:12px;">
+      </td></tr>
+
+      <!-- Cuerpo -->
+      <tr><td style="background-color:#FFFFFF;padding:34px 32px 10px;">
+        <h1 style="margin:0 0 12px;font-size:26px;line-height:1.25;color:#1E5350;">¡Tu regalo está aquí, ${fName}! 🎁</h1>
+        <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#3D524F;">Gracias por registrarte. Esto es lo que preparamos para ti y tu peludo:</p>
+        <div style="background:#FDF9EF;border:2px dashed #1CBCAD;border-radius:14px;padding:16px;text-align:center;margin:8px 0"><span style="font-size:12px;color:#6B7C79;letter-spacing:.08em">TU CUPÓN DE DESCUENTO</span><br><span style="font-size:26px;font-weight:800;color:#1E5350;letter-spacing:.06em">${finalCoupon}</span></div>
+        <p style="text-align:center;margin:16px 0"><a href="${finalPdfUrl}" style="background:#1CBCAD;color:#ffffff;padding:14px 28px;border-radius:999px;font-weight:700;text-decoration:none;display:inline-block">📘 Descargar tu guía de cuidado</a></p>
+      </td></tr>
+
+      <!-- Por qué unirte -->
+      <tr><td style="background-color:#FFFFFF;padding:6px 32px 8px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F1;border-radius:16px;">
+          <tr><td style="padding:18px 22px;">
+            <p style="margin:0 0 10px;font-size:14px;font-weight:bold;color:#1E5350;">Usa tu cupón al unirte a la manada — membresía de salud para tu perro o gato:</p>
+            <p style="margin:0;font-size:13.5px;line-height:2;color:#3D524F;">
+              🐾 Disponible en todo México<br>
+              🐾 Mantienes a tu veterinario<br>
+              🐾 Incluye hasta 3 mascotas<br>
+              🐾 Orientación veterinaria 24/7<br>
+              🐾 100% digital
+            </p>
+          </td></tr>
+        </table>
+      </td></tr>
+
+      <!-- CTA -->
+      <tr><td style="background-color:#FFFFFF;padding:22px 32px 34px;text-align:center;">
+        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+          <tr><td style="background-color:#1E5350;border-radius:999px;">
+            <a href="https://app.pataamiga.mx/registro?step=1" style="display:inline-block;padding:15px 36px;font-size:16px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Unirme a la manada</a>
+          </td></tr>
+        </table>
+        <p style="margin:14px 0 0;font-size:12px;color:#8A9490;">Membresía desde $159 MXN al mes · No es un seguro</p>
+      </td></tr>
+
+      <!-- Pie -->
+      <tr><td style="background-color:#1E5350;border-radius:0 0 20px 20px;padding:24px 32px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#FFFFFF;">Club Pata Amiga · Protección para tu manada</p>
+        <p style="margin:0 0 10px;font-size:12px;line-height:1.7;color:#BFD9D6;">
+          ¿Dudas? Escríbenos a <a href="mailto:soporte@pataamiga.mx" style="color:#A6CE39;text-decoration:none;">soporte@pataamiga.mx</a><br>
+          <a href="https://www.instagram.com/pataamigamx" style="color:#BFD9D6;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp;
+          <a href="https://www.facebook.com/share/14YQRpe9WzS/" style="color:#BFD9D6;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp;
+          <a href="https://www.tiktok.com/@pataamigamx" style="color:#BFD9D6;text-decoration:underline;">TikTok</a>
+        </p>
+        <p style="margin:0;font-size:10.5px;line-height:1.6;color:#8FB5B1;">
+          Recibiste este correo porque te registraste para recibir tu regalo de bienvenida.<br>
+          Si no fuiste tú, puedes ignorar este mensaje.<br>
+          GIRBAZ, S.A. de C.V. y PATA AMIGA, A.C. · Hecho con ♡ en México
+        </p>
+      </td></tr>
+
+    </table>
+  </td></tr>
+</table></body></html>`
                 });
 
                 if (mailRes.data?.id) {
