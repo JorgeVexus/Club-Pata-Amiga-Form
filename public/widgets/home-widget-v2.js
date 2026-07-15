@@ -1562,7 +1562,7 @@
             if (!this.container) return;
 
             // Logo de marca
-            const logoColorUrl = 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929d5ea79839f5517dc2edd_2ccd338fb84f816d8245097d8203902f_client-first-logo-white.webp';
+            const logoColorUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg`;
             const logoOnDarkUrl = `${CONFIG.apiUrl}/brand/logo-on-dark.svg`;
 
             // Construir HTML de la Marquee
