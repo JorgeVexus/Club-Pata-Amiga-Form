@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         const coupon = couponRow?.value?.trim();
         const pdfUrl = pdfRow?.url;
 
-        const finalCoupon = coupon || 'MANADA10';
+        const finalCoupon = coupon || 'MESGRATIS';
         const finalPdfUrl = pdfUrl || 'https://iddzylyvuhkhuvinvbou.supabase.co/storage/v1/object/public/site-assets/campaign-regalo-pdf-1784071291583.pdf';
 
         // 4. Enviar email usando Resend con el diseño exacto aprobado por el usuario
@@ -147,22 +147,22 @@ export async function POST(request: NextRequest) {
       <!-- Cuerpo -->
       <tr><td style="background-color:#FFFFFF;padding:34px 32px 10px;">
         <h1 style="margin:0 0 12px;font-size:26px;line-height:1.25;color:#1E5350;">¡Tu regalo está aquí, ${fName}! 🎁</h1>
-        <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#3D524F;">Gracias por registrarte. Esto es lo que preparamos para ti y tu peludo:</p>
-        <div style="background:#FDF9EF;border:2px dashed #1CBCAD;border-radius:14px;padding:16px;text-align:center;margin:8px 0"><span style="font-size:12px;color:#6B7C79;letter-spacing:.08em">TU CUPÓN DE DESCUENTO</span><br><span style="font-size:26px;font-weight:800;color:#1E5350;letter-spacing:.06em">${finalCoupon}</span></div>
-        <p style="text-align:center;margin:16px 0"><a href="${finalPdfUrl}" style="background:#1CBCAD;color:#ffffff;padding:14px 28px;border-radius:999px;font-weight:700;text-decoration:none;display:inline-block">📘 Descargar tu guía de cuidado</a></p>
+        <p style="margin:0 0 18px;font-size:15px;line-height:1.6;color:#3D524F;">¡Qué felicidad que te unas a nosotros! Esto es lo que preparamos con mucho cariño para ti y tu peludo:</p>
+        <div style="background:#FDF9EF;border:2px dashed #1CBCAD;border-radius:14px;padding:16px;text-align:center;margin:8px 0"><span style="font-size:12px;color:#6B7C79;letter-spacing:.08em">TU REGALO DE BIENVENIDA</span><br><span style="font-size:26px;font-weight:800;color:#1E5350;letter-spacing:.06em">${finalCoupon}</span><br><span style="font-size:14px;font-weight:bold;color:#f7941d;margin-top:4px;display:inline-block;">¡Tu primer mes va por nuestra cuenta!</span></div>
+        <p style="text-align:center;margin:16px 0"><a href="${finalPdfUrl}" style="background:#1CBCAD;color:#ffffff;padding:14px 28px;border-radius:999px;font-weight:700;text-decoration:none;display:inline-block">📘 Descargar mi Guía Interactiva</a></p>
       </td></tr>
 
       <!-- Por qué unirte -->
       <tr><td style="background-color:#FFFFFF;padding:6px 32px 8px;">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F1;border-radius:16px;">
           <tr><td style="padding:18px 22px;">
-            <p style="margin:0 0 10px;font-size:14px;font-weight:bold;color:#1E5350;">Usa tu cupón al unirte a la manada — membresía de salud para tu perro o gato:</p>
+            <p style="margin:0 0 10px;font-size:14px;font-weight:bold;color:#1E5350;">Usa tu cupón para llevarte 1 mes gratis en la membresía de tu lomito o michi:</p>
             <p style="margin:0;font-size:13.5px;line-height:2;color:#3D524F;">
-              🐾 Disponible en todo México<br>
-              🐾 Mantienes a tu veterinario<br>
-              🐾 Incluye hasta 3 mascotas<br>
-              🐾 Orientación veterinaria 24/7<br>
-              🐾 100% digital
+              🐾 Disponible en todo México.<br>
+              🐾 Mantienes a tu veterinario de confianza.<br>
+              🐾 Incluye hasta 3 peludos.<br>
+              🐾 Orientación veterinaria 24/7.<br>
+              🐾 100% digital.
             </p>
           </td></tr>
         </table>
@@ -175,14 +175,14 @@ export async function POST(request: NextRequest) {
             <a href="https://app.pataamiga.mx/registro?step=1" style="display:inline-block;padding:15px 36px;font-size:16px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Unirme a la manada</a>
           </td></tr>
         </table>
-        <p style="margin:14px 0 0;font-size:12px;color:#8A9490;">Membresía desde $159 MXN al mes · No es un seguro</p>
+        <p style="margin:14px 0 0;font-size:12px;color:#8A9490;">Tu primer mes es gratis • Después $159 MXN al mes • Cancela cuando quieras.</p>
       </td></tr>
 
       <!-- Pie -->
       <tr><td style="background-color:#1E5350;border-radius:0 0 20px 20px;padding:24px 32px;text-align:center;">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#FFFFFF;">Club Pata Amiga · Protección para tu manada</p>
+        <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#FFFFFF;">Pata Amiga · Cuidamos a tu manada</p>
         <p style="margin:0 0 10px;font-size:12px;line-height:1.7;color:#BFD9D6;">
-          ¿Dudas? Escríbenos a <a href="mailto:soporte@pataamiga.mx" style="color:#A6CE39;text-decoration:none;">soporte@pataamiga.mx</a><br>
+          ¿Dudas? Escríbenos a <a href="mailto:contacto@patamiga.mx" style="color:#A6CE39;text-decoration:none;">contacto@patamiga.mx</a><br>
           <a href="https://www.instagram.com/pataamigamx" style="color:#BFD9D6;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp;
           <a href="https://www.facebook.com/share/14YQRpe9WzS/" style="color:#BFD9D6;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp;
           <a href="https://www.tiktok.com/@pataamigamx" style="color:#BFD9D6;text-decoration:underline;">TikTok</a>
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
         <p style="margin:0;font-size:10.5px;line-height:1.6;color:#8FB5B1;">
           Recibiste este correo porque te registraste para recibir tu regalo de bienvenida.<br>
           Si no fuiste tú, puedes ignorar este mensaje.<br>
-          GIRBAZ, S.A. de C.V. y PATA AMIGA, A.C. · Hecho con ♡ en México
+          GIRBAZ, S.A. de C.V y Club Pata Amiga. Hecho con ❤️ en México.
         </p>
       </td></tr>
 
