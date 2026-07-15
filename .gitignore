@@ -57,3 +57,6 @@ config.local.*
 
 # Graphify
 graphify-out/
+
+# Temporary clones
+temp-pata-amiga/
