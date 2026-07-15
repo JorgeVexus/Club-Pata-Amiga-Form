@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
                     to: mail,
                     subject: campaign.emailSubject && campaign.emailSubject !== 'Obtén tu regalo de bienvenida' 
                         ? campaign.emailSubject 
-                        : '🎁 ¡Tu regalo ya llegó! 1 mes gratis para tu peludo 🐾',
+                        : '🎁 ¡Tu regalo ya llegó! — Club Pata Amiga 🐾',
                     html: `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Obtén tu regalo — Club Pata Amiga</title></head><body style="margin:0;padding:0;"><!-- Correo "Obtén tu regalo" · Club Pata Amiga -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F1;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
   <tr><td align="center">

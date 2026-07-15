@@ -28,7 +28,7 @@ export const CAMPAIGNS: Campaign[] = [
       { emoji: "📘", text: "Guía de cuidado para tu peludo (PDF)" },
       { emoji: "💬", text: "Orientación veterinaria 24/7 al unirte a la manada" },
     ],
-    emailSubject: "🎁 ¡Tu regalo ya llegó! 1 mes gratis para tu peludo 🐾",
+    emailSubject: "🎁 ¡Tu regalo ya llegó! — Club Pata Amiga 🐾",
   },
 ];
 
