@@ -1563,7 +1563,7 @@
 
             // Logo de marca
             const logoColorUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg`;
-            const logoOnDarkUrl = `${CONFIG.apiUrl}/brand/logo-on-dark.svg`;
+            const logoOnDarkUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-on-dark.svg`;
 
             // Construir HTML de la Marquee
             let marqueeItemsHtml = '';
