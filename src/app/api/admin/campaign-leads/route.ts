@@ -159,3 +159,52 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+
+export async function DELETE(request: NextRequest) {
+    try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser) return unauthorizedResponse();
+
+        if (!supabase) {
+            return NextResponse.json(
+                { success: false, error: 'Database not configured' },
+                { status: 500, headers: corsHeaders() }
+            );
+        }
+
+        const { searchParams } = new URL(request.url);
+        const id = searchParams.get('id');
+
+        if (!id) {
+            return NextResponse.json(
+                { success: false, error: 'Falta el parámetro id' },
+                { status: 400, headers: corsHeaders() }
+            );
+        }
+
+        const { error } = await supabase
+            .from('campaign_leads')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            console.error('Error deleting campaign lead:', error);
+            return NextResponse.json(
+                { success: false, error: 'Error al eliminar el lead' },
+                { status: 500, headers: corsHeaders() }
+            );
+        }
+
+        return NextResponse.json({
+            success: true,
+            message: 'Lead eliminado correctamente'
+        }, { headers: corsHeaders() });
+
+    } catch (error) {
+        console.error('Campaign Leads DELETE error:', error);
+        return NextResponse.json(
+            { success: false, error: 'Error interno del servidor' },
+            { status: 500, headers: corsHeaders() }
+        );
+    }
+}

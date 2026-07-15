@@ -95,6 +95,28 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
         }
     };
 
+    const handleDeleteLead = async (id: string, name: string) => {
+        if (!confirm(`¿Estás seguro de que deseas eliminar el lead de ${name}?`)) {
+            return;
+        }
+
+        try {
+            const res = await adminFetch(`/api/admin/campaign-leads?id=${id}`, {
+                method: 'DELETE'
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert('✨ Lead eliminado correctamente.');
+                fetchData(); // Refrescar lista
+            } else {
+                alert('❌ Error al eliminar: ' + data.error);
+            }
+        } catch (err) {
+            console.error('Error deleting lead:', err);
+            alert('❌ Error de conexión al eliminar lead');
+        }
+    };
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -407,18 +429,19 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                 <th>UTM Campaign</th>
                                 <th>Estatus Correo</th>
                                 <th>Fecha Registro</th>
+                                <th style={{ textAlign: 'center' }}>Acciones</th>
                             </tr>
                         </thead>
                         <tbody className={styles.tableBody}>
                             {loading ? (
                                 <tr>
-                                    <td colSpan={8} className={styles.emptyState}>
+                                    <td colSpan={9} className={styles.emptyState}>
                                         Cargando leads de regalo...
                                     </td>
                                 </tr>
                             ) : leads.length === 0 ? (
                                 <tr>
-                                    <td colSpan={8} className={styles.emptyState}>
+                                    <td colSpan={9} className={styles.emptyState}>
                                         No se encontraron registrados en esta campaña
                                     </td>
                                 </tr>
@@ -466,6 +489,32 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                                             </span>
                                         </td>
                                         <td>{new Date(lead.created_at).toLocaleString('es-MX')}</td>
+                                        <td style={{ textAlign: 'center' }}>
+                                            <button
+                                                onClick={() => handleDeleteLead(lead.id, lead.first_name)}
+                                                style={{
+                                                    background: '#FEE2E2',
+                                                    color: '#991B1B',
+                                                    border: '1px solid #F87171',
+                                                    borderRadius: '50px',
+                                                    padding: '6px 12px',
+                                                    cursor: 'pointer',
+                                                    fontSize: '0.75rem',
+                                                    fontWeight: 'bold',
+                                                    transition: 'all 0.2s'
+                                                }}
+                                                onMouseOver={(e) => {
+                                                    e.currentTarget.style.background = '#EF4444';
+                                                    e.currentTarget.style.color = 'white';
+                                                }}
+                                                onMouseOut={(e) => {
+                                                    e.currentTarget.style.background = '#FEE2E2';
+                                                    e.currentTarget.style.color = '#991B1B';
+                                                }}
+                                            >
+                                                🗑️ Borrar
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
