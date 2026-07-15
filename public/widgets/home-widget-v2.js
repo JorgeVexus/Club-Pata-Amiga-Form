@@ -1628,8 +1628,8 @@
                         </a>
                         <nav class="pata-v2-nav">
                             <a href="#beneficios" class="pata-v2-nav-item">Beneficios</a>
-                            <a href="https://www.pataamiga.mx/centros" class="pata-v2-nav-item">Centros aliados</a>
-                            <a href="https://www.pataamiga.mx/embajadores" class="pata-v2-nav-item">Embajadores</a>
+                            <a href="#wellness-partner-form-anchor" class="pata-v2-nav-item" id="nav-centros-btn">Centros aliados</a>
+                            <a href="https://www.pataamiga.mx/embajadores/dashboard" class="pata-v2-nav-item">Embajadores</a>
                             <a href="https://www.pataamiga.mx/user/inicio-de-sesion" class="pata-v2-nav-login">
                                 <span>Iniciar sesión</span>
                             </a>
@@ -1942,7 +1942,7 @@
                                 <span class="pata-v2-footer-links-title">COMUNIDAD</span>
                                 <a href="https://www.pataamiga.mx/centros" class="pata-v2-footer-link">Centros aliados</a>
                                 <a href="https://www.pataamiga.mx/centros/registro" class="pata-v2-footer-link">Quiero ser centro aliado</a>
-                                <a href="https://www.pataamiga.mx/embajadores" class="pata-v2-footer-link">Quiero ser embajador</a>
+                                <a href="https://www.pataamiga.mx/embajadores/dashboard" class="pata-v2-footer-link">Quiero ser embajador</a>
                             </div>
                         </div>
 
@@ -2005,6 +2005,7 @@
             registerNavLinks('a[href="#faq"]', '#faq');
             registerNavLinks('#hero-price-anchor', '#planes');
             registerNavLinks('#scroll-to-partner-form-btn', '#wellness-partner-form-anchor');
+            registerNavLinks('#nav-centros-btn', '#wellness-partner-form-anchor');
 
             // Integración de compra con Memberstack
             const buyPlansBtn = this.container.querySelector('#buy-plans-btn');
