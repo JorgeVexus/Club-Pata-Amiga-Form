@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
       <!-- CTA -->
       <tr><td style="background-color:#FFFFFF;padding:22px 32px 34px;text-align:center;">
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-          <tr><td style="background-color:#1E5350;border-radius:999px;">
+          <tr><td style="background-color:#1CBCAD;border-radius:999px;">
             <a href="https://app.pataamiga.mx/registro?step=1" style="display:inline-block;padding:15px 36px;font-size:16px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Unirme a la manada</a>
           </td></tr>
         </table>
@@ -179,15 +179,15 @@ export async function POST(request: NextRequest) {
       </td></tr>
 
       <!-- Pie -->
-      <tr><td style="background-color:#1E5350;border-radius:0 0 20px 20px;padding:24px 32px;text-align:center;">
-        <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#FFFFFF;">Pata Amiga · Cuidamos a tu manada</p>
-        <p style="margin:0 0 10px;font-size:12px;line-height:1.7;color:#BFD9D6;">
-          ¿Dudas? Escríbenos a <a href="mailto:contacto@patamiga.mx" style="color:#A6CE39;text-decoration:none;">contacto@patamiga.mx</a><br>
-          <a href="https://www.instagram.com/pataamigamx" style="color:#BFD9D6;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp;
-          <a href="https://www.facebook.com/share/14YQRpe9WzS/" style="color:#BFD9D6;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp;
-          <a href="https://www.tiktok.com/@pataamigamx" style="color:#BFD9D6;text-decoration:underline;">TikTok</a>
+      <tr><td style="background-color:#1CBCAD;border-radius:0 0 20px 20px;padding:24px 32px;text-align:center;">
+        <p style="margin:0 0 8px;font-size:13px;font-weight:bold;color:#1E5350;">Pata Amiga · Cuidamos a tu manada</p>
+        <p style="margin:0 0 10px;font-size:12px;line-height:1.7;color:#1E5350;">
+          ¿Dudas? Escríbenos a <a href="mailto:contacto@patamiga.mx" style="color:#1E5350;text-decoration:underline;font-weight:bold;">contacto@patamiga.mx</a><br>
+          <a href="https://www.instagram.com/pataamigamx" style="color:#1E5350;text-decoration:underline;">Instagram</a> &nbsp;·&nbsp;
+          <a href="https://www.facebook.com/share/14YQRpe9WzS/" style="color:#1E5350;text-decoration:underline;">Facebook</a> &nbsp;·&nbsp;
+          <a href="https://www.tiktok.com/@pataamigamx" style="color:#1E5350;text-decoration:underline;">TikTok</a>
         </p>
-        <p style="margin:0;font-size:10.5px;line-height:1.6;color:#8FB5B1;">
+        <p style="margin:0;font-size:10.5px;line-height:1.6;color:#1E5350;opacity:0.85;">
           Recibiste este correo porque te registraste para recibir tu regalo de bienvenida.<br>
           Si no fuiste tú, puedes ignorar este mensaje.<br>
           GIRBAZ, S.A. de C.V y Club Pata Amiga. Hecho con ❤️ en México.
