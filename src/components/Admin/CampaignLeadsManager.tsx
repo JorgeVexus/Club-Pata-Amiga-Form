@@ -38,8 +38,62 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
     const [savingCoupon, setSavingCoupon] = useState(false);
     const [uploadingPdf, setUploadingPdf] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [exportingCsv, setExportingCsv] = useState(false);
 
     const LIMIT = 50;
+
+    const handleExportCSV = async () => {
+        try {
+            setExportingCsv(true);
+            const params = new URLSearchParams({
+                search: search,
+                campaign: 'regalo',
+                export: 'true'
+            });
+
+            const res = await adminFetch(`/api/admin/campaign-leads?${params}`);
+            const data = await res.json();
+
+            if (data.success && data.leads) {
+                const leadsToExport = data.leads as CampaignLead[];
+                
+                // Generar contenido CSV
+                const headers = ['Nombre', 'Apellidos', 'Email', 'Telefono', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Estatus Correo', 'Fecha Registro'];
+                
+                const rows = leadsToExport.map(lead => [
+                    `"${(lead.first_name || '').replace(/"/g, '""')}"`,
+                    `"${(lead.last_name || '').replace(/"/g, '""')}"`,
+                    `"${(lead.email || '').replace(/"/g, '""')}"`,
+                    `"${(lead.phone || '').replace(/"/g, '""')}"`,
+                    `"${(lead.utm_source || '').replace(/"/g, '""')}"`,
+                    `"${(lead.utm_medium || '').replace(/"/g, '""')}"`,
+                    `"${(lead.utm_campaign || '').replace(/"/g, '""')}"`,
+                    `"${(lead.gift_email_status || '').replace(/"/g, '""')}"`,
+                    `"${new Date(lead.created_at).toLocaleString('es-MX')}"`
+                ]);
+
+                const csvContent = "\uFEFF" // UTF-8 BOM
+                    + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');
+
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.setAttribute('href', url);
+                link.setAttribute('download', `leads_regalo_${new Date().toISOString().split('T')[0]}.csv`);
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                alert('❌ Error al exportar: ' + (data.error || 'No se obtuvieron leads'));
+            }
+        } catch (err) {
+            console.error('Error exporting CSV:', err);
+            alert('❌ Error de conexión al exportar leads');
+        } finally {
+            setExportingCsv(false);
+        }
+    };
 
     const fetchData = async () => {
         try {
@@ -293,7 +347,35 @@ export default function CampaignLeadsManager({ refreshKey }: CampaignLeadsManage
                         👥 Leads Registrados ({total})
                     </div>
 
-                    <div className={styles.requestsControls}>
+                    <div className={styles.requestsControls} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                        <button
+                            onClick={handleExportCSV}
+                            disabled={exportingCsv || leads.length === 0}
+                            style={{
+                                background: '#10B981',
+                                color: 'white',
+                                border: '1px solid #000000',
+                                borderRadius: '50px',
+                                fontWeight: 'bold',
+                                padding: '0 18px',
+                                cursor: 'pointer',
+                                height: '38px',
+                                fontSize: '0.8rem',
+                                transition: 'opacity 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '6px',
+                                opacity: leads.length === 0 ? 0.5 : 1
+                            }}
+                            onMouseOver={(e) => {
+                                if (leads.length > 0) e.currentTarget.style.opacity = '0.9';
+                            }}
+                            onMouseOut={(e) => {
+                                if (leads.length > 0) e.currentTarget.style.opacity = '1';
+                            }}
+                        >
+                            <span>📥</span> {exportingCsv ? 'Exportando...' : 'Exportar CSV'}
+                        </button>
                         <div className={styles.searchBox}>
                             <span className={styles.searchIcon}>🔍</span>
                             <input

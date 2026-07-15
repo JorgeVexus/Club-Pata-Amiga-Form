@@ -53,9 +53,12 @@ export async function GET(request: NextRequest) {
             query = query.or(`email.ilike.%${search}%,first_name.ilike.%${search}%,last_name.ilike.%${search}%`);
         }
 
-        const from = (page - 1) * limit;
-        const to = from + limit - 1;
-        query = query.range(from, to);
+        const isExport = searchParams.get('export') === 'true';
+        if (!isExport) {
+            const from = (page - 1) * limit;
+            const to = from + limit - 1;
+            query = query.range(from, to);
+        }
 
         const { data: leads, error: leadsError, count } = await query;
 
