@@ -432,7 +432,9 @@
 
                     <!-- Header -->
                     <header class="pata-gift-header">
-                        <img src="${logoUrl}" alt="Club Pata Amiga" class="pata-gift-logo">
+                        <a href="https://www.pataamiga.mx/" target="_blank" rel="noopener noreferrer" style="display: inline-block;">
+                            <img src="${logoUrl}" alt="Club Pata Amiga" class="pata-gift-logo">
+                        </a>
                     </header>
 
                     <!-- Main -->
@@ -476,7 +478,7 @@
                                         </span>
                                     </label>
 
-                                    <div class="pata-gift-status error" id="pata-gift-form-error"></div>
+                                    <div class="pata-gift-status" id="pata-gift-form-error"></div>
 
                                     <button type="submit" class="pata-gift-btn" id="pata-gift-submit-btn">
                                         <span>🎁 Quiero mi regalo</span>
@@ -515,6 +517,7 @@
                 submitBtn.disabled = true;
                 submitBtn.innerHTML = '<span>Enviando...</span>';
                 errorEl.style.display = 'none';
+                errorEl.classList.remove('error');
 
                 const formData = new FormData(form);
                 const payload = {
@@ -542,6 +545,7 @@
                         this.renderSuccess(payload.firstName, payload.email);
                     } else {
                         errorEl.textContent = `❌ ${data.error || 'Ocurrió un error. Inténtalo de nuevo.'}`;
+                        errorEl.classList.add('error');
                         errorEl.style.display = 'block';
                         submitBtn.disabled = false;
                         submitBtn.innerHTML = '<span>🎁 Quiero mi regalo</span>';
@@ -550,6 +554,7 @@
                 } catch (error) {
                     console.error('Error submitting campaign lead:', error);
                     errorEl.textContent = '❌ Error de conexión con el servidor. Inténtalo de nuevo.';
+                    errorEl.classList.add('error');
                     errorEl.style.display = 'block';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<span>🎁 Quiero mi regalo</span>';
