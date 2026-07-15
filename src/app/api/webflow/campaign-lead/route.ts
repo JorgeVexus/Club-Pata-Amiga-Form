@@ -133,7 +133,9 @@ export async function POST(request: NextRequest) {
                 const mailRes = await resend.emails.send({
                     from: `Club Pata Amiga <${DEFAULT_FROM_EMAIL}>`,
                     to: mail,
-                    subject: campaign.emailSubject,
+                    subject: campaign.emailSubject && campaign.emailSubject !== 'Obtén tu regalo de bienvenida' 
+                        ? campaign.emailSubject 
+                        : '🎁 ¡Tu regalo ya llegó! 1 mes gratis para tu peludo 🐾',
                     html: `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Obtén tu regalo — Club Pata Amiga</title></head><body style="margin:0;padding:0;"><!-- Correo "Obtén tu regalo" · Club Pata Amiga -->
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF7F1;padding:24px 12px;font-family:Arial,Helvetica,sans-serif;">
   <tr><td align="center">
@@ -171,7 +173,7 @@ export async function POST(request: NextRequest) {
       <!-- CTA -->
       <tr><td style="background-color:#FFFFFF;padding:22px 32px 34px;text-align:center;">
         <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
-          <tr><td style="background-color:#1CBCAD;border-radius:999px;">
+          <tr><td style="background-color:#FE8F15;border-radius:999px;">
             <a href="https://app.pataamiga.mx/registro?step=1" style="display:inline-block;padding:15px 36px;font-size:16px;font-weight:bold;color:#FFFFFF;text-decoration:none;">Unirme a la manada</a>
           </td></tr>
         </table>
