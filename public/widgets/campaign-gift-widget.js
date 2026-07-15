@@ -403,7 +403,7 @@
 
         render() {
             const utm = this.getUtmParams();
-            const logoUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-on-dark.svg`;
+            const logoUrl = `${CONFIG.apiUrl}/widgets/logo-on-dark.svg`;
 
             // Construir la marquesina con loop duplicado (REPEATS = 3 por mitad)
             let marqueeItemsHtml = '';
