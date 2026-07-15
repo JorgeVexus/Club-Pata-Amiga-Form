@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { resend, DEFAULT_FROM_EMAIL } from '@/lib/resend';
 import { getCampaign, campaignCouponKey, campaignPdfSlot } from '@/lib/landings';
+import { upsertContact } from '@/services/crm.service';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -106,7 +107,25 @@ export async function POST(request: NextRequest) {
 
         const leadId = lead?.id;
 
-        // 2. Consultar Cupón y PDF de la base de datos
+        // 2. Sincronizar contacto con CRM LynSales (best-effort, no bloquea el flujo)
+        try {
+            const crmTags: string[] = [`campaña-${campaign.slug}`]; // ej. "campaña-regalo"
+            if (utm?.source) crmTags.push(`utm-source-${utm.source.toLowerCase().slice(0, 40)}`);
+
+            await upsertContact({
+                firstName: fName,
+                lastName: lName,
+                email: mail,
+                phone: tel,
+                country: 'MX',
+                tags: crmTags,
+            });
+        } catch (crmError) {
+            // El fallo del CRM nunca debe impedir el registro ni el envío del regalo
+            console.error('[CRM] Error sincronizando campaign lead:', crmError);
+        }
+
+        // 3. Consultar Cupón y PDF de la base de datos
         const [{ data: couponRow }, { data: pdfRow }] = await Promise.all([
             supabase
                 .from('site_settings')
