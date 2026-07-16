@@ -57,12 +57,25 @@ function AmbassadorRegistrationContent() {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [hasActiveSession, setHasActiveSession] = useState(false);
   const [memberData, setMemberData] = useState<MemberData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
 
   useEffect(() => {
     const checkMemberStatus = async () => {
       setIsLoading(true);
+      setHasActiveSession(false);
+
+      if (typeof window !== 'undefined' && window.$memberstackDom) {
+        try {
+          const sessionResult = await window.$memberstackDom.getCurrentMember();
+          if (sessionResult?.data) {
+            setHasActiveSession(true);
+          }
+        } catch {
+          setHasActiveSession(false);
+        }
+      }
 
       if (memberIdFromUrl) {
         try {
@@ -92,6 +105,7 @@ function AmbassadorRegistrationContent() {
         try {
           const result = await window.$memberstackDom.getCurrentMember();
           if (result?.data) {
+            setHasActiveSession(true);
             const cf = result.data.customFields || {};
             setMemberData({
               id: result.data.id,
@@ -123,6 +137,7 @@ function AmbassadorRegistrationContent() {
   const handleLogout = async () => {
     if (typeof window !== 'undefined' && window.$memberstackDom) {
       await window.$memberstackDom.logout();
+      setHasActiveSession(false);
       window.location.reload();
     }
   };
@@ -134,7 +149,7 @@ function AmbassadorRegistrationContent() {
       <NavbarRedesign
         onLogout={handleLogout}
         member={memberData}
-        showLogout={isLoggedIn}
+        showLogout={hasActiveSession}
       />
       <div 
         className={styles.pageBackground}

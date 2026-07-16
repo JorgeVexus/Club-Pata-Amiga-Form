@@ -216,6 +216,14 @@ export default function AmbassadorForm({
                 return nextErrors;
             });
         }
+
+        if (['facebook', 'instagram', 'tiktok'].includes(field) && errors.social_media) {
+            setErrors(prev => {
+                const nextErrors = { ...prev };
+                delete nextErrors.social_media;
+                return nextErrors;
+            });
+        }
     };
 
     const verifyCurp = async (curp: string) => {
@@ -323,6 +331,10 @@ export default function AmbassadorForm({
             nextErrors.phone = 'El celular es requerido';
         } else if (formData.phone.length !== 10) {
             nextErrors.phone = 'El celular debe tener 10 digitos';
+        }
+
+        if (!formData.facebook.trim() && !formData.instagram.trim() && !formData.tiktok.trim()) {
+            nextErrors.social_media = 'Agrega al menos una red social para continuar';
         }
 
         if (!formData.motivation.trim()) {

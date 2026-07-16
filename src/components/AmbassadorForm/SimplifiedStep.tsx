@@ -294,10 +294,10 @@ export default function SimplifiedStep({
                     {errors.phone && <small id="ambassador-phone-error" className={styles.error}>{errors.phone}</small>}
                 </label>
 
-                <div className={styles.socialSection}>
+                <div className={styles.socialSection} data-field="social_media">
                     <div className={styles.sectionLabel}>
                         <span>Redes sociales</span>
-                        <small>Opcional</small>
+                        <small>Al menos una es obligatoria</small>
                     </div>
 
                     <label className={styles.fieldGroup}>
@@ -332,6 +332,7 @@ export default function SimplifiedStep({
                             placeholder="https://tiktok.com/@tu-perfil"
                         />
                     </label>
+                    {errors.social_media && <small id="ambassador-social-media-error" className={styles.error}>{errors.social_media}</small>}
                 </div>
 
                 <label className={fieldClassName('motivation')} data-field="motivation">
