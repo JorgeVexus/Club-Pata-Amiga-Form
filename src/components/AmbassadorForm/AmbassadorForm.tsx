@@ -115,8 +115,8 @@ export default function AmbassadorForm({
     const hasPreloadedMember = useMemo(() => Boolean(preloadedData || linkedMemberstackId), [linkedMemberstackId, preloadedData]);
 
     useEffect(() => {
-        onStepChange?.(showSuccess ? 4 : 1);
-    }, [onStepChange, showSuccess]);
+        onStepChange?.(showCompleteProfile ? 3 : showSuccess ? 2 : 1);
+    }, [onStepChange, showCompleteProfile, showSuccess]);
 
     useEffect(() => {
         const saved = localStorage.getItem('ambassador_terms_acceptance');

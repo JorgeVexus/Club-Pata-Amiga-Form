@@ -1,4 +1,8 @@
 .pageContainer {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    background: transparent !important;
     position: relative;
     width: 100%;
     display: flex;
@@ -65,6 +69,10 @@
 }
 
 .profileHeader h2 {
+    color: #1E5350 !important;
+    font-size: 38px !important;
+    font-weight: 400 !important;
+    line-height: 1.05 !important;
     font-family: 'Fraiche', sans-serif;
     font-size: 2rem;
     font-weight: 700;
@@ -85,6 +93,11 @@
 
 .orangeFormBox,
 .tealFormBox {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     position: relative;
     border-radius: 36px;
     padding: 2rem;
@@ -104,6 +117,7 @@
 }
 
 .formBadge {
+    display: none !important;
     position: absolute;
     top: -18px;
     right: 28px;
@@ -120,17 +134,22 @@
 }
 
 .divider {
+    border-color: #EEE9DD !important;
     height: 1px;
     background: rgba(255, 255, 255, 0.3);
 }
 
 .section {
+    padding: 0 !important;
+    border: 0 !important;
+    background: transparent !important;
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
 }
 
 .sectionTitle {
+    color: #1E5350 !important;
     display: flex;
     align-items: center;
     gap: 0.6rem;
@@ -169,6 +188,10 @@
 
 .input,
 .textarea {
+    min-height: 48px !important;
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
+    background: #FFF !important;
     width: 100%;
     border: 2px solid transparent;
     border-radius: 20px;
@@ -190,6 +213,8 @@
 
 .input:focus,
 .textarea:focus {
+    border-color: #1CBCAD !important;
+    box-shadow: 0 0 0 3px rgba(28,188,173,.14) !important;
     border-color: #000000;
 }
 
@@ -215,20 +240,26 @@
    ============================================ */
 
 .paymentCards {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.75rem;
-    flex-wrap: wrap;
 }
 
 .paymentCard {
-    display: inline-flex !important;
+    min-height: 52px !important;
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
+    background: #FFF !important;
+    box-shadow: none !important;
+    display: flex !important;
     align-items: center !important;
-    gap: 0.4rem !important;
-    padding: 0.65rem 1.1rem !important;
-    background: rgba(255, 255, 255, 0.2) !important;
-    color: #ffffff !important;
-    border: 2px solid rgba(255, 255, 255, 0.55) !important;
-    border-radius: 999px !important;
+    justify-content: flex-start !important;
+    gap: 0.65rem !important;
+    padding: 0.8rem 1rem !important;
+    background: #FFFFFF !important;
+    color: #3D524F !important;
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
     font-family: 'Outfit', sans-serif !important;
     font-weight: 700 !important;
     font-size: 0.9rem !important;
@@ -237,14 +268,17 @@
 }
 
 .paymentCard:hover {
-    border-color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.3) !important;
+    border-color: #1CBCAD !important;
+    background: #F5FBFA !important;
 }
 
 .paymentCardSelected {
-    background: #ffffff !important;
-    color: #2D3748 !important;
-    border-color: #000000 !important;
+    border-color: #1CBCAD !important;
+    background: #E9F7F5 !important;
+    background: #E9F7F5 !important;
+    color: #0E8377 !important;
+    border-color: #1CBCAD !important;
+    box-shadow: 0 0 0 3px rgba(28,188,173,.12) !important;
 }
 
 .bankFields {
@@ -261,9 +295,9 @@
 }
 
 .fieldLabel span {
-    color: #ffffff;
-    font-size: 0.85rem;
-    font-weight: 700;
+    color: #1E5350;
+    font-size: 13px;
+    font-weight: 600;
 }
 
 /* ============================================
@@ -272,20 +306,37 @@
 
 .socialGrid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: 1fr;
     gap: 0.75rem;
 }
 
 .socialInputWrapper {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    padding: 6px 8px;
+    border: 1.5px solid #E4DFD3;
+    border-radius: 12px;
+    background: #FFFFFF;
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.socialInputWrapper:focus-within {
+    border-color: #1CBCAD;
+    box-shadow: 0 0 0 3px rgba(28,188,173,.14);
+}
+
+.socialInputWrapper .input {
+    min-height: 38px !important;
+    padding: 0 8px !important;
+    border: 0 !important;
+    box-shadow: none !important;
 }
 
 .socialIcon {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -318,23 +369,30 @@
 
 .buttonsRow {
     display: flex;
-    justify-content: center;
+    justify-content: stretch;
 }
 
 .saveButton {
+    width: 100% !important;
+    min-height: 52px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #1CBCAD !important;
+    box-shadow: none !important;
+    font-family: 'Outfit', sans-serif !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 0.6rem !important;
     width: 100% !important;
-    max-width: 380px !important;
-    min-height: 50px !important;
+    max-width: none !important;
+    min-height: 52px !important;
     padding: 0.85rem 1.5rem !important;
-    background: #FE8F15 !important;
+    background: #1CBCAD !important;
     color: #ffffff !important;
-    border: 2px solid #000000 !important;
-    border-radius: 50px !important;
-    font-family: 'Fraiche', sans-serif !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    font-family: 'Outfit', sans-serif !important;
     font-size: 1.05rem !important;
     font-weight: 700 !important;
     cursor: pointer !important;
@@ -368,6 +426,10 @@
    ============================================ */
 
 .successBox {
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: #E9F7F5 !important;
+    box-shadow: none !important;
     background: #ffffff;
     border-radius: 36px;
     padding: 3rem 2rem;
@@ -398,6 +460,11 @@
 }
 
 .loginButton {
+    min-height: 52px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #1CBCAD !important;
+    box-shadow: none !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;

@@ -3,7 +3,6 @@
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AmbassadorForm from '@/components/AmbassadorForm/AmbassadorForm';
-import BrandLogo from '@/components/UI/BrandLogo';
 import NavbarRedesign from '@/components/RegistrationV2/NavbarRedesign';
 import styles from './page.module.css';
 
@@ -29,18 +28,25 @@ function LoadingCard() {
 }
 
 function AmbassadorStepper({ currentStep = 1 }: { currentStep?: number }) {
-  const isSuccess = currentStep === 4;
+  const steps = ['Solicitud', 'Enviada', 'Completar perfil'];
 
   return (
     <div className={styles.stepper}>
-      <div className={styles.stepperItem}>
-        <div className={`${styles.stepIcon} ${isSuccess ? styles.stepIconCompleted : styles.stepIconActive}`}>
-          {isSuccess ? 'OK' : '1'}
-        </div>
-        <span className={`${styles.stepLabel} ${isSuccess ? styles.stepLabelCompleted : styles.stepLabelActive}`}>
-          {isSuccess ? 'Solicitud enviada' : 'Solicitud de embajador'}
-        </span>
-      </div>
+      {steps.map((label, index) => {
+        const number = index + 1;
+        const isActive = number === currentStep;
+        const isCompleted = number < currentStep;
+        return (
+          <div key={label} className={`${styles.stepperItem} ${isActive ? styles.stepperItemActive : ''} ${isCompleted ? styles.stepperItemCompleted : ''}`}>
+            <div className={`${styles.stepIcon} ${isActive ? styles.stepIconActive : ''} ${isCompleted ? styles.stepIconCompleted : ''}`}>
+              {isCompleted ? '✓' : number}
+            </div>
+            <span className={`${styles.stepLabel} ${isActive ? styles.stepLabelActive : ''} ${isCompleted ? styles.stepLabelCompleted : ''}`}>
+              {label}
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -121,22 +127,18 @@ function AmbassadorRegistrationContent() {
     }
   };
 
-  const isSuccessStep = currentStep === 4;
+  const isSuccessStep = currentStep >= 2;
 
   return (
     <div className={styles.mainWrapper}>
-      {isSuccessStep && (
-        <NavbarRedesign
-          onLogout={handleLogout}
-          member={memberData}
-          showLogout={true}
-        />
-      )}
+      <NavbarRedesign
+        onLogout={handleLogout}
+        member={memberData}
+        showLogout={isLoggedIn}
+      />
       <div 
         className={styles.pageBackground}
-        style={isSuccessStep ? { minHeight: 'calc(100vh - 80px)', paddingTop: '1.5rem' } : undefined}
       >
-        {!isSuccessStep && <BrandLogo />}
         <div className={styles.whiteCard}>
           <img
             id="embajador-img-nina"
@@ -155,7 +157,7 @@ function AmbassadorRegistrationContent() {
             aria-hidden
           />
 
-          <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>
+          {!isSuccessStep && <h1 className={styles.mainTitle}>Sé embajador Pata Amiga</h1>}
 
           {isLoggedIn && memberData && !isSuccessStep && (
             <div className={styles.userGreeting}>

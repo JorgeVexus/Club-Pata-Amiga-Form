@@ -1,4 +1,5 @@
 .modalOverlay {
+    background: rgba(30,83,80,.42) !important;
     position: fixed;
     top: 0;
     left: 0;
@@ -20,6 +21,10 @@
 }
 
 .modalContent {
+    max-width: 560px !important;
+    border: 1px solid #EEE9DD !important;
+    border-radius: 20px !important;
+    box-shadow: 0 20px 60px rgba(30,83,80,.18) !important;
     background: white;
     border-radius: 24px;
     width: 100%;
@@ -44,6 +49,7 @@
 }
 
 .modalHeader {
+    background: #FFF !important;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -53,6 +59,7 @@
 }
 
 .modalTitle {
+    color: #1E5350 !important;
     font-size: 1.3rem;
     font-weight: 700;
     color: white;
@@ -61,6 +68,8 @@
 }
 
 .modalClose {
+    background: #E9F7F5 !important;
+    color: #0E8377 !important;
     background: rgba(255, 255, 255, 0.2);
     border: none;
     width: 36px;
@@ -234,6 +243,10 @@
 }
 
 .modalCloseBtn {
+    min-height: 48px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #1CBCAD !important;
     padding: 10px 24px;
     background: #00BBB4;
     color: white;

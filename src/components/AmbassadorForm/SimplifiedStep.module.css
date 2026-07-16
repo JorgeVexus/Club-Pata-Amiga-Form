@@ -1,4 +1,10 @@
 .formShell {
+    width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     width: auto;
     background: #FE8F15;
     border: 2px solid #000000;
@@ -14,6 +20,9 @@
 }
 
 .formIntro h2 {
+    color: #1E5350 !important;
+    font-size: 28px !important;
+    font-weight: 400 !important;
     font-family: 'Fraiche', sans-serif;
     font-size: 2rem;
     font-weight: 600;
@@ -22,6 +31,7 @@
 }
 
 .formIntro p {
+    color: #6B7C79 !important;
     color: rgba(255, 255, 255, 0.92);
     font-size: 0.95rem;
     line-height: 1.45;
@@ -51,6 +61,9 @@
 .fieldGroup span,
 .radioField legend,
 .sectionLabel span {
+    color: #1E5350 !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
     color: #ffffff;
     font-size: 0.88rem;
     font-weight: 700;
@@ -58,6 +71,9 @@
 
 .input,
 .textarea {
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
+    background: #FFF !important;
     width: 100%;
     border: 2px solid transparent;
     border-radius: 24px;
@@ -71,6 +87,7 @@
 }
 
 .input {
+    min-height: 48px !important;
     min-height: 46px;
     padding: 0.75rem 1rem;
 }
@@ -84,6 +101,9 @@
 
 .input:focus,
 .textarea:focus {
+    border-color: #1CBCAD !important;
+    box-shadow: 0 0 0 3px rgba(28,188,173,.14) !important;
+    transform: none !important;
     border-color: #000000;
     box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.28);
     transform: translateY(-1px);
@@ -117,6 +137,10 @@
 }
 
 .radioOption {
+    min-height: 48px !important;
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
+    color: #6B7C79 !important;
     display: flex;
     align-items: center;
     gap: 0.45rem;
@@ -136,6 +160,10 @@
 }
 
 .radioOptionSelected {
+    border-color: #1CBCAD !important;
+    background: #E9F7F5 !important;
+    color: #0E8377 !important;
+    box-shadow: none !important;
     background: #ffffff;
     border-color: #000000;
     color: #2D3748;
@@ -208,6 +236,9 @@
 }
 
 .phoneInput > span {
+    min-height: 48px !important;
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 12px !important;
     display: inline-flex;
     align-items: center;
     min-height: 46px;
@@ -297,6 +328,10 @@
 }
 
 .termsSection {
+    padding: 16px !important;
+    border: 0 !important;
+    border-radius: 16px !important;
+    background: #FDFBF7 !important;
     margin: 0.35rem 0 0;
     padding: 1rem;
     background: rgba(255, 255, 255, 0.12);
@@ -326,6 +361,7 @@
 }
 
 .termsText {
+    color: #3D524F !important;
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
@@ -335,6 +371,7 @@
 }
 
 .viewTermsLink {
+    color: #0E8377 !important;
     width: fit-content;
     background: none;
     border: none;
@@ -353,6 +390,13 @@
 }
 
 .submitButton {
+    width: 100% !important;
+    min-height: 52px !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #1CBCAD !important;
+    box-shadow: none !important;
+    font-family: 'Outfit', sans-serif !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;

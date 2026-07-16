@@ -627,3 +627,46 @@
         transform: translateY(0);
     }
 }
+
+/* Nuevo estándar visual compartido con el registro de membresías. */
+.pageBackground {
+    min-height: calc(100dvh - 74px) !important;
+    padding: 40px 20px 64px !important;
+    background: #FAF7F1 !important;
+    align-items: flex-start !important;
+}
+.whiteCard {
+    width: 100% !important;
+    max-width: 560px !important;
+    margin: 0 auto !important;
+    padding: 28px !important;
+    border: 0 !important;
+    border-radius: 20px !important;
+    background: #FFF !important;
+    box-shadow: 0 2px 12px rgba(30,83,80,.06) !important;
+    overflow: visible !important;
+}
+.decorativeImage { display: none !important; }
+.mainTitle { margin: 0 0 20px !important; color: #1E5350 !important; font-size: 38px !important; font-weight: 400 !important; line-height: 1.05 !important; text-align: left !important; text-shadow: none !important; }
+.userGreeting { margin: 0 0 18px !important; color: #6B7C79 !important; text-align: left !important; }
+.logoutLink { color: #0E8377 !important; }
+.stepper { display: flex !important; width: 100% !important; max-width: none !important; gap: 8px !important; margin: 0 0 24px !important; padding: 0 !important; background: transparent !important; }
+.stepperItem { display: flex !important; min-width: 0 !important; min-height: 38px !important; flex: 1 1 0 !important; align-items: center !important; gap: 8px !important; padding: 8px 12px !important; border: 1.5px solid #E4DFD3 !important; border-radius: 999px !important; background: #FFF !important; }
+.stepperItemActive { border-color: #1CBCAD !important; background: #1CBCAD !important; }
+.stepperItemCompleted { border-color: #E9F7F5 !important; background: #E9F7F5 !important; }
+.stepIcon { width: 20px !important; height: 20px !important; flex: 0 0 20px !important; background: #EFEAE0 !important; color: #8A9490 !important; font-size: 11px !important; }
+.stepperItemActive .stepIcon { background: rgba(255,255,255,.25) !important; color: #FFF !important; }
+.stepperItemCompleted .stepIcon { background: #1CBCAD !important; color: #FFF !important; }
+.stepLabel { overflow: hidden !important; color: #8A9490 !important; font-size: 12px !important; font-weight: 600 !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+.stepperItemActive .stepLabel { color: #FFF !important; }
+.stepperItemCompleted .stepLabel { color: #0E8377 !important; }
+.contentLayout, .formColumn { width: 100% !important; max-width: none !important; margin: 0 !important; }
+
+@media (max-width: 640px) {
+    .pageBackground { min-height: calc(100dvh - 46px) !important; padding: 18px 20px 48px !important; }
+    .whiteCard { padding: 20px !important; }
+    .mainTitle { font-size: 30px !important; }
+    .stepperItem { height: 6px !important; min-height: 6px !important; padding: 0 !important; border: 0 !important; background: #E4DFD3 !important; }
+    .stepperItemActive, .stepperItemCompleted { background: #1CBCAD !important; }
+    .stepIcon, .stepLabel { display: none !important; }
+}

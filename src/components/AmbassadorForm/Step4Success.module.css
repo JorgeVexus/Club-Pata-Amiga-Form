@@ -3,6 +3,7 @@
    ============================================ */
 
 .pageContainer {
+    width: 100% !important;
     position: relative;
     width: 100%;
 }
@@ -15,6 +16,10 @@
 }
 
 .landingSubtitle h2 {
+    color: #1E5350 !important;
+    font-size: 38px !important;
+    font-weight: 400 !important;
+    line-height: 1.05 !important;
     font-size: 40px;
     font-weight: 700;
     color: #FE8F15;
@@ -38,6 +43,11 @@
 
 /* Recuadro naranja */
 .orangeFormBox {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
     position: relative;
     background: #FE8F15;
     border-radius: 50px;
@@ -49,10 +59,12 @@
 
 /* Contenido de éxito - máximo 60% */
 .successContent {
+    max-width: 100% !important;
     max-width: 60%;
 }
 
 .whatNextTitle {
+    color: #1E5350 !important;
     font-size: 1.3rem;
     font-weight: 700;
     color: white;
@@ -66,6 +78,7 @@
 }
 
 .stepsList li {
+    color: #3D524F !important;
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
@@ -90,6 +103,9 @@
 
 /* Callout completar perfil */
 .completeProfileCallout {
+    border: 1.5px solid #E4DFD3 !important;
+    border-radius: 16px !important;
+    background: #FDFBF7 !important;
     display: flex !important;
     align-items: center !important;
     gap: 1rem !important;
@@ -141,6 +157,8 @@
 
 /* Recuadro verde de contacto */
 .contactBox {
+    border-radius: 16px !important;
+    background: #E9F7F5 !important;
     background: #9FD406;
     border-radius: 20px;
     padding: 1.5rem;
@@ -148,10 +166,12 @@
 }
 
 .contactContent {
+    max-width: 100% !important;
     max-width: 60%;
 }
 
 .contactBox h3 {
+    color: #1E5350 !important;
     font-size: 1.1rem;
     font-weight: 700;
     color: white;
@@ -159,12 +179,14 @@
 }
 
 .contactEmail {
+    color: #0E8377 !important;
     font-size: 0.95rem;
     color: white;
     margin: 0 0 4px 0;
 }
 
 .contactNote {
+    color: #6B7C79 !important;
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
@@ -175,15 +197,19 @@
    ============================================ */
 
 .buttonsRow {
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     gap: 0.6rem !important;
     margin-bottom: 1.5rem !important;
-    background: #F0FDFC !important;
-    border: 2px solid #000000 !important;
-    border-radius: 28px !important;
-    padding: 1.5rem !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
 }
 
 .loginHint {
@@ -195,6 +221,13 @@
 
 /* Botón iniciar sesión - turquesa, prominente para no perderse entre el naranja */
 .loginButton {
+    min-height: 52px !important;
+    max-width: none !important;
+    border: 0 !important;
+    border-radius: 999px !important;
+    background: #1CBCAD !important;
+    box-shadow: none !important;
+    font-family: 'Outfit', sans-serif !important;
     display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -204,7 +237,7 @@
     padding: 16px 28px !important;
     background: #00BBB4 !important;
     color: #ffffff !important;
-    border: 2px solid #000000 !important;
+    border: 0 !important;
     border-radius: 50px !important;
     font-family: 'Fraiche', sans-serif !important;
     font-weight: 700 !important;
