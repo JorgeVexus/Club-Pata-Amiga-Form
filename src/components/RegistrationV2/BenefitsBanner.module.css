@@ -10,6 +10,16 @@
     border-bottom: 1px solid #E2E8F0;
 }
 
+/* Banda secundaria del nuevo sistema visual. */
+.banner { background: #E9F7F5; border-color: #D6EEE9; box-shadow: none; }
+.title { color: #1E5350; }
+.subtitle { color: #6B7C79; }
+.icon { color: #1CBCAD; }
+
+@media (min-width: 641px) {
+    .banner { display: none; }
+}
+
 .marqueeTrack {
     display: flex;
     align-items: center;

@@ -6,6 +6,89 @@
     padding: 1.5rem 0;
 }
 
+/* Nuevo sistema visual: pills en escritorio, segmentos en móvil. */
+.container { justify-content: stretch; gap: .5rem; padding: 0; }
+.step { flex: 1; min-width: 0; flex-direction: row; gap: .5rem; padding: .5rem .75rem; border: 1.5px solid #E4DFD3; border-radius: 999px; background: #FFF; }
+.stepNumber { width: 20px; height: 20px; flex: 0 0 auto; background: #EFEAE0; color: #8A9490; font-size: .6875rem; }
+.step.active { background: #1CBCAD; border-color: #1CBCAD; }
+.step.completed { background: #E9F7F5; border-color: #E9F7F5; }
+.step.active .stepNumber { background: rgba(255,255,255,.25); box-shadow: none; }
+.step.completed .stepNumber { background: #1CBCAD; }
+.stepLabel { overflow: hidden; max-width: none; color: #8A9490; font-size: .8125rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.step.active .stepLabel { color: #FFF; }
+.step.completed .stepLabel { color: #0E8377; }
+.connector { display: none; }
+
+@media (max-width: 480px) {
+    .container { gap: .375rem; }
+    .step { height: 6px; padding: 0; border: 0; border-radius: 999px; background: #E4DFD3; }
+    .step.active, .step.completed { background: #1CBCAD; }
+    .stepNumber, .stepLabel { display: none; }
+}
+
+/* Medidas exactas del stepper horizontal del repositorio de referencia. */
+.container {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: stretch;
+    gap: 8px;
+    padding: 0;
+}
+
+.step {
+    display: flex;
+    min-width: 0;
+    min-height: 38px;
+    flex: 1 1 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1.5px solid #E4DFD3;
+    border-radius: 999px;
+    background: #FFFFFF;
+}
+
+.stepNumber {
+    width: 20px;
+    height: 20px;
+    flex: 0 0 20px;
+    background: #EFEAE0;
+    color: #8A9490;
+    font-size: 11px;
+    box-shadow: none;
+}
+
+.stepLabel {
+    display: block;
+    overflow: hidden;
+    max-width: none;
+    color: #8A9490;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    text-align: left;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.step.active { border-color: #1CBCAD; background: #1CBCAD; }
+.step.active .stepNumber { background: rgba(255,255,255,.25); color: #FFFFFF; }
+.step.active .stepLabel { color: #FFFFFF; }
+.step.completed { border-color: #E9F7F5; background: #E9F7F5; }
+.step.completed .stepNumber { background: #1CBCAD; color: #FFFFFF; }
+.step.completed .stepLabel { color: #0E8377; }
+.connector { display: none; }
+
+@media (max-width: 640px) {
+    .container { gap: 6px; }
+    .step { min-height: 6px; height: 6px; padding: 0; border: 0; background: #E4DFD3; }
+    .step.active, .step.completed { background: #1CBCAD; }
+    .stepNumber, .stepLabel { display: none; }
+}
+
 .step {
     display: flex;
     flex-direction: column;
@@ -71,4 +154,24 @@
     .connector {
         width: 20px;
     }
+}
+
+/* Cascada final: número y texto permanecen en la misma fila. */
+.container { display: flex; width: 100%; align-items: center; justify-content: stretch; gap: 8px; padding: 0; }
+.step { display: flex; min-width: 0; min-height: 38px; flex: 1 1 0; flex-direction: row; align-items: center; justify-content: flex-start; gap: 8px; padding: 8px 14px; border: 1.5px solid #E4DFD3; border-radius: 999px; background: #FFF; }
+.stepNumber { display: flex; width: 20px; height: 20px; flex: 0 0 20px; align-items: center; justify-content: center; background: #EFEAE0; color: #8A9490; font-size: 11px; box-shadow: none; }
+.stepLabel { display: block; overflow: hidden; max-width: none; color: #8A9490; font-size: 13px; font-weight: 600; line-height: 1; text-align: left; text-overflow: ellipsis; white-space: nowrap; }
+.step.active { border-color: #1CBCAD; background: #1CBCAD; }
+.step.active .stepNumber { background: rgba(255,255,255,.25); color: #FFF; box-shadow: none; }
+.step.active .stepLabel { color: #FFF; }
+.step.completed { border-color: #E9F7F5; background: #E9F7F5; }
+.step.completed .stepNumber { background: #1CBCAD; color: #FFF; }
+.step.completed .stepLabel { color: #0E8377; }
+.connector { display: none; }
+
+@media (max-width: 640px) {
+    .container { gap: 6px; }
+    .step { min-height: 6px; height: 6px; padding: 0; border: 0; background: #E4DFD3; }
+    .step.active, .step.completed { background: #1CBCAD; }
+    .stepNumber, .stepLabel { display: none; }
 }

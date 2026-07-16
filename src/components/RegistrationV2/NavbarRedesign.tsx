@@ -15,7 +15,7 @@ export default function NavbarRedesign({ onLogout, member, showLogout = true }: 
             <div className={styles.content}>
                 <a href="https://www.pataamiga.mx" className={styles.logoWrapper}>
                     <img 
-                        src="https://res.cloudinary.com/dqy07kgu6/image/upload/v1777695849/logo_pata_amiga_cbgtjz.png" 
+                        src="/widgets/logo-light-bg.svg"
                         alt="Pata Amiga" 
                         className={styles.logo} 
                     />

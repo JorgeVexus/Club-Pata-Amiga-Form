@@ -1,10 +1,10 @@
 # Integración CRM LynSales — Leads de Campañas de Marketing
-**Club Pata Amiga · Documentación técnica para agencia LynDoors**
+**Pata Amiga · Documentación técnica para agencia LynDoors**
 *Última actualización: 15 de julio 2026*
 
 ---
 
-## 1. Resumen Ejecutivo
+## 1. Resumen 
 
 Cuando un usuario se registra en cualquier **landing page de campaña** de Club Pata Amiga (ej. campaña "Regálale una membresía"), sus datos son enviados automáticamente al CRM de LynSales como un nuevo contacto. El contacto llega etiquetado con la campaña de origen y los parámetros UTM para facilitar la segmentación y el seguimiento.
 

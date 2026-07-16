@@ -15,6 +15,58 @@
     z-index: 10;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.pageBackground { background: #FAF7F1; }
+.mainContent { max-width: 1180px; gap: clamp(2rem, 5vw, 5rem); }
+.formCard, .petCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before { display: none; }
+.topProgressBar { display: none; }
+.topProgressBarFill { background: #1CBCAD; }
+.stepBadge, .petBadgeLabel { background: #E9F7F5; color: #0E8377; }
+.formTitle, .headline { color: #1E5350; text-wrap: balance; }
+.primaryButton, .secondaryButton, .addPetButton { min-height: 52px; border-radius: 999px; box-shadow: none; }
+.primaryButton { border-color: #1CBCAD; background: #1CBCAD; }
+.secondaryButton { border-color: #E4DFD3; background: #FFF; color: #3D524F; }
+
+/* Cascada final: una sola tarjeta, misma medida que el paso 1. */
+.containerCenter, .mainContent { display: block; width: 100%; max-width: 560px; margin-inline: auto; padding: 24px 0 56px; }
+.formColumn { display: block; width: 100%; max-width: 560px; margin-inline: auto; }
+.formCard { width: 100%; padding: 0; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formHeader { padding: clamp(20px, 2vw, 28px) 28px 0 !important; }
+.formTitle { margin-top: 0 !important; }
+.formBody { padding: 20px 28px 28px; }
+.petCard { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+
+@media (max-width: 640px) {
+    .containerCenter, .mainContent { padding: 18px 20px 56px; }
+    .formCard { border-radius: 20px; padding-bottom: 0; }
+    .formHeader { padding: 20px 20px 0; }
+    .formBody { padding: 18px 20px 20px; }
+}
+
+/* Réplica del layout de /registro/peludo del repositorio de referencia. */
+.container, .pageBackground { min-height: auto; background: #FAF7F1; }
+.headerSection, .benefitsSection, .stepBadge { display: none; }
+.containerCenter, .mainContent { display: block; width: 100%; max-width: 560px; margin: 0 auto; padding: 24px 0 56px; }
+.formColumn { width: 100%; max-width: 560px; margin: 0 auto; }
+.formCard { overflow: visible; padding: 0; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formHeader { padding: 28px 28px 0; text-align: left; }
+.formTitle { font-size: 38px; line-height: 1.05; font-weight: 400; letter-spacing: 0; color: #1E5350; }
+.formBody { gap: 18px; padding: 20px 28px 28px; }
+.petCard { padding: 0; border: 0; border-radius: 0; box-shadow: none; }
+.primaryButton, .secondaryButton { height: 52px; min-height: 52px; font-size: 16px; border-radius: 999px; }
+.primaryButton { border: 0; background: #1CBCAD; color: #FFF; }
+
+@media (max-width: 640px) {
+    .containerCenter, .mainContent { padding: 18px 20px 56px; }
+    .formHeader { padding: 20px 20px 0; }
+    .formTitle { font-size: 30px; }
+    .formBody { padding: 18px 20px 20px; }
+}
+.primaryButton:hover { background: #0E8377; border-color: #0E8377; transform: translateY(-1px); }
+.secondaryButton:hover, .addPetButton:hover { border-color: #1CBCAD; background: #E9F7F5; }
+.primaryButton:focus-visible, .secondaryButton:focus-visible, .addPetButton:focus-visible, .removePetButton:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .containerCenter {
     width: 100%;
     max-width: 600px;
@@ -327,6 +379,7 @@
 }
 
 .stepBadge {
+    display: none !important;
     width: 100%;
     max-width: 389px;
     height: 60px;
@@ -637,3 +690,12 @@
         transform: none !important;
     }
 }
+
+.pageBackground { background: #FAF7F1; }
+.formCard, .petCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before, .topProgressBar { display: none; }
+.stepBadge, .petBadgeLabel { background: #E9F7F5; color: #0E8377; }
+.formTitle, .headline { color: #1E5350; text-wrap: balance; }
+.primaryButton, .secondaryButton, .addPetButton { min-height: 52px; border-radius: 999px; box-shadow: none; }
+.primaryButton { border-color: #1CBCAD; background: #1CBCAD; }
+.secondaryButton { border-color: #E4DFD3; background: #FFF; color: #3D524F; }

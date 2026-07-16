@@ -592,3 +592,14 @@
         text-align: center;
     }
 }
+
+/* Adaptación visual Pata Amiga 2026. */
+.modalOverlay { background: rgba(30,83,80,.42); backdrop-filter: blur(6px); }
+.modalContent { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 20px 60px rgba(30,83,80,.18); }
+.modalTitle, .sectionTitle, .docTitle { color: #1E5350; }
+.acceptedBanner { border-radius: 12px; background: #E9F7F5; color: #0E8377; }
+.simpleConsentItem, .acceptedItem, .docItem, .docAccordionItem { border-color: #EEE9DD; border-radius: 12px; background: #FDFBF7; }
+.acceptedCheck, .simpleConsentCheck { background: #1CBCAD; }
+.understoodBtn, .downloadBtn, .retryBtn { min-height: 48px; border-radius: 999px; background: #1CBCAD; box-shadow: none; }
+.understoodBtn:hover, .downloadBtn:hover, .retryBtn:hover { background: #0E8377; transform: translateY(-1px); }
+.modalClose:focus-visible, .understoodBtn:focus-visible, .downloadBtn:focus-visible, .retryBtn:focus-visible, .clickable:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }

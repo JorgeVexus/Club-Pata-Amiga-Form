@@ -7,6 +7,14 @@
 import { resend, DEFAULT_FROM_EMAIL, DEFAULT_FROM_NAME, MEMBERS_FROM_EMAIL, MEMBERS_FROM_NAME, REPLY_TO_EMAIL } from '@/lib/resend';
 import { commService } from '@/services/comm.service';
 import { buildBrandedEmailHtml } from '@/utils/email-builder';
+import {
+    buildMissingDocsEmailHtml,
+    getMissingDocsMessage,
+    getMissingDocsSubject,
+    type FollowupDay,
+    type MissingDocType,
+    type MissingPetDocsEmailParams,
+} from '@/utils/missing-pet-docs-email';
 
 interface SendEmailParams {
     userId: string;
@@ -280,67 +288,11 @@ El equipo de Club Pata Amiga`;
 // SEGUIMIENTO DE DOCUMENTACION FALTANTE DE MASCOTAS
 // ============================================================
 
-export type MissingDocType = 'photo' | 'certificate' | 'both';
-export type FollowupDay = 0 | 10 | 13 | 14 | 15;
+export type { MissingDocType, FollowupDay };
 
-interface SendMissingPetDocsEmailParams {
+interface SendMissingPetDocsEmailParams extends MissingPetDocsEmailParams {
     userId: string;
     userEmail: string;
-    userName: string;
-    petName: string;
-    petIndex: number;
-    missingDocs: MissingDocType;
-    followupDay: FollowupDay;
-    uploadUrl: string;
-}
-
-function getMissingDocsSubject(petName: string, day: FollowupDay, missing: MissingDocType): string {
-    const docLabel = missing === 'both'
-        ? 'la foto y el certificado medico'
-        : missing === 'photo' ? 'la foto' : 'el certificado medico';
-    const subjects: Record<FollowupDay, string> = {
-        0:  `Casi listo! Solo falta ${docLabel} de ${petName}`,
-        10: `Necesitas ayuda con ${docLabel} de ${petName}?`,
-        13: `No queremos que ${petName} pierda sus beneficios`,
-        14: `Manana es el ultimo dia para completar el perfil de ${petName}`,
-        15: `Ultima oportunidad: activa la proteccion de ${petName} hoy`,
-    };
-    return subjects[day];
-}
-
-function getMissingDocsMessage(
-    petName: string,
-    userName: string,
-    day: FollowupDay,
-    missing: MissingDocType
-): { headline: string; body: string } {
-    const firstName = userName.split(' ')[0];
-    const docMissing = missing === 'both'
-        ? 'la foto y el certificado medico'
-        : missing === 'photo' ? 'la foto' : 'el certificado medico';
-    const messages: Record<FollowupDay, { headline: string; body: string }> = {
-        0:  { headline: `Hola ${firstName}! Tu registro fue un exito`, body: `Solo falta un pequeno detalle para que ${petName} este completamente protegido. Necesitamos ${docMissing}. Es muy rapido y lo puedes hacer ahora mismo!` },
-        10: { headline: `Hola ${firstName}, como van?`, body: `Hemos notado que aun falta ${docMissing} de ${petName}. Si tienes alguna duda sobre como subir los archivos, con gusto te ayudamos. Responde este correo y te orientamos.` },
-        13: { headline: `${firstName}, ${petName} te necesita`, body: `Estamos en la recta final. El perfil de ${petName} aun esta incompleto y sin ${docMissing}, no podremos activar su cobertura completa. Solo te toma un momento!` },
-        14: { headline: `Solo queda 1 dia, ${firstName}`, body: `Manana vence el plazo para completar el perfil de ${petName}. No queremos que pierda ningun beneficio. Sube ${docMissing} hoy y listo.` },
-        15: { headline: `Es hoy, ${firstName}!`, body: `Hoy es el ultimo dia para que ${petName} tenga su perfil completo y activo. Si subes ${docMissing} ahora, todo queda en orden. No te tardes!` },
-    };
-    return messages[day];
-}
-
-function buildMissingDocsEmailHtml(params: SendMissingPetDocsEmailParams): string {
-    const { petName, userName, missingDocs, followupDay, uploadUrl } = params;
-    const { headline, body } = getMissingDocsMessage(petName, userName, followupDay, missingDocs);
-
-    const missingItems: string[] = [];
-    if (missingDocs === 'photo' || missingDocs === 'both') {
-        missingItems.push(`<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;"><span style="width:32px;height:32px;border-radius:50%;background:#FE8F15;color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">foto</span><div><strong style="color:#2D3748;display:block;margin-bottom:2px;">Foto de ${petName}</strong><span style="color:#718096;font-size:13px;">Una foto clara donde se vea bien su carita</span></div></li>`);
-    }
-    if (missingDocs === 'certificate' || missingDocs === 'both') {
-        missingItems.push(`<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;"><span style="width:32px;height:32px;border-radius:50%;background:#7DD8D5;color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">doc</span><div><strong style="color:#2D3748;display:block;margin-bottom:2px;">Certificado medico veterinario</strong><span style="color:#718096;font-size:13px;">Expedido por un medico veterinario certificado</span></div></li>`);
-    }
-
-    return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>Club Pata Amiga</title></head><body style="margin:0;padding:0;background-color:#F7F8FA;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8FA;padding:40px 20px;"><tr><td align="center"><table width="100%" style="max-width:580px;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:linear-gradient(135deg,#7DD8D5 0%,#00BBB4 100%);padding:36px 40px;text-align:center;"><img src="https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/6929e0aea61dcbb985e68c84_logo.svg" alt="Club Pata Amiga" height="44" style="display:block;margin:0 auto 16px;"/><p style="margin:0;color:rgba(255,255,255,0.85);font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">Perfil de tu mascota</p></td></tr><tr><td style="padding:40px 40px 24px;"><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#2D3748;line-height:1.3;">${headline}</h1><p style="margin:0 0 28px;font-size:16px;color:#4A5568;line-height:1.7;">${body}</p><div style="background:#FFFBF5;border:1.5px solid #FEE4C4;border-radius:16px;padding:24px;margin-bottom:28px;"><p style="margin:0 0 16px;font-size:12px;font-weight:700;color:#FE8F15;text-transform:uppercase;letter-spacing:0.5px;">Documentos pendientes</p><ul style="margin:0;padding:0;list-style:none;">${missingItems.join('')}</ul></div><div style="text-align:center;margin-bottom:28px;"><a href="${uploadUrl}" style="display:inline-block;background:#FE8F15;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;border:2px solid #000000;box-shadow:0 4px 14px rgba(254,143,21,0.35);">Completar perfil de ${petName}</a></div><p style="margin:0;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">Si ya lo completaste o tienes dudas, responde este correo y con gusto te ayudamos.</p></td></tr><tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #EDF2F7;margin:0;"/></td></tr><tr><td style="padding:24px 40px 36px;text-align:center;"><p style="margin:0 0 8px;font-size:13px;color:#718096;">Con carino, <strong style="color:#2D3748;">El equipo de Club Pata Amiga</strong></p><p style="margin:0;font-size:11px;color:#A0AEC0;">No reconoces esta cuenta? <a href="mailto:miembros@pataamiga.mx" style="color:#7DD8D5;text-decoration:none;">Contactanos</a></p></td></tr></table></td></tr></table></body></html>`;
 }
 
 /**

@@ -13,6 +13,66 @@
     z-index: 10;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.pageBackground { background: #FAF7F1; }
+.formCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before { display: none; }
+.topProgressBar { display: none; }
+.topProgressBarFill { background: #1CBCAD; }
+.stepBadge { background: #E9F7F5; color: #0E8377; }
+.formTitle, .planName { color: #1E5350; text-wrap: balance; }
+.planCard { border: 1.5px solid #E4DFD3; border-radius: 16px; box-shadow: none; }
+.planCard:hover { border-color: #1CBCAD; transform: translateY(-2px); }
+.planCard.selected { border-color: #1CBCAD; background: #F5FBFA; box-shadow: 0 0 0 3px rgba(28,188,173,.12); }
+.referralInput { min-height: 50px; border: 1.5px solid #E4DFD3; border-radius: 12px; }
+.referralInput:focus { border-color: #1CBCAD; box-shadow: 0 0 0 3px rgba(28,188,173,.14); }
+.primaryButton, .secondaryButton, .selectPlanButton { min-height: 52px; border-radius: 999px; box-shadow: none; }
+.primaryButton, .selectedButton { border-color: #1CBCAD; background: #1CBCAD; }
+.secondaryButton { border-color: #E4DFD3; background: #FFF; color: #3D524F; }
+
+/* Cascada final: ancho y tarjeta exterior iguales al paso 1. */
+.containerCenter { width: 100%; max-width: 560px; margin-inline: auto; padding: 24px 0 56px; }
+.formCard { width: 100%; padding: 0; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formHeader { padding: clamp(20px, 2vw, 28px) 28px 0 !important; text-align: left; }
+.formTitle { margin-top: 0 !important; }
+.formBody { padding: 20px 28px 28px; }
+.plansContainer { grid-template-columns: 1fr; }
+
+@media (max-width: 640px) {
+    .containerCenter { padding: 18px 20px 56px; }
+    .formCard { border-radius: 20px; padding-bottom: 0; }
+    .formHeader { padding: 20px 20px 0; }
+    .formBody { padding: 18px 20px 20px; }
+}
+
+/* Réplica del layout de /registro/plan del repositorio de referencia. */
+.containerCenter { width: 100%; max-width: 760px; margin-inline: auto; padding: 24px 0 56px; }
+.pageBackground { min-height: auto; background: #FAF7F1; }
+.stepBadge { display: none; }
+.formCard { overflow: visible; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.formHeader { padding: 0 0 24px; text-align: center; }
+.formTitle { font-size: 40px; line-height: 1.05; font-weight: 400; letter-spacing: 0; color: #1E5350; }
+.formSubtitle { margin-top: 8px; color: #6B7C79; font-size: 15px; }
+.formBody { gap: 20px; padding: 0; }
+.plansContainer { gap: 20px; }
+.planCard { padding: 28px; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.planCard.selected { border: 2.5px solid #1CBCAD; background: #FFF; box-shadow: 0 6px 24px rgba(28,188,173,.16); }
+.planName { font-size: 20px; color: #1E5350; }
+.price { font-family: var(--font-heading); font-size: 44px; font-weight: 400; color: #1E5350; }
+.popularBadge { top: -14px; right: 20px; border-radius: 999px; background: #F23D6D; color: #FFF; }
+.referralSection { padding: 16px 20px; border: 0; border-radius: 16px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.referralInput { height: 46px; border-style: dashed; }
+.primaryButton, .secondaryButton, .selectPlanButton { height: 52px; min-height: 52px; border-radius: 999px; }
+
+@media (max-width: 800px) {
+    .containerCenter { padding: 18px 20px 56px; }
+    .formTitle { font-size: 30px; text-align: left; }
+    .formSubtitle { text-align: left; }
+    .planCard { padding: 20px; }
+}
+.primaryButton:hover, .selectedButton:hover { background: #0E8377; border-color: #0E8377; transform: translateY(-1px); }
+.primaryButton:focus-visible, .secondaryButton:focus-visible, .selectPlanButton:focus-visible, .viewTermsLink:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .pageBackground {
     position: fixed;
     top: 0;
@@ -79,6 +139,7 @@
 }
 
 .stepBadge {
+    display: none !important;
     width: 100%;
     max-width: 389px;
     height: 60px;
@@ -462,3 +523,16 @@
     .formTitle { font-size: 24px; }
     .primaryButton, .secondaryButton { padding: 14px; font-size: 14px; }
 }
+
+.pageBackground { background: #FAF7F1; }
+.formCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before, .topProgressBar { display: none; }
+.stepBadge { background: #E9F7F5; color: #0E8377; }
+.formTitle, .planName { color: #1E5350; text-wrap: balance; }
+.planCard { border: 1.5px solid #E4DFD3; border-radius: 16px; box-shadow: none; }
+.planCard:hover { border-color: #1CBCAD; transform: translateY(-2px); }
+.planCard.selected { border-color: #1CBCAD; background: #F5FBFA; box-shadow: 0 0 0 3px rgba(28,188,173,.12); }
+.referralInput { min-height: 50px; border: 1.5px solid #E4DFD3; border-radius: 12px; }
+.primaryButton, .secondaryButton, .selectPlanButton { min-height: 52px; border-radius: 999px; box-shadow: none; }
+.primaryButton, .selectedButton { border-color: #1CBCAD; background: #1CBCAD; }
+.secondaryButton { border-color: #E4DFD3; background: #FFF; color: #3D524F; }

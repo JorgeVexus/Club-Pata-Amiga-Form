@@ -13,6 +13,54 @@
     z-index: 10;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.pageBackground { background: #FAF7F1; }
+.formCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before { display: none; }
+.topProgressBar { display: none; }
+.topProgressBarFill { background: #1CBCAD; }
+.stepBadge { background: #E9F7F5; color: #0E8377; }
+.formTitle, .sectionTitle { color: #1E5350; text-wrap: balance; }
+.section { border-color: #EEE9DD; background: #FDFBF7; border-radius: 16px; }
+.fileUploadBox { min-height: 120px; border: 1.5px dashed #CFC8B8; border-radius: 16px; background: #FFF; }
+.fileUploadBox:hover { border-color: #1CBCAD; background: #F5FBFA; }
+.primaryButton { min-height: 52px; border: 0; border-radius: 999px; background: #1CBCAD; box-shadow: none; }
+
+/* Cascada final: una sola tarjeta, misma medida que el paso 1. */
+.containerCenter { width: 100%; max-width: 560px; margin-inline: auto; padding: 24px 0 56px; }
+.formCard { width: 100%; padding: 0; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formHeader { padding: clamp(20px, 2vw, 28px) 28px 0 !important; }
+.formTitle { margin-top: 0 !important; }
+.formBody { padding: 20px 28px 28px; }
+.section { padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+
+@media (max-width: 640px) {
+    .containerCenter { padding: 18px 20px 56px; }
+    .formCard { border-radius: 20px; padding-bottom: 0; }
+    .formHeader { padding: 20px 20px 0; }
+    .formBody { padding: 18px 20px 20px; }
+}
+
+.containerCenter { width: 100%; max-width: 560px; margin-inline: auto; padding: 24px 0 56px; }
+.pageBackground { min-height: auto; background: #FAF7F1; }
+.stepBadge { display: none; }
+.formCard { overflow: visible; padding: 0; border: 0; border-radius: 20px; background: #FFF; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formHeader { padding: 28px 28px 0; text-align: left; }
+.formTitle { font-size: 38px; line-height: 1.05; font-weight: 400; letter-spacing: 0; color: #1E5350; }
+.formSubtitle { margin-top: 8px; color: #6B7C79; font-size: 15px; }
+.formBody { gap: 18px; padding: 20px 28px 28px; }
+.section { padding: 0; border: 0; border-radius: 0; background: transparent; }
+.fileUploadBox { border-radius: 12px; }
+
+@media (max-width: 640px) {
+    .containerCenter { padding: 18px 20px 56px; }
+    .formHeader { padding: 20px 20px 0; }
+    .formTitle { font-size: 30px; }
+    .formBody { padding: 18px 20px 20px; }
+}
+.primaryButton:hover:not(:disabled) { background: #0E8377; transform: translateY(-1px); }
+.primaryButton:focus-visible, .fileUploadLabel:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .pageBackground {
     position: fixed;
     top: 0;
@@ -79,6 +127,7 @@
 }
 
 .stepBadge {
+    display: none !important;
     width: 100%;
     max-width: 420px;
     height: 60px;
@@ -403,3 +452,13 @@
         font-size: 12px;
     }
 }
+
+.pageBackground { background: #FAF7F1; }
+.formCard { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 2px 12px rgba(30,83,80,.06); }
+.formCard::before, .topProgressBar { display: none; }
+.stepBadge { background: #E9F7F5; color: #0E8377; }
+.formTitle, .sectionTitle { color: #1E5350; text-wrap: balance; }
+.section { border-color: #EEE9DD; border-radius: 16px; background: #FDFBF7; }
+.fileUploadBox { min-height: 120px; border: 1.5px dashed #CFC8B8; border-radius: 16px; background: #FFF; }
+.fileUploadBox:hover { border-color: #1CBCAD; background: #F5FBFA; }
+.primaryButton { min-height: 52px; border: 0; border-radius: 999px; background: #1CBCAD; box-shadow: none; }

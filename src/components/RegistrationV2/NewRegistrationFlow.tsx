@@ -1631,8 +1631,11 @@ export default function NewRegistrationFlow() {
                 con max-width/padding internos. Usar `.content` aquí duplicaba el padding en mobile
                 (step + wrapper), dejando el card visiblemente angosto. */}
             <div className={styles.contentWide}>
-                {/* Indicador de pasos (Oculto en pasos 1 y 2 ya que tienen su propio indicador interno, y en éxito/transición) */}
-                {/* Indicador de pasos ya no es necesario arriba pues cada paso tiene su propia barra interna */}
+                {currentStep <= 5 && !isPaymentSuccessTransition && (
+                    <div className={styles.flowProgress}>
+                        <StepIndicator currentStep={currentStep} totalSteps={5} stepLabels={STEPS.map((step) => step.label)} />
+                    </div>
+                )}
 
 
                 {/* Indicador de guardado */}

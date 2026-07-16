@@ -4,6 +4,10 @@
     gap: 0.5rem;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.select { min-height: 48px; border: 1.5px solid #E4DFD3; border-radius: 12px; box-shadow: none; }
+.select:focus { border-color: #1CBCAD; box-shadow: 0 0 0 3px rgba(28,188,173,.14); }
+
 /* Cuando está dentro de una fila (.row), no agregar margin-bottom */
 :global(.row) .container {
     margin-bottom: 0;

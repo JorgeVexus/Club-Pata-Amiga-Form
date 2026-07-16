@@ -2,25 +2,24 @@
 
 .navbar {
     width: 100%;
-    background: #00BBB4;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.10);
-    backdrop-filter: blur(6px);
+    background: #FFFFFF;
+    border-bottom: 1px solid #EEE9DD;
     position: relative;
     display: flex;
     justify-content: center;
-    padding: 10px 32px;
+    padding: 14px 32px;
 }
 
 .content {
     width: 100%;
-    max-width: 1850px;
+    max-width: none;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
 
 .logoWrapper {
-    width: 158px;
+    width: 130px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -30,7 +29,7 @@
 
 .logo {
     width: 100%;
-    height: 60px;
+    height: 46px;
     object-fit: contain;
 }
 
@@ -40,11 +39,11 @@
 }
 
 .logoutButton {
-    width: 237px;
+    width: auto;
     padding: 8px 24px;
-    background: #00BBB4; /* As specified in the snippet */
-    border-radius: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.2); /* Added subtle border so it's visible */
+    background: #FFFFFF;
+    border-radius: 999px;
+    border: 1px solid #E4DFD3;
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -53,32 +52,37 @@
 }
 
 .logoutButton:hover {
-    background: rgba(0, 0, 0, 0.05);
+    background: #E9F7F5;
+    border-color: #1CBCAD;
 }
 
+.logoutButton:focus-visible { outline: 3px solid rgba(28, 188, 173, .28); outline-offset: 2px; }
+
 .logoutText {
-    width: 189px;
+    width: auto;
     text-align: center;
-    color: black;
-    font-size: 18px;
+    color: #0E8377;
+    font-size: 14px;
     font-family: var(--font-body);
     font-weight: 600;
-    text-decoration: underline;
+    text-decoration: none;
     line-height: 28px;
 }
 
 /* Mobile Adjustments */
 @media (max-width: 768px) {
     .navbar {
-        padding: 6px 16px;
+        padding: 8px 20px 0;
+        border-bottom: 0;
+        background: #FAF7F1;
     }
     
     .logo {
-        height: 40px;
+        height: 38px;
     }
     
     .logoWrapper {
-        width: 100px;
+        width: 107px;
     }
     
     .logoutButton {

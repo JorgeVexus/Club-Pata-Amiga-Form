@@ -4,6 +4,12 @@
     gap: 1rem;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.optionCard { min-height: 92px; border: 1.5px solid #E4DFD3; border-radius: 16px; background: #FFF; box-shadow: none; }
+.optionCard:hover { border-color: #1CBCAD; background: #F5FBFA; transform: translateY(-2px); }
+.optionCard.selected { border-color: #1CBCAD; background: #E9F7F5; box-shadow: 0 0 0 3px rgba(28,188,173,.12); }
+.optionCard:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .label {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;

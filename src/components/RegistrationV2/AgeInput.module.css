@@ -4,6 +4,14 @@
     gap: 0.5rem;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.numberInput { min-height: 48px; border: 1.5px solid #E4DFD3; border-radius: 12px; box-shadow: none; }
+.numberInput:focus { border-color: #1CBCAD; box-shadow: 0 0 0 3px rgba(28,188,173,.14); }
+.unitToggle { border-color: #E4DFD3; border-radius: 12px; background: #F7F3EB; }
+.unitButton { min-height: 44px; border-radius: 10px; }
+.unitButton.active { background: #1CBCAD; color: #FFF; box-shadow: none; }
+.unitButton:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .label {
     font-family: 'Outfit', sans-serif;
     font-weight: 600;

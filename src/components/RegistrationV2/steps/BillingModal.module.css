@@ -13,6 +13,18 @@
     padding: 1rem;
 }
 
+/* Adaptación visual Pata Amiga 2026. */
+.modalOverlay { background: rgba(30,83,80,.42); backdrop-filter: blur(6px); }
+.modalContent { border: 1px solid #EEE9DD; border-radius: 20px; box-shadow: 0 20px 60px rgba(30,83,80,.18); }
+.modalTitle { color: #1E5350; }
+.inputField, .selectField { min-height: 48px; border: 1.5px solid #E4DFD3; border-radius: 12px; }
+.inputField:focus, .selectField:focus { border-color: #1CBCAD; box-shadow: 0 0 0 3px rgba(28,188,173,.14); }
+.cancelButton, .saveButton { min-height: 48px; border-radius: 999px; box-shadow: none; }
+.cancelButton { border-color: #E4DFD3; background: #FFF; color: #3D524F; }
+.saveButton { border: 0; background: #1CBCAD; }
+.saveButton:hover:not(:disabled) { background: #0E8377; }
+.modalClose:focus-visible, .cancelButton:focus-visible, .saveButton:focus-visible { outline: 3px solid rgba(28,188,173,.28); outline-offset: 2px; }
+
 .modalContent {
     background: var(--color-white);
     border: 2px solid var(--color-black);
