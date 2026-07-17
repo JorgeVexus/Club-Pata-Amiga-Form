@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
+import { getAuthenticatedAmbassador } from '@/lib/ambassador-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,6 +29,14 @@ export async function GET(
         const markReadFor = searchParams.get('markReadFor');
         const unreadOnly = searchParams.get('unreadOnly') === 'true';
         const forRole = searchParams.get('for');
+
+        if (markReadFor === 'admin') {
+            const adminUser = await getAdminUser(request);
+            if (!adminUser || 'isUnauthorized' in adminUser) return unauthorizedResponse();
+        } else {
+            const auth = await getAuthenticatedAmbassador(request, id);
+            if (!auth.ok) return auth.response;
+        }
 
         if (unreadOnly && forRole === 'ambassador') {
             const { count, error } = await supabaseAdmin
@@ -112,11 +121,13 @@ export async function POST(
 
         if (senderRole === 'admin') {
             const adminUser = await getAdminUser(request);
-            if (!adminUser || (adminUser as any).isUnauthorized) {
+            if (!adminUser || 'isUnauthorized' in adminUser) {
                 return unauthorizedResponse();
             }
-            senderName = (adminUser as any).full_name;
+            senderName = adminUser.full_name;
         } else {
+            const auth = await getAuthenticatedAmbassador(request, id);
+            if (!auth.ok) return auth.response;
             senderName = [ambassador.first_name, ambassador.paternal_surname].filter(Boolean).join(' ');
         }
 

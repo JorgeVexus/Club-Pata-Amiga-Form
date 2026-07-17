@@ -13,6 +13,9 @@
     let chatRealtimeInitialized = false;
     let chatModalOpen = false;
     let chatMessagesCache = [];
+    let ambassadorV2View = 'summary';
+    let currentMemberHasActivePlan = false;
+    let currentMemberToken = '';
     const DEFAULT_AVATAR_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
         <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80">
             <rect width="80" height="80" rx="40" fill="#E8F8F7"/>
@@ -56,10 +59,25 @@
         API_BASE_URL: 'https://app.pataamiga.mx',
         IMAGES_BASE_URL: 'https://app.pataamiga.mx/embajadores-images',
         CLOUDINARY_URL: 'https://res.cloudinary.com/dqy07kgu6/image/upload',
-        DEBUG: false,
-        supabaseUrl: 'https://hjvhntxjkuuobgfslzlf.supabase.co',
-        supabaseAnonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhqdmhudHhqa3V1b2JnZnNsemxmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ4NTg5NTcsImV4cCI6MjA4MDQzNDk1N30.YnrJ_ECWnqcO_iDP5V-tBkgwd4LdBhJnJ5jdLsowjnA'
+        DEBUG: false
     };
+
+    function ambassadorApiFetch(url, options = {}) {
+        const headers = {
+            ...(options.headers || {}),
+            ...(currentMemberToken ? { Authorization: `Bearer ${currentMemberToken}` } : {})
+        };
+        return fetch(url, { ...options, headers });
+    }
+
+    function formatAmbassadorCurrency(value) {
+        return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN' }).format(Number(value) || 0);
+    }
+
+    function formatAmbassadorDate(value) {
+        if (!value) return 'Sin fecha';
+        return new Date(value).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+    }
 
     function sanitizeClabeInput(value) {
         return String(value || '').replace(/\D/g, '').slice(0, 18);
@@ -2522,6 +2540,35 @@
 
     `;
 
+    const V2_STYLES = `
+        .ambassador-widget-v2-host .ambassador-widget-content{max-width:none;padding:0}
+        .amb-v2-shell{--amb-teal:#21BCAF;--amb-deep:#1E5B57;--amb-ink:#174D49;--amb-lime:#A9DD28;--amb-cream:#F8F5EE;--amb-line:#E7E0D4;min-height:100dvh;background:var(--amb-cream);color:#49615D;font-family:'Outfit',sans-serif;padding:30px 20px 70px;box-sizing:border-box}
+        .amb-v2-wrap{width:min(980px,100%);margin:0 auto}
+        .amb-v2-top{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:20px}
+        .amb-v2-brand{display:flex;align-items:center;gap:12px;color:var(--amb-ink)}
+        .amb-v2-brand img{width:108px;height:auto}.amb-v2-badge{padding:6px 10px;border-radius:999px;background:#E4F5F3;color:#087B74;font-size:10px;font-weight:900;letter-spacing:.08em}
+        .amb-v2-user{display:flex;align-items:center;gap:9px;color:var(--amb-ink);font-size:13px;font-weight:800}.amb-v2-avatar{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#FE8F15;color:#fff;font-weight:900}
+        .amb-v2-tabs{display:flex;gap:9px;overflow-x:auto;padding:2px 0 18px;scrollbar-width:none}.amb-v2-tabs::-webkit-scrollbar{display:none}
+        .amb-v2-tab{flex:0 0 auto;min-height:42px;padding:0 20px;border:1px solid #DED7CB;border-radius:999px;background:#fff;color:#64716F;font:800 12px/1 'Outfit',sans-serif;cursor:pointer;transition:.2s ease}
+        .amb-v2-tab:hover{transform:translateY(-1px);border-color:var(--amb-teal)}.amb-v2-tab.is-active{border-color:var(--amb-teal);background:var(--amb-teal);color:#fff}
+        .amb-v2-view[hidden]{display:none!important}.amb-v2-summary,.amb-v2-page{display:grid;gap:18px}
+        .amb-v2-membership{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 22px;border-radius:18px;background:#148B82;color:#fff;box-shadow:0 8px 18px rgba(30,83,80,.1)}
+        .amb-v2-membership strong{display:block;font:400 17px/1.1 'Fraiche','Outfit',sans-serif}.amb-v2-membership span{display:block;margin-top:5px;font-size:12px}.amb-v2-membership a{flex:0 0 auto;padding:12px 18px;border-radius:999px;background:#fff;color:#067A73;text-decoration:none;font-size:12px;font-weight:900}
+        .amb-v2-hero-grid{display:grid;grid-template-columns:1.25fr .95fr;gap:16px}
+        .amb-v2-code-card{position:relative;min-height:286px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;gap:14px;padding:26px;border-radius:22px;background:#205C58;color:#fff}.amb-v2-code-card:after{content:'';position:absolute;width:220px;height:220px;right:-65px;bottom:-105px;border-radius:50%;background:rgba(255,255,255,.08)}
+        .amb-v2-eyebrow{position:relative;z-index:1;color:var(--amb-lime);font-size:11px;font-weight:900;letter-spacing:.08em}.amb-v2-code-row{position:relative;z-index:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap}.amb-v2-code{font:400 clamp(28px,4vw,38px)/1 'Fraiche','Outfit',sans-serif;letter-spacing:.04em}.amb-v2-copy{padding:9px 14px;border:0;border-radius:999px;background:rgba(255,255,255,.14);color:#fff;font-weight:800;cursor:pointer}
+        .amb-v2-code-card p{position:relative;z-index:1;max-width:500px;margin:0;color:rgba(255,255,255,.78);font-size:13px}.amb-v2-actions{position:relative;z-index:1;display:flex;gap:9px;flex-wrap:wrap}.amb-v2-primary,.amb-v2-secondary{min-height:40px;padding:0 18px;border-radius:999px;font:800 12px/1 'Outfit',sans-serif;cursor:pointer}.amb-v2-primary{border:0;background:var(--amb-lime);color:#174D49}.amb-v2-secondary{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff}
+        .amb-v2-kpis{display:grid;grid-template-columns:1fr;gap:11px}.amb-v2-kpi{min-height:78px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:17px 19px;border-radius:17px;background:#fff;box-shadow:0 3px 12px rgba(30,83,80,.045)}.amb-v2-kpi span{display:block;color:#89928E;font-size:10.5px;font-weight:900;letter-spacing:.05em}.amb-v2-kpi strong{display:block;margin-top:5px;color:var(--amb-ink);font:400 25px/1 'Fraiche','Outfit',sans-serif}.amb-v2-kpi button{border:0;background:transparent;color:#007E77;font-size:11px;font-weight:900;cursor:pointer}
+        .amb-v2-card{padding:20px;border-radius:19px;background:#fff;box-shadow:0 3px 12px rgba(30,83,80,.05)}.amb-v2-card-head{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:14px}.amb-v2-title{margin:0;color:var(--amb-ink);font:400 20px/1.1 'Fraiche','Outfit',sans-serif}.amb-v2-link{border:0;background:transparent;color:#007E77;font-size:11px;font-weight:900;cursor:pointer}
+        .amb-v2-table-head,.amb-v2-referral{display:grid;grid-template-columns:minmax(0,1fr) 100px 100px 100px;gap:12px;align-items:center}.amb-v2-table-head{padding:0 0 8px;border-bottom:1px solid #EEE8DE;color:#A29A8F;font-size:10px;font-weight:900;letter-spacing:.05em}.amb-v2-referral{padding:12px 0;border-bottom:1px solid #F0EBE3;font-size:12.5px}.amb-v2-referral:last-child{border:0}.amb-v2-referral strong{color:var(--amb-ink)}.amb-v2-referral small{display:block;color:#89938F;font-size:10px}.amb-v2-money{color:#007E77;font-weight:900}.amb-v2-chip{justify-self:start;padding:5px 9px;border-radius:999px;background:#EFF7D8;color:#668508;font-size:9px;font-weight:900;text-transform:uppercase}.amb-v2-chip.pending{background:#FFF1DE;color:#B96B00}.amb-v2-chip.rejected{background:#FFE5EC;color:#B51F4D}.amb-v2-empty{padding:22px 0;color:#73817D;font-size:13px}
+        .amb-v2-page-head h1{margin:0;color:var(--amb-ink);font:400 30px/1 'Fraiche','Outfit',sans-serif}.amb-v2-page-head p{margin:7px 0 0;font-size:13px}.amb-v2-stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.amb-v2-stat{padding:18px;border-radius:17px;background:#fff}.amb-v2-stat span{font-size:10px;font-weight:900;color:#89928E}.amb-v2-stat strong{display:block;margin-top:7px;color:var(--amb-ink);font:400 27px/1 'Fraiche','Outfit',sans-serif}
+        .amb-v2-material-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.amb-v2-filter{padding:8px 13px;border:1px solid var(--amb-line);border-radius:999px;background:#fff;color:#64716F;font-weight:800;cursor:pointer}.amb-v2-filter.active{border-color:var(--amb-teal);background:var(--amb-teal);color:#fff}.amb-v2-material-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}.amb-v2-material{overflow:hidden;display:flex;flex-direction:column;min-height:190px;border:1px solid var(--amb-line);border-radius:16px;background:#fff}.amb-v2-material img{width:100%;height:110px;object-fit:cover}.amb-v2-material-body{display:flex;flex:1;flex-direction:column;gap:6px;padding:13px}.amb-v2-material-body strong{color:var(--amb-ink)}.amb-v2-material-body span{font-size:11px}.amb-v2-material-body a{margin-top:auto;color:#007E77;font-size:11px;font-weight:900;text-decoration:none}
+        .amb-v2-account-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:15px}.amb-v2-profile{display:flex;align-items:center;gap:14px}.amb-v2-profile img{width:70px;height:70px;border-radius:20px;object-fit:cover}.amb-v2-profile strong{display:block;color:var(--amb-ink);font-size:17px}.amb-v2-profile span{font-size:12px}.amb-v2-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.amb-v2-detail{padding:12px;border-radius:12px;background:#FAF8F3}.amb-v2-detail span{display:block;color:#9A9388;font-size:9px;font-weight:900;text-transform:uppercase}.amb-v2-detail strong{display:block;margin-top:5px;color:var(--amb-ink);font-size:12px}.amb-v2-account-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.amb-v2-account-actions button{min-height:38px;padding:0 15px;border:1px solid var(--amb-line);border-radius:999px;background:#fff;color:#087B74;font-weight:900;cursor:pointer}.amb-v2-danger{color:#B51F4D!important}
+        .amb-chat-bubble{background:var(--amb-teal)!important;box-shadow:0 12px 30px rgba(30,83,80,.25)!important}.amb-chat-modal{border-radius:22px!important;border:1px solid var(--amb-line)!important;box-shadow:0 24px 65px rgba(30,83,80,.2)!important}.amb-chat-header{background:#205C58!important}
+        @media(max-width:760px){.amb-v2-shell{padding:20px 14px 90px}.amb-v2-top{align-items:flex-start}.amb-v2-user strong{display:none}.amb-v2-hero-grid,.amb-v2-account-grid{grid-template-columns:1fr}.amb-v2-stat-grid{grid-template-columns:1fr 1fr}.amb-v2-material-grid{grid-template-columns:1fr}.amb-v2-table-head{display:none}.amb-v2-referral{grid-template-columns:1fr auto;gap:8px}.amb-v2-referral>*:nth-child(2){display:none}.amb-v2-referral>*:nth-child(4){grid-column:2;grid-row:1}.amb-v2-membership{align-items:flex-start;flex-direction:column}.amb-v2-membership a{width:100%;box-sizing:border-box;text-align:center}.amb-v2-detail-grid{grid-template-columns:1fr}.amb-v2-code-card{min-height:250px}}
+        @media(prefers-reduced-motion:reduce){.amb-v2-shell *{scroll-behavior:auto!important;transition:none!important}}
+    `;
+
     // ============================================
     // TEMPLATES HTML
     // ============================================
@@ -2732,7 +2779,25 @@
     }
 
     // Estado: Aprobado - Dashboard completo (Nuevo Diseño)
-    function renderApproved(ambassador, materials) {
+    function ambassadorV2Money(value) { return '$' + (Number(value) || 0).toLocaleString('es-MX') + ' MXN'; }
+    function ambassadorV2Status(status) { const key=String(status||'pending').toLowerCase(); const labels={approved:'Aprobado',paid:'Pagado',pending:'En revisión',process:'En revisión',rejected:'Rechazado'}; return {key,label:labels[key]||key.replaceAll('_',' ')}; }
+    function renderAmbassadorV2Referrals(referrals, limit) {
+        const items=typeof limit==='number'?referrals.slice(0,limit):referrals;
+        if(!items.length)return '<div class="amb-v2-empty">Aún no tienes referidos. Comparte tu código y aquí verás cada suscripción que llegue con él. 🐾</div>';
+        return items.map(ref=>{const status=ambassadorV2Status(ref.commission_status||ref.status);const amount=ref.commission_amount??ref.commission;return `<div class="amb-v2-referral"><span><strong>${escapeHtml(ref.masked_name||'R*****')}</strong><small>${escapeHtml(ref.created_at||ref.date||'')}</small></span><span>${escapeHtml(ref.plan||ref.subscription_plan||'—')}</span><span class="amb-v2-money">${amount==null?'—':ambassadorV2Money(amount)}</span><span class="amb-v2-chip ${status.key}">${escapeHtml(status.label)}</span></div>`;}).join('');
+    }
+    function renderAmbassadorV2Summary(ambassador) {
+        const referrals=ambassador.recent_referrals||[];const code=ambassador.referral_code||'---';
+        const banner=currentMemberHasActivePlan?'':'<section class="amb-v2-membership"><div><strong>Tú también puedes cuidar a tu manada 🐾</strong><span>Como embajador aún no tienes membresía. Únete y registra hasta 3 mascotas.</span></div><a href="https://www.pataamiga.mx/#planes">Quiero mi membresía</a></section>';
+        return `<div class="amb-v2-summary">${banner}<div class="amb-v2-hero-grid"><section class="amb-v2-code-card"><span class="amb-v2-eyebrow">TU CÓDIGO DE EMBAJADOR</span><div class="amb-v2-code-row"><strong class="amb-v2-code">${escapeHtml(code)}</strong><button class="amb-v2-copy" type="button" onclick="window.copyReferralCode('${escapeHtml(code)}')">Copiar</button></div><p>Compártelo en tus redes — cada suscripción con tu código te genera comisión.</p><div class="amb-v2-actions"><button class="amb-v2-primary" type="button" onclick="window.shareCode('${escapeHtml(code)}')">Compartir link</button><button class="amb-v2-secondary" type="button" onclick="window.requestCodeChange('${escapeHtml(String(ambassador.id))}')">Personalizar código</button></div></section><div class="amb-v2-kpis"><article class="amb-v2-kpi"><div><span>REFERIDOS ACTIVOS</span><strong>${Number(ambassador.active_referrals_count??ambassador.approved_referrals)||0}</strong></div><button type="button" onclick="window.setAmbassadorV2View('metrics')">Ver métricas →</button></article><article class="amb-v2-kpi"><div><span>COMISIONES DEL MES</span><strong>${ambassadorV2Money(ambassador.pending_payout??ambassador.month_earnings)}</strong></div><small>Pago el día 5</small></article><article class="amb-v2-kpi"><div><span>TOTAL HISTÓRICO</span><strong>${ambassadorV2Money(ambassador.total_earnings)}</strong></div></article></div></div><section class="amb-v2-card amb-v2-referrals"><div class="amb-v2-card-head"><h2 class="amb-v2-title">Tus referidos recientes</h2><button class="amb-v2-link" type="button" onclick="window.setAmbassadorV2View('metrics')">Ver métricas detalladas →</button></div><div class="amb-v2-table-head"><span>REFERIDO</span><span>PLAN</span><span>COMISIÓN</span><span>ESTADO</span></div>${renderAmbassadorV2Referrals(referrals,5)}</section></div>`;
+    }
+    function renderAmbassadorV2Metrics(ambassador) {const refs=ambassador.recent_referrals||[];return `<div class="amb-v2-page"><header class="amb-v2-page-head"><h1>Métricas</h1><p>Consulta el desempeño de tu código y el estado de cada referido.</p></header><div class="amb-v2-stat-grid"><article class="amb-v2-stat"><span>TOTAL REFERIDOS</span><strong>${Number(ambassador.total_referrals??ambassador.referrals_count??refs.length)||0}</strong></article><article class="amb-v2-stat"><span>APROBADOS</span><strong>${Number(ambassador.approved_referrals)||0}</strong></article><article class="amb-v2-stat"><span>EN REVISIÓN</span><strong>${Number(ambassador.review_referrals)||0}</strong></article><article class="amb-v2-stat"><span>TOTAL HISTÓRICO</span><strong>${ambassadorV2Money(ambassador.total_earnings)}</strong></article></div><section class="amb-v2-card amb-v2-referrals"><div class="amb-v2-card-head"><h2 class="amb-v2-title">Estado de tus referidos</h2></div><div class="amb-v2-table-head"><span>REFERIDO</span><span>PLAN</span><span>COMISIÓN</span><span>ESTADO</span></div>${renderAmbassadorV2Referrals(refs)}</section></div>`;}
+    function renderAmbassadorV2Materials(materials) {const filters=[{key:'all',label:'Todos'},{key:'newsletter',label:'Newsletter'},{key:'image',label:'Imágenes'},{key:'pdf',label:'PDFs'},{key:'video',label:'Videos'},{key:'other',label:'Otros'}].filter(f=>f.key==='all'||materials.some(i=>i.file_type===f.key));const cards=materials.map(item=>`<article class="amb-v2-material amb-material-item" data-type="${escapeHtml(item.file_type||'other')}">${['image','newsletter'].includes(item.file_type)?`<img src="${escapeHtml(item.file_url||'')}" alt="${escapeHtml(item.title||'Material')}">`:''}<div class="amb-v2-material-body"><strong>${escapeHtml(item.title||'Material para compartir')}</strong><span>${escapeHtml(item.description||item.file_type||'')}</span><a href="${escapeHtml(item.file_url||'#')}" target="_blank" rel="noopener noreferrer" download>Descargar →</a></div></article>`).join('');return `<div class="amb-v2-page"><header class="amb-v2-page-head"><h1>Materiales</h1><p>Recursos listos para compartir con tu comunidad.</p></header><section class="amb-v2-card"><div class="amb-v2-material-filters">${filters.map((f,i)=>`<button class="amb-v2-filter amb-material-filter-btn ${i?'':'active'}" data-filter="${f.key}" type="button" onclick="window.filterAmbassadorMaterials('${f.key}')">${f.label}</button>`).join('')}</div><div class="amb-v2-material-grid">${cards||'<div class="amb-v2-empty">Pronto habrá material digital disponible para descargar.</div>'}</div></section></div>`;}
+    function renderAmbassadorV2Account(ambassador) {const name=[ambassador.first_name,ambassador.paternal_surname,ambassador.maternal_surname].filter(Boolean).join(' ')||'Embajador';const clabe=String(ambassador.clabe||'');return `<div class="amb-v2-page"><header class="amb-v2-page-head"><h1>Mi cuenta</h1><p>Administra tu perfil, datos de pago y código de embajador.</p></header><div class="amb-v2-account-grid"><section class="amb-v2-card"><div class="amb-v2-profile"><img src="${escapeHtml(ambassador.profile_photo_url||DEFAULT_AVATAR_PLACEHOLDER)}" alt="Foto de ${escapeHtml(name)}"><div><strong>${escapeHtml(name)}</strong><span>${escapeHtml(ambassador.email||'')}</span></div></div><div class="amb-v2-detail-grid"><div class="amb-v2-detail"><span>Teléfono</span><strong>${escapeHtml(ambassador.phone||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>RFC</span><strong>${escapeHtml(ambassador.rfc||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>Ciudad</span><strong>${escapeHtml(ambassador.city||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>Red principal</span><strong>${escapeHtml(ambassador.instagram||ambassador.facebook||ambassador.tiktok||'Sin registrar')}</strong></div></div><div class="amb-v2-account-actions"><button type="button" onclick="window.editAmbassadorProfile()">Editar información</button><button type="button" onclick="window.requestCodeChange('${escapeHtml(String(ambassador.id))}')">Solicitar cambio de código</button></div></section><aside class="amb-v2-card"><h2 class="amb-v2-title">Datos de pago</h2><div class="amb-v2-detail-grid"><div class="amb-v2-detail"><span>Banco</span><strong>${escapeHtml(ambassador.bank_name||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>CLABE</span><strong>${clabe?'•••• '+escapeHtml(clabe.slice(-4)):'Sin registrar'}</strong></div></div><div class="amb-v2-account-actions"><button type="button" onclick="window.addPaymentMethod()">${clabe?'Editar datos bancarios':'Agregar CLABE'}</button><button type="button" onclick="window.viewPaymentHistory()">Ver cortes mensuales</button><button class="amb-v2-danger" type="button" onclick="window.cancelAmbassadorRequest('${escapeHtml(String(ambassador.id))}')">Cancelar cuenta de embajador</button></div></aside></div></div>`;}
+    window.setAmbassadorV2View=function(view){const allowed=['summary','metrics','materials','account'];ambassadorV2View=allowed.includes(view)?view:'summary';document.querySelectorAll('.amb-v2-view').forEach(section=>{section.hidden=section.dataset.view!==ambassadorV2View;});document.querySelectorAll('.amb-v2-tab').forEach(tab=>{const active=tab.dataset.view===ambassadorV2View;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',String(active));});window.scrollTo({top:0,behavior:'smooth'});};
+    function renderApproved(ambassador,materials){materials=materials||[];const name=ambassador.first_name||'Embajador';return `<div class="amb-v2-shell"><div class="amb-v2-wrap"><header class="amb-v2-top"><div class="amb-v2-brand"><img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga"><span class="amb-v2-badge">EMBAJADOR</span></div><div class="amb-v2-user"><span class="amb-v2-avatar">${escapeHtml(name.charAt(0).toUpperCase())}</span><strong>${escapeHtml(name)}</strong></div></header><nav class="amb-v2-tabs" role="tablist"><button class="amb-v2-tab is-active" data-view="summary" role="tab" aria-selected="true" onclick="window.setAmbassadorV2View('summary')">🏠 Resumen</button><button class="amb-v2-tab" data-view="metrics" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('metrics')">📈 Métricas</button><button class="amb-v2-tab" data-view="materials" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('materials')">🖼️ Materiales</button><button class="amb-v2-tab" data-view="account" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('account')">⚙️ Mi cuenta</button></nav><main><section class="amb-v2-view" data-view="summary">${renderAmbassadorV2Summary(ambassador)}</section><section class="amb-v2-view" data-view="metrics" hidden>${renderAmbassadorV2Metrics(ambassador)}</section><section class="amb-v2-view" data-view="materials" hidden>${renderAmbassadorV2Materials(materials)}</section><section class="amb-v2-view" data-view="account" hidden>${renderAmbassadorV2Account(ambassador)}</section></main></div></div>`;}
+
+    function renderApprovedLegacy(ambassador, materials) {
         materials = materials || [];
         const toNumber = (value, fallback = 0) => {
             const parsed = Number(value);
@@ -3060,8 +3125,7 @@
                             return `
                             <div class="amb-referral-item">
                                 <div class="amb-referral-left">
-                                    <span class="amb-referral-name">${ref.name || ref.referred_user_name || 'Usuario'}</span>
-                                    <span class="amb-referral-email">${ref.email || ref.referred_user_email || ''}</span>
+                                    <span class="amb-referral-name">${ref.masked_name || 'R*****'}</span>
                                     <span class="amb-referral-date">
                                         <img src="${CONFIG.CLOUDINARY_URL}/v1772043745/calendario_1_n3pzcf.svg" alt="" class="amb-referral-date-icon">
                                         ${ref.date || formatDate(ref.created_at)}
@@ -3185,14 +3249,14 @@
 
     window.copyReferralCode = function (code) {
         navigator.clipboard.writeText(code).then(() => {
-            const btn = document.querySelector('.amb-btn-orange');
+            const btn = document.querySelector('.amb-v2-copy, .amb-btn-orange');
             if (btn) {
                 const originalText = btn.innerHTML;
                 btn.innerHTML = '✓ Copiado';
                 btn.style.background = '#22C55E';
                 setTimeout(() => {
                     btn.innerHTML = originalText;
-                    btn.style.background = '#FF8C42';
+                    btn.style.background = '';
                 }, 2000);
             }
         }).catch(err => {
@@ -3255,7 +3319,7 @@
         btn.disabled = true;
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/generate-code-link`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/generate-code-link`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -3283,14 +3347,16 @@
         }
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/request-code-change`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/request-code-change`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
 
             const data = await response.json();
 
-            if (data.success) {
+            if (data.success && data.status === 'pending_admin') {
+                alert('✅ Solicitud enviada. Te notificaremos cuando administración habilite el cambio de código.');
+            } else if (data.success) {
                 alert('✅ Hemos enviado un email con el link para cambiar tu código. Revisa tu bandeja de entrada.');
             } else {
                 alert('❌ ' + (data.error || 'No se pudo procesar la solicitud'));
@@ -3307,7 +3373,7 @@
         }
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/resend-code-email`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/resend-code-email`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -3331,7 +3397,7 @@
         }
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/cancel`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/cancel`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -3477,7 +3543,7 @@
         };
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/dashboard`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -3512,7 +3578,7 @@
         }
         
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/dashboard`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -3629,7 +3695,7 @@
         fd.append('ambassadorId', currentAmbassador.id);
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/upload/ambassador-photo`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/upload/ambassador-photo`, {
                 method: 'POST',
                 body: fd
             });
@@ -3675,7 +3741,7 @@
         };
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/dashboard`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData)
@@ -3713,10 +3779,10 @@
                             ${history.length > 0 ? history.map(item => `
                                 <div class="amb-history-item">
                                     <div class="amb-history-info">
-                                        <span class="amb-history-date">${formatDate(item.date)}</span>
+                                        <span class="amb-history-date">${formatAmbassadorDate(item.date)}</span>
                                         <span class="amb-history-concept">${item.concept}</span>
                                     </div>
-                                    <span class="amb-history-amount ${item.type}">${formatCurrency(item.amount)}</span>
+                                    <span class="amb-history-amount ${item.type}">${formatAmbassadorCurrency(item.amount)}</span>
                                 </div>
                             `).join('') : '<p style="text-align: center; color: #888; padding: 40px;">No hay movimientos registrados</p>'}
                         </div>
@@ -3740,9 +3806,14 @@
 
     async function loadPaymentHistory() {
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/payment-history`);
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/payouts`);
             const data = await response.json();
-            return data.success ? data.data : [];
+            return data.success ? (data.data || []).map((payout) => ({
+                date: payout.created_at,
+                concept: payout.notes || 'Pago de comisiones',
+                amount: payout.amount,
+                type: payout.status === 'paid' ? 'positive' : 'pending'
+            })) : [];
         } catch (error) {
             console.error('Error cargando historial:', error);
             return [];
@@ -3795,7 +3866,7 @@
     async function loadAmbassadorChatMessages() {
         if (!currentAmbassador) return;
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages?markReadFor=ambassador`);
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages?markReadFor=ambassador`);
             const data = await response.json();
             chatMessagesCache = Array.isArray(data) ? data : [];
             const list = document.getElementById('amb-chat-messages');
@@ -3817,7 +3888,7 @@
 
         input.disabled = true;
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${currentAmbassador.id}/messages`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ senderRole: 'ambassador', message })
@@ -3904,32 +3975,13 @@
 
     async function fetchAmbassadorUnreadChatCount(ambassadorId) {
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/messages?unreadOnly=true&for=ambassador`);
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/messages?unreadOnly=true&for=ambassador`);
             const data = await response.json();
             return data.count || 0;
         } catch (error) {
             console.error('Error consultando mensajes no leídos:', error);
             return 0;
         }
-    }
-
-    function waitForSupabaseSdk(maxAttempts, intervalMs) {
-        return new Promise((resolve) => {
-            let attempts = 0;
-            const check = () => {
-                if (typeof supabase !== 'undefined' && supabase.createClient && CONFIG.supabaseUrl && CONFIG.supabaseAnonKey) {
-                    resolve(true);
-                    return;
-                }
-                attempts++;
-                if (attempts >= maxAttempts) {
-                    resolve(false);
-                    return;
-                }
-                setTimeout(check, intervalMs);
-            };
-            check();
-        });
     }
 
     function handleIncomingAdminChatMessage(ambassador, newMessage) {
@@ -3942,7 +3994,7 @@
                 list.innerHTML = renderChatMessagesHtml(chatMessagesCache);
                 scrollChatToBottom();
             }
-            fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}/messages?markReadFor=ambassador`).catch(() => {});
+            ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}/messages?markReadFor=ambassador`).catch(() => {});
         } else {
             fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
         }
@@ -3956,37 +4008,9 @@
 
         fetchAmbassadorUnreadChatCount(ambassador.id).then(count => updateChatBadge(count));
 
-        // El polling corre siempre como respaldo, incluso si Realtime logra conectar.
-        // Así el chat sigue funcionando aunque el SDK de Supabase no cargue a tiempo
-        // en la página de Webflow (orden de scripts) o la suscripción se caiga.
+        // El widget público consulta exclusivamente las API Routes del servidor.
+        // El polling conserva la actualización automática sin exponer llaves de datos.
         startChatPolling(ambassador);
-
-        waitForSupabaseSdk(10, 300).then((available) => {
-            if (!available) {
-                console.warn('[AmbassadorChat] SDK de Supabase no disponible tras esperar; usando solo polling.');
-                return;
-            }
-            try {
-                const supabaseClient = supabase.createClient(CONFIG.supabaseUrl, CONFIG.supabaseAnonKey);
-                supabaseClient
-                    .channel(`ambassador-chat-${ambassador.id}`)
-                    .on('postgres_changes', {
-                        event: 'INSERT',
-                        schema: 'public',
-                        table: 'ambassador_messages',
-                        filter: `ambassador_id=eq.${ambassador.id}`
-                    }, (payload) => {
-                        const newMessage = payload.new;
-                        if (newMessage.sender_role !== 'admin') return;
-                        handleIncomingAdminChatMessage(ambassador, newMessage);
-                    })
-                    .subscribe((status) => {
-                        console.log('[AmbassadorChat] Estado de suscripción Realtime:', status);
-                    });
-            } catch (error) {
-                console.error('[AmbassadorChat] No se pudo iniciar Realtime, se mantiene el polling:', error);
-            }
-        });
     }
 
     function startChatPolling(ambassador) {
@@ -4005,7 +4029,7 @@
         }
 
         try {
-            const response = await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/payouts`, {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/payouts`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' }
             });
@@ -4033,12 +4057,10 @@
             console.log(`[AmbassadorWidget] Checking status for: ${email || 'unknown'} (ID: ${memberstackId || 'none'})`);
             
             // Prefer memberstackId for the query
-            const url = memberstackId 
-                ? `${CONFIG.API_BASE_URL}/api/ambassadors/by-memberstack?memberstackId=${encodeURIComponent(memberstackId)}`
-                : `${CONFIG.API_BASE_URL}/api/ambassadors?search=${encodeURIComponent(email)}&limit=1`;
+            const url = `${CONFIG.API_BASE_URL}/api/ambassadors/dashboard`;
             
             console.log(`[AmbassadorWidget] Fetching: ${url}`);
-            const response = await fetch(url);
+            const response = await ambassadorApiFetch(url);
             
             if (!response.ok) {
                 console.error(`[AmbassadorWidget] API Error: ${response.status}`);
@@ -4127,7 +4149,7 @@
             ambassador.welcome_shown = true;
             
             try {
-                await fetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassador.id}`, {
+                await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/dashboard`, {
                     method: 'PATCH',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ welcome_shown: true })
@@ -4157,6 +4179,12 @@
             styleTag.textContent = STYLES;
             document.head.appendChild(styleTag);
         }
+        if (!document.getElementById('ambassador-widget-v2-styles')) {
+            const styleTag = document.createElement('style');
+            styleTag.id = 'ambassador-widget-v2-styles';
+            styleTag.textContent = V2_STYLES;
+            document.head.appendChild(styleTag);
+        }
 
         // Show loading
         container.innerHTML = `
@@ -4175,6 +4203,9 @@
                 const member = await window.$memberstackDom.getCurrentMember();
                 email = member?.data?.auth?.email;
                 memberId = member?.data?.id;
+                currentMemberToken = await Promise.resolve(window.$memberstackDom.getMemberCookie());
+                const planConnections = member?.data?.planConnections || [];
+                currentMemberHasActivePlan = planConnections.some((plan) => plan.status === 'ACTIVE');
                 console.log('👤 Memberstack user:', { email, memberId });
             } catch (e) {
                 console.log('Memberstack not available');
@@ -4215,6 +4246,8 @@
             `;
         }
 
+        container.classList.toggle('ambassador-widget-v2-host', Boolean(ambassador && ambassador.status === 'approved'));
+
         container.innerHTML = `
             <div class="ambassador-widget-container">
                 <div class="ambassador-widget-content">
@@ -4232,6 +4265,7 @@
 
         // Burbuja de chat con administración (solo embajadores aprobados)
         if (ambassador && ambassador.status === 'approved') {
+            window.setAmbassadorV2View(ambassadorV2View);
             initAmbassadorChatRealtime(ambassador);
         }
 

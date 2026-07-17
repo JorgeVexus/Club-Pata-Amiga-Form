@@ -50,9 +50,10 @@
             }
 
             const fetchUrl = CONFIG.apiUrl + '/api/ambassadors/by-memberstack?memberstackId=' + encodeURIComponent(member.id);
+            const memberToken = await Promise.resolve(window.$memberstackDom.getMemberCookie());
             console.log('🎯 [Embajadores Visibilidad] Consultando: ' + fetchUrl);
 
-            const res = await fetch(fetchUrl);
+            const res = await fetch(fetchUrl, { headers: { Authorization: 'Bearer ' + memberToken } });
             const data = await res.json();
             console.log('🎯 [Embajadores Visibilidad] Datos recibidos:', data);
 

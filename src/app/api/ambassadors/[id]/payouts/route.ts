@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAuthenticatedAmbassador } from '@/lib/ambassador-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,6 +26,8 @@ export async function POST(
 ) {
     try {
         const { id } = await params;
+        const auth = await getAuthenticatedAmbassador(request, id);
+        if (!auth.ok) return auth.response;
 
         // 1. Obtener datos actuales del embajador
         const { data: ambassador, error: fetchError } = await supabase
@@ -122,6 +125,8 @@ export async function GET(
 ) {
     try {
         const { id } = await params;
+        const auth = await getAuthenticatedAmbassador(request, id);
+        if (!auth.ok) return auth.response;
 
         const { data, error } = await supabase
             .from('ambassador_payouts')

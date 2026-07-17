@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { getAuthenticatedAmbassador } from '@/lib/ambassador-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,27 +29,9 @@ export async function POST(
 
         console.log(`[CANCEL_AMBASSADOR] Iniciando cancelación para embajador ID: ${id}`);
 
-        // 1. Obtener embajador
-        const { data: ambassador, error: fetchError } = await supabase
-            .from('ambassadors')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
-
-        if (fetchError) {
-            console.error('[CANCEL_AMBASSADOR] Error buscando embajador en Supabase:', fetchError);
-            return NextResponse.json(
-                { success: false, error: 'Error al buscar el embajador' },
-                { status: 500, headers: corsHeaders() }
-            );
-        }
-
-        if (!ambassador) {
-            return NextResponse.json(
-                { success: false, error: 'Embajador no encontrado' },
-                { status: 404, headers: corsHeaders() }
-            );
-        }
+        const auth = await getAuthenticatedAmbassador(request, id);
+        if (!auth.ok) return auth.response;
+        const ambassador = auth.ambassador;
 
         if (ambassador.status === 'cancelled') {
             return NextResponse.json(

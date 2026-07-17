@@ -121,9 +121,15 @@ export default function Step5CompleteProfile({ ambassadorId, initialData, onSave
 
         setIsSubmitting(true);
         try {
-            const response = await fetch(`/api/ambassadors/${ambassadorId}`, {
+            const memberstackWindow = window as Window & {
+                $memberstackDom?: { getMemberCookie?: () => string | Promise<string> };
+            };
+            const memberstack = memberstackWindow.$memberstackDom;
+            const token = await Promise.resolve(memberstack?.getMemberCookie?.());
+            if (!token) throw new Error('No hay una sesión activa de Memberstack');
+            const response = await fetch('/api/ambassadors/dashboard', {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
                     rfc: formData.rfc.trim() || undefined,
                     payment_method: formData.payment_method || undefined,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -36,7 +37,7 @@ function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, PATCH, DELETE, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-admin-memberstack-id',
     };
 }
 
@@ -81,6 +82,8 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser || 'isUnauthorized' in adminUser) return unauthorizedResponse();
         const { id } = await params;
 
         const { data: ambassador, error } = await supabase
@@ -154,6 +157,8 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser || 'isUnauthorized' in adminUser) return unauthorizedResponse();
         const { id } = await params;
         const body = await request.json();
         const normalizedPaymentMethod = typeof body.payment_method === 'string' ? body.payment_method.trim() : body.payment_method;
@@ -359,6 +364,8 @@ export async function DELETE(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const adminUser = await getAdminUser(request);
+        if (!adminUser || 'isUnauthorized' in adminUser) return unauthorizedResponse();
         const { id } = await params;
 
         const { error } = await supabase

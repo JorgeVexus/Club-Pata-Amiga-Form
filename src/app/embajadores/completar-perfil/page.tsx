@@ -28,18 +28,18 @@ function CompleteProfileContent() {
     useEffect(() => {
         const loadAmbassador = async () => {
             try {
-                if (ambassadorIdParam) {
-                    const res = await fetch(`/api/ambassadors/${ambassadorIdParam}`);
-                    const data = await res.json();
-                    if (data.success) {
-                        setAmbassador(data.data);
-                    }
-                } else if (memberIdParam) {
-                    const res = await fetch(`/api/ambassadors/by-memberstack?memberstackId=${encodeURIComponent(memberIdParam)}`);
-                    const data = await res.json();
-                    if (data.success && data.data) {
-                        setAmbassador(data.data);
-                    }
+                const memberstackWindow = window as Window & {
+                    $memberstackDom?: { getMemberCookie?: () => string | Promise<string> };
+                };
+                const memberstack = memberstackWindow.$memberstackDom;
+                const token = await Promise.resolve(memberstack?.getMemberCookie?.());
+                if (!token) throw new Error('No hay una sesión activa de Memberstack');
+                const res = await fetch('/api/ambassadors/dashboard', {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                const data = await res.json();
+                if (data.success && data.data) {
+                    setAmbassador(data.data);
                 }
             } catch (err) {
                 console.error('Error cargando embajador:', err);

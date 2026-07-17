@@ -269,11 +269,13 @@
 
         async loadData() {
             const id = this.member.id;
+            const memberToken = await Promise.resolve(window.$memberstackDom.getMemberCookie());
+            const memberHeaders = { Authorization: `Bearer ${memberToken}` };
             try {
                 const [profRes, pmRes, ambRes, wellRes] = await Promise.allSettled([
                     fetch(`${CONFIG.apiUrl}/api/user/profile?memberstackId=${id}`).then(r=>r.json()),
                     fetch(`${CONFIG.apiUrl}/api/user/payment-method?memberstackId=${id}`).then(r=>r.json()),
-                    fetch(`${CONFIG.apiUrl}/api/ambassadors/by-memberstack?memberstackId=${id}`).then(r=>r.json()),
+                    fetch(`${CONFIG.apiUrl}/api/ambassadors/by-memberstack?memberstackId=${id}`, { headers: memberHeaders }).then(r=>r.json()),
                     fetch(`${CONFIG.apiUrl}/api/wellness/me?memberstack_id=${id}`).then(r=>r.json())
                 ]);
 

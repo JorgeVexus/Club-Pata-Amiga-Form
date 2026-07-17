@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { getAuthenticatedAmbassador } from '@/lib/ambassador-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -32,19 +33,9 @@ export async function POST(
     try {
         const { id } = await params;
 
-        // Obtener embajador
-        const { data: ambassador, error: ambassadorError } = await supabase
-            .from('ambassadors')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-        if (ambassadorError || !ambassador) {
-            return NextResponse.json(
-                { success: false, error: 'Embajador no encontrado' },
-                { status: 404, headers: corsHeaders() }
-            );
-        }
+        const auth = await getAuthenticatedAmbassador(request, id);
+        if (!auth.ok) return auth.response;
+        const ambassador = auth.ambassador;
 
         // Verificar que está aprobado
         if (ambassador.status !== 'approved') {

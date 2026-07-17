@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { verifyMemberstackRequest } from '@/lib/ambassador-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,15 +10,12 @@ const supabase = createClient(
 // Enmascara el nombre del referido para mostrarlo al embajador sin exponer el dato completo.
 // "Efrain Rabago" -> "E***in R***go"
 function maskReferredName(fullName: string | null | undefined): string {
-    if (!fullName || !fullName.trim()) return 'Usuario';
+    if (!fullName || !fullName.trim()) return 'R*****';
 
     return fullName
         .trim()
         .split(/\s+/)
-        .map((word) => {
-            if (word.length <= 3) return `${word[0]}***`;
-            return `${word[0]}***${word.slice(-2)}`;
-        })
+        .map((word) => `${Array.from(word)[0].toUpperCase()}*****`)
         .join(' ');
 }
 
@@ -48,6 +46,20 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(
                 { success: false, error: 'memberstackId requerido' },
                 { status: 400, headers: corsHeaders() }
+            );
+        }
+
+        const authenticatedMemberId = await verifyMemberstackRequest(request);
+        if (!authenticatedMemberId) {
+            return NextResponse.json(
+                { success: false, error: 'Sesión inválida o expirada' },
+                { status: 401, headers: corsHeaders() }
+            );
+        }
+        if (authenticatedMemberId !== memberstackId) {
+            return NextResponse.json(
+                { success: false, error: 'No tienes acceso a esta cuenta' },
+                { status: 403, headers: corsHeaders() }
             );
         }
 
@@ -138,9 +150,12 @@ export async function GET(request: NextRequest) {
                 ...detailedData,
                 // Nunca exponer nombre/correo completos del referido en este endpoint público (sin auth)
                 recent_referrals: (recentReferrals || []).map(r => ({
-                    ...r,
-                    referred_user_name: maskReferredName(r.referred_user_name),
-                    referred_user_email: undefined,
+                    id: r.id,
+                    masked_name: maskReferredName(r.referred_user_name),
+                    plan: r.membership_plan || null,
+                    commission_amount: r.commission_amount ?? null,
+                    commission_status: r.commission_status || 'pending',
+                    created_at: r.created_at,
                 })),
                 total_referrals: totalReferrals || 0,
                 referrals_count: totalReferrals || 0,

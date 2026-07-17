@@ -4,13 +4,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
-
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { ambassadorSupabaseAdmin as supabase, getAuthenticatedAmbassador } from '@/lib/ambassador-auth';
 
 function corsHeaders() {
     return {
@@ -32,19 +27,9 @@ export async function POST(
     try {
         const { id } = await params;
 
-        // Obtener embajador
-        const { data: ambassador, error: ambassadorError } = await supabase
-            .from('ambassadors')
-            .select('*')
-            .eq('id', id)
-            .single();
-
-        if (ambassadorError || !ambassador) {
-            return NextResponse.json(
-                { success: false, error: 'Embajador no encontrado' },
-                { status: 404, headers: corsHeaders() }
-            );
-        }
+        const auth = await getAuthenticatedAmbassador(request, id);
+        if (!auth.ok) return auth.response;
+        const ambassador = auth.ambassador;
 
         // Verificar que está aprobado
         if (ambassador.status !== 'approved') {
@@ -56,10 +41,26 @@ export async function POST(
 
         // Verificar que tiene permiso para cambiar
         if (!ambassador.can_change_referral_code) {
-            return NextResponse.json(
-                { success: false, error: 'No tienes permitido cambiar tu código' },
-                { status: 403, headers: corsHeaders() }
-            );
+            const { error: notificationError } = await supabase.from('notifications').insert({
+                user_id: 'admin',
+                type: 'ambassador_code_change_request',
+                title: 'Solicitud de cambio de código',
+                message: `${ambassador.first_name || 'Un embajador'} solicitó autorización para cambiar su código.`,
+                metadata: { ambassador_id: ambassador.id, notification_kind: 'ambassador_code_change_request' },
+                is_read: false,
+            });
+            if (notificationError) {
+                console.error('[AmbassadorCodeChange] Error creating admin notification:', notificationError);
+                return NextResponse.json(
+                    { success: false, error: 'No se pudo enviar la solicitud a administración' },
+                    { status: 500, headers: corsHeaders() }
+                );
+            }
+            return NextResponse.json({
+                success: true,
+                status: 'pending_admin',
+                message: 'Solicitud enviada a administración',
+            }, { headers: corsHeaders() });
         }
 
         // Verificar que no ha cambiado antes
@@ -101,6 +102,7 @@ export async function POST(
 
         return NextResponse.json({
             success: true,
+            status: 'email_sent',
             message: 'Email enviado correctamente'
         }, { headers: corsHeaders() });
 
