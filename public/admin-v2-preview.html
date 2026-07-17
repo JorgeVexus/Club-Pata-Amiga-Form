@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Admin V2 Preview — Pata Amiga</title>
+  <style>
+    @font-face{font-family:Fraiche;src:url('/fonts/Fraiche.woff2') format('woff2');font-display:swap}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Outfit,system-ui,sans-serif;color:#365853;background:#f8f5ee}button,input{font:inherit}
+    .app{display:grid;grid-template-columns:228px minmax(0,1fr);min-height:100dvh}.side{position:sticky;top:0;display:flex;height:100dvh;flex-direction:column;padding:22px 14px 14px;background:#1e5b57;color:#fff;overflow:auto}.logo{width:104px;margin:0 8px 7px}.committee{margin:0 8px 14px;color:#ffffff80;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+    .nav{display:grid;gap:3px}.nav button{display:flex;align-items:center;gap:10px;width:100%;min-height:38px;padding:8px 10px;border:0;border-radius:9px;background:transparent;color:#ffffffc4;font-size:12px;font-weight:700;text-align:left;cursor:pointer}.nav button:hover,.nav button.active{background:#ffffff1f;color:#fff}.nav i{width:7px;height:7px;border-radius:50%;background:#21bcaf}.nav button:nth-child(3) i{background:#fe8f15}.nav button:nth-child(4) i{background:#e85b76}.nav b{margin-left:auto;min-width:20px;padding:3px 6px;border-radius:99px;background:#ffffff24;text-align:center;font-size:9px}.group{margin:13px 10px 5px;color:#ffffff70;font-size:8px;font-weight:900;letter-spacing:.1em;text-transform:uppercase}
+    .admin{display:flex;align-items:center;gap:9px;margin-top:auto;padding:11px;border-radius:12px;background:#00000026}.avatar{display:grid;width:34px;height:34px;place-items:center;border-radius:50%;background:#a9dd28;color:#174d49;font-weight:900}.admin strong,.admin small{display:block}.admin strong{font-size:11px}.admin small{margin-top:2px;color:#ffffff8f;font-size:9px}
+    main{min-width:0;padding:0 28px 45px}.top{position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:flex-end;gap:9px;min-height:70px;background:#f8f5eef2;backdrop-filter:blur(12px)}.circle,.report,.menu{height:40px;border:1px solid #e6dfd3;background:#fff;color:#174d49;cursor:pointer}.circle,.menu{width:40px;border-radius:50%}.report{padding:0 18px;border:0;border-radius:99px;background:#21bcaf;color:#fff;font-weight:800}.menu{display:none}
+    .heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;margin:5px 0 22px}.heading h1{margin:0;color:#174d49;font:400 clamp(27px,3vw,36px)/1 Fraiche,Outfit,sans-serif}.heading p{margin:7px 0 0;color:#71817d;font-size:12px}.search{width:min(340px,38vw);height:42px;padding:0 16px;border:1px solid #ebe5da;border-radius:99px;background:#fff;color:#667975;outline:none}.search:focus{border-color:#21bcaf;box-shadow:0 0 0 3px #21bcaf26}
+    .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.card,.panel{background:#fff;border:1px solid #1e5b570f;box-shadow:0 8px 24px #2d49450e}.card{min-height:126px;padding:19px;border-radius:18px}.eyebrow{color:#8b9692;font-size:9px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.card strong{display:block;margin-top:12px;color:#174d49;font:400 29px/1 Fraiche,Outfit,sans-serif;font-variant-numeric:tabular-nums}.card small{display:block;margin-top:10px;color:#73827e;font-size:10px}
+    .work{display:grid;grid-template-columns:1.15fr .85fr;gap:16px;margin-top:18px}.panel{padding:22px;border-radius:20px}.panel-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px}.panel h2{margin:5px 0 0;color:#174d49;font:400 22px/1 Fraiche,Outfit,sans-serif}.pill{padding:7px 10px;border-radius:99px;background:#e7f5f3;color:#087b74;font-size:9px;font-weight:900}.queue{display:grid;gap:8px}.queue button{display:grid;grid-template-columns:1fr auto 18px;gap:10px;align-items:center;padding:13px 14px;border:1px solid #ece7dc;border-radius:13px;background:#fbfaf6;color:#365853;text-align:left;cursor:pointer}.queue button:hover{border-color:#21bcaf;background:#f3fbfa}.queue strong{color:#174d49}.activity article{display:grid;grid-template-columns:9px 1fr;gap:10px;padding:13px 0;border-bottom:1px solid #eee9df}.dot{width:8px;height:8px;margin-top:5px;border-radius:50%;background:#21bcaf}.activity strong,.activity small{display:block}.activity strong{color:#294f4b;font-size:11px}.activity small{margin-top:4px;color:#82908c;font-size:9px}.scrim{display:none}
+    [data-screen][hidden]{display:none}.module-tools{display:flex;gap:9px;margin-bottom:14px}.module-tools input{flex:1;min-width:0;height:42px;padding:0 14px;border:1px solid #e6dfd3;border-radius:12px;background:#fff}.module-tools button{padding:0 16px;border:0;border-radius:12px;background:#21bcaf;color:#fff;font-weight:800}.table{width:100%;border-collapse:collapse}.table th,.table td{padding:13px 10px;border-bottom:1px solid #eee9df;font-size:11px;text-align:left}.table th{color:#8b9692;font-size:9px;letter-spacing:.06em;text-transform:uppercase}.status{display:inline-block;padding:5px 8px;border-radius:99px;background:#e7f5f3;color:#087b74;font-size:8px;font-weight:900;text-transform:uppercase}.status.pending{background:#fff1de;color:#b96b00}.row-action{border:0;background:transparent;color:#00867e;font-weight:900;cursor:pointer}
+    @media(max-width:1000px){.metrics{grid-template-columns:repeat(2,1fr)}.work{grid-template-columns:1fr}.search{width:280px}}
+    @media(max-width:760px){.app{grid-template-columns:1fr}.side{position:fixed;z-index:20;width:min(88vw,310px);transform:translateX(-105%);transition:transform .25s ease}.side.open{transform:none}.scrim.show{position:fixed;z-index:15;display:block;inset:0;background:#173b3970}.menu{display:block;margin-right:auto}main{padding:0 14px 35px}.top{min-height:60px}.report{display:none}.heading{align-items:flex-start;flex-direction:column;margin-top:12px}.search{width:100%}.metrics{gap:10px}.card{min-height:112px;padding:15px}.work{gap:12px}.panel{padding:17px}}
+    @media(max-width:390px){.metrics{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="scrim" id="scrim"></div>
+  <div class="app">
+    <aside class="side" id="side">
+      <img class="logo" src="/widgets/home%20v2%20images/logo-on-dark.svg" alt="Pata Amiga">
+      <span class="committee">Panel del comité</span>
+      <nav class="nav">
+        <button class="active" data-view="summary"><i></i>Resumen</button>
+        <button data-view="members"><i></i>Miembros<b>3</b></button>
+        <button data-view="pets"><i></i>Mascotas<b>2</b></button>
+        <button data-view="reimbursements"><i></i>Reintegros<b>1</b></button>
+        <button data-view="ambassadors"><i></i>Embajadores<b>1</b></button>
+        <button data-view="centers"><i></i>Centros<b>2</b></button>
+        <span class="group">Operación</span>
+        <button data-view="payments"><i></i>Pagos y facturación</button>
+        <button data-view="finance"><i></i>Finanzas</button>
+        <button data-view="communications"><i></i>Comunicaciones</button>
+        <button data-view="reports"><i></i>Reportes</button>
+        <span class="group">Administración</span>
+        <button data-view="leads"><i></i>Leads Webflow</button>
+        <button data-view="legal"><i></i>Documentos legales</button>
+        <button data-view="settings"><i></i>Configuración</button>
+      </nav>
+      <div class="admin"><span class="avatar">R</span><span><strong>Rocío</strong><small>Super admin</small></span></div>
+    </aside>
+    <main>
+      <header class="top">
+        <button class="menu" id="menu" aria-label="Abrir menú">☰</button>
+        <button class="circle" aria-label="Actualizar">↻</button>
+        <button class="circle" aria-label="Notificaciones">●</button>
+        <button class="report">Enviar reporte</button>
+      </header>
+      <section data-screen="summary">
+      <div class="heading">
+        <div><h1>Buenos días, Rocío</h1><p>Resumen operativo del comité · datos reales del backend actual</p></div>
+        <input class="search" placeholder="Buscar miembro, mascota o folio…">
+      </div>
+      <section class="metrics">
+        <article class="card"><span class="eyebrow">Miembros activos</span><strong>142</strong><small>membresías vigentes</small></article>
+        <article class="card"><span class="eyebrow">Reintegros aprobados</span><strong>$24,850</strong><small>monto aprobado acumulado</small></article>
+        <article class="card"><span class="eyebrow">Embajadores</span><strong>18</strong><small>embajadores aprobados</small></article>
+        <article class="card"><span class="eyebrow">Centros aliados</span><strong>27</strong><small>activos en el directorio</small></article>
+      </section>
+      <section class="work">
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">Operación</span><h2>Colas pendientes</h2></div><span class="pill">9 pendientes</span></div>
+          <div class="queue">
+            <button><span>Mascotas por revisar</span><strong>3</strong><span>→</span></button>
+            <button><span>Reintegros nuevos</span><strong>1</strong><span>→</span></button>
+            <button><span>Embajadores pendientes</span><strong>1</strong><span>→</span></button>
+            <button><span>Centros pendientes</span><strong>2</strong><span>→</span></button>
+            <button><span>Apelaciones pendientes</span><strong>2</strong><span>→</span></button>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">Seguimiento</span><h2>Actividad reciente</h2></div></div>
+          <div class="activity">
+            <article><span class="dot"></span><div><strong>Membresía aprobada para Mariana C.</strong><small>Rocío · hoy</small></div></article>
+            <article><span class="dot" style="background:#fe8f15"></span><div><strong>Documentos solicitados para Bruno</strong><small>Rocío · hoy</small></div></article>
+            <article><span class="dot" style="background:#e85b76"></span><div><strong>Reintegro enviado a revisión</strong><small>Equipo del comité · ayer</small></div></article>
+          </div>
+        </article>
+      </section>
+      </section>
+      <section data-screen="members" hidden><div class="heading"><div><h1>Miembros</h1><p>Gestiona membresías, expedientes y estados de aprobación.</p></div></div><div class="module-tools"><input placeholder="Buscar por nombre o correo"><button>Filtrar</button></div><article class="panel"><table class="table"><thead><tr><th>Miembro</th><th>Plan</th><th>Estado</th><th>Acción</th></tr></thead><tbody><tr><td>Mariana C.</td><td>Anual</td><td><span class="status">Activo</span></td><td><button class="row-action">Ver expediente</button></td></tr><tr><td>Roberto M.</td><td>Mensual</td><td><span class="status pending">Por revisar</span></td><td><button class="row-action">Revisar</button></td></tr></tbody></table></article></section>
+      <section data-screen="pets" hidden><div class="heading"><div><h1>Mascotas</h1><p>Cola de expedientes, documentos y periodos de espera.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Mascota</th><th>Responsable</th><th>Documentos</th><th>Estado</th><th></th></tr></thead><tbody><tr><td>Bruno</td><td>Mariana C.</td><td>Completo</td><td><span class="status pending">Pendiente</span></td><td><button class="row-action">Revisar</button></td></tr><tr><td>Nala</td><td>Roberto M.</td><td>Completo</td><td><span class="status">Aprobada</span></td><td><button class="row-action">Ver</button></td></tr></tbody></table></article></section>
+      <section data-screen="reimbursements" hidden><div class="heading"><div><h1>Reintegros</h1><p>Solicitudes del Fondo Solidario y su seguimiento.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Folio</th><th>Miembro / mascota</th><th>Tipo</th><th>Monto</th><th>Estado</th></tr></thead><tbody><tr><td>R-0048</td><td>Mariana C. · Bruno</td><td>Gastos veterinarios</td><td>$2,450</td><td><span class="status pending">Nueva</span></td></tr><tr><td>R-0047</td><td>Roberto M. · Nala</td><td>Vacunas</td><td>$300</td><td><span class="status">Aprobada</span></td></tr></tbody></table></article></section>
+      <section data-screen="ambassadors" hidden><div class="heading"><div><h1>Embajadores</h1><p>Solicitudes, códigos, referidos y comisiones.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Embajador</th><th>Código</th><th>Referidos</th><th>Estado</th><th></th></tr></thead><tbody><tr><td>Daniela R.</td><td>PATAMIGA-DANI</td><td>8</td><td><span class="status">Aprobada</span></td><td><button class="row-action">Ver detalle</button></td></tr><tr><td>Carlos A.</td><td>En asignación</td><td>0</td><td><span class="status pending">Pendiente</span></td><td><button class="row-action">Revisar</button></td></tr></tbody></table></article></section>
+      <section data-screen="centers" hidden><div class="heading"><div><h1>Centros aliados</h1><p>Directorio, solicitudes y beneficios vigentes.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Centro</th><th>Ciudad</th><th>Servicio</th><th>Estado</th><th></th></tr></thead><tbody><tr><td>Clínica Vet Prueba</td><td>Querétaro</td><td>Clínica</td><td><span class="status">Activo</span></td><td><button class="row-action">Ver detalle</button></td></tr><tr><td>Hotel Peludo</td><td>Juriquilla</td><td>Hotel</td><td><span class="status pending">Pendiente</span></td><td><button class="row-action">Revisar</button></td></tr></tbody></table></article></section>
+      <section data-screen="payments" hidden><div class="heading"><div><h1>Pagos y facturación</h1><p>Registros de pago, facturas, estados y reintentos automáticos.</p></div></div><section class="metrics"><article class="card"><span class="eyebrow">Pagos confirmados</span><strong>136</strong><small>periodo actual</small></article><article class="card"><span class="eyebrow">Por conciliar</span><strong>4</strong><small>requieren revisión</small></article><article class="card"><span class="eyebrow">Facturas solicitadas</span><strong>7</strong><small>pendientes del mes</small></article><article class="card"><span class="eyebrow">Reintentos</span><strong>2</strong><small>cobros programados</small></article></section></section>
+      <section data-screen="finance" hidden><div class="heading"><div><h1>Finanzas</h1><p>Ingresos, reintegros, pagos a centros y comisiones.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Movimiento</th><th>Área</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr></thead><tbody><tr><td>Pago membresía anual</td><td>Membresías</td><td>17 jul</td><td>$1,699</td><td><span class="status">Confirmado</span></td></tr><tr><td>Comisión embajador</td><td>Comisiones</td><td>17 jul</td><td>$170</td><td><span class="status pending">Pendiente</span></td></tr></tbody></table></article></section>
+      <section data-screen="communications" hidden><div class="heading"><div><h1>Comunicaciones</h1><p>Mensajes para miembros, centros, embajadores y plantillas.</p></div></div><div class="work"><article class="panel"><div class="panel-head"><div><span class="eyebrow">Nuevo envío</span><h2>Selecciona una audiencia</h2></div></div><div class="queue"><button><span>Miembros</span><strong>142</strong><span>→</span></button><button><span>Embajadores</span><strong>18</strong><span>→</span></button><button><span>Centros aliados</span><strong>27</strong><span>→</span></button></div></article><article class="panel"><div class="panel-head"><div><span class="eyebrow">Plantillas</span><h2>Mensajes disponibles</h2></div></div><p>Bienvenida, solicitud de documentos, aprobación, rechazo y comunicados generales.</p></article></div></section>
+      <section data-screen="reports" hidden><div class="heading"><div><h1>Reportes</h1><p>Gráficas interactivas, exportaciones y reporte de emergencias.</p></div></div><section class="metrics"><article class="card"><span class="eyebrow">Altas del mes</span><strong>11</strong><small>miembros nuevos</small></article><article class="card"><span class="eyebrow">Bajas del mes</span><strong>3</strong><small>membresías cerradas</small></article><article class="card"><span class="eyebrow">Emergencias</span><strong>2</strong><small>reportes recibidos</small></article><article class="card"><span class="eyebrow">Exportaciones</span><strong>5</strong><small>generadas este mes</small></article></section></section>
+      <section data-screen="leads" hidden><div class="heading"><div><h1>Leads Webflow</h1><p>Newsletter, centros interesados y campañas de regalos.</p></div></div><article class="panel"><table class="table"><thead><tr><th>Contacto</th><th>Origen</th><th>Fecha</th><th>Estado</th><th></th></tr></thead><tbody><tr><td>contacto@huellafeliz.mx</td><td>Centro aliado</td><td>17 jul</td><td><span class="status pending">Nuevo</span></td><td><button class="row-action">Atender</button></td></tr><tr><td>familia@example.mx</td><td>Newsletter</td><td>16 jul</td><td><span class="status">Activo</span></td><td><button class="row-action">Ver</button></td></tr></tbody></table></article></section>
+      <section data-screen="legal" hidden><div class="heading"><div><h1>Documentos legales</h1><p>Versiones vigentes de contratos, términos y avisos.</p></div></div><div class="queue"><button><span>Contrato de membresía</span><strong>V. 4</strong><span>→</span></button><button><span>Términos y condiciones</span><strong>V. 3</strong><span>→</span></button><button><span>Aviso de privacidad</span><strong>V. 2</strong><span>→</span></button></div></section>
+      <section data-screen="settings" hidden><div class="heading"><div><h1>Configuración</h1><p>Ajustes exclusivos para superadministradores.</p></div></div><article class="panel"><div class="panel-head"><div><span class="eyebrow">Operación</span><h2>Preferencias del sistema</h2></div></div><div class="queue"><button><span>Omitir pago en pruebas</span><strong>Inactivo</strong><span>→</span></button><button><span>Administradores</span><strong>4</strong><span>→</span></button><button><span>Parámetros de notificaciones</span><strong>Editar</strong><span>→</span></button></div></article></section>
+      <section data-screen="generic" hidden><div class="heading"><div><h1 id="generic-title">Módulo administrativo</h1><p id="generic-copy">Esta pantalla conservará la funcionalidad actual dentro del nuevo shell.</p></div></div><article class="panel"><div class="panel-head"><div><span class="eyebrow">Vista conservada</span><h2>Contenido del módulo actual</h2></div></div><p>En producción aquí se renderiza el componente existente con sus filtros, tablas, modales y conexiones actuales.</p></article></section>
+      <section class="work">
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">Operación</span><h2>Colas pendientes</h2></div><span class="pill">9 pendientes</span></div>
+          <div class="queue">
+            <button><span>Mascotas por revisar</span><strong>3</strong><span>→</span></button>
+            <button><span>Reintegros nuevos</span><strong>1</strong><span>→</span></button>
+            <button><span>Embajadores pendientes</span><strong>1</strong><span>→</span></button>
+            <button><span>Centros pendientes</span><strong>2</strong><span>→</span></button>
+            <button><span>Apelaciones pendientes</span><strong>2</strong><span>→</span></button>
+          </div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div><span class="eyebrow">Seguimiento</span><h2>Actividad reciente</h2></div></div>
+          <div class="activity">
+            <article><span class="dot"></span><div><strong>Membresía aprobada para Mariana C.</strong><small>Rocío · hoy</small></div></article>
+            <article><span class="dot" style="background:#fe8f15"></span><div><strong>Documentos solicitados para Bruno</strong><small>Rocío · hoy</small></div></article>
+            <article><span class="dot" style="background:#e85b76"></span><div><strong>Reintegro enviado a revisión</strong><small>Equipo del comité · ayer</small></div></article>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script>
+    const side=document.getElementById('side'),scrim=document.getElementById('scrim');
+    document.getElementById('menu').addEventListener('click',()=>{side.classList.add('open');scrim.classList.add('show')});
+    scrim.addEventListener('click',()=>{side.classList.remove('open');scrim.classList.remove('show')});
+    const titles={payments:'Pagos y facturación',finance:'Finanzas',communications:'Comunicaciones',reports:'Reportes',leads:'Leads Webflow',legal:'Documentos legales',settings:'Configuración'};
+    function showView(view){
+      const known=['summary','members','pets','reimbursements','ambassadors','centers','payments','finance','communications','reports','leads','legal','settings'];
+      document.querySelectorAll('[data-screen]').forEach(screen=>screen.hidden=screen.dataset.screen!==(known.includes(view)?view:'generic'));
+      if(!known.includes(view)){document.getElementById('generic-title').textContent=titles[view]||'Módulo administrativo'}
+      side.classList.remove('open');scrim.classList.remove('show');
+    }
+    document.querySelectorAll('.nav button').forEach(button=>button.addEventListener('click',()=>{document.querySelectorAll('.nav button').forEach(item=>item.classList.remove('active'));button.classList.add('active');showView(button.dataset.view)}));
+  </script>
+</body>
+</html>

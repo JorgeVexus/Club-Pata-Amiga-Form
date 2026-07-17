@@ -60,8 +60,22 @@ export async function GET(request: NextRequest) {
 
         const activeWellnessCenters = totalWellnessCenters || 0;
 
-        // Simulación de Fondo Solidario (ej. $50 de cada membresía aprobada se va al fondo)
-        const solidarityFund = totalMembers * 50;
+        // Sumar exclusivamente montos aprobados reales. Mantener el nombre
+        // totalRefunds evita romper los consumidores existentes del dashboard.
+        const { data: approvedRequests, error: refundsError } = await supabase
+            .from('solidarity_requests')
+            .select('approved_amount')
+            .in('status', ['approved', 'paid', 'scheduled', 'completed']);
+
+        if (refundsError) {
+            throw refundsError;
+        }
+
+        const totalRefunds = (approvedRequests || []).reduce(
+            (sum: number, solidarityRequest: { approved_amount: number | string | null }) =>
+                sum + (Number(solidarityRequest.approved_amount) || 0),
+            0
+        );
 
         return NextResponse.json({
             success: true,
@@ -69,7 +83,7 @@ export async function GET(request: NextRequest) {
                 totalMembers,
                 totalAmbassadors: totalAmbassadors || 0,
                 activeWellnessCenters,
-                totalRefunds: solidarityFund,
+                totalRefunds,
             }
         });
 

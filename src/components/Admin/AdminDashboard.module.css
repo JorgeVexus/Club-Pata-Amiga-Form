@@ -166,3 +166,112 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Admin V2 shell */
+.dashboard{min-height:100dvh;background:#f8f5ee;color:#365853;font-family:var(--font-body,'Outfit'),sans-serif}
+.dashboardContent{min-height:100dvh}
+.mainContent{padding:0 28px 48px;overflow-x:hidden;background:#f8f5ee}
+.header{align-items:center;margin:8px 0 22px}
+.pageTitle{margin:0;color:#174d49;font-family:var(--font-heading,'Fraiche'),sans-serif;font-size:clamp(25px,3vw,34px);font-weight:400;line-height:1}
+.pageDate{margin-top:7px;color:#71817d;font-size:12px}
+.adminBadge{border:1px solid #e6dfd3;background:#fff;box-shadow:0 6px 18px rgba(45,73,69,.05)}
+.adminIcon{background:#e7f5f3}
+@media(max-width:768px){.mainContent{padding:0 14px 32px}.header{margin-top:14px}}
+
+/* Visual bridge for legacy operational modules. It is intentionally scoped so
+   existing component behavior, modal contracts and semantic action colors stay intact. */
+.moduleCanvas {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    color: #365853;
+    --admin-v2-ink: #174d49;
+    --admin-v2-muted: #71817d;
+    --admin-v2-border: #e6dfd3;
+    --admin-v2-accent: #21bcaf;
+    --admin-v2-surface: #ffffff;
+}
+
+.moduleCanvas > :global(*) {
+    min-width: 0;
+}
+
+.moduleCanvas :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    color: #365853;
+    background: var(--admin-v2-surface);
+}
+
+.moduleCanvas :global(th) {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--admin-v2-border);
+    color: #87928f;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .045em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.moduleCanvas :global(td) {
+    padding: 14px;
+    border-bottom: 1px solid #eee8df;
+    color: #365853;
+}
+
+.moduleCanvas :global(tbody tr:last-child td) {
+    border-bottom: 0;
+}
+
+.moduleCanvas :global(tbody tr) {
+    transition: background-color 160ms ease;
+}
+
+.moduleCanvas :global(tbody tr:hover) {
+    background: #fbfaf6;
+}
+
+.moduleCanvas :global(input),
+.moduleCanvas :global(select),
+.moduleCanvas :global(textarea) {
+    max-width: 100%;
+    border: 1px solid var(--admin-v2-border);
+    border-radius: 12px;
+    background: #fff;
+    color: #365853;
+    font: inherit;
+}
+
+.moduleCanvas :global(input:focus),
+.moduleCanvas :global(select:focus),
+.moduleCanvas :global(textarea:focus) {
+    border-color: var(--admin-v2-accent);
+    outline: 3px solid rgba(33, 188, 175, .14);
+}
+
+.moduleCanvas :global(button) {
+    font-family: inherit;
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.moduleCanvas :global(button:focus-visible),
+.moduleCanvas :global(a:focus-visible) {
+    outline: 3px solid rgba(33, 188, 175, .28);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .moduleCanvas {
+        gap: 14px;
+    }
+
+    .moduleCanvas :global(table) {
+        font-size: 13px;
+    }
+
+    .moduleCanvas :global(th),
+    .moduleCanvas :global(td) {
+        padding: 11px 10px;
+    }
+}

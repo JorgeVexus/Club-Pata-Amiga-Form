@@ -36,12 +36,14 @@ import NewsletterSubscribersTable from './NewsletterSubscribersTable';
 import WellnessLeadsTable from './WellnessLeadsTable';
 import EmergencyReportTable from './EmergencyReportTable';
 import CampaignLeadsManager from './CampaignLeadsManager';
+import AdminOverview from './V2/AdminOverview';
+import AdminLoadingShell from './V2/AdminLoadingShell';
 
 function DashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report'>('all-members');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
 
@@ -555,44 +557,11 @@ function DashboardContent() {
     };
 
     if (isAuthLoading) {
-        return (
-            <div style={{ 
-                display: 'flex', 
-                flexDirection: 'column',
-                justifyContent: 'center', 
-                alignItems: 'center', 
-                height: '100vh',
-                background: '#f8f9fa',
-                fontFamily: 'var(--font-body)'
-            }}>
-                <div style={{
-                    width: '40px',
-                    height: '40px',
-                    border: '4px solid #f3f3f3',
-                    borderTop: '4px solid #00BBB4',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite'
-                }}></div>
-                <style>{`
-                    @keyframes spin {
-                        0% { transform: rotate(0deg); }
-                        100% { transform: rotate(360deg); }
-                    }
-                `}</style>
-                <p style={{ marginTop: '1rem', color: '#666', fontWeight: 500 }}>
-                    Verificando credenciales...
-                </p>
-            </div>
-        );
+        return <AdminLoadingShell />;
     }
 
     return (
         <div className={styles.dashboard}>
-            <Navbar
-                onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                onNotificationClick={handleNotificationClick}
-            />
-
             <div className={styles.dashboardContent}>
                 <div
                     className={`${styles.sidebarOverlay} ${isMobileMenuOpen ? styles.visible : ''}`}
@@ -607,13 +576,19 @@ function DashboardContent() {
                     isMobileOpen={isMobileMenuOpen}
                     onClose={() => setIsMobileMenuOpen(false)}
                     isSuperAdmin={isAdminSuper}
+                    adminName={adminName}
+                    adminRole={adminRoleLabel}
                 />
 
                 <main className={styles.mainContent}>
+                    <Navbar
+                        onMobileMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                        onNotificationClick={handleNotificationClick}
+                    />
                     <header className={styles.header}>
                         <div className={styles.headerLeft}>
                             <h1 className={styles.pageTitle}>
-                                {REQUEST_TYPE_LABELS[activeFilter as RequestType] || 'Administración'}
+                                {activeFilter === 'all' ? `Buenos días, ${adminName}` : REQUEST_TYPE_LABELS[activeFilter as RequestType] || 'Administración'}
                                 {subFilter && ` - ${REQUEST_STATUS_LABELS[subFilter as RequestStatus]}`}
                             </h1>
                             <p className={styles.pageDate}>
@@ -634,9 +609,20 @@ function DashboardContent() {
                         </div>
                     </header>
 
-                    {activeFilter !== 'admins' && <MetricCards metrics={metrics} activeFilter={activeFilter} />}
-
-                    {renderContent()}
+                    {activeFilter === 'all' ? (
+                        <AdminOverview
+                            metrics={metrics}
+                            pendingCounts={pendingCounts}
+                            recentActivityLogs={recentActivityLogs}
+                            isSuperAdmin={isAdminSuper}
+                            onNavigate={handleFilterChange}
+                        />
+                    ) : (
+                        <div className={styles.moduleCanvas}>
+                            {activeFilter !== 'admins' && <MetricCards metrics={metrics} activeFilter={activeFilter} />}
+                            {renderContent()}
+                        </div>
+                    )}
                 </main>
             </div>
 

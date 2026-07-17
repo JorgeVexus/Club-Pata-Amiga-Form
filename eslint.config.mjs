@@ -21,6 +21,7 @@ const config = [
       '.next/**',
       'out/**',
       'build/**',
+      'temp-pata-amiga/**',
       'next-env.d.ts',
       'login code extracted/**'
     ]

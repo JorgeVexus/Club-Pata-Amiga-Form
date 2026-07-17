@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
@@ -12,6 +13,8 @@ interface SidebarProps {
     isMobileOpen?: boolean;
     onClose?: () => void;
     isSuperAdmin?: boolean;
+    adminName?: string;
+    adminRole?: string;
 }
 
 interface MenuItem {
@@ -37,7 +40,9 @@ export default function Sidebar({
     pendingCounts, 
     isMobileOpen, 
     onClose, 
-    isSuperAdmin = false 
+    isSuperAdmin = false,
+    adminName = 'Admin',
+    adminRole = 'Administrador',
 }: SidebarProps) {
     const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
         'gestion': true,
@@ -144,6 +149,16 @@ export default function Sidebar({
 
     return (
         <aside className={`${styles.sidebar} ${isMobileOpen ? styles.open : ''}`}>
+            <div className={styles.brand}>
+                <Image
+                    src="/widgets/home%20v2%20images/logo-on-dark.svg"
+                    alt="Pata Amiga"
+                    width={113}
+                    height={40}
+                    priority
+                />
+                <span>Panel del comité</span>
+            </div>
             {/* Close Button (Mobile Only) */}
             <button
                 className={styles.closeButton}
@@ -236,6 +251,14 @@ export default function Sidebar({
                         </button>
                     </nav>
                 )}
+            </div>
+
+            <div className={styles.adminFooter}>
+                <span className={styles.adminInitial}>{adminName.charAt(0).toUpperCase()}</span>
+                <span>
+                    <strong>{adminName}</strong>
+                    <small>{adminRole}</small>
+                </span>
             </div>
 
         </aside>

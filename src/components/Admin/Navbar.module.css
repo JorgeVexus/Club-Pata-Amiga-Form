@@ -178,3 +178,11 @@
     cursor: not-allowed;
     transform: none;
 }
+
+/* Admin V2 top actions */
+.navbar{position:sticky;top:0;min-height:72px;padding:14px 0 10px;border:0;background:rgba(248,245,238,.94);box-shadow:none;backdrop-filter:blur(12px);z-index:80}
+.navbarLogo{min-width:0}.logoImage{display:none}.navbarRight{margin-left:auto;gap:9px}.adminBadgeNav{display:none}
+.refreshButton,.logoutButton{width:40px;height:40px;margin:0;padding:0;justify-content:center;border:1px solid #e6dfd3;background:#fff;color:#365853;box-shadow:0 5px 14px rgba(45,73,69,.05)}
+.refreshButton:hover,.logoutButton:hover{border-color:#21bcaf;background:#eef9f7;color:#087b74;transform:translateY(-1px)}
+.logoutText{display:none}.mobileMenuButton{color:#174d49;border:1px solid #e6dfd3}.mobileMenuButton:focus-visible,.refreshButton:focus-visible,.logoutButton:focus-visible{outline:3px solid rgba(33,188,175,.3);outline-offset:2px}
+@media(max-width:768px){.navbar{min-height:60px;padding:9px 0}.navbarLogo{margin-right:auto}.mobileMenuButton{display:grid;width:40px;height:40px;place-items:center;padding:0}}

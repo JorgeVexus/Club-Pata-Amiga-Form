@@ -1,15 +1,17 @@
 .metricCards {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-xl);
+    gap: 14px;
+    margin-bottom: 2px;
 }
 
 .metricCard {
     background: white;
-    border-radius: var(--radius-lg);
-    padding: var(--spacing-lg);
-    box-shadow: var(--shadow-sm);
+    min-height: 126px;
+    border: 1px solid #eee8df;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 8px 24px rgba(45, 73, 69, .045);
     display: flex;
     flex-direction: column;
     gap: var(--spacing-md);
@@ -24,7 +26,7 @@
 .metricIcon {
     width: 40px;
     height: 40px;
-    border-radius: var(--radius-md);
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -32,19 +34,19 @@
 }
 
 .metricIcon.yellow {
-    background: var(--brand-yellow);
+    background: #fff2d9;
 }
 
 .metricIcon.blue {
-    background: var(--brand-green);
+    background: #e7f5f3;
 }
 
 .metricIcon.green {
-    background: var(--brand-green);
+    background: #edf7d8;
 }
 
 .metricIcon.orange {
-    background: var(--brand-orange);
+    background: #fff0e2;
 }
 
 .metricChange {
@@ -62,13 +64,13 @@
 .metricValue {
     font-size: 2rem;
     font-weight: var(--font-weight-bold);
-    color: var(--gray-900);
+    color: #174d49;
     line-height: 1;
 }
 
 .metricLabel {
     font-size: 0.875rem;
-    color: var(--gray-600);
+    color: #87928f;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     font-weight: var(--font-weight-medium);
