@@ -564,87 +564,85 @@
             animation: pataModalSlideUp 0.5s var(--pata-spring) forwards;
         }
 
+        #pata-member-welcome-modal {
+            background: rgba(30, 83, 80, 0.4);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+        }
+
         .pata-member-welcome-modal {
-            max-width: 560px;
-            padding: 42px;
+            width: min(420px, calc(100vw - 40px));
+            max-width: 420px;
+            padding: 32px;
+            border: 0;
+            border-radius: 24px;
+            background: #FFFFFF;
+            box-shadow: 0 24px 60px rgba(30, 83, 80, 0.25);
             text-align: center;
             position: relative;
             overflow: hidden;
         }
 
         .pata-member-welcome-icon {
-            width: 78px;
-            height: 78px;
-            border-radius: 50%;
-            border: var(--pata-border-thick);
-            background: var(--pata-accent);
+            width: 54px;
+            height: 54px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 38px;
-            margin-bottom: 22px;
-            box-shadow: 8px 8px 0 rgba(0,0,0,0.12);
+            margin-bottom: 16px;
+            color: #1CBcad;
+        }
+
+        .pata-member-welcome-icon svg {
+            width: 52px;
+            height: 52px;
+            display: block;
         }
 
         .pata-member-welcome-title {
             font-family: 'Fraiche', 'Outfit', sans-serif;
-            font-size: clamp(34px, 8vw, 52px);
-            line-height: 0.95;
-            margin: 0 0 18px;
-            color: #000;
-            text-transform: lowercase;
+            font-size: 26px;
+            line-height: 1.15;
+            margin: 0 0 16px;
+            color: #1E5350;
         }
 
         .pata-member-welcome-text {
-            color: #111;
-            font-size: 17px;
-            line-height: 1.45;
-            font-weight: 700;
-            margin: 0 0 22px;
-        }
-
-        .pata-member-welcome-list {
-            text-align: left;
-            display: grid;
-            gap: 12px;
-            margin: 24px 0 30px;
-            padding: 0;
-            list-style: none;
-        }
-
-        .pata-member-welcome-list li {
-            background: #F7FAFA;
-            border: var(--pata-border-thin);
-            border-radius: 18px;
-            padding: 14px 16px;
-            font-weight: 800;
-            color: #111;
+            color: #6B7C79;
+            font-size: 14px;
+            line-height: 1.65;
+            font-weight: 400;
+            margin: 0 0 16px;
         }
 
         .pata-member-welcome-btn {
             width: 100%;
-            border: var(--pata-border-thick);
+            height: 48px;
+            border: 0;
             border-radius: 999px;
-            background: var(--pata-action);
-            color: #000;
-            padding: 17px 24px;
+            background: #1CBcad;
+            color: #FFFFFF;
+            padding: 0 24px;
             font-family: 'Outfit', sans-serif;
-            font-size: 17px;
-            font-weight: 950;
+            font-size: 15px;
+            font-weight: 700;
             cursor: pointer;
-            box-shadow: 6px 6px 0 #000;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: none;
+            transition: background-color 0.2s ease, opacity 0.2s ease;
         }
 
         .pata-member-welcome-btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 3px 3px 0 #000;
+            background: #0E8377;
+        }
+
+        .pata-member-welcome-btn:disabled {
+            cursor: wait;
+            opacity: 0.65;
         }
 
         @media (max-width: 600px) {
             .pata-member-welcome-modal {
-                padding: 30px 22px;
-                border-radius: 30px;
+                padding: 28px 22px;
             }
         }
 
@@ -4599,40 +4597,58 @@
         showMemberWelcomeModal() {
             if (document.getElementById('pata-member-welcome-modal')) return;
 
-            const firstName = (this.userExtra?.firstName || this.member?.customFields?.['first-name'] || '').trim();
-            const greetingName = firstName ? `, ${firstName}` : '';
             const overlay = document.createElement('div');
             overlay.className = 'pata-modal-overlay show';
             overlay.id = 'pata-member-welcome-modal';
             overlay.style.zIndex = '1000000';
             overlay.innerHTML = `
                 <div class="pata-modal pata-member-welcome-modal" onclick="event.stopPropagation()">
-                    <div class="pata-member-welcome-icon">🎉</div>
-                    <h2 class="pata-member-welcome-title">bienvenido${greetingName} a la manada</h2>
+                    <div class="pata-member-welcome-icon" aria-hidden="true">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <ellipse cx="32" cy="40" rx="17" ry="14" fill="currentColor"/>
+                            <circle cx="15" cy="25" r="7" fill="currentColor"/>
+                            <circle cx="27" cy="15" r="7" fill="currentColor"/>
+                            <circle cx="41" cy="15" r="7" fill="currentColor"/>
+                            <circle cx="51" cy="27" r="7" fill="currentColor"/>
+                        </svg>
+                    </div>
+                    <h2 class="pata-member-welcome-title">&iexcl;Bienvenido a la manada!</h2>
                     <p class="pata-member-welcome-text">
-                        Tu membresía ya está activa. Desde este panel podrás acompañar el proceso de tus mascotas y ver todo lo importante en un solo lugar.
+                        Tu membres&iacute;a est&aacute; activa: orientaci&oacute;n veterinaria 24/7, reintegros y centros aliados te esperan.
                     </p>
-                    <ul class="pata-member-welcome-list">
-                        <li>Consulta el estado individual de cada mascota.</li>
-                        <li>Completa información o documentos si el equipo lo solicita.</li>
-                        <li>Revisa beneficios, tiempos de espera y actualizaciones de tu cuenta.</li>
-                    </ul>
-                    <button id="pata-member-welcome-close" class="pata-member-welcome-btn">Comenzar ahora</button>
+                    <p id="pata-member-welcome-error" class="pata-member-welcome-text" role="alert" hidden></p>
+                    <button id="pata-member-welcome-close" class="pata-member-welcome-btn">Explorar mi cuenta</button>
                 </div>
             `;
 
             const closeModal = async () => {
-                overlay.remove();
-                this.memberWelcomeShown = true;
+                if (overlay.dataset.saving === 'true') return;
+                const button = overlay.querySelector('#pata-member-welcome-close');
+                const errorMessage = overlay.querySelector('#pata-member-welcome-error');
+                overlay.dataset.saving = 'true';
+                button.disabled = true;
+                button.textContent = 'Guardando...';
+                errorMessage.hidden = true;
 
                 try {
-                    await fetch(`${CONFIG.apiUrl}/api/user/welcome-shown`, {
+                    const response = await fetch(`${CONFIG.apiUrl}/api/user/welcome-shown`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ memberstackId: this.member.id })
                     });
+                    const data = await response.json();
+                    if (!response.ok || !data.success || data.welcome_shown !== true) {
+                        throw new Error(data.error || 'No se pudo guardar la bienvenida.');
+                    }
+                    this.memberWelcomeShown = true;
+                    overlay.remove();
                 } catch (err) {
                     console.error('Unified Widget: Error saving member welcome_shown:', err);
+                    errorMessage.textContent = 'No pudimos guardar este cambio. Intenta nuevamente.';
+                    errorMessage.hidden = false;
+                    button.disabled = false;
+                    button.textContent = 'Reintentar';
+                    overlay.dataset.saving = 'false';
                 }
             };
 

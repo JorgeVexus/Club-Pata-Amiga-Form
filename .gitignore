@@ -58,5 +58,8 @@ config.local.*
 # Graphify
 graphify-out/
 
+# Local visual brainstorming previews
+.superpowers/
+
 # Temporary clones
 temp-pata-amiga/

@@ -30,24 +30,30 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const { error } = await supabaseAdmin
+        const { data: updatedUser, error } = await supabaseAdmin
             .from('users')
             .update({ welcome_shown: true })
-            .eq('memberstack_id', memberstackId);
+            .eq('memberstack_id', memberstackId)
+            .select('memberstack_id, welcome_shown')
+            .single();
 
-        if (error) {
-            console.error('[Member Welcome] Error updating welcome_shown:', error);
+        if (error || !updatedUser) {
+            console.error('[Member Welcome] Account update failed:', error);
             return NextResponse.json(
-                { success: false, error: 'No se pudo guardar bienvenida vista' },
-                { status: 500, headers: corsHeaders() }
+                { success: false, error: 'No se encontro la cuenta o no se pudo guardar la bienvenida' },
+                { status: 404, headers: corsHeaders() }
             );
         }
 
-        return NextResponse.json({ success: true }, { headers: corsHeaders() });
-    } catch (error: any) {
-        console.error('[Member Welcome] Unexpected error:', error);
         return NextResponse.json(
-            { success: false, error: error.message },
+            { success: true, welcome_shown: updatedUser.welcome_shown },
+            { headers: corsHeaders() }
+        );
+    } catch (error: unknown) {
+        console.error('[Member Welcome] Unexpected error:', error);
+        const message = error instanceof Error ? error.message : 'Error inesperado';
+        return NextResponse.json(
+            { success: false, error: message },
             { status: 500, headers: corsHeaders() }
         );
     }
