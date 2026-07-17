@@ -3936,7 +3936,7 @@
         .pata-v2-centers::after { content: ''; position: absolute; width: 170px; height: 170px; right: -55px; top: -60px; border-radius: 48%; background: rgba(255,255,255,.08); }
         .pata-v2-centers .pata-v2-section-title { position: relative; z-index: 1; color: white; }
         .pata-v2-centers p { position: relative; z-index: 1; max-width: 520px; font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,.84); }
-        .pata-v2-centers-link { position: relative; z-index: 1; margin-top: auto; min-height: 44px; display: grid; place-items: center; border-radius: 999px; background: white; color: var(--v2-teal-deep); font-size: 12px; font-weight: 900; text-decoration: none; }
+        .pata-v2-centers-link { position: relative; z-index: 1; width:100%; margin-top: auto; min-height: 44px; display: grid; place-items: center; border:0; border-radius: 999px; background: white; color: var(--v2-teal-deep); font:900 12px 'Outfit',sans-serif; text-decoration: none; cursor:pointer; }
         .pata-v2-empty { grid-column: 1 / -1; padding: 30px; border-radius: 20px; background: white; box-shadow: var(--v2-shadow); text-align: center; }
         .pata-v2-reimbursements { display: grid; gap: 18px; }
         .pata-v2-page-head { display:flex; justify-content:space-between; align-items:center; gap:18px; }
@@ -4007,11 +4007,45 @@
         .pata-v2-submit { min-height:46px; border:0; border-radius:999px; background:var(--v2-orange); color:white; font-weight:900; cursor:pointer; }
         .pata-v2-notice { padding:12px 14px; border-radius:12px; background:#FFF7E8; color:#8A5A12; font-size:12px; }
         .pata-v2-error { padding:12px; border-radius:12px; background:#FCEAEA; color:#A52D2D; }
+        .pata-v2-centers-page { display:grid; gap:16px; }
+        .pata-v2-centers-search { display:flex; align-items:center; gap:10px; padding:6px 7px 6px 17px; border-radius:999px; background:#fff; box-shadow:0 2px 12px rgba(30,83,80,.08); }
+        .pata-v2-centers-search span { color:#6E7F7B; font-size:16px; }
+        .pata-v2-centers-search input { min-width:0; flex:1; height:40px; border:0; outline:0; background:transparent; color:var(--v2-ink); font:500 13.5px 'Outfit',sans-serif; }
+        .pata-v2-centers-search button { min-height:40px; padding:0 22px; border:0; border-radius:999px; background:var(--v2-teal); color:#fff; font:800 13px 'Outfit',sans-serif; cursor:pointer; transition:background .2s ease,transform .2s ease; }
+        .pata-v2-centers-search button:hover { background:var(--v2-teal-deep); transform:translateY(-1px); }
+        .pata-v2-centers-filters { display:flex; flex-wrap:wrap; gap:8px; }
+        .pata-v2-center-filter { min-height:34px; padding:0 16px; border:1.5px solid #DED9CF; border-radius:999px; background:#fff; color:#536663; font:700 12px 'Outfit',sans-serif; cursor:pointer; transition:border-color .2s ease,background .2s ease,color .2s ease; }
+        .pata-v2-center-filter:hover { border-color:var(--v2-teal); }
+        .pata-v2-center-filter.is-active { border-color:var(--v2-teal); background:var(--v2-teal); color:#fff; }
+        .pata-v2-centers-clear { align-self:center; padding:4px 5px; border:0; background:transparent; color:#71807C; font:700 11.5px 'Outfit',sans-serif; text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+        .pata-v2-centers-clear:hover { color:var(--v2-teal-deep); }
+        .pata-v2-centers-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:14px; }
+        .pata-v2-center-card { min-width:0; overflow:hidden; border-radius:18px; background:#fff; box-shadow:0 2px 10px rgba(30,83,80,.05); }
+        .pata-v2-center-photo { width:100%; height:110px; display:grid; place-items:center; border:0; border-bottom:2px dashed #C9E9E4; background:#EAF8F6; color:#0B9D92; font-size:11px; font-weight:800; object-fit:cover; }
+        .pata-v2-center-card:nth-child(3n+2) .pata-v2-center-photo:not(img) { border-color:#F2D9AC; background:#FFF4E2; color:#C96A00; }
+        .pata-v2-center-card:nth-child(3n) .pata-v2-center-photo:not(img) { border-color:#F2C7D4; background:#FDECF2; color:#C51F55; }
+        .pata-v2-center-body { display:grid; gap:7px; padding:14px 16px 16px; }
+        .pata-v2-center-head { display:flex; align-items:flex-start; justify-content:space-between; gap:10px; }
+        .pata-v2-center-head h2 { min-width:0; margin:0; color:var(--v2-ink); font-size:14.5px; line-height:1.25; }
+        .pata-v2-center-chip { flex:none; padding:4px 10px; border-radius:999px; background:#EAF8F6; color:#087E75; font-size:9.5px; font-weight:900; text-transform:uppercase; }
+        .pata-v2-center-address,.pata-v2-center-phone,.pata-v2-center-benefit { margin:0; font-size:12px; line-height:1.4; }
+        .pata-v2-center-address { color:#778581; }
+        .pata-v2-center-phone { color:#008E84; font-weight:700; text-decoration:none; }
+        .pata-v2-center-benefit { color:#C96A00; font-weight:700; }
+        .pata-v2-centers-state { grid-column:1/-1; padding:34px 24px; border-radius:18px; background:#fff; color:#64736F; text-align:center; }
+        .pata-v2-centers-state button { margin-top:12px; border:0; background:transparent; color:#008E84; font-weight:800; cursor:pointer; }
+        .pata-v2-centers-cta { display:flex; align-items:center; justify-content:space-between; gap:20px; padding:17px 20px; border-radius:16px; background:#fff; box-shadow:0 2px 10px rgba(30,83,80,.05); }
+        .pata-v2-centers-cta strong,.pata-v2-centers-cta span { display:block; }
+        .pata-v2-centers-cta strong { color:var(--v2-ink); font-size:14px; }
+        .pata-v2-centers-cta span { margin-top:2px; color:#7B8985; font-size:12.5px; }
+        .pata-v2-centers-cta a { flex:none; min-height:44px; display:grid; place-items:center; padding:0 25px; border:2px solid var(--v2-teal); border-radius:999px; color:var(--v2-teal-deep); font-size:13px; font-weight:800; text-decoration:none; transition:background .2s ease,color .2s ease; }
+        .pata-v2-centers-cta a:hover { background:var(--v2-teal); color:#fff; }
 
         @media (max-width: 1100px) {
             .pata-v2-shell { grid-template-columns: 205px minmax(0, 1fr); }
             .pata-v2-main { padding: 26px 24px 30px; }
             .pata-v2-pet-grid { grid-template-columns: 1fr; }
+            .pata-v2-centers-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
         }
         @media (max-width: 900px) {
             .pata-v2-shell { display: block; }
@@ -4038,6 +4072,9 @@
             .pata-v2-kpi:first-child { grid-column: auto; }
             .pata-v2-kpi { min-height: 106px; padding: 17px 18px; }
             .pata-v2-support-options, .pata-v2-pet-options, .pata-v2-document-grid, .pata-v2-field-grid { grid-template-columns:1fr; }
+            .pata-v2-centers-grid { grid-template-columns:1fr; }
+            .pata-v2-centers-cta { align-items:flex-start; flex-direction:column; }
+            .pata-v2-centers-cta a { width:100%; }
             .pata-v2-pet-card { grid-template-columns: 70px minmax(0, 1fr); gap: 12px; padding: 15px; }
             .pata-v2-pet-photo { width: 70px; height: 76px; }
             .pata-v2-pet-top { display: block; }
@@ -4058,8 +4095,13 @@
             this.pets = [];
             this.isAmbassador = false;
             this.v2View = 'home';
-            if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('section') === 'reimbursements') this.v2View = 'reimbursements';
+            if (typeof location !== 'undefined') {
+                const requestedSection = new URLSearchParams(location.search).get('section');
+                if (requestedSection === 'reimbursements') this.v2View = 'reimbursements';
+                if (requestedSection === 'centers') this.v2View = 'centers';
+            }
             this.solidarity = { loading: false, loaded: false, error: '', stats: {}, requests: [], balances: {}, detail: null, messages: [] };
+            this.centers = { loading: false, loaded: false, error: '', items: [], query: '', service: 'all' };
             this.membershipStatus = 'approved';
             this.memberWelcomeShown = true;
             this.userExtra = { firstName: '', lastName: '', lastAdminResponse: '', actionRequiredFields: [] };
@@ -5310,10 +5352,118 @@
             };
         }
 
+        getV2CenterService(service) {
+            const key = String(service || '').toLowerCase().trim();
+            const aliases = {
+                clinic:['clinic','clinica','clínica','veterinaria','hospital'],
+                store:['store','tienda'],
+                hotel:['hotel','guarderia','guardería'],
+                grooming:['grooming','estetica','estética'],
+                funeral:['funeral','funeraria'],
+                walker:['walker','paseador','paseadores']
+            };
+            const matched = Object.entries(aliases).find(([, values]) => values.some(value => key.includes(value)));
+            return matched?.[0] || key || 'other';
+        }
+
+        renderV2CentersView() {
+            const services = {
+                all:{ label:'Todos', icon:'' }, clinic:{ label:'Clínicas', singular:'Clínica', icon:'🏥' },
+                store:{ label:'Tiendas', singular:'Tienda', icon:'🛒' }, hotel:{ label:'Hoteles', singular:'Hotel', icon:'🏨' },
+                grooming:{ label:'Estética', singular:'Estética', icon:'✂️' }, funeral:{ label:'Funerarias', singular:'Funeraria', icon:'🕊️' },
+                walker:{ label:'Paseadores', singular:'Paseador', icon:'🐕' }
+            };
+            const normalizedQuery = this.centers.query.trim().toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const visibleCenters = this.centers.items.filter(center => {
+                const centerServices = (Array.isArray(center.services) ? center.services : []).map(item => this.getV2CenterService(item));
+                const matchesService = this.centers.service === 'all' || centerServices.includes(this.centers.service);
+                const searchable = [center.establishment_name, center.address, center.phone]
+                    .filter(Boolean).join(' ').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+                return matchesService && (!normalizedQuery || searchable.includes(normalizedQuery));
+            });
+            let filters = Object.entries(services).map(([key, service]) => `<button class="pata-v2-center-filter ${this.centers.service === key ? 'is-active' : ''}" type="button" data-center-service="${key}">${service.icon ? `${service.icon} ` : ''}${service.label}</button>`).join('');
+            if (this.centers.query || this.centers.service !== 'all') filters += '<button class="pata-v2-centers-clear" type="button" data-centers-clear-filters>Borrar filtros</button>';
+            let content = '';
+            if (this.centers.loading) {
+                content = '<div class="pata-v2-centers-state">Cargando centros aliados…</div>';
+            } else if (this.centers.error) {
+                content = `<div class="pata-v2-centers-state">${this.escapeHtml(this.centers.error)}<br><button type="button" data-centers-retry>Intentar de nuevo</button></div>`;
+            } else if (!visibleCenters.length) {
+                content = '<div class="pata-v2-centers-state">No encontramos centros con esa búsqueda. Prueba con otra ciudad o quita los filtros — estamos sumando aliados en todo México. 🐾</div>';
+            } else {
+                content = visibleCenters.map(center => {
+                    const mainServiceKey = this.getV2CenterService(Array.isArray(center.services) ? center.services[0] : center.services);
+                    const service = services[mainServiceKey] || { singular:'Centro aliado' };
+                    const photo = Array.isArray(center.photo_urls) && center.photo_urls[0] ? center.photo_urls[0] : center.logo_url;
+                    const name = this.escapeHtml(center.establishment_name || 'Centro aliado');
+                    const phone = String(center.phone || '');
+                    const phoneHref = phone.replace(/[^\d+]/g, '');
+                    return `<article class="pata-v2-center-card">${photo ? `<img class="pata-v2-center-photo" src="${this.escapeHtml(photo)}" alt="${name}" loading="lazy" decoding="async">` : '<div class="pata-v2-center-photo">FOTO DEL CENTRO</div>'}<div class="pata-v2-center-body"><div class="pata-v2-center-head"><h2>${name}</h2><span class="pata-v2-center-chip">${this.escapeHtml(service.singular || 'Centro aliado')}</span></div>${center.address ? `<p class="pata-v2-center-address">${this.escapeHtml(center.address)}</p>` : ''}${phone ? `<a class="pata-v2-center-phone" href="tel:${this.escapeHtml(phoneHref)}">📞 ${this.escapeHtml(phone)}</a>` : ''}${center.promotion_details ? `<p class="pata-v2-center-benefit">🎁 ${this.escapeHtml(center.promotion_details)}</p>` : ''}</div></article>`;
+                }).join('');
+            }
+            return `<section class="pata-v2-centers-page"><header><h1 class="pata-v2-title">Centros aliados</h1><p class="pata-v2-subtitle">Beneficios exclusivos para miembros — y recuerda: siempre puedes seguir con tu veterinario de confianza.</p></header><form class="pata-v2-centers-search" id="pata-v2-centers-search"><span aria-hidden="true">🔍</span><input name="centerQuery" value="${this.escapeHtml(this.centers.query)}" placeholder="Ciudad o código postal…" aria-label="Buscar centros aliados"><button type="submit">Buscar</button></form><div class="pata-v2-centers-filters" aria-label="Filtrar centros por servicio">${filters}</div><div class="pata-v2-centers-grid">${content}</div><div class="pata-v2-centers-cta"><div><strong>¿Tienes un negocio pet-friendly?</strong><span>Únete a la red de centros aliados de Pata Amiga.</span></div><a href="https://www.pataamiga.mx/#wellness-partner-form-anchor">Quiero ser centro aliado</a></div></section>`;
+        }
+
+        attachV2CentersEvents() {
+            const form = document.getElementById('pata-v2-centers-search');
+            if (form) {
+                const searchInput = form.querySelector('[name="centerQuery"]');
+                if (searchInput) searchInput.oninput = () => {
+                    this.centers.query = searchInput.value;
+                    if (!this.centers.query) this.render();
+                };
+                form.onsubmit = event => {
+                    event.preventDefault();
+                    this.centers.query = new FormData(form).get('centerQuery')?.toString() || '';
+                    this.render();
+                };
+            }
+            document.querySelectorAll('[data-center-service]').forEach(button => {
+                button.onclick = () => {
+                    this.centers.service = button.dataset.centerService || 'all';
+                    this.render();
+                };
+            });
+            const retry = document.querySelector('[data-centers-retry]');
+            if (retry) retry.onclick = () => {
+                this.centers.loaded = false;
+                this.centers.error = '';
+                this.showCentersV2();
+            };
+            const clearFilters = document.querySelector('[data-centers-clear-filters]');
+            if (clearFilters) clearFilters.onclick = () => {
+                this.centers.query = '';
+                this.centers.service = 'all';
+                this.render();
+            };
+        }
+
         showPetsV2() {
             this.v2View = 'pets';
             this.render();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async showCentersV2() {
+            this.v2View = 'centers';
+            this.render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (this.centers.loaded || this.centers.loading) return;
+            this.centers.loading = true;
+            this.centers.error = '';
+            this.render();
+            try {
+                const response = await globalThis.fetch.call(globalThis, `${CONFIG.apiUrl}/api/wellness/locations`);
+                const payload = await response.json();
+                if (!response.ok || payload.success === false) throw new Error(payload.error || 'No pudimos cargar los centros aliados.');
+                this.centers.items = Array.isArray(payload.data) ? payload.data : [];
+                this.centers.loaded = true;
+            } catch (error) {
+                this.centers.error = error instanceof Error ? error.message : 'No pudimos cargar los centros aliados.';
+            } finally {
+                this.centers.loading = false;
+                this.render();
+            }
         }
 
         showHomeV2() {
@@ -5335,7 +5485,7 @@
                         <button class="pata-v2-nav-link ${this.v2View === 'pets' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showPetsV2()"><span class="pata-v2-nav-icon">🐾</span>Mis peludos</button>
                         <button class="pata-v2-nav-link ${['reimbursements','newReimbursement','reimbursementDetail'].includes(this.v2View) ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showReimbursementsV2()"><span class="pata-v2-nav-icon">💚</span>Reintegros</button>
                         <a class="pata-v2-nav-link" href="${CONFIG.vetUrl}"><span class="pata-v2-nav-icon">💬</span>Orientación vet 24/7</a>
-                        <a class="pata-v2-nav-link" href="${CONFIG.centersUrl}"><span class="pata-v2-nav-icon">📍</span>Centros aliados</a>
+                        <button class="pata-v2-nav-link ${this.v2View === 'centers' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showCentersV2()"><span class="pata-v2-nav-icon">📍</span>Centros aliados</button>
                         ${this.isAmbassador ? `<a class="pata-v2-nav-link" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-nav-icon">🤝</span>Panel de embajador</a>` : ''}
                     </nav>
                     <nav class="pata-v2-nav pata-v2-nav-bottom">
@@ -5365,6 +5515,7 @@
             const logoUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg`;
             const isPetsView = this.v2View === 'pets';
             const isSolidarityView = ['reimbursements', 'newReimbursement', 'reimbursementDetail'].includes(this.v2View);
+            const isCentersView = this.v2View === 'centers';
             const solidarityContent = this.v2View === 'newReimbursement'
                 ? this.renderV2NewReimbursementView()
                 : this.v2View === 'reimbursementDetail'
@@ -5384,7 +5535,8 @@
                         </div>
                         <div class="pata-v2-content">
                             ${isSolidarityView ? solidarityContent : ''}
-                            <div style="${isSolidarityView ? 'display:none' : 'display:contents'}">
+                            ${isCentersView ? this.renderV2CentersView() : ''}
+                            <div style="${isSolidarityView || isCentersView ? 'display:none' : 'display:contents'}">
                             ${isPetsView ? `
                                 <header class="pata-v2-pets-page-head">
                                     <div><h1 class="pata-v2-title">Mis peludos</h1><p>${activePets.length} de 3 peludos activos. Consulta sus datos y abre el expediente de cada integrante de tu manada.</p></div>
@@ -5416,7 +5568,7 @@
 
                             ${isPetsView ? '' : `<section class="pata-v2-lower-grid">
                                 <article class="pata-v2-activity"><h2 class="pata-v2-section-title">Actividad reciente</h2><div class="pata-v2-activity-list">${this.renderV2Activity()}</div></article>
-                                <article class="pata-v2-centers"><h2 class="pata-v2-section-title">Centros aliados cerca de ti</h2><p>Veterinarias, tiendas y hoteles con beneficios para miembros en todo México.</p><a class="pata-v2-centers-link" href="${CONFIG.centersUrl}">Explorar el directorio</a></article>
+                                <article class="pata-v2-centers"><h2 class="pata-v2-section-title">Centros aliados cerca de ti</h2><p>Veterinarias, tiendas y hoteles con beneficios para miembros en todo México.</p><button class="pata-v2-centers-link" type="button" onclick="window.pataWidget.showCentersV2()">Explorar el directorio</button></article>
                             </section>`}
                             </div>
                         </div>
@@ -5427,9 +5579,13 @@
             this.container.classList.add('show');
             this.attachEvents();
             this.attachV2ReimbursementEvents();
+            this.attachV2CentersEvents();
             this.hideGlobalLoaders();
             if (this.v2View === 'reimbursements' && !this.solidarity.loaded && !this.solidarity.loading) {
                 setTimeout(() => this.showReimbursementsV2(), 0);
+            }
+            if (this.v2View === 'centers' && !this.centers.loaded && !this.centers.loading && !this.centers.error) {
+                setTimeout(() => this.showCentersV2(), 0);
             }
         }
 

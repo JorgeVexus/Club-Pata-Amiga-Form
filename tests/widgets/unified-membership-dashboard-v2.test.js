@@ -112,3 +112,36 @@ test('reimbursement submit is disabled when no pet is eligible', () => {
   assert.match(source, /eligible\.length \? '' : 'disabled'/);
   assert.match(source, /No tienes mascotas con el tiempo de espera completado/);
 });
+
+test('Centros aliados opens as an internal Dashboard V2 view', () => {
+  assert.match(source, /async showCentersV2\(\)/);
+  assert.match(source, /this\.v2View = 'centers'/);
+  assert.match(source, /onclick="window\.pataWidget\.showCentersV2\(\)"/);
+  assert.match(source, /this\.v2View === 'centers'/);
+});
+
+test('Centros aliados loads approved wellness locations through the API', () => {
+  assert.match(source, /\/api\/wellness\/locations/);
+  assert.match(source, /renderV2CentersView\(\)/);
+  assert.match(source, /attachV2CentersEvents\(\)/);
+});
+
+test('Centros aliados matches the new repository directory interactions', () => {
+  assert.match(source, /pata-v2-centers-search/);
+  assert.match(source, /data-center-service/);
+  assert.match(source, /promotion_details/);
+  assert.match(source, /https:\/\/www\.pataamiga\.mx\/#wellness-partner-form-anchor/);
+  assert.match(source, /No encontramos centros con esa búsqueda/);
+});
+
+test('Centros aliados does not loop API retries after an error', () => {
+  assert.match(source, /!this\.centers\.error/);
+  assert.match(source, /data-centers-retry/);
+});
+
+test('Centros aliados clears stale search state and exposes reset filters', () => {
+  assert.match(source, /searchInput\.oninput/);
+  assert.match(source, /if \(!this\.centers\.query\) this\.render\(\)/);
+  assert.match(source, /data-centers-clear-filters/);
+  assert.match(source, /this\.centers\.service = 'all'/);
+});
