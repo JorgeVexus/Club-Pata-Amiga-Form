@@ -251,8 +251,59 @@
 }
 
 .moduleCanvas :global(button) {
-    font-family: inherit;
+    border-color: transparent !important;
+    font-family: var(--font-body,'Outfit'), sans-serif !important;
     transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+/* Retire the previous brutalist treatment without changing component markup or handlers. */
+.moduleCanvas :global(div),
+.moduleCanvas :global(section),
+.moduleCanvas :global(article),
+.moduleCanvas :global(button),
+.moduleCanvas :global(input),
+.moduleCanvas :global(select),
+.moduleCanvas :global(textarea) {
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+.moduleCanvas :global([class*="container"]),
+.moduleCanvas :global([class*="requestsSection"]),
+.moduleCanvas :global([class*="statCard"]),
+.moduleCanvas :global([class*="summaryCard"]),
+.moduleCanvas :global([class*="reportCard"]),
+.moduleCanvas :global([class*="panel"]) {
+    border: 1px solid var(--admin-v2-border) !important;
+    border-radius: 18px !important;
+    background: var(--admin-v2-surface);
+    box-shadow: 0 8px 24px rgba(45, 73, 69, .05) !important;
+}
+
+.moduleCanvas :global([class*="statCard"]) {
+    min-height: 116px;
+    padding: 18px !important;
+}
+
+.moduleCanvas :global([class*="statValue"]),
+.moduleCanvas :global([class*="amount"]) {
+    color: var(--admin-v2-ink) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.moduleCanvas :global([class*="title"]),
+.moduleCanvas :global([class*="Title"]) {
+    color: var(--admin-v2-ink);
+}
+
+.moduleCanvas :global(button:hover) {
+    box-shadow: 0 5px 14px rgba(45, 73, 69, .1) !important;
+    transform: translateY(-1px);
+}
+
+.moduleCanvas :global(button:active) {
+    box-shadow: none !important;
+    transform: translateY(0) scale(.98);
 }
 
 .moduleCanvas :global(button:focus-visible),

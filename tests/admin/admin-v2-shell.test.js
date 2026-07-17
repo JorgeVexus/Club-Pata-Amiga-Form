@@ -60,6 +60,21 @@ test('legacy admin modules render inside a scoped V2 visual canvas', () => {
   assert.match(dashboardStyles, /\.moduleCanvas\s+:global\(button\)/);
 });
 
+test('production sidebar forces the readable body font on interactive labels', () => {
+  const sidebarStyles = read('src/components/Admin/Sidebar.module.css');
+  assert.match(sidebarStyles, /\.sidebar\s*\{[^}]*font-family:\s*var\(--font-body,'Outfit'\)/s);
+  assert.match(sidebarStyles, /\.menuItem[^}]*font-family:\s*var\(--font-body,'Outfit'\)/s);
+  assert.match(sidebarStyles, /\.menuTitle[^}]*font-family:\s*var\(--font-body,'Outfit'\)/s);
+});
+
+test('V2 canvas neutralizes brutalist borders and offset shadows from internal modules', () => {
+  const dashboardStyles = read('src/components/Admin/AdminDashboard.module.css');
+  assert.match(dashboardStyles, /\.moduleCanvas\s+:global\(\[class\*="statCard"\]\)/);
+  assert.match(dashboardStyles, /border:\s*1px solid var\(--admin-v2-border\)\s*!important/);
+  assert.match(dashboardStyles, /box-shadow:\s*0 8px 24px rgba\(45, 73, 69, \.05\)\s*!important/);
+  assert.match(dashboardStyles, /\.moduleCanvas\s+:global\(button\)\s*\{[^}]*border-color:\s*transparent/s);
+});
+
 test('admin V2 mounts the new overview and loading shell', () => {
   assert.match(dashboard, /AdminOverview/);
   assert.match(dashboard, /AdminLoadingShell/);
