@@ -10,6 +10,12 @@
 
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
+        memberPortalUrl: window.PATA_AMIGA_CONFIG?.memberPortalUrl || '/mi-cuenta',
+        reimbursementsUrl: window.PATA_AMIGA_CONFIG?.reimbursementsUrl || '/reintegros',
+        vetUrl: window.PATA_AMIGA_CONFIG?.vetUrl || '/orientacion-veterinaria',
+        centersUrl: window.PATA_AMIGA_CONFIG?.centersUrl || '/centros-aliados',
+        ambassadorUrl: window.PATA_AMIGA_CONFIG?.ambassadorUrl || '/embajadores/panel',
+        addPetUrl: window.PATA_AMIGA_CONFIG?.addPetUrl || '/registrar-mascotas',
         brandColor: '#00BBB4',
         progressColor: '#9fd406',
         countdownBg: '#C8E600',
@@ -21,6 +27,25 @@
             appealed: { bg: '#F3E5F5', text: '#7B1FA2', label: 'APELADA', icon: '⚖️' }
         }
     };
+
+    const CLABE_BANK_CODES = {
+        '002':'Citibanamex', '012':'BBVA', '014':'Santander', '021':'HSBC',
+        '030':'BanBajio', '036':'Inbursa', '044':'Scotiabank', '058':'Banregio',
+        '072':'Banorte', '127':'Banco Azteca', '168':'Hey Banco', '638':'Nu Mexico'
+    };
+    const CLABE_BANK_OPTIONS = [...new Set(Object.values(CLABE_BANK_CODES))].sort((a, b) => a.localeCompare(b, 'es'));
+
+    function sanitizeClabeV2(value) {
+        return String(value || '').replace(/\D/g, '').slice(0, 18);
+    }
+
+    function isValidClabeV2(value) {
+        const clabe = sanitizeClabeV2(value);
+        if (!/^\d{18}$/.test(clabe)) return false;
+        const weights = [3, 7, 1];
+        const sum = clabe.slice(0, 17).split('').reduce((total, digit, index) => total + ((Number(digit) * weights[index % 3]) % 10), 0);
+        return ((10 - (sum % 10)) % 10) === Number(clabe[17]);
+    }
 
     const STYLES = `
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;900&display=swap');
@@ -3750,11 +3775,245 @@
             }
             `;
 
+    const V2_STYLES = `
+        .pata-unified-panel.show { animation: none; }
+        .pata-v2-shell, .pata-v2-shell * { box-sizing: border-box; }
+        .pata-v2-shell {
+            --v2-cream: #F8F5EE;
+            --v2-white: #FFFFFF;
+            --v2-teal: #21BCAF;
+            --v2-teal-deep: #1E5D57;
+            --v2-teal-soft: #E5F5F2;
+            --v2-orange: #FE8F15;
+            --v2-ink: #153F3B;
+            --v2-body: #4E6865;
+            --v2-muted: #8A9692;
+            --v2-line: #ECE7DD;
+            --v2-shadow: 0 5px 18px rgba(38, 62, 58, .055);
+            min-height: 100dvh;
+            display: grid;
+            grid-template-columns: 232px minmax(0, 1fr);
+            background: var(--v2-cream);
+            color: var(--v2-body);
+            font-family: 'Outfit', sans-serif;
+        }
+        .pata-v2-sidebar {
+            position: sticky; top: 0; height: 100dvh;
+            display: flex; flex-direction: column; gap: 18px;
+            padding: 22px 12px 20px;
+            background: var(--v2-white); border-right: 1px solid var(--v2-line);
+        }
+        .pata-v2-logo { display: flex; align-items: center; min-height: 54px; padding: 0 7px 8px; }
+        .pata-v2-logo img { width: 92px; height: auto; display: block; }
+        .pata-v2-nav { display: grid; gap: 5px; }
+        .pata-v2-nav-bottom { margin-top: auto; }
+        .pata-v2-nav-link {
+            width: 100%; min-height: 43px; display: flex; align-items: center; gap: 12px;
+            padding: 10px 15px; border: 0; border-radius: 13px; background: transparent;
+            color: #405854; font: 700 13.5px/1 'Outfit', sans-serif; text-decoration: none;
+            text-align: left; cursor: pointer; transition: background .2s ease, color .2s ease, transform .2s ease;
+        }
+        .pata-v2-nav-link:hover { background: #F2F8F6; color: var(--v2-teal-deep); transform: translateX(2px); }
+        .pata-v2-nav-link:focus-visible { outline: 3px solid rgba(33,188,175,.28); outline-offset: 2px; }
+        .pata-v2-nav-link.is-active { background: var(--v2-teal-soft); color: #087B72; }
+        .pata-v2-nav-icon { width: 18px; text-align: center; font-size: 15px; }
+        .pata-v2-account {
+            display: flex; align-items: center; gap: 10px; margin-top: 3px; padding: 11px 12px;
+            border-radius: 14px; background: var(--v2-cream);
+        }
+        .pata-v2-avatar { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; background: var(--v2-teal); color: white; font-weight: 900; }
+        .pata-v2-account strong, .pata-v2-account span { display: block; }
+        .pata-v2-account strong { color: var(--v2-ink); font-size: 13px; }
+        .pata-v2-account span { margin-top: 2px; color: var(--v2-muted); font-size: 10.5px; }
+        .pata-v2-main { min-width: 0; padding: 30px 34px 34px; }
+        .pata-v2-content { width: 100%; max-width: 1640px; margin: 0 auto; display: grid; gap: 22px; }
+        .pata-v2-mobile-top { display: none; }
+        .pata-v2-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .pata-v2-title { margin: 0; color: var(--v2-ink); font-family: 'Fraiche', 'Outfit', sans-serif; font-size: clamp(28px, 2.2vw, 34px); line-height: 1; }
+        .pata-v2-subtitle { margin: 8px 0 0; color: var(--v2-body); font-size: 14px; }
+        .pata-v2-header-actions { display: flex; align-items: center; gap: 10px; }
+        .pata-v2-icon-button { width: 45px; height: 45px; display: grid; place-items: center; border: 0; border-radius: 50%; background: white; box-shadow: var(--v2-shadow); }
+        .pata-v2-vet-button { min-height: 45px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 999px; background: var(--v2-teal); color: white; font-weight: 800; font-size: 13px; text-decoration: none; }
+        .pata-v2-kpi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+        .pata-v2-kpi {
+            position: relative; min-height: 126px; overflow: hidden; display: flex; flex-direction: column; justify-content: center;
+            padding: 19px 21px; border-radius: 18px; background: white; box-shadow: var(--v2-shadow);
+        }
+        .pata-v2-kpi.is-primary { background: var(--v2-teal); color: white; }
+        .pata-v2-kpi.is-primary::after { content: ''; position: absolute; width: 150px; height: 150px; right: -50px; bottom: -76px; border-radius: 48%; background: rgba(255,255,255,.14); }
+        .pata-v2-kpi-label { position: relative; z-index: 1; margin-bottom: 9px; color: var(--v2-muted); font-size: 11px; font-weight: 900; letter-spacing: .065em; }
+        .pata-v2-kpi.is-primary .pata-v2-kpi-label, .pata-v2-kpi.is-primary .pata-v2-kpi-meta { color: rgba(255,255,255,.85); }
+        .pata-v2-kpi-value { position: relative; z-index: 1; color: var(--v2-ink); font: 400 25px/1 'Fraiche', 'Outfit', sans-serif; }
+        .pata-v2-kpi.is-primary .pata-v2-kpi-value { color: white; }
+        .pata-v2-kpi-meta, .pata-v2-kpi-link { position: relative; z-index: 1; margin-top: 10px; font-size: 12px; }
+        .pata-v2-kpi-link { color: #007E75; font-weight: 800; text-decoration: none; }
+        .pata-v2-section { display: grid; gap: 12px; }
+        .pata-v2-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+        .pata-v2-section-title { margin: 0; color: var(--v2-ink); font: 400 21px/1 'Fraiche', 'Outfit', sans-serif; }
+        .pata-v2-section-link { border: 0; background: transparent; padding: 0; color: #007E75; font-weight: 800; font-size: 12px; text-decoration: none; cursor: pointer; }
+        .pata-v2-pets-page-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+        .pata-v2-pets-page-head p { margin: 8px 0 0; color: var(--v2-body); font-size: 13px; }
+        .pata-v2-add-button { min-height: 44px; display: inline-flex; align-items: center; padding: 0 22px; border-radius: 999px; background: var(--v2-teal); color: white; font-size: 13px; font-weight: 900; text-decoration: none; }
+        .pata-v2-pet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+        .pata-v2-pet-card {
+            min-width: 0; display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px;
+            padding: 20px; border-radius: 20px; background: white; box-shadow: var(--v2-shadow);
+        }
+        .pata-v2-pet-photo { width: 86px; height: 86px; overflow: hidden; display: grid; place-items: center; border: 1px dashed #9CDCD6; border-radius: 17px; background: #EAF8F6; color: #159A8F; font-size: 11px; font-weight: 800; text-align: center; }
+        .pata-v2-pet-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .pata-v2-pet-content { min-width: 0; display: flex; flex-direction: column; }
+        .pata-v2-pet-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+        .pata-v2-pet-name { margin: 1px 0 5px; color: var(--v2-ink); font-size: 18px; font-weight: 800; }
+        .pata-v2-pet-meta { overflow: hidden; margin: 0; color: var(--v2-body); font-size: 12.5px; text-overflow: ellipsis; white-space: nowrap; }
+        .pata-v2-status { flex: none; padding: 5px 11px; border-radius: 999px; font-size: 10px; font-weight: 900; letter-spacing: .03em; }
+        .pata-v2-status.approved { color: #557C12; background: #EFF8DA; }
+        .pata-v2-status.pending, .pata-v2-status.appealed { color: #B76600; background: #FFF3DE; }
+        .pata-v2-status.rejected { color: #B83535; background: #FCEAEA; }
+        .pata-v2-status.action_required { color: #087C73; background: #DFF4F1; }
+        .pata-v2-status.inactive { color: #66706D; background: #EEF0EF; }
+        .pata-v2-wait { margin-top: 13px; }
+        .pata-v2-wait-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; color: var(--v2-muted); font-size: 10.5px; }
+        .pata-v2-wait-row strong { color: #007E75; }
+        .pata-v2-track { height: 7px; overflow: hidden; border-radius: 999px; background: #ECEAE4; }
+        .pata-v2-track span { display: block; height: 100%; border-radius: inherit; background: var(--v2-teal); }
+        .pata-v2-pet-action { align-self: flex-start; margin-top: 8px; border: 0; background: transparent; padding: 0; color: #007E75; font: 800 11px/1.2 'Outfit', sans-serif; cursor: pointer; }
+        .pata-v2-pet-action:focus-visible { outline: 3px solid rgba(33,188,175,.25); outline-offset: 3px; }
+        .pata-v2-lower-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 15px; }
+        .pata-v2-activity, .pata-v2-centers { min-height: 215px; padding: 22px; border-radius: 20px; }
+        .pata-v2-activity { background: white; box-shadow: var(--v2-shadow); }
+        .pata-v2-activity-list { display: grid; margin-top: 14px; }
+        .pata-v2-activity-item { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 12px; min-height: 50px; border-bottom: 1px solid var(--v2-line); font-size: 12.5px; }
+        .pata-v2-activity-item:last-child { border-bottom: 0; }
+        .pata-v2-activity-icon { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 50%; background: var(--v2-teal-soft); }
+        .pata-v2-activity-date { color: #A39A90; font-size: 11px; }
+        .pata-v2-centers { position: relative; overflow: hidden; display: flex; flex-direction: column; background: var(--v2-teal-deep); color: white; }
+        .pata-v2-centers::after { content: ''; position: absolute; width: 170px; height: 170px; right: -55px; top: -60px; border-radius: 48%; background: rgba(255,255,255,.08); }
+        .pata-v2-centers .pata-v2-section-title { position: relative; z-index: 1; color: white; }
+        .pata-v2-centers p { position: relative; z-index: 1; max-width: 520px; font-size: 12.5px; line-height: 1.5; color: rgba(255,255,255,.84); }
+        .pata-v2-centers-link { position: relative; z-index: 1; margin-top: auto; min-height: 44px; display: grid; place-items: center; border-radius: 999px; background: white; color: var(--v2-teal-deep); font-size: 12px; font-weight: 900; text-decoration: none; }
+        .pata-v2-empty { grid-column: 1 / -1; padding: 30px; border-radius: 20px; background: white; box-shadow: var(--v2-shadow); text-align: center; }
+        .pata-v2-reimbursements { display: grid; gap: 18px; }
+        .pata-v2-page-head { display:flex; justify-content:space-between; align-items:center; gap:18px; }
+        .pata-v2-back { border:0; background:transparent; color:#087E75; font-weight:800; cursor:pointer; padding:0; }
+        .pata-v2-balance-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+        .pata-v2-balance-card, .pata-v2-request-row, .pata-v2-form-card, .pata-v2-detail-card, .pata-v2-chat-card { background:white; border-radius:18px; box-shadow:var(--v2-shadow); }
+        .pata-v2-balance-card { padding:16px 18px 15px; display:grid; gap:8px; }
+        .pata-v2-balance-head { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#A0968A; font-size:10px; }
+        .pata-v2-balance-label { display:flex; align-items:center; gap:5px; color:#7D837F; font-size:11px; font-weight:900; letter-spacing:.02em; }
+        .pata-v2-balance-label i { width:13px; height:13px; display:grid; place-items:center; color:var(--v2-teal); font-style:normal; }
+        .pata-v2-balance-label svg { width:13px; height:13px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; }
+        .pata-v2-balance-amount { display:flex; align-items:baseline; gap:5px; }
+        .pata-v2-balance-amount strong { color:var(--v2-ink); font:400 24px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-balance-amount span { color:#89908B; font:400 12px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-balance-track { height:8px; overflow:hidden; border-radius:999px; background:#ECE9E1; }
+        .pata-v2-balance-track > span { display:block; height:100%; min-width:0; border-radius:inherit; background:var(--v2-orange); }
+        .pata-v2-balance-card p { margin:1px 0 0; color:#7B8581; font-size:10.5px; line-height:1.35; }
+        .pata-v2-request-list { display:grid; gap:9px; }
+        .pata-v2-request-row { width:100%; border:0; padding:15px 18px; display:grid; grid-template-columns:110px 1fr auto auto; align-items:center; gap:14px; text-align:left; cursor:pointer; font-family:inherit; }
+        .pata-v2-request-row strong { color:var(--v2-ink); }
+        .pata-v2-chip { padding:5px 10px; border-radius:999px; background:#FFF3DE; color:#A45B05; font-size:10px; font-weight:900; }
+        .pata-v2-form-card, .pata-v2-detail-card { padding:22px; display:grid; gap:16px; }
+        .pata-v2-support-options { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+        .pata-v2-support-card { min-height:128px; padding:16px; display:flex; flex-direction:column; align-items:flex-start; gap:6px; border:1.5px solid #E2DCD2; border-radius:16px; background:white; color:#A09D94; text-align:left; font-family:inherit; cursor:pointer; transition:border-color .2s ease, transform .2s ease, box-shadow .2s ease; }
+        .pata-v2-support-card:hover { transform:translateY(-1px); border-color:var(--v2-teal); }
+        .pata-v2-support-card:active { transform:translateY(1px); }
+        .pata-v2-support-card.is-selected { border:2px solid var(--v2-teal); color:var(--v2-ink); box-shadow:0 5px 16px rgba(28,188,173,.11); }
+        .pata-v2-support-card > span { font-size:11px; font-weight:900; }
+        .pata-v2-support-card.is-selected > span { color:#087E75; }
+        .pata-v2-support-card > strong { color:inherit; font:400 23px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-support-card p, .pata-v2-support-card small { margin:0; font-size:10.5px; line-height:1.35; }
+        .pata-v2-form-group { display:grid; gap:8px; }
+        .pata-v2-form-label { color:var(--v2-ink); font-size:12px; font-weight:800; }
+        .pata-v2-pet-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+        .pata-v2-pet-option { min-height:52px; display:flex; align-items:center; gap:9px; padding:9px 13px; border:1.5px solid #DED9CF; border-radius:12px; background:white; color:#8C887E; font:700 13px 'Outfit',sans-serif; text-align:left; cursor:pointer; }
+        .pata-v2-pet-option.is-selected { border-color:var(--v2-teal); background:var(--v2-teal); color:white; }
+        .pata-v2-pet-option:disabled { opacity:.58; cursor:not-allowed; }
+        .pata-v2-pet-option-icon { width:30px; height:30px; flex:none; display:grid; place-items:center; border-radius:50%; background:#EFEAE0; color:#D77D3B; }
+        .pata-v2-pet-option.is-selected .pata-v2-pet-option-icon { background:rgba(255,255,255,.22); color:white; }
+        .pata-v2-pet-option-icon svg { width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:1.8; }
+        .pata-v2-document-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+        .pata-v2-document-card { min-height:124px; padding:15px 12px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; border:2px dashed #A8DEDA; border-radius:14px; background:#F2FAF9; color:#087E75; text-align:center; cursor:pointer; transition:border-color .2s ease, background .2s ease, transform .2s ease; }
+        .pata-v2-document-card[hidden] { display:none; }
+        .pata-v2-document-card:hover { transform:translateY(-1px); border-color:var(--v2-teal); }
+        .pata-v2-document-card.has-file { border-color:#7DCB91; background:#F1FAF3; color:#337744; }
+        .pata-v2-document-card input { position:absolute; width:1px; height:1px; overflow:hidden; opacity:0; pointer-events:none; }
+        .pata-v2-document-icon { width:24px; height:24px; display:grid; place-items:center; color:#B79FC9; }
+        .pata-v2-document-icon svg { width:22px; height:22px; fill:none; stroke:currentColor; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+        .pata-v2-document-card strong { max-width:190px; font-size:11px; line-height:1.35; }
+        .pata-v2-document-card small { max-width:190px; overflow:hidden; color:#8A9691; font-size:10px; text-overflow:ellipsis; white-space:nowrap; }
+        .pata-v2-detail-grid { display:grid; grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr); gap:14px; align-items:start; }
+        .pata-v2-detail-card > strong { color:var(--v2-ink); font:400 34px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-chat-card { padding:22px; display:grid; gap:14px; }
+        .pata-v2-chat-history { display:grid; gap:9px; max-height:300px; overflow:auto; }
+        .pata-v2-chat-message { max-width:82%; padding:10px 13px; border-radius:14px 14px 14px 4px; background:var(--v2-teal-soft); color:var(--v2-ink); }
+        .pata-v2-chat-message.is-user { justify-self:end; border-radius:14px 14px 4px 14px; background:var(--v2-teal); color:white; }
+        .pata-v2-chat-message span { display:block; margin-bottom:3px; font-size:10px; font-weight:900; }
+        .pata-v2-chat-message p { margin:0; font-size:12px; line-height:1.45; }
+        .pata-v2-chat-form { display:grid; gap:9px; }
+        .pata-v2-chat-form textarea { width:100%; min-height:82px; resize:vertical; border:1.5px solid #DED9CF; border-radius:12px; padding:12px 14px; font:500 14px 'Outfit',sans-serif; }
+        .pata-v2-field-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:13px; }
+        .pata-v2-field { display:grid; gap:6px; color:var(--v2-ink); font-size:12px; font-weight:700; }
+        .pata-v2-field input, .pata-v2-field select, .pata-v2-field textarea { width:100%; border:1.5px solid #DED9CF; border-radius:12px; padding:12px 14px; background:white; color:#243C39; font:500 14px 'Outfit',sans-serif; }
+        .pata-v2-field textarea { min-height:100px; resize:vertical; }
+        .pata-v2-field-help { color:#8A9691; font-size:10.5px; font-weight:500; }
+        .pata-v2-field-help.is-valid { color:#337744; }
+        .pata-v2-field-help.is-error { color:#A52D2D; }
+        .pata-v2-submit { min-height:46px; border:0; border-radius:999px; background:var(--v2-orange); color:white; font-weight:900; cursor:pointer; }
+        .pata-v2-notice { padding:12px 14px; border-radius:12px; background:#FFF7E8; color:#8A5A12; font-size:12px; }
+        .pata-v2-error { padding:12px; border-radius:12px; background:#FCEAEA; color:#A52D2D; }
+
+        @media (max-width: 1100px) {
+            .pata-v2-shell { grid-template-columns: 205px minmax(0, 1fr); }
+            .pata-v2-main { padding: 26px 24px 30px; }
+            .pata-v2-pet-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 900px) {
+            .pata-v2-shell { display: block; }
+            .pata-v2-sidebar { display: none; }
+            .pata-v2-main { padding: 0 18px 28px; }
+            .pata-v2-mobile-top { min-height: 66px; display: flex; align-items: center; justify-content: space-between; margin: 0 -18px 22px; padding: 10px 18px; background: white; border-bottom: 1px solid var(--v2-line); }
+            .pata-v2-mobile-top img { width: 80px; }
+            .pata-v2-mobile-actions { display: flex; gap: 7px; }
+            .pata-v2-mobile-actions a, .pata-v2-mobile-actions button { min-width: 39px; height: 39px; display: grid; place-items: center; border: 0; border-radius: 50%; background: var(--v2-teal-soft); text-decoration: none; cursor: pointer; }
+            .pata-v2-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .pata-v2-kpi:first-child { grid-column: 1 / -1; }
+            .pata-v2-detail-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width: 600px) {
+            .pata-v2-main { padding-left: 14px; padding-right: 14px; }
+            .pata-v2-mobile-top { margin-left: -14px; margin-right: -14px; padding-left: 14px; padding-right: 14px; }
+            .pata-v2-header { align-items: flex-start; }
+            .pata-v2-pets-page-head { align-items: flex-start; }
+            .pata-v2-add-button { min-height: 40px; padding: 0 16px; }
+            .pata-v2-header-actions { display: none; }
+            .pata-v2-title { font-size: 27px; }
+            .pata-v2-subtitle { font-size: 12.5px; line-height: 1.45; }
+            .pata-v2-kpi-grid { grid-template-columns: 1fr; gap: 10px; }
+            .pata-v2-kpi:first-child { grid-column: auto; }
+            .pata-v2-kpi { min-height: 106px; padding: 17px 18px; }
+            .pata-v2-support-options, .pata-v2-pet-options, .pata-v2-document-grid, .pata-v2-field-grid { grid-template-columns:1fr; }
+            .pata-v2-pet-card { grid-template-columns: 70px minmax(0, 1fr); gap: 12px; padding: 15px; }
+            .pata-v2-pet-photo { width: 70px; height: 76px; }
+            .pata-v2-pet-top { display: block; }
+            .pata-v2-status { display: inline-block; margin-top: 7px; }
+            .pata-v2-pet-meta { white-space: normal; }
+            .pata-v2-lower-grid { grid-template-columns: 1fr; }
+            .pata-v2-balance-grid, .pata-v2-field-grid { grid-template-columns:1fr; }
+            .pata-v2-request-row { grid-template-columns:1fr auto; }
+            .pata-v2-activity-item { grid-template-columns: 32px 1fr; }
+            .pata-v2-activity-date { grid-column: 2; }
+        }
+    `;
+
     class UnifiedWidget {
         constructor(containerId) {
             this.container = document.getElementById(containerId);
             this.member = null;
             this.pets = [];
+            this.isAmbassador = false;
+            this.v2View = 'home';
+            if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('section') === 'reimbursements') this.v2View = 'reimbursements';
+            this.solidarity = { loading: false, loaded: false, error: '', stats: {}, requests: [], balances: {}, detail: null, messages: [] };
             this.membershipStatus = 'approved';
             this.memberWelcomeShown = true;
             this.userExtra = { firstName: '', lastName: '', lastAdminResponse: '', actionRequiredFields: [] };
@@ -3854,6 +4113,11 @@
             }
         }
 
+        isLocalPreview() {
+            return (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+                && location.pathname.includes('/widgets/');
+        }
+
         async init() {
             console.log('🚀 Unified Widget: Starting initialization...');
             this.injectStyles();
@@ -3866,7 +4130,11 @@
 
             try {
                 console.log('⏳ Unified Widget: Waiting for Memberstack...');
-                await this.waitForMemberstack();
+                if (!this.isLocalPreview()) await this.waitForMemberstack();
+
+                if (!this.member && this.isLocalPreview()) {
+                    this.member = { id: 'local-preview-user', customFields: { 'first-name': 'Jorge' } };
+                }
 
                 if (!this.member) {
                     console.warn('⚠️ Unified Widget: No member session found.');
@@ -4072,11 +4340,18 @@
         }
 
         injectStyles() {
-            if (document.getElementById('pata-unified-styles')) return;
-            const style = document.createElement('style');
-            style.id = 'pata-unified-styles';
-            style.textContent = STYLES;
-            document.head.appendChild(style);
+            if (!document.getElementById('pata-unified-styles')) {
+                const style = document.createElement('style');
+                style.id = 'pata-unified-styles';
+                style.textContent = STYLES;
+                document.head.appendChild(style);
+            }
+            if (!document.getElementById('pata-v2-styles')) {
+                const v2Style = document.createElement('style');
+                v2Style.id = 'pata-v2-styles';
+                v2Style.textContent = V2_STYLES;
+                document.head.appendChild(v2Style);
+            }
         }
 
         async waitForMemberstack() {
@@ -4130,13 +4405,14 @@
                         }
                     ];
                     this.membershipStatus = 'approved';
-                    this.memberWelcomeShown = false;
+                    this.memberWelcomeShown = this.isLocalPreview();
                     this.member = this.member || { id: 'test-user', customFields: { 'first-name': 'Jorge' } };
                     this.userExtra = {
                         firstName: 'Jorge',
                         lastAdminResponse: '',
                         actionRequiredFields: []
                     };
+                    this.isAmbassador = true;
                     return;
                 }
 
@@ -4150,6 +4426,7 @@
                 const roleData = await roleRes.json();
 
                 if (roleData.success) {
+                    this.isAmbassador = roleData.role === 'ambassador' || roleData.isAmbassador === true;
                     console.log('📊 Unified Widget: Role check result:', roleData.role);
 
                     // Cuando actives cobros, descomenta el bloque original
@@ -4649,67 +4926,426 @@
             this.hideGlobalLoaders();
         }
 
-        renderDashboardView(firstName, pet) {
-            if (!pet) {
-                this.container.innerHTML = this.renderCompleteRegistrationView(firstName);
-                this.container.classList.add('show');
-                this.hideGlobalLoaders();
-                return;
+        getV2Status(pet) {
+            if (pet.is_active === false) return { key: 'inactive', label: 'DADA DE BAJA' };
+            const status = (pet.status || pet.approval_status || 'pending').toLowerCase();
+            const statuses = {
+                approved: { key: 'approved', label: '✓ APROBADO' },
+                pending: { key: 'pending', label: 'EN REVISIÓN' },
+                pending_approval: { key: 'pending', label: 'EN REVISIÓN' },
+                waiting_approval: { key: 'pending', label: 'EN REVISIÓN' },
+                rejected: { key: 'rejected', label: 'RECHAZADO' },
+                action_required: { key: 'action_required', label: 'ACCIÓN REQUERIDA' },
+                appealed: { key: 'appealed', label: 'APELACIÓN EN REVISIÓN' }
+            };
+            return statuses[status] || statuses.pending;
+        }
+
+        formatV2Date(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return '';
+            return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        renderV2PetCards() {
+            if (!this.pets.length) {
+                return `<div class="pata-v2-empty">Aún no registras a ningún peludo. <a class="pata-v2-kpi-link" href="${CONFIG.addPetUrl}">Preséntanos al primero →</a></div>`;
             }
 
+            return this.pets.map((pet, index) => {
+                const status = this.getV2Status(pet);
+                const carencia = this.calculateCarencia(pet);
+                const image = pet.photo_url || pet.primary_photo_url || pet.pet_photo_url || '';
+                const type = this.escapeHtml(pet.type || pet.species || 'Mascota');
+                const breed = this.escapeHtml(pet.breed || pet.breed_name || 'Sin raza registrada');
+                const age = pet.age ? ` · ${this.escapeHtml(String(pet.age))}` : '';
+                const name = this.escapeHtml(pet.name || `Peludo ${index + 1}`);
+                const waitText = carencia.daysRemaining > 0 ? `${carencia.daysRemaining} días` : 'Completado';
+                const actionText = status.key === 'approved' && !carencia.isWaiting
+                    ? 'Reintegro disponible · Utilizar mis beneficios →'
+                    : status.key === 'action_required'
+                        ? 'Completar información →'
+                        : status.key === 'rejected'
+                            ? 'Ver motivo y opciones →'
+                            : 'Ver expediente →';
+
+                return `
+                    <article class="pata-v2-pet-card ${pet.is_active === false ? 'pata-grayscale' : ''}">
+                        <div class="pata-v2-pet-photo">
+                            ${image ? `<img src="${this.escapeHtml(image)}" alt="Foto de ${name}" loading="lazy">` : `<span>FOTO<br>${name}</span>`}
+                        </div>
+                        <div class="pata-v2-pet-content">
+                            <div class="pata-v2-pet-top">
+                                <div>
+                                    <h3 class="pata-v2-pet-name">${name}</h3>
+                                    <p class="pata-v2-pet-meta">${type} · ${breed}${age}</p>
+                                </div>
+                                <span class="pata-v2-status ${status.key}">${status.label}</span>
+                            </div>
+                            <div class="pata-v2-wait">
+                                <div class="pata-v2-wait-row"><span>Período de espera</span><strong>${waitText}</strong></div>
+                                <div class="pata-v2-track"><span style="width:${carencia.percentage}%"></span></div>
+                            </div>
+                            <button class="pata-v2-pet-action pata-btn-ver-detalles" data-pet-id="${this.escapeHtml(String(pet.id))}" data-pet-index="${index}">${actionText}</button>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        renderV2Activity() {
+            const activities = this.pets.slice(0, 3).map(pet => ({
+                text: `Registraste a ${this.escapeHtml(pet.name || 'tu mascota')} — su período de espera comenzó`,
+                date: this.formatV2Date(pet.created_at || pet.waiting_period_start)
+            }));
+            if (!activities.length) return '<p>Aquí verás los avances de tu manada.</p>';
+            return activities.map(item => `
+                <div class="pata-v2-activity-item">
+                    <span class="pata-v2-activity-icon">🐾</span>
+                    <span>${item.text}</span>
+                    <span class="pata-v2-activity-date">${item.date}</span>
+                </div>
+            `).join('');
+        }
+
+        getSolidarityClient() {
+            return window.PataSolidarityClient ? new window.PataSolidarityClient(CONFIG.apiUrl) : null;
+        }
+
+        async showReimbursementsV2() {
+            this.v2View = 'reimbursements';
+            this.render();
+            if (this.solidarity.loaded || this.solidarity.loading) return;
+            this.solidarity.loading = true;
+            this.render();
+            try {
+                if (this.isLocalPreview()) {
+                    this.solidarity.balances = {
+                        medical_emergency: { limit: 3000, used: 1200, available: 1800 },
+                        annual_vaccination: { limit: 300, used: 0, available: 300 },
+                        death: { limit: 2000, used: 0, available: 2000 }
+                    };
+                    this.solidarity.requests = [
+                        { id:'mock-1', request_number:'A345', benefit_type:'medical_emergency', status:'in_review', requested_amount:1200, case_title:'Consulta y estudios', created_at:new Date().toISOString(), pet:{ name:'Simba' } },
+                        { id:'mock-2', request_number:'A298', benefit_type:'annual_vaccination', status:'paid', requested_amount:300, case_title:'Vacuna anual', created_at:new Date(Date.now()-30*86400000).toISOString(), pet:{ name:'Luna' } }
+                    ];
+                } else {
+                    const client = this.getSolidarityClient();
+                    if (!client) throw new Error('No se cargó el cliente de reintegros.');
+                    const data = await client.getOverview(this.member.id);
+                    this.solidarity.balances = data.balance.balances || data.balance || {};
+                    this.solidarity.requests = data.history.requests || [];
+                    this.solidarity.stats = data.stats || {};
+                }
+                this.solidarity.loaded = true;
+                this.solidarity.error = '';
+            } catch (error) { this.solidarity.error = error.message; }
+            finally {
+                this.solidarity.loading = false;
+                if (typeof location !== 'undefined' && new URLSearchParams(location.search).get('form') === 'original') this.v2View = 'newReimbursement';
+                this.render();
+            }
+        }
+
+        showNewReimbursementV2() { this.v2View = 'newReimbursement'; this.render(); }
+
+        async showReimbursementDetailV2(requestId) {
+            this.v2View = 'reimbursementDetail';
+            this.solidarity.detail = this.solidarity.requests.find(r => String(r.id) === String(requestId)) || null;
+            if (this.isLocalPreview()) {
+                this.solidarity.messages = [
+                    { id:'mock-message-1', sender_role:'admin', message:'Recibimos tu solicitud. El comité está revisando la documentación.', created_at:new Date().toISOString() }
+                ];
+            }
+            this.render();
+            if (this.isLocalPreview() || !requestId) return;
+            try {
+                const client = this.getSolidarityClient();
+                const [detail, messages] = await Promise.all([client.getDetail(requestId, this.member.id), client.getMessages(requestId, this.member.id)]);
+                this.solidarity.detail = detail.request;
+                this.solidarity.messages = Array.isArray(messages) ? messages : (messages.messages || []);
+                this.render();
+            } catch (error) { this.solidarity.error = error.message; this.render(); }
+        }
+
+        formatMoneyV2(value) { return `$${Number(value || 0).toLocaleString('es-MX')}`; }
+
+        renderV2ReimbursementsView() {
+            if (this.solidarity.loading) return '<div class="pata-v2-empty">Cargando tus reintegros…</div>';
+            const labels = { medical_emergency:'Gastos veterinarios', annual_vaccination:'Vacunas', death:'Fallecimiento' };
+            const icons = {
+                medical_emergency:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10.5h16v8H4zM7 7h10v3.5H7zM10 4h4v3"/><path d="M8 14h2m-1-1v2m6-1h2"/></svg>',
+                death:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V9l5-5 5 5v11M5 20h14M10 13h4v7"/></svg>',
+                annual_vaccination:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 9-9m-6 0 6 6m-8 1-2 2 1 1 2-2m5-10 2-2 4 4-2 2M14 4l6 6"/></svg>'
+            };
+            const year = new Date().getFullYear();
+            const balances = ['medical_emergency','death','annual_vaccination'].map(key => {
+                const b = this.solidarity.balances[key] || { limit:0, used:0, available:0 };
+                const usedPercentage = Number(b.limit) > 0 ? Math.min(100, Math.max(0, Number(b.used) / Number(b.limit) * 100)) : 0;
+                return `<article class="pata-v2-balance-card"><div class="pata-v2-balance-head"><span class="pata-v2-balance-label"><i>${icons[key]}</i>${labels[key].toUpperCase()}</span><span>${year}</span></div><div class="pata-v2-balance-amount"><strong>${this.formatMoneyV2(b.available)}</strong><span>disponibles</span></div><div class="pata-v2-balance-track" role="progressbar" aria-label="Saldo utilizado de ${labels[key]}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(usedPercentage)}"><span style="width:${usedPercentage}%"></span></div><p>Usaste ${this.formatMoneyV2(b.used)} de ${this.formatMoneyV2(b.limit)} MXN — tu saldo se renueva en enero.</p></article>`;
+            }).join('');
+            const rows = this.solidarity.requests.map(r => `<button class="pata-v2-request-row" type="button" onclick="window.pataWidget.showReimbursementDetailV2('${this.escapeHtml(String(r.id))}')"><strong>${this.escapeHtml(r.request_number || r.folio || 'Solicitud')}</strong><span>${this.escapeHtml(r.pet?.name || r.pets?.name || 'Mascota')} · ${labels[r.benefit_type] || r.benefit_type}</span><b>${this.formatMoneyV2(r.requested_amount)}</b><span class="pata-v2-chip">${this.escapeHtml((r.status || 'new').replaceAll('_',' ').toUpperCase())}</span></button>`).join('');
+            return `<section class="pata-v2-reimbursements"><header class="pata-v2-page-head"><div><h1 class="pata-v2-title">Reintegros</h1><p class="pata-v2-subtitle">Consulta tu disponible del Fondo Solidario y el seguimiento de tus solicitudes.</p></div><button class="pata-v2-add-button" type="button" onclick="window.pataWidget.showNewReimbursementV2()">+ Nueva solicitud</button></header>${this.solidarity.error ? `<div class="pata-v2-error">${this.escapeHtml(this.solidarity.error)}</div>` : ''}<div class="pata-v2-balance-grid">${balances}</div><div><h2 class="pata-v2-section-title">Mis solicitudes</h2><div class="pata-v2-request-list">${rows || '<div class="pata-v2-empty">Aún no tienes solicitudes.</div>'}</div></div></section>`;
+        }
+
+        renderV2NewReimbursementView() {
+            const eligible = this.pets.filter(p => p.is_active !== false && this.getV2Status(p).key === 'approved');
+            const categoryData = [
+                { key:'medical_emergency', title:'GASTOS VETERINARIOS', note:'Urgencias, análisis, estudios, cirugía y hospitalización' },
+                { key:'death', title:'FALLECIMIENTO', note:'Gastos funerarios de tu peludo' },
+                { key:'annual_vaccination', title:'VACUNAS', note:'Esquema de vacunación al día' }
+            ];
+            const initialCategory = categoryData.find(item => Number(this.solidarity.balances[item.key]?.available) > 0)?.key || 'medical_emergency';
+            const supportCards = categoryData.map(item => {
+                const balance = this.solidarity.balances[item.key] || { available:0, limit:0 };
+                return `<button class="pata-v2-support-card ${item.key === initialCategory ? 'is-selected' : ''}" type="button" data-benefit-type="${item.key}"><span>${item.title}</span><strong>${this.formatMoneyV2(balance.available)} disp.</strong><p>${item.note}</p><small>Tope anual ${this.formatMoneyV2(balance.limit)} MXN</small></button>`;
+            }).join('');
+            const petCards = this.pets.map(pet => {
+                const isEligible = eligible.some(item => String(item.id) === String(pet.id));
+                const isSelected = String(eligible[0]?.id) === String(pet.id);
+                const status = isEligible ? 'disponible' : (this.getV2Status(pet).label || 'no disponible').toLowerCase();
+                return `<button class="pata-v2-pet-option ${isSelected ? 'is-selected' : ''}" type="button" data-pet-id="${this.escapeHtml(String(pet.id || ''))}" ${isEligible ? '' : 'disabled'}><span class="pata-v2-pet-option-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 10.5c-1.7 0-3-1.5-3-3.3S6.4 4 7.8 4s2.4 1.6 2.4 3.4m5.3 3.1c1.7 0 3-1.5 3-3.3S17.6 4 16.2 4s-2.4 1.6-2.4 3.4M12 9c-3 0-5.5 2.8-5.5 6 0 2.8 2.1 5 5.5 5s5.5-2.2 5.5-5c0-3.2-2.5-6-5.5-6Z"/></svg></span><span>${this.escapeHtml(pet.name || 'Mascota')} · ${this.escapeHtml(status)}</span></button>`;
+            }).join('');
+            const documents = [
+                { type:'invoice', categories:'medical_emergency annual_vaccination', title:'Comprobante de gastos', note:'JPG, PNG o PDF' },
+                { type:'medical_report', categories:'medical_emergency', title:'Informe o indicaciones médicas', note:'JPG, PNG o PDF' },
+                { type:'vaccination_card', categories:'annual_vaccination', title:'Cartilla o certificado de vacunación', note:'JPG, PNG o PDF' },
+                { type:'pet_photo', categories:'death', title:'Una foto hermosa de tu peludito', note:'JPG, PNG o PDF' },
+                { type:'death_certificate', categories:'death', title:'Certificado de defunción o informe médico', note:'JPG, PNG o PDF' },
+                { type:'funeral_expense_receipt', categories:'death', title:'Comprobante de gastos funerarios', note:'JPG, PNG o PDF' }
+            ].map(doc => `<label class="pata-v2-document-card" data-document-type="${doc.type}" data-categories="${doc.categories}"><input type="file" accept="image/*,.pdf" data-doc-input="${doc.type}"><span class="pata-v2-document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h4M9.5 12h6M9.5 15h6M9.5 18h4"/></svg></span><strong>${doc.title}</strong><small data-file-label>${doc.note}</small></label>`).join('');
+            const bankOptions = CLABE_BANK_OPTIONS.map(bank => `<option value="${this.escapeHtml(bank)}">${this.escapeHtml(bank)}</option>`).join('');
+            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">Solicita tu reintegro</h1><p class="pata-v2-subtitle">Acude a tu veterinario de confianza, envíanos tus comprobantes y daremos seguimiento a tu solicitud.</p></header><div class="pata-v2-support-options">${supportCards}</div><form id="pata-v2-reimbursement-form" class="pata-v2-form-card"><input type="hidden" name="benefitType" value="${initialCategory}"><input type="hidden" name="petId" value="${this.escapeHtml(String(eligible[0]?.id || ''))}"><input type="hidden" name="requestType" value="reimbursement"><div class="pata-v2-form-group"><span class="pata-v2-form-label">¿Para quién es el reintegro?</span><div class="pata-v2-pet-options">${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Monto del apoyo solicitado<input name="requestedAmount" type="number" min="1" required placeholder="$ Monto en MXN"></label><label class="pata-v2-field">¿Cuánto pagaste en total? <small>(opcional)</small><input name="totalPaidAmount" type="number" min="0" placeholder="$ Total de la factura"></label><label class="pata-v2-field">¿En qué fecha ocurrió?<input name="incidentDate" type="date" required></label><label class="pata-v2-field">Nombre del titular de la cuenta<input name="bankHolder" autocomplete="name" required></label></div><label class="pata-v2-field">Cuéntanos qué ocurrió<textarea name="caseDescription" required></textarea></label><div class="pata-v2-form-group"><span class="pata-v2-form-label">Documentos para tu solicitud</span><div class="pata-v2-document-grid">${documents}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Cuenta para tu transferencia (CLABE)<input name="bankClabe" inputmode="numeric" minlength="18" maxlength="18" pattern="[0-9]{18}" required placeholder="18 dígitos"><small class="pata-v2-field-help" data-clabe-help>Escribe los 18 dígitos; sugeriremos el banco.</small></label><label class="pata-v2-field">Banco<select name="bankName" required><option value="">Selecciona tu banco</option>${bankOptions}</select><small class="pata-v2-field-help">Puedes cambiar la sugerencia si es necesario.</small></label></div><div class="pata-v2-notice">El backend validará elegibilidad, carencia y saldo disponible antes de crear la solicitud.</div><div id="pata-v2-reimbursement-error"></div><button class="pata-v2-submit" type="submit">Enviar solicitud</button></form></section>`;
+        }
+
+        renderV2ReimbursementDetailView() {
+            const r = this.solidarity.detail;
+            if (!r) return '<div class="pata-v2-empty">Cargando solicitud…</div>';
+            const messages = this.solidarity.messages.map(message => `<div class="pata-v2-chat-message ${message.sender_role === 'user' ? 'is-user' : ''}"><span>${message.sender_role === 'user' ? 'Tú' : 'Equipo Pata Amiga'}</span><p>${this.escapeHtml(message.message || '')}</p></div>`).join('');
+            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">${this.escapeHtml(r.case_title || `Solicitud ${r.request_number || ''}`)}</h1><p class="pata-v2-subtitle">Seguimiento del Fondo Solidario</p></header><div class="pata-v2-detail-grid"><article class="pata-v2-detail-card"><span class="pata-v2-chip">${this.escapeHtml((r.status || 'new').replaceAll('_',' ').toUpperCase())}</span><strong>${this.formatMoneyV2(r.requested_amount)}</strong><p>${this.escapeHtml(r.case_description || 'Tu solicitud está siendo atendida por el comité.')}</p><p>Peludo: <strong>${this.escapeHtml(r.pet?.name || r.pets?.name || 'Mascota')}</strong></p></article><article class="pata-v2-chat-card"><h2 class="pata-v2-section-title">Mensajes</h2><div class="pata-v2-chat-history">${messages || '<p class="pata-v2-empty">Aún no hay mensajes en esta solicitud.</p>'}</div><form id="pata-v2-solidarity-message-form" class="pata-v2-chat-form"><textarea name="message" required placeholder="Escribe un mensaje para el equipo…"></textarea><div id="pata-v2-message-error"></div><button class="pata-v2-submit" type="submit">Enviar mensaje</button></form></article></div></section>`;
+        }
+
+        attachV2ReimbursementEvents() {
+            const form = document.getElementById('pata-v2-reimbursement-form');
+            const updateDocumentVisibility = (benefitType) => {
+                document.querySelectorAll('.pata-v2-document-card').forEach(card => {
+                    const visible = (card.dataset.categories || '').split(' ').includes(benefitType);
+                    card.hidden = !visible;
+                    const input = card.querySelector('input[type="file"]');
+                    if (input) input.required = visible;
+                });
+            };
+            if (form) {
+                const benefitInput = form.querySelector('input[name="benefitType"]');
+                const petInput = form.querySelector('input[name="petId"]');
+                document.querySelectorAll('.pata-v2-support-card').forEach(card => {
+                    card.onclick = () => {
+                        document.querySelectorAll('.pata-v2-support-card').forEach(item => item.classList.remove('is-selected'));
+                        card.classList.add('is-selected');
+                        benefitInput.value = card.dataset.benefitType;
+                        updateDocumentVisibility(benefitInput.value);
+                    };
+                });
+                document.querySelectorAll('.pata-v2-pet-option:not(:disabled)').forEach(card => {
+                    card.onclick = () => {
+                        document.querySelectorAll('.pata-v2-pet-option').forEach(item => item.classList.remove('is-selected'));
+                        card.classList.add('is-selected');
+                        petInput.value = card.dataset.petId;
+                    };
+                });
+                document.querySelectorAll('.pata-v2-document-card input[type="file"]').forEach(input => {
+                    input.onchange = () => {
+                        const label = input.closest('.pata-v2-document-card');
+                        const fileLabel = label.querySelector('[data-file-label]');
+                        label.classList.toggle('has-file', Boolean(input.files?.length));
+                        fileLabel.textContent = input.files?.[0]?.name || 'JPG, PNG o PDF';
+                    };
+                });
+                const clabeInput = form.querySelector('input[name="bankClabe"]');
+                const bankSelect = form.querySelector('select[name="bankName"]');
+                const clabeHelp = form.querySelector('[data-clabe-help]');
+                clabeInput.oninput = () => {
+                    clabeInput.value = sanitizeClabeV2(clabeInput.value);
+                    const code = clabeInput.value.slice(0, 3);
+                    const detectedBank = CLABE_BANK_CODES[code] || '';
+                    if (code.length === 3 && clabeInput.dataset.lastDetectedCode !== code) {
+                        if (detectedBank) bankSelect.value = detectedBank;
+                        clabeInput.dataset.lastDetectedCode = code;
+                    }
+                    const isComplete = clabeInput.value.length === 18;
+                    const isValid = isComplete && isValidClabeV2(clabeInput.value);
+                    clabeInput.setCustomValidity(!isComplete ? 'La CLABE debe tener exactamente 18 dígitos.' : (isValid ? '' : 'La CLABE no es válida. Revisa los 18 dígitos.'));
+                    clabeHelp.textContent = !isComplete ? `${clabeInput.value.length} de 18 dígitos` : (isValid ? 'CLABE válida.' : 'La CLABE no supera la validación.');
+                    clabeHelp.classList.toggle('is-valid', isValid);
+                    clabeHelp.classList.toggle('is-error', isComplete && !isValid);
+                };
+                updateDocumentVisibility(benefitInput.value);
+            }
+            if (form) form.onsubmit = async (event) => {
+                event.preventDefault();
+                const submit = form.querySelector('button[type="submit"]');
+                const errorBox = document.getElementById('pata-v2-reimbursement-error');
+                submit.disabled = true;
+                try {
+                    const values = Object.fromEntries(new FormData(form).entries());
+                    const documents = [];
+                    const client = this.getSolidarityClient();
+                    for (const input of form.querySelectorAll('.pata-v2-document-card:not([hidden]) input[type="file"]')) {
+                        const file = input.files?.[0];
+                        if (!file) continue;
+                        const docType = input.dataset.docInput;
+                        const uploaded = await client.uploadDocument(file, this.member.id, docType);
+                        documents.push({ docType, path:uploaded.path, fileName:uploaded.fileName, fileSize:uploaded.fileSize, mimeType:uploaded.mimeType });
+                    }
+                    await client.createRequest({ ...values, memberstackId:this.member.id, caseTitle:'Solicitud de reintegro', documents });
+                    this.solidarity.loaded = false;
+                    this.showReimbursementsV2();
+                } catch (error) { errorBox.className='pata-v2-error'; errorBox.textContent=error.message; }
+                finally { submit.disabled = false; }
+            };
+            const messageForm = document.getElementById('pata-v2-solidarity-message-form');
+            if (messageForm) messageForm.onsubmit = async (event) => {
+                event.preventDefault();
+                const submit = messageForm.querySelector('button[type="submit"]');
+                const errorBox = document.getElementById('pata-v2-message-error');
+                const message = new FormData(messageForm).get('message').trim();
+                if (!message) return;
+                submit.disabled = true;
+                try {
+                    const requestId = this.solidarity.detail.id;
+                    if (this.isLocalPreview()) {
+                        this.solidarity.messages.push({ id:`mock-${Date.now()}`, sender_role:'user', message, created_at:new Date().toISOString() });
+                    } else {
+                        const created = await this.getSolidarityClient().sendMessage(requestId, { message, senderRole:'user', senderId:this.member.id, attachments:[] });
+                        this.solidarity.messages.push(created);
+                    }
+                    this.render();
+                } catch (error) { errorBox.className='pata-v2-error'; errorBox.textContent=error.message; submit.disabled = false; }
+            };
+        }
+
+        showPetsV2() {
+            this.v2View = 'pets';
+            this.render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        showHomeV2() {
+            this.v2View = 'home';
+            this.render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderV2Navigation(firstName) {
+            const safeName = this.escapeHtml(firstName || 'Mi cuenta');
+            const initial = safeName.charAt(0).toUpperCase() || 'P';
+            return `
+                <aside class="pata-v2-sidebar" aria-label="Navegación de miembros">
+                    <a class="pata-v2-logo" href="/" aria-label="Pata Amiga">
+                        <img src="${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga">
+                    </a>
+                    <nav class="pata-v2-nav">
+                        <button class="pata-v2-nav-link ${this.v2View === 'home' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showHomeV2()"><span class="pata-v2-nav-icon">🏠</span>Inicio</button>
+                        <button class="pata-v2-nav-link ${this.v2View === 'pets' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showPetsV2()"><span class="pata-v2-nav-icon">🐾</span>Mis peludos</button>
+                        <button class="pata-v2-nav-link ${['reimbursements','newReimbursement','reimbursementDetail'].includes(this.v2View) ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showReimbursementsV2()"><span class="pata-v2-nav-icon">💚</span>Reintegros</button>
+                        <a class="pata-v2-nav-link" href="${CONFIG.vetUrl}"><span class="pata-v2-nav-icon">💬</span>Orientación vet 24/7</a>
+                        <a class="pata-v2-nav-link" href="${CONFIG.centersUrl}"><span class="pata-v2-nav-icon">📍</span>Centros aliados</a>
+                        ${this.isAmbassador ? `<a class="pata-v2-nav-link" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-nav-icon">🤝</span>Panel de embajador</a>` : ''}
+                    </nav>
+                    <nav class="pata-v2-nav pata-v2-nav-bottom">
+                        <a class="pata-v2-nav-link" href="${CONFIG.memberPortalUrl}"><span class="pata-v2-nav-icon">⚙️</span>Mi cuenta</a>
+                        ${this.member ? '<button class="pata-v2-nav-link" type="button" onclick="window.pataWidget.logoutV2()"><span class="pata-v2-nav-icon">👋</span>Cerrar sesión</button>' : ''}
+                    </nav>
+                    <div class="pata-v2-account"><span class="pata-v2-avatar">${initial}</span><span><strong>${safeName}</strong><span>Plan de membresía</span></span></div>
+                </aside>
+            `;
+        }
+
+        async logoutV2() {
+            if (!this.member || !window.$memberstackDom) return;
+            try {
+                await window.$memberstackDom.logout();
+                window.location.href = window.PATA_AMIGA_CONFIG?.loginUrl || '/iniciar-sesion';
+            } catch (error) {
+                console.error('No fue posible cerrar sesión:', error);
+            }
+        }
+
+        renderDashboardView(firstName) {
             const isMemberApproved = this.membershipStatus === 'active' || this.membershipStatus === 'approved';
+            const activePets = this.pets.filter(pet => pet.is_active !== false);
+            const availablePet = activePets.find(pet => this.getV2Status(pet).key === 'approved' && !this.calculateCarencia(pet).isWaiting);
+            const safeName = this.escapeHtml(firstName || 'amiga');
+            const logoUrl = `${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg`;
+            const isPetsView = this.v2View === 'pets';
+            const isSolidarityView = ['reimbursements', 'newReimbursement', 'reimbursementDetail'].includes(this.v2View);
+            const solidarityContent = this.v2View === 'newReimbursement'
+                ? this.renderV2NewReimbursementView()
+                : this.v2View === 'reimbursementDetail'
+                    ? this.renderV2ReimbursementDetailView()
+                    : this.renderV2ReimbursementsView();
 
-            // Generate the dashboard shell
             this.container.innerHTML = `
-                <div class="pata-approved-wrapper-new">
-                    <main class="pata-container-new">
-                        <header class="pata-header-new">
-
-                            <h1 data-od-id="dashboard-greeting">¡hola, ${firstName}!</h1>
-                            <div class="pata-header-sub-new">
-                                ${isMemberApproved
-                    ? '<p>Tu membresía está activa. Nos encanta tenerte en la manada.</p>'
-                    : '<p>Gracias por tu paciencia. <br> En un máximo de 24-48 horas te notificaremos el resultado.<br> Mientras tanto, puedes entrar aquí cuando quieras para ver tu estatus actualizado.</p>'}
+                <div class="pata-v2-shell">
+                    ${this.renderV2Navigation(safeName)}
+                    <main class="pata-v2-main">
+                        <div class="pata-v2-mobile-top">
+                            <img src="${logoUrl}" alt="Pata Amiga">
+                            <div class="pata-v2-mobile-actions">
+                                <a href="${CONFIG.vetUrl}" aria-label="Orientación veterinaria">💬</a>
+                                ${this.member ? '<button type="button" onclick="window.pataWidget.logoutV2()" aria-label="Cerrar sesión">👋</button>' : ''}
                             </div>
-                        </header>
+                        </div>
+                        <div class="pata-v2-content">
+                            ${isSolidarityView ? solidarityContent : ''}
+                            <div style="${isSolidarityView ? 'display:none' : 'display:contents'}">
+                            ${isPetsView ? `
+                                <header class="pata-v2-pets-page-head">
+                                    <div><h1 class="pata-v2-title">Mis peludos</h1><p>${activePets.length} de 3 peludos activos. Consulta sus datos y abre el expediente de cada integrante de tu manada.</p></div>
+                                    ${activePets.length < 3 ? `<a class="pata-v2-add-button" href="${CONFIG.addPetUrl}">+ Agregar</a>` : ''}
+                                </header>
+                            ` : `
+                                <header class="pata-v2-header">
+                                    <div>
+                                        <h1 class="pata-v2-title" data-od-id="dashboard-greeting">¡Hola, ${safeName}!</h1>
+                                        <p class="pata-v2-subtitle">${isMemberApproved ? 'Tu manada está protegida. Tu membresía se encuentra activa.' : 'Estamos revisando tu membresía y te notificaremos cualquier actualización.'}</p>
+                                    </div>
+                                    <div class="pata-v2-header-actions">
+                                        <button class="pata-v2-icon-button" type="button" aria-label="Notificaciones">🔔</button>
+                                        <a class="pata-v2-vet-button" href="${CONFIG.vetUrl}">💬&nbsp; Orientación veterinaria 24/7</a>
+                                    </div>
+                                </header>
 
-                        <section class="pata-card-new">
-                            <!-- Pet Selector (Tabs) -->
-                            <div class="pata-pet-selector-new">
-                                <div class="pata-tabs-new">
-                                    ${this.pets.map((p, i) => `
-                                        <div class="pata-tab-new ${i === this.currentIndex ? 'tab-active' : 'tab-inactive'} ${p.is_active === false ? 'pata-grayscale' : ''}" onclick="window.pataWidget.setIndex(${i})">
-                                            <span class="pata-tab-icon-new">${this.getPetIcon(p)}</span>
-                                            <span class="pata-tab-name-new">${p.name.toLowerCase()}${p.is_active === false ? ' <span style="background:#3D494D;color:#fff;border:2px solid #000;border-radius:50px;padding:2px 8px;font-size:9px;font-weight:950;text-transform:uppercase;margin-left:6px;">baja</span>' : ''}</span>
-                                        </div>
-                                    `).join('')}
-                                </div>
-                            </div>
+                                <section class="pata-v2-kpi-grid" aria-label="Resumen de membresía">
+                                    <article class="pata-v2-kpi is-primary"><span class="pata-v2-kpi-label">MEMBRESÍA</span><strong class="pata-v2-kpi-value">${isMemberApproved ? 'Activa' : 'En revisión'}</strong><span class="pata-v2-kpi-meta">Tu protección Pata Amiga</span></article>
+                                    <article class="pata-v2-kpi"><span class="pata-v2-kpi-label">MIS PELUDOS</span><strong class="pata-v2-kpi-value">${activePets.length} de 3</strong>${activePets.length < 3 ? `<a class="pata-v2-kpi-link" href="${CONFIG.addPetUrl}">+ Registrar otro peludo</a>` : '<span class="pata-v2-kpi-meta">Tu manada está completa</span>'}</article>
+                                    <article class="pata-v2-kpi"><span class="pata-v2-kpi-label">REINTEGROS</span><strong class="pata-v2-kpi-value">${availablePet ? `Disponible para ${this.escapeHtml(availablePet.name)}` : 'En espera'}</strong>${availablePet ? `<button class="pata-v2-kpi-link pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">Iniciar solicitud →</button>` : '<span class="pata-v2-kpi-meta">Al completar el período de espera</span>'}</article>
+                                </section>
+                            `}
 
-                            <!-- Content Area (Status Specific) -->
-                            <div class="pata-dashboard-content-new pata-slide-animate">
-                                ${this.renderPetContent(pet)}
-                            </div>
+                            <section class="pata-v2-section" id="pata-v2-pets">
+                                ${isPetsView ? '' : `<div class="pata-v2-section-head"><h2 class="pata-v2-section-title">Mis peludos</h2><button class="pata-v2-section-link" type="button" onclick="window.pataWidget.showPetsV2()">Ver todos →</button></div>`}
+                                <div class="pata-v2-pet-grid">${this.renderV2PetCards()}</div>
+                            </section>
 
-                            <!-- Footer Banner -->
-                            <div class="pata-footer-banner-new" data-od-id="bottom-banner">
-                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="black" stroke-width="2"/>
-                                    <path d="M12 16V12M12 8H12.01" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                <div class="pata-footer-text-new">
-                                    <h4>¿Tienes alguna duda o necesitas ayuda?</h4>
-                                    <p>Nuestro equipo está listo para apoyarte. Escríbenos al <a href="https://wa.me/525639545068?text=Hola,%20necesito%20ayuda%20con%20mi%20membresía" target="_blank" style="color: inherit; font-weight: 900; text-decoration: underline;">WhatsApp 56-3954-5068</a> o a <a href="mailto:miembros@pataamiga.mx" style="color: inherit; font-weight: 900; text-decoration: underline;">miembros@pataamiga.mx</a></p>
-                                </div>
+                            ${isPetsView ? '' : `<section class="pata-v2-lower-grid">
+                                <article class="pata-v2-activity"><h2 class="pata-v2-section-title">Actividad reciente</h2><div class="pata-v2-activity-list">${this.renderV2Activity()}</div></article>
+                                <article class="pata-v2-centers"><h2 class="pata-v2-section-title">Centros aliados cerca de ti</h2><p>Veterinarias, tiendas y hoteles con beneficios para miembros en todo México.</p><a class="pata-v2-centers-link" href="${CONFIG.centersUrl}">Explorar el directorio</a></article>
+                            </section>`}
                             </div>
-                        </section>
+                        </div>
                     </main>
                 </div>
             `;
 
             this.container.classList.add('show');
             this.attachEvents();
+            this.attachV2ReimbursementEvents();
             this.hideGlobalLoaders();
+            if (this.v2View === 'reimbursements' && !this.solidarity.loaded && !this.solidarity.loading) {
+                setTimeout(() => this.showReimbursementsV2(), 0);
+            }
         }
 
         renderPendingView(firstName, pet) {

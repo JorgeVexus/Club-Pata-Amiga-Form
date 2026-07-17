@@ -11,8 +11,6 @@ import {
     buildMissingDocsEmailHtml,
     getMissingDocsMessage,
     getMissingDocsSubject,
-    type FollowupDay,
-    type MissingDocType,
     type MissingPetDocsEmailParams,
 } from '@/utils/missing-pet-docs-email';
 
@@ -288,7 +286,8 @@ El equipo de Club Pata Amiga`;
 // SEGUIMIENTO DE DOCUMENTACION FALTANTE DE MASCOTAS
 // ============================================================
 
-export type { MissingDocType, FollowupDay };
+export type MissingDocType = 'photo' | 'certificate' | 'both';
+export type FollowupDay = 0 | 10 | 13 | 14 | 15;
 
 interface SendMissingPetDocsEmailParams extends MissingPetDocsEmailParams {
     userId: string;

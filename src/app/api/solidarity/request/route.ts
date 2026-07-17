@@ -15,6 +15,19 @@ const corsHeaders = {
     'Access-Control-Allow-Headers': 'Content-Type',
 };
 
+function sanitizeClabe(value: unknown) {
+    return String(value || '').replace(/\D/g, '').slice(0, 18);
+}
+
+function isValidClabe(value: string) {
+    if (!/^\d{18}$/.test(value)) return false;
+    const weights = [3, 7, 1] as const;
+    const sum = value.slice(0, 17).split('').reduce((total, digit, index) => {
+        return total + ((Number(digit) * weights[index % weights.length]) % 10);
+    }, 0);
+    return ((10 - (sum % 10)) % 10) === Number(value[17]);
+}
+
 export async function OPTIONS() {
     return NextResponse.json({}, { headers: corsHeaders });
 }
@@ -48,6 +61,14 @@ export async function POST(request: NextRequest) {
 
         if (!memberstackId || !petId || !requestType || !benefitType || !caseDescription) {
             return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400, headers: corsHeaders });
+        }
+
+        const normalizedBankClabe = sanitizeClabe(bankClabe);
+        if (requestType === 'reimbursement' && (!bankName || !bankHolder)) {
+            return NextResponse.json({ error: 'Banco y titular de la cuenta son obligatorios.' }, { status: 400, headers: corsHeaders });
+        }
+        if (requestType === 'reimbursement' && !isValidClabe(normalizedBankClabe)) {
+            return NextResponse.json({ error: 'La CLABE no es válida. Revisa los 18 dígitos.' }, { status: 400, headers: corsHeaders });
         }
 
         const limit = SOLIDARITY_LIMITS[benefitType as keyof typeof SOLIDARITY_LIMITS];
@@ -143,7 +164,7 @@ export async function POST(request: NextRequest) {
                 vet_name: vetName,
                 vet_license: vetLicense,
                 bank_name: bankName,
-                bank_clabe: bankClabe,
+                bank_clabe: normalizedBankClabe,
                 bank_holder: bankHolder,
             })
             .select()
