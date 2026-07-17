@@ -3874,6 +3874,7 @@
         .pata-v2-main { min-width: 0; padding: 30px 34px 34px; }
         .pata-v2-content { width: 100%; max-width: 1640px; margin: 0 auto; display: grid; gap: 22px; }
         .pata-v2-mobile-top { display: none; }
+        .pata-v2-mobile-tabbar { display:none; }
         .pata-v2-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
         .pata-v2-title { margin: 0; color: var(--v2-ink); font-family: 'Fraiche', 'Outfit', sans-serif; font-size: clamp(28px, 2.2vw, 34px); line-height: 1; }
         .pata-v2-subtitle { margin: 8px 0 0; color: var(--v2-body); font-size: 14px; }
@@ -4050,7 +4051,7 @@
         @media (max-width: 900px) {
             .pata-v2-shell { display: block; }
             .pata-v2-sidebar { display: none; }
-            .pata-v2-main { padding: 0 18px 28px; }
+            .pata-v2-main { padding:0 18px; padding-bottom:calc(94px + env(safe-area-inset-bottom)); }
             .pata-v2-mobile-top { min-height: 66px; display: flex; align-items: center; justify-content: space-between; margin: 0 -18px 22px; padding: 10px 18px; background: white; border-bottom: 1px solid var(--v2-line); }
             .pata-v2-mobile-top img { width: 80px; }
             .pata-v2-mobile-actions { display: flex; gap: 7px; }
@@ -4058,6 +4059,11 @@
             .pata-v2-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .pata-v2-kpi:first-child { grid-column: 1 / -1; }
             .pata-v2-detail-grid { grid-template-columns:1fr; }
+            .pata-v2-mobile-tabbar { position:fixed; inset-inline:0; bottom:0; z-index:10000; display:flex; align-items:flex-start; justify-content:space-around; gap:2px; padding:10px 6px max(10px,env(safe-area-inset-bottom)); border-top:1px solid var(--v2-line); background:rgba(255,255,255,.97); box-shadow:0 -6px 22px rgba(30,83,80,.08); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); }
+            .pata-v2-mobile-tab { min-width:0; flex:1; min-height:49px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:4px 2px; border:0; background:transparent; color:#71807C; font:700 9.5px/1.1 'Outfit',sans-serif; text-align:center; text-decoration:none; cursor:pointer; }
+            .pata-v2-mobile-tab-icon { font-size:18px; line-height:1; }
+            .pata-v2-mobile-tab.is-active { color:var(--v2-teal-deep); font-weight:900; }
+            .pata-v2-mobile-tab:focus-visible { outline:3px solid rgba(33,188,175,.28); outline-offset:-2px; border-radius:10px; }
         }
         @media (max-width: 600px) {
             .pata-v2-main { padding-left: 14px; padding-right: 14px; }
@@ -5494,6 +5500,14 @@
                     </nav>
                     <div class="pata-v2-account"><span class="pata-v2-avatar">${initial}</span><span><strong>${safeName}</strong><span>Plan de membresía</span></span></div>
                 </aside>
+                <nav class="pata-v2-mobile-tabbar" aria-label="Navegación móvil de miembros">
+                    <button class="pata-v2-mobile-tab ${this.v2View === 'home' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showHomeV2()"><span class="pata-v2-mobile-tab-icon">🏠</span><span>Inicio</span></button>
+                    <button class="pata-v2-mobile-tab ${this.v2View === 'pets' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showPetsV2()"><span class="pata-v2-mobile-tab-icon">🐾</span><span>Peludos</span></button>
+                    <button class="pata-v2-mobile-tab ${['reimbursements','newReimbursement','reimbursementDetail'].includes(this.v2View) ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showReimbursementsV2()"><span class="pata-v2-mobile-tab-icon">💚</span><span>Reintegros</span></button>
+                    <a class="pata-v2-mobile-tab" href="${CONFIG.vetUrl}"><span class="pata-v2-mobile-tab-icon">💬</span><span>Vet 24/7</span></a>
+                    <button class="pata-v2-mobile-tab ${this.v2View === 'centers' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showCentersV2()"><span class="pata-v2-mobile-tab-icon">📍</span><span>Centros</span></button>
+                    ${this.isAmbassador ? `<a class="pata-v2-mobile-tab" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-mobile-tab-icon">🤝</span><span>Embajador</span></a>` : ''}
+                </nav>
             `;
         }
 

@@ -145,3 +145,12 @@ test('Centros aliados clears stale search state and exposes reset filters', () =
   assert.match(source, /data-centers-clear-filters/);
   assert.match(source, /this\.centers\.service = 'all'/);
 });
+
+test('Dashboard V2 keeps a fixed horizontal navigation visible on mobile', () => {
+  assert.match(source, /pata-v2-mobile-tabbar/);
+  assert.match(source, /position:fixed;[^}]*bottom:0/);
+  assert.match(source, /env\(safe-area-inset-bottom\)/);
+  assert.match(source, /pata-v2-mobile-tab/);
+  assert.match(source, /this\.isAmbassador \? `<a class="pata-v2-mobile-tab/);
+  assert.match(source, /padding-bottom:\s*calc\(/);
+});
