@@ -2,6 +2,8 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const SolidarityClient = require('../../public/widgets/solidarity-client.js');
+const fs = require('node:fs');
+const path = require('node:path');
 
 test('client builds API-first overview requests for the Memberstack member', async () => {
   const calls = [];
@@ -32,4 +34,10 @@ test('client submits requests and messages through existing endpoints', async ()
   assert.equal(calls[0].options.method, 'POST');
   assert.equal(calls[1].url, '/api/solidarity/requests/req_1/messages');
   assert.equal(calls[1].options.method, 'POST');
+});
+
+test('Webflow preview only needs the unified widget script', () => {
+  const preview = fs.readFileSync(path.resolve(__dirname, '../../public/widgets/dashboard-v2-preview.html'), 'utf8');
+  assert.doesNotMatch(preview, /<script src="\/widgets\/solidarity-client\.js/);
+  assert.match(preview, /<script src="\/widgets\/unified-membership-widget\.js/);
 });

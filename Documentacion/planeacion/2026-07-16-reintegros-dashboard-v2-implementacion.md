@@ -6,7 +6,8 @@ Integrar el Fondo Solidario bajo la etiqueta visual “Reintegros” dentro del 
 
 ## Arquitectura
 
-- `solidarity-client.js` encapsula exclusivamente llamadas a `/api/solidarity/*` y `/api/upload/solidarity-document`.
+- `UnifiedWidget` incluye un cliente API interno para `/api/solidarity/*` y `/api/upload/solidarity-document`, de modo que Webflow solo necesita cargar el widget unificado.
+- `solidarity-client.js` permanece como capa de compatibilidad y para pruebas aisladas; si ya esta cargado, el widget puede reutilizarlo.
 - `UnifiedWidget` conserva navegación y presenta tres vistas: `reimbursements`, `newReimbursement` y `reimbursementDetail`.
 - El navegador nunca inicializa Supabase.
 - Los widgets antiguos permanecen disponibles como respaldo durante la validación.

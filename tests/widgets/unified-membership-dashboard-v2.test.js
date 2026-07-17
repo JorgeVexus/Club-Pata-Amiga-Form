@@ -89,3 +89,10 @@ test('reimbursement bank is required, selectable and suggested from CLABE', () =
   assert.match(source, /bankSelect\.value = detectedBank/);
   assert.doesNotMatch(source, /Banco <small>\(opcional\)<\/small>/);
 });
+
+test('unified widget includes its own solidarity API client for Webflow', () => {
+  assert.match(source, /class EmbeddedSolidarityClient/);
+  assert.match(source, /new EmbeddedSolidarityClient\(CONFIG\.apiUrl\)/);
+  assert.match(source, /\/api\/solidarity\/request/);
+  assert.match(source, /\/api\/upload\/solidarity-document/);
+});
