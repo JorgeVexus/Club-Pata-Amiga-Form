@@ -41,3 +41,19 @@ test('Webflow preview only needs the unified widget script', () => {
   assert.doesNotMatch(preview, /<script src="\/widgets\/solidarity-client\.js/);
   assert.match(preview, /<script src="\/widgets\/unified-membership-widget\.js/);
 });
+
+test('default browser fetch keeps the Window global as its receiver', async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async function browserFetch(url) {
+    assert.equal(this, globalThis);
+    return { ok: true, json: async () => ({ success: true, url }) };
+  };
+
+  try {
+    const client = new SolidarityClient('https://app.pataamiga.mx');
+    const result = await client.request('/api/solidarity/stats');
+    assert.equal(result.success, true);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

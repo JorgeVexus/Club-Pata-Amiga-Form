@@ -48,7 +48,7 @@
     }
 
     class EmbeddedSolidarityClient {
-        constructor(apiUrl = '', fetchImpl = fetch) {
+        constructor(apiUrl = '', fetchImpl = globalThis.fetch.bind(globalThis)) {
             this.apiUrl = String(apiUrl).replace(/\/$/, '');
             this.fetch = fetchImpl;
         }

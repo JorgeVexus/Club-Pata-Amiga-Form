@@ -96,3 +96,7 @@ test('unified widget includes its own solidarity API client for Webflow', () => 
   assert.match(source, /\/api\/solidarity\/request/);
   assert.match(source, /\/api\/upload\/solidarity-document/);
 });
+
+test('embedded solidarity client binds native fetch to the browser global', () => {
+  assert.match(source, /fetchImpl = globalThis\.fetch\.bind\(globalThis\)/);
+});
