@@ -154,3 +154,22 @@ test('Dashboard V2 keeps a fixed horizontal navigation visible on mobile', () =>
   assert.match(source, /this\.isAmbassador \? `<a class="pata-v2-mobile-tab/);
   assert.match(source, /padding-bottom:\s*calc\(/);
 });
+
+test('Orientación veterinaria opens as an internal Dashboard V2 view from every entry point', () => {
+  assert.match(source, /showVetV2\(\)/);
+  assert.match(source, /this\.v2View = 'vet'/);
+  assert.match(source, /this\.v2View === 'vet'/);
+  assert.match(source, /pata-v2-vet-chat/);
+  assert.match(source, /onclick="window\.pataWidget\.showVetV2\(\)"/);
+  assert.doesNotMatch(source, /class="pata-v2-vet-button" href=/);
+});
+
+test('Dashboard V2 notification bell stays API-first and supports read actions', () => {
+  assert.match(source, /pata-v2-notifications/);
+  assert.match(source, /\/api\/notifications\?userId=/);
+  assert.match(source, /\/api\/notifications\/mark-all-read/);
+  assert.match(source, /\/api\/notifications\/\$\{notificationId\}\/read/);
+  assert.match(source, /notificationRefreshInterval/);
+  assert.match(source, /aria-expanded/);
+  assert.doesNotMatch(source, /supabase\.createClient/);
+});

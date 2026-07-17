@@ -3879,8 +3879,38 @@
         .pata-v2-title { margin: 0; color: var(--v2-ink); font-family: 'Fraiche', 'Outfit', sans-serif; font-size: clamp(28px, 2.2vw, 34px); line-height: 1; }
         .pata-v2-subtitle { margin: 8px 0 0; color: var(--v2-body); font-size: 14px; }
         .pata-v2-header-actions { display: flex; align-items: center; gap: 10px; }
-        .pata-v2-icon-button { width: 45px; height: 45px; display: grid; place-items: center; border: 0; border-radius: 50%; background: white; box-shadow: var(--v2-shadow); }
-        .pata-v2-vet-button { min-height: 45px; display: inline-flex; align-items: center; padding: 0 20px; border-radius: 999px; background: var(--v2-teal); color: white; font-weight: 800; font-size: 13px; text-decoration: none; }
+        .pata-v2-icon-button { width: 45px; height: 45px; display: grid; place-items: center; border: 0; border-radius: 50%; background: white; box-shadow: var(--v2-shadow); cursor:pointer; transition:transform .2s ease,box-shadow .2s ease; }
+        .pata-v2-icon-button:hover { transform:translateY(-2px); box-shadow:0 12px 25px rgba(30,83,80,.13); }
+        .pata-v2-vet-button { min-height: 45px; display: inline-flex; align-items: center; padding: 0 20px; border:0; border-radius: 999px; background: var(--v2-teal); color: white; font:800 13px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,background .2s ease; }
+        .pata-v2-vet-button:hover { background:var(--v2-teal-deep); transform:translateY(-1px); }
+        .pata-v2-notifications { position:relative; }
+        .pata-v2-notification-button { position:relative; color:#1E5350; font-size:18px; }
+        .pata-v2-notification-badge { position:absolute; top:-3px; right:-3px; min-width:18px; height:18px; display:grid; place-items:center; padding:0 4px; border:2px solid white; border-radius:10px; background:#FF6B6B; color:white; font:800 9px/1 'Outfit',sans-serif; }
+        .pata-v2-notification-panel { position:absolute; top:calc(100% + 12px); right:0; z-index:40; width:min(370px,calc(100vw - 32px)); overflow:hidden; border:1px solid #E8E2D7; border-radius:20px; background:white; box-shadow:0 22px 55px rgba(30,83,80,.18); transform-origin:top right; animation:pataV2PanelIn .2s ease-out; }
+        @keyframes pataV2PanelIn { from{opacity:0;transform:translateY(-6px) scale(.98)} to{opacity:1;transform:none} }
+        .pata-v2-notification-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 18px 14px; border-bottom:1px solid #F0ECE4; }
+        .pata-v2-notification-head strong { color:#1E5350; font:900 18px/1.1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-notification-read-all { border:0; background:transparent; color:#008B84; font:800 11px/1 'Outfit',sans-serif; cursor:pointer; }
+        .pata-v2-notification-list { max-height:390px; overflow:auto; padding:8px; }
+        .pata-v2-notification-item { width:100%; display:grid; grid-template-columns:38px minmax(0,1fr) auto; gap:10px; align-items:start; padding:12px; border:0; border-radius:14px; background:transparent; color:#435956; text-align:left; cursor:pointer; }
+        .pata-v2-notification-item:hover { background:#F7F4EE; }
+        .pata-v2-notification-item.is-unread { background:#EAF8F6; }
+        .pata-v2-notification-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:white; color:#008B84; box-shadow:inset 0 0 0 1px #E5EEE9; }
+        .pata-v2-notification-copy strong { display:block; margin-bottom:3px; color:#163F3D; font-size:13px; }
+        .pata-v2-notification-copy span { display:block; font-size:11.5px; line-height:1.35; }
+        .pata-v2-notification-time { color:#9A9489; font-size:10px; white-space:nowrap; }
+        .pata-v2-notification-empty { padding:34px 22px; color:#75847F; font-size:13px; text-align:center; }
+        .pata-v2-vet-view { min-height:calc(100dvh - 80px); display:flex; flex-direction:column; }
+        .pata-v2-vet-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:16px; }
+        .pata-v2-vet-disclaimer { align-self:center; max-width:360px; margin:0 auto 12px; padding:9px 18px; border-radius:999px; background:#EEEAE1; color:#758078; font-size:10px; font-weight:700; text-align:center; }
+        .pata-v2-vet-chat { position:relative; flex:1; min-height:620px; overflow:hidden; border:1px solid #E8E2D7; border-radius:24px; background:#FBF9F4; box-shadow:0 14px 36px rgba(30,83,80,.07); }
+        .pata-v2-vet-chat > iframe { width:100%!important; height:100%!important; min-height:620px!important; border:0!important; }
+        .pata-vet-bot-state { min-height:620px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding:32px; color:#61736E; text-align:center; }
+        .pata-vet-bot-state-icon { width:52px; height:52px; display:grid; place-items:center; border-radius:18px; background:#E6F6F4; font-size:24px; }
+        .pata-vet-bot-state strong { color:#1E5350; font:900 22px/1.1 'Fraiche','Outfit',sans-serif; }
+        .pata-vet-bot-state p { max-width:430px; margin:0; font-size:13px; line-height:1.5; }
+        .pata-v2-vet-preview-message { width:min(300px,75%); margin:24px; padding:16px; border-radius:6px 18px 18px 18px; background:white; box-shadow:0 5px 16px rgba(30,83,80,.08); color:#1E5350; font-size:14px; line-height:1.45; }
+        .pata-v2-vet-preview-input { position:absolute; inset:auto 12px 12px; display:flex; align-items:center; justify-content:space-between; min-height:48px; padding:0 18px; border:1px solid #E6DFD3; border-radius:999px; background:white; color:#AAA397; font-size:13px; }
         .pata-v2-kpi-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
         .pata-v2-kpi {
             position: relative; min-height: 126px; overflow: hidden; display: flex; flex-direction: column; justify-content: center;
@@ -4072,6 +4102,10 @@
             .pata-v2-pets-page-head { align-items: flex-start; }
             .pata-v2-add-button { min-height: 40px; padding: 0 16px; }
             .pata-v2-header-actions { display: none; }
+            .pata-v2-vet-view { min-height:calc(100dvh - 150px); }
+            .pata-v2-vet-head { display:block; }
+            .pata-v2-vet-chat, .pata-v2-vet-chat > iframe, .pata-vet-bot-state { min-height:calc(100dvh - 245px)!important; }
+            .pata-v2-notification-panel { position:fixed; top:68px; right:12px; }
             .pata-v2-title { font-size: 27px; }
             .pata-v2-subtitle { font-size: 12.5px; line-height: 1.45; }
             .pata-v2-kpi-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -4105,9 +4139,14 @@
                 const requestedSection = new URLSearchParams(location.search).get('section');
                 if (requestedSection === 'reimbursements') this.v2View = 'reimbursements';
                 if (requestedSection === 'centers') this.v2View = 'centers';
+                if (requestedSection === 'vet') this.v2View = 'vet';
             }
             this.solidarity = { loading: false, loaded: false, error: '', stats: {}, requests: [], balances: {}, detail: null, messages: [] };
             this.centers = { loading: false, loaded: false, error: '', items: [], query: '', service: 'all' };
+            this.notifications = { loading: false, loaded: false, error: '', items: [], open: false };
+            this.notificationRefreshInterval = null;
+            this.notificationGlobalEventsAttached = false;
+            this.vetBotScriptPromise = null;
             this.membershipStatus = 'approved';
             this.memberWelcomeShown = true;
             this.userExtra = { firstName: '', lastName: '', lastAdminResponse: '', actionRequiredFields: [] };
@@ -5472,6 +5511,155 @@
             }
         }
 
+        showVetV2() {
+            this.v2View = 'vet';
+            this.notifications.open = false;
+            this.render();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        renderV2VetView() {
+            return `
+                <section class="pata-v2-vet-view">
+                    <header class="pata-v2-vet-head">
+                        <div><h1 class="pata-v2-title">Orientación veterinaria 24/7</h1><p class="pata-v2-subtitle">Cuéntanos qué sucede y recibe una guía inicial para cuidar a tu peludo.</p></div>
+                    </header>
+                    <div class="pata-v2-vet-disclaimer">Acompañamiento y guía — no sustituye una consulta ni un diagnóstico veterinario</div>
+                    <div id="pata-v2-vet-chat" class="pata-v2-vet-chat" aria-live="polite">
+                        <div class="pata-vet-bot-state pata-vet-bot-state-loading" role="status"><span class="pata-vet-bot-state-icon" aria-hidden="true">🐾</span><strong>Preparando tu orientación</strong><p>Estamos conectando tu cuenta con la guía veterinaria.</p></div>
+                    </div>
+                </section>
+            `;
+        }
+
+        async mountVetBotV2() {
+            const container = document.getElementById('pata-v2-vet-chat');
+            if (!container || this.v2View !== 'vet') return;
+            if (this.isLocalPreview()) {
+                container.innerHTML = '<div class="pata-v2-vet-preview-message">¡Hola, Jorge! 🐾 Soy tu guía veterinaria.<br>¿Cómo están tus peludos hoy?</div><div class="pata-v2-vet-preview-input"><span>Escribe tu pregunta...</span><span>➜</span></div>';
+                return;
+            }
+            try {
+                if (!window.PataVetBot) {
+                    if (!this.vetBotScriptPromise) {
+                        this.vetBotScriptPromise = new Promise((resolve, reject) => {
+                            const script = document.createElement('script');
+                            script.src = `${CONFIG.apiUrl}/widgets/vet-bot.js`;
+                            script.dataset.pataVetBot = 'true';
+                            script.onload = resolve;
+                            script.onerror = reject;
+                            document.head.appendChild(script);
+                        });
+                    }
+                    await this.vetBotScriptPromise;
+                }
+                await window.PataVetBot?.mount({ element: '#pata-v2-vet-chat' });
+            } catch (error) {
+                console.error('No fue posible cargar la orientación veterinaria:', error);
+                container.innerHTML = '<div class="pata-vet-bot-state pata-vet-bot-state-error" role="status"><span class="pata-vet-bot-state-icon">💬</span><strong>No pudimos abrir el chat</strong><p>Revisa tu conexión e inténtalo nuevamente en unos momentos.</p></div>';
+            }
+        }
+
+        formatNotificationTimeV2(value) {
+            const timestamp = new Date(value).getTime();
+            if (!Number.isFinite(timestamp)) return '';
+            const minutes = Math.max(0, Math.floor((Date.now() - timestamp) / 60000));
+            if (minutes < 1) return 'Ahora';
+            if (minutes < 60) return `${minutes} min`;
+            if (minutes < 1440) return `${Math.floor(minutes / 60)} h`;
+            return `${Math.floor(minutes / 1440)} d`;
+        }
+
+        renderV2NotificationBell() {
+            const unread = this.notifications.items.filter(item => !item.is_read).length;
+            const panel = this.notifications.open ? `
+                <div class="pata-v2-notification-panel" role="dialog" aria-label="Notificaciones">
+                    <div class="pata-v2-notification-head"><strong>Notificaciones</strong>${unread ? '<button class="pata-v2-notification-read-all" type="button" onclick="window.pataWidget.markAllNotificationsReadV2(event)">Marcar leídas</button>' : ''}</div>
+                    <div class="pata-v2-notification-list">
+                        ${this.notifications.loading ? '<div class="pata-v2-notification-empty">Cargando novedades...</div>' : ''}
+                        ${this.notifications.error ? `<div class="pata-v2-notification-empty">${this.escapeHtml(this.notifications.error)}</div>` : ''}
+                        ${!this.notifications.loading && !this.notifications.error && !this.notifications.items.length ? '<div class="pata-v2-notification-empty">No tienes notificaciones nuevas.</div>' : ''}
+                        ${this.notifications.items.map(item => `<button class="pata-v2-notification-item ${item.is_read ? '' : 'is-unread'}" type="button" onclick="window.pataWidget.openNotificationV2('${this.escapeHtml(String(item.id))}')"><span class="pata-v2-notification-icon">${this.escapeHtml(item.icon || '🔔')}</span><span class="pata-v2-notification-copy"><strong>${this.escapeHtml(item.title || 'Actualización de tu cuenta')}</strong><span>${this.escapeHtml(item.message || '')}</span></span><time class="pata-v2-notification-time">${this.formatNotificationTimeV2(item.created_at)}</time></button>`).join('')}
+                    </div>
+                </div>` : '';
+            return `<div class="pata-v2-notifications"><button class="pata-v2-icon-button pata-v2-notification-button" type="button" aria-label="Notificaciones" aria-expanded="${this.notifications.open}" onclick="window.pataWidget.toggleNotificationsV2(event)">🔔${unread ? `<span class="pata-v2-notification-badge">${unread > 9 ? '9+' : unread}</span>` : ''}</button>${panel}</div>`;
+        }
+
+        updateNotificationBellV2() {
+            document.querySelectorAll('.pata-v2-notifications').forEach(current => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = this.renderV2NotificationBell();
+                current.replaceWith(wrapper.firstElementChild);
+            });
+        }
+
+        toggleNotificationsV2(event) {
+            event?.stopPropagation();
+            this.notifications.open = !this.notifications.open;
+            this.updateNotificationBellV2();
+            if (this.notifications.open && !this.notifications.loaded) this.loadNotificationsV2();
+        }
+
+        closeNotificationsV2() {
+            if (!this.notifications.open) return;
+            this.notifications.open = false;
+            this.updateNotificationBellV2();
+        }
+
+        async loadNotificationsV2() {
+            const userId = this.member?.id;
+            if (!userId) return;
+            if (this.isLocalPreview()) {
+                this.notifications = { ...this.notifications, loading: false, loaded: true, error: '', items: [
+                    { id: 'preview-1', title: 'Tu membresía está activa', message: 'Ya puedes usar orientación veterinaria, reintegros y centros aliados.', icon: '🐾', is_read: false, created_at: new Date().toISOString() },
+                    { id: 'preview-2', title: 'Expediente actualizado', message: 'Recibimos correctamente los documentos de Felix.', icon: '📄', is_read: true, created_at: new Date(Date.now() - 7200000).toISOString() }
+                ] };
+                this.updateNotificationBellV2();
+                return;
+            }
+            this.notifications.loading = !this.notifications.loaded;
+            this.updateNotificationBellV2();
+            try {
+                const response = await fetch(`${CONFIG.apiUrl}/api/notifications?userId=${encodeURIComponent(userId)}&limit=10`);
+                const data = await response.json();
+                if (!response.ok || !data.success) throw new Error('No pudimos cargar tus notificaciones.');
+                this.notifications = { ...this.notifications, loading: false, loaded: true, error: '', items: data.notifications || [] };
+            } catch (error) {
+                this.notifications = { ...this.notifications, loading: false, loaded: true, error: error.message || 'No pudimos cargar tus notificaciones.' };
+            }
+            this.updateNotificationBellV2();
+        }
+
+        startNotificationPollingV2() {
+            if (this.notificationRefreshInterval || !this.member?.id) return;
+            this.loadNotificationsV2();
+            this.notificationRefreshInterval = window.setInterval(() => this.loadNotificationsV2(), 5000);
+        }
+
+        async markNotificationReadV2(notificationId) {
+            const item = this.notifications.items.find(notification => String(notification.id) === String(notificationId));
+            if (!item || item.is_read) return;
+            item.is_read = true;
+            this.updateNotificationBellV2();
+            if (this.isLocalPreview()) return;
+            await fetch(`${CONFIG.apiUrl}/api/notifications/${notificationId}/read`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: this.member.id }) });
+        }
+
+        async markAllNotificationsReadV2(event) {
+            event?.stopPropagation();
+            this.notifications.items = this.notifications.items.map(item => ({ ...item, is_read: true }));
+            this.updateNotificationBellV2();
+            if (this.isLocalPreview()) return;
+            await fetch(`${CONFIG.apiUrl}/api/notifications/mark-all-read`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: this.member.id }) });
+        }
+
+        async openNotificationV2(notificationId) {
+            const item = this.notifications.items.find(notification => String(notification.id) === String(notificationId));
+            await this.markNotificationReadV2(notificationId);
+            this.closeNotificationsV2();
+            if (item?.link) window.location.href = item.link;
+        }
+
         showHomeV2() {
             this.v2View = 'home';
             this.render();
@@ -5490,7 +5678,7 @@
                         <button class="pata-v2-nav-link ${this.v2View === 'home' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showHomeV2()"><span class="pata-v2-nav-icon">🏠</span>Inicio</button>
                         <button class="pata-v2-nav-link ${this.v2View === 'pets' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showPetsV2()"><span class="pata-v2-nav-icon">🐾</span>Mis peludos</button>
                         <button class="pata-v2-nav-link ${['reimbursements','newReimbursement','reimbursementDetail'].includes(this.v2View) ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showReimbursementsV2()"><span class="pata-v2-nav-icon">💚</span>Reintegros</button>
-                        <a class="pata-v2-nav-link" href="${CONFIG.vetUrl}"><span class="pata-v2-nav-icon">💬</span>Orientación vet 24/7</a>
+                        <button class="pata-v2-nav-link ${this.v2View === 'vet' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showVetV2()"><span class="pata-v2-nav-icon">💬</span>Orientación vet 24/7</button>
                         <button class="pata-v2-nav-link ${this.v2View === 'centers' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showCentersV2()"><span class="pata-v2-nav-icon">📍</span>Centros aliados</button>
                         ${this.isAmbassador ? `<a class="pata-v2-nav-link" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-nav-icon">🤝</span>Panel de embajador</a>` : ''}
                     </nav>
@@ -5504,7 +5692,7 @@
                     <button class="pata-v2-mobile-tab ${this.v2View === 'home' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showHomeV2()"><span class="pata-v2-mobile-tab-icon">🏠</span><span>Inicio</span></button>
                     <button class="pata-v2-mobile-tab ${this.v2View === 'pets' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showPetsV2()"><span class="pata-v2-mobile-tab-icon">🐾</span><span>Peludos</span></button>
                     <button class="pata-v2-mobile-tab ${['reimbursements','newReimbursement','reimbursementDetail'].includes(this.v2View) ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showReimbursementsV2()"><span class="pata-v2-mobile-tab-icon">💚</span><span>Reintegros</span></button>
-                    <a class="pata-v2-mobile-tab" href="${CONFIG.vetUrl}"><span class="pata-v2-mobile-tab-icon">💬</span><span>Vet 24/7</span></a>
+                    <button class="pata-v2-mobile-tab ${this.v2View === 'vet' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showVetV2()"><span class="pata-v2-mobile-tab-icon">💬</span><span>Vet 24/7</span></button>
                     <button class="pata-v2-mobile-tab ${this.v2View === 'centers' ? 'is-active' : ''}" type="button" onclick="window.pataWidget.showCentersV2()"><span class="pata-v2-mobile-tab-icon">📍</span><span>Centros</span></button>
                     ${this.isAmbassador ? `<a class="pata-v2-mobile-tab" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-mobile-tab-icon">🤝</span><span>Embajador</span></a>` : ''}
                 </nav>
@@ -5530,6 +5718,7 @@
             const isPetsView = this.v2View === 'pets';
             const isSolidarityView = ['reimbursements', 'newReimbursement', 'reimbursementDetail'].includes(this.v2View);
             const isCentersView = this.v2View === 'centers';
+            const isVetView = this.v2View === 'vet';
             const solidarityContent = this.v2View === 'newReimbursement'
                 ? this.renderV2NewReimbursementView()
                 : this.v2View === 'reimbursementDetail'
@@ -5543,14 +5732,16 @@
                         <div class="pata-v2-mobile-top">
                             <img src="${logoUrl}" alt="Pata Amiga">
                             <div class="pata-v2-mobile-actions">
-                                <a href="${CONFIG.vetUrl}" aria-label="Orientación veterinaria">💬</a>
+                                ${this.renderV2NotificationBell()}
+                                <button type="button" onclick="window.pataWidget.showVetV2()" aria-label="Orientación veterinaria">💬</button>
                                 ${this.member ? '<button type="button" onclick="window.pataWidget.logoutV2()" aria-label="Cerrar sesión">👋</button>' : ''}
                             </div>
                         </div>
                         <div class="pata-v2-content">
                             ${isSolidarityView ? solidarityContent : ''}
                             ${isCentersView ? this.renderV2CentersView() : ''}
-                            <div style="${isSolidarityView || isCentersView ? 'display:none' : 'display:contents'}">
+                            ${isVetView ? this.renderV2VetView() : ''}
+                            <div style="${isSolidarityView || isCentersView || isVetView ? 'display:none' : 'display:contents'}">
                             ${isPetsView ? `
                                 <header class="pata-v2-pets-page-head">
                                     <div><h1 class="pata-v2-title">Mis peludos</h1><p>${activePets.length} de 3 peludos activos. Consulta sus datos y abre el expediente de cada integrante de tu manada.</p></div>
@@ -5563,8 +5754,8 @@
                                         <p class="pata-v2-subtitle">${isMemberApproved ? 'Tu manada está protegida. Tu membresía se encuentra activa.' : 'Estamos revisando tu membresía y te notificaremos cualquier actualización.'}</p>
                                     </div>
                                     <div class="pata-v2-header-actions">
-                                        <button class="pata-v2-icon-button" type="button" aria-label="Notificaciones">🔔</button>
-                                        <a class="pata-v2-vet-button" href="${CONFIG.vetUrl}">💬&nbsp; Orientación veterinaria 24/7</a>
+                                        ${this.renderV2NotificationBell()}
+                                        <button class="pata-v2-vet-button" type="button" onclick="window.pataWidget.showVetV2()">💬&nbsp; Orientación veterinaria 24/7</button>
                                     </div>
                                 </header>
 
@@ -5594,6 +5785,17 @@
             this.attachEvents();
             this.attachV2ReimbursementEvents();
             this.attachV2CentersEvents();
+            if (!this.notificationGlobalEventsAttached) {
+                document.addEventListener('click', event => {
+                    if (this.notifications.open && !event.target.closest('.pata-v2-notifications')) this.closeNotificationsV2();
+                });
+                document.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') this.closeNotificationsV2();
+                });
+                this.notificationGlobalEventsAttached = true;
+            }
+            this.startNotificationPollingV2();
+            if (isVetView) setTimeout(() => this.mountVetBotV2(), 0);
             this.hideGlobalLoaders();
             if (this.v2View === 'reimbursements' && !this.solidarity.loaded && !this.solidarity.loading) {
                 setTimeout(() => this.showReimbursementsV2(), 0);

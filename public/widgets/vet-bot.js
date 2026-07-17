@@ -1,136 +1,151 @@
 /**
- * Vet-Bot Centralized Integration v5.0
- * app.pataamiga.mx | Club Pata Amiga
- * 
- * Este script automatiza la inicialización del Vet-Bot,
- * asegurando que Memberstack y el token de sesión estén listos
- * antes de cargar el plugin. Esto soluciona problemas de saludo
- * automático en Mac/iOS y simplifica la integración en Webflow.
+ * Vet Bot embebido para Club Pata Amiga.
+ * Se monta de forma explícita dentro del Dashboard V2 y nunca crea una burbuja flotante.
  */
-
 (function () {
     'use strict';
 
     const CONFIG = {
-        API_URL: 'https://app.pataamiga.mx/api',
+        API_URL: (window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx').replace(/\/$/, '') + '/api',
         BOT_PLUGIN_URL: 'https://app.chatgptbuilder.io/webchat/plugin.js?v=6',
-        BOT_ID: "K4THS5LyA99jKDKYNgD3",
-        ACCOUNT_ID: "1146761",
-        PRIMARY_COLOR: "#36D6B5",
+        BOT_ID: 'K4THS5LyA99jKDKYNgD3',
+        ACCOUNT_ID: '1146761',
+        PRIMARY_COLOR: '#21BCAF',
         FIELDS: {
-            SESSION_TOKEN: "673882",
-            CLIENT_EMAIL: "515388",
-            CLIENT_NAME: "620522"
+            SESSION_TOKEN: '673882',
+            CLIENT_EMAIL: '515388',
+            CLIENT_NAME: '620522'
         },
-        RETRY_INTERVAL: 300,
-        MAX_RETRIES: 30 // ~9 segundos
+        RETRY_INTERVAL: 250,
+        MAX_RETRIES: 40
     };
 
-    const log = (...args) => console.log('[VetBot-Central]', ...args);
+    let pluginPromise = null;
+    let mountedElement = null;
 
-    let retryCount = 0;
-
-    async function generateToken(memberstackId, email) {
-        try {
-            const response = await fetch(`${CONFIG.API_URL}/auth/session-token`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ memberstackId, email })
-            });
-            const data = await response.json();
-            return data.sessionToken || data.session_token || data.token;
-        } catch (e) {
-            console.error('[VetBot-Central] Error generating token:', e);
-            return null;
-        }
+    function resolveElement(element) {
+        if (typeof element === 'string') return document.querySelector(element);
+        return element instanceof HTMLElement ? element : null;
     }
 
-    function loadScript(url) {
-        return new Promise((resolve, reject) => {
+    function renderState(element, kind, title, message) {
+        element.dataset.vetBotState = kind;
+        element.innerHTML = `
+            <div class="pata-vet-bot-state pata-vet-bot-state-${kind}" role="status">
+                <span class="pata-vet-bot-state-icon" aria-hidden="true">${kind === 'loading' ? '🐾' : '💬'}</span>
+                <strong>${title}</strong>
+                <p>${message}</p>
+            </div>
+        `;
+    }
+
+    function loadPlugin() {
+        if (typeof window.ktt10 !== 'undefined') return Promise.resolve();
+        if (pluginPromise) return pluginPromise;
+        pluginPromise = new Promise((resolve, reject) => {
+            const existing = document.querySelector('script[data-pata-vet-plugin]');
+            if (existing) {
+                existing.addEventListener('load', resolve, { once: true });
+                existing.addEventListener('error', reject, { once: true });
+                return;
+            }
             const script = document.createElement('script');
-            script.src = url;
+            script.src = CONFIG.BOT_PLUGIN_URL;
+            script.dataset.pataVetPlugin = 'true';
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
         });
+        return pluginPromise;
     }
 
-    async function init() {
-        // 1. Esperar a Memberstack
-        if (!window.$memberstackDom) {
-            if (retryCount < CONFIG.MAX_RETRIES) {
-                retryCount++;
-                setTimeout(init, CONFIG.RETRY_INTERVAL);
-                return;
-            }
-            return log('❌ Error: Memberstack no cargó a tiempo.');
+    async function waitForMemberstack() {
+        for (let attempt = 0; attempt < CONFIG.MAX_RETRIES; attempt += 1) {
+            if (window.$memberstackDom) return window.$memberstackDom;
+            await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_INTERVAL));
+        }
+        return null;
+    }
+
+    async function waitForPlugin() {
+        for (let attempt = 0; attempt < CONFIG.MAX_RETRIES; attempt += 1) {
+            if (typeof window.ktt10 !== 'undefined') return window.ktt10;
+            await new Promise(resolve => setTimeout(resolve, CONFIG.RETRY_INTERVAL));
+        }
+        return null;
+    }
+
+    async function generateToken(memberstackId, email) {
+        const response = await fetch(`${CONFIG.API_URL}/auth/session-token`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ memberstackId, email })
+        });
+        if (!response.ok) throw new Error('No se pudo generar la sesión del chat.');
+        const data = await response.json();
+        return data.sessionToken || data.session_token || data.token;
+    }
+
+    async function mount({ element } = {}) {
+        const target = resolveElement(element);
+        if (!target) return { ok: false, reason: 'missing-container' };
+        if (mountedElement === target && target.dataset.vetBotState === 'ready') {
+            return { ok: true, reused: true };
         }
 
+        renderState(target, 'loading', 'Preparando tu orientación', 'Estamos conectando tu cuenta con la guía veterinaria.');
         try {
-            // 2. Obtener miembro actual
-            const member = await window.$memberstackDom.getCurrentMember();
-            if (!member || !member.data) {
-                return log('ℹ️ Sesión no iniciada. El bot no se cargará automáticamente.');
+            const memberstack = await waitForMemberstack();
+            if (!memberstack) throw new Error('Memberstack no está disponible.');
+            const memberResult = await memberstack.getCurrentMember();
+            const member = memberResult?.data;
+            if (!member?.id) {
+                renderState(target, 'session', 'Inicia sesión para continuar', 'La orientación veterinaria está disponible dentro de tu cuenta.');
+                return { ok: false, reason: 'no-session' };
             }
 
-            // 2.1 Verificar plan activo
-            const planConnections = member.data.planConnections || [];
-            const hasActivePlan = planConnections.some(p => p.status === 'ACTIVE');
-
+            const planConnections = member.planConnections || [];
+            const hasActivePlan = planConnections.some(plan => plan.status === 'ACTIVE');
             if (!hasActivePlan) {
-                return log('ℹ️ El miembro no tiene un plan activo. El bot solo está disponible para miembros activos.');
+                renderState(target, 'plan', 'Activa tu membresía', 'La orientación veterinaria 24/7 está incluida para miembros con un plan pagado activo.');
+                return { ok: false, reason: 'inactive-plan' };
             }
 
-            const userEmail = member.data.auth?.email;
-            const firstName = member.data.customFields?.['first-name'] || userEmail?.split('@')[0] || 'Cliente';
-            
-            log('🔑 Obteniendo token de sesión...');
-            const token = await generateToken(member.data.id, userEmail);
+            const email = member.auth?.email || '';
+            const firstName = member.customFields?.['first-name'] || email.split('@')[0] || 'Cliente';
+            const token = await generateToken(member.id, email);
+            if (!token) throw new Error('No se recibió un token válido.');
 
-            if (!token) {
-                return log('❌ Error: No se pudo generar el token de sesión.');
-            }
+            await loadPlugin();
+            const plugin = await waitForPlugin();
+            if (!plugin) throw new Error('El chat no respondió a tiempo.');
 
-            // 3. Cargar el plugin del bot dinámicamente
-            log('📦 Cargando plugin de ChatGPT Builder...');
-            await loadScript(CONFIG.BOT_PLUGIN_URL);
-
-            // 4. Configurar el bot (Polling para asegurar que ktt10 existe)
-            const setupBot = () => {
-                if (typeof ktt10 === 'undefined') {
-                    setTimeout(setupBot, 200);
-                    return;
-                }
-
-                log('🚀 Inicializando Bot...');
-                ktt10.setup({
-                    id: CONFIG.BOT_ID,
-                    accountId: CONFIG.ACCOUNT_ID,
-                    color: CONFIG.PRIMARY_COLOR,
-                    setCustomFields: [
-                        { id: CONFIG.FIELDS.SESSION_TOKEN, value: token },
-                        { id: CONFIG.FIELDS.CLIENT_EMAIL, value: userEmail },
-                        { id: CONFIG.FIELDS.CLIENT_NAME, value: firstName }
-                    ],
-                    email: userEmail,
-                    first_name: firstName
-                    // Nota: No incluimos 'ref' ya que el builder usa el token para el contexto
-                });
-
-                log('✅ Vet-Bot listo y configurado.');
-            };
-
-            setupBot();
-
+            target.innerHTML = '';
+            plugin.setup({
+                id: CONFIG.BOT_ID,
+                accountId: CONFIG.ACCOUNT_ID,
+                color: CONFIG.PRIMARY_COLOR,
+                type: 'container',
+                element: typeof element === 'string' ? element : target,
+                hideHeader: true,
+                loadMessages: true,
+                setCustomFields: [
+                    { id: CONFIG.FIELDS.SESSION_TOKEN, value: token },
+                    { id: CONFIG.FIELDS.CLIENT_EMAIL, value: email },
+                    { id: CONFIG.FIELDS.CLIENT_NAME, value: firstName }
+                ],
+                email,
+                first_name: firstName
+            });
+            mountedElement = target;
+            target.dataset.vetBotState = 'ready';
+            return { ok: true };
         } catch (error) {
-            console.error('[VetBot-Central] Fatal Error:', error);
+            console.error('[PataVetBot] No fue posible iniciar el chat:', error);
+            renderState(target, 'error', 'No pudimos abrir el chat', 'Revisa tu conexión e inténtalo nuevamente en unos momentos.');
+            return { ok: false, reason: 'error' };
         }
     }
 
-    // Iniciar cuando el DOM esté listo o inmediatamente si ya lo está
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    window.PataVetBot = { mount };
 })();
