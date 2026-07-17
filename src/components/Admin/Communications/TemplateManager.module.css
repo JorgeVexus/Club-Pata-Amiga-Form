@@ -249,3 +249,7 @@
     text-align: center;
     color: #666;
 }
+
+/* Admin V2 */
+.container{padding:0;font-family:var(--font-body,'Outfit'),sans-serif}.header{margin-bottom:18px}.header h3{color:#174d49;font-family:var(--font-heading,'Fraiche'),sans-serif;font-size:24px;font-weight:400}.createButton,.saveBtn{min-height:42px;border-radius:11px;background:#21bcaf;font-family:inherit}.templateList{grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}.templateCard{align-items:flex-start;border-color:#e6dfd3;border-radius:16px;padding:18px;box-shadow:none}.templateCard:hover{border-color:#b9ded9;box-shadow:0 8px 22px rgba(45,73,69,.06)}.templateIcon{background:#e7f5f3;color:#087b74}.templateInfo h4{color:#174d49}.badge{background:#eef3f2;color:#52706c}.templateActions button{min-height:36px;border-color:#e2dbcf;border-radius:9px;color:#365853;font-family:inherit}.noData{border:1px dashed #d8d0c4;background:#fbfaf6;color:#71817d}.modal{border:1px solid #e6dfd3;border-radius:20px;box-shadow:0 24px 60px rgba(24,77,73,.16)}.formGroup input,.formGroup select,.formGroup textarea{min-height:42px;border-color:#e2dbcf;border-radius:11px;font-family:inherit}.help{border-left:0;border-radius:10px;background:#eaf6f4;color:#52706c}.cancelBtn{border:1px solid #e2dbcf;background:#fff;color:#365853}
+@media(max-width:640px){.header{align-items:flex-start;flex-direction:column;gap:12px}.createButton{width:100%}.templateList{grid-template-columns:1fr}.modal{margin:14px;padding:20px}}

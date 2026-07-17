@@ -1,0 +1,57 @@
+.materialsRoot {
+    color: #365853;
+    font-family: var(--font-body,'Outfit'), sans-serif;
+}
+
+.materialsRoot :global(h2),
+.materialsRoot :global(h3) {
+    color: #174d49 !important;
+}
+
+.materialsRoot :global(h2) {
+    font-family: var(--font-heading,'Fraiche'), sans-serif !important;
+    font-size: 24px !important;
+    font-weight: 400 !important;
+}
+
+.materialsRoot :global(input) {
+    min-height: 42px;
+    border: 1px solid #e2dbcf !important;
+    border-radius: 11px !important;
+    color: #365853;
+    font-family: inherit !important;
+}
+
+.materialsRoot :global(input:focus) {
+    border-color: #21bcaf !important;
+    outline: 3px solid rgba(33,188,175,.14);
+}
+
+.materialsRoot :global(button) {
+    border-width: 1px !important;
+    box-shadow: none !important;
+    font-family: inherit !important;
+}
+
+.materialsRoot :global(table) {
+    border: 1px solid #e6dfd3;
+    border-radius: 16px !important;
+    box-shadow: 0 8px 24px rgba(45,73,69,.045) !important;
+}
+
+.materialsRoot :global(th) {
+    background: #fbfaf6 !important;
+    color: #87928f !important;
+    font-size: 11px !important;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+}
+
+.materialsRoot :global(td) {
+    color: #365853 !important;
+}
+
+@media (max-width: 768px) {
+    .materialsRoot { overflow-x: auto; }
+    .materialsRoot :global(table) { min-width: 820px; }
+}

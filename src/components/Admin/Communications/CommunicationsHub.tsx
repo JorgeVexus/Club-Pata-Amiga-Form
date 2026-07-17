@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styles from './CommunicationsHub.module.css';
 import TemplateManager from './TemplateManager';
 import MessageSender from './MessageSender';
@@ -29,47 +29,62 @@ export default function CommunicationsHub({ adminName, isSuperAdmin, prefill, au
     return (
         <div className={styles.hubContainer}>
             <div className={styles.hubHeader}>
-                <h1 className={styles.hubTitle}>
-                    📡 Hub de Comunicación: <span className={styles.audienceTag}>{getAudienceLabel()}</span>
-                </h1>
+                <div>
+                    <span className={styles.eyebrow}>Comunicaciones</span>
+                    <h1 className={styles.hubTitle}>Hub de Comunicación</h1>
+                    <p className={styles.hubDescription}>Envía mensajes, administra plantillas y consulta el historial desde un solo lugar.</p>
+                </div>
+                <span className={styles.audienceTag}>{getAudienceLabel()}</span>
             </div>
 
             {/* Tabs Navigation */}
-            <div className={styles.tabsHeader}>
+            <div className={styles.tabsHeader} role="tablist" aria-label="Secciones de comunicación">
                 <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'messaging'}
                     className={`${styles.tabButton} ${activeTab === 'messaging' ? styles.active : ''}`}
                     onClick={() => setActiveTab('messaging')}
                 >
-                    <span className={styles.tabIcon}>📤</span>
-                    Enviar Mensaje
+                    <span className={`${styles.tabIcon} ${styles.sendIcon}`} aria-hidden="true" />
+                    Enviar mensaje
                 </button>
                 <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'templates'}
                     className={`${styles.tabButton} ${activeTab === 'templates' ? styles.active : ''}`}
                     onClick={() => setActiveTab('templates')}
                 >
-                    <span className={styles.tabIcon}>📄</span>
-                    Gestionar Plantillas
+                    <span className={`${styles.tabIcon} ${styles.templateIcon}`} aria-hidden="true" />
+                    Plantillas
                 </button>
                 <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'history'}
                     className={`${styles.tabButton} ${activeTab === 'history' ? styles.active : ''}`}
                     onClick={() => setActiveTab('history')}
                 >
-                    <span className={styles.tabIcon}>📜</span>
+                    <span className={`${styles.tabIcon} ${styles.historyIcon}`} aria-hidden="true" />
                     Historial
                 </button>
                 {audience === 'ambassador' && (
                     <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeTab === 'materials'}
                         className={`${styles.tabButton} ${activeTab === 'materials' ? styles.active : ''}`}
                         onClick={() => setActiveTab('materials')}
                     >
-                        <span className={styles.tabIcon}>🎁</span>
+                        <span className={`${styles.tabIcon} ${styles.materialIcon}`} aria-hidden="true" />
                         Materiales
                     </button>
                 )}
             </div>
 
             {/* Tab Content */}
-            <div className={styles.tabContent}>
+            <div className={styles.tabContent} role="tabpanel">
                 {activeTab === 'messaging' ? (
                     <MessageSender adminName={adminName} prefill={prefill} audience={audience} />
                 ) : activeTab === 'templates' ? (

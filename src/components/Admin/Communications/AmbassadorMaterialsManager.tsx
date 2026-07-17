@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { adminFetch } from '@/utils/admin-fetch';
 import { supabase } from '@/lib/supabase';
+import styles from './AmbassadorMaterialsManager.module.css';
 
 type FileType = 'image' | 'pdf' | 'video' | 'other' | 'newsletter';
 type ContentKind = 'material' | 'newsletter';
@@ -341,7 +342,7 @@ export default function AmbassadorMaterialsManager() {
     }
 
     return (
-        <div style={containerStyle}>
+        <div className={styles.materialsRoot} style={containerStyle}>
             <div style={headerStyle}>
                 <h2 style={titleStyle}>🎁 Materiales Digitales para Embajadores</h2>
                 <button style={addBtnStyle} onClick={() => setShowUploadForm(!showUploadForm)}>

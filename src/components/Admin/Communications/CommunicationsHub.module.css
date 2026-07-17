@@ -1,84 +1,121 @@
 .hubContainer {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    min-width: 0;
+    gap: 18px;
     height: 100%;
+    color: #365853;
+    font-family: var(--font-body,'Outfit'), sans-serif;
 }
 
 .hubHeader {
-    padding: 0 10px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 2px 2px 0;
+}
+
+.eyebrow {
+    display: block;
+    margin-bottom: 7px;
+    color: #88938f;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
 }
 
 .hubTitle {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #2D3748;
     margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    color: #174d49;
+    font-family: var(--font-heading,'Fraiche'), sans-serif;
+    font-size: clamp(25px, 3vw, 34px);
+    font-weight: 400;
+    line-height: 1;
+}
+
+.hubDescription {
+    max-width: 62ch;
+    margin: 9px 0 0;
+    color: #71817d;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .audienceTag {
-    background-color: #00BBB4;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    border: 1px solid #cfe8e5;
+    border-radius: 999px;
+    background: #e7f5f3;
+    color: #087b74;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .055em;
     text-transform: uppercase;
 }
 
 .tabsHeader {
     display: flex;
-    gap: 10px;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 0;
+    align-items: center;
+    width: fit-content;
+    max-width: 100%;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid #e4ddd2;
+    border-radius: 14px;
+    background: #eee9df;
+    overflow-x: auto;
 }
 
 .tabButton {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: center;
+    min-height: 40px;
     gap: 8px;
-    padding: 12px 24px;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    font-size: 1rem;
-    font-weight: 600;
-    color: #666;
+    padding: 9px 15px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: #667773;
+    font-family: var(--font-body,'Outfit'), sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: background-color 180ms ease, color 180ms ease, transform 180ms ease;
 }
 
-.tabButton:hover {
-    color: #00BBB4;
-}
-
-.tabButton.active {
-    color: #00BBB4;
-    border-bottom-color: #00BBB4;
-}
+.tabButton:hover { background: rgba(255,255,255,.65); color: #174d49; }
+.tabButton:active { transform: scale(.98); }
+.tabButton:focus-visible { outline: 3px solid rgba(33,188,175,.28); outline-offset: 2px; }
+.tabButton.active { background: #21bcaf; color: #fff; box-shadow: 0 5px 14px rgba(33,188,175,.18); }
 
 .tabIcon {
-    font-size: 1.2rem;
+    position: relative;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 1.7px solid currentColor;
+    border-radius: 4px;
 }
+.sendIcon::after { content: ''; position: absolute; width: 6px; height: 6px; right: 2px; top: 2px; border-top: 1.7px solid currentColor; border-right: 1.7px solid currentColor; transform: rotate(45deg); }
+.templateIcon::before { content: ''; position: absolute; left: 3px; right: 3px; top: 4px; height: 1.7px; background: currentColor; box-shadow: 0 4px 0 currentColor; }
+.historyIcon { border-radius: 50%; }
+.historyIcon::after { content: ''; position: absolute; left: 7px; top: 3px; width: 1.7px; height: 5px; background: currentColor; transform-origin: bottom; transform: rotate(-35deg); }
+.materialIcon::before { content: ''; position: absolute; left: 7px; top: 0; width: 1.7px; height: 14px; background: currentColor; }
 
 .tabContent {
     flex: 1;
-    overflow-y: auto;
-    padding: 10px 0;
+    min-width: 0;
+    padding: 0;
 }
 
-.emptyState {
-    text-align: center;
-    padding: 60px 20px;
-    color: #999;
-}
-
-.emptyIcon {
-    font-size: 3rem;
-    display: block;
-    margin-bottom: 15px;
-    opacity: 0.5;
+@media (max-width: 768px) {
+    .hubHeader { align-items: flex-start; flex-direction: column; gap: 13px; }
+    .hubDescription { font-size: 12px; }
+    .tabsHeader { width: 100%; }
+    .tabButton { flex: 1 0 auto; padding-inline: 12px; }
 }

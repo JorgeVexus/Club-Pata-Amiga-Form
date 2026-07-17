@@ -129,3 +129,7 @@
     text-align: center;
     color: #00BBB4;
 }
+
+/* Admin V2 */
+.container{padding:0;font-family:var(--font-body,'Outfit'),sans-serif}.header{margin-bottom:16px}.header h3{color:#174d49;font-family:var(--font-heading,'Fraiche'),sans-serif;font-size:24px;font-weight:400}.search{min-height:42px;border-color:#e2dbcf;border-radius:11px;color:#365853;font-family:inherit}.search:focus{border-color:#21bcaf;outline:3px solid rgba(33,188,175,.14)}.tableWrapper{border-color:#e6dfd3;border-radius:16px;box-shadow:0 8px 24px rgba(45,73,69,.045)}.table th{background:#fbfaf6;color:#87928f;font-size:11px;letter-spacing:.045em}.table td{border-top-color:#eee8df;color:#365853}.adminCol{color:#087b74}.userId code{background:#eef3f2;color:#365853}.typeBadge,.statusBadge{border-radius:999px}.email{background:#e7f5f3;color:#087b74}.app{background:#eef3f2;color:#365853}.empty{color:#71817d}
+@media(max-width:768px){.header{align-items:stretch;flex-direction:column;gap:12px}.search{width:100%}.tableWrapper{overflow-x:auto}.table{min-width:760px}}

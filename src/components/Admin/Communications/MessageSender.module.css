@@ -321,7 +321,7 @@
     padding: 14px;
     background: #c53030;
     color: white;
-    border: 2px solid #000;
+    border: 1px solid #e5bcbc;
     border-radius: 50px;
     fontWeight: bold;
     cursor: pointer;
@@ -387,3 +387,8 @@
     color: #555;
     line-height: 1.4;
 }
+
+/* Admin V2 */
+.container{padding:0;font-family:var(--font-body,'Outfit'),sans-serif}.grid{grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;align-items:stretch}.configSection,.previewSection{padding:22px;border:1px solid #e6dfd3;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(45,73,69,.045)}.configSection{gap:22px}.formGroup label{color:#365853;font-size:11px;letter-spacing:.035em}.input,.select{min-height:44px;border-color:#e2dbcf;border-radius:12px;color:#365853;font-family:inherit}.input:focus,.select:focus{border-color:#21bcaf;box-shadow:0 0 0 3px rgba(33,188,175,.14)}.modeToggle,.toggleGroup{background:#eee9df}.activeMode,.toggleBtn.active{color:#087b74;box-shadow:none}.emailBtn,.waBtn{min-height:46px;border-radius:12px;font-family:inherit}.emailBtn{background:#21bcaf}.waBtn{background:#1f8f68}.previewSection{background:#fbfaf6;border-style:solid}.previewHeader label{color:#365853}.previewCard{border:1px solid #eee8df;box-shadow:none}.previewSubject{color:#174d49;background:#fff}.noPreview{color:#82908c}.results{border-color:#e6dfd3;box-shadow:0 12px 28px rgba(45,73,69,.1)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.previewCard{min-height:340px}}
+@media(max-width:560px){.configSection,.previewSection{padding:16px}.actions{grid-template-columns:1fr}}
