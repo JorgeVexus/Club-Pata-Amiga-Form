@@ -104,7 +104,8 @@ test('embedded solidarity client binds native fetch to the browser global', () =
 test('reimbursement pet eligibility includes completed waiting period', () => {
   assert.match(source, /isPetEligibleForReimbursementV2\(pet\)/);
   assert.match(source, /!this\.calculateCarencia\(pet\)\.isWaiting/);
-  assert.match(source, /Faltan \$\{carencia\.daysRemaining\} d&iacute;as/);
+  assert.match(source, /Faltan \$\{carencia\.daysRemaining\} días/);
+  assert.doesNotMatch(source, /status = `Faltan \$\{carencia\.daysRemaining\} d&iacute;as`/);
 });
 
 test('reimbursement submit is disabled when no pet is eligible', () => {

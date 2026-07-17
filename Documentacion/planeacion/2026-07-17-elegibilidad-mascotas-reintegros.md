@@ -22,5 +22,6 @@ La API `/api/solidarity/request` conserva su validacion con `isPetActive`, por l
 
 - Prueba de regresion para la regla visual.
 - Prueba de estado `Faltan N dias`.
+- Prueba de codificacion para impedir que `d&iacute;as` se muestre como texto literal despues de `escapeHtml`.
 - Prueba de envio deshabilitado sin mascotas elegibles.
 - Pruebas de widgets, sintaxis, type-check, build y lint.
