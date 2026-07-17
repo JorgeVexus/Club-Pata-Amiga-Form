@@ -5154,8 +5154,14 @@
             return `<section class="pata-v2-reimbursements"><header class="pata-v2-page-head"><div><h1 class="pata-v2-title">Reintegros</h1><p class="pata-v2-subtitle">Consulta tu disponible del Fondo Solidario y el seguimiento de tus solicitudes.</p></div><button class="pata-v2-add-button" type="button" onclick="window.pataWidget.showNewReimbursementV2()">+ Nueva solicitud</button></header>${this.solidarity.error ? `<div class="pata-v2-error">${this.escapeHtml(this.solidarity.error)}</div>` : ''}<div class="pata-v2-balance-grid">${balances}</div><div><h2 class="pata-v2-section-title">Mis solicitudes</h2><div class="pata-v2-request-list">${rows || '<div class="pata-v2-empty">Aún no tienes solicitudes.</div>'}</div></div></section>`;
         }
 
+        isPetEligibleForReimbursementV2(pet) {
+            return pet.is_active !== false
+                && this.getV2Status(pet).key === 'approved'
+                && !this.calculateCarencia(pet).isWaiting;
+        }
+
         renderV2NewReimbursementView() {
-            const eligible = this.pets.filter(p => p.is_active !== false && this.getV2Status(p).key === 'approved');
+            const eligible = this.pets.filter(pet => this.isPetEligibleForReimbursementV2(pet));
             const categoryData = [
                 { key:'medical_emergency', title:'GASTOS VETERINARIOS', note:'Urgencias, análisis, estudios, cirugía y hospitalización' },
                 { key:'death', title:'FALLECIMIENTO', note:'Gastos funerarios de tu peludo' },
@@ -5166,12 +5172,21 @@
                 const balance = this.solidarity.balances[item.key] || { available:0, limit:0 };
                 return `<button class="pata-v2-support-card ${item.key === initialCategory ? 'is-selected' : ''}" type="button" data-benefit-type="${item.key}"><span>${item.title}</span><strong>${this.formatMoneyV2(balance.available)} disp.</strong><p>${item.note}</p><small>Tope anual ${this.formatMoneyV2(balance.limit)} MXN</small></button>`;
             }).join('');
-            const petCards = this.pets.map(pet => {
+            let petCards = this.pets.map(pet => {
                 const isEligible = eligible.some(item => String(item.id) === String(pet.id));
                 const isSelected = String(eligible[0]?.id) === String(pet.id);
-                const status = isEligible ? 'disponible' : (this.getV2Status(pet).label || 'no disponible').toLowerCase();
+                const carencia = this.calculateCarencia(pet);
+                const petStatus = this.getV2Status(pet);
+                let status = 'no disponible';
+                if (isEligible) status = 'disponible';
+                else if (pet.is_active === false) status = 'dada de baja';
+                else if (petStatus.key !== 'approved') status = (petStatus.label || status).toLowerCase();
+                else if (carencia.isWaiting) status = `Faltan ${carencia.daysRemaining} d&iacute;as`;
                 return `<button class="pata-v2-pet-option ${isSelected ? 'is-selected' : ''}" type="button" data-pet-id="${this.escapeHtml(String(pet.id || ''))}" ${isEligible ? '' : 'disabled'}><span class="pata-v2-pet-option-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8.5 10.5c-1.7 0-3-1.5-3-3.3S6.4 4 7.8 4s2.4 1.6 2.4 3.4m5.3 3.1c1.7 0 3-1.5 3-3.3S17.6 4 16.2 4s-2.4 1.6-2.4 3.4M12 9c-3 0-5.5 2.8-5.5 6 0 2.8 2.1 5 5.5 5s5.5-2.2 5.5-5c0-3.2-2.5-6-5.5-6Z"/></svg></span><span>${this.escapeHtml(pet.name || 'Mascota')} · ${this.escapeHtml(status)}</span></button>`;
             }).join('');
+            const submitDisabled = eligible.length ? '' : 'disabled';
+            const noEligibleNotice = submitDisabled ? '<p class="pata-v2-error">No tienes mascotas con el tiempo de espera completado.</p>' : '';
+            petCards = `${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}${noEligibleNotice}`;
             const documents = [
                 { type:'invoice', categories:'medical_emergency annual_vaccination', title:'Comprobante de gastos', note:'JPG, PNG o PDF' },
                 { type:'medical_report', categories:'medical_emergency', title:'Informe o indicaciones médicas', note:'JPG, PNG o PDF' },
@@ -5193,6 +5208,11 @@
 
         attachV2ReimbursementEvents() {
             const form = document.getElementById('pata-v2-reimbursement-form');
+            if (form) {
+                const petIdField = form.querySelector('[name="petId"]');
+                const submitButton = form.querySelector('.pata-v2-submit');
+                if (submitButton) submitButton.disabled = !petIdField?.value;
+            }
             const updateDocumentVisibility = (benefitType) => {
                 document.querySelectorAll('.pata-v2-document-card').forEach(card => {
                     const visible = (card.dataset.categories || '').split(' ').includes(benefitType);

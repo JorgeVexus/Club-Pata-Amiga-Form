@@ -100,3 +100,14 @@ test('unified widget includes its own solidarity API client for Webflow', () => 
 test('embedded solidarity client binds native fetch to the browser global', () => {
   assert.match(source, /fetchImpl = globalThis\.fetch\.bind\(globalThis\)/);
 });
+
+test('reimbursement pet eligibility includes completed waiting period', () => {
+  assert.match(source, /isPetEligibleForReimbursementV2\(pet\)/);
+  assert.match(source, /!this\.calculateCarencia\(pet\)\.isWaiting/);
+  assert.match(source, /Faltan \$\{carencia\.daysRemaining\} d&iacute;as/);
+});
+
+test('reimbursement submit is disabled when no pet is eligible', () => {
+  assert.match(source, /eligible\.length \? '' : 'disabled'/);
+  assert.match(source, /No tienes mascotas con el tiempo de espera completado/);
+});
