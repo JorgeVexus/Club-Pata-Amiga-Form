@@ -3871,6 +3871,8 @@
         .pata-v2-mobile-actions .pata-v2-account-menu a, .pata-v2-mobile-actions .pata-v2-account-menu button { width: 100%; min-height: 42px; height:auto; display: flex; place-items:unset; align-items: center; justify-content:flex-start; gap: 10px; padding: 10px 12px; border: 0; border-radius: 12px; background: transparent; color: #174f4c; font: 700 14px 'Outfit', sans-serif; text-align: left; text-decoration: none; cursor: pointer; }
         .pata-v2-mobile-actions .pata-v2-account-menu a:hover, .pata-v2-mobile-actions .pata-v2-account-menu button:hover { background: #e7f6f4; }
         .pata-v2-mobile-actions .pata-v2-account-menu button { color: #b33838; }
+        .pata-v2-mobile-actions .pata-v2-emergency-mobile { background:#ee3434; color:#fff; box-shadow:0 8px 18px rgba(185,36,36,.2); }
+        .pata-v2-emergency-mobile svg { width:19px; height:19px; }
         .pata-v2-nav-link {
             width: 100%; min-height: 43px; display: flex; align-items: center; gap: 12px;
             padding: 10px 15px; border: 0; border-radius: 13px; background: transparent;
@@ -4176,6 +4178,7 @@
             this.notificationGlobalEventsAttached = false;
             this.mobileAccountMenuOpen = false;
             this.vetBotScriptPromise = null;
+            this.emergencyWidgetScriptPromise = null;
             this.petCardsScriptPromise = null;
             this.membershipStatus = 'approved';
             this.memberWelcomeShown = true;
@@ -4301,7 +4304,7 @@
                 if (!this.isLocalPreview()) await this.waitForMemberstack();
 
                 if (!this.member && this.isLocalPreview()) {
-                    this.member = { id: 'local-preview-user', customFields: { 'first-name': 'Jorge' } };
+                    this.member = { id: 'local-preview-user', auth: { email: 'jorge@pataamiga.mx' }, customFields: { 'first-name': 'Jorge' }, planConnections: [{ status: 'ACTIVE' }] };
                 }
 
                 if (!this.member) {
@@ -5660,6 +5663,45 @@
             }
         }
 
+        async loadEmergencyWidgetV2() {
+            if (!this.member || window.PataEmergencyWidget) return window.PataEmergencyWidget || null;
+            if (!this.emergencyWidgetScriptPromise) {
+                this.emergencyWidgetScriptPromise = new Promise((resolve, reject) => {
+                    const existing = document.getElementById('pata-emergency-widget-script');
+                    if (existing) {
+                        existing.addEventListener('load', resolve, { once:true });
+                        existing.addEventListener('error', reject, { once:true });
+                        setTimeout(resolve, 500);
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.id = 'pata-emergency-widget-script';
+                    script.src = `${CONFIG.apiUrl}/widgets/emergency-button-widget.js?v=20260717-dashboard-v2-centered`;
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('No se pudo cargar el acceso de emergencia.'));
+                    document.head.appendChild(script);
+                });
+            }
+            try {
+                await this.emergencyWidgetScriptPromise;
+                for (let attempt = 0; attempt < 20 && !window.PataEmergencyWidget; attempt += 1) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                return window.PataEmergencyWidget || null;
+            } catch (error) {
+                console.error('No fue posible cargar el acceso de emergencia:', error);
+                this.emergencyWidgetScriptPromise = null;
+                return null;
+            }
+        }
+
+        async openEmergencyV2() {
+            const emergencyWidget = await this.loadEmergencyWidgetV2();
+            if (!emergencyWidget?.openModal()) {
+                alert('El acceso de emergencia está disponible únicamente para membresías activas.');
+            }
+        }
+
         formatNotificationTimeV2(value) {
             const timestamp = new Date(value).getTime();
             if (!Number.isFinite(timestamp)) return '';
@@ -5840,7 +5882,9 @@
                             <img src="${logoUrl}" alt="Pata Amiga">
                             <div class="pata-v2-mobile-actions">
                                 ${this.renderV2NotificationBell()}
-                                <button type="button" onclick="window.pataWidget.showVetV2()" aria-label="Orientación veterinaria">💬</button>
+                                <button class="pata-v2-emergency-mobile" type="button" onclick="window.pataWidget.openEmergencyV2()" aria-label="Emergencia">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6 19.8 19.8 0 0 1-3.1-8.7A2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2.1z"/></svg>
+                                </button>
                                 ${this.member ? `
                                     <div class="pata-v2-account-menu-wrap">
                                         <button class="pata-v2-hamburger" type="button" onclick="window.pataWidget.toggleMobileAccountMenuV2(event)" aria-label="Abrir menú de cuenta" aria-expanded="${this.mobileAccountMenuOpen}">
@@ -5916,6 +5960,7 @@
             }
             this.startNotificationPollingV2();
             if (isVetView) setTimeout(() => this.mountVetBotV2(), 0);
+            setTimeout(() => this.loadEmergencyWidgetV2(), 0);
             this.hideGlobalLoaders();
             if (this.v2View === 'reimbursements' && !this.solidarity.loaded && !this.solidarity.loading) {
                 setTimeout(() => this.showReimbursementsV2(), 0);

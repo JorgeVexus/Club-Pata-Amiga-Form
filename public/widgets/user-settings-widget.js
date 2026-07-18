@@ -667,6 +667,7 @@
         async init() {
             this.injectStyles();
             await this.createContainer();
+            this.loadAccountNavbar();
             await this.loadMember();
             if (this.member) {
                 // Cargar datos en paralelo para mejor performance
@@ -678,6 +679,15 @@
             } else {
                 this.renderNoSession();
             }
+        }
+
+        loadAccountNavbar() {
+            if (window.PataAccountNavbar || document.getElementById('pata-account-navbar-script')) return;
+            const script = document.createElement('script');
+            script.id = 'pata-account-navbar-script';
+            script.src = `${CONFIG.apiUrl}/widgets/member-account-navbar.js?v=20260717-primary-nav-2`;
+            script.onerror = () => console.error('[SettingsWidget] No fue posible cargar la navegación de cuenta.');
+            document.head.appendChild(script);
         }
 
         injectStyles() {

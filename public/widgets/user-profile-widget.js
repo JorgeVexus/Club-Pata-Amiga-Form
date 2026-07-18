@@ -255,8 +255,18 @@
             const container = document.getElementById('pata-profile');
             if (!container) return;
             this.injectStyles();
+            this.loadAccountNavbar();
             container.innerHTML = '<div class="ppa-widget"><div style="text-align:center;padding:60px;font-family:Outfit,sans-serif;color:#666;font-size:16px;">Cargando tu perfil...</div></div>';
             await this.waitForMemberstack();
+        }
+
+        loadAccountNavbar() {
+            if (window.PataAccountNavbar || document.getElementById('pata-account-navbar-script')) return;
+            const script = document.createElement('script');
+            script.id = 'pata-account-navbar-script';
+            script.src = `${CONFIG.apiUrl}/widgets/member-account-navbar.js?v=20260717-primary-nav-2`;
+            script.onerror = () => console.error('[ProfileWidget] No fue posible cargar la navegación de cuenta.');
+            document.head.appendChild(script);
         }
 
         injectStyles() {

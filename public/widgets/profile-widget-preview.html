@@ -56,6 +56,10 @@
         window.fetch = function(url, opts) {
             const u = url.toString();
 
+            if (u.includes('/api/auth/check-role')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true, role: 'member' }) });
+            }
+
             if (u.includes('/api/user/profile')) {
                 return Promise.resolve({ ok: true, json: () => Promise.resolve({
                     success: true,
@@ -83,6 +87,12 @@
                         ambassador_code: null
                     }
                 })});
+            }
+
+            if (u.includes('/api/notifications')) {
+                return Promise.resolve({ ok: true, json: () => Promise.resolve({ success: true, notifications: [
+                    { id: 'profile-preview-1', title: 'Tu perfil está actualizado', message: 'Tus datos están protegidos y al día.', is_read: false, created_at: new Date().toISOString() }
+                ] }) });
             }
 
             if (u.includes('/api/user/payment-method')) {
@@ -198,6 +208,6 @@
         }
     </script>
 
-    <script src="/widgets/user-profile-widget.js"></script>
+    <script src="/widgets/user-profile-widget.js?v=20260717-primary-nav"></script>
 </body>
 </html>
