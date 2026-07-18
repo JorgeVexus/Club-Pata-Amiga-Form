@@ -1647,7 +1647,7 @@
                                 Protección<br>para tu manada.
                             </h1>
                             <p class="pata-v2-hero-desc">
-                                Membresía de salud para tu perro o gato: orientación veterinaria 24/7, reintegros para gastos veterinarios y una red de centros aliados en todo México. Mantienes a tu veterinario de confianza.
+                                Membresía de salud para tu lomito y/o michi: orientación veterinaria 24/7, reintegros para gastos veterinarios. Mantienes a tu veterinario de confianza.
                             </p>
                             <div class="pata-v2-hero-actions">
                                 <a href="https://app.pataamiga.mx/registro?step=1" class="pata-v2-btn pata-v2-btn-white" id="hero-cta-btn">Proteger a mi peludo</a>
@@ -2009,10 +2009,10 @@
 
             // Integración de compra con Memberstack
             const buyPlansBtn = this.container.querySelector('#buy-plans-btn');
-            
+
             const handlePlanPurchase = async (planType) => {
                 const priceId = CONFIG.plans[planType];
-                
+
                 if (window.$memberstackDom && this.member) {
                     try {
                         await window.$memberstackDom.purchasePlansWithCheckout({
@@ -2042,7 +2042,7 @@
                 const btn = item.querySelector('.pata-v2-faq-btn');
                 const toggleFaq = () => {
                     const isOpen = item.classList.contains('open');
-                    
+
                     // Colapsar los demás acordeones
                     this.container.querySelectorAll('.pata-v2-faq-item').forEach(other => {
                         other.classList.remove('open');
@@ -2079,13 +2079,13 @@
                     this.isWellnessProcessing = true;
                     const submitBtn = this.container.querySelector('#wellness-submit-btn');
                     const statusEl = this.container.querySelector('#wellness-form-status');
-                    
+
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Enviando...';
                     statusEl.style.display = 'none';
 
                     const formData = new FormData(wellnessForm);
-                    
+
                     // Recoger servicios
                     const selectedServices = [];
                     this.container.querySelectorAll('input[name="services"]:checked').forEach(cb => {
@@ -2093,7 +2093,7 @@
                             selectedServices.push(cb.value);
                         }
                     });
-                    
+
                     const otherServiceVal = this.container.querySelector('#pata-v2-otro-service')?.value?.trim() || '';
                     if (cbOtro && cbOtro.checked && otherServiceVal) {
                         selectedServices.push(otherServiceVal);
