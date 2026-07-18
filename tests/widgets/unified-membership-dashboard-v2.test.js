@@ -5,6 +5,7 @@ const path = require('node:path');
 
 const widgetPath = path.resolve(__dirname, '../../public/widgets/unified-membership-widget.js');
 const source = fs.readFileSync(widgetPath, 'utf8');
+const petCardsSource = fs.readFileSync(path.resolve(__dirname, '../../public/widgets/pet-cards-widget.js'), 'utf8');
 
 test('dashboard V2 exposes the reference visual shell', () => {
   assert.match(source, /pata-v2-shell/);
@@ -42,6 +43,11 @@ test('local preview seeds a member before the no-session early return', () => {
   assert.ok(sessionGuard > previewSeed, 'local preview seed must run before the session guard');
 });
 
+test('add-pet preview exposes one available slot without changing production rules', () => {
+  assert.match(source, /searchParams\.has\('add-pet-fix'\)/);
+  assert.match(source, /previewPets\.slice\(0, 2\)/);
+});
+
 test('V2 CSS is isolated from the legacy stylesheet parser context', () => {
   assert.match(source, /style\.textContent = STYLES;/);
   assert.match(source, /v2Style\.id = 'pata-v2-styles'/);
@@ -54,6 +60,25 @@ test('Mis peludos and Ver todos open the same cards-only internal view', () => {
   assert.match(source, /this\.v2View === 'pets'/);
   assert.match(source, /onclick="window\.pataWidget\.showPetsV2\(\)"[^>]*>Ver todos/);
   assert.match(source, /pata-v2-pets-page-head/);
+});
+
+test('new pet actions reuse the functional Pet Cards registration modal', () => {
+  assert.match(source, /async openAddPetFormV2\(\)/);
+  assert.match(source, /window\.ManadaWidget\.showAddForm\(\)/);
+  assert.match(source, /widgets\/pet-cards-widget\.js/);
+  assert.match(source, /addEventListener\('pata:pet-created'/);
+  assert.match(petCardsSource, /dispatchEvent\(new CustomEvent\('pata:pet-created'/);
+  assert.match(source, /onclick="window\.pataWidget\.openAddPetFormV2\(\)"/);
+  assert.doesNotMatch(source, /href="\$\{CONFIG\.addPetUrl\}"/);
+});
+
+test('new pet modal uses the Dashboard V2 visual treatment without changing its flow', () => {
+  assert.match(petCardsSource, /pata-add-modal-v2/);
+  assert.match(petCardsSource, /#pata-add-modal\.pata-add-modal-v2/);
+  assert.match(petCardsSource, /--add-v2-teal:#20BCAF/);
+  assert.match(petCardsSource, /\.pata-step-dot\.active/);
+  assert.match(petCardsSource, /\.pata-type-btn\.active/);
+  assert.match(petCardsSource, /#pata-save-btn/);
 });
 
 test('Fondo Solidario is integrated as internal reimbursement views', () => {

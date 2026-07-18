@@ -3927,14 +3927,14 @@
         .pata-v2-kpi-value { position: relative; z-index: 1; color: var(--v2-ink); font: 400 25px/1 'Fraiche', 'Outfit', sans-serif; }
         .pata-v2-kpi.is-primary .pata-v2-kpi-value { color: white; }
         .pata-v2-kpi-meta, .pata-v2-kpi-link { position: relative; z-index: 1; margin-top: 10px; font-size: 12px; }
-        .pata-v2-kpi-link { color: #007E75; font-weight: 800; text-decoration: none; }
+        .pata-v2-kpi-link { padding:0; border:0; background:transparent; color:#007E75; font:800 12px 'Outfit',sans-serif; text-align:left; text-decoration:none; cursor:pointer; }
         .pata-v2-section { display: grid; gap: 12px; }
         .pata-v2-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
         .pata-v2-section-title { margin: 0; color: var(--v2-ink); font: 400 21px/1 'Fraiche', 'Outfit', sans-serif; }
         .pata-v2-section-link { border: 0; background: transparent; padding: 0; color: #007E75; font-weight: 800; font-size: 12px; text-decoration: none; cursor: pointer; }
         .pata-v2-pets-page-head { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
         .pata-v2-pets-page-head p { margin: 8px 0 0; color: var(--v2-body); font-size: 13px; }
-        .pata-v2-add-button { min-height: 44px; display: inline-flex; align-items: center; padding: 0 22px; border-radius: 999px; background: var(--v2-teal); color: white; font-size: 13px; font-weight: 900; text-decoration: none; }
+        .pata-v2-add-button { min-height:44px; display:inline-flex; align-items:center; padding:0 22px; border:0; border-radius:999px; background:var(--v2-teal); color:white; font:900 13px 'Outfit',sans-serif; text-decoration:none; cursor:pointer; }
         .pata-v2-pet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
         .pata-v2-pet-card {
             min-width: 0; display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 16px;
@@ -4161,6 +4161,7 @@
             this.notificationRefreshInterval = null;
             this.notificationGlobalEventsAttached = false;
             this.vetBotScriptPromise = null;
+            this.petCardsScriptPromise = null;
             this.membershipStatus = 'approved';
             this.memberWelcomeShown = true;
             this.userExtra = { firstName: '', lastName: '', lastAdminResponse: '', actionRequiredFields: [] };
@@ -4173,6 +4174,11 @@
             this.missingPhotosFiles = { photo1: null, photo2: null, photo3: null, photo4: null, photo5: null };
 
             window.UnifiedWidgetInstance = this;
+
+            window.addEventListener('pata:pet-created', async () => {
+                await this.loadData();
+                this.render();
+            });
 
             if (!this.container) return;
             this.init();
@@ -4522,7 +4528,7 @@
                 // 🔴 LOCAL TESTING: Inject 3 pets if on localhost
                 if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
                     console.log('🧪 Unified Widget: Local environment detected, injecting test pets...');
-                    this.pets = [
+                    const previewPets = [
                         {
                             id: 'test-approved',
                             name: 'Simba',
@@ -4551,6 +4557,8 @@
                             photo_url: 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?auto=format&fit=crop&q=80&w=200&h=200'
                         }
                     ];
+                    const searchParams = new URLSearchParams(location.search);
+                    this.pets = searchParams.has('add-pet-fix') ? previewPets.slice(0, 2) : previewPets;
                     this.membershipStatus = 'approved';
                     this.memberWelcomeShown = this.isLocalPreview();
                     this.member = this.member || { id: 'test-user', customFields: { 'first-name': 'Jorge' } };
@@ -5115,7 +5123,7 @@
 
         renderV2PetCards() {
             if (!this.pets.length) {
-                return `<div class="pata-v2-empty">Aún no registras a ningún peludo. <a class="pata-v2-kpi-link" href="${CONFIG.addPetUrl}">Preséntanos al primero →</a></div>`;
+                return `<div class="pata-v2-empty">Aún no registras a ningún peludo. <button class="pata-v2-kpi-link" type="button" onclick="window.pataWidget.openAddPetFormV2()">Preséntanos al primero →</button></div>`;
             }
 
             return this.pets.map((pet, index) => {
@@ -5510,6 +5518,61 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        async openAddPetFormV2() {
+            const activePets = this.pets.filter(pet => pet.is_active !== false && !pet.unsubscribed_at);
+            if (activePets.length >= 3) {
+                alert('Tu manada ya tiene el máximo de 3 mascotas activas.');
+                return;
+            }
+
+            if (!document.getElementById('pata-amiga-manada-widget')) {
+                const bridgeContainer = document.createElement('div');
+                bridgeContainer.id = 'pata-amiga-manada-widget';
+                bridgeContainer.hidden = true;
+                bridgeContainer.setAttribute('aria-hidden', 'true');
+                document.body.appendChild(bridgeContainer);
+            }
+
+            if (!window.ManadaWidget) {
+                if (!this.petCardsScriptPromise) {
+                    this.petCardsScriptPromise = new Promise((resolve, reject) => {
+                        const existing = document.getElementById('pata-pet-cards-widget-script');
+                        if (existing) {
+                            existing.addEventListener('load', resolve, { once:true });
+                            existing.addEventListener('error', reject, { once:true });
+                            setTimeout(resolve, 600);
+                            return;
+                        }
+                        const script = document.createElement('script');
+                        script.id = 'pata-pet-cards-widget-script';
+                        script.src = `${CONFIG.apiUrl}/widgets/pet-cards-widget.js`;
+                        script.onload = resolve;
+                        script.onerror = () => reject(new Error('No se pudo cargar el formulario de mascotas.'));
+                        document.head.appendChild(script);
+                    });
+                }
+                try {
+                    await this.petCardsScriptPromise;
+                    for (let attempt = 0; attempt < 20 && !window.ManadaWidget; attempt += 1) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                    }
+                } catch (error) {
+                    console.error('Error loading pet registration form:', error);
+                    alert('No pudimos abrir el formulario. Intenta de nuevo.');
+                    this.petCardsScriptPromise = null;
+                    return;
+                }
+            }
+
+            if (!window.ManadaWidget?.showAddForm) {
+                alert('No pudimos abrir el formulario. Intenta de nuevo.');
+                return;
+            }
+
+            if (!window.ManadaWidget.member && this.member) window.ManadaWidget.member = this.member;
+            window.ManadaWidget.showAddForm();
+        }
+
         async showCentersV2() {
             this.v2View = 'centers';
             this.render();
@@ -5767,7 +5830,7 @@
                             ${isPetsView ? `
                                 <header class="pata-v2-pets-page-head">
                                     <div><h1 class="pata-v2-title">Mis peludos</h1><p>${activePets.length} de 3 peludos activos. Consulta sus datos y abre el expediente de cada integrante de tu manada.</p></div>
-                                    ${activePets.length < 3 ? `<a class="pata-v2-add-button" href="${CONFIG.addPetUrl}">+ Agregar</a>` : ''}
+                                    ${activePets.length < 3 ? `<button class="pata-v2-add-button" type="button" onclick="window.pataWidget.openAddPetFormV2()">+ Agregar</button>` : ''}
                                 </header>
                             ` : `
                                 <header class="pata-v2-header">
@@ -5783,7 +5846,7 @@
 
                                 <section class="pata-v2-kpi-grid" aria-label="Resumen de membresía">
                                     <article class="pata-v2-kpi is-primary"><span class="pata-v2-kpi-label">MEMBRESÍA</span><strong class="pata-v2-kpi-value">${isMemberApproved ? 'Activa' : 'En revisión'}</strong><span class="pata-v2-kpi-meta">Tu protección Pata Amiga</span></article>
-                                    <article class="pata-v2-kpi"><span class="pata-v2-kpi-label">MIS PELUDOS</span><strong class="pata-v2-kpi-value">${activePets.length} de 3</strong>${activePets.length < 3 ? `<a class="pata-v2-kpi-link" href="${CONFIG.addPetUrl}">+ Registrar otro peludo</a>` : '<span class="pata-v2-kpi-meta">Tu manada está completa</span>'}</article>
+                                    <article class="pata-v2-kpi"><span class="pata-v2-kpi-label">MIS PELUDOS</span><strong class="pata-v2-kpi-value">${activePets.length} de 3</strong>${activePets.length < 3 ? `<button class="pata-v2-kpi-link" type="button" onclick="window.pataWidget.openAddPetFormV2()">+ Registrar otro peludo</button>` : '<span class="pata-v2-kpi-meta">Tu manada está completa</span>'}</article>
                                     <article class="pata-v2-kpi"><span class="pata-v2-kpi-label">REINTEGROS</span><strong class="pata-v2-kpi-value">${availablePet ? `Disponible para ${this.escapeHtml(availablePet.name)}` : 'En espera'}</strong>${availablePet ? `<button class="pata-v2-kpi-link pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">Iniciar solicitud →</button>` : '<span class="pata-v2-kpi-meta">Al completar el período de espera</span>'}</article>
                                 </section>
                             `}

@@ -728,6 +728,136 @@
         /* Referral Validation States */
         .pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
         .pata-form-input.invalid { border-color: #E53E3E; background: #FFF5F5; }
+
+        /* Dashboard V2: visual-only treatment for the new-pet flow */
+        #pata-add-modal.pata-add-modal-v2 {
+            --add-v2-teal:#20BCAF;
+            --add-v2-teal-dark:#087D78;
+            --add-v2-ink:#1E5350;
+            --add-v2-body:#5F706C;
+            --add-v2-line:#E6DFD3;
+            --add-v2-cream:#F8F5EF;
+            --add-v2-orange:#FE8F15;
+            padding:24px;
+            background:rgba(30,83,80,.28);
+            backdrop-filter:blur(14px);
+            -webkit-backdrop-filter:blur(14px);
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-modal-box {
+            width:min(620px,100%);
+            max-width:620px!important;
+            height:auto;
+            max-height:min(90dvh,820px)!important;
+            padding:0!important;
+            border:1px solid rgba(255,255,255,.78)!important;
+            border-radius:26px;
+            background:#fff;
+            box-shadow:0 24px 70px rgba(30,83,80,.2),inset 0 1px 0 rgba(255,255,255,.9);
+            overflow:hidden!important;
+            animation:pataAddV2Enter .28s cubic-bezier(.16,1,.3,1);
+        }
+        #pata-add-modal.pata-add-modal-v2 #pata-add-content {
+            width:100%;
+            max-width:none!important;
+            max-height:min(90dvh,820px)!important;
+            padding:38px 42px 44px!important;
+            overflow-y:auto!important;
+            scrollbar-width:thin;
+            scrollbar-color:#C8D8D4 transparent;
+        }
+        #pata-add-modal.pata-add-modal-v2 #pata-add-content > button[aria-label="Cerrar formulario"] {
+            top:18px!important;
+            right:18px!important;
+            width:36px!important;
+            height:36px!important;
+            display:grid!important;
+            place-items:center!important;
+            border:1px solid var(--add-v2-line)!important;
+            border-radius:50%!important;
+            background:var(--add-v2-cream)!important;
+            color:var(--add-v2-ink)!important;
+            font:500 22px/1 'Outfit',sans-serif!important;
+            transition:transform .2s ease,background .2s ease!important;
+        }
+        #pata-add-modal.pata-add-modal-v2 #pata-add-content > button[aria-label="Cerrar formulario"]:hover { background:#E8F6F4!important; transform:rotate(4deg); }
+        #pata-add-modal.pata-add-modal-v2 #pata-add-content > h2 {
+            margin:0 48px 10px 0!important;
+            color:var(--add-v2-ink)!important;
+            font:400 clamp(28px,5vw,38px)/1.05 'Fraiche','Outfit',sans-serif!important;
+            text-align:left!important;
+            text-transform:none!important;
+            text-wrap:balance;
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-step-indicator { justify-content:flex-start; gap:7px; margin:0 0 30px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-step-dot { width:38px; height:5px; border:0; border-radius:999px; background:#E9E5DD; }
+        #pata-add-modal.pata-add-modal-v2 .pata-step-dot.active { width:38px; height:5px; border:0; border-radius:999px; background:var(--add-v2-teal); }
+        #pata-add-modal.pata-add-modal-v2 .pata-step-label { margin-left:7px; color:#81908C; font:800 11px/1 'Outfit',sans-serif; letter-spacing:.05em; text-transform:uppercase; }
+        #pata-add-modal.pata-add-modal-v2 .pata-form-group { gap:8px; margin-bottom:20px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-form-label { color:var(--add-v2-ink); font:800 13px/1.3 'Outfit',sans-serif; text-transform:none; }
+        #pata-add-modal.pata-add-modal-v2 .pata-form-input,
+        #pata-add-modal.pata-add-modal-v2 .pata-form-select,
+        #pata-add-modal.pata-add-modal-v2 .pata-form-textarea {
+            min-height:50px;
+            width:100%;
+            padding:0 16px;
+            border:1px solid var(--add-v2-line)!important;
+            border-radius:14px!important;
+            background:#FBFAF7;
+            box-shadow:none;
+            color:#30423E;
+            font:500 14px 'Outfit',sans-serif;
+            transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-form-textarea { min-height:112px; padding:14px 16px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-form-input:focus,
+        #pata-add-modal.pata-add-modal-v2 .pata-form-select:focus,
+        #pata-add-modal.pata-add-modal-v2 .pata-form-textarea:focus { outline:0; border-color:var(--add-v2-teal)!important; background:#fff; box-shadow:0 0 0 3px rgba(32,188,175,.13); }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-sel { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0; }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-btn {
+            min-height:100px;
+            padding:15px;
+            border:1px solid var(--add-v2-line);
+            border-radius:16px;
+            background:#FBFAF7;
+            box-shadow:none;
+            color:var(--add-v2-ink);
+            font:800 14px 'Outfit',sans-serif;
+            transition:transform .2s ease,border-color .2s ease,background .2s ease;
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-btn:hover { border-color:var(--add-v2-teal); transform:translateY(-2px); }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-btn:active { transform:scale(.98); }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-btn.active { border-color:var(--add-v2-teal); background:#E6F7F5; box-shadow:inset 0 0 0 1px var(--add-v2-teal); color:var(--add-v2-teal-dark); }
+        #pata-add-modal.pata-add-modal-v2 .pata-type-icon { margin:0 0 6px; font-size:32px; line-height:1; }
+        #pata-add-modal.pata-add-modal-v2 .pata-age-row { align-items:stretch; gap:10px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-age-row > div:first-child .pata-form-input { border-right:1px solid var(--add-v2-line)!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-unit-toggle { min-width:170px; padding:4px; border:1px solid var(--add-v2-line)!important; border-radius:14px!important; background:#F1EFEA; }
+        #pata-add-modal.pata-add-modal-v2 .pata-unit-btn { min-height:40px; border:0; border-radius:10px; background:transparent; color:#657571; font:800 12px 'Outfit',sans-serif; box-shadow:none; }
+        #pata-add-modal.pata-add-modal-v2 .pata-unit-btn.active { background:#fff; color:var(--add-v2-teal-dark); box-shadow:0 2px 8px rgba(30,83,80,.08); }
+        #pata-add-modal.pata-add-modal-v2 .pata-breed-type-switch { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:4px; border:1px solid var(--add-v2-line); border-radius:14px; background:#F1EFEA; }
+        #pata-add-modal.pata-add-modal-v2 .pata-switch-btn { min-height:42px; border:0; border-radius:10px; background:transparent; box-shadow:none; color:#657571; font:800 12px 'Outfit',sans-serif; }
+        #pata-add-modal.pata-add-modal-v2 .pata-switch-btn.active { background:#fff; color:var(--add-v2-teal-dark); box-shadow:0 2px 8px rgba(30,83,80,.08); }
+        #pata-add-modal.pata-add-modal-v2 .pata-info-box { border:0; border-radius:13px; background:#EFF8F6; box-shadow:none; color:var(--add-v2-body); }
+        #pata-add-modal.pata-add-modal-v2 .pata-info-box.error { background:#FFF0EF; color:#A33B35; }
+        #pata-add-modal.pata-add-modal-v2 .pata-upload-box { border:1px dashed #8EDAD3!important; border-radius:16px!important; background:#F2FAF9!important; box-shadow:none!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-upload-box:hover { border-color:var(--add-v2-teal)!important; background:#E9F8F6!important; transform:translateY(-1px); }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn-row { display:flex; gap:10px; margin-top:28px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn { min-height:50px; border:0!important; border-radius:999px; box-shadow:none; font:900 14px 'Outfit',sans-serif; transition:transform .2s ease,filter .2s ease; }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn:hover { transform:translateY(-1px); filter:brightness(.98); }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn:active { transform:scale(.98); }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn-primary,
+        #pata-add-modal.pata-add-modal-v2 #pata-save-btn { background:var(--add-v2-orange)!important; color:#fff!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-btn-secondary { background:#E7F6F4!important; color:var(--add-v2-teal-dark)!important; }
+        @keyframes pataAddV2Enter { from { opacity:0; transform:translateY(18px) scale(.98); } to { opacity:1; transform:translateY(0) scale(1); } }
+
+        @media (max-width:600px) {
+            #pata-add-modal.pata-add-modal-v2 { align-items:flex-end; padding:12px 10px; }
+            #pata-add-modal.pata-add-modal-v2 .pata-modal-box { max-height:calc(100dvh - 20px)!important; border-radius:24px 24px 18px 18px; }
+            #pata-add-modal.pata-add-modal-v2 #pata-add-content { max-height:calc(100dvh - 20px)!important; padding:32px 20px 30px!important; }
+            #pata-add-modal.pata-add-modal-v2 .pata-form-row { display:grid; grid-template-columns:1fr; gap:0; }
+            #pata-add-modal.pata-add-modal-v2 .pata-age-row { display:grid; grid-template-columns:minmax(0,1fr); }
+            #pata-add-modal.pata-add-modal-v2 .pata-unit-toggle { width:100%; min-width:0; }
+            #pata-add-modal.pata-add-modal-v2 .pata-btn-row { flex-direction:column-reverse; }
+        }
         .pata-referral-msg.success { color: #2F855A; }
         .pata-referral-msg.error { color: #C53030; }
         .pata-referral-msg.loading { color: #718096; }
@@ -1928,7 +2058,7 @@
             };
             
             const modal = document.createElement('div');
-            modal.className = 'pata-modal-overlay';
+            modal.className = 'pata-modal-overlay pata-add-modal-v2';
             modal.id = 'pata-add-modal';
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
             modal.innerHTML = `<div class="pata-modal-box" id="pata-add-content" style="max-width:550px; max-height:90vh; overflow-y:auto; padding: 40px; box-sizing: border-box;"></div>`;
@@ -2460,6 +2590,7 @@
                 if (data.success) {
                     alert('¡Mascota registrada! Revisaremos la información pronto.');
                     document.getElementById('pata-add-modal').remove();
+                    window.dispatchEvent(new CustomEvent('pata:pet-created', { detail: { pet: data.pet || null } }));
                     this.init();
                 } else {
                     const missingFields = this.formatMissingFields(data.missingFields);
