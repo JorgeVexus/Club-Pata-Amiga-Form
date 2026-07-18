@@ -27,7 +27,7 @@
             emoji: '💬',
             bg: 'pata-v2-bg-info-bg',
             title: 'Orientación veterinaria 24/7',
-            text: 'Orientación inmediata con IA veterinaria, disponible desde el primer día de tu membresía.'
+            text: 'Disponible desde el primer día de tu membresía.'
         },
         {
             emoji: '🐾',
@@ -1882,7 +1882,7 @@
                         <div class="pata-v2-footer-top">
                             <div class="pata-v2-footer-contact">
                                 <h3 class="pata-v2-footer-h3">Contáctanos</h3>
-                                <a href="mailto:soporte@pataamiga.mx" class="pata-v2-footer-email">✉️ soporte@pataamiga.mx</a>
+                                <a href="mailto:contacto@pataamiga.mx" class="pata-v2-footer-email">✉️ contacto@pataamiga.mx</a>
                                 <div class="pata-v2-socials-row">
                                     <a href="https://www.instagram.com/pataamigamx" target="_blank" rel="noopener noreferrer" class="pata-v2-social-btn" aria-label="Instagram">
                                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
