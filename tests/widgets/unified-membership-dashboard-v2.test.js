@@ -115,6 +115,12 @@ test('reimbursement bank is required, selectable and suggested from CLABE', () =
   assert.doesNotMatch(source, /Banco <small>\(opcional\)<\/small>/);
 });
 
+test('reimbursement keeps all transfer account fields together and uses member-friendly copy', () => {
+  assert.match(source, /Cuenta para tu transferencia \(CLABE\)[\s\S]*Banco[\s\S]*Nombre del titular de la cuenta/);
+  assert.match(source, /Revisaremos que tu peludo cumpla con el periodo de espera y que tengas saldo disponible/);
+  assert.doesNotMatch(source, /El backend validar[aá] elegibilidad/);
+});
+
 test('unified widget includes its own solidarity API client for Webflow', () => {
   assert.match(source, /class EmbeddedSolidarityClient/);
   assert.match(source, /new EmbeddedSolidarityClient\(CONFIG\.apiUrl\)/);
@@ -177,6 +183,15 @@ test('Centros aliados can launch as coming soon without loading test centers', (
   assert.match(source, /Próximamente/);
   assert.match(source, /if \(!CENTERS_DIRECTORY_ENABLED\) return/);
   assert.match(source, /if \(!CENTERS_DIRECTORY_ENABLED\)\s*\{[\s\S]*renderCentersComingSoonV2/s);
+});
+
+test('Dashboard home replaces the active centers directory card with the coming soon design', () => {
+  assert.match(source, /pata-v2-centers-coming-soon--home/);
+  assert.match(source, /Estamos preparando una red para tu manada/);
+  assert.match(source, /Muy pronto encontrar[^<]+veterinarias, tiendas y servicios aliados/);
+  assert.match(source, /pataWidget\.showCentersV2\(\)/);
+  assert.doesNotMatch(source, /Centros aliados cerca de ti/);
+  assert.doesNotMatch(source, /Explorar el directorio/);
 });
 
 test('Dashboard V2 keeps a fixed horizontal navigation visible on mobile', () => {
