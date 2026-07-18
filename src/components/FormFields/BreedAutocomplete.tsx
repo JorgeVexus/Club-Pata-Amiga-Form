@@ -28,6 +28,42 @@ interface BreedAutocompleteProps {
     required?: boolean;
 }
 
+// Helper para parsear y estructurar el warning_message dinámicamente
+const getDynamicWarning = (warningMessage: string, breedName: string) => {
+    if (!warningMessage) return null;
+
+    // Intentamos extraer las enfermedades
+    // El formato esperado es: "... pueden tener [enfermedades]. No cubrimos..."
+    const diseasesMatch = warningMessage.match(/pueden tener\s+([^.]+)\./i);
+    const diseasesRaw = diseasesMatch ? diseasesMatch[1] : '';
+
+    let formattedDiseases = '';
+    if (diseasesRaw) {
+        // Separamos por comas, limpiamos espacios
+        const diseases = diseasesRaw.split(',').map(d => d.trim()).filter(Boolean);
+        if (diseases.length === 1) {
+            formattedDiseases = diseases[0];
+        } else if (diseases.length === 2) {
+            formattedDiseases = `${diseases[0]} o ${diseases[1]}`;
+        } else if (diseases.length > 2) {
+            const last = diseases[diseases.length - 1];
+            const rest = diseases.slice(0, -1).join(', ');
+            formattedDiseases = `${rest} o ${last}`;
+        }
+    }
+
+    // Intentamos extraer la raza en plural para el segundo párrafo
+    // Ej: "⚠️ Los Chihuahua pueden tener..." -> "Chihuahua"
+    // Buscamos lo que esté entre "Los/Las " y " pueden tener"
+    const pluralMatch = warningMessage.match(/(?:Los|Las)\s+(.+?)\s+pueden tener/i);
+    const breedPlural = pluralMatch ? pluralMatch[1] : breedName;
+
+    return {
+        formattedDiseases,
+        breedPlural
+    };
+};
+
 export default function BreedAutocomplete({
     label,
     name,
@@ -169,11 +205,34 @@ export default function BreedAutocomplete({
                 )}
             </div>
 
-            {selectedBreed?.has_genetic_issues && selectedBreed.warning_message && (
-                <div className={styles.warningBox}>
-                    {selectedBreed.warning_message}
-                </div>
-            )}
+            {selectedBreed?.has_genetic_issues && selectedBreed.warning_message && (() => {
+                const dynamicInfo = getDynamicWarning(selectedBreed.warning_message, selectedBreed.name);
+                
+                if (!dynamicInfo || !dynamicInfo.formattedDiseases) {
+                    return (
+                        <div className={styles.warningBox}>
+                            {selectedBreed.warning_message}
+                        </div>
+                    );
+                }
+
+                return (
+                    <div className={styles.warningBoxDynamic}>
+                        <div className={styles.warningTitle}>
+                            ℹ️ <strong>Queremos lo mejor para tu {selectedBreed.name}.</strong> 🐾
+                        </div>
+                        <p className={styles.warningParagraph}>
+                            Sabemos que, como muchas otras razas, los {dynamicInfo.breedPlural} pueden tener mayor predisposición a desarrollar algunas condiciones de salud, como {dynamicInfo.formattedDiseases}.
+                        </p>
+                        <p className={styles.warningParagraph}>
+                            En <strong>Pata Amiga</strong> creemos que la confianza comienza con la transparencia. Por eso, es importante que sepas que nuestra membresía está diseñada para acompañarte ante imprevistos y accidentes. Actualmente, no contempla reintegros relacionados con enfermedades genéticas o hereditarias.
+                        </p>
+                        <p className={styles.warningParagraph}>
+                            Nuestro compromiso es brindarte claridad desde el primer día para que siempre sepas cómo funciona tu membresía y puedas aprovecharla al máximo.
+                        </p>
+                    </div>
+                );
+            })()}
 
             {error && <p className="error-text">{error}</p>}
         </div>

@@ -145,3 +145,37 @@
 .suggestionsList::-webkit-scrollbar-thumb:hover {
     background: #6bc7c4;
 }
+
+/* Caja de advertencia dinámica (estilo premium e informativo) */
+.warningBoxDynamic {
+    margin-top: 1rem;
+    padding: 1.25rem 1.5rem;
+    background: #eefaf9; /* Color de fondo sutil verde/turquesa pastel, muy amigable */
+    border: 2px solid #7DD8D5; /* Color primario del proyecto */
+    border-radius: 20px;
+    color: #2D3748; /* Color de texto oscuro para alta legibilidad */
+    font-size: 0.9rem;
+    line-height: 1.6;
+    animation: slideDown 0.3s ease-out;
+}
+
+.warningTitle {
+    color: #00BBB4; /* Color secundario turquesa más oscuro */
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.warningParagraph {
+    margin-bottom: 0.75rem;
+}
+
+.warningParagraph:last-child {
+    margin-bottom: 0;
+}
+
+.warningParagraph strong {
+    color: #00BBB4;
+}
