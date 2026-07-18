@@ -1692,7 +1692,7 @@
                         <div id="planes" class="pata-v2-planes-container">
                             <div class="pata-v2-planes-info">
                                 <h2 class="pata-v2-h2" style="line-height:1.2;">
-                                    Planes simples,<br>sin letras chiquitas
+                                    Inicia sesión,<br>sin letras chiquitas
                                 </h2>
                                 <div class="pata-v2-planes-grid">
                                     <!-- Plan Mensual -->
