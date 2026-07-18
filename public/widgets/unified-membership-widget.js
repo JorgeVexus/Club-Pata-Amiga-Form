@@ -5367,6 +5367,10 @@
 
         attachV2ReimbursementEvents() {
             const form = document.getElementById('pata-v2-reimbursement-form');
+            const incidentDateInput = form?.querySelector('input[name="incidentDate"]');
+            if (incidentDateInput?.parentElement?.firstChild) {
+                incidentDateInput.parentElement.firstChild.textContent = '¿En qué fecha ocurrió el evento?';
+            }
             if (form) {
                 const petIdField = form.querySelector('[name="petId"]');
                 const submitButton = form.querySelector('.pata-v2-submit');
