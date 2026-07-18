@@ -6,7 +6,7 @@ import styles from './Sidebar.module.css';
 import type { RequestType } from '@/types/admin.types';
 
 interface SidebarProps {
-    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report';
+    activeFilter: RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'all-members' | 'cancellations' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report' | 'pet-unsubscriptions';
     activeSubStatus?: string | null;
     onFilterChange: (filter: any) => void;
     pendingCounts: Record<string, number>;
@@ -68,6 +68,7 @@ export default function Sidebar({
             items: [
                 { id: 'all', label: 'Dashboard Global', icon: '📊' },
                 { id: 'member', label: 'Miembros', icon: '👥', badge: pendingCounts.member },
+                { id: 'pet-unsubscriptions', label: 'Bajas de peludos', icon: '🐾', badge: pendingCounts['pet-unsubscriptions'] },
                 { id: 'ambassador', label: 'Embajadores', icon: '🎯', badge: pendingCounts.ambassador },
                 { id: 'wellness-center', label: 'Centros de bienestar', icon: '🏥', badge: pendingCounts['wellness-center'] },
                 { id: 'terminate-users', label: 'Baja de Usuarios', icon: '🚫' },

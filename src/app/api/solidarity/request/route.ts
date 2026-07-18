@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { SOLIDARITY_LIMITS, getSolidarityAvailableAmount } from '@/utils/solidarity-balance';
 import { getPetCarenciaDate, getDaysUntilActive, isPetActive } from '@/utils/carencia.utils';
+import { getSolidarityCycle } from '@/utils/solidarity-cycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -78,7 +79,7 @@ export async function POST(request: NextRequest) {
 
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, first_name, last_name')
+            .select('id, first_name, last_name, first_payment_at, payment_completed_at, created_at')
             .eq('memberstack_id', memberstackId)
             .single();
 
@@ -121,13 +122,13 @@ export async function POST(request: NextRequest) {
             }, { status: 403, headers: corsHeaders });
         }
 
-        const currentYear = new Date().getFullYear();
-        const startOfYear = `${currentYear}-01-01T00:00:00Z`;
+        const cycle = getSolidarityCycle(user.first_payment_at || user.payment_completed_at || user.created_at);
         const { data: existingRequests, error: balanceError } = await supabaseAdmin
             .from('solidarity_requests')
             .select('benefit_type, requested_amount, approved_amount, status')
             .eq('user_id', user.id)
-            .gte('created_at', startOfYear);
+            .gte('created_at', cycle.start.toISOString())
+            .lt('created_at', cycle.renewal.toISOString());
 
         if (balanceError) throw balanceError;
 
@@ -136,9 +137,16 @@ export async function POST(request: NextRequest) {
         const availableAmount = getSolidarityAvailableAmount(existingRequests || [], benefitType);
 
         if (requestedAmountForBalance > availableAmount) {
+            const fundLabels: Record<string, string> = {
+                medical_emergency: 'fondo de emergencias',
+                annual_vaccination: 'fondo de vacunas',
+                death: 'fondo por fallecimiento',
+            };
             return NextResponse.json({
-                error: `El monto solicitado ($${requestedAmountForBalance}) excede el disponible de tu membresía para este apoyo ($${availableAmount}).`
-            }, { status: 400, headers: corsHeaders });
+                code: 'INSUFFICIENT_SOLIDARITY_BALANCE',
+                availableAmount,
+                error: `Tu solicitud no puede ser procesada como la ingresaste debido a que no cuentas con los fondos suficientes en tu ${fundLabels[benefitType] || 'fondo disponible'}.`
+            }, { status: 409, headers: corsHeaders });
         }
 
         const { data: solidarityRequest, error: requestError } = await supabaseAdmin

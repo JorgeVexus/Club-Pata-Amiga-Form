@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { calculateSolidarityBalances } from '@/utils/solidarity-balance';
+import { getSolidarityCycle } from '@/utils/solidarity-cycle';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -30,11 +31,12 @@ export async function GET(request: NextRequest) {
 
         let userId: string | null = null;
         let resolvedMemberstackId: string | null = memberstackId;
+        let paymentAnchor: string | null = null;
 
         if (memberstackId) {
             const { data: user, error: userError } = await supabaseAdmin
                 .from('users')
-                .select('id, memberstack_id')
+                .select('id, memberstack_id, first_payment_at, payment_completed_at, created_at')
                 .eq('memberstack_id', memberstackId)
                 .single();
 
@@ -44,6 +46,7 @@ export async function GET(request: NextRequest) {
 
             userId = user.id;
             resolvedMemberstackId = user.memberstack_id;
+            paymentAnchor = user.first_payment_at || user.payment_completed_at || user.created_at;
         }
 
         if (petId) {
@@ -64,14 +67,23 @@ export async function GET(request: NextRequest) {
             userId = userId || pet.owner_id;
         }
 
-        const currentYear = new Date().getFullYear();
-        const startOfYear = `${currentYear}-01-01T00:00:00Z`;
+        if (!paymentAnchor) {
+            const { data: owner, error: ownerError } = await supabaseAdmin
+                .from('users')
+                .select('first_payment_at, payment_completed_at, created_at')
+                .eq('id', userId)
+                .single();
+            if (ownerError || !owner) return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404, headers: corsHeaders });
+            paymentAnchor = owner.first_payment_at || owner.payment_completed_at || owner.created_at;
+        }
+        const cycle = getSolidarityCycle(paymentAnchor);
 
         const { data: requests, error } = await supabaseAdmin
             .from('solidarity_requests')
             .select('benefit_type, requested_amount, approved_amount, status')
             .eq('user_id', userId)
-            .gte('created_at', startOfYear);
+            .gte('created_at', cycle.start.toISOString())
+            .lt('created_at', cycle.renewal.toISOString());
 
         if (error) throw error;
 
@@ -80,7 +92,9 @@ export async function GET(request: NextRequest) {
             petId,
             memberstackId: resolvedMemberstackId,
             userId,
-            year: currentYear,
+            year: cycle.renewal.getUTCFullYear(),
+            cycleStart: cycle.start.toISOString(),
+            renewalDate: cycle.renewal.toISOString(),
             balances: calculateSolidarityBalances(requests || []),
         }, { headers: corsHeaders });
     } catch (error: any) {

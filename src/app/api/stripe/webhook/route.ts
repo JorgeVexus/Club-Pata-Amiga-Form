@@ -138,7 +138,7 @@ export async function POST(request: NextRequest) {
 
                     const { data: dbUser } = await supabaseAdmin
                         .from('users')
-                        .select('id')
+                        .select('id, first_payment_at')
                         .or(`email.eq.${userEmail},stripe_customer_id.eq.${customerId}`)
                         .maybeSingle();
 
@@ -146,6 +146,7 @@ export async function POST(request: NextRequest) {
                         const updateData: any = {
                             payment_completed_at: paidAt ? new Date(paidAt).toISOString() : new Date().toISOString(),
                         };
+                        if (!dbUser.first_payment_at) updateData.first_payment_at = updateData.payment_completed_at;
                         if (stripeFields.couponCode) {
                             updateData.coupon_code = stripeFields.couponCode;
                         }

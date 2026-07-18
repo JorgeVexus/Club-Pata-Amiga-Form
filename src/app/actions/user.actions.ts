@@ -629,7 +629,7 @@ export async function getPetsByUserId(memberstackId: string) {
         try {
             const { data: unsubs, error: unsubsError } = await supabase
                 .from('pet_unsubscriptions')
-                .select('pet_id, pet_index, reason, description, created_at')
+                .select('id, pet_id, pet_index, reason, description, status, requested_at, reviewed_at, created_at')
                 .eq('memberstack_id', realMemberstackId)
                 .order('created_at', { ascending: false });
 

@@ -3976,6 +3976,7 @@
         .pata-v2-status.rejected { color: #B83535; background: #FCEAEA; }
         .pata-v2-status.action_required { color: #087C73; background: #DFF4F1; }
         .pata-v2-status.inactive { color: #66706D; background: #EEF0EF; }
+        .pata-v2-status.unsubscribe_pending { color:#8A5A12; background:#FFF0CE; }
         .pata-v2-wait { margin-top: 13px; }
         .pata-v2-wait-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; color: var(--v2-muted); font-size: 10.5px; }
         .pata-v2-wait-row strong { color: #007E75; }
@@ -4191,7 +4192,7 @@
                 if (requestedSection === 'centers') this.v2View = 'centers';
                 if (requestedSection === 'vet') this.v2View = 'vet';
             }
-            this.solidarity = { loading: false, loaded: false, error: '', stats: {}, requests: [], balances: {}, detail: null, messages: [] };
+            this.solidarity = { loading: false, loaded: false, error: '', stats: {}, requests: [], balances: {}, renewalDate: null, detail: null, messages: [] };
             this.centers = { loading: false, loaded: false, error: '', items: [], query: '', service: 'all' };
             this.notifications = { loading: false, loaded: false, error: '', items: [], open: false };
             this.notificationRefreshInterval = null;
@@ -4596,6 +4597,10 @@
                         }
                     ];
                     const searchParams = new URLSearchParams(location.search);
+                    if (searchParams.get('pet-unsubscription') === 'pending') {
+                        previewPets[0].unsubscription_request_status = 'pending';
+                        previewPets[0].unsubscription_requested_at = new Date().toISOString();
+                    }
                     this.pets = searchParams.has('add-pet-fix') ? previewPets.slice(0, 2) : previewPets;
                     this.membershipStatus = 'approved';
                     this.memberWelcomeShown = this.isLocalPreview();
@@ -5139,6 +5144,7 @@
 
         getV2Status(pet) {
             if (pet.is_active === false) return { key: 'inactive', label: 'DADA DE BAJA' };
+            if (pet.unsubscription_request_status === 'pending') return { key: 'unsubscribe_pending', label: 'BAJA SOLICITADA' };
             const status = (pet.status || pet.approval_status || 'pending').toLowerCase();
             const statuses = {
                 approved: { key: 'approved', label: '✓ APROBADO' },
@@ -5238,6 +5244,7 @@
                         annual_vaccination: { limit: 300, used: 0, available: 300 },
                         death: { limit: 2000, used: 0, available: 2000 }
                     };
+                    this.solidarity.renewalDate = '2027-07-14T18:00:00.000Z';
                     this.solidarity.requests = [
                         { id:'mock-1', request_number:'A345', benefit_type:'medical_emergency', status:'in_review', requested_amount:1200, case_title:'Consulta y estudios', created_at:new Date().toISOString(), pet:{ name:'Simba' } },
                         { id:'mock-2', request_number:'A298', benefit_type:'annual_vaccination', status:'paid', requested_amount:300, case_title:'Vacuna anual', created_at:new Date(Date.now()-30*86400000).toISOString(), pet:{ name:'Luna' } }
@@ -5247,6 +5254,7 @@
                     if (!client) throw new Error('No se cargó el cliente de reintegros.');
                     const data = await client.getOverview(this.member.id);
                     this.solidarity.balances = data.balance.balances || data.balance || {};
+                    this.solidarity.renewalDate = data.balance.renewalDate || null;
                     this.solidarity.requests = data.history.requests || [];
                     this.solidarity.stats = data.stats || {};
                 }
@@ -5291,11 +5299,15 @@
                 death:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 20V9l5-5 5 5v11M5 20h14M10 13h4v7"/></svg>',
                 annual_vaccination:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 18 9-9m-6 0 6 6m-8 1-2 2 1 1 2-2m5-10 2-2 4 4-2 2M14 4l6 6"/></svg>'
             };
-            const year = new Date().getFullYear();
+            const renewalDate = this.solidarity.renewalDate ? new Date(this.solidarity.renewalDate) : null;
+            const year = renewalDate && !Number.isNaN(renewalDate.getTime()) ? renewalDate.getFullYear() : new Date().getFullYear();
+            const renewalLabel = renewalDate && !Number.isNaN(renewalDate.getTime())
+                ? renewalDate.toLocaleDateString('es-MX', { day:'numeric', month:'long', year:'numeric' })
+                : `el siguiente aniversario de tu membresía`;
             const balances = ['medical_emergency','death','annual_vaccination'].map(key => {
                 const b = this.solidarity.balances[key] || { limit:0, used:0, available:0 };
                 const usedPercentage = Number(b.limit) > 0 ? Math.min(100, Math.max(0, Number(b.used) / Number(b.limit) * 100)) : 0;
-                return `<article class="pata-v2-balance-card"><div class="pata-v2-balance-head"><span class="pata-v2-balance-label"><i>${icons[key]}</i>${labels[key].toUpperCase()}</span><span>${year}</span></div><div class="pata-v2-balance-amount"><strong>${this.formatMoneyV2(b.available)}</strong><span>disponibles</span></div><div class="pata-v2-balance-track" role="progressbar" aria-label="Saldo utilizado de ${labels[key]}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(usedPercentage)}"><span style="width:${usedPercentage}%"></span></div><p>Usaste ${this.formatMoneyV2(b.used)} de ${this.formatMoneyV2(b.limit)} MXN — tu saldo se renueva en enero.</p></article>`;
+                return `<article class="pata-v2-balance-card"><div class="pata-v2-balance-head"><span class="pata-v2-balance-label"><i>${icons[key]}</i>${labels[key].toUpperCase()}</span><span>${year}</span></div><div class="pata-v2-balance-amount"><strong>${this.formatMoneyV2(b.available)}</strong><span>disponibles</span></div><div class="pata-v2-balance-track" role="progressbar" aria-label="Saldo utilizado de ${labels[key]}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(usedPercentage)}"><span style="width:${usedPercentage}%"></span></div><p>Usaste ${this.formatMoneyV2(b.used)} de ${this.formatMoneyV2(b.limit)} MXN — tu saldo se renueva el ${renewalLabel}.</p></article>`;
             }).join('');
             const rows = this.solidarity.requests.map(r => `<button class="pata-v2-request-row" type="button" onclick="window.pataWidget.showReimbursementDetailV2('${this.escapeHtml(String(r.id))}')"><strong>${this.escapeHtml(r.request_number || r.folio || 'Solicitud')}</strong><span>${this.escapeHtml(r.pet?.name || r.pets?.name || 'Mascota')} · ${labels[r.benefit_type] || r.benefit_type}</span><b>${this.formatMoneyV2(r.requested_amount)}</b><span class="pata-v2-chip">${this.escapeHtml((r.status || 'new').replaceAll('_',' ').toUpperCase())}</span></button>`).join('');
             return `<section class="pata-v2-reimbursements"><header class="pata-v2-page-head"><div><h1 class="pata-v2-title">Reintegros</h1><p class="pata-v2-subtitle">Consulta tu disponible del Fondo Solidario y el seguimiento de tus solicitudes.</p></div><button class="pata-v2-add-button" type="button" onclick="window.pataWidget.showNewReimbursementV2()">+ Nueva solicitud</button></header>${this.solidarity.error ? `<div class="pata-v2-error">${this.escapeHtml(this.solidarity.error)}</div>` : ''}<div class="pata-v2-balance-grid">${balances}</div><div><h2 class="pata-v2-section-title">Mis solicitudes</h2><div class="pata-v2-request-list">${rows || '<div class="pata-v2-empty">Aún no tienes solicitudes.</div>'}</div></div></section>`;
@@ -5343,7 +5355,7 @@
                 { type:'funeral_expense_receipt', categories:'death', title:'Comprobante de gastos funerarios', note:'JPG, PNG o PDF' }
             ].map(doc => `<label class="pata-v2-document-card" data-document-type="${doc.type}" data-categories="${doc.categories}"><input type="file" accept="image/*,.pdf" data-doc-input="${doc.type}"><span class="pata-v2-document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h4M9.5 12h6M9.5 15h6M9.5 18h4"/></svg></span><strong>${doc.title}</strong><small data-file-label>${doc.note}</small></label>`).join('');
             const bankOptions = CLABE_BANK_OPTIONS.map(bank => `<option value="${this.escapeHtml(bank)}">${this.escapeHtml(bank)}</option>`).join('');
-            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">Solicita tu reintegro</h1><p class="pata-v2-subtitle">Acude a tu veterinario de confianza, envíanos tus comprobantes y daremos seguimiento a tu solicitud.</p></header><div class="pata-v2-support-options">${supportCards}</div><form id="pata-v2-reimbursement-form" class="pata-v2-form-card"><input type="hidden" name="benefitType" value="${initialCategory}"><input type="hidden" name="petId" value="${this.escapeHtml(String(eligible[0]?.id || ''))}"><input type="hidden" name="requestType" value="reimbursement"><div class="pata-v2-form-group"><span class="pata-v2-form-label">¿Para quién es el reintegro?</span><div class="pata-v2-pet-options">${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Monto del apoyo solicitado<input name="requestedAmount" type="number" min="1" required placeholder="$ Monto en MXN"></label><label class="pata-v2-field">¿Cuánto pagaste en total? <small>(opcional)</small><input name="totalPaidAmount" type="number" min="0" placeholder="$ Total de la factura"></label><label class="pata-v2-field">¿En qué fecha ocurrió?<input name="incidentDate" type="date" required></label></div><label class="pata-v2-field">Cuéntanos qué ocurrió<textarea name="caseDescription" required></textarea></label><div class="pata-v2-form-group"><span class="pata-v2-form-label">Documentos para tu solicitud</span><div class="pata-v2-document-grid">${documents}</div></div><div class="pata-v2-form-group"><span class="pata-v2-form-label">Datos para tu transferencia</span><div class="pata-v2-field-grid"><label class="pata-v2-field">Cuenta para tu transferencia (CLABE)<input name="bankClabe" inputmode="numeric" minlength="18" maxlength="18" pattern="[0-9]{18}" required placeholder="18 dígitos"><small class="pata-v2-field-help" data-clabe-help>Escribe los 18 dígitos; sugeriremos el banco.</small></label><label class="pata-v2-field">Banco<select name="bankName" required><option value="">Selecciona tu banco</option>${bankOptions}</select><small class="pata-v2-field-help">Puedes cambiar la sugerencia si es necesario.</small></label><label class="pata-v2-field pata-v2-field--wide">Nombre del titular de la cuenta<input name="bankHolder" autocomplete="name" required></label></div></div><div class="pata-v2-notice">Revisaremos que tu peludo cumpla con el periodo de espera y que tengas saldo disponible. Así nos aseguramos de que todo esté listo para ayudarte.</div><div id="pata-v2-reimbursement-error"></div><button class="pata-v2-submit" type="submit">Enviar solicitud</button></form></section>`;
+            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">Solicita tu reintegro</h1><p class="pata-v2-subtitle">Acude a tu veterinario de confianza, envíanos tus comprobantes y daremos seguimiento a tu solicitud.</p></header><div class="pata-v2-support-options">${supportCards}</div><form id="pata-v2-reimbursement-form" class="pata-v2-form-card"><input type="hidden" name="benefitType" value="${initialCategory}"><input type="hidden" name="petId" value="${this.escapeHtml(String(eligible[0]?.id || ''))}"><input type="hidden" name="requestType" value="reimbursement"><div class="pata-v2-form-group"><span class="pata-v2-form-label">¿Para quién es el reintegro?</span><div class="pata-v2-pet-options">${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Monto del apoyo solicitado<input name="requestedAmount" type="number" min="1" required placeholder="$ Monto en MXN"></label><label class="pata-v2-field">¿Cuánto pagaste en total? <small>(opcional)</small><input name="totalPaidAmount" type="number" min="0" placeholder="$ Total de la factura"></label><label class="pata-v2-field">¿En qué fecha ocurrió?<input name="incidentDate" type="date" required></label></div><label class="pata-v2-field">Cuéntanos qué ocurrió<textarea name="caseDescription" required></textarea></label><div class="pata-v2-form-group"><span class="pata-v2-form-label">Documentos para tu solicitud</span><div class="pata-v2-document-grid">${documents}</div></div><div class="pata-v2-form-group"><span class="pata-v2-form-label">Datos para tu transferencia</span><div class="pata-v2-field-grid"><label class="pata-v2-field">Cuenta para tu transferencia (CLABE)<input name="bankClabe" inputmode="numeric" minlength="18" maxlength="18" pattern="[0-9]{18}" required placeholder="18 dígitos"><small class="pata-v2-field-help" data-clabe-help>Escribe los 18 dígitos; sugeriremos el banco.</small></label><label class="pata-v2-field">Banco<select name="bankName" required><option value="">Selecciona tu banco</option>${bankOptions}</select><small class="pata-v2-field-help">Puedes cambiar la sugerencia si es necesario.</small></label><label class="pata-v2-field pata-v2-field--wide">Nombre del titular de la cuenta<input name="bankHolder" autocomplete="name" required></label></div></div><div class="pata-v2-notice" data-insufficient-balance-notice hidden></div><div id="pata-v2-reimbursement-error"></div><button class="pata-v2-submit" type="submit">Enviar solicitud</button></form></section>`;
         }
 
         renderV2ReimbursementDetailView() {
@@ -5371,12 +5383,30 @@
             if (form) {
                 const benefitInput = form.querySelector('input[name="benefitType"]');
                 const petInput = form.querySelector('input[name="petId"]');
+                const amountInput = form.querySelector('input[name="requestedAmount"]');
+                const insufficientNotice = form.querySelector('[data-insufficient-balance-notice]');
+                const submitButton = form.querySelector('.pata-v2-submit');
+                const fundLabels = { medical_emergency:'fondo de emergencias', annual_vaccination:'fondo de vacunas', death:'fondo por fallecimiento' };
+                const updateBalanceValidation = () => {
+                    const available = Number(this.solidarity.balances[benefitInput.value]?.available || 0);
+                    const requested = Number(amountInput.value || 0);
+                    const insufficient = requested > available;
+                    insufficientNotice.hidden = !insufficient;
+                    insufficientNotice.textContent = insufficient
+                        ? `Tu solicitud no puede ser procesada como la ingresaste debido a que no cuentas con los fondos suficientes en tu ${fundLabels[benefitInput.value] || 'fondo disponible'}.`
+                        : '';
+                    amountInput.setCustomValidity(insufficient ? `El monto máximo disponible es ${this.formatMoneyV2(available)} MXN.` : '');
+                    submitButton.disabled = !petInput.value || insufficient;
+                    return insufficient;
+                };
+                amountInput.addEventListener('input', updateBalanceValidation);
                 document.querySelectorAll('.pata-v2-support-card').forEach(card => {
                     card.onclick = () => {
                         document.querySelectorAll('.pata-v2-support-card').forEach(item => item.classList.remove('is-selected'));
                         card.classList.add('is-selected');
                         benefitInput.value = card.dataset.benefitType;
                         updateDocumentVisibility(benefitInput.value);
+                        updateBalanceValidation();
                     };
                 });
                 document.querySelectorAll('.pata-v2-pet-option:not(:disabled)').forEach(card => {
@@ -5384,6 +5414,7 @@
                         document.querySelectorAll('.pata-v2-pet-option').forEach(item => item.classList.remove('is-selected'));
                         card.classList.add('is-selected');
                         petInput.value = card.dataset.petId;
+                        updateBalanceValidation();
                     };
                 });
                 document.querySelectorAll('.pata-v2-document-card input[type="file"]').forEach(input => {
@@ -5413,11 +5444,16 @@
                     clabeHelp.classList.toggle('is-error', isComplete && !isValid);
                 };
                 updateDocumentVisibility(benefitInput.value);
+                updateBalanceValidation();
             }
             if (form) form.onsubmit = async (event) => {
                 event.preventDefault();
                 const submit = form.querySelector('button[type="submit"]');
                 const errorBox = document.getElementById('pata-v2-reimbursement-error');
+                const amount = Number(form.querySelector('input[name="requestedAmount"]').value || 0);
+                const benefit = form.querySelector('input[name="benefitType"]').value;
+                const available = Number(this.solidarity.balances[benefit]?.available || 0);
+                if (amount > available) return;
                 submit.disabled = true;
                 try {
                     const values = Object.fromEntries(new FormData(form).entries());
@@ -7578,7 +7614,7 @@
                                 ` : ''}
 
                                 <!-- 🗑️ Solicitar Baja Section -->
-                                ${pet.is_active !== false ? `
+                                ${pet.is_active !== false && pet.unsubscription_request_status !== 'pending' ? `
                                     <div style="margin-top: 30px; border-top: 1px dashed #ddd; padding-top: 20px;">
                                         <button class="pata-btn-unsubscribe" onclick="window.pataWidget.handlePetUnsubscribe('${pet.id}', ${petIndex}, '${this.escapeHtml(pet.name)}')">
                                             <span>👋</span> Solicitar baja de este peludito
@@ -7586,6 +7622,12 @@
                                         <p style="font-size: 11px; color: #888; text-align: center; margin-top: 10px; font-style: italic;">
                                             Al dar de baja a un peludito, liberas un espacio en tu manada para proteger a otro integrante.
                                         </p>
+                                    </div>
+                                ` : pet.unsubscription_request_status === 'pending' ? `
+                                    <div style="margin-top:30px;background:#FFF7E8;border:1px solid #F0D8A8;padding:20px;border-radius:20px;text-align:center;">
+                                        <span style="font-size:24px;display:block;margin-bottom:10px;">⏳</span>
+                                        <p style="font-size:14px;font-weight:800;color:#8A5A12;margin:0 0 5px;">Baja solicitada</p>
+                                        <p style="font-size:12px;color:#8A6A35;margin:0;">El equipo está revisando tu solicitud. Este espacio seguirá ocupado hasta que sea aprobada.</p>
                                     </div>
                                 ` : `
                                     <div style="margin-top: 30px; background: #f8f9fa; border: 2px solid #ddd; padding: 20px; border-radius: 20px; text-align: center;">
@@ -8399,7 +8441,7 @@
                 });
                 const data = await res.json();
                 if (data.success) {
-                    alert(`La baja de ${petName} se ha procesado correctamente.`);
+                    alert(data.status === 'pending' ? `La solicitud de baja de ${petName} quedó en revisión.` : `La baja de ${petName} se ha procesado correctamente.`);
                     window.location.reload();
                 } else alert('Error: ' + (data.error || 'Inténtalo más tarde.'));
             } catch (err) { alert('Ocurrió un error inesperado.'); } finally { this.hideGlobalLoaders(); }

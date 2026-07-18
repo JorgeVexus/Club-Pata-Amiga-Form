@@ -8,9 +8,30 @@ import {
   getEffectiveActivePetCount,
   getRegistrationActivePetCount,
   getSolidarityPetLifecycleSummary,
+  isApprovedUnsubscription,
   isUnsubscribedPetWithHistory,
   isUnsubscribedPet,
 } from '../src/utils/pet-lifecycle.js';
+
+test('only approved or legacy unsubscription records are terminal', () => {
+  assert.equal(isApprovedUnsubscription({ status: 'pending' }), false);
+  assert.equal(isApprovedUnsubscription({ status: 'rejected' }), false);
+  assert.equal(isApprovedUnsubscription({ status: 'approved' }), true);
+  assert.equal(isApprovedUnsubscription({}), true);
+});
+
+test('pending unsubscription keeps the pet active and exposes request metadata', () => {
+  const [pet] = enrichPetsWithLifecycle(
+    [{ id: 'pet-1', name: 'Simba', memberstack_slot: 1, is_active: true, status: 'approved' }],
+    { 'pet-1-name': 'Simba', 'pet-1-is-active': 'true' },
+    [{ id: 'request-1', pet_id: 'pet-1', pet_index: 1, pet_name: 'Simba', status: 'pending' }],
+  );
+
+  assert.equal(pet.is_active, true);
+  assert.equal(pet.status, 'approved');
+  assert.equal(pet.unsubscription_request_status, 'pending');
+  assert.equal(pet.unsubscription_request_id, 'request-1');
+});
 
 test('getAvailablePetSlot reuses an inactive Memberstack slot', () => {
   const customFields = {

@@ -33,6 +33,10 @@ function isUnsubscribedPet(pet = {}) {
     return pet?.is_active === false || pet?.status === 'unsubscribed';
 }
 
+function isApprovedUnsubscription(item = {}) {
+    return !item?.status || item.status === 'approved';
+}
+
 function isUnsubscribedPetWithHistory(pet = {}, unsubscriptions = []) {
     if (isUnsubscribedPet(pet)) return true;
 
@@ -91,11 +95,23 @@ function buildLatestUnsubscriptionMap(unsubscriptions = []) {
     const byPetId = new Map();
     const bySlot = new Map();
     const bySlotAndName = new Map();
+    const pendingByPetId = new Map();
+    const pendingBySlotAndName = new Map();
 
     for (const item of unsubscriptions) {
         if (!item) continue;
         const slot = Number(item.pet_index);
         const petName = typeof item.pet_name === 'string' ? item.pet_name.trim().toLowerCase() : '';
+
+        if (item.status === 'pending') {
+            if (item.pet_id && !pendingByPetId.has(item.pet_id)) pendingByPetId.set(item.pet_id, item);
+            if (Number.isInteger(slot) && slot > 0 && petName && !pendingBySlotAndName.has(`${slot}:${petName}`)) {
+                pendingBySlotAndName.set(`${slot}:${petName}`, item);
+            }
+            continue;
+        }
+
+        if (!isApprovedUnsubscription(item)) continue;
 
         if (item.pet_id && !byPetId.has(item.pet_id)) {
             byPetId.set(item.pet_id, item);
@@ -110,11 +126,11 @@ function buildLatestUnsubscriptionMap(unsubscriptions = []) {
         }
     }
 
-    return { byPetId, bySlot, bySlotAndName };
+    return { byPetId, bySlot, bySlotAndName, pendingByPetId, pendingBySlotAndName };
 }
 
 function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions = []) {
-    const { byPetId, bySlot, bySlotAndName } = buildLatestUnsubscriptionMap(unsubscriptions);
+    const { byPetId, bySlot, bySlotAndName, pendingByPetId, pendingBySlotAndName } = buildLatestUnsubscriptionMap(unsubscriptions);
 
     return pets.map((pet, index) => {
         const slot = Number(pet.memberstack_slot) || index + 1;
@@ -125,6 +141,10 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
             byPetId.get(pet.id) ||
             (petName ? bySlotAndName.get(`${slot}:${petName}`) : null) ||
             bySlot.get(slot) ||
+            null;
+        const pendingUnsubscription =
+            pendingByPetId.get(pet.id) ||
+            (petName ? pendingBySlotAndName.get(`${slot}:${petName}`) : null) ||
             null;
         const unsubscriptionMatchesPetId = Boolean(unsubscription?.pet_id && unsubscription.pet_id === pet.id);
         const unsubscriptionMatchesName = Boolean(
@@ -151,6 +171,9 @@ function enrichPetsWithLifecycle(pets = [], customFields = {}, unsubscriptions =
             unsubscribed_reason: pet.unsubscribed_reason || appliedUnsubscription?.reason || null,
             unsubscribed_description: pet.unsubscribed_description || appliedUnsubscription?.description || null,
             unsubscribed_at: pet.unsubscribed_at || appliedUnsubscription?.created_at || null,
+            unsubscription_request_status: pendingUnsubscription ? 'pending' : null,
+            unsubscription_request_id: pendingUnsubscription?.id || null,
+            unsubscription_requested_at: pendingUnsubscription?.requested_at || pendingUnsubscription?.created_at || null,
         };
     });
 }
@@ -214,6 +237,7 @@ module.exports = {
     getAvailablePetSlot,
     getSolidarityPetLifecycleSummary,
     isFalseLike,
+    isApprovedUnsubscription,
     isTrueLike,
     isUnsubscribedPet,
     isUnsubscribedPetWithHistory,

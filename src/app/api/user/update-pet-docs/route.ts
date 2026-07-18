@@ -78,7 +78,7 @@ export async function POST(req: NextRequest) {
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
-            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .select('id, pet_id, pet_index, pet_name, reason, description, status, requested_at, reviewed_at, created_at')
             .eq('memberstack_id', memberId)
             .order('created_at', { ascending: false });
 

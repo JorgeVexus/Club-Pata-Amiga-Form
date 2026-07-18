@@ -100,7 +100,7 @@ export async function POST(
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
-            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .select('id, pet_id, pet_index, pet_name, reason, description, status, requested_at, reviewed_at, created_at')
             .eq('memberstack_id', owner.memberstack_id)
             .order('created_at', { ascending: false });
 

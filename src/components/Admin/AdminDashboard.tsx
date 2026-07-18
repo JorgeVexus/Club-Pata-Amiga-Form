@@ -38,12 +38,13 @@ import EmergencyReportTable from './EmergencyReportTable';
 import CampaignLeadsManager from './CampaignLeadsManager';
 import AdminOverview from './V2/AdminOverview';
 import AdminLoadingShell from './V2/AdminLoadingShell';
+import PetUnsubscriptionsTable from './PetUnsubscriptionsTable';
 
 function DashboardContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     
-    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report'>('all');
+    const [activeFilter, setActiveFilter] = useState<RequestType | 'all' | 'admins' | 'legal-docs' | 'settings' | 'newsletter' | 'wellness-leads' | 'campaign-leads' | 'emergency-report' | 'pet-unsubscriptions'>('all');
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [selectedSolidarityRequestId, setSelectedSolidarityRequestId] = useState<string | null>(null);
 
@@ -69,6 +70,7 @@ function DashboardContent() {
         'terminate-users': 0,
         'newsletter': 0,
         'wellness-leads': 0,
+        'pet-unsubscriptions': 0,
     });
 
     const [subFilter, setSubFilter] = useState<string | null>(null);
@@ -326,6 +328,10 @@ function DashboardContent() {
             const wellnessLeadsRes = await adminFetch('/api/admin/wellness-leads?status=new&limit=1');
             const wellnessLeadsData = await wellnessLeadsRes.json();
             if (wellnessLeadsData.success) setPendingCounts(prev => ({ ...prev, 'wellness-leads': wellnessLeadsData.total || 0 }));
+
+            const petUnsubscriptionsRes = await adminFetch('/api/admin/pet-unsubscriptions');
+            const petUnsubscriptionsData = await petUnsubscriptionsRes.json();
+            if (petUnsubscriptionsData.success) setPendingCounts(prev => ({ ...prev, 'pet-unsubscriptions': petUnsubscriptionsData.count || 0 }));
         } catch (error) { console.error(error); }
     }
 
@@ -441,6 +447,8 @@ function DashboardContent() {
                 return <LegalDocsManager />;
             case 'cancellations':
                 return <CancellationsTable />;
+            case 'pet-unsubscriptions':
+                return <PetUnsubscriptionsTable refreshKey={refreshKey} />;
             case 'emergency-report':
                 return <EmergencyReportTable refreshKey={refreshKey} />;
             default:

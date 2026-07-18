@@ -31,7 +31,7 @@ async function updateMemberStatusFromPets(memberstackId: string) {
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')
-            .select('pet_id, pet_index, pet_name, reason, description, created_at')
+            .select('id, pet_id, pet_index, pet_name, reason, description, status, requested_at, reviewed_at, created_at')
             .eq('memberstack_id', memberstackId)
             .order('created_at', { ascending: false });
 
