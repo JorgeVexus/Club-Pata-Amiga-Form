@@ -28,6 +28,10 @@
         }
     };
 
+    // Reversible launch flag: keep the directory implementation ready while
+    // production displays the coming-soon state and never loads test centers.
+    const CENTERS_DIRECTORY_ENABLED = false;
+
     const CLABE_BANK_CODES = {
         '002':'Citibanamex', '012':'BBVA', '014':'Santander', '021':'HSBC',
         '030':'BanBajio', '036':'Inbursa', '044':'Scotiabank', '058':'Banregio',
@@ -4039,6 +4043,16 @@
         .pata-v2-notice { padding:12px 14px; border-radius:12px; background:#FFF7E8; color:#8A5A12; font-size:12px; }
         .pata-v2-error { padding:12px; border-radius:12px; background:#FCEAEA; color:#A52D2D; }
         .pata-v2-centers-page { display:grid; gap:16px; }
+        .pata-v2-centers-coming-soon { position:relative; min-height:min(520px,62vh); display:grid; place-items:center; overflow:hidden; padding:clamp(28px,6vw,72px); border:1px solid #E8E0D5; border-radius:24px; background:#fff; box-shadow:0 10px 30px rgba(30,83,80,.06); text-align:center; }
+        .pata-v2-centers-coming-soon::before { content:''; position:absolute; width:260px; height:260px; right:-90px; top:-105px; border-radius:50%; background:#E5F7F5; }
+        .pata-v2-centers-coming-soon::after { content:''; position:absolute; width:190px; height:190px; left:-75px; bottom:-90px; border-radius:50%; background:#FFF2DD; }
+        .pata-v2-centers-coming-soon-inner { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; max-width:600px; }
+        .pata-v2-centers-coming-soon-badge { display:inline-flex; align-items:center; min-height:30px; margin-bottom:20px; padding:0 14px; border-radius:999px; background:#E5F7F5; color:#087D78; font:800 12px 'Outfit',sans-serif; letter-spacing:.06em; text-transform:uppercase; }
+        .pata-v2-centers-coming-soon-icon { position:relative; width:72px; height:72px; margin-bottom:22px; border-radius:22px; background:var(--v2-teal); box-shadow:0 12px 24px rgba(0,187,180,.2); transform:rotate(-3deg); }
+        .pata-v2-centers-coming-soon-icon::before { content:''; position:absolute; width:22px; height:22px; left:25px; top:18px; border:5px solid #fff; border-radius:50%; box-sizing:border-box; }
+        .pata-v2-centers-coming-soon-icon::after { content:''; position:absolute; left:31px; top:38px; width:11px; height:18px; background:#fff; clip-path:polygon(50% 100%,0 0,100% 0); }
+        .pata-v2-centers-coming-soon h2 { margin:0; color:var(--v2-ink); font:400 clamp(30px,4vw,46px)/1.05 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-centers-coming-soon p { max-width:520px; margin:16px 0 0; color:#647572; font:500 clamp(15px,2vw,18px)/1.55 'Outfit',sans-serif; }
         .pata-v2-centers-search { display:flex; align-items:center; gap:10px; padding:6px 7px 6px 17px; border-radius:999px; background:#fff; box-shadow:0 2px 12px rgba(30,83,80,.08); }
         .pata-v2-centers-search span { color:#6E7F7B; font-size:16px; }
         .pata-v2-centers-search input { min-width:0; flex:1; height:40px; border:0; outline:0; background:transparent; color:var(--v2-ink); font:500 13.5px 'Outfit',sans-serif; }
@@ -5411,7 +5425,14 @@
             return matched?.[0] || key || 'other';
         }
 
+        renderCentersComingSoonV2() {
+            return `<section class="pata-v2-centers-page"><header><h1 class="pata-v2-title">Centros aliados</h1><p class="pata-v2-subtitle">Beneficios exclusivos para miembros y sus peludos.</p></header><article class="pata-v2-centers-coming-soon" aria-labelledby="pata-v2-centers-coming-soon-title"><div class="pata-v2-centers-coming-soon-inner"><span class="pata-v2-centers-coming-soon-badge">Próximamente</span><span class="pata-v2-centers-coming-soon-icon" aria-hidden="true"></span><h2 id="pata-v2-centers-coming-soon-title">Estamos preparando una red para tu manada</h2><p>Muy pronto encontrarás aquí veterinarias, tiendas y servicios aliados con beneficios especiales para miembros de Pata Amiga.</p></div></article></section>`;
+        }
+
         renderV2CentersView() {
+            if (!CENTERS_DIRECTORY_ENABLED) {
+                return this.renderCentersComingSoonV2();
+            }
             const services = {
                 all:{ label:'Todos', icon:'' }, clinic:{ label:'Clínicas', singular:'Clínica', icon:'🏥' },
                 store:{ label:'Tiendas', singular:'Tienda', icon:'🛒' }, hotel:{ label:'Hoteles', singular:'Hotel', icon:'🏨' },
@@ -5493,6 +5514,7 @@
             this.v2View = 'centers';
             this.render();
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (!CENTERS_DIRECTORY_ENABLED) return;
             if (this.centers.loaded || this.centers.loading) return;
             this.centers.loading = true;
             this.centers.error = '';
@@ -5800,7 +5822,7 @@
             if (this.v2View === 'reimbursements' && !this.solidarity.loaded && !this.solidarity.loading) {
                 setTimeout(() => this.showReimbursementsV2(), 0);
             }
-            if (this.v2View === 'centers' && !this.centers.loaded && !this.centers.loading && !this.centers.error) {
+            if (CENTERS_DIRECTORY_ENABLED && this.v2View === 'centers' && !this.centers.loaded && !this.centers.loading && !this.centers.error) {
                 setTimeout(() => this.showCentersV2(), 0);
             }
         }

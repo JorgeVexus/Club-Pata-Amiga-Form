@@ -146,6 +146,14 @@ test('Centros aliados clears stale search state and exposes reset filters', () =
   assert.match(source, /this\.centers\.service = 'all'/);
 });
 
+test('Centros aliados can launch as coming soon without loading test centers', () => {
+  assert.match(source, /const CENTERS_DIRECTORY_ENABLED = false/);
+  assert.match(source, /pata-v2-centers-coming-soon/);
+  assert.match(source, /Próximamente/);
+  assert.match(source, /if \(!CENTERS_DIRECTORY_ENABLED\) return/);
+  assert.match(source, /if \(!CENTERS_DIRECTORY_ENABLED\)\s*\{[\s\S]*renderCentersComingSoonV2/s);
+});
+
 test('Dashboard V2 keeps a fixed horizontal navigation visible on mobile', () => {
   assert.match(source, /pata-v2-mobile-tabbar/);
   assert.match(source, /position:fixed;[^}]*bottom:0/);
