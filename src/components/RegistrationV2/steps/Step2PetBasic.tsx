@@ -58,7 +58,7 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
 
     const handleAddPet = () => {
         if (pets.length >= 3) {
-            showToast('Máximo 3 mascotas permitidas', 'warning');
+            showToast('Máximo 3 peludos permitidos', 'warning');
             return;
         }
         setPets([...pets, { petType: '', petName: '', petAge: 0, petAgeUnit: 'years' }]);
@@ -201,14 +201,14 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                                 <div key={index} className={styles.petCard}>
                                     <div className={styles.petCardHeader}>
                                         <div className={styles.petBadgeLabel}>
-                                            🐾 Mascota {index + 1}
+                                            🐾 Peludo {index + 1}
                                         </div>
                                         {pets.length > 1 && (
                                             <button 
                                                 type="button" 
                                                 className={styles.removePetButton}
                                                 onClick={() => handleRemovePet(index)}
-                                                title="Eliminar mascota"
+                                                title="Eliminar peludo"
                                             >
                                                 ✕
                                             </button>
@@ -272,7 +272,7 @@ export default function Step2PetBasic({ data, onNext, onBack, showToast }: Step2
                                     onClick={handleAddPet}
                                 >
                                     <span className={styles.addPetIcon}>+</span>
-                                    Añadir otra mascota
+                                    Añadir otro peludo
                                 </button>
                             )}
 

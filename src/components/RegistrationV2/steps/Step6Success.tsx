@@ -16,7 +16,7 @@ interface Step6SuccessProps {
 
 function formatPetNames(names: string[]) {
     const cleanedNames = names.map((name) => name.trim()).filter(Boolean);
-    if (cleanedNames.length === 0) return 'tu mascota';
+    if (cleanedNames.length === 0) return 'tu peludo';
     if (cleanedNames.length === 1) return cleanedNames[0];
     if (cleanedNames.length === 2) return `${cleanedNames[0]} y ${cleanedNames[1]}`;
     return `${cleanedNames.slice(0, -1).join(', ')} y ${cleanedNames[cleanedNames.length - 1]}`;
@@ -38,7 +38,7 @@ export default function Step6Success({ petName, petNames = [], member, userEmail
                 trackCompleteRegistration({
                     content_name: 'Full Registration Complete',
                     content_category: 'registration',
-                    pet_name: petName || 'Mascota'
+                    pet_name: petName || 'Peludo'
                 });
             } catch (err) {
                 console.warn('MetaPixel tracking failed (non-blocking):', err);
@@ -114,7 +114,7 @@ export default function Step6Success({ petName, petNames = [], member, userEmail
                             Tu membresía ya quedó activa.
                         </h3>
                         <p className={styles.formDescription}>
-                            Revisaremos la información de {petsReviewLabel} y te notificaremos el resultado de cada mascota.
+                            Revisaremos la información de {petsReviewLabel} y te notificaremos el resultado de cada peludo.
                         </p>
                     </div>
 

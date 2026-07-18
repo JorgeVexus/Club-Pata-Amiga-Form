@@ -101,7 +101,7 @@ export default function Step3PlanSelection({
 
     // Resumen de mascota
     const primaryPet = normalizePetBasicList(data?.petBasic)[0];
-    const petName = primaryPet?.petName || 'tu mascota';
+    const petName = primaryPet?.petName || 'tu peludo';
     const petType = primaryPet?.petType === 'gato' ? 'gato' : 'perro';
     const petNickname = petType === 'gato' ? 'michi' : 'lomito';
     const canCheckout = hasValidPetBasic(data?.petBasic);
@@ -199,7 +199,7 @@ export default function Step3PlanSelection({
 
     const handleContinue = async () => {
         if (!canCheckout) {
-            showToast('Antes de pagar necesitamos registrar al menos una mascota.', 'error');
+            showToast('Antes de pagar necesitamos registrar al menos un peludo.', 'error');
             onBack();
             return;
         }
@@ -360,7 +360,7 @@ export default function Step3PlanSelection({
                                     <span>
                                         ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>!
                                         <br />
-                                        <small>Tu beneficio de 90 días de carencia ha sido aplicado.</small>
+                                        <small>Tu beneficio de 90 días de tiempo de espera ha sido aplicado.</small>
                                     </span>
                                 </div>
                             )}
@@ -436,7 +436,7 @@ export default function Step3PlanSelection({
                                 style={{ marginTop: '1rem', background: 'transparent !important', color: '#E65100 !important', borderStyle: 'dashed' }}
                                 onClick={() => {
                                     if (!canCheckout) {
-                                        showToast('Antes de pagar necesitamos registrar al menos una mascota.', 'error');
+                                        showToast('Antes de pagar necesitamos registrar al menos un peludo.', 'error');
                                         onBack();
                                         return;
                                     }

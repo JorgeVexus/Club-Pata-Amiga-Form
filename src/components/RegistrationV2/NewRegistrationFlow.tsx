@@ -46,10 +46,10 @@ import styles from './NewRegistrationFlow.module.css';
 // Pasos del flujo
 const STEPS = [
     { id: 1, label: 'Cuenta', component: Step1Account },
-    { id: 2, label: 'Mascota', component: Step2PetBasic },
+    { id: 2, label: 'Peludo', component: Step2PetBasic },
     { id: 3, label: 'Plan', component: Step3PlanSelection },
     { id: 4, label: 'Perfil', component: Step4CompleteProfile },
-    { id: 5, label: 'Mascota', component: Step5CompletePet },
+    { id: 5, label: 'Peludo', component: Step5CompletePet },
 ];
 
 // Permite reactivar rapidamente la promo sin volver a integrar el componente.

@@ -225,7 +225,7 @@ export default function BreedAutocomplete({
                             Sabemos que, como muchas otras razas, los {dynamicInfo.breedPlural} pueden tener mayor predisposición a desarrollar algunas condiciones de salud, como {dynamicInfo.formattedDiseases}.
                         </p>
                         <p className={styles.warningParagraph}>
-                            En <strong>Pata Amiga</strong> creemos que la confianza comienza con la transparencia. Por eso, es importante que sepas que nuestra membresía está diseñada para acompañarte ante imprevistos y accidentes. Actualmente, no contempla reintegros relacionados con enfermedades genéticas o hereditarias.
+                            En <strong>Pata Amiga</strong> creemos que la confianza comienza con la transparencia. Por eso, es importante que sepas que nuestra membresía está diseñada para acompañarte ante imprevistos y accidentes. Actualmente, no contempla reintegros relacionados con enfermedades genéticas, hereditarias o congénitas.
                         </p>
                         <p className={styles.warningParagraph}>
                             Nuestro compromiso es brindarte claridad desde el primer día para que siempre sepas cómo funciona tu membresía y puedas aprovecharla al máximo.

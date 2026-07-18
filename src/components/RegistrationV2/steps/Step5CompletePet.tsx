@@ -178,7 +178,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!validateForm()) {
-            showToast('Completa los campos requeridos en todas las mascotas', 'error');
+            showToast('Completa los campos requeridos en todos los peludos', 'error');
             return;
         }
         setIsLoading(true);
@@ -223,7 +223,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                             <div key={index} className={`${styles.petSection} ${styles.fadeIn}`}>
                                 <div className={styles.petHeader}>
                                     <div className={styles.petBadge}>
-                                        {pet.petType === 'gato' ? '🐱' : '🐶'} {pet.name || `Mascota ${index + 1}`}
+                                        {pet.petType === 'gato' ? '🐱' : '🐶'} {pet.name || `Peludo ${index + 1}`}
                                     </div>
                                 </div>
 
@@ -429,7 +429,7 @@ export default function Step5CompletePet({ data, onNext, showToast }: Step5Compl
                                     <div className={styles.alertBox}>
                                         <span className={styles.alertIcon}>⚕️</span>
                                         <div>
-                                            <strong>Información sobre mascota senior</strong>
+                                            <strong>Información sobre peludo senior</strong>
                                             <p>
                                                 Como {pet.name} es un peludito senior (10+ años), necesitamos conocer un poco más sobre su estado de salud actual para completar su registro. 🐾💙
                                             </p>
