@@ -189,6 +189,7 @@ export async function POST(
                             icon: '💬',
                             link: notificationLink,
                             metadata: {
+                                action: isFromAdmin ? 'open_reimbursement' : 'show_detail',
                                 requestId: id,
                                 petName: petName,
                                 senderRole: senderRole

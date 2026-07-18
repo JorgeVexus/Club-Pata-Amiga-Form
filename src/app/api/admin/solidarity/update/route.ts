@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
                 message: `Tu solicitud ${statusText}.`,
                 icon: '💰',
                 link: `/miembros/detalle-solicitud?id=${requestId}`,
+                metadata: { action: 'open_reimbursement', requestId, source: 'solidarity_status' },
                 is_read: false,
                 created_at: new Date().toISOString()
             });

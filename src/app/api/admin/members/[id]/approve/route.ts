@@ -145,7 +145,8 @@ export async function POST(
             title: '¡Tu solicitud ha sido aprobada! 🎉',
             message: 'Bienvenido a Club Pata Amiga. Tu membresía ya está activa y puedes disfrutar de todos los beneficios.',
             icon: '🎉',
-            link: '/dashboard'
+            link: '/dashboard',
+            metadata: { action: 'show_detail', source: 'member_approval' }
         });
 
         // Enviar correo de aprobación transaccional

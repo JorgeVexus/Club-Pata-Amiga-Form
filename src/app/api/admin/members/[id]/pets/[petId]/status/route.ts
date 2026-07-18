@@ -262,7 +262,8 @@ export async function POST(
                 title: 'Mascota aprobada ✅',
                 message: `¡Excelentes noticias! ${pet.name} ha sido aprobada y ya forma parte de la manada.`,
                 icon: '🐕',
-                link: '/miembros/dashboard'
+                  link: '/miembros/dashboard',
+                  metadata: { action: 'open_pet', source: 'pet_status', petId: resolvedPetId }
             });
         } else if (status === 'action_required') {
             await createServerNotification({
@@ -271,7 +272,8 @@ export async function POST(
                 title: `Acción requerida: ${pet.name} 📋`,
                 message: adminNotes || 'Necesitamos información adicional sobre tu mascota.',
                 icon: '📋',
-                link: '/miembros/dashboard'
+                  link: '/miembros/dashboard',
+                  metadata: { action: 'open_pet', source: 'pet_status', petId: resolvedPetId }
             });
         } else if (status === 'rejected') {
             await createServerNotification({
@@ -280,7 +282,8 @@ export async function POST(
                 title: `${pet.name} no fue aprobada ❌`,
                 message: adminNotes || 'Tu mascota no cumplió con los requisitos. Puedes apelar si crees que fue un error.',
                 icon: '❌',
-                link: '/miembros/dashboard'
+                  link: '/miembros/dashboard',
+                  metadata: { action: 'open_pet', source: 'pet_status', petId: resolvedPetId }
             });
         }
 

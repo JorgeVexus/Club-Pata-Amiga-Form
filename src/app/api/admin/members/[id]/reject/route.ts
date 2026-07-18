@@ -62,7 +62,8 @@ export async function POST(
             title: 'Actualización de tu solicitud 📋',
             message: `Tu solicitud requiere cambios. Razón: ${reason}`,
             icon: '📋',
-            link: '/completar-perfil'
+            link: '/completar-perfil',
+            metadata: { action: 'show_detail', source: 'member_rejection' }
         });
 
         console.log(`✅ Miembro ${memberId} rechazado exitosamente`);

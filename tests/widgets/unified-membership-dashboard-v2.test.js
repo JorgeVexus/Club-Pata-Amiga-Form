@@ -206,3 +206,23 @@ test('Dashboard V2 notification bell stays API-first and supports read actions',
   assert.match(source, /aria-expanded/);
   assert.doesNotMatch(source, /supabase\.createClient/);
 });
+
+test('notification cards resist host button styles and remain readable on mobile', () => {
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*height:auto!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*min-height:72px!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*white-space:normal!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*appearance:none!important;/s);
+  assert.match(source, /\.pata-v2-notification-copy\s*\{[^}]*min-width:0;/s);
+  assert.match(source, /\.pata-v2-notification-copy (strong|span)[^}]*overflow-wrap:anywhere;/s);
+  assert.match(source, /\.pata-v2-notification-list\s*\{[^}]*max-height:calc\(100dvh -/s);
+  assert.match(source, /@media \(max-width: 600px\)[\s\S]*\.pata-v2-notification-panel\s*\{[^}]*left:8px;[^}]*right:8px;/s);
+});
+
+test('notification cards override Webflow button dimensions without affecting other buttons', () => {
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*display:grid!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*height:auto!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*min-height:72px!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*padding:12px!important;/s);
+  assert.match(source, /\.pata-v2-notification-item\s*\{[^}]*transform:none!important;/s);
+  assert.match(source, /@media \(max-width: 600px\)[\s\S]*\.pata-v2-notification-item\s*\{[^}]*min-height:76px!important;/s);
+});

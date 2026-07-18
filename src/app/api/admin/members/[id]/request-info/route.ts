@@ -224,7 +224,7 @@ export async function POST(
             message: `Necesitamos ${requestLabels.length === 1 ? requestLabels[0] : `${requestLabels.length} documentos`} para completar la revisión de ${pet.name}.`,
             icon: '📋',
             link: `/mi-membresia?petId=${resolvedPetId}&action=chat`,
-            metadata: { source: 'info_request', petId: resolvedPetId, requestTypes }
+            metadata: { action: 'open_pet_chat', source: 'info_request', petId: resolvedPetId, requestTypes }
         });
 
         if (user.email) {

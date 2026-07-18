@@ -92,7 +92,7 @@ export async function POST(
             message: message.length > 100 ? message.substring(0, 100) + '...' : message,
             icon: '📩',
             link: '/mi-membresia',
-            metadata: { source: 'appeal_response', petId: petId }
+            metadata: { action: 'open_pet_chat', source: 'appeal_response', petId: petId }
         });
 
         console.log(`✅ Respuesta de apelación enviada a mascota ${petId} y notificación creada para ${memberId}`);

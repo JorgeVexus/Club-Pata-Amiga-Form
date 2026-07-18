@@ -3911,15 +3911,23 @@
         .pata-v2-notification-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 18px 14px; border-bottom:1px solid #F0ECE4; }
         .pata-v2-notification-head strong { color:#1E5350; font:900 18px/1.1 'Fraiche','Outfit',sans-serif; }
         .pata-v2-notification-read-all { border:0; background:transparent; color:#008B84; font:800 11px/1 'Outfit',sans-serif; cursor:pointer; }
-        .pata-v2-notification-list { max-height:390px; overflow:auto; padding:8px; }
-        .pata-v2-notification-item { width:100%; display:grid; grid-template-columns:38px minmax(0,1fr) auto; gap:10px; align-items:start; padding:12px; border:0; border-radius:14px; background:transparent; color:#435956; text-align:left; cursor:pointer; }
+        .pata-v2-notification-list { max-height:min(390px,calc(100dvh - 150px)); overflow:auto; overscroll-behavior:contain; padding:8px; }
+        .pata-v2-notification-item { width:100%!important; height:auto!important; min-height:72px!important; max-height:none!important; display:grid!important; grid-template-columns:38px minmax(0,1fr) auto!important; gap:10px!important; align-items:start!important; transform:none!important; margin:0!important; padding:12px!important; border:0!important; border-radius:14px!important; background:transparent; color:#435956!important; font-family:'Outfit',sans-serif!important; font-size:inherit!important; line-height:1.35!important; white-space:normal!important; text-align:left!important; text-transform:none!important; letter-spacing:normal!important; appearance:none!important; -webkit-appearance:none!important; box-sizing:border-box!important; cursor:pointer; }
         .pata-v2-notification-item:hover { background:#F7F4EE; }
         .pata-v2-notification-item.is-unread { background:#EAF8F6; }
         .pata-v2-notification-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:white; color:#008B84; box-shadow:inset 0 0 0 1px #E5EEE9; }
-        .pata-v2-notification-copy strong { display:block; margin-bottom:3px; color:#163F3D; font-size:13px; }
-        .pata-v2-notification-copy span { display:block; font-size:11.5px; line-height:1.35; }
+        .pata-v2-notification-copy { min-width:0; }
+        .pata-v2-notification-copy strong { display:block; margin-bottom:3px; color:#163F3D; font-size:13px; line-height:1.25; white-space:normal; overflow-wrap:anywhere; }
+        .pata-v2-notification-copy span { display:block; font-size:11.5px; line-height:1.4; white-space:normal; overflow-wrap:anywhere; }
         .pata-v2-notification-time { color:#9A9489; font-size:10px; white-space:nowrap; }
         .pata-v2-notification-empty { padding:34px 22px; color:#75847F; font-size:13px; text-align:center; }
+        .pata-v2-notification-detail-modal { position:fixed; inset:0; z-index:10020; display:grid; place-items:center; padding:20px; background:rgba(22,63,61,.28); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+        .pata-v2-notification-detail-card { position:relative; width:min(460px,100%); padding:34px; border:1px solid #E8E2D7; border-radius:26px; background:#fff; box-shadow:0 26px 70px rgba(30,83,80,.2); color:#435956; text-align:center; }
+        .pata-v2-notification-detail-icon { width:58px; height:58px; display:grid; place-items:center; margin:0 auto 18px; border-radius:18px; background:#EAF8F6; font-size:26px; }
+        .pata-v2-notification-detail-card h2 { margin:0; color:#1E5350; font:900 27px/1.05 'Fraiche','Outfit',sans-serif; text-wrap:balance; }
+        .pata-v2-notification-detail-card p { margin:14px auto 0; max-width:38ch; font-size:14px; line-height:1.55; overflow-wrap:anywhere; }
+        .pata-v2-notification-detail-card time { display:block; margin-top:12px; color:#918B80; font-size:11px; }
+        .pata-v2-notification-detail-close { min-height:44px; margin-top:24px; padding:0 28px; border:0; border-radius:999px; background:#21BCAF; color:white; font:800 13px/1 'Outfit',sans-serif; cursor:pointer; }
         .pata-v2-vet-view { min-height:calc(100dvh - 80px); display:flex; flex-direction:column; }
         .pata-v2-vet-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:16px; }
         .pata-v2-vet-disclaimer { align-self:center; max-width:360px; margin:0 auto 12px; padding:9px 18px; border-radius:999px; background:#EEEAE1; color:#758078; font-size:10px; font-weight:700; text-align:center; }
@@ -4135,7 +4143,11 @@
             .pata-v2-vet-view { min-height:calc(100dvh - 150px); }
             .pata-v2-vet-head { display:block; }
             .pata-v2-vet-chat, .pata-v2-vet-chat > iframe, .pata-vet-bot-state { min-height:calc(100dvh - 245px)!important; }
-            .pata-v2-notification-panel { position:fixed; top:68px; right:12px; }
+            .pata-v2-notification-panel { position:fixed; top:68px; left:8px; right:8px; width:auto; max-width:none; border-radius:18px; }
+            .pata-v2-notification-head { padding:16px 14px 12px; }
+            .pata-v2-notification-list { max-height:calc(100dvh - 142px); padding:6px; }
+            .pata-v2-notification-item { min-height:76px!important; grid-template-columns:38px minmax(0,1fr)!important; gap:9px!important; padding:11px 10px!important; }
+            .pata-v2-notification-time { grid-column:2; margin-top:-4px; }
             .pata-v2-title { font-size: 27px; }
             .pata-v2-subtitle { font-size: 12.5px; line-height: 1.45; }
             .pata-v2-kpi-grid { grid-template-columns: 1fr; gap: 10px; }
@@ -5753,29 +5765,51 @@
             if (!userId) return;
             if (this.isLocalPreview()) {
                 this.notifications = { ...this.notifications, loading: false, loaded: true, error: '', items: [
-                    { id: 'preview-1', title: 'Tu membresía está activa', message: 'Ya puedes usar orientación veterinaria, reintegros y centros aliados.', icon: '🐾', is_read: false, created_at: new Date().toISOString() },
-                    { id: 'preview-2', title: 'Expediente actualizado', message: 'Recibimos correctamente los documentos de Felix.', icon: '📄', is_read: true, created_at: new Date(Date.now() - 7200000).toISOString() }
+                    { id: 'preview-1', title: 'Acción requerida: Rex', message: 'El equipo necesita información adicional. Toca aquí para abrir el chat de su expediente.', icon: '💬', is_read: false, created_at: new Date().toISOString(), metadata: { action:'open_pet_chat', petId:'test-action' } },
+                    { id: 'preview-2', title: 'Actualización de tu reintegro', message: 'Recibimos tus documentos y el comité ya está revisando la solicitud.', icon: '💚', is_read: false, created_at: new Date(Date.now() - 7200000).toISOString(), metadata: { action:'open_reimbursement', requestId:'mock-1' } },
+                    { id: 'preview-3', title: 'Tu membresía está activa', message: 'Ya puedes consultar todas las novedades de tu cuenta y los beneficios disponibles.', icon: '🐾', is_read: true, created_at: new Date(Date.now() - 86400000).toISOString(), metadata: { action:'show_detail' } }
                 ] };
                 this.updateNotificationBellV2();
                 return;
             }
             this.notifications.loading = !this.notifications.loaded;
-            this.updateNotificationBellV2();
+            if (!this.notifications.loaded) this.updateNotificationBellV2();
             try {
                 const response = await fetch(`${CONFIG.apiUrl}/api/notifications?userId=${encodeURIComponent(userId)}&limit=10`);
                 const data = await response.json();
                 if (!response.ok || !data.success) throw new Error('No pudimos cargar tus notificaciones.');
-                this.notifications = { ...this.notifications, loading: false, loaded: true, error: '', items: data.notifications || [] };
+                const nextItems = data.notifications || [];
+                if (!this.hasNotificationPayloadChangedV2(nextItems)) return;
+                this.notifications = { ...this.notifications, loading: false, loaded: true, error: '', items: nextItems };
             } catch (error) {
                 this.notifications = { ...this.notifications, loading: false, loaded: true, error: error.message || 'No pudimos cargar tus notificaciones.' };
             }
             this.updateNotificationBellV2();
         }
 
+        hasNotificationPayloadChangedV2(nextItems) {
+            if (!this.notifications.loaded || this.notifications.error) return true;
+            const signature = items => JSON.stringify((items || []).map(item => ({
+                id: item.id,
+                title: item.title,
+                message: item.message,
+                icon: item.icon,
+                is_read: item.is_read,
+                created_at: item.created_at,
+                link: item.link,
+                metadata: item.metadata
+            })));
+            return signature(this.notifications.items) !== signature(nextItems);
+        }
+
         startNotificationPollingV2() {
             if (this.notificationRefreshInterval || !this.member?.id) return;
+            if (this.isLocalPreview()) {
+                this.loadNotificationsV2();
+                return;
+            }
             this.loadNotificationsV2();
-            this.notificationRefreshInterval = window.setInterval(() => this.loadNotificationsV2(), 5000);
+            this.notificationRefreshInterval = window.setInterval(() => this.loadNotificationsV2(), 15000);
         }
 
         async markNotificationReadV2(notificationId) {
@@ -5795,11 +5829,108 @@
             await fetch(`${CONFIG.apiUrl}/api/notifications/mark-all-read`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: this.member.id }) });
         }
 
+        async ensureNotificationActionResolverV2() {
+            if (window.PataNotificationActions?.resolveNotificationAction) return window.PataNotificationActions;
+            if (!this.notificationResolverScriptPromise) {
+                this.notificationResolverScriptPromise = new Promise((resolve, reject) => {
+                    const existing = document.getElementById('pata-notification-action-resolver-script');
+                    if (existing) {
+                        existing.addEventListener('load', () => resolve(window.PataNotificationActions), { once:true });
+                        existing.addEventListener('error', reject, { once:true });
+                        return;
+                    }
+                    const script = document.createElement('script');
+                    script.id = 'pata-notification-action-resolver-script';
+                    script.src = `${CONFIG.apiUrl}/widgets/notification-action-resolver.js`;
+                    script.onload = () => resolve(window.PataNotificationActions);
+                    script.onerror = () => reject(new Error('No se pudo cargar la acción de la notificación.'));
+                    document.head.appendChild(script);
+                });
+            }
+            const resolver = await this.notificationResolverScriptPromise;
+            if (!resolver?.resolveNotificationAction) throw new Error('El resolvedor de notificaciones no está disponible.');
+            return resolver;
+        }
+
+        openPetDetailsV2(petId, options = {}) {
+            const pet = this.pets.find(candidate => String(candidate.id) === String(petId));
+            if (!pet) throw new Error('No encontramos la mascota relacionada con esta notificación.');
+            document.getElementById('pata-details-modal-wrapper')?.remove();
+            const modalDiv = document.createElement('div');
+            modalDiv.id = 'pata-details-modal-wrapper';
+            modalDiv.innerHTML = this.renderPetDetailsModal(pet);
+            document.body.appendChild(modalDiv);
+            document.body.classList.add('pata-no-scroll');
+            const close = () => {
+                modalDiv.remove();
+                document.body.classList.remove('pata-no-scroll');
+            };
+            document.getElementById('pata-close-details')?.addEventListener('click', close);
+            document.getElementById('pata-close-details-btn')?.addEventListener('click', close);
+            document.getElementById('pata-pet-details-modal')?.addEventListener('click', event => {
+                if (event.target.id === 'pata-pet-details-modal') close();
+            });
+            this.fetchAndRenderChat(pet.id);
+            if (options.focusChat) {
+                window.setTimeout(() => {
+                    const chat = document.getElementById('pata-chat-root');
+                    chat?.scrollIntoView({ behavior:'smooth', block:'start' });
+                    document.getElementById('pata-chat-input')?.focus();
+                }, 250);
+            }
+        }
+
+        showNotificationDetailV2(item) {
+            document.getElementById('pata-v2-notification-detail-modal')?.remove();
+            const modal = document.createElement('div');
+            modal.id = 'pata-v2-notification-detail-modal';
+            modal.className = 'pata-v2-notification-detail-modal';
+            modal.setAttribute('role', 'dialog');
+            modal.setAttribute('aria-modal', 'true');
+            const title = this.escapeHtml(item?.title || 'Actualización de tu cuenta');
+            const message = this.escapeHtml(item?.message || 'Consulta esta actualización en tu cuenta.');
+            const icon = this.escapeHtml(item?.icon || '🔔');
+            const createdAt = item?.created_at ? new Date(item.created_at).toLocaleString('es-MX', { dateStyle:'long', timeStyle:'short' }) : '';
+            modal.innerHTML = `<article class="pata-v2-notification-detail-card" onclick="event.stopPropagation()"><span class="pata-v2-notification-detail-icon" aria-hidden="true">${icon}</span><h2>${title}</h2><p>${message}</p>${createdAt ? `<time>${this.escapeHtml(createdAt)}</time>` : ''}<button class="pata-v2-notification-detail-close" type="button">Entendido</button></article>`;
+            const close = () => modal.remove();
+            modal.addEventListener('click', close);
+            modal.querySelector('.pata-v2-notification-detail-close')?.addEventListener('click', close);
+            document.body.appendChild(modal);
+        }
+
+        async executeNotificationActionV2(item) {
+            try {
+                const resolver = await this.ensureNotificationActionResolverV2();
+                const action = resolver.PataNotificationActions?.resolveNotificationAction
+                    ? resolver.PataNotificationActions.resolveNotificationAction(item)
+                    : resolver.resolveNotificationAction(item);
+                switch (action.type) {
+                    case 'open_pet_chat':
+                        this.openPetDetailsV2(action.petId, { focusChat:true });
+                        return;
+                    case 'open_pet':
+                        this.openPetDetailsV2(action.petId);
+                        return;
+                    case 'open_reimbursement':
+                        await this.showReimbursementDetailV2(action.requestId);
+                        return;
+                    case 'navigate':
+                        window.location.assign(action.url);
+                        return;
+                    default:
+                        this.showNotificationDetailV2(item);
+                }
+            } catch (error) {
+                console.error('No fue posible abrir la notificación:', error);
+                this.showNotificationDetailV2(item);
+            }
+        }
+
         async openNotificationV2(notificationId) {
             const item = this.notifications.items.find(notification => String(notification.id) === String(notificationId));
             await this.markNotificationReadV2(notificationId);
             this.closeNotificationsV2();
-            if (item?.link) window.location.href = item.link;
+            if (item) await this.executeNotificationActionV2(item);
         }
 
         showHomeV2() {
