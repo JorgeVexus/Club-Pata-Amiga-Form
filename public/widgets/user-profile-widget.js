@@ -221,6 +221,25 @@
             margin-top: 5px;
             line-height: 1.4;
         }
+        /* Perfil V2 visual standard */
+        .ppa-widget { max-width: 1040px; gap: 18px; color:#174f4c; }
+        .ppa-card,.ppa-card-green { border:1px solid #e8e0d4; border-radius:24px; padding:30px; box-shadow:0 8px 24px rgba(24,75,71,.07); }
+        .ppa-card-green { background:#1fbdb3; }
+        .ppa-member-name { color:#174f4c; font-size:clamp(34px,6vw,52px); text-transform:none; }
+        .ppa-member-since { color:#71817f; font-size:15px; }
+        .ppa-section-title { color:#174f4c; font-size:32px; text-transform:none; }
+        .ppa-section-title-wh { font-size:36px; text-transform:none; }
+        .ppa-avatar { border:0; box-shadow:0 0 0 6px #e7f6f4; }
+        .ppa-edit-btn,.ppa-copy-btn,.ppa-save-btn { border:0; background:#1fbdb3; box-shadow:none; color:#fff; }
+        .ppa-edit-btn:hover,.ppa-copy-btn:hover,.ppa-save-btn:hover { transform:translateY(-1px); box-shadow:0 8px 18px rgba(31,189,179,.22); }
+        .ppa-data-row { border:1px solid #e8e0d4; border-radius:14px; min-height:58px; background:#fbfaf7; }
+        .ppa-row-icon { color:#1a938c; }
+        .ppa-stat-card,.ppa-payment-box { border-radius:16px; box-shadow:0 3px 12px rgba(24,75,71,.06); }
+        .ppa-pata-float { display:none; }
+        .ppa-modal,.ppa-cancel-modal { border:1px solid #e8e0d4; border-radius:24px; box-shadow:0 22px 60px rgba(24,75,71,.2); }
+        .ppa-fi { border:1px solid #ddd4c7; border-radius:14px; background:#fbfaf7; }
+        .ppa-save-btn { border-radius:999px; font-size:18px; text-transform:none; }
+        @media(max-width:640px) { .ppa-card,.ppa-card-green { padding:22px 18px; border-radius:20px; } }
     `;
     class UserProfileWidget {
         constructor() {

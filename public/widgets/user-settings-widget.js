@@ -603,6 +603,28 @@
             margin-top: 5px;
             line-height: 1.4;
         }
+        /* Settings V2 visual standard */
+        .pata-settings-widget { max-width:1040px; padding:24px; color:#174f4c; }
+        .pata-settings-container { max-width:900px; padding:0; }
+        .pata-settings-header { margin-bottom:24px; }
+        .pata-settings-title { color:#174f4c; font-size:clamp(36px,6vw,52px); }
+        .pata-settings-subtitle { color:#71817f; font-size:16px; }
+        .pata-settings-section { margin-bottom:18px; padding:26px; border:1px solid #e8e0d4; border-radius:24px; box-shadow:0 8px 24px rgba(24,75,71,.06); }
+        .pata-section-title { color:#174f4c; font-family:'Fraiche',sans-serif; font-size:25px; }
+        .pata-section-subtitle { color:#71817f; margin-bottom:18px; }
+        .pata-settings-list { gap:8px; }
+        .pata-settings-item { min-height:58px; padding:14px 16px; border:1px solid #eee7dd; border-radius:14px; background:#fbfaf7; }
+        .pata-settings-item:hover { background:#e7f6f4; transform:none; border-color:#bfe8e4; }
+        .pata-item-icon { color:#159b94; }
+        .pata-item-label { color:#315c59; font-weight:600; }
+        .pata-slider { background:#dcd8d1; }
+        input:checked + .pata-slider { background:#1fbdb3; }
+        .pata-subscription-card { border:1px solid #e8e0d4; border-radius:16px; background:#fff; }
+        .pata-sub-icon { background:#1fbdb3; }
+        .pata-modal-content,.pata-legal-modal-content { border:1px solid #e8e0d4 !important; border-radius:24px !important; box-shadow:0 22px 60px rgba(24,75,71,.2) !important; }
+        .pata-input { border:1px solid #ddd4c7 !important; border-radius:14px !important; background:#fbfaf7 !important; }
+        .pata-btn-submit { border:0 !important; border-radius:999px !important; background:#1fbdb3 !important; box-shadow:none !important; text-transform:none !important; }
+        @media(max-width:640px) { .pata-settings-widget { padding:14px; } .pata-settings-section { padding:20px 16px; border-radius:20px; } }
     `;
 
     const ICONS = {

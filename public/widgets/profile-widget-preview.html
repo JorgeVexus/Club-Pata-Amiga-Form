@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dev Preview - User Profile Widget</title>
     <style>
-        body { background: #15BEB2; margin: 0; padding: 40px 20px; font-family: 'Outfit', sans-serif; }
-        .dev-bar { background: #fff; border-radius: 20px; padding: 20px 30px; margin-bottom: 30px; max-width: 900px; margin-left: auto; margin-right: auto; display: flex; align-items: center; gap: 15px; flex-wrap: wrap; border: 2px solid #000; }
-        .dev-bar h3 { margin: 0; font-size: 16px; color: #000; }
-        .dev-btn { padding: 8px 16px; border: 2px solid #000; border-radius: 50px; background: #fff; cursor: pointer; font-weight: 700; font-size: 12px; font-family: inherit; transition: all 0.2s; }
-        .dev-btn:hover { background: #f0f0f0; transform: translateY(-1px); }
-        .dev-btn.green { background: #9fd406; color: #000; }
-        .dev-btn.teal { background: #15BEB2; color: #fff; }
-        .dev-btn.orange { background: #FE8F15; color: #fff; }
-        #pata-profile { max-width: 900px; margin: 0 auto; }
+        body { background: #f7f4ee; color:#174f4c; margin: 0; padding: 32px 20px 64px; min-height:100dvh; font-family: 'Outfit', sans-serif; }
+        .dev-bar { background: rgba(255,255,255,.88); border-radius: 18px; padding: 14px 18px; margin: 0 auto 24px; max-width: 1000px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border: 1px solid #e8e0d4; box-shadow:0 8px 24px rgba(24,75,71,.06); }
+        .dev-bar h3 { margin: 0 8px 0 0; font-size: 15px; color: #174f4c; }
+        .dev-btn { padding: 8px 14px; border: 1px solid #ded5c8; border-radius: 999px; background: #fff; color:#315c59; cursor: pointer; font-weight: 700; font-size: 12px; font-family: inherit; transition: transform .2s ease, background .2s ease; }
+        .dev-btn:hover { background: #e7f6f4; transform: translateY(-1px); }
+        .dev-btn.green,.dev-btn.teal,.dev-btn.orange { background: #1fbdb3; border-color:#1fbdb3; color: #fff; }
+        #pata-profile { max-width: 1040px; margin: 0 auto; }
+        @media(max-width:640px) { body { padding:16px 12px 42px; } .dev-bar span { display:none; } }
     </style>
 </head>
 <body>
@@ -45,6 +44,7 @@
                     }]
                 }
             }),
+            getMemberCookie: async () => 'preview-member-token',
             launchStripeCustomerPortal: async () => {
                 alert('🔗 [MOCK] Abriendo Customer Portal de Stripe...\n\nEn producción esto redirige a stripe.com/billing/portal');
             },

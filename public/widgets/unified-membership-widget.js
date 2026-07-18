@@ -11,6 +11,9 @@
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         memberPortalUrl: window.PATA_AMIGA_CONFIG?.memberPortalUrl || '/mi-cuenta',
+        profileUrl: window.PATA_AMIGA_CONFIG?.profileUrl || 'https://www.pataamiga.mx/miembros/perfil',
+        settingsUrl: window.PATA_AMIGA_CONFIG?.settingsUrl || 'https://www.pataamiga.mx/miembros/configuracion',
+        logoutRedirectUrl: window.PATA_AMIGA_CONFIG?.logoutRedirectUrl || 'https://www.pataamiga.mx/',
         reimbursementsUrl: window.PATA_AMIGA_CONFIG?.reimbursementsUrl || '/reintegros',
         vetUrl: window.PATA_AMIGA_CONFIG?.vetUrl || '/orientacion-veterinaria',
         centersUrl: window.PATA_AMIGA_CONFIG?.centersUrl || '/centros-aliados',
@@ -3857,6 +3860,17 @@
         .pata-v2-logo img { width: 92px; height: auto; display: block; }
         .pata-v2-nav { display: grid; gap: 5px; }
         .pata-v2-nav-bottom { margin-top: auto; }
+        .pata-v2-account-menu-wrap { position: relative; }
+        .pata-v2-hamburger { position: relative; }
+        .pata-v2-hamburger-lines { width: 18px; display: grid; gap: 3px; }
+        .pata-v2-hamburger-lines span { display: block; width: 100%; height: 2px; border-radius: 2px; background: #0b5a57; transition: transform .18s ease, opacity .18s ease; }
+        .pata-v2-hamburger[aria-expanded="true"] .pata-v2-hamburger-lines span:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+        .pata-v2-hamburger[aria-expanded="true"] .pata-v2-hamburger-lines span:nth-child(2) { opacity: 0; }
+        .pata-v2-hamburger[aria-expanded="true"] .pata-v2-hamburger-lines span:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+        .pata-v2-account-menu { position: absolute; z-index: 50; top: calc(100% + 10px); right: 0; width: 210px; padding: 8px; border: 1px solid #e8e0d4; border-radius: 18px; background: #fff; box-shadow: 0 16px 38px rgba(24,75,71,.16); }
+        .pata-v2-mobile-actions .pata-v2-account-menu a, .pata-v2-mobile-actions .pata-v2-account-menu button { width: 100%; min-height: 42px; height:auto; display: flex; place-items:unset; align-items: center; justify-content:flex-start; gap: 10px; padding: 10px 12px; border: 0; border-radius: 12px; background: transparent; color: #174f4c; font: 700 14px 'Outfit', sans-serif; text-align: left; text-decoration: none; cursor: pointer; }
+        .pata-v2-mobile-actions .pata-v2-account-menu a:hover, .pata-v2-mobile-actions .pata-v2-account-menu button:hover { background: #e7f6f4; }
+        .pata-v2-mobile-actions .pata-v2-account-menu button { color: #b33838; }
         .pata-v2-nav-link {
             width: 100%; min-height: 43px; display: flex; align-items: center; gap: 12px;
             padding: 10px 15px; border: 0; border-radius: 13px; background: transparent;
@@ -4160,6 +4174,7 @@
             this.notifications = { loading: false, loaded: false, error: '', items: [], open: false };
             this.notificationRefreshInterval = null;
             this.notificationGlobalEventsAttached = false;
+            this.mobileAccountMenuOpen = false;
             this.vetBotScriptPromise = null;
             this.petCardsScriptPromise = null;
             this.membershipStatus = 'approved';
@@ -5768,7 +5783,8 @@
                         ${this.isAmbassador ? `<a class="pata-v2-nav-link" href="${CONFIG.ambassadorUrl}"><span class="pata-v2-nav-icon">🤝</span>Panel de embajador</a>` : ''}
                     </nav>
                     <nav class="pata-v2-nav pata-v2-nav-bottom">
-                        <a class="pata-v2-nav-link" href="${CONFIG.memberPortalUrl}"><span class="pata-v2-nav-icon">⚙️</span>Mi cuenta</a>
+                        <a class="pata-v2-nav-link" href="${CONFIG.profileUrl}"><span class="pata-v2-nav-icon">👤</span>Perfil</a>
+                        <a class="pata-v2-nav-link" href="${CONFIG.settingsUrl}"><span class="pata-v2-nav-icon">⚙️</span>Ajustes</a>
                         ${this.member ? '<button class="pata-v2-nav-link" type="button" onclick="window.pataWidget.logoutV2()"><span class="pata-v2-nav-icon">👋</span>Cerrar sesión</button>' : ''}
                     </nav>
                     <div class="pata-v2-account"><span class="pata-v2-avatar">${initial}</span><span><strong>${safeName}</strong><span>Plan de membresía</span></span></div>
@@ -5788,10 +5804,16 @@
             if (!this.member || !window.$memberstackDom) return;
             try {
                 await window.$memberstackDom.logout();
-                window.location.href = window.PATA_AMIGA_CONFIG?.loginUrl || '/iniciar-sesion';
+                window.location.href = CONFIG.logoutRedirectUrl;
             } catch (error) {
                 console.error('No fue posible cerrar sesión:', error);
             }
+        }
+
+        toggleMobileAccountMenuV2(event) {
+            if (event) event.stopPropagation();
+            this.mobileAccountMenuOpen = !this.mobileAccountMenuOpen;
+            this.render();
         }
 
         renderDashboardView(firstName) {
@@ -5819,7 +5841,20 @@
                             <div class="pata-v2-mobile-actions">
                                 ${this.renderV2NotificationBell()}
                                 <button type="button" onclick="window.pataWidget.showVetV2()" aria-label="Orientación veterinaria">💬</button>
-                                ${this.member ? '<button type="button" onclick="window.pataWidget.logoutV2()" aria-label="Cerrar sesión">👋</button>' : ''}
+                                ${this.member ? `
+                                    <div class="pata-v2-account-menu-wrap">
+                                        <button class="pata-v2-hamburger" type="button" onclick="window.pataWidget.toggleMobileAccountMenuV2(event)" aria-label="Abrir menú de cuenta" aria-expanded="${this.mobileAccountMenuOpen}">
+                                            <span class="pata-v2-hamburger-lines" aria-hidden="true"><span></span><span></span><span></span></span>
+                                        </button>
+                                        ${this.mobileAccountMenuOpen ? `
+                                            <div class="pata-v2-account-menu" role="menu">
+                                                <a href="${CONFIG.profileUrl}" role="menuitem"><span>👤</span>Perfil</a>
+                                                <a href="${CONFIG.settingsUrl}" role="menuitem"><span>⚙️</span>Ajustes</a>
+                                                <button type="button" onclick="window.pataWidget.logoutV2()" role="menuitem"><span>↪</span>Cerrar sesión</button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                         <div class="pata-v2-content">
