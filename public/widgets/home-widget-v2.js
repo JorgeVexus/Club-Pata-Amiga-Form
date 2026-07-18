@@ -27,19 +27,19 @@
             emoji: '💬',
             bg: 'pata-v2-bg-info-bg',
             title: 'Orientación veterinaria 24/7',
-            text: 'Disponible desde el primer día de tu membresía.'
+            text: 'Orientación veterinaria para cuidar de tu peludo, disponible en tu chat desde el primer día de tu membresía.'
         },
         {
             emoji: '🐾',
             bg: 'pata-v2-bg-warning-bg',
             title: 'Reintegros',
-            text: 'Hasta $3,000 MXN en gastos veterinarios, $2,000 por fallecimiento y $300 en vacunas. En 72 hrs.'
+            text: 'Hasta $3,000 MXN en emergencias veterinarias, $300 MNX en vacunación y $2,000 en caso de fallecimiento.'
         },
         {
             emoji: '📍',
             bg: 'pata-v2-bg-success-bg',
             title: 'Centros aliados',
-            text: 'Red de veterinarias, tiendas y hoteles con beneficios exclusivos para miembros, cerca de ti.'
+            text: 'Próximamente'
         }
     ];
 
@@ -1644,13 +1644,13 @@
                         <div class="blob"></div>
                         <div class="pata-v2-hero-content">
                             <h1 class="pata-v2-h1">
-                                Protección<br>para tu manada.
+                                Tranquilidad total<br>para tu manada.
                             </h1>
                             <p class="pata-v2-hero-desc">
                                 Membresía de salud para tu lomito y/o michi: orientación veterinaria 24/7, reintegros para gastos veterinarios. Mantienes a tu veterinario de confianza.
                             </p>
                             <div class="pata-v2-hero-actions">
-                                <a href="https://app.pataamiga.mx/registro?step=1" class="pata-v2-btn pata-v2-btn-white" id="hero-cta-btn">Proteger a mi peludo</a>
+                                <a href="https://app.pataamiga.mx/registro?step=1" class="pata-v2-btn pata-v2-btn-white" id="hero-cta-btn">Únete a la manada</a>
                                 <a href="#planes" class="pata-v2-hero-price-link" id="hero-price-anchor">Desde $159 MXN al mes</a>
                             </div>
                         </div>
