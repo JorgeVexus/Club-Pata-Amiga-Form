@@ -110,6 +110,10 @@
                     redirectUrl = 'https://app.pataamiga.mx/payment-processing';
                     logger.log('Pago en proceso, redirigiendo a página de espera');
                     break;
+                case 'incomplete_profile':
+                    redirectUrl = data.redirectUrl || 'https://www.pataamiga.mx/miembros/completar-perfil';
+                    logger.log('Perfil incompleto, redirigiendo a completar registro');
+                    break;
                 case 'member':
                 default:
                     redirectUrl = dashboards?.member || DEFAULT_URLS.member;

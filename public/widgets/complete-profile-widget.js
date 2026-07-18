@@ -751,7 +751,7 @@
                             <div class="ppa-success-icon">🎉</div>
                             <h1 class="ppa-complete-title">¡perfil completo!</h1>
                             <p class="ppa-complete-subtitle">Tu información ha sido actualizada. Ya eres parte activa de la manada.</p>
-                            <button class="ppa-btn-next" onclick="window.location.reload()" style="max-width:240px;margin-top:32px;">ver mi perfil</button>
+                            <button class="ppa-btn-next" onclick="window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period'" style="max-width:240px;margin-top:32px;">ver mi perfil</button>
                         </div>
                     </div>
                 </div>

@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { getMemberCompletionIssue } from '@/utils/registration-completeness';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-import { AdminAuthService } from '@/services/admin-auth.service';
+const INCOMPLETE_PROFILE_URL = 'https://www.pataamiga.mx/miembros/completar-perfil';
 
 // CORS headers
 function corsHeaders() {
@@ -156,6 +157,46 @@ export async function POST(request: NextRequest) {
                     role: 'payment_processing',
                     message: 'Tu pago está siendo procesado'
                 }, { headers: corsHeaders() });
+            }
+
+            if (hasActivePlan) {
+                const { data: profileUser, error: profileError } = await supabase
+                    .from('users')
+                    .select('id, first_name, last_name, mother_last_name, curp, phone, postal_code, colony, city')
+                    .eq('memberstack_id', memberstackId)
+                    .maybeSingle();
+
+                if (profileError) {
+                    console.error(`❌ [Check-Role] No se pudo evaluar el perfil de ${memberstackId}:`, profileError);
+                } else {
+                    let pets: Record<string, unknown>[] = [];
+                    let petsError: unknown = null;
+
+                    if (profileUser?.id) {
+                        const petsResult = await supabase
+                            .from('pets')
+                            .select('pet_type, age_value, gender, is_mixed_breed, breed, coat_color, primary_photo_url, photo_url, is_senior, vet_certificate_url, is_active, status')
+                            .eq('owner_id', profileUser.id);
+                        pets = petsResult.data || [];
+                        petsError = petsResult.error;
+                    }
+
+                    if (petsError) {
+                        console.error(`❌ [Check-Role] No se pudieron evaluar las mascotas de ${memberstackId}:`, petsError);
+                    } else {
+                        const registrationIssue = getMemberCompletionIssue(profileUser, pets);
+
+                        if (registrationIssue) {
+                            console.log(`📝 [Check-Role] Registro incompleto para ${memberstackId}: ${registrationIssue}`);
+                            return NextResponse.json({
+                                success: true,
+                                role: 'incomplete_profile',
+                                redirectUrl: INCOMPLETE_PROFILE_URL,
+                                registrationIssue
+                            }, { headers: corsHeaders() });
+                        }
+                    }
+                }
             }
         }
 

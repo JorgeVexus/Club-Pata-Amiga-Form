@@ -72,8 +72,71 @@ function getRegistrationIssue({ hasActivePlan, petCount, hasValidPetBasic: valid
   return null;
 }
 
+function hasText(value) {
+  return typeof value === 'string' && value.trim().length > 0;
+}
+
+function isActivePet(pet) {
+  return pet?.is_active !== false && pet?.status !== 'unsubscribed';
+}
+
+function isCompletePet(pet) {
+  const petType = String(pet?.pet_type || pet?.petType || '').trim().toLowerCase();
+  const hasValidType = VALID_PET_TYPES.has(petType);
+  const hasValidAge = Number(pet?.age_value ?? pet?.ageValue ?? 0) > 0;
+  const hasValidGender = pet?.gender === 'macho' || pet?.gender === 'hembra';
+  const hasBreedType = typeof pet?.is_mixed_breed === 'boolean';
+  const breed = String(pet?.breed || '').trim();
+  const hasBreed = pet?.is_mixed_breed === true || (
+    pet?.is_mixed_breed === false &&
+    breed.length > 0 &&
+    breed !== 'Mestizo' &&
+    breed !== 'Doméstico'
+  );
+  const hasPhoto = hasText(pet?.primary_photo_url) || hasText(pet?.photo_url);
+  const hasVetCertificate = !pet?.is_senior || hasText(pet?.vet_certificate_url);
+
+  return hasValidType &&
+    hasValidAge &&
+    hasValidGender &&
+    hasBreedType &&
+    hasBreed &&
+    hasText(pet?.coat_color) &&
+    hasPhoto &&
+    hasVetCertificate;
+}
+
+function getMemberCompletionIssue(user, pets) {
+  const hasMemberInfo = user && [
+    user.first_name,
+    user.last_name,
+    user.mother_last_name,
+    user.curp,
+    user.phone,
+    user.postal_code,
+    user.colony,
+    user.city,
+  ].every(hasText);
+
+  if (!hasMemberInfo) {
+    return 'missing_member_info';
+  }
+
+  const activePets = (Array.isArray(pets) ? pets : []).filter(isActivePet);
+  if (activePets.length === 0) {
+    return 'missing_pet';
+  }
+
+  if (activePets.some((pet) => !isCompletePet(pet))) {
+    return 'incomplete_pet';
+  }
+
+  return null;
+}
+
 module.exports = {
   clampRequestedRegistrationStep,
+  getMemberCompletionIssue,
   getRegistrationIssue,
   hasValidPetBasic,
   normalizePetBasicList,
