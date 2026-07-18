@@ -67,6 +67,8 @@ interface Step3PlanSelectionProps {
     isRecovery?: boolean;
 }
 
+const SHOW_AMBASSADOR_CODE = false;
+
 export default function Step3PlanSelection({
     data,
     member,
@@ -328,8 +330,9 @@ export default function Step3PlanSelection({
                             ))}
                         </div>
 
-                        {/* Referral Section */}
-                        <div className={styles.referralSection}>
+                        {/* Referral Section — temporalmente oculta sin eliminar su implementación */}
+                        {SHOW_AMBASSADOR_CODE && (
+                            <div className={styles.referralSection}>
                             <label className={styles.referralLabel}>
                                 🎟️ ¿Tienes un código de Embajador?
                             </label>
@@ -367,7 +370,8 @@ export default function Step3PlanSelection({
                             {referralError && (
                                 <span className={styles.referralError}>❌ {referralError}</span>
                             )}
-                        </div>
+                            </div>
+                        )}
 
                         {/* Checkbox único de términos */}
                         <div className={styles.termsSection}>
