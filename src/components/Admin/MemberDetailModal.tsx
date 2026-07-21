@@ -352,7 +352,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                 const typeLabels: Record<string, string> = {
                     'PET_PHOTO_1': 'Foto Principal',
                     'PET_VET_CERT': 'Certificado Médico',
-                    'OTHER_DOC': 'Documento Adicional'
+                    'OTHER_DOC': 'Documento Adicional',
+                    'OTRO': 'Otro'
                 };
                 
                 const selectedLabels = next.map(t => typeLabels[t] || t);
@@ -1159,7 +1160,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                             {[
                                                                 { type: 'PET_PHOTO_1', label: '📸 Foto Principal', color: '#FE8F15' },
                                                                 { type: 'PET_VET_CERT', label: '🏥 Certificado Médico', color: '#7DD8D5' },
-                                                                { type: 'OTHER_DOC', label: '📄 Documento Adicional', color: '#A0AEC0' }
+                                                                { type: 'OTHER_DOC', label: '📄 Documento Adicional', color: '#A0AEC0' },
+                                                                { type: 'OTRO', label: '💬 Otro', color: '#9F7AEA' }
                                                             ].map(opt => (
                                                                 <label key={opt.type} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 14px', borderRadius: '12px', border: `2px solid ${(selectedRequests[pet.id] || []).includes(opt.type) ? opt.color : '#E2E8F0'}`, background: (selectedRequests[pet.id] || []).includes(opt.type) ? `${opt.color}15` : '#fff', cursor: 'pointer', marginBottom: '8px', fontWeight: (selectedRequests[pet.id] || []).includes(opt.type) ? 700 : 400, fontSize: '0.9rem' }}>
                                                                     <input type="checkbox" checked={(selectedRequests[pet.id] || []).includes(opt.type)} onChange={() => toggleRequestType(pet.id, opt.type)} style={{ width: '18px', height: '18px', accentColor: opt.color }} />

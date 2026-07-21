@@ -39,6 +39,11 @@ const REQUEST_TYPES: Record<string, { label: string; icon: string; description: 
         label: 'Documento Adicional',
         icon: '📄',
         description: 'un documento o archivo adicional'
+    },
+    OTRO: {
+        label: 'Otro',
+        icon: '💬',
+        description: 'otra información o aclaración que necesitamos de tu parte'
     }
 };
 

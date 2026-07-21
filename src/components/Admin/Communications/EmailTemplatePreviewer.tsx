@@ -209,7 +209,8 @@ Estamos para apoyarte si necesitas volver a registrar a tu mascota con los docum
                 checklistItems: [
                     { type: 'PET_PHOTO_1', label: 'Foto Principal', icon: '📷', description: 'Una foto clara donde se vea bien su carita' },
                     { type: 'PET_VET_CERT', label: 'Certificado Médico', icon: '⚕️', description: 'Expedido por un médico veterinario certificado para mascotas senior' },
-                    { type: 'OTHER_DOC', label: 'Documentación Adicional', icon: '📄', description: 'Cualquier otro documento que sea necesario aclarar (identificación, dirección)' }
+                    { type: 'OTHER_DOC', label: 'Documentación Adicional', icon: '📄', description: 'Cualquier otro documento que sea necesario aclarar (identificación, dirección)' },
+                    { type: 'OTRO', label: 'Otro', icon: '💬', description: 'Otra información o aclaración que necesitamos de tu parte' }
                 ]
             },
             { key: 'dashboardUrl', label: 'URL de Completar Documentos', type: 'text', defaultValue: 'https://club.pataamiga.mx/completar-documentacion' }
@@ -219,7 +220,8 @@ Estamos para apoyarte si necesitas volver a registrar a tu mascota con los docum
             const checklistItems = [
                 { type: 'PET_PHOTO_1', label: 'Foto Principal', icon: '📷', description: 'Una foto clara donde se vea bien su carita' },
                 { type: 'PET_VET_CERT', label: 'Certificado Médico', icon: '⚕️', description: 'Expedido por un médico veterinario certificado para mascotas senior' },
-                { type: 'OTHER_DOC', label: 'Documentación Adicional', icon: '📄', description: 'Cualquier otro documento que sea necesario aclarar (identificación, dirección)' }
+                { type: 'OTHER_DOC', label: 'Documentación Adicional', icon: '📄', description: 'Cualquier otro documento que sea necesario aclarar (identificación, dirección)' },
+                { type: 'OTRO', label: 'Otro', icon: '💬', description: 'Otra información o aclaración que necesitamos de tu parte' }
             ];
 
             const activeTypes = Array.isArray(requestedTypes) ? requestedTypes : [requestedTypes];
@@ -227,7 +229,8 @@ Estamos para apoyarte si necesitas volver a registrar a tu mascota con los docum
                 .filter(item => activeTypes.includes(item.type))
                 .map(item => {
                     const bgColor = item.type === 'PET_PHOTO_1' ? '#FE8F15' :
-                        item.type === 'PET_VET_CERT' ? '#7DD8D5' : '#A0AEC0';
+                        item.type === 'PET_VET_CERT' ? '#7DD8D5' :
+                        item.type === 'OTRO' ? '#9F7AEA' : '#A0AEC0';
 
                     return `<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;">
                         <span style="width:32px;height:32px;border-radius:50%;background:${bgColor};color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">${item.icon}</span>

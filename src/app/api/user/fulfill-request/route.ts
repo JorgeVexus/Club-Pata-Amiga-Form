@@ -35,6 +35,7 @@ const FIELD_MAP: Record<string, { bucket: string; petField: string; label: strin
     PET_PHOTO_1: { bucket: 'pet-photos', petField: 'photo_url', label: 'Foto Principal' },
     PET_VET_CERT: { bucket: 'vet-certificates', petField: 'vet_certificate_url', label: 'Certificado Médico' },
     OTHER_DOC: { bucket: 'pet-photos', petField: '', label: 'Documento Adicional' },
+    OTRO: { bucket: 'pet-photos', petField: '', label: 'Otro' },
 };
 
 export async function POST(req: NextRequest) {
