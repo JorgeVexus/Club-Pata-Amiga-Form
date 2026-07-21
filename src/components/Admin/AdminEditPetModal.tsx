@@ -5,6 +5,7 @@ import styles from './AdminEditUserModal.module.css'; // Reutiliza los mismos es
 import { adminFetch } from '@/utils/admin-fetch';
 
 import BreedAutocomplete from '@/components/FormFields/BreedAutocomplete';
+import ColorAutocomplete from '@/components/FormFields/ColorAutocomplete';
 
 interface Pet {
     id: string;
@@ -17,6 +18,11 @@ interface Pet {
     is_adopted?: boolean;
     is_senior?: boolean;
     is_mixed_breed?: boolean;
+    coat_color?: string;
+    nose_color?: string;
+    eye_color?: string;
+    primary_photo_url?: string;
+    photo_url?: string;
     memberstack_slot?: number | null;
 }
 
@@ -41,6 +47,10 @@ interface PetFormData {
     isAdopted: boolean;
     isSenior: boolean;
     isMixedBreed: boolean;
+    coatColor: string;
+    noseColor: string;
+    eyeColor: string;
+    primaryPhotoUrl: string;
 }
 
 export default function AdminEditPetModal({
@@ -54,19 +64,24 @@ export default function AdminEditPetModal({
     onSaved,
 }: AdminEditPetModalProps) {
     const initialData = (): PetFormData => ({
-        name:        pet.name        || '',
-        breed:       pet.breed       || '',
-        petType:     pet.pet_type    || 'dog',
-        gender:      pet.gender      || '',
-        ageValue:    String(pet.age_value || ''),
-        ageUnit:     pet.age_unit    || 'years',
-        isAdopted:   pet.is_adopted  ?? false,
-        isSenior:    pet.is_senior   ?? false,
-        isMixedBreed: pet.is_mixed_breed ?? false,
+        name:            pet.name            || '',
+        breed:           pet.breed           || '',
+        petType:         pet.pet_type        || 'dog',
+        gender:          pet.gender          || '',
+        ageValue:        String(pet.age_value || ''),
+        ageUnit:         pet.age_unit        || 'years',
+        isAdopted:       pet.is_adopted      ?? false,
+        isSenior:        pet.is_senior       ?? false,
+        isMixedBreed:    pet.is_mixed_breed  ?? false,
+        coatColor:       pet.coat_color      || '',
+        noseColor:       pet.nose_color      || '',
+        eyeColor:        pet.eye_color       || '',
+        primaryPhotoUrl: pet.primary_photo_url || pet.photo_url || '',
     });
 
     const [formData, setFormData] = useState<PetFormData>(initialData);
     const [isSaving, setIsSaving] = useState(false);
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -80,6 +95,41 @@ export default function AdminEditPetModal({
 
     const handleChange = (key: keyof PetFormData, value: string | boolean) => {
         setFormData(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (file.size > 10 * 1024 * 1024) {
+            setError('La foto no debe superar 10MB');
+            return;
+        }
+
+        setIsUploadingPhoto(true);
+        setError(null);
+
+        try {
+            const uploadBody = new FormData();
+            uploadBody.append('file', file);
+            uploadBody.append('userId', memberId);
+
+            const res = await fetch('/api/upload/pet-photo', {
+                method: 'POST',
+                body: uploadBody,
+            });
+
+            const data = await res.json();
+            if (data.success && data.url) {
+                handleChange('primaryPhotoUrl', data.url);
+            } else {
+                setError(data.error || 'Error al subir foto');
+            }
+        } catch (err: any) {
+            setError('Error de conexión al subir foto');
+        } finally {
+            setIsUploadingPhoto(false);
+        }
     };
 
     const handleSave = async () => {
@@ -119,6 +169,8 @@ export default function AdminEditPetModal({
                     name: 'name', breed: 'breed', petType: 'pet_type', gender: 'gender',
                     ageValue: 'age_value', ageUnit: 'age_unit',
                     isAdopted: 'is_adopted', isSenior: 'is_senior', isMixedBreed: 'is_mixed_breed',
+                    coatColor: 'coat_color', noseColor: 'nose_color', eyeColor: 'eye_color',
+                    primaryPhotoUrl: 'primary_photo_url',
                 };
 
                 (Object.keys(formData) as (keyof PetFormData)[]).forEach(key => {
@@ -173,6 +225,50 @@ export default function AdminEditPetModal({
                 </div>
 
                 <div className={styles.body}>
+                    {/* Foto Principal */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>📸 Foto Principal</h3>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+                            {formData.primaryPhotoUrl ? (
+                                <img
+                                    src={formData.primaryPhotoUrl}
+                                    alt="Foto de la mascota"
+                                    style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #7DD8D5', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}
+                                />
+                            ) : (
+                                <div style={{ width: '72px', height: '72px', borderRadius: '50%', background: '#FEF08A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2.2rem', border: '2px solid #000' }}>
+                                    {petEmoji}
+                                </div>
+                            )}
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                                <label
+                                    style={{
+                                        display: 'inline-block', padding: '8px 18px', background: '#FE8F15', color: '#fff',
+                                        borderRadius: '50px', border: '1.5px solid #000', cursor: 'pointer', fontWeight: 600, fontSize: '0.85rem'
+                                    }}
+                                >
+                                    {isUploadingPhoto ? '⏳ Subiendo...' : '📷 Subir / Cambiar Foto'}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handlePhotoUpload}
+                                        style={{ display: 'none' }}
+                                        disabled={isUploadingPhoto}
+                                    />
+                                </label>
+                                {formData.primaryPhotoUrl && (
+                                    <button
+                                        type="button"
+                                        onClick={() => handleChange('primaryPhotoUrl', '')}
+                                        style={{ padding: '7px 14px', background: '#FEE2E2', color: '#DC2626', border: '1.5px solid #FCA5A5', borderRadius: '50px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600 }}
+                                    >
+                                        Quitar Foto
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Tipo */}
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>🐾 Tipo de Mascota</h3>
@@ -248,6 +344,43 @@ export default function AdminEditPetModal({
                                     <option value="years">Años</option>
                                     <option value="months">Meses</option>
                                 </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Rasgos de Color */}
+                    <div className={styles.section}>
+                        <h3 className={styles.sectionTitle}>🎨 Rasgos de Color</h3>
+                        <div className={styles.grid}>
+                            <div className={styles.field}>
+                                <ColorAutocomplete
+                                    label="Color de Pelo"
+                                    name="coatColor"
+                                    category="coat"
+                                    petType={formData.petType === 'cat' ? 'gato' : 'perro'}
+                                    value={formData.coatColor}
+                                    onChange={(val) => handleChange('coatColor', val)}
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <ColorAutocomplete
+                                    label="Color de Nariz"
+                                    name="noseColor"
+                                    category="nose"
+                                    petType={formData.petType === 'cat' ? 'gato' : 'perro'}
+                                    value={formData.noseColor}
+                                    onChange={(val) => handleChange('noseColor', val)}
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <ColorAutocomplete
+                                    label="Color de Ojos"
+                                    name="eyeColor"
+                                    category="eye"
+                                    petType={formData.petType === 'cat' ? 'gato' : 'perro'}
+                                    value={formData.eyeColor}
+                                    onChange={(val) => handleChange('eyeColor', val)}
+                                />
                             </div>
                         </div>
                     </div>

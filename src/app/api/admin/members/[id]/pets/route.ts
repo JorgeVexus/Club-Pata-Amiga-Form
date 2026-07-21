@@ -24,6 +24,10 @@ export async function POST(
             isAdopted,
             isSenior,
             isMixedBreed,
+            coatColor,
+            noseColor,
+            eyeColor,
+            primaryPhotoUrl,
             msIndex,      // 1, 2, o 3
             memberName,
         } = body;
@@ -69,7 +73,12 @@ export async function POST(
             is_adopted: isAdopted ?? false,
             is_senior: isSenior ?? false,
             is_mixed_breed: isMixedBreed ?? false,
-            status: 'approved',
+            coat_color: coatColor || null,
+            nose_color: noseColor || null,
+            eye_color: eyeColor || null,
+            primary_photo_url: primaryPhotoUrl || null,
+            photo_url: primaryPhotoUrl || null,
+            status: 'pending',
             basic_info_completed: true,
             created_at: new Date().toISOString(),
         };

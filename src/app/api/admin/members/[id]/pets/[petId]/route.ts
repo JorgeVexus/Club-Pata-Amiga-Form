@@ -25,6 +25,10 @@ export async function PATCH(
             isAdopted,
             isSenior,
             isMixedBreed,
+            coatColor,
+            noseColor,
+            eyeColor,
+            primaryPhotoUrl,
             // Slot de Memberstack (1, 2, o 3)
             msIndex,
             // Para logging
@@ -65,15 +69,22 @@ export async function PATCH(
 
         // ── 2. Supabase — todos los campos de la tabla pets ──────────────────────
         const supabaseFields: Record<string, any> = {};
-        if (name !== undefined)          supabaseFields.name          = name;
-        if (breed !== undefined)         supabaseFields.breed         = breed;
-        if (petType !== undefined)       supabaseFields.pet_type      = petType;
-        if (gender !== undefined)        supabaseFields.gender        = gender;
-        if (ageValue !== undefined)      supabaseFields.age_value     = String(ageValue);
-        if (ageUnit !== undefined)       supabaseFields.age_unit      = ageUnit;
-        if (isAdopted !== undefined)     supabaseFields.is_adopted    = isAdopted;
-        if (isSenior !== undefined)      supabaseFields.is_senior     = isSenior;
-        if (isMixedBreed !== undefined)  supabaseFields.is_mixed_breed = isMixedBreed;
+        if (name !== undefined)            supabaseFields.name              = name;
+        if (breed !== undefined)           supabaseFields.breed             = breed;
+        if (petType !== undefined)         supabaseFields.pet_type          = petType;
+        if (gender !== undefined)          supabaseFields.gender            = gender;
+        if (ageValue !== undefined)        supabaseFields.age_value         = String(ageValue);
+        if (ageUnit !== undefined)         supabaseFields.age_unit          = ageUnit;
+        if (isAdopted !== undefined)       supabaseFields.is_adopted        = isAdopted;
+        if (isSenior !== undefined)        supabaseFields.is_senior         = isSenior;
+        if (isMixedBreed !== undefined)    supabaseFields.is_mixed_breed    = isMixedBreed;
+        if (coatColor !== undefined)       supabaseFields.coat_color        = coatColor;
+        if (noseColor !== undefined)       supabaseFields.nose_color        = noseColor;
+        if (eyeColor !== undefined)        supabaseFields.eye_color         = eyeColor;
+        if (primaryPhotoUrl !== undefined) {
+            supabaseFields.primary_photo_url = primaryPhotoUrl;
+            supabaseFields.photo_url         = primaryPhotoUrl;
+        }
 
         if (Object.keys(supabaseFields).length > 0) {
             const { error: supaErr } = await supabaseAdmin
