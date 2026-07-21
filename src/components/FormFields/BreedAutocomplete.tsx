@@ -26,6 +26,7 @@ interface BreedAutocompleteProps {
     onChange: (value: string, hasWarning: boolean, warningMessage?: string, maxAge?: number) => void;
     error?: string;
     required?: boolean;
+    showWarning?: boolean;
 }
 
 // Helper para parsear y estructurar el warning_message dinámicamente
@@ -72,6 +73,7 @@ export default function BreedAutocomplete({
     onChange,
     error,
     required = false,
+    showWarning = true,
 }: BreedAutocompleteProps) {
     const [inputValue, setInputValue] = useState(value);
     const [suggestions, setSuggestions] = useState<Breed[]>([]);
@@ -195,7 +197,7 @@ export default function BreedAutocomplete({
                                     style={{ background: index === activeIndex ? '#f5f5f5' : 'transparent' }} // Fallback style
                                 >
                                     {displayName}
-                                    {breed.has_genetic_issues && (
+                                    {showWarning && breed.has_genetic_issues && (
                                         <span className={styles.warningIcon}>⚠️</span>
                                     )}
                                 </li>
@@ -205,7 +207,7 @@ export default function BreedAutocomplete({
                 )}
             </div>
 
-            {selectedBreed?.has_genetic_issues && selectedBreed.warning_message && (() => {
+            {showWarning && selectedBreed?.has_genetic_issues && selectedBreed.warning_message && (() => {
                 const dynamicInfo = getDynamicWarning(selectedBreed.warning_message, selectedBreed.name);
                 
                 if (!dynamicInfo || !dynamicInfo.formattedDiseases) {

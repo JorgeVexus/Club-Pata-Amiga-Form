@@ -4,6 +4,8 @@ import React, { useState, useEffect } from 'react';
 import styles from './AdminEditUserModal.module.css'; // Reutiliza los mismos estilos base
 import { adminFetch } from '@/utils/admin-fetch';
 
+import BreedAutocomplete from '@/components/FormFields/BreedAutocomplete';
+
 interface Pet {
     id: string;
     name: string;
@@ -216,13 +218,13 @@ export default function AdminEditPetModal({
                                 />
                             </div>
                             <div className={styles.field}>
-                                <label className={styles.label}>Raza</label>
-                                <input
-                                    type="text"
+                                <BreedAutocomplete
+                                    label="Raza"
+                                    name="breed"
+                                    petType={formData.petType === 'cat' ? 'gato' : 'perro'}
                                     value={formData.breed}
-                                    onChange={e => handleChange('breed', e.target.value)}
-                                    className={styles.input}
-                                    placeholder={formData.isMixedBreed ? 'Mestizo' : 'Raza'}
+                                    showWarning={false}
+                                    onChange={(value) => handleChange('breed', value)}
                                 />
                             </div>
                             <div className={styles.field}>
