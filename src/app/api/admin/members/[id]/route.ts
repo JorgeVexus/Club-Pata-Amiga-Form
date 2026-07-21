@@ -116,6 +116,8 @@ export async function PATCH(
             maternalLastName,
             phone,
             birthDate,
+            nationality,
+            nationalityCode,
             curp,
             address,
             colony,
@@ -139,6 +141,7 @@ export async function PATCH(
         if (paternalLastName !== undefined) msFields['paternal-last-name'] = paternalLastName;
         if (maternalLastName !== undefined) msFields['maternal-last-name'] = maternalLastName;
         if (phone !== undefined)            msFields['phone']               = phone;
+        if (nationality !== undefined)      msFields['nationality']         = nationality;
 
         const msUpdatePayload: Record<string, any> = {};
         if (email !== undefined) {
@@ -161,18 +164,20 @@ export async function PATCH(
 
         // ── 2. Actualizar en Supabase ─────────────────────────────────────────────
         const supabaseFields: Record<string, any> = {};
-        if (email !== undefined)        supabaseFields.email        = email;
-        if (firstName !== undefined)    supabaseFields.first_name   = firstName;
-        if (paternalLastName !== undefined) supabaseFields.last_name = paternalLastName;
+        if (email !== undefined)            supabaseFields.email            = email;
+        if (firstName !== undefined)        supabaseFields.first_name       = firstName;
+        if (paternalLastName !== undefined) supabaseFields.last_name        = paternalLastName;
         if (maternalLastName !== undefined) supabaseFields.mother_last_name = maternalLastName;
-        if (phone !== undefined)        supabaseFields.phone        = phone;
-        if (birthDate !== undefined)    supabaseFields.birth_date   = birthDate;
-        if (curp !== undefined)         supabaseFields.curp         = curp?.trim()?.toUpperCase() || curp;
-        if (address !== undefined)      supabaseFields.address      = address;
-        if (colony !== undefined)       supabaseFields.colony       = colony;
-        if (city !== undefined)         supabaseFields.city         = city;
-        if (state !== undefined)        supabaseFields.state        = state;
-        if (postalCode !== undefined)   supabaseFields.postal_code  = postalCode;
+        if (phone !== undefined)            supabaseFields.phone            = phone;
+        if (birthDate !== undefined)        supabaseFields.birth_date       = birthDate;
+        if (nationality !== undefined)      supabaseFields.nationality      = nationality;
+        if (nationalityCode !== undefined)  supabaseFields.nationality_code = nationalityCode;
+        if (curp !== undefined)             supabaseFields.curp             = curp?.trim()?.toUpperCase() || curp;
+        if (address !== undefined)          supabaseFields.address          = address;
+        if (colony !== undefined)           supabaseFields.colony           = colony;
+        if (city !== undefined)             supabaseFields.city             = city;
+        if (state !== undefined)            supabaseFields.state            = state;
+        if (postalCode !== undefined)       supabaseFields.postal_code      = postalCode;
 
         if (Object.keys(supabaseFields).length > 0) {
             const { error: supaErr } = await supabaseAdmin

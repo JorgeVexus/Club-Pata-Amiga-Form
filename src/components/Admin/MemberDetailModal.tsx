@@ -102,7 +102,7 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
 
     // States for Full Editing Modals
     const [isUserEditModalOpen, setIsUserEditModalOpen] = useState(false);
-    const [editingPetForModal, setEditingPetForModal] = useState<{ pet: Pet; index: number } | null>(null);
+    const [editingPetForModal, setEditingPetForModal] = useState<{ pet: Pet; index: number; isNew?: boolean } | null>(null);
     const [showUnsubscribedPets, setShowUnsubscribedPets] = useState(false);
 
     useEffect(() => {
@@ -1577,9 +1577,32 @@ return (
 
                     {/* Pets */}
                     <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>
-                            {selectedPetId ? 'Mascota en Apelación' : `Mascotas Registradas (${pets.length})`}
-                        </h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 className={styles.sectionTitle} style={{ margin: 0 }}>
+                                {selectedPetId ? 'Mascota en Apelación' : `Mascotas Registradas (${pets.length})`}
+                            </h3>
+                            {!selectedPetId && pets.length < 3 && (
+                                <button
+                                    onClick={() => {
+                                        const takenSlots = pets.map((p, idx) => p.memberstack_slot || (idx + 1));
+                                        const freeSlot = [1, 2, 3].find(slot => !takenSlots.includes(slot)) || (pets.length + 1);
+                                        const emptyPet: Pet = {
+                                            id: `new-${Date.now()}`,
+                                            name: '',
+                                            breed: '',
+                                            pet_type: 'dog',
+                                            status: 'approved',
+                                            created_at: new Date().toISOString(),
+                                        };
+                                        setEditingPetForModal({ pet: emptyPet, index: freeSlot, isNew: true });
+                                    }}
+                                    className={styles.editLink}
+                                    style={{ fontSize: '0.85rem', padding: '6px 14px', background: '#00BBB4', color: '#fff', borderRadius: '50px', border: '1.5px solid #000', cursor: 'pointer', fontWeight: 600 }}
+                                >
+                                    ➕ Añadir Mascota
+                                </button>
+                            )}
+                        </div>
                         {loadingPets ? (
                             <div className={styles.loading}>Cargando mascotas...</div>
                         ) : (
@@ -1589,9 +1612,36 @@ return (
                                         {activePets.map((pet) => renderPetCard(pet))}
                                     </div>
                                 ) : (
-                                    <p className={styles.noPets} style={{ fontStyle: 'italic', color: '#64748B', padding: '16px 0' }}>
-                                        No hay mascotas activas o pendientes.
-                                    </p>
+                                    <div style={{ textAlign: 'center', padding: '20px 0' }}>
+                                        <p className={styles.noPets} style={{ fontStyle: 'italic', color: '#64748B', marginBottom: '12px' }}>
+                                            No hay mascotas activas o pendientes.
+                                        </p>
+                                        <button
+                                            onClick={() => {
+                                                const emptyPet: Pet = {
+                                                    id: `new-${Date.now()}`,
+                                                    name: '',
+                                                    breed: '',
+                                                    pet_type: 'dog',
+                                                    status: 'approved',
+                                                    created_at: new Date().toISOString(),
+                                                };
+                                                setEditingPetForModal({ pet: emptyPet, index: 1, isNew: true });
+                                            }}
+                                            style={{
+                                                background: '#00BBB4',
+                                                color: '#fff',
+                                                border: '2px solid #000',
+                                                borderRadius: '50px',
+                                                padding: '8px 20px',
+                                                fontWeight: 700,
+                                                fontSize: '0.9rem',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            ➕ Añadir Mascota Manualmente
+                                        </button>
+                                    </div>
                                 )}
 
                                 {unsubscribedPets.length > 0 && (
@@ -1710,6 +1760,7 @@ return (
                         petIndex={editingPetForModal.index}
                         memberId={member.id}
                         memberName={`${fields['first-name'] || supabaseUser?.first_name || ''} ${fields['paternal-last-name'] || supabaseUser?.last_name || ''}`.trim()}
+                        isNew={editingPetForModal.isNew}
                         onSaved={() => {
                             loadPets();
                             if (onDataChange) onDataChange();

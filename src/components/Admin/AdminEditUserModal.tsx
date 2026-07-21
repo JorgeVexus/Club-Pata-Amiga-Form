@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import styles from './AdminEditUserModal.module.css';
 import { adminFetch } from '@/utils/admin-fetch';
+import NationalitySelect from '../RegistrationV2/NationalitySelect';
+import ColonyAutocomplete from '../FormFields/ColonyAutocomplete';
+import { getCDMXAlcaldia } from '@/utils/postalCodeUtils';
 
 interface AdminEditUserModalProps {
     isOpen: boolean;
@@ -20,6 +23,8 @@ interface UserFormData {
     email: string;
     phone: string;
     birthDate: string;
+    nationality: string;
+    nationalityCode: string;
     curp: string;
     address: string;
     colony: string;
@@ -45,6 +50,8 @@ export default function AdminEditUserModal({
         email:           member?.auth?.email           || member?.email                   || supabaseUser?.email || '',
         phone:           fields['phone']               || supabaseUser?.phone             || '',
         birthDate:       fields['birth-date']          || supabaseUser?.birth_date        || '',
+        nationality:     supabaseUser?.nationality     || fields['nationality']           || 'México',
+        nationalityCode: supabaseUser?.nationality_code || 'MEX',
         curp:            fields['curp']                || supabaseUser?.curp              || '',
         address:         fields['address']             || supabaseUser?.address           || '',
         colony:          fields['colony']              || supabaseUser?.colony            || '',
@@ -56,13 +63,127 @@ export default function AdminEditUserModal({
     const [formData, setFormData] = useState<UserFormData>(initialData);
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isLoadingCP, setIsLoadingCP] = useState(false);
+    const [colonySuggestions, setColonySuggestions] = useState<string[]>([]);
 
     useEffect(() => {
         if (isOpen) {
             setFormData(initialData());
             setError(null);
+            setColonySuggestions([]);
         }
     }, [isOpen, member, supabaseUser]);
+
+    const fetchFromGoogle = async (cp: string) => {
+        if (typeof window === 'undefined' || !(window as any).google || !(window as any).google.maps) return null;
+        try {
+            const geocoder = new (window as any).google.maps.Geocoder();
+            const response = await geocoder.geocode({
+                address: cp,
+                componentRestrictions: { country: 'MX' },
+                language: 'es',
+                region: 'mx'
+            });
+
+            if (response.results && response.results.length > 0) {
+                const result = response.results[0];
+                let state = '';
+                let city = '';
+
+                result.address_components.forEach((component: any) => {
+                    if (component.types.includes('administrative_area_level_1')) {
+                        state = component.long_name;
+                    }
+                });
+
+                const isCDMXState =
+                    state.toLowerCase().includes('ciudad de méxico') ||
+                    state.toLowerCase().includes('mexico city') ||
+                    state.toLowerCase() === 'distrito federal';
+
+                if (isCDMXState) state = 'Ciudad de México';
+
+                const components = result.address_components;
+                const sublocality1 = components.find((c: any) => c.types.includes('sublocality_level_1'))?.long_name;
+                const adminArea2 = components.find((c: any) => c.types.includes('administrative_area_level_2'))?.long_name;
+                const locality = components.find((c: any) => c.types.includes('locality'))?.long_name;
+
+                if (isCDMXState) {
+                    city = sublocality1 || adminArea2 || locality || '';
+                    if (city.toLowerCase().includes('ciudad de méxico') ||
+                        city.toLowerCase().includes('mexico city') ||
+                        city.toLowerCase().includes('cdmx')) {
+                        city = sublocality1 || adminArea2 || '';
+                    }
+                } else {
+                    city = adminArea2 || locality || sublocality1 || '';
+                }
+
+                return { state, city };
+            }
+        } catch (err) {
+            console.error('Google Geocoding error:', err);
+        }
+        return null;
+    };
+
+    const fetchColoniesFromSepomex = async (cp: string) => {
+        if (!cp || cp.length !== 5) return null;
+        try {
+            const response = await fetch(`/api/sepomex?cp=${cp}`);
+            const result = await response.json();
+            if (result.success) {
+                setColonySuggestions(result.data.colonies || []);
+                return result.data;
+            }
+        } catch (err) {
+            console.error('Error SEPOMEX:', err);
+        }
+        return null;
+    };
+
+    const handlePostalCodeQuery = async (cpValue?: string) => {
+        const cp = cpValue || formData.postalCode;
+        if (!cp || cp.length !== 5) return;
+
+        setIsLoadingCP(true);
+        try {
+            const [googleData, sepomexData] = await Promise.all([
+                fetchFromGoogle(cp),
+                fetchColoniesFromSepomex(cp)
+            ]);
+
+            if (googleData || sepomexData) {
+                setFormData(current => {
+                    const finalState = googleData?.state || sepomexData?.state || current.state;
+                    const localAlcaldia = getCDMXAlcaldia(cp);
+                    const isCDMX = localAlcaldia ||
+                                  finalState.toLowerCase().includes('ciudad de méxico') ||
+                                  finalState.toLowerCase().includes('mexico city');
+
+                    let finalCity = localAlcaldia || googleData?.city;
+
+                    if (!finalCity || (isCDMX && !localAlcaldia && (
+                        finalCity.toLowerCase().includes('ciudad de méxico') ||
+                        finalCity.toLowerCase().includes('mexico city')
+                    ))) {
+                        finalCity = sepomexData?.municipality || finalCity || current.city;
+                    }
+
+                    return {
+                        ...current,
+                        state: finalState || '',
+                        city: finalCity || '',
+                        postalCode: cp,
+                    };
+                });
+            }
+        } catch (err) {
+            console.error('Error consultando CP:', err);
+        } finally {
+            setIsLoadingCP(false);
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -86,6 +207,8 @@ export default function AdminEditUserModal({
                 email:           'email',
                 phone:           'phone',
                 birthDate:       'birth_date',
+                nationality:     'nationality',
+                nationalityCode: 'nationality_code',
                 curp:            'curp',
                 address:         'address',
                 colony:          'colony',
@@ -182,13 +305,26 @@ export default function AdminEditUserModal({
                                 />
                             </div>
                             <div className={styles.field}>
+                                <NationalitySelect
+                                    value={formData.nationality}
+                                    onChange={(nameEs, code) => {
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            nationality: nameEs,
+                                            nationalityCode: code,
+                                        }));
+                                    }}
+                                />
+                            </div>
+                            <div className={styles.field}>
                                 <label className={styles.label}>CURP</label>
                                 <input
                                     type="text"
                                     value={formData.curp}
-                                    onChange={e => handleChange('curp', e.target.value)}
+                                    onChange={e => handleChange('curp', e.target.value.toUpperCase())}
                                     className={styles.input}
                                     placeholder="XXXX000000XXXXXX00"
+                                    maxLength={18}
                                 />
                             </div>
                         </div>
@@ -227,13 +363,24 @@ export default function AdminEditUserModal({
                         <div className={styles.grid}>
                             <div className={styles.field}>
                                 <label className={styles.label}>Código Postal</label>
-                                <input
-                                    type="text"
-                                    value={formData.postalCode}
-                                    onChange={e => handleChange('postalCode', e.target.value)}
-                                    className={styles.input}
-                                    placeholder="Código Postal"
-                                />
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <input
+                                        type="text"
+                                        value={formData.postalCode}
+                                        onChange={e => {
+                                            const cleaned = e.target.value.replace(/\D/g, '').slice(0, 5);
+                                            handleChange('postalCode', cleaned);
+                                            if (cleaned.length === 5) {
+                                                handlePostalCodeQuery(cleaned);
+                                            }
+                                        }}
+                                        onBlur={() => handlePostalCodeQuery()}
+                                        className={styles.input}
+                                        placeholder="Código Postal (5 dígitos)"
+                                        maxLength={5}
+                                    />
+                                    {isLoadingCP && <span style={{ fontSize: '0.75rem', color: '#FE8F15', fontWeight: 600 }}>Consultando...</span>}
+                                </div>
                             </div>
                             <div className={styles.field}>
                                 <label className={styles.label}>Estado</label>
@@ -246,33 +393,34 @@ export default function AdminEditUserModal({
                                 />
                             </div>
                             <div className={styles.field}>
-                                <label className={styles.label}>Ciudad</label>
+                                <label className={styles.label}>Municipio / Alcaldía</label>
                                 <input
                                     type="text"
                                     value={formData.city}
                                     onChange={e => handleChange('city', e.target.value)}
                                     className={styles.input}
-                                    placeholder="Ciudad"
+                                    placeholder="Municipio / Alcaldía"
                                 />
                             </div>
                             <div className={styles.field}>
-                                <label className={styles.label}>Colonia</label>
-                                <input
-                                    type="text"
+                                <ColonyAutocomplete
+                                    label="Colonia"
+                                    name="colony"
                                     value={formData.colony}
-                                    onChange={e => handleChange('colony', e.target.value)}
-                                    className={styles.input}
-                                    placeholder="Colonia"
+                                    suggestions={colonySuggestions}
+                                    onChange={value => handleChange('colony', value)}
+                                    placeholder="Escribe o selecciona colonia..."
+                                    isLoading={isLoadingCP}
                                 />
                             </div>
-                            <div className={styles.field}>
+                            <div className={styles.field} style={{ gridColumn: 'span 2' }}>
                                 <label className={styles.label}>Dirección (calle y número)</label>
                                 <input
                                     type="text"
                                     value={formData.address}
                                     onChange={e => handleChange('address', e.target.value)}
                                     className={styles.input}
-                                    placeholder="Dirección (calle y número)"
+                                    placeholder="Calle y número exterior/interior"
                                 />
                             </div>
                         </div>

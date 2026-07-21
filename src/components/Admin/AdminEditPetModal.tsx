@@ -25,6 +25,7 @@ interface AdminEditPetModalProps {
     petIndex: number; // 1, 2, o 3 — para el slot de Memberstack
     memberId: string;
     memberName: string;
+    isNew?: boolean;
     onSaved: () => void;
 }
 
@@ -47,6 +48,7 @@ export default function AdminEditPetModal({
     petIndex,
     memberId,
     memberName,
+    isNew = false,
     onSaved,
 }: AdminEditPetModalProps) {
     const initialData = (): PetFormData => ({
@@ -87,45 +89,66 @@ export default function AdminEditPetModal({
         setError(null);
 
         try {
-            const original = initialData();
+            if (isNew) {
+                // Registrar nueva mascota vía POST
+                const res = await adminFetch(`/api/admin/members/${memberId}/pets`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...formData,
+                        msIndex: petIndex,
+                        memberName,
+                    }),
+                });
 
-            // Detectar qué cambió
-            const diff: Record<string, { old: string | boolean; new: string | boolean }> = {};
-            const fieldKeyMap: Record<keyof PetFormData, string> = {
-                name: 'name', breed: 'breed', petType: 'pet_type', gender: 'gender',
-                ageValue: 'age_value', ageUnit: 'age_unit',
-                isAdopted: 'is_adopted', isSenior: 'is_senior', isMixedBreed: 'is_mixed_breed',
-            };
-
-            (Object.keys(formData) as (keyof PetFormData)[]).forEach(key => {
-                if (String(formData[key]) !== String(original[key])) {
-                    diff[fieldKeyMap[key]] = { old: original[key] as string, new: formData[key] as string };
+                const data = await res.json();
+                if (data.success) {
+                    onSaved();
+                    onClose();
+                } else {
+                    setError(data.error || 'Error al registrar mascota');
                 }
-            });
-
-            if (Object.keys(diff).length === 0) {
-                onClose();
-                return;
-            }
-
-            const res = await adminFetch(`/api/admin/members/${memberId}/pets/${pet.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...formData,
-                    msIndex: petIndex,
-                    petName: pet.name,
-                    memberName,
-                    changes: diff,
-                }),
-            });
-
-            const data = await res.json();
-            if (data.success) {
-                onSaved();
-                onClose();
             } else {
-                setError(data.error || 'Error al guardar');
+                // Editar mascota existente vía PATCH
+                const original = initialData();
+
+                const diff: Record<string, { old: string | boolean; new: string | boolean }> = {};
+                const fieldKeyMap: Record<keyof PetFormData, string> = {
+                    name: 'name', breed: 'breed', petType: 'pet_type', gender: 'gender',
+                    ageValue: 'age_value', ageUnit: 'age_unit',
+                    isAdopted: 'is_adopted', isSenior: 'is_senior', isMixedBreed: 'is_mixed_breed',
+                };
+
+                (Object.keys(formData) as (keyof PetFormData)[]).forEach(key => {
+                    if (String(formData[key]) !== String(original[key])) {
+                        diff[fieldKeyMap[key]] = { old: original[key] as string, new: formData[key] as string };
+                    }
+                });
+
+                if (Object.keys(diff).length === 0) {
+                    onClose();
+                    return;
+                }
+
+                const res = await adminFetch(`/api/admin/members/${memberId}/pets/${pet.id}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        ...formData,
+                        msIndex: petIndex,
+                        petName: pet.name,
+                        memberName,
+                        changes: diff,
+                    }),
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    onSaved();
+                    onClose();
+                } else {
+                    setError(data.error || 'Error al guardar');
+                }
             }
         } catch (e: any) {
             setError('Error de conexión');
@@ -135,14 +158,15 @@ export default function AdminEditPetModal({
     };
 
     const petEmoji = formData.petType === 'cat' ? '🐱' : '🐶';
+    const titleText = isNew
+        ? `➕ Registrar Nueva Mascota (Slot ${petIndex})`
+        : `${petEmoji} Editar Info de ${pet.name}`;
 
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
                 <div className={styles.header}>
-                    <h2 className={styles.title}>
-                        {petEmoji} Editar Info de {pet.name}
-                    </h2>
+                    <h2 className={styles.title}>{titleText}</h2>
                     <button className={styles.closeBtn} onClick={onClose}>✕</button>
                 </div>
 
