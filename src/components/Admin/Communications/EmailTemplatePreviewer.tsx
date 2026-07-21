@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styles from './EmailTemplatePreviewer.module.css';
 import { buildBrandedEmailHtml } from '@/utils/email-builder';
+import { adminFetch } from '@/utils/admin-fetch';
 
 // Definición de tipos
 type CategoryType = 'members' | 'ambassadors' | 'wellness';
@@ -127,6 +128,7 @@ Estamos para apoyarte si necesitas volver a registrar a tu mascota con los docum
         defaultSubject: '¡Casi listo! Solo falta la foto de {petName}',
         defaultRecipient: 'miembro@pataamiga.mx',
         params: [
+            { key: 'recipientEmail', label: 'Correo destinatario de prueba', type: 'text', defaultValue: 'pruebas@pataamiga.mx' },
             { key: 'userName', label: 'Nombre del Miembro', type: 'text', defaultValue: 'Jorge Cerna' },
             { key: 'petName', label: 'Nombre de la Mascota', type: 'text', defaultValue: 'Rocky' },
             {
@@ -155,40 +157,8 @@ Estamos para apoyarte si necesitas volver a registrar a tu mascota con los docum
             },
             { key: 'uploadUrl', label: 'Enlace de Subida', type: 'text', defaultValue: 'https://club.pataamiga.mx/completar-perfil' }
         ],
-        render: ({ userName, petName, followupDay, missingDocs, uploadUrl }) => {
-            const dayNum = Number(followupDay);
-            const docLabel = missingDocs === 'both' ? 'la foto y el certificado médico' :
-                            missingDocs === 'photo' ? 'la foto' : 'el certificado médico';
-            
-            const subjects: Record<number, string> = {
-                0: `¡Casi listo! Solo falta ${docLabel} de ${petName}`,
-                10: `¿Necesitas ayuda con ${docLabel} de ${petName}?`,
-                13: `No queremos que ${petName} pierda sus beneficios`,
-                14: `Mañana es el último día para completar el perfil de ${petName}`,
-                15: `Última oportunidad: activa la protección de ${petName} hoy`,
-            };
-            const subject = subjects[dayNum] || `Completa la información de ${petName}`;
-
-            const firstName = userName.split(' ')[0] || 'Miembro';
-            const messages: Record<number, { headline: string; body: string }> = {
-                0:  { headline: `¡Hola ${firstName}! Tu registro fue un éxito`, body: `Solo falta un pequeño detalle para que ${petName} esté completamente protegido. Necesitamos ${docLabel}. ¡Es muy rápido y lo puedes hacer ahora mismo!` },
-                10: { headline: `Hola ${firstName}, ¿cómo van?`, body: `Hemos notado que aún falta ${docLabel} de ${petName}. Si tienes alguna duda sobre cómo subir los archivos, con gusto te ayudamos. Responde este correo y te orientamos.` },
-                13: { headline: `${firstName}, ${petName} te necesita`, body: `Estamos en la recta final. El perfil de ${petName} aún está incompleto y sin ${docLabel}, no podremos activar su cobertura completa. ¡Solo te toma un momento!` },
-                14: { headline: `Solo queda 1 día, ${firstName}`, body: `Mañana vence el plazo para completar el perfil de ${petName}. No queremos que pierda ningún beneficio. Sube ${docLabel} hoy y listo.` },
-                15: { headline: `¡Es hoy, ${firstName}!`, body: `Hoy es el último día para que ${petName} tenga su perfil completo y activo. Si subes ${docLabel} ahora, todo queda en orden. ¡No te tardes!` },
-            };
-            const msg = messages[dayNum] || messages[0];
-
-            const missingItems: string[] = [];
-            if (missingDocs === 'photo' || missingDocs === 'both') {
-                missingItems.push(`<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;"><span style="width:32px;height:32px;border-radius:50%;background:#FE8F15;color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">📷</span><div><strong style="color:#2D3748;display:block;margin-bottom:2px;">Foto de ${petName}</strong><span style="color:#718096;font-size:13px;">Una foto clara donde se vea bien su carita</span></div></li>`);
-            }
-            if (missingDocs === 'certificate' || missingDocs === 'both') {
-                missingItems.push(`<li style="margin-bottom:12px;display:flex;align-items:flex-start;gap:12px;"><span style="width:32px;height:32px;border-radius:50%;background:#7DD8D5;color:#fff;display:inline-block;text-align:center;line-height:32px;font-size:16px;flex-shrink:0;">📄</span><div><strong style="color:#2D3748;display:block;margin-bottom:2px;">Certificado médico veterinario</strong><span style="color:#718096;font-size:13px;">Expedido por un médico veterinario certificado</span></div></li>`);
-            }
-
-            return `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/><title>${subject}</title></head><body style="margin:0;padding:0;background-color:#F7F8FA;font-family:Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#F7F8FA;padding:40px 20px;"><tr><td align="center"><table width="100%" style="max-width:580px;background:#FFFFFF;border-radius:24px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);"><tr><td style="background:linear-gradient(135deg,#7DD8D5 0%,#00BBB4 100%);padding:36px 40px;text-align:center;"><img src="https://app.pataamiga.mx/Identidad/logo-pata-amiga-azul.png" alt="Club Pata Amiga" height="44" style="display:block;margin:0 auto 16px;"/><p style="margin:0;color:rgba(255,255,255,0.85);font-size:13px;letter-spacing:1px;text-transform:uppercase;font-weight:600;">Perfil de tu mascota</p></td></tr><tr><td style="padding:40px 40px 24px;"><h1 style="margin:0 0 16px;font-size:24px;font-weight:700;color:#2D3748;line-height:1.3;">${msg.headline}</h1><p style="margin:0 0 28px;font-size:16px;color:#4A5568;line-height:1.7;">${msg.body}</p><div style="background:#FFFBF5;border:1.5px solid #FEE4C4;border-radius:16px;padding:24px;margin-bottom:28px;"><p style="margin:0 0 16px;font-size:12px;font-weight:700;color:#FE8F15;text-transform:uppercase;letter-spacing:0.5px;">Documentos pendientes</p><ul style="margin:0;padding:0;list-style:none;">${missingItems.join('')}</ul></div><div style="text-align:center;margin-bottom:28px;"><a href="${uploadUrl}" style="display:inline-block;background:#FE8F15;color:#FFFFFF;font-size:16px;font-weight:700;text-decoration:none;padding:16px 40px;border-radius:50px;border:2px solid #000000;box-shadow:0 4px 14px rgba(254,143,21,0.35);font-family:'Outfit',sans-serif;">Completar perfil de ${petName}</a></div><p style="margin:0;font-size:13px;color:#A0AEC0;text-align:center;line-height:1.6;">Si ya lo completaste o tienes dudas, responde este correo y con gusto te ayudamos.</p></td></tr><tr><td style="padding:0 40px;"><hr style="border:none;border-top:1px solid #EDF2F7;margin:0;"/></td></tr><tr><td style="padding:24px 40px 36px;text-align:center;"><p style="margin:0 0 8px;font-size:13px;color:#718096;">Con cariño, <strong style="color:#2D3748;">El equipo de Club Pata Amiga</strong></p></td></tr></table></td></tr></table></body></html>`;
-        }
+        // Esta plantilla siempre se resuelve desde la API canónica.
+        render: () => ''
     },
     {
         id: 'member-info-request',
@@ -960,6 +930,11 @@ export default function EmailTemplatePreviewer() {
     const [selectedTemplate, setSelectedTemplate] = useState<Template>(MEMBER_TEMPLATES[0]);
     const [formState, setFormState] = useState<Record<string, any>>({});
     const [viewportWidth, setViewportWidth] = useState<'desktop' | 'mobile'>('desktop');
+    const [previewHtml, setPreviewHtml] = useState('');
+    const [previewSubject, setPreviewSubject] = useState('');
+    const [previewError, setPreviewError] = useState('');
+    const [isSending, setIsSending] = useState(false);
+    const [sendFeedback, setSendFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     // Obtener las plantillas de la categoría activa
@@ -982,6 +957,8 @@ export default function EmailTemplatePreviewer() {
     // Cargar parámetros por defecto al seleccionar plantilla
     const handleTemplateChange = (template: Template) => {
         setSelectedTemplate(template);
+        setPreviewError('');
+        setSendFeedback(null);
         const initialState: Record<string, any> = {};
         template.params.forEach(p => {
             initialState[p.key] = p.defaultValue;
@@ -994,22 +971,67 @@ export default function EmailTemplatePreviewer() {
         handleTemplateChange(MEMBER_TEMPLATES[0]);
     }, []);
 
-    // Actualizar el contenido del iframe cada vez que cambien los parámetros o la plantilla
+    // La plantilla del cron usa el generador canónico del servidor para evitar divergencias.
     useEffect(() => {
-        if (!iframeRef.current || !selectedTemplate) return;
+        if (!selectedTemplate) return;
+
+        if (selectedTemplate.id !== 'member-missing-docs') {
+            try {
+                const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
+                if (doc) {
+                    doc.open();
+                    doc.write(selectedTemplate.render(formState));
+                    doc.close();
+                }
+            } catch (error) {
+                console.error('Error rendering template preview:', error);
+            }
+            return;
+        }
+
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(async () => {
+            try {
+                const response = await adminFetch('/api/admin/communications/missing-docs-test', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'preview', ...formState }),
+                    signal: controller.signal,
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'No fue posible actualizar la vista previa.');
+                }
+                setPreviewHtml(result.html);
+                setPreviewSubject(result.subject);
+                setPreviewError('');
+            } catch (error) {
+                if (error instanceof DOMException && error.name === 'AbortError') return;
+                console.error('Error loading canonical email preview:', error);
+                setPreviewError(error instanceof Error ? error.message : 'No fue posible actualizar la vista previa.');
+            }
+        }, 250);
+
+        return () => {
+            window.clearTimeout(timeoutId);
+            controller.abort();
+        };
+    }, [selectedTemplate, formState]);
+
+    useEffect(() => {
+        if (!iframeRef.current || !previewHtml) return;
 
         try {
-            const html = selectedTemplate.render(formState);
             const doc = iframeRef.current.contentDocument || iframeRef.current.contentWindow?.document;
             if (doc) {
                 doc.open();
-                doc.write(html);
+                doc.write(previewHtml);
                 doc.close();
             }
         } catch (error) {
             console.error('Error rendering template preview:', error);
         }
-    }, [selectedTemplate, formState]);
+    }, [previewHtml]);
 
     const handleInputChange = (key: string, value: any) => {
         setFormState(prev => ({
@@ -1029,6 +1051,42 @@ export default function EmailTemplatePreviewer() {
                 [key]: updatedList
             };
         });
+    };
+
+    const handleSendMissingDocsTest = async () => {
+        if (isSending) return;
+
+        const recipientEmail = String(formState.recipientEmail || '').trim();
+        if (!recipientEmail) {
+            setSendFeedback({ type: 'error', message: 'Escribe el correo que recibirá la prueba.' });
+            return;
+        }
+        if (!window.confirm(`¿Enviar esta prueba únicamente a ${recipientEmail}?`)) return;
+
+        setIsSending(true);
+        setSendFeedback(null);
+        try {
+            const response = await adminFetch('/api/admin/communications/missing-docs-test', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'send', ...formState }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) {
+                throw new Error(result.error || 'No fue posible enviar la prueba.');
+            }
+            setSendFeedback({
+                type: 'success',
+                message: `Prueba enviada a ${result.recipientEmail}. ID: ${result.id || 'sin ID'}`,
+            });
+        } catch (error) {
+            setSendFeedback({
+                type: 'error',
+                message: error instanceof Error ? error.message : 'No fue posible enviar la prueba.',
+            });
+        } finally {
+            setIsSending(false);
+        }
     };
 
     // Renderizar un input basado en su tipo de parámetro
@@ -1136,9 +1194,42 @@ export default function EmailTemplatePreviewer() {
                     {selectedTemplate?.params.map(param => (
                         <div key={param.key} className={styles.formGroup}>
                             <label>{param.label}</label>
-                            {renderParamInput(param)}
+                            {param.key === 'recipientEmail' ? (
+                                <input
+                                    type="email"
+                                    className={styles.formInput}
+                                    value={String(formState.recipientEmail || '')}
+                                    onChange={(event) => handleInputChange('recipientEmail', event.target.value)}
+                                    placeholder="qa@pataamiga.mx"
+                                    autoComplete="email"
+                                    required
+                                />
+                            ) : renderParamInput(param)}
                         </div>
                     ))}
+                    {selectedTemplate?.id === 'member-missing-docs' && (
+                        <div className={styles.testSendPanel}>
+                            <p className={styles.testNotice}>
+                                Este envío es de prueba y no modifica expedientes ni ejecuta el cron.
+                            </p>
+                            <button
+                                type="button"
+                                className={styles.sendTestButton}
+                                onClick={handleSendMissingDocsTest}
+                                disabled={isSending}
+                            >
+                                {isSending ? 'Enviando…' : 'Enviar correo de prueba'}
+                            </button>
+                            {sendFeedback && (
+                                <p
+                                    role="status"
+                                    className={sendFeedback.type === 'success' ? styles.successFeedback : styles.errorFeedback}
+                                >
+                                    {sendFeedback.message}
+                                </p>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
 
@@ -1147,11 +1238,16 @@ export default function EmailTemplatePreviewer() {
                 <div className={styles.previewHeader}>
                     <div className={styles.previewMeta}>
                         <span className={styles.previewSubject}>
-                            <strong>Asunto:</strong> {selectedTemplate?.defaultSubject.replace(/{([^{}]+)}/g, (match, key) => formState[key] || match)}
+                            <strong>Asunto:</strong> {selectedTemplate?.id === 'member-missing-docs'
+                                ? (previewSubject || selectedTemplate.defaultSubject)
+                                : selectedTemplate?.defaultSubject.replace(/{([^{}]+)}/g, (match, key) => formState[key] || match)}
                         </span>
                         <span className={styles.previewRecipient}>
-                            <strong>Para:</strong> {selectedTemplate?.defaultRecipient}
+                            <strong>Para:</strong> {selectedTemplate?.id === 'member-missing-docs'
+                                ? (formState.recipientEmail || 'Escribe un correo de prueba')
+                                : selectedTemplate?.defaultRecipient}
                         </span>
+                        {previewError && <span className={styles.previewError}>{previewError}</span>}
                     </div>
 
                     <div className={styles.viewportToggles}>
