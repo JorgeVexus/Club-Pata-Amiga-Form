@@ -129,24 +129,6 @@ export default function AdminEditUserModal({
         }
     };
 
-    const Field = ({ label, fieldKey, type = 'text', placeholder }: {
-        label: string;
-        fieldKey: keyof UserFormData;
-        type?: string;
-        placeholder?: string;
-    }) => (
-        <div className={styles.field}>
-            <label className={styles.label}>{label}</label>
-            <input
-                type={type}
-                value={formData[fieldKey]}
-                onChange={e => handleChange(fieldKey, e.target.value)}
-                className={styles.input}
-                placeholder={placeholder || label}
-            />
-        </div>
-    );
-
     return (
         <div className={styles.overlay} onClick={onClose}>
             <div className={styles.modal} onClick={e => e.stopPropagation()}>
@@ -160,11 +142,55 @@ export default function AdminEditUserModal({
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>👤 Identidad</h3>
                         <div className={styles.grid}>
-                            <Field label="Nombre(s)" fieldKey="firstName" />
-                            <Field label="Apellido Paterno" fieldKey="paternalLastName" />
-                            <Field label="Apellido Materno" fieldKey="maternalLastName" />
-                            <Field label="Fecha de Nacimiento" fieldKey="birthDate" type="date" />
-                            <Field label="CURP" fieldKey="curp" placeholder="XXXX000000XXXXXX00" />
+                            <div className={styles.field}>
+                                <label className={styles.label}>Nombre(s)</label>
+                                <input
+                                    type="text"
+                                    value={formData.firstName}
+                                    onChange={e => handleChange('firstName', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Nombre(s)"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Apellido Paterno</label>
+                                <input
+                                    type="text"
+                                    value={formData.paternalLastName}
+                                    onChange={e => handleChange('paternalLastName', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Apellido Paterno"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Apellido Materno</label>
+                                <input
+                                    type="text"
+                                    value={formData.maternalLastName}
+                                    onChange={e => handleChange('maternalLastName', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Apellido Materno"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Fecha de Nacimiento</label>
+                                <input
+                                    type="date"
+                                    value={formData.birthDate}
+                                    onChange={e => handleChange('birthDate', e.target.value)}
+                                    className={styles.input}
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>CURP</label>
+                                <input
+                                    type="text"
+                                    value={formData.curp}
+                                    onChange={e => handleChange('curp', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="XXXX000000XXXXXX00"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -172,8 +198,26 @@ export default function AdminEditUserModal({
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>📱 Contacto</h3>
                         <div className={styles.grid}>
-                            <Field label="Correo Electrónico" fieldKey="email" type="email" />
-                            <Field label="Teléfono" fieldKey="phone" type="tel" />
+                            <div className={styles.field}>
+                                <label className={styles.label}>Correo Electrónico</label>
+                                <input
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={e => handleChange('email', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Correo Electrónico"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Teléfono</label>
+                                <input
+                                    type="tel"
+                                    value={formData.phone}
+                                    onChange={e => handleChange('phone', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Teléfono"
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -181,11 +225,56 @@ export default function AdminEditUserModal({
                     <div className={styles.section}>
                         <h3 className={styles.sectionTitle}>📍 Dirección</h3>
                         <div className={styles.grid}>
-                            <Field label="Código Postal" fieldKey="postalCode" />
-                            <Field label="Estado" fieldKey="state" />
-                            <Field label="Ciudad" fieldKey="city" />
-                            <Field label="Colonia" fieldKey="colony" />
-                            <Field label="Dirección (calle y número)" fieldKey="address" />
+                            <div className={styles.field}>
+                                <label className={styles.label}>Código Postal</label>
+                                <input
+                                    type="text"
+                                    value={formData.postalCode}
+                                    onChange={e => handleChange('postalCode', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Código Postal"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Estado</label>
+                                <input
+                                    type="text"
+                                    value={formData.state}
+                                    onChange={e => handleChange('state', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Estado"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Ciudad</label>
+                                <input
+                                    type="text"
+                                    value={formData.city}
+                                    onChange={e => handleChange('city', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Ciudad"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Colonia</label>
+                                <input
+                                    type="text"
+                                    value={formData.colony}
+                                    onChange={e => handleChange('colony', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Colonia"
+                                />
+                            </div>
+                            <div className={styles.field}>
+                                <label className={styles.label}>Dirección (calle y número)</label>
+                                <input
+                                    type="text"
+                                    value={formData.address}
+                                    onChange={e => handleChange('address', e.target.value)}
+                                    className={styles.input}
+                                    placeholder="Dirección (calle y número)"
+                                />
+                            </div>
                         </div>
                     </div>
 
