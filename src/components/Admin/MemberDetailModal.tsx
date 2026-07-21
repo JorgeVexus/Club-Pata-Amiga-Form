@@ -6,6 +6,8 @@ import { formatMXN } from '@/utils/format';
 import { adminFetch } from '@/utils/admin-fetch';
 import { getPetsByUserId, getBillingDetailsByMemberstackId, getUserDataByMemberstackId } from '@/app/actions/user.actions';
 import { getPetCarenciaDate, getDaysUntilActive, getDaysElapsed } from '@/utils/carencia.utils';
+import AdminEditUserModal from './AdminEditUserModal';
+import AdminEditPetModal from './AdminEditPetModal';
 
 interface Pet {
     id: string;
@@ -98,14 +100,9 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
     const [cancellationData, setCancellationData] = useState<any>(null);
     const [loadingCancellation, setLoadingCancellation] = useState(false);
 
-    // States for Editing
-    const [isEditingEmail, setIsEditingEmail] = useState(false);
-    const [editingEmailValue, setEditingEmailValue] = useState(member?.auth?.email || member?.email || '');
-    const [isSavingEmail, setIsSavingEmail] = useState(false);
-
-    const [editingPetId, setEditingPetId] = useState<string | null>(null);
-    const [editingPetNameValue, setEditingPetNameValue] = useState('');
-    const [isSavingPetName, setIsSavingPetName] = useState(false);
+    // States for Full Editing Modals
+    const [isUserEditModalOpen, setIsUserEditModalOpen] = useState(false);
+    const [editingPetForModal, setEditingPetForModal] = useState<{ pet: Pet; index: number } | null>(null);
     const [showUnsubscribedPets, setShowUnsubscribedPets] = useState(false);
 
     useEffect(() => {
@@ -116,9 +113,8 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             loadStripeDetails();
             loadCancellationData();
             // Reset editing states
-            setIsEditingEmail(false);
-            setEditingEmailValue(member?.auth?.email || member?.email || '');
-            setEditingPetId(null);
+            setIsUserEditModalOpen(false);
+            setEditingPetForModal(null);
             setShowRejectForm({});
             setShowUnsubscribedPets(false);
         }
@@ -182,70 +178,6 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
             console.error('Error loading cancellation data:', error);
         } finally {
             setLoadingCancellation(false);
-        }
-    }
-
-    async function handleSaveEmail() {
-        if (!editingEmailValue || !editingEmailValue.includes('@')) {
-            alert('Por favor ingresa un email válido.');
-            return;
-        }
-
-        setIsSavingEmail(true);
-        try {
-            const response = await adminFetch(`/api/admin/members/${member.id}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: editingEmailValue })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert('✅ Email actualizado y verificado correctamente.');
-                setIsEditingEmail(false);
-                if (onDataChange) onDataChange();
-            } else {
-                alert('❌ Error: ' + (data.error || 'Ocurrió un error al actualizar el email.'));
-            }
-        } catch (error) {
-            console.error('Error saving email:', error);
-            alert('Error de conexión');
-        } finally {
-            setIsSavingEmail(false);
-        }
-    }
-
-    async function handleSavePetName(petId: string, msIndex: number) {
-        if (!editingPetNameValue.trim()) {
-            alert('El nombre no puede estar vacío.');
-            return;
-        }
-
-        setIsSavingPetName(true);
-        try {
-            const response = await adminFetch(`/api/admin/members/${member.id}/pets/${petId}`, {
-                method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
-                    name: editingPetNameValue,
-                    msIndex: msIndex
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert('✅ Nombre de mascota actualizado correctamente.');
-                setEditingPetId(null);
-                loadPets(); // Recargar mascotas locales
-                if (onDataChange) onDataChange();
-            } else {
-                alert('❌ Error: ' + (data.error || 'Ocurrió un error al actualizar el nombre.'));
-            }
-        } catch (error) {
-            console.error('Error saving pet name:', error);
-            alert('Error de conexión');
-        } finally {
-            setIsSavingPetName(false);
         }
     }
 
@@ -718,34 +650,16 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
                                                     )}
                                                 </div>
                                                 <div className={styles.petInfo}>
-                                                    {editingPetId === pet.id ? (
-                                                        <div className={styles.editRow}>
-                                                            <input 
-                                                                type="text" 
-                                                                value={editingPetNameValue} 
-                                                                onChange={(e) => setEditingPetNameValue(e.target.value)}
-                                                                className={styles.editInput}
-                                                                autoFocus
-                                                            />
-                                                            <button onClick={() => handleSavePetName(pet.id, pIdx)} disabled={isSavingPetName} className={styles.saveButton}>
-                                                                {isSavingPetName ? '...' : '✓'}
-                                                            </button>
-                                                            <button onClick={() => setEditingPetId(null)} className={styles.cancelButton}>✕</button>
-                                                        </div>
-                                                    ) : (
-                                                        <div className={styles.valueRow}>
-                                                            <h4 style={{ margin: 0 }}>{pet.name}</h4>
-                                                            <button 
-                                                                onClick={() => {
-                                                                    setEditingPetId(pet.id);
-                                                                    setEditingPetNameValue(pet.name);
-                                                                }} 
-                                                                className={styles.editLink}
-                                                            >
-                                                                Editar
-                                                            </button>
-                                                        </div>
-                                                    )}
+                                                    <div className={styles.valueRow} style={{ alignItems: 'center', gap: '8px' }}>
+                                                        <h4 style={{ margin: 0 }}>{pet.name}</h4>
+                                                        <button
+                                                            onClick={() => setEditingPetForModal({ pet, index: pIdx })}
+                                                            className={styles.editLink}
+                                                            title="Editar todos los datos de esta mascota"
+                                                        >
+                                                            ✏️ Editar Info
+                                                        </button>
+                                                    </div>
                                                     <div className={styles.petBreed}>
                                                         {pet.is_mixed_breed 
                                                             ? (pet.pet_type === 'cat' ? 'Doméstico' : 'Mestizo') 
@@ -1272,7 +1186,16 @@ return (
 
                     {/* Personal Info */}
                     <div className={styles.section}>
-                        <h3 className={styles.sectionTitle}>Información Personal</h3>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                            <h3 className={styles.sectionTitle} style={{ margin: 0 }}>Información Personal</h3>
+                            <button
+                                onClick={() => setIsUserEditModalOpen(true)}
+                                className={styles.editLink}
+                                style={{ fontSize: '0.85rem', padding: '6px 14px', background: '#FE8F15', color: '#fff', borderRadius: '50px', border: '1.5px solid #000', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                                ✏️ Editar Info Usuario
+                            </button>
+                        </div>
                         <div className={styles.grid}>
                             <div className={styles.field}>
                                 <span className={styles.label}>Nombre Completo</span>
@@ -1298,36 +1221,7 @@ return (
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Correo Electrónico</span>
-                                <div className={styles.editableContainer}>
-                                    {isEditingEmail ? (
-                                        <div className={styles.editRow}>
-                                            <input 
-                                                type="email" 
-                                                value={editingEmailValue} 
-                                                onChange={(e) => setEditingEmailValue(e.target.value)}
-                                                className={styles.editInput}
-                                                autoFocus
-                                            />
-                                            <button onClick={handleSaveEmail} disabled={isSavingEmail} className={styles.saveButton}>
-                                                {isSavingEmail ? '...' : '✓'}
-                                            </button>
-                                            <button onClick={() => setIsEditingEmail(false)} className={styles.cancelButton}>✕</button>
-                                        </div>
-                                    ) : (
-                                        <div className={styles.valueRow}>
-                                            <span className={styles.value}>{member?.auth?.email || member?.email || supabaseUser?.email || '-'}</span>
-                                            <button 
-                                                onClick={() => {
-                                                    setEditingEmailValue(member?.auth?.email || member?.email || '');
-                                                    setIsEditingEmail(true);
-                                                }} 
-                                                className={styles.editLink}
-                                            >
-                                                Editar
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
+                                <span className={styles.value}>{member?.auth?.email || member?.email || supabaseUser?.email || '-'}</span>
                             </div>
                             <div className={styles.field}>
                                 <span className={styles.label}>Teléfono</span>
@@ -1794,6 +1688,34 @@ return (
                         </span>
                     )}
                 </div>
+
+                {/* 🆕 Modales de edición de datos */}
+                <AdminEditUserModal
+                    isOpen={isUserEditModalOpen}
+                    onClose={() => setIsUserEditModalOpen(false)}
+                    member={member}
+                    supabaseUser={supabaseUser}
+                    memberName={`${fields['first-name'] || supabaseUser?.first_name || ''} ${fields['paternal-last-name'] || supabaseUser?.last_name || ''}`.trim()}
+                    onSaved={() => {
+                        loadSupabaseUserData();
+                        if (onDataChange) onDataChange();
+                    }}
+                />
+
+                {editingPetForModal && (
+                    <AdminEditPetModal
+                        isOpen={!!editingPetForModal}
+                        onClose={() => setEditingPetForModal(null)}
+                        pet={editingPetForModal.pet}
+                        petIndex={editingPetForModal.index}
+                        memberId={member.id}
+                        memberName={`${fields['first-name'] || supabaseUser?.first_name || ''} ${fields['paternal-last-name'] || supabaseUser?.last_name || ''}`.trim()}
+                        onSaved={() => {
+                            loadPets();
+                            if (onDataChange) onDataChange();
+                        }}
+                    />
+                )}
             </div>
         </div>
     );

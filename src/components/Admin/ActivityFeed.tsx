@@ -5,13 +5,14 @@ import styles from './ActivityFeed.module.css';
 
 export interface ActivityLog {
     id: string;
-    type: 'approved' | 'rejected' | 'registration' | 'unsubscription';
+    type: 'approved' | 'rejected' | 'registration' | 'unsubscription' | 'edit' | 'deleted';
     targetName: string;
     adminName: string;
     timestamp: string; // ISO Date
     role: 'Miembro' | 'Embajador' | 'Mascota';
-    detail?: string; 
-    description?: string; // Add description field
+    detail?: string;
+    description?: string;
+    title?: string;
 }
 
 interface ActivityFeedProps {
@@ -20,7 +21,7 @@ interface ActivityFeedProps {
 }
 
 export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
-    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved' | 'registration' | 'unsubscription'>('all');
+    const [filter, setFilter] = useState<'all' | 'rejected' | 'approved' | 'registration' | 'unsubscription' | 'edit'>('all');
     const [search, setSearch] = useState('');
 
     // Time Ago Helper
@@ -100,6 +101,12 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                 >
                     Bajas
                 </button>
+                <button
+                    className={`${styles.filterButton} ${filter === 'edit' ? styles.active : ''}`}
+                    onClick={() => setFilter('edit')}
+                >
+                    Ediciones
+                </button>
             </div>
 
             {/* Search and Sort Controls */}
@@ -132,10 +139,14 @@ export default function ActivityFeed({ title, logs }: ActivityFeedProps) {
                         <div key={log.id} className={styles.activityCard}>
                             <div className={styles.cardHeader}>
                                 <span>
-                                    {log.type === 'approved' ? 'SOLICITUD APROBADA' : 
-                                     log.type === 'rejected' ? 'SOLICITUD RECHAZADA' : 
-                                     log.type === 'registration' ? 'NUEVO REGISTRO' : 
-                                     'BAJA DE MASCOTA'} #{log.id.slice(-4).toUpperCase()}
+                                    {log.title || (
+                                        log.type === 'approved' ? 'SOLICITUD APROBADA' :
+                                        log.type === 'rejected' ? 'SOLICITUD RECHAZADA' :
+                                        log.type === 'registration' ? 'NUEVO REGISTRO' :
+                                        log.type === 'edit' ? 'EDICIÓN DE DATOS' :
+                                        log.type === 'deleted' ? 'USUARIO ELIMINADO' :
+                                        'BAJA DE MASCOTA'
+                                    )} #{log.id.slice(-4).toUpperCase()}
                                 </span>
                                 <span className={styles.timeAgo}>{timeAgo(log.timestamp)}</span>
                             </div>

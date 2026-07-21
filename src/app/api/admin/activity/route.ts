@@ -202,6 +202,39 @@ export async function POST(request: NextRequest) {
             }
         });
 
+        // --- 🆕 Procesar Ediciones de Datos (member_edits) ---
+        const { data: edits, error: editsError } = await supabase
+            .from('member_edits')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(100);
+
+        if (editsError) {
+            console.warn('⚠️ Error fetching member_edits (tabla puede no existir aún):', editsError.message);
+        }
+
+        (edits || []).forEach((edit: any) => {
+            const isPersonal = edit.edited_by_id === memberstackId || edit.edited_by_name === adminName;
+
+            if (isSuperAdmin || isPersonal) {
+                const isUserEdit = edit.edit_type === 'user_data';
+                const changedCount = Object.keys(edit.changes || {}).length;
+                activityLogs.push({
+                    id: `edit-${edit.id}`,
+                    type: 'edit',
+                    category: 'member',
+                    title: isUserEdit ? 'Edición de Datos de Usuario' : `Edición de Datos de Mascota`,
+                    description: isUserEdit
+                        ? `Editó los datos de ${edit.member_name} (${changedCount} campo${changedCount !== 1 ? 's' : ''})`
+                        : `Editó los datos de ${edit.pet_name} (mascota de ${edit.member_name})`,
+                    timestamp: edit.created_at,
+                    adminName: edit.edited_by_name,
+                    targetName: isUserEdit ? edit.member_name : edit.pet_name,
+                    role: isUserEdit ? 'Miembro' : 'Mascota',
+                });
+            }
+        });
+
         // 4. Ordenar por fecha descendente
         activityLogs.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
