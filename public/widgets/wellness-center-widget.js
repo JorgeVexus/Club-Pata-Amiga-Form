@@ -678,27 +678,24 @@
                         : `<button type="button" class="wc-v2-nav-item${view === activeView ? ' is-active' : ''}" data-wc-view="${view}">${label}</button>`
                     ).join('')}
                 </nav>
-                ${locked ? '' : `
-                    <nav class="wc-v2-nav wc-v2-nav-bottom" aria-label="Cuenta del centro">
-                        <button type="button" class="wc-v2-nav-item" data-wc-account-action="profile">Perfil</button>
-                        <a class="wc-v2-nav-item" href="${CONFIG.SETTINGS_URL}">Ajustes</a>
-                        <button type="button" class="wc-v2-nav-item is-danger" data-wc-account-action="logout">Cerrar sesión</button>
-                    </nav>`}
+                <nav class="wc-v2-nav wc-v2-nav-bottom" aria-label="Cuenta del centro">
+                    <button type="button" class="wc-v2-nav-item" data-wc-account-action="profile">Perfil</button>
+                    <a class="wc-v2-nav-item" href="${CONFIG.SETTINGS_URL}">Ajustes</a>
+                    <button type="button" class="wc-v2-nav-item is-danger" data-wc-account-action="logout">Cerrar sesión</button>
+                </nav>
                 <div class="wc-v2-account"><strong>${name}</strong><span>Centro de bienestar</span></div>
             </aside>`;
     }
 
-    function renderV2MobileNav(center, locked = false) {
-        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong>${locked
-            ? '<span>Estado de solicitud</span>'
-            : `<div class="wc-v2-mobile-account">
+    function renderV2MobileNav(center) {
+        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong><div class="wc-v2-mobile-account">
                 <button type="button" class="wc-v2-hamburger" data-wc-toggle-account aria-label="Abrir menú de cuenta" aria-expanded="false"><span class="wc-v2-hamburger-lines" aria-hidden="true"><span></span><span></span><span></span></span></button>
                 <div class="wc-v2-mobile-account-menu" role="menu" hidden>
                     <button type="button" data-wc-account-action="profile" role="menuitem">Perfil</button>
                     <a href="${CONFIG.SETTINGS_URL}" role="menuitem">Ajustes</a>
                     <button type="button" data-wc-account-action="logout" role="menuitem">Cerrar sesión</button>
                 </div>
-            </div>`}
+            </div>
         </div>`;
     }
 
@@ -707,7 +704,7 @@
             <div class="wc-v2-shell${locked ? ' is-locked' : ''}">
                 ${renderV2Sidebar(center, activeView, locked)}
                 <main class="wc-v2-main">
-                    ${renderV2MobileNav(center, locked)}
+                    ${renderV2MobileNav(center)}
                     <div class="wc-v2-content">${content}</div>
                 </main>
             </div>`;
@@ -846,6 +843,7 @@
     function renderBlocked(container, center = {}) {
         const content = `<header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Cuenta desactivada</span><h1 class="wc-v2-title">Tu centro ya no está activo</h1><p class="wc-v2-subtitle">El perfil dejó de mostrarse y no recibirá nuevas solicitudes.</p></header><section class="wc-v2-state-card"><span class="wc-v2-status">Cancelado</span><h2>${escapeHtml(getCenterDisplayName(center))} está fuera de la red</h2><p>Si deseas reactivar el centro o necesitas ayuda con información anterior, nuestro equipo puede orientarte.</p><a href="mailto:aliados@pataamiga.mx" class="wc-v2-action" style="display:inline-flex;align-items:center;text-decoration:none;">Contactar soporte</a></section>`;
         container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
+        bindV2Navigation(container, center);
     }
 
     function getCenterDisplayName(center) {
@@ -1338,6 +1336,7 @@
                 <div class="wc-v2-profile-wrap wc-pending-profile-form-section">${renderEditProfileForm(center, { title:'Completa la información de tu centro', formId:'wc-pending-profile-form', showCloseButton:false, submitText:'Guardar información' })}</div>
             </section>`;
         container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
+        bindV2Navigation(container, center);
 
         bindEditProfileForm(container, center, {
             formSelector: '#wc-pending-profile-form',
@@ -1351,6 +1350,7 @@
             <header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Resultado de solicitud</span><h1 class="wc-v2-title">Necesitamos revisar algunos datos</h1><p class="wc-v2-subtitle">Puedes consultar el motivo y enviarnos una aclaración.</p></header>
             <section class="wc-v2-state-card"><span class="wc-v2-status">Requiere atención</span><h2>Tu solicitud fue rechazada</h2><p>Si ya cuentas con la información correcta, solicita una nueva revisión.</p><div class="wc-v2-reason"><strong>Motivo informado</strong>${escapeHtml(center.rejection_reason || 'No se proporcionó un motivo específico.')}</div><div id="appeal-form-container" class="wc-v2-appeal-form"><label for="wc-appeal-text">Motivo de tu apelación</label><textarea id="wc-appeal-text" placeholder="Cuéntanos qué información debemos volver a revisar..."></textarea><div class="wc-v2-form-feedback" role="alert"></div><button id="btn-submit-appeal" class="wc-v2-action">Enviar apelación</button></div></section>`;
         container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
+        bindV2Navigation(container, center);
 
         container.querySelector('#btn-submit-appeal').addEventListener('click', async () => {
             const message = container.querySelector('#wc-appeal-text').value;
@@ -1377,6 +1377,7 @@
     function renderAppealed(container, center) {
         const content = `<header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Seguimiento</span><h1 class="wc-v2-title">Recibimos tu apelación</h1><p class="wc-v2-subtitle">Nuestro equipo volverá a revisar el expediente.</p></header><section class="wc-v2-state-card"><span class="wc-v2-status">Apelación en revisión</span><h2>No necesitas hacer nada más, ${escapeHtml(getCenterDisplayName(center))}</h2><p>Te avisaremos por correo cuando exista una resolución o si necesitamos información adicional.</p><div class="wc-v2-reason"><strong>Solicitud conservada</strong>Tus datos y documentos permanecen disponibles durante la revisión.</div></section>`;
         container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
+        bindV2Navigation(container, center);
     }
 
     function renderDashboard(container, center) {

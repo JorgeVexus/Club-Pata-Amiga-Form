@@ -63,6 +63,8 @@ Los módulos usarán bordes ligeros, radios de 18–24 px y sombras discretas. N
 - Perfil abre el editor existente del Centro de Bienestar.
 - Ajustes abre `https://www.pataamiga.mx/miembros/configuracion`, con override mediante `window.PATA_AMIGA_CONFIG.settingsUrl`.
 - Cerrar sesión usa Memberstack y redirige a la URL configurable de salida.
+- Perfil, Ajustes y Cerrar sesión permanecen disponibles en todos los estados de aprobación, incluidos pendiente, rechazado, apelado y cancelado.
+- Los estados no aprobados bloquean únicamente las herramientas operativas de Citas y Reintegros.
 - Fondo crema en el área principal.
 - Encabezado con nombre del establecimiento y estado.
 - Resumen de solicitudes, citas y reintegros.
@@ -73,6 +75,8 @@ Los módulos usarán bordes ligeros, radios de 18–24 px y sombras discretas. N
 ### Estados previos o bloqueados
 
 Los estados `pending`, `rejected`, `appealed` y `cancelled` compartirán un patrón visual común, sin mostrar herramientas no disponibles para ese estado.
+
+Estos estados sí conservarán los controles globales de cuenta para consultar datos, abrir Ajustes y cerrar sesión.
 
 - `pending`: explicación de revisión y formulario complementario existente.
 - `rejected`: motivo informado, formulario de apelación y contacto de soporte.

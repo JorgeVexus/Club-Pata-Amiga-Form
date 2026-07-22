@@ -33,6 +33,12 @@ Implementación completada el 21 de julio de 2026 sobre `main`, sin commit ni pu
 - [x] Cerrar sesión mediante Memberstack y redirigir con `logoutRedirectUrl`.
 - [x] Probar escritorio, móvil, accesibilidad y regresiones.
 
+### Extensión de cuenta para estados no aprobados
+
+- [x] Mostrar Perfil, Ajustes y Cerrar sesión en estados pendiente, rechazado, apelado y cancelado.
+- [x] Mantener Citas y Reintegros ocultos en esos estados.
+- [x] Verificar el sidebar y el hamburguesa móvil en la pantalla rechazada.
+
 ---
 
 ## Mapa de archivos

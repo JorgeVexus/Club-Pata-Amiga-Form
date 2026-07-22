@@ -88,6 +88,15 @@ assert.ok(source.includes('function logoutWellnessCenter('), 'wellness logout ha
 assert.ok(source.includes('await window.$memberstackDom.logout()'), 'logout must use Memberstack');
 assert.ok(source.includes('window.location.href = CONFIG.LOGOUT_REDIRECT_URL'), 'logout must redirect after success');
 
+const sidebarRenderer = source.match(/function renderV2Sidebar[\s\S]*?function renderV2MobileNav/);
+assert.ok(sidebarRenderer, 'V2 sidebar renderer must exist');
+assert.ok(!sidebarRenderer[0].includes("${locked ? '' :"), 'account controls must not be hidden for locked approval states');
+
+const mobileRenderer = source.match(/function renderV2MobileNav[\s\S]*?function renderV2Shell/);
+assert.ok(mobileRenderer, 'V2 mobile renderer must exist');
+assert.ok(mobileRenderer[0].includes('wc-v2-mobile-account'), 'mobile account menu must render for every approval state');
+assert.ok(source.split('bindV2Navigation(container, center);').length - 1 >= 5, 'account actions must be bound in approved and non-approved states');
+
 const preview = fs.readFileSync('public/widgets/wellness-center-widget-v2-preview.html', 'utf8');
 assert.ok(preview.includes('wellness-center-widget.js'), 'preview must load the production widget');
 assert.ok(preview.includes('PATA_AMIGA_CONFIG'), 'preview must exercise runtime configuration');
