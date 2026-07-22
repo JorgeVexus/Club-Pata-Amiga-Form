@@ -26,8 +26,16 @@
   <script>
     const previewStatus = new URLSearchParams(location.search).get('status') || 'approved';
     document.querySelector(`[data-status="${previewStatus}"]`)?.classList.add('active');
-    window.PATA_AMIGA_CONFIG = { API_BASE_URL: location.origin, DEBUG: true };
-    window.$memberstackDom = { getCurrentMember: async () => ({ data: { id: 'preview-member' } }) };
+    window.PATA_AMIGA_CONFIG = {
+      API_BASE_URL: location.origin,
+      settingsUrl: '#preview-settings',
+      logoutRedirectUrl: `${location.pathname}?status=approved&loggedOut=1`,
+      DEBUG: true
+    };
+    window.$memberstackDom = {
+      getCurrentMember: async () => ({ data: { id: 'preview-member' } }),
+      logout: async () => { document.documentElement.dataset.previewLogout = 'complete'; }
+    };
     const center = {
       id:'preview-center', memberstack_id:'preview-member', status:previewStatus,
       establishment_name:'VetCare Roma', name:'VetCare Servicios Veterinarios S.A. de C.V.',

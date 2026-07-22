@@ -13,6 +13,8 @@
     const runtimeConfig = window.PATA_AMIGA_CONFIG || {};
     const CONFIG = {
         API_BASE_URL: runtimeConfig.API_BASE_URL || runtimeConfig.apiBaseUrl || 'https://app.pataamiga.mx',
+        SETTINGS_URL: runtimeConfig.settingsUrl || 'https://www.pataamiga.mx/miembros/configuracion',
+        LOGOUT_REDIRECT_URL: runtimeConfig.logoutRedirectUrl || 'https://www.pataamiga.mx/',
         DEBUG: Boolean(runtimeConfig.DEBUG)
     };
 
@@ -586,16 +588,30 @@
         .wc-v2-sidebar { position:sticky; top:0; height:100dvh; display:flex; flex-direction:column; gap:20px; padding:24px 14px; border-right:1px solid var(--wc-v2-line); background:var(--wc-v2-white); }
         .wc-v2-brand { padding:8px 12px 18px; color:var(--wc-v2-ink); font:400 23px/1 'Fraiche','Outfit',sans-serif; }
         .wc-v2-nav { display:grid; gap:6px; }
+        .wc-v2-nav-bottom { margin-top:auto; padding-top:14px; border-top:1px solid var(--wc-v2-line); }
         .wc-v2-nav-item { width:100%; min-height:43px; display:flex; align-items:center; gap:11px; padding:10px 14px; border:0; border-radius:13px; background:transparent; color:#405854; font:700 13px 'Outfit',sans-serif; text-align:left; cursor:pointer; }
         .wc-v2-nav-item:hover { background:#F2F8F6; color:var(--wc-v2-teal-deep); }
         .wc-v2-nav-item:focus-visible { outline:3px solid rgba(33,188,175,.28); outline-offset:2px; }
         .wc-v2-nav-item.is-active { background:var(--wc-v2-teal-soft); color:#087B72; }
-        .wc-v2-account { margin-top:auto; padding:13px; border-radius:14px; background:var(--wc-v2-cream); }
+        .wc-v2-nav-item.is-danger { color:#B33838; }
+        .wc-v2-account { padding:13px; border-radius:14px; background:var(--wc-v2-cream); }
         .wc-v2-account strong,.wc-v2-account span { display:block; }
         .wc-v2-account strong { color:var(--wc-v2-ink); font-size:13px; }
         .wc-v2-account span { margin-top:3px; color:var(--wc-v2-muted); font-size:11px; }
         .wc-v2-main { min-width:0; padding:32px 36px 44px; background:var(--wc-v2-cream); }
-        .wc-v2-mobile-nav { display:none; }
+        .wc-v2-mobile-nav { display:none; position:relative; }
+        .wc-v2-mobile-account { position:relative; }
+        .wc-v2-hamburger { width:40px; height:40px; display:grid; place-items:center; border:0; border-radius:50%; background:var(--wc-v2-teal-soft); color:var(--wc-v2-teal-deep); cursor:pointer; }
+        .wc-v2-hamburger-lines { width:18px; display:grid; gap:3px; }
+        .wc-v2-hamburger-lines span { display:block; width:100%; height:2px; border-radius:2px; background:currentColor; }
+        .wc-v2-hamburger[aria-expanded="true"] .wc-v2-hamburger-lines span:nth-child(1) { transform:translateY(5px) rotate(45deg); }
+        .wc-v2-hamburger[aria-expanded="true"] .wc-v2-hamburger-lines span:nth-child(2) { opacity:0; }
+        .wc-v2-hamburger[aria-expanded="true"] .wc-v2-hamburger-lines span:nth-child(3) { transform:translateY(-5px) rotate(-45deg); }
+        .wc-v2-mobile-account-menu { position:absolute; top:calc(100% + 9px); right:0; z-index:60; width:210px; padding:8px; border:1px solid var(--wc-v2-line); border-radius:18px; background:#fff; box-shadow:0 16px 38px rgba(24,75,71,.16); }
+        .wc-v2-mobile-account-menu[hidden] { display:none; }
+        .wc-v2-mobile-account-menu a,.wc-v2-mobile-account-menu button { width:100%; min-height:42px; display:flex; align-items:center; padding:10px 12px; border:0; border-radius:12px; background:transparent; color:#174F4C; font:700 14px 'Outfit',sans-serif; text-align:left; text-decoration:none; cursor:pointer; }
+        .wc-v2-mobile-account-menu a:hover,.wc-v2-mobile-account-menu button:hover { background:var(--wc-v2-teal-soft); }
+        .wc-v2-mobile-account-menu button[data-wc-account-action="logout"] { color:#B33838; }
         .wc-v2-content { width:100%; max-width:1400px; margin:0 auto; }
         .wc-v2-page-head { margin-bottom:24px; }
         .wc-v2-eyebrow { color:#087B72; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
@@ -652,7 +668,7 @@
         const name = escapeHtml(getCenterDisplayName(center));
         const items = locked
             ? [['Estado de solicitud', 'status']]
-            : [['Resumen', 'dashboard'], ['Citas', 'appointments'], ['Reintegros', 'payments'], ['Perfil', 'profile']];
+            : [['Resumen', 'dashboard'], ['Citas', 'appointments'], ['Reintegros', 'payments']];
         return `
             <aside class="wc-v2-sidebar">
                 <div class="wc-v2-brand">Pata Amiga</div>
@@ -662,12 +678,28 @@
                         : `<button type="button" class="wc-v2-nav-item${view === activeView ? ' is-active' : ''}" data-wc-view="${view}">${label}</button>`
                     ).join('')}
                 </nav>
+                ${locked ? '' : `
+                    <nav class="wc-v2-nav wc-v2-nav-bottom" aria-label="Cuenta del centro">
+                        <button type="button" class="wc-v2-nav-item" data-wc-account-action="profile">Perfil</button>
+                        <a class="wc-v2-nav-item" href="${CONFIG.SETTINGS_URL}">Ajustes</a>
+                        <button type="button" class="wc-v2-nav-item is-danger" data-wc-account-action="logout">Cerrar sesión</button>
+                    </nav>`}
                 <div class="wc-v2-account"><strong>${name}</strong><span>Centro de bienestar</span></div>
             </aside>`;
     }
 
     function renderV2MobileNav(center, locked = false) {
-        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong><span>${locked ? 'Estado de solicitud' : escapeHtml(getCenterDisplayName(center))}</span></div>`;
+        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong>${locked
+            ? '<span>Estado de solicitud</span>'
+            : `<div class="wc-v2-mobile-account">
+                <button type="button" class="wc-v2-hamburger" data-wc-toggle-account aria-label="Abrir menú de cuenta" aria-expanded="false"><span class="wc-v2-hamburger-lines" aria-hidden="true"><span></span><span></span><span></span></span></button>
+                <div class="wc-v2-mobile-account-menu" role="menu" hidden>
+                    <button type="button" data-wc-account-action="profile" role="menuitem">Perfil</button>
+                    <a href="${CONFIG.SETTINGS_URL}" role="menuitem">Ajustes</a>
+                    <button type="button" data-wc-account-action="logout" role="menuitem">Cerrar sesión</button>
+                </div>
+            </div>`}
+        </div>`;
     }
 
     function renderV2Shell({ center, activeView = 'dashboard', content, locked = false }) {
@@ -704,6 +736,37 @@
                 }
             });
         });
+
+        const accountToggle = container.querySelector('[data-wc-toggle-account]');
+        const accountMenu = container.querySelector('.wc-v2-mobile-account-menu');
+        accountToggle?.addEventListener('click', () => {
+            const willOpen = accountMenu.hasAttribute('hidden');
+            accountMenu.toggleAttribute('hidden', !willOpen);
+            accountToggle.setAttribute('aria-expanded', String(willOpen));
+        });
+
+        container.querySelectorAll('[data-wc-account-action]').forEach(button => {
+            button.addEventListener('click', async () => {
+                const action = button.getAttribute('data-wc-account-action');
+                if (action === 'profile') showEditProfileModal(container, center);
+                if (action === 'logout') await logoutWellnessCenter(button);
+            });
+        });
+    }
+
+    async function logoutWellnessCenter(button) {
+        if (!window.$memberstackDom?.logout) return;
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = 'Cerrando sesión...';
+        try {
+            await window.$memberstackDom.logout();
+            window.location.href = CONFIG.LOGOUT_REDIRECT_URL;
+        } catch (error) {
+            console.error('No fue posible cerrar sesión:', error);
+            button.disabled = false;
+            button.textContent = originalText;
+        }
     }
 
     // ============================================

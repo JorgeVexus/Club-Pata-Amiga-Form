@@ -73,11 +73,20 @@ for (const className of ['wc-v2-kpi-grid', 'wc-v2-dashboard-grid', 'wc-v2-reques
 assert.ok(source.includes('data-wc-view="${view}"'), 'sidebar items must expose their target view');
 assert.ok(source.includes("['Citas', 'appointments']"), 'sidebar must expose appointments');
 assert.ok(source.includes("['Reintegros', 'payments']"), 'sidebar must expose payments');
-assert.ok(source.includes("['Perfil', 'profile']"), 'sidebar must expose profile');
 assert.ok(source.includes('function bindV2Navigation('), 'V2 sidebar actions must be bound');
 assert.ok(source.includes("case 'appointments': showAppointmentsModal(container, center)"), 'appointments navigation must reuse its existing modal');
 assert.ok(source.includes("case 'payments': showPaymentsModal(center)"), 'payments navigation must reuse its existing modal');
 assert.ok(source.includes("case 'profile': showEditProfileModal(container, center)"), 'profile navigation must reuse its existing modal');
+
+assert.ok(source.includes("SETTINGS_URL: runtimeConfig.settingsUrl || 'https://www.pataamiga.mx/miembros/configuracion'"), 'settings must use the shared configurable route');
+assert.ok(source.includes("LOGOUT_REDIRECT_URL: runtimeConfig.logoutRedirectUrl || 'https://www.pataamiga.mx/'"), 'logout redirect must be configurable');
+assert.ok(source.includes('data-wc-account-action="profile"'), 'desktop account menu must expose profile');
+assert.ok(source.includes('data-wc-account-action="logout"'), 'desktop account menu must expose logout');
+assert.ok(source.includes('wc-v2-hamburger'), 'mobile dashboard must expose an account hamburger');
+assert.ok(source.includes('wc-v2-mobile-account-menu'), 'mobile account menu must be rendered');
+assert.ok(source.includes('function logoutWellnessCenter('), 'wellness logout handler must exist');
+assert.ok(source.includes('await window.$memberstackDom.logout()'), 'logout must use Memberstack');
+assert.ok(source.includes('window.location.href = CONFIG.LOGOUT_REDIRECT_URL'), 'logout must redirect after success');
 
 const preview = fs.readFileSync('public/widgets/wellness-center-widget-v2-preview.html', 'utf8');
 assert.ok(preview.includes('wellness-center-widget.js'), 'preview must load the production widget');

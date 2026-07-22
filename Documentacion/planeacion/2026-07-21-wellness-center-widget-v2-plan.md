@@ -24,6 +24,15 @@ Implementación completada el 21 de julio de 2026 sobre `main`, sin commit ni pu
 - ESLint de los archivos modificados: 0 errores; 11 advertencias heredadas del widget.
 - `git diff --check` aprobado.
 
+### Extensión de navegación de cuenta
+
+- [x] Añadir Perfil, Ajustes y Cerrar sesión al final del sidebar aprobado.
+- [x] Añadir menú hamburguesa móvil con las mismas acciones.
+- [x] Reutilizar el editor de perfil existente.
+- [x] Usar la ruta compartida de ajustes con configuración dinámica.
+- [x] Cerrar sesión mediante Memberstack y redirigir con `logoutRedirectUrl`.
+- [x] Probar escritorio, móvil, accesibilidad y regresiones.
+
 ---
 
 ## Mapa de archivos

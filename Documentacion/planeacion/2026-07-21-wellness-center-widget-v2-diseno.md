@@ -59,11 +59,16 @@ Los módulos usarán bordes ligeros, radios de 18–24 px y sombras discretas. N
 ### Shell aprobado
 
 - Sidebar blanco en escritorio con navegación funcional.
+- Navegación inferior de cuenta con Perfil, Ajustes y Cerrar sesión.
+- Perfil abre el editor existente del Centro de Bienestar.
+- Ajustes abre `https://www.pataamiga.mx/miembros/configuracion`, con override mediante `window.PATA_AMIGA_CONFIG.settingsUrl`.
+- Cerrar sesión usa Memberstack y redirige a la URL configurable de salida.
 - Fondo crema en el área principal.
 - Encabezado con nombre del establecimiento y estado.
 - Resumen de solicitudes, citas y reintegros.
 - Accesos a citas, pagos, perfil y salida de la red.
 - Navegación móvil compacta y persistente donde sea apropiado.
+- Encabezado móvil con menú hamburguesa para Perfil, Ajustes y Cerrar sesión.
 
 ### Estados previos o bloqueados
 
