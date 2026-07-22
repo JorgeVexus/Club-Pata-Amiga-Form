@@ -160,11 +160,42 @@ export async function POST(request: NextRequest) {
             }
 
             if (hasActivePlan) {
-                const { data: profileUser, error: profileError } = await supabase
+                const memberData = memberDetails.data as any;
+                const memberEmail = memberData?.auth?.email || memberData?.email;
+
+                let profileUser: any = null;
+                let profileError: any = null;
+
+                const { data: userByMsId, error: msError } = await supabase
                     .from('users')
-                    .select('id, first_name, last_name, mother_last_name, curp, phone, postal_code, colony, city')
+                    .select('id, first_name, last_name, mother_last_name, curp, phone, postal_code, colony, city, memberstack_id')
                     .eq('memberstack_id', memberstackId)
                     .maybeSingle();
+
+                if (msError) {
+                    profileError = msError;
+                } else if (userByMsId) {
+                    profileUser = userByMsId;
+                } else if (memberEmail) {
+                    const { data: userByEmail, error: emailError } = await supabase
+                        .from('users')
+                        .select('id, first_name, last_name, mother_last_name, curp, phone, postal_code, colony, city, memberstack_id')
+                        .ilike('email', memberEmail.trim())
+                        .maybeSingle();
+
+                    if (emailError) {
+                        profileError = emailError;
+                    } else if (userByEmail) {
+                        profileUser = userByEmail;
+                        if (!userByEmail.memberstack_id || userByEmail.memberstack_id !== memberstackId) {
+                            console.log(`🔗 [Check-Role] Vinculando memberstack_id ${memberstackId} a usuario ${userByEmail.id} (${memberEmail})`);
+                            await supabase
+                                .from('users')
+                                .update({ memberstack_id: memberstackId })
+                                .eq('id', userByEmail.id);
+                        }
+                    }
+                }
 
                 if (profileError) {
                     console.error(`❌ [Check-Role] No se pudo evaluar el perfil de ${memberstackId}:`, profileError);

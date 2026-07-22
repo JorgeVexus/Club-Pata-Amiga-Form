@@ -267,7 +267,6 @@
             console.log('- colony:', u.colony);
 
             // Step 1: Personal Info
-            // Aseguramos que los campos existan y no sean solo espacios
             const hasInfo = u.first_name && u.last_name && u.mother_last_name && u.curp && u.phone && u.postal_code && u.colony && u.city;
             if (!hasInfo) {
                 console.log('🚩 [DEBUG] Paso "member_info" REQUERIDO');
@@ -277,7 +276,6 @@
             }
 
             // Step 2: Pets — determine missing fields per pet or need new pet
-            // Filter out pets that were unsubscribed/deactivated
             const activePets = this.pets.filter(p => p.is_active !== false && p.status !== 'unsubscribed');
             console.log('🐾 [DEBUG] Mascotas activas:', activePets.length, 'de', this.pets.length, 'totales');
 
@@ -285,7 +283,6 @@
                 console.log('🚩 [DEBUG] Paso "add_pet" REQUERIDO (0 mascotas activas)');
                 this.steps.push('add_pet');
             } else {
-                // Check each ACTIVE pet for missing fields and collect them
                 const incompletePet = activePets.find(p => {
                     const missing = this.getMissingFields(p);
                     return missing.length > 0;
@@ -311,6 +308,11 @@
         }
 
         startFlow() {
+            if (this.steps.length === 0) {
+                console.log('✅ [DEBUG] El perfil ya está completo. Redirigiendo a pet-waiting-period...');
+                window.location.href = 'https://www.pataamiga.mx/pets/pet-waiting-period';
+                return;
+            }
             this.render();
         }
 
