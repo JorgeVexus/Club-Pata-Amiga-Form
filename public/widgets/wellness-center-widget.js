@@ -10,9 +10,10 @@
     let payments = [];
     let appointments = [];
 
+    const runtimeConfig = window.PATA_AMIGA_CONFIG || {};
     const CONFIG = {
-        API_BASE_URL: 'https://app.pataamiga.mx', // Cambiar según entorno
-        DEBUG: false
+        API_BASE_URL: runtimeConfig.API_BASE_URL || runtimeConfig.apiBaseUrl || 'https://app.pataamiga.mx',
+        DEBUG: Boolean(runtimeConfig.DEBUG)
     };
 
     const INSTAGRAM_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
@@ -561,7 +562,149 @@
                 flex-direction: column;
             }
         }
+
+        /* Wellness Center Dashboard V2 */
+        .wc-v2-shell, .wc-v2-shell * { box-sizing: border-box; }
+        .wc-v2-shell {
+            --wc-v2-cream: #F8F5EE;
+            --wc-v2-white: #FFFFFF;
+            --wc-v2-teal: #21BCAF;
+            --wc-v2-teal-deep: #1E5D57;
+            --wc-v2-teal-soft: #E5F5F2;
+            --wc-v2-orange: #FE8F15;
+            --wc-v2-ink: #153F3B;
+            --wc-v2-body: #4E6865;
+            --wc-v2-muted: #8A9692;
+            --wc-v2-line: #ECE7DD;
+            min-height: 100dvh;
+            display: grid;
+            grid-template-columns: 232px minmax(0, 1fr);
+            background: var(--wc-v2-cream);
+            color: var(--wc-v2-body);
+            font-family: 'Outfit', sans-serif;
+        }
+        .wc-v2-sidebar { position:sticky; top:0; height:100dvh; display:flex; flex-direction:column; gap:20px; padding:24px 14px; border-right:1px solid var(--wc-v2-line); background:var(--wc-v2-white); }
+        .wc-v2-brand { padding:8px 12px 18px; color:var(--wc-v2-ink); font:400 23px/1 'Fraiche','Outfit',sans-serif; }
+        .wc-v2-nav { display:grid; gap:6px; }
+        .wc-v2-nav-item { width:100%; min-height:43px; display:flex; align-items:center; gap:11px; padding:10px 14px; border:0; border-radius:13px; background:transparent; color:#405854; font:700 13px 'Outfit',sans-serif; text-align:left; cursor:pointer; }
+        .wc-v2-nav-item:hover { background:#F2F8F6; color:var(--wc-v2-teal-deep); }
+        .wc-v2-nav-item:focus-visible { outline:3px solid rgba(33,188,175,.28); outline-offset:2px; }
+        .wc-v2-nav-item.is-active { background:var(--wc-v2-teal-soft); color:#087B72; }
+        .wc-v2-account { margin-top:auto; padding:13px; border-radius:14px; background:var(--wc-v2-cream); }
+        .wc-v2-account strong,.wc-v2-account span { display:block; }
+        .wc-v2-account strong { color:var(--wc-v2-ink); font-size:13px; }
+        .wc-v2-account span { margin-top:3px; color:var(--wc-v2-muted); font-size:11px; }
+        .wc-v2-main { min-width:0; padding:32px 36px 44px; background:var(--wc-v2-cream); }
+        .wc-v2-mobile-nav { display:none; }
+        .wc-v2-content { width:100%; max-width:1400px; margin:0 auto; }
+        .wc-v2-page-head { margin-bottom:24px; }
+        .wc-v2-eyebrow { color:#087B72; font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; }
+        .wc-v2-title { margin:7px 0 8px; color:var(--wc-v2-ink); font:400 clamp(29px,4vw,42px)/1 'Fraiche','Outfit',sans-serif; }
+        .wc-v2-subtitle { max-width:650px; margin:0; color:var(--wc-v2-body); font-size:14px; line-height:1.55; }
+        .wc-v2-state-card { max-width:760px; padding:32px; border:1px solid var(--wc-v2-line); border-radius:22px; background:var(--wc-v2-white); box-shadow:0 8px 24px rgba(45,73,69,.05); }
+        .wc-v2-status { display:inline-flex; align-items:center; gap:7px; margin-bottom:17px; padding:6px 11px; border-radius:999px; background:var(--wc-v2-teal-soft); color:#087B72; font-size:11px; font-weight:800; text-transform:uppercase; }
+        .wc-v2-status::before { content:''; width:7px; height:7px; border-radius:50%; background:currentColor; }
+        .wc-v2-state-card h2 { margin:0 0 10px; color:var(--wc-v2-ink); font:400 29px/1.1 'Fraiche','Outfit',sans-serif; }
+        .wc-v2-state-card > p { margin:0 0 20px; color:var(--wc-v2-body); line-height:1.55; }
+        .wc-v2-reason { margin:20px 0; padding:17px 19px; border-left:3px solid var(--wc-v2-orange); border-radius:0 14px 14px 0; background:#FFF2E5; color:var(--wc-v2-body); }
+        .wc-v2-reason strong { display:block; margin-bottom:5px; color:var(--wc-v2-ink); font-size:11px; letter-spacing:.08em; text-transform:uppercase; }
+        .wc-v2-appeal-form { margin-top:22px; padding-top:22px; border-top:1px solid var(--wc-v2-line); }
+        .wc-v2-appeal-form textarea { width:100%; min-height:120px; padding:14px; border:1px solid var(--wc-v2-line); border-radius:13px; background:#fff; color:var(--wc-v2-ink); font:inherit; resize:vertical; }
+        .wc-v2-appeal-form textarea:focus { border-color:var(--wc-v2-teal); outline:3px solid rgba(33,188,175,.14); }
+        .wc-v2-action { min-height:43px; margin-top:12px; padding:0 21px; border:0; border-radius:999px; background:var(--wc-v2-orange); color:#fff; font:800 13px 'Outfit',sans-serif; cursor:pointer; }
+        .wc-v2-form-feedback { min-height:20px; margin-top:8px; color:#B33838; font-size:12px; }
+        .wc-v2-profile-wrap { margin-top:24px; padding-top:24px; border-top:1px solid var(--wc-v2-line); }
+        .wc-v2-kpi-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; margin-bottom:16px; }
+        .wc-v2-dashboard-grid { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; }
+        .wc-v2-dashboard-card { padding:22px; border:1px solid var(--wc-v2-line); border-radius:18px; background:#fff; box-shadow:0 5px 18px rgba(38,62,58,.055); }
+        .wc-v2-dashboard-card h2 { margin:0 0 7px; color:var(--wc-v2-ink); font:400 23px 'Fraiche','Outfit',sans-serif; }
+        .wc-v2-dashboard-card p { color:var(--wc-v2-body); }
+        .wc-v2-request-list { display:grid; gap:12px; }
+        .wc-v2-profile-summary { margin-top:16px; }
+        .wc-v2-shell .wc-btn { min-height:42px; padding:0 20px; border:0; border-radius:999px; box-shadow:none; color:#fff; font:800 13px 'Outfit',sans-serif; }
+        .wc-v2-shell .wc-btn-primary { background:var(--wc-v2-orange); }
+        .wc-v2-shell .wc-btn-secondary { background:var(--wc-v2-teal); }
+        .wc-v2-shell .wc-card { padding:22px; border:1px solid var(--wc-v2-line); border-radius:18px; box-shadow:0 5px 18px rgba(38,62,58,.055); }
+        .wc-modal-overlay { padding:18px; background:rgba(21,63,59,.46); backdrop-filter:blur(5px); }
+        .wc-modal { padding:30px; border:1px solid #ECE7DD; border-radius:22px; color:#4E6865; box-shadow:0 24px 60px rgba(21,63,59,.16); }
+        .wc-modal .wc-title { color:#153F3B; font:400 27px/1.1 'Fraiche','Outfit',sans-serif; }
+        .wc-modal .wc-btn { min-height:42px; padding:0 20px; border:0; border-radius:999px; box-shadow:none; color:#fff; font:800 13px 'Outfit',sans-serif; }
+        .wc-modal .wc-btn-primary { background:#FE8F15; }
+        .wc-modal .wc-btn-secondary { background:#21BCAF; }
+        .wc-modal .wc-input { border:1px solid #ECE7DD; border-radius:12px; color:#153F3B; background:#fff; }
+        .wc-modal .wc-input:focus { border-color:#21BCAF; outline:3px solid rgba(33,188,175,.14); }
+        .wc-modal .wc-label { color:#4E6865; }
+        .wc-modal .wc-table th { color:#8A9692; background:#FBFAF6; }
+        .wc-modal .wc-table td,.wc-modal .wc-table th { border-color:#ECE7DD; }
+        @media (prefers-reduced-motion: reduce) { .wc-v2-shell *, .wc-modal { animation:none!important; transition:none!important; } }
+        @media (max-width: 900px) {
+            .wc-v2-shell { display:block; }
+            .wc-v2-sidebar { display:none; }
+            .wc-v2-main { padding:0 18px 34px; }
+            .wc-v2-mobile-nav { min-height:66px; display:flex; align-items:center; justify-content:space-between; margin:0 -18px 24px; padding:10px 18px; border-bottom:1px solid var(--wc-v2-line); background:var(--wc-v2-white); }
+            .wc-v2-mobile-nav strong { color:var(--wc-v2-ink); font:400 20px 'Fraiche','Outfit',sans-serif; }
+            .wc-v2-mobile-nav span { color:var(--wc-v2-muted); font-size:11px; }
+            .wc-v2-kpi-grid { grid-template-columns:1fr; }
+        }
     `;
+
+    function renderV2Sidebar(center, activeView = 'dashboard', locked = false) {
+        const name = escapeHtml(getCenterDisplayName(center));
+        const items = locked
+            ? [['Estado de solicitud', 'status']]
+            : [['Resumen', 'dashboard'], ['Citas', 'appointments'], ['Reintegros', 'payments'], ['Perfil', 'profile']];
+        return `
+            <aside class="wc-v2-sidebar">
+                <div class="wc-v2-brand">Pata Amiga</div>
+                <nav class="wc-v2-nav" aria-label="Navegación del centro">
+                    ${items.map(([label, view]) => locked
+                        ? `<div class="wc-v2-nav-item${view === activeView ? ' is-active' : ''}">${label}</div>`
+                        : `<button type="button" class="wc-v2-nav-item${view === activeView ? ' is-active' : ''}" data-wc-view="${view}">${label}</button>`
+                    ).join('')}
+                </nav>
+                <div class="wc-v2-account"><strong>${name}</strong><span>Centro de bienestar</span></div>
+            </aside>`;
+    }
+
+    function renderV2MobileNav(center, locked = false) {
+        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong><span>${locked ? 'Estado de solicitud' : escapeHtml(getCenterDisplayName(center))}</span></div>`;
+    }
+
+    function renderV2Shell({ center, activeView = 'dashboard', content, locked = false }) {
+        return `
+            <div class="wc-v2-shell${locked ? ' is-locked' : ''}">
+                ${renderV2Sidebar(center, activeView, locked)}
+                <main class="wc-v2-main">
+                    ${renderV2MobileNav(center, locked)}
+                    <div class="wc-v2-content">${content}</div>
+                </main>
+            </div>`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replaceAll('&', '&amp;')
+            .replaceAll('<', '&lt;')
+            .replaceAll('>', '&gt;')
+            .replaceAll('"', '&quot;')
+            .replaceAll("'", '&#039;');
+    }
+
+    function bindV2Navigation(container, center) {
+        container.querySelectorAll('[data-wc-view]').forEach(button => {
+            button.addEventListener('click', () => {
+                const view = button.getAttribute('data-wc-view');
+                switch (view) {
+                    case 'dashboard':
+                        container.querySelector('.wc-v2-main')?.scrollTo({ top: 0, behavior: 'smooth' });
+                        break;
+                    case 'appointments': showAppointmentsModal(container, center); break;
+                    case 'payments': showPaymentsModal(center); break;
+                    case 'profile': showEditProfileModal(container, center); break;
+                }
+            });
+        });
+    }
 
     // ============================================
     // LÓGICA DE DATOS
@@ -637,18 +780,9 @@
         `;
     }
 
-    function renderBlocked(container) {
-        container.innerHTML = `
-            <div class="wc-status-screen">
-                <div class="wc-status-icon">🚫</div>
-                <h1 class="wc-title">Acceso Restringido</h1>
-                <p>Tu cuenta como Centro de Bienestar ha sido desactivada.</p>
-                <p>Lamentamos que hayas salido de la manada. Si deseas volver, por favor contáctanos.</p>
-                <div style="margin-top: 30px;">
-                    <a href="mailto:aliados@pataamiga.mx" class="wc-btn wc-btn-primary" style="text-decoration:none;">Contactar Soporte</a>
-                </div>
-            </div>
-        `;
+    function renderBlocked(container, center = {}) {
+        const content = `<header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Cuenta desactivada</span><h1 class="wc-v2-title">Tu centro ya no está activo</h1><p class="wc-v2-subtitle">El perfil dejó de mostrarse y no recibirá nuevas solicitudes.</p></header><section class="wc-v2-state-card"><span class="wc-v2-status">Cancelado</span><h2>${escapeHtml(getCenterDisplayName(center))} está fuera de la red</h2><p>Si deseas reactivar el centro o necesitas ayuda con información anterior, nuestro equipo puede orientarte.</p><a href="mailto:aliados@pataamiga.mx" class="wc-v2-action" style="display:inline-flex;align-items:center;text-decoration:none;">Contactar soporte</a></section>`;
+        container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
     }
 
     function getCenterDisplayName(center) {
@@ -1131,25 +1265,16 @@
     }
 
     function renderPending(container, center) {
-        container.innerHTML = `
-            <div class="wc-status-screen wc-status-screen-wide">
-                <div class="wc-status-icon">⏳</div>
-                <h1 class="wc-title">Solicitud en Revisión</h1>
-                <p>¡Hola, ${getCenterDisplayName(center)}! Tu solicitud para ser aliado de Pata Amiga está siendo revisada por nuestro equipo.</p>
-                <p>Te notificaremos por correo electrónico una vez que hayamos validado tus datos.</p>
-                <div style="margin-top: 30px; padding: 20px; background: #FFFBEB; border-radius: 20px; border: 2px solid #FEF3C7;">
-                    <p style="font-size: 0.9rem; color: #92400E;">Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.</p>
-                </div>
-                <div class="wc-pending-profile-form-section">
-                    ${renderEditProfileForm(center, {
-                        title: 'Completa la información de tu centro',
-                        formId: 'wc-pending-profile-form',
-                        showCloseButton: false,
-                        submitText: 'Guardar información'
-                    })}
-                </div>
-            </div>
-        `;
+        const content = `
+            <header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Solicitud recibida</span><h1 class="wc-v2-title">Estamos revisando tu centro</h1><p class="wc-v2-subtitle">Te notificaremos por correo cuando nuestro equipo termine de validar la información.</p></header>
+            <section class="wc-v2-state-card">
+                <span class="wc-v2-status">En revisión</span>
+                <h2>Hola, ${escapeHtml(getCenterDisplayName(center))}</h2>
+                <p>Mientras revisamos tu solicitud, puedes completar los datos públicos para que el perfil quede listo al aprobarse.</p>
+                <div class="wc-v2-reason"><strong>Siguiente paso recomendado</strong>Agrega logo, redes sociales, ubicación, horarios y beneficios.</div>
+                <div class="wc-v2-profile-wrap wc-pending-profile-form-section">${renderEditProfileForm(center, { title:'Completa la información de tu centro', formId:'wc-pending-profile-form', showCloseButton:false, submitText:'Guardar información' })}</div>
+            </section>`;
+        container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
 
         bindEditProfileForm(container, center, {
             formSelector: '#wc-pending-profile-form',
@@ -1159,29 +1284,15 @@
     }
 
     function renderRejected(container, center) {
-        container.innerHTML = `
-            <div class="wc-status-screen">
-                <div class="wc-status-icon">❌</div>
-                <h1 class="wc-title">Solicitud Rechazada</h1>
-                <p>Hola ${center.establishment_name || center.name}, el comité determinó no aceptar tu solicitud de centro de bienestar debido a:</p>
-                
-                <div class="wc-appeal-box">
-                    <p style="${center.rejection_reason ? 'font-weight:bold; color:#E53E3E;' : ''}">${center.rejection_reason || 'No se proporcionó un motivo específico.'}</p>
-                </div>
-
-                <div id="appeal-form-container" style="margin-top: 40px;">
-                    <h2 class="wc-title" style="font-size:1.2rem;">¿Deseas apelar esta decisión?</h2>
-                    <p>Si consideras que hubo un error o tienes nueva información para compartir, descríbelo aquí:</p>
-                    <textarea id="wc-appeal-text" placeholder="Escribe tu mensaje de apelación aquí..." style="width:100%; height:120px; padding:15px; border-radius:20px; border:2px solid #000; margin-top:10px; font-family:inherit;"></textarea>
-                    <button id="btn-submit-appeal" class="wc-btn wc-btn-primary" style="width:100%; margin-top:15px;">Enviar Apelación</button>
-                </div>
-            </div>
-        `;
+        const content = `
+            <header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Resultado de solicitud</span><h1 class="wc-v2-title">Necesitamos revisar algunos datos</h1><p class="wc-v2-subtitle">Puedes consultar el motivo y enviarnos una aclaración.</p></header>
+            <section class="wc-v2-state-card"><span class="wc-v2-status">Requiere atención</span><h2>Tu solicitud fue rechazada</h2><p>Si ya cuentas con la información correcta, solicita una nueva revisión.</p><div class="wc-v2-reason"><strong>Motivo informado</strong>${escapeHtml(center.rejection_reason || 'No se proporcionó un motivo específico.')}</div><div id="appeal-form-container" class="wc-v2-appeal-form"><label for="wc-appeal-text">Motivo de tu apelación</label><textarea id="wc-appeal-text" placeholder="Cuéntanos qué información debemos volver a revisar..."></textarea><div class="wc-v2-form-feedback" role="alert"></div><button id="btn-submit-appeal" class="wc-v2-action">Enviar apelación</button></div></section>`;
+        container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
 
         container.querySelector('#btn-submit-appeal').addEventListener('click', async () => {
             const message = container.querySelector('#wc-appeal-text').value;
             if (!message.trim()) {
-                alert('Por favor escribe un mensaje de apelación.');
+                container.querySelector('.wc-v2-form-feedback').textContent = 'Escribe un mensaje antes de enviar la apelación.';
                 return;
             }
 
@@ -1193,7 +1304,7 @@
             if (result.success) {
                 renderAppealed(container, { ...center, status: 'appealed' });
             } else {
-                alert('Error al enviar la apelación. Intenta de nuevo.');
+                container.querySelector('.wc-v2-form-feedback').textContent = 'No pudimos enviar la apelación. Intenta de nuevo.';
                 btn.disabled = false;
                 btn.innerText = 'Enviar Apelación';
             }
@@ -1201,46 +1312,38 @@
     }
 
     function renderAppealed(container, center) {
-        container.innerHTML = `
-            <div class="wc-status-screen">
-                <div class="wc-status-icon">📩</div>
-                <h1 class="wc-title">Apelación en Revisión</h1>
-                <p>Hemos recibido tu apelación, ${center.name}.</p>
-                <p>Nuestro equipo revisará nuevamente tu caso y los comentarios proporcionados.</p>
-                <div style="margin-top: 30px; padding: 20px; background: #F0F9FF; border-radius: 20px; border: 2px solid #E0F2FE;">
-                    <p style="font-size: 0.9rem; color: #0369A1;">Te avisaremos por correo lo antes posible. ¡Gracias por tu paciencia!</p>
-                </div>
-            </div>
-        `;
+        const content = `<header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Seguimiento</span><h1 class="wc-v2-title">Recibimos tu apelación</h1><p class="wc-v2-subtitle">Nuestro equipo volverá a revisar el expediente.</p></header><section class="wc-v2-state-card"><span class="wc-v2-status">Apelación en revisión</span><h2>No necesitas hacer nada más, ${escapeHtml(getCenterDisplayName(center))}</h2><p>Te avisaremos por correo cuando exista una resolución o si necesitamos información adicional.</p><div class="wc-v2-reason"><strong>Solicitud conservada</strong>Tus datos y documentos permanecen disponibles durante la revisión.</div></section>`;
+        container.innerHTML = renderV2Shell({ center, activeView:'status', content, locked:true });
     }
 
     function renderDashboard(container, center) {
         currentCenter = center;
         const social = center.social_links || {};
 
-        container.innerHTML = `
-            <div class="wellness-widget-content">
-                <div class="wc-card">
+        const content = `
+            <header class="wc-v2-page-head"><span class="wc-v2-eyebrow">Centro aliado activo</span><h1 class="wc-v2-title">Hola, ${escapeHtml(center.establishment_name)}</h1><p class="wc-v2-subtitle">Administra solicitudes, citas, reintegros y la información pública del centro.</p></header>
+            <div class="wc-v2-dashboard-grid">
+                <div class="wc-v2-dashboard-card">
                     <div class="wc-status-badge status-${center.status}">${center.status === 'approved' ? 'Aliado Activo' : 'En Revisión'}</div>
-                    <h1 class="wc-title">¡Hola, ${center.establishment_name}!</h1>
-                    <p>Bienvenido a tu panel de control de Pata Amiga.</p>
+                    <h2>Tu perfil está publicado</h2>
+                    <p>La información está visible para los miembros de Pata Amiga.</p>
                 </div>
 
-                <div class="wc-grid">
-                    <div class="wc-card">
+                <div class="wc-v2-kpi-grid wc-v2-request-list">
+                    <div class="wc-v2-dashboard-card">
                         <h2 class="wc-title" style="font-size:1.5rem;">Solicitudes y Citas</h2>
                         <p>Gestiona las solicitudes de atención y tu calendario.</p>
                         <button id="btn-view-appointments" class="wc-btn wc-btn-secondary">Gestionar Citas</button>
                     </div>
 
-                    <div class="wc-card">
+                    <div class="wc-v2-dashboard-card">
                         <h2 class="wc-title" style="font-size:1.5rem;">Apoyo Económico</h2>
                         <p>Beneficios económicos y pagos recibidos.</p>
                         <button id="btn-view-payments" class="wc-btn wc-btn-secondary">Ver Historial</button>
                     </div>
                 </div>
 
-                <div class="wc-card">
+                <div class="wc-v2-dashboard-card wc-v2-profile-summary">
                     <h2 class="wc-title" style="font-size:1.5rem; margin-bottom: 0;">Información del Centro</h2>
                     
                     <div class="wc-info-card-content">
@@ -1257,9 +1360,9 @@
 
                         <div class="wc-info-grid">
                             <div class="wc-info-section">
-                                <h4 class="wc-info-section-title">📍 Datos de Contacto</h4>
+                                <h4 class="wc-info-section-title">Datos de contacto</h4>
                                 <div class="wc-info-item">
-                                    <span class="wc-info-icon">📞</span>
+                                    <span class="wc-info-icon" aria-hidden="true">•</span>
                                     <div>
                                         <strong>Teléfono:</strong> 
                                         ${center.phone 
@@ -1269,7 +1372,7 @@
                                     </div>
                                 </div>
                                 <div class="wc-info-item">
-                                    <span class="wc-info-icon">✉️</span>
+                                    <span class="wc-info-icon" aria-hidden="true">•</span>
                                     <div>
                                         <strong>Email:</strong> 
                                         ${center.email 
@@ -1279,7 +1382,7 @@
                                     </div>
                                 </div>
                                 <div class="wc-info-item">
-                                    <span class="wc-info-icon">🏠</span>
+                                    <span class="wc-info-icon" aria-hidden="true">•</span>
                                     <div>
                                         <strong>Ubicaciones:</strong>
                                         ${renderLocationsSummary(center)}
@@ -1288,13 +1391,13 @@
                             </div>
 
                             <div class="wc-info-section">
-                                <h4 class="wc-info-section-title">🎁 Beneficio para Miembros</h4>
+                                <h4 class="wc-info-section-title">Beneficio para miembros</h4>
                                 <div class="wc-info-promo-box">
                                     <strong>Beneficio Especial:</strong><br>
                                     ${center.promotion_details || '<span style="color:#718096; font-style:italic;">No se ha configurado la promoción para los miembros de Pata Amiga.</span>'}
                                 </div>
 
-                                <h4 class="wc-info-section-title" style="margin-top: 15px;">🌐 Redes Sociales</h4>
+                                <h4 class="wc-info-section-title" style="margin-top: 15px;">Redes sociales</h4>
                                 <div class="wc-info-socials">
                                     ${social.instagram 
                                         ? `<a href="${social.instagram}" target="_blank" class="wc-info-social-btn instagram" title="Instagram">${INSTAGRAM_SVG}</a>` 
@@ -1331,11 +1434,13 @@
                 </div>
             </div>
         `;
+        container.innerHTML = renderV2Shell({ center, activeView:'dashboard', content });
 
         container.querySelector('#btn-view-appointments').addEventListener('click', () => showAppointmentsModal(container, center));
         container.querySelector('#btn-view-payments').addEventListener('click', () => showPaymentsModal(container, center));
         container.querySelector('#btn-edit-profile').addEventListener('click', () => showEditProfileModal(container, center));
         container.querySelector('#wc-btn-exit').addEventListener('click', () => showExitModal(container, center));
+        bindV2Navigation(container, center);
 
         // Mostrar modal de bienvenida si es necesario
         if (!center.welcome_shown && center.status === 'approved') {
@@ -2245,7 +2350,7 @@
         }
 
         if (center.status === 'cancelled') {
-            renderBlocked(target);
+            renderBlocked(target, center);
         } else if (center.status === 'pending') {
             renderPending(target, center);
         } else if (center.status === 'rejected') {
