@@ -491,3 +491,404 @@
     font-size: 0.9rem;
     line-height: 1.4;
 }
+
+/* Registro V2 de Centros de Bienestar */
+.stageCard {
+    width: 100%;
+}
+
+.progressTrack {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 28px;
+}
+
+.progressStep {
+    min-width: 0;
+    min-height: 42px;
+    padding: 8px 10px;
+    border: 1.5px solid #E4DFD3;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #84918E;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-body);
+}
+
+.progressStepActive {
+    border-color: #1CBCAD;
+    background: #1CBCAD;
+    color: #FFFFFF;
+}
+
+.progressStepComplete {
+    border-color: #D6F0EC;
+    background: #EAF8F6;
+    color: #0E8377;
+}
+
+.progressNumber {
+    width: 22px;
+    height: 22px;
+    flex: 0 0 22px;
+    border-radius: 50%;
+    background: #EFEAE0;
+    color: #687773;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.progressStepActive .progressNumber {
+    background: rgba(255, 255, 255, 0.24);
+    color: #FFFFFF;
+}
+
+.progressStepComplete .progressNumber {
+    background: #1CBCAD;
+    color: #FFFFFF;
+}
+
+.progressLabel {
+    overflow: hidden;
+    font-size: 0.72rem;
+    font-weight: 650;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.form {
+    max-width: none;
+    gap: 22px;
+}
+
+.field {
+    gap: 7px;
+}
+
+.field label,
+.groupLabel {
+    color: #294F4C;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 650;
+}
+
+.field input,
+.field textarea {
+    width: 100%;
+    min-height: 48px;
+    box-sizing: border-box;
+    padding: 12px 15px;
+    border: 1.5px solid #E4DFD3;
+    border-radius: 12px;
+    background: #FFFEFC;
+    color: #244744;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    transition: border-color 200ms ease, box-shadow 200ms ease, background 200ms ease;
+}
+
+.field input:hover,
+.field textarea:hover {
+    border-color: #C9C1B2;
+}
+
+.field input:focus,
+.field textarea:focus {
+    outline: none;
+    border-color: #1CBCAD;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 4px rgba(28, 188, 173, 0.14);
+}
+
+.servicesGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.serviceBadge {
+    min-height: 44px;
+    padding: 10px 12px;
+    border: 1.5px solid #E4DFD3;
+    border-radius: 12px;
+    background: #FFFEFC;
+    color: #526763;
+    font-weight: 550;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.serviceBadge:hover {
+    border-color: #1CBCAD;
+    background: #F4FBFA;
+}
+
+.serviceBadge:focus-visible {
+    outline: 3px solid rgba(28, 188, 173, 0.22);
+    outline-offset: 2px;
+}
+
+.serviceBadge:active {
+    transform: scale(0.98);
+}
+
+.serviceBadge.active {
+    border-color: #1CBCAD;
+    background: #DDF5F2;
+    color: #0B7168;
+    box-shadow: inset 0 0 0 1px #1CBCAD;
+}
+
+.passwordToggle {
+    right: 9px;
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    color: #526763;
+}
+
+.passwordToggle:focus-visible,
+.viewTermsLink:focus-visible,
+.highlightLink:focus-visible,
+.primaryButton:focus-visible,
+.submitButton:focus-visible,
+.secondaryButtonSmall:focus-visible {
+    outline: 3px solid rgba(28, 188, 173, 0.25);
+    outline-offset: 3px;
+}
+
+.checkboxField {
+    align-items: flex-start;
+    color: #526763;
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.checkboxField input[type="checkbox"] {
+    width: 19px;
+    height: 19px;
+    margin-top: 1px;
+    accent-color: #1CBCAD;
+}
+
+.viewTermsLink,
+.highlightLink {
+    color: #0E8377;
+    font-weight: 650;
+    text-underline-offset: 3px;
+}
+
+.highlightLink {
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.submitButton,
+.primaryButton {
+    min-height: 52px;
+    padding: 13px 24px;
+    border: 0;
+    border-radius: 999px;
+    background: #1CBCAD;
+    color: #FFFFFF;
+    font-family: var(--font-body);
+    font-size: 0.98rem;
+    font-weight: 700;
+    box-shadow: 0 8px 18px rgba(28, 188, 173, 0.16);
+    transition: transform 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+.submitButton:hover:not(:disabled),
+.primaryButton:hover {
+    background: #159F94;
+    transform: translateY(-1px);
+    box-shadow: 0 10px 22px rgba(28, 188, 173, 0.22);
+}
+
+.submitButton:active,
+.primaryButton:active {
+    transform: scale(0.985);
+}
+
+.submitButton:disabled {
+    background: #A8CFCA;
+    box-shadow: none;
+}
+
+.errorText {
+    color: #B33838;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+}
+
+.submitError,
+.message.error {
+    border: 1px solid #F0C9C4;
+    border-radius: 12px;
+    background: #FFF2F0;
+    color: #9A332D;
+    text-align: left;
+}
+
+.successContainer {
+    padding: 36px 24px 18px;
+    border: 0;
+    border-radius: 16px;
+    background: #F3FBF9;
+    box-shadow: none;
+}
+
+.successIcon {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 18px;
+    border-radius: 16px;
+    background: #1CBCAD;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-body);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.successContainer h2,
+.complementaryTitle {
+    margin: 0 0 12px;
+    color: #1E5350;
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 5vw, 2.35rem);
+    font-weight: 400;
+    line-height: 1.1;
+}
+
+.successContainer p {
+    color: #607470;
+    line-height: 1.55;
+}
+
+.complementaryContainer {
+    max-width: none;
+}
+
+.complementaryTitle {
+    text-align: left;
+}
+
+.alertBox {
+    padding: 14px 16px;
+    border: 1px solid #F1D8A3;
+    border-radius: 12px;
+    background: #FFF9EC;
+    color: #7A5A1C;
+    text-align: left;
+}
+
+.complementaryFormInner {
+    gap: 24px;
+}
+
+.section {
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid #EEE8DC;
+}
+
+.section h4 {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: #1E5350;
+    font-size: 1.15rem;
+}
+
+.secondaryButtonSmall {
+    min-height: 42px;
+    padding: 9px 15px;
+    border: 1.5px solid #1CBCAD;
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: #0E8377;
+    font-family: var(--font-body);
+    font-weight: 650;
+}
+
+.branchCard,
+.branchQuestion,
+.locationPhotosPanel {
+    border: 1px solid #E4DFD3;
+    border-radius: 16px;
+    background: #FBF9F4;
+}
+
+.map {
+    height: 280px;
+    border: 1px solid #E4DFD3;
+    border-radius: 16px;
+}
+
+.logoPreview {
+    border: 1px solid #E4DFD3;
+    border-radius: 16px;
+    background: #F3FBF9;
+}
+
+@media (max-width: 640px) {
+    .progressTrack {
+        gap: 6px;
+        margin-bottom: 22px;
+    }
+
+    .progressStep {
+        min-height: 6px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: #E4DFD3;
+    }
+
+    .progressStepActive,
+    .progressStepComplete {
+        background: #1CBCAD;
+    }
+
+    .progressNumber,
+    .progressLabel {
+        display: none;
+    }
+
+    .row,
+    .socialGrid,
+    .servicesGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .successContainer {
+        padding: 30px 16px 14px;
+    }
+
+    .logoPreviewContainer,
+    .branchQuestion {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .submitButton,
+    .primaryButton,
+    .secondaryButtonSmall {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .map {
+        height: 240px;
+    }
+}

@@ -139,71 +139,105 @@ export default function WellnessForm({ onSuccess }: Props) {
         }
     };
 
+    const currentStage = view === 'form' ? 1 : view === 'complementary-success' ? 3 : 2;
+    const progressLabels = ['Solicitud', 'Información del centro', 'Revisión'];
+    const renderProgress = () => (
+        <nav className={styles.progressTrack} aria-label="Progreso del registro">
+            {progressLabels.map((label, index) => {
+                const stage = index + 1;
+                const isActive = currentStage === stage;
+                const isComplete = currentStage > stage;
+                return (
+                    <div
+                        key={label}
+                        className={`${styles.progressStep} ${isActive ? styles.progressStepActive : ''} ${isComplete ? styles.progressStepComplete : ''}`}
+                        aria-current={isActive ? 'step' : undefined}
+                    >
+                        <span className={styles.progressNumber}>{isComplete ? '✓' : stage}</span>
+                        <span className={styles.progressLabel}>{label}</span>
+                    </div>
+                );
+            })}
+        </nav>
+    );
+
     if (view === 'success') {
         return (
-            <div className={styles.successContainer}>
-                <h2>¡Solicitud Enviada!</h2>
-                <p>Tu solicitud como Centro de Bienestar está en revisión.</p>
-                <p>Te enviaremos un correo una vez que hayamos validado tu información.</p>
+            <div className={styles.stageCard}>
+                {renderProgress()}
+                <div className={styles.successContainer}>
+                    <span className={styles.successIcon} aria-hidden="true">✓</span>
+                    <h2>¡Solicitud Enviada!</h2>
+                    <p>Tu solicitud como Centro de Bienestar está en revisión.</p>
+                    <p>Te enviaremos un correo una vez que hayamos validado tu información.</p>
                 
-                <p className={styles.legendText}>
-                    Por lo mientras te invitamos a contarnos más sobre tu Centro de Bienestar terminando tu registro{' '}
-                    <span 
-                        className={styles.highlightLink} 
-                        onClick={() => setView('complementary')}
-                        role="button"
-                        tabIndex={0}
-                    >
-                        aquí
-                    </span>
-                </p>
+                    <p className={styles.legendText}>
+                        Por lo mientras te invitamos a contarnos más sobre tu Centro de Bienestar terminando tu registro{' '}
+                        <button
+                            type="button"
+                            className={styles.highlightLink}
+                            onClick={() => setView('complementary')}
+                        >
+                            aquí
+                        </button>
+                    </p>
 
-                <button 
-                    onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
-                    className={styles.primaryButton}
-                >
-                    Iniciar sesión
-                </button>
+                    <button
+                        onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
+                        className={styles.primaryButton}
+                    >
+                        Iniciar sesión
+                    </button>
+                </div>
             </div>
         );
     }
 
     if (view === 'complementary' && registeredCenter) {
         return (
-            <div className={styles.complementaryContainer}>
-                <h3 className={styles.complementaryTitle}>Completa la información de tu centro</h3>
-                <div className={styles.alertBox}>
-                    Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.
+            <div className={styles.stageCard}>
+                {renderProgress()}
+                <div className={styles.complementaryContainer}>
+                    <h3 className={styles.complementaryTitle}>Completa la información de tu centro</h3>
+                    <div className={styles.alertBox}>
+                        Mientras tanto, puedes adelantar el llenado de tu información complementaria (logo, redes sociales, ubicación) para agilizar tu aprobación.
+                    </div>
+                    <WellnessComplementaryForm
+                        center={registeredCenter}
+                        onUpdate={(updated) => {
+                            setRegisteredCenter(updated);
+                            setView('complementary-success');
+                        }}
+                    />
                 </div>
-                <WellnessComplementaryForm 
-                    center={registeredCenter} 
-                    onUpdate={(updated) => {
-                        setRegisteredCenter(updated);
-                        setView('complementary-success');
-                    }}
-                />
             </div>
         );
     }
 
     if (view === 'complementary-success') {
         return (
-            <div className={styles.successContainer}>
-                <h2>¡Información Completa!</h2>
-                <p>Gracias por contarnos más sobre tu Centro de Bienestar.</p>
-                <p>Tu información complementaria ha sido guardada y será revisada por nuestro equipo para agilizar tu aprobación.</p>
-                <button 
-                    onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
-                    className={styles.primaryButton}
-                >
-                    Iniciar sesión
-                </button>
+            <div className={styles.stageCard}>
+                {renderProgress()}
+                <div className={styles.successContainer}>
+                    <span className={styles.successIcon} aria-hidden="true">✓</span>
+                    <h2>¡Información Completa!</h2>
+                    <p>Gracias por contarnos más sobre tu Centro de Bienestar.</p>
+                    <p>Tu información complementaria ha sido guardada y será revisada por nuestro equipo para agilizar tu aprobación.</p>
+                    <button
+                        onClick={() => window.location.href = 'https://www.pataamiga.mx/user/inicio-de-sesion'}
+                        className={styles.primaryButton}
+                    >
+                        Iniciar sesión
+                    </button>
+                </div>
             </div>
         );
     }
 
     return (
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.stageCard}>
+            {renderProgress()}
+            <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.field}>
                 <label>Nombre del establecimiento</label>
                 <input 
@@ -331,15 +365,16 @@ export default function WellnessForm({ onSuccess }: Props) {
                 {isSubmitting ? 'Enviando...' : 'Registrar Centro'}
             </button>
 
-            <TermsModalEnhanced 
-                isOpen={showTermsModal}
-                onClose={(accepted) => {
-                    setShowTermsModal(false);
-                    if (accepted) {
-                        setFormData(prev => ({...prev, accept_terms: true}));
-                    }
-                }}
-            />
-        </form>
+                <TermsModalEnhanced
+                    isOpen={showTermsModal}
+                    onClose={(accepted) => {
+                        setShowTermsModal(false);
+                        if (accepted) {
+                            setFormData(prev => ({...prev, accept_terms: true}));
+                        }
+                    }}
+                />
+            </form>
+        </div>
     );
 }

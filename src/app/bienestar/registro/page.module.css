@@ -1,118 +1,147 @@
 .pageBackground {
-    min-height: 100vh;
-    background: linear-gradient(180deg, #F7FAFC 0%, #EDF2F7 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    position: relative;
+    min-height: 100dvh;
+    background: #FAF7F1;
+    color: #1E5350;
+    padding-bottom: 48px;
 }
 
-.pageBackground::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-image: url('https://res.cloudinary.com/dqy07kgu6/image/upload/v1777696967/LetraApalo_3_bjsdfo.png');
-    background-size: 50vw;
-    background-repeat: no-repeat;
-    background-position: right center;
-    opacity: 0.2;
-    pointer-events: none;
-    z-index: 0;
-}
-
-.pageBackground > a,
-.container {
-    position: relative;
-    z-index: 1;
-}
-
-.pageBackground > a {
-    top: auto;
-    left: auto;
-    background: #00BBB4;
-    border: 2px solid #000000;
-    border-radius: 18px;
-    box-shadow: 4px 4px 0 #000000;
-    padding: 10px 14px;
-    margin: 10px auto 32px;
-    width: fit-content;
+.registrationNav {
+    min-height: 74px;
+    padding: 12px clamp(20px, 5vw, 72px);
+    background: #FFFFFF;
+    border-bottom: 1px solid #EEE8DC;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 24px;
 }
 
-.pageBackground > a:hover {
-    transform: translateY(-2px);
+.registrationNav > a:first-child {
+    position: static;
 }
 
-.pageBackground > a img {
-    height: 72px;
+.registrationNav img {
+    width: auto;
+    height: 48px;
+}
+
+.loginLink {
+    color: #0E8377;
+    font-family: var(--font-body);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 200ms ease, transform 200ms ease;
+}
+
+.loginLink:hover {
+    color: #1E5350;
+    transform: translateY(-1px);
+}
+
+.loginLink:focus-visible {
+    outline: 3px solid rgba(28, 188, 173, 0.28);
+    outline-offset: 5px;
+    border-radius: 8px;
 }
 
 .container {
-    width: 100%;
-    max-width: 800px;
-    margin-top: 0;
+    width: calc(100% - 40px);
+    max-width: 700px;
+    margin: 0 auto;
+    padding-top: 48px;
 }
 
-.header {
-    text-align: center;
-    margin-bottom: 40px;
+.heroCopy {
+    margin-bottom: 24px;
+}
+
+.eyebrow {
+    display: block;
+    margin-bottom: 10px;
+    color: #0E8377;
+    font-family: var(--font-body);
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
 .title {
+    margin: 0;
+    color: #1E5350;
     font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: var(--color-text-dark);
-    margin-bottom: 10px;
+    font-size: clamp(2.2rem, 6vw, 3.35rem);
+    font-weight: 400;
+    letter-spacing: -0.025em;
+    line-height: 1.02;
+    text-wrap: balance;
 }
 
 .subtitle {
+    max-width: 58ch;
+    margin: 14px 0 0;
+    color: #667B77;
     font-family: var(--font-body);
-    font-size: 1.1rem;
-    color: var(--color-text-light);
+    font-size: 1rem;
+    line-height: 1.6;
+    text-wrap: pretty;
 }
 
 .formCard {
-    background: white;
-    padding: 40px;
-    border-radius: var(--radius-container);
-    border: 3px solid #000000;
-    box-shadow: 12px 12px 0px rgba(0, 0, 0, 0.1);
+    background: #FFFFFF;
+    padding: 30px;
+    border: 1px solid #EEE8DC;
+    border-radius: 20px;
+    box-shadow: 0 2px 12px rgba(30, 83, 80, 0.06);
 }
 
 .footer {
-    text-align: center;
-    margin-top: 40px;
+    width: calc(100% - 40px);
+    max-width: 700px;
+    margin: 28px auto 0;
+    color: #7D8D89;
     font-family: var(--font-body);
-    font-size: 0.9rem;
-    color: var(--color-text-light);
+    font-size: 0.8rem;
+    text-align: center;
 }
 
-@media (max-width: 600px) {
+.footer p {
+    margin: 0;
+}
+
+@media (max-width: 640px) {
     .pageBackground {
-        padding-top: 24px;
+        padding-bottom: 32px;
     }
 
-    .pageBackground > a {
-        margin-bottom: 26px;
-        padding: 8px 12px;
-        border-radius: 16px;
+    .registrationNav {
+        min-height: 62px;
+        padding: 9px 20px;
     }
 
-    .pageBackground > a img {
-        height: 48px;
+    .registrationNav img {
+        height: 40px;
     }
 
-    .title {
-        font-size: 2rem;
+    .loginLink {
+        max-width: 110px;
+        font-size: 0.78rem;
+        line-height: 1.2;
+        text-align: right;
     }
-    
+
+    .container {
+        width: calc(100% - 28px);
+        padding-top: 30px;
+    }
+
+    .heroCopy {
+        margin-bottom: 18px;
+    }
+
     .formCard {
-        padding: 25px;
+        padding: 20px;
+        border-radius: 18px;
     }
 }
