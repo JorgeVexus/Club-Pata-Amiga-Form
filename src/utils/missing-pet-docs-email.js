@@ -1,85 +1,133 @@
 /**
- * 📧 Missing Pet Docs — Email Templates
+ * Missing Pet Docs — Email Templates
  *
- * Genera HTML de correo para los días de seguimiento:
- * Día 0, 10, 13, 14 y 15.
- *
- * Todos los días usan el mismo sistema de diseño de marca Pata Amiga
- * (header turquesa, logo, Outfit, botón naranja) para mantener consistencia.
+ * Shared generator used by the cron workflow and the admin test preview/send flow.
+ * Visual design must stay unchanged; only tone and dynamic copy vary by follow-up day.
  */
 
-// ─── URLs de Assets ────────────────────────────────────────────────────────────
-const LOGO_URL         = 'https://app.pataamiga.mx/Identidad/logo-pata-amiga-azul.png';
-const HEADER_COLOR     = '#08BDB4';
-const CTA_COLOR        = '#FE8F15';
-const CURRENT_YEAR     = new Date().getFullYear();
-
-// ─── Helpers ───────────────────────────────────────────────────────────────────
+const LOGO_URL = 'https://app.pataamiga.mx/Identidad/logo-pata-amiga-azul.png';
+const HEADER_COLOR = '#08BDB4';
+const CTA_COLOR = '#FE8F15';
+const CURRENT_YEAR = new Date().getFullYear();
 
 function escapeHtml(value) {
     return String(value ?? '')
-        .replaceAll('&',  '&amp;')
-        .replaceAll('<',  '&lt;')
-        .replaceAll('>',  '&gt;')
-        .replaceAll('"',  '&quot;')
-        .replaceAll("'",  '&#039;');
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
 }
-
-// ─── Asunto del correo ─────────────────────────────────────────────────────────
 
 function getMissingDocsSubject(petName, day, missing) {
     const safePetName = String(petName ?? 'tu mascota');
-    const docLabel = missing === 'both'
-        ? 'la foto y el certificado médico'
-        : missing === 'photo' ? 'la foto' : 'el certificado médico';
+    const singularDoc = missing === 'photo' ? 'la foto' : 'el certificado médico';
+    const detailLabel = missing === 'both'
+        ? `completar el perfil de ${safePetName}`
+        : `subir ${singularDoc} de ${safePetName}`;
 
     const subjects = {
-        0:  `¡Casi listo! Solo falta ${docLabel} de ${safePetName}`,
-        10: `¿Necesitas ayuda con ${docLabel} de ${safePetName}?`,
-        13: `No queremos que ${safePetName} pierda sus beneficios`,
-        14: `Mañana es el último día para completar el perfil de ${safePetName}`,
-        15: `Última oportunidad: activa la protección de ${safePetName} hoy`,
+        0: `Ya casi queda listo: ${detailLabel}`,
+        10: `Aún estamos a tiempo de completar el perfil de ${safePetName}`,
+        13: `Quedan 3 días para completar el perfil de ${safePetName}`,
+        14: `Quedan 2 días para completar el perfil de ${safePetName}`,
+        15: `Hoy es el último día para completar el perfil de ${safePetName}`,
     };
+
     return subjects[day] || subjects[0];
 }
 
-// ─── Mensaje según el día ──────────────────────────────────────────────────────
-
 function getMissingDocsMessage(petName, userName, day, missing) {
-    const firstName  = String(userName || 'Miembro').trim().split(/\s+/)[0] || 'Miembro';
-    const docMissing = missing === 'both'
-        ? 'la foto y el certificado médico'
-        : missing === 'photo' ? 'la foto' : 'el certificado médico';
+    const safePetName = escapeHtml(petName || 'tu peludo');
+    const missingIntro = missing === 'both'
+        ? 'Solo faltan estos dos detalles:'
+        : 'Solo falta este detalle:';
+    const helperBase = 'Si necesitas ayuda para subirlos o tienes cualquier duda, aquí estamos para ayudarte.';
 
     const messages = {
         0: {
-            headline: `Tu registro fue un éxito`,
-            body:     `Estábamos viendo el perfil de <strong>${escapeHtml(petName)}</strong> y está a nada de quedar completo. Solo nos faltan un par de detalles para conocerlo mejor y poder acompañarte cuando lo necesites.`,
+            headline: 'Tu registro fue un éxito',
+            body: `Nos da muchísimo gusto que ya seas parte de la manada 🐾<br><br>Estábamos viendo el perfil de <strong>${safePetName}</strong> y está a nada de quedar completo.<br><br>${missingIntro}<br><br>Con esto listo, podemos estar preparados para darte el apoyo adecuado en cualquier momento. Es muy rápido y puedes hacerlo directamente desde tu dashboard.<br><br>No te tomará más de unos minutos.`,
+            ctaLabel: `Completar perfil de ${safePetName}`,
+            helperText: helperBase,
+            signoffLead: 'Un abrazo,',
         },
         10: {
-            headline: `¿Cómo van?`,
-            body:     `Hemos notado que aún falta ${escapeHtml(docMissing)} de <strong>${escapeHtml(petName)}</strong>. Si tienes alguna duda sobre cómo subir los archivos, con gusto te ayudamos. Responde este correo y te orientamos.`,
+            headline: `¿Cómo va todo con ${safePetName}?`,
+            body: `Esperamos que estén teniendo muy buenos días juntos.<br><br>Sabemos que el día a día se llena de cosas... y justo por eso pasamos a recordarte algo importante:<br><br>El perfil de <strong>${safePetName}</strong> está a nada de quedar completo y <strong>AÚN TENEMOS 10 DÍAS</strong> para dejarlo listo sin prisas.<br><br>Contar con su información completa nos permite estar preparados para darte ese respaldo solidario cuando lo necesites.<br><br>${missingIntro}<br><br>Te toma menos de dos minutos.`,
+            ctaLabel: `Dejar listo el perfil de ${safePetName}`,
+            helperText: 'No lo dejes para el final... hacerlo hoy es mucho más fácil que correr después. Aquí estamos para acompañarte.',
+            signoffLead: 'Un abrazo,',
         },
         13: {
-            headline: `${escapeHtml(petName)} te necesita`,
-            body:     `Estamos en la recta final. El perfil de <strong>${escapeHtml(petName)}</strong> aún está incompleto y sin ${escapeHtml(docMissing)}, no podremos activar su cobertura completa. ¡Solo te toma un momento!`,
+            headline: 'Queríamos escribirte hoy',
+            body: `Sabemos que el día a día se llena de cosas. Y justo por eso queríamos escribirte hoy.<br><br><strong>Quedan 3 DÍAS</strong> para completar el perfil de <strong>${safePetName}</strong>, y estás a un paso de dejar todo listo.<br><br>Tener su información completa nos permite acompañarte mejor y reaccionar a tiempo cuando lo necesites.<br><br>${missingIntro}<br><br>Te toma menos de un minuto.`,
+            ctaLabel: 'COMPLETAR perfil ahora',
+            helperText: 'Hazlo hoy y te olvidas de este pendiente 🧡',
+            signoffLead: 'Aquí estamos para ustedes, siempre,',
         },
         14: {
-            headline: `Solo queda 1 día`,
-            body:     `Mañana vence el plazo para completar el perfil de <strong>${escapeHtml(petName)}</strong>. No queremos que pierda ningún beneficio. Sube ${escapeHtml(docMissing)} hoy y listo.`,
+            headline: 'Ya estamos muy cerca del cierre',
+            body: `Pasamos por aquí porque ya estamos muy cerca del cierre.<br><br><strong>Quedan 2 DÍAS</strong> para completar el perfil de <strong>${safePetName}</strong>.<br><br>Sabemos que entre todo lo del día, esto puede quedarse para después... <strong>PERO HOY ES EL MEJOR MOMENTO PARA DEJARLO LISTO.</strong><br><br>Con su información completa, podemos acompañarte y darte el respaldo de la manada cuando lo necesites.<br><br>${missingIntro}<br><br>Lo puedes dejar listo en un momento.`,
+            ctaLabel: 'DEJARLO listo ahora',
+            helperText: `No lo dejes pasar...<br><br><strong>${safePetName}</strong> está a nada de estar completamente dentro de la manada 🧡`,
+            signoffLead: 'Estamos contigo,',
         },
         15: {
-            headline: `¡Es hoy!`,
-            body:     `Hoy es el último día para que <strong>${escapeHtml(petName)}</strong> tenga su perfil completo y activo. Si subes ${escapeHtml(docMissing)} ahora, todo queda en orden. ¡No te tardes!`,
+            headline: 'Último aviso',
+            body: `Pasamos por aquí con el último aviso 🐾<br><br>Hoy es el <strong>ÚLTIMO DÍA</strong> para completar el perfil de <strong>${safePetName}</strong> y estás a un paso de dejar todo listo.<br><br>Sabemos que el día se llena... pero este pequeño paso hace toda la diferencia.<br><br>Con su información completa, <strong>PUEDES CONTAR CON EL RESPALDO DE LA MANADA CUANDO LO NECESITES</strong> 🧡<br><br>${missingIntro}<br><br>Estás a un paso de activarlo.`,
+            ctaLabel: 'COMPLETAR Perfil',
+            helperText: `Hazlo hoy y quédate con la tranquilidad de que <strong>${safePetName}</strong> ya está completamente dentro de la manada.`,
+            signoffLead: 'Estamos contigo, siempre 🧡',
         },
     };
+
     return messages[day] || messages[0];
 }
 
-// ─── Tarjetas de documentación faltante ───────────────────────────────────────
+function getDocCopyByDay(day) {
+    return {
+        0: {
+            photoTitle: 'SU FOTO MÁS GUAPA',
+            photoDescription: 'Queremos conocerlo y que su perfil sea único.',
+            certificateTitle: 'SU CERTIFICADO MÉDICO',
+            certificateDescription: 'Es indispensable para tener su historial al día y brindarte el apoyo correcto.',
+        },
+        10: {
+            photoTitle: 'Su FOTO',
+            photoDescription: 'Esa donde sale increíble.',
+            certificateTitle: 'Su CERTIFICADO MÉDICO',
+            certificateDescription: 'Para tener su información completa.',
+        },
+        13: {
+            photoTitle: 'Su FOTO',
+            photoDescription: 'Para reconocerlo al momento.',
+            certificateTitle: 'Su CERTIFICADO MÉDICO',
+            certificateDescription: 'Para acompañarte mejor cuando lo necesites.',
+        },
+        14: {
+            photoTitle: 'Su FOTO',
+            photoDescription: 'Para dejar su perfil completo.',
+            certificateTitle: 'Su CERTIFICADO MÉDICO',
+            certificateDescription: 'Para que toda su información quede lista.',
+        },
+        15: {
+            photoTitle: 'Su FOTO',
+            photoDescription: 'La más reciente.',
+            certificateTitle: 'Su CERTIFICADO MÉDICO',
+            certificateDescription: 'Para activar su perfil completo.',
+        },
+    }[day] || {
+        photoTitle: 'Su FOTO',
+        photoDescription: 'Para completar su perfil.',
+        certificateTitle: 'Su CERTIFICADO MÉDICO',
+        certificateDescription: 'Para completar su perfil.',
+    };
+}
 
-function buildMissingRows(petName, missingDocs) {
+function buildMissingRows(missingDocs, day) {
     const rows = [];
+    const docCopy = getDocCopyByDay(day);
 
     if (missingDocs === 'photo' || missingDocs === 'both') {
         rows.push(`
@@ -101,10 +149,10 @@ function buildMissingRows(petName, missingDocs) {
                             <td valign="middle" style="padding:20px 20px 20px 14px;">
                                 <strong style="display:block;color:#1A202C;font-size:16px;
                                                font-family:'Outfit',Arial,sans-serif;margin-bottom:4px;">
-                                    Foto de ${escapeHtml(petName)}
+                                    ${escapeHtml(docCopy.photoTitle)}
                                 </strong>
                                 <span style="color:#718096;font-size:14px;font-family:'Outfit',Arial,sans-serif;">
-                                    Una foto clara donde se vea bien su carita
+                                    ${escapeHtml(docCopy.photoDescription)}
                                 </span>
                             </td>
                         </tr>
@@ -134,10 +182,10 @@ function buildMissingRows(petName, missingDocs) {
                             <td valign="middle" style="padding:20px 20px 20px 14px;">
                                 <strong style="display:block;color:#1A202C;font-size:16px;
                                                font-family:'Outfit',Arial,sans-serif;margin-bottom:4px;">
-                                    Certificado médico veterinario
+                                    ${escapeHtml(docCopy.certificateTitle)}
                                 </strong>
                                 <span style="color:#718096;font-size:14px;font-family:'Outfit',Arial,sans-serif;">
-                                    Expedido por un médico veterinario certificado
+                                    ${escapeHtml(docCopy.certificateDescription)}
                                 </span>
                             </td>
                         </tr>
@@ -150,9 +198,16 @@ function buildMissingRows(petName, missingDocs) {
     return rows.join('');
 }
 
-// ─── Wrapper de diseño de marca (shared por todos los días) ───────────────────
-
-function buildBrandedEmailShell({ firstName, headline, body, missingRows, uploadUrl, petName }) {
+function buildBrandedEmailShell({
+    firstName,
+    headline,
+    body,
+    missingRows,
+    uploadUrl,
+    ctaLabel,
+    helperText,
+    signoffLead,
+}) {
     return `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -185,15 +240,12 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
            style="background-color:#F7F8FA;padding:24px 10px;">
         <tr>
             <td align="center">
-                <!-- Email shell -->
                 <table class="email-shell" role="presentation" width="600" cellspacing="0"
                        cellpadding="0" border="0"
                        style="width:600px;max-width:600px;background:#FFFFFF;
                               border-radius:24px;overflow:hidden;
                               border:1px solid #E2E8F0;
                               box-shadow:0 10px 25px rgba(0,0,0,0.05);">
-
-                    <!-- HEADER ────────────────────────────────────────── -->
                     <tr>
                         <td style="background-color:${HEADER_COLOR};padding:36px 40px;text-align:center;">
                             <img src="${LOGO_URL}" alt="Club Pata Amiga" width="180"
@@ -205,12 +257,8 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
                             </div>
                         </td>
                     </tr>
-
-                    <!-- BODY ──────────────────────────────────────────── -->
                     <tr>
                         <td class="pad" style="padding:40px;">
-
-                            <!-- Greeting -->
                             <h1 class="greeting"
                                 style="margin:0 0 6px;font-size:28px;font-weight:700;
                                        color:#1A202C;font-family:'Outfit',Arial,sans-serif;">
@@ -221,25 +269,21 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
                                 ${headline}
                             </p>
 
-                            <!-- Divider -->
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                                 <tr><td height="1" style="background:#EDF2F7;font-size:0;line-height:0;">&nbsp;</td></tr>
                             </table>
                             <div style="height:24px;"></div>
 
-                            <!-- Body copy -->
                             <p style="margin:0 0 24px;font-size:16px;line-height:1.7;color:#4A5568;
                                       font-family:'Outfit',Arial,sans-serif;">
                                 ${body}
                             </p>
 
-                            <!-- Missing docs cards -->
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0"
                                    style="margin-bottom:8px;">
                                 ${missingRows}
                             </table>
 
-                            <!-- CTA Button -->
                             <table role="presentation" cellspacing="0" cellpadding="0"
                                    align="center" style="margin:28px auto 0;">
                                 <tr>
@@ -254,35 +298,29 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
                                                   font-size:16px;font-weight:700;
                                                   font-family:'Outfit',Arial,sans-serif;
                                                   line-height:1.2;">
-                                            Completar perfil de ${petName}
+                                            ${ctaLabel}
                                         </a>
                                     </td>
                                 </tr>
                             </table>
 
-                            <!-- Divider -->
                             <div style="height:32px;"></div>
                             <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                                 <tr><td height="1" style="background:#EDF2F7;font-size:0;line-height:0;">&nbsp;</td></tr>
                             </table>
                             <div style="height:24px;"></div>
 
-                            <!-- Sign-off -->
                             <p style="margin:0;font-size:15px;color:#4A5568;line-height:1.6;
                                       font-family:'Outfit',Arial,sans-serif;">
-                                Si tienes alguna duda o necesitas ayuda, responde este correo
-                                y te atendemos directamente.
+                                ${helperText}
                             </p>
                             <p style="margin:20px 0 0;font-size:15px;font-weight:700;color:#1A202C;
                                       font-family:'Outfit',Arial,sans-serif;">
-                                Con cariño,<br>
+                                ${signoffLead}<br>
                                 <span style="color:${HEADER_COLOR};">La manada Pata Amiga®</span>
                             </p>
-
                         </td>
                     </tr>
-
-                    <!-- FOOTER ────────────────────────────────────────── -->
                     <tr>
                         <td style="padding:28px 40px;background:#F8FAFC;text-align:center;
                                    border-top:1px solid #EDF2F7;">
@@ -303,7 +341,6 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
                             </p>
                         </td>
                     </tr>
-
                 </table>
             </td>
         </tr>
@@ -312,34 +349,30 @@ function buildBrandedEmailShell({ firstName, headline, body, missingRows, upload
 </html>`;
 }
 
-// ─── Builder público ───────────────────────────────────────────────────────────
-
 function buildMissingDocsEmailHtml(params) {
-    const firstName    = escapeHtml(String(params.userName || 'Miembro').trim().split(/\s+/)[0] || 'Miembro');
-    const petName      = escapeHtml(params.petName || 'tu mascota');
-    const uploadUrl    = escapeHtml(params.uploadUrl || '#');
-    const day          = Number(params.followupDay);
-    const missingDocs  = params.missingDocs;
+    const firstName = escapeHtml(String(params.userName || 'Miembro').trim().split(/\s+/)[0] || 'Miembro');
+    const uploadUrl = escapeHtml(params.uploadUrl || '#');
+    const day = Number(params.followupDay);
+    const missingDocs = params.missingDocs;
 
-    const message      = getMissingDocsMessage(params.petName, params.userName, day, missingDocs);
-    const missingRows  = buildMissingRows(params.petName, missingDocs);
+    const message = getMissingDocsMessage(params.petName, params.userName, day, missingDocs);
+    const missingRows = buildMissingRows(missingDocs, day);
 
     return buildBrandedEmailShell({
         firstName,
-        headline:    escapeHtml(message.headline),
-        body:        message.body,   // may contain safe <strong> tags
+        headline: escapeHtml(message.headline),
+        body: message.body,
         missingRows,
         uploadUrl,
-        petName,
+        ctaLabel: message.ctaLabel,
+        helperText: message.helperText,
+        signoffLead: message.signoffLead,
     });
 }
-
-// ─── Exports ───────────────────────────────────────────────────────────────────
 
 module.exports = {
     buildMissingDocsEmailHtml,
     getMissingDocsMessage,
     getMissingDocsSubject,
-    // Legacy export kept for backwards-compat
     IMAGE_PLACEHOLDERS: Object.freeze({}),
 };

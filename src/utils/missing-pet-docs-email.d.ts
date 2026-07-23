@@ -12,5 +12,16 @@ export interface MissingPetDocsEmailParams {
 
 export const IMAGE_PLACEHOLDERS: Readonly<Record<'hero' | 'pack' | 'logo' | 'photoIcon' | 'certificateIcon', string>>;
 export function getMissingDocsSubject(petName: string, day: FollowupDay, missing: MissingDocType): string;
-export function getMissingDocsMessage(petName: string, userName: string, day: FollowupDay, missing: MissingDocType): { headline: string; body: string };
+export function getMissingDocsMessage(
+    petName: string,
+    userName: string,
+    day: FollowupDay,
+    missing: MissingDocType,
+): {
+    headline: string;
+    body: string;
+    ctaLabel: string;
+    helperText: string;
+    signoffLead: string;
+};
 export function buildMissingDocsEmailHtml(params: MissingPetDocsEmailParams): string;
