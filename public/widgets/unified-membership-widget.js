@@ -7054,7 +7054,11 @@
 
                 const dateStr = log.date || log.created_at;
                 const date = dateStr ? new Date(dateStr).toLocaleString('es-MX', {
-                    day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
+                    timeZone: 'America/Mexico_City',
+                    day: '2-digit',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
                 }) : '---';
 
                 const icon = log.icon || '📋';
