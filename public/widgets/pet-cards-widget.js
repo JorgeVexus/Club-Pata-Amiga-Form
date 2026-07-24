@@ -2504,9 +2504,24 @@
             const raw = String(warningMessage || '').replace(/⚠️/g, '').trim();
             const match = raw.match(/pueden tener\s+(.+?)\.\s*No cubrimos/i);
             const conditions = match ? match[1].trim() : raw.replace(/No cubrimos problemas genéticos ni hereditarios\.?/i, '').trim();
+            const pluralMatch = raw.match(/(?:Los|Las)\s+(.+?)\s+pueden tener/i);
             const safeBreed = this.escapeHtml(breedName || 'esta raza');
+            const safeBreedPlural = this.escapeHtml(pluralMatch ? pluralMatch[1] : (breedName || 'esta raza'));
             const safeConditions = this.escapeHtml(conditions || 'algunas condiciones hereditarias');
-            return `<strong>Información importante sobre ${safeBreed}</strong>Sabemos que, como muchas otras razas, los ${safeBreed} pueden tener mayor predisposición a desarrollar algunas condiciones de salud, como ${safeConditions}. En Pata Amiga te acompañamos con claridad: los problemas genéticos o hereditarios no forman parte de la cobertura.`;
+            return `
+                <div style="font-weight:900; color:#00BBB4; margin-bottom:14px;">
+                    ℹ️ <strong>Queremos lo mejor para tu ${safeBreed}.</strong> 🐾
+                </div>
+                <p style="margin:0 0 14px; line-height:1.65;">
+                    Sabemos que, como muchas otras razas, los ${safeBreedPlural} pueden tener mayor predisposición a desarrollar algunas condiciones de salud, como ${safeConditions}.
+                </p>
+                <p style="margin:0 0 14px; line-height:1.65;">
+                    En <strong style="color:#00BBB4;">Pata Amiga</strong> creemos que la confianza comienza con la transparencia. Por eso, es importante que sepas que nuestra membresía está diseñada para acompañarte ante imprevistos y accidentes. Actualmente, no contempla reintegros relacionados con enfermedades genéticas, hereditarias o congénitas.
+                </p>
+                <p style="margin:0; line-height:1.65;">
+                    Nuestro compromiso es brindarte claridad desde el primer día para que siempre sepas cómo funciona tu membresía y puedas aprovecharla al máximo.
+                </p>
+            `;
         }
 
         async setupColorAutocomplete(inputId, suggestionsId, category) {
