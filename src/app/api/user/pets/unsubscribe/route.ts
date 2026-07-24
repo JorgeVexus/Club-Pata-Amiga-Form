@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAdminUser } from '@/lib/admin-auth';
+import { createServerNotification } from '@/app/actions/notification.actions';
 import {
     createPetUnsubscriptionRequest,
     executeImmediatePetUnsubscription,
@@ -36,7 +37,29 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: true, status: 'approved', message: 'Mascota dada de baja exitosamente' });
         }
 
-        await createPetUnsubscriptionRequest(workflowInput);
+        const pendingRequest = await createPetUnsubscriptionRequest(workflowInput);
+        try {
+            await createServerNotification({
+                userId: 'admin',
+                type: 'pet_unsubscription_requested',
+                title: 'Solicitud de baja de peludo',
+                message: `${petName} solicitó baja por: ${reason}. Revisa la solicitud para liberar el espacio.`,
+                icon: '🐾',
+                link: `/admin/dashboard?tab=pet-unsubscriptions&petUnsubscriptionId=${pendingRequest.id}`,
+                metadata: {
+                    action: 'open_pet_unsubscriptions',
+                    source: 'pet_unsubscription_request',
+                    petUnsubscriptionId: pendingRequest.id,
+                    memberId,
+                    petId: petId || null,
+                    petName,
+                    reason,
+                },
+            });
+        } catch (notificationError) {
+            console.error('Error creating admin pet unsubscription notification:', notificationError);
+        }
+
         return NextResponse.json({
             success: true,
             status: 'pending',

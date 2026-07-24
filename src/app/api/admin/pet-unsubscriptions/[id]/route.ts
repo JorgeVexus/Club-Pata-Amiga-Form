@@ -47,13 +47,17 @@ export async function PATCH(request: NextRequest, context: { params: Promise<{ i
             await createServerNotification({
                 userId: user.id,
                 type: 'pet_status',
-                title: action === 'approve' ? 'Baja de peludo aprobada' : 'Solicitud de baja rechazada',
+                title: action === 'approve' ? 'Espacio liberado en tu membresía' : 'Solicitud de baja rechazada',
                 message: action === 'approve'
-                    ? `La baja de ${pending.pet_name} fue aprobada. Ya tienes disponible ese espacio en tu manada.`
+                    ? `La baja de ${pending.pet_name} fue aprobada y se liberó un espacio para otro peludito en tu membresía.`
                     : `La solicitud de baja de ${pending.pet_name} no fue aprobada. Tu peludo continúa activo.`,
                 icon: action === 'approve' ? '✅' : '🐾',
                 link: '/pets/pet-waiting-period',
-                metadata: { petUnsubscriptionId: id, action },
+                metadata: {
+                    source: 'pet_unsubscription_review',
+                    petUnsubscriptionId: id,
+                    action: action === 'approve' ? 'open_add_pet' : 'show_detail',
+                },
             });
         }
 

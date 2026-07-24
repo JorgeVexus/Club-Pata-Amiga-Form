@@ -351,6 +351,9 @@ function DashboardContent() {
             setActiveFilter('solidarity-fund');
             setSelectedSolidarityRequestId(requestId);
             router.push(`/admin/dashboard?tab=solidarity-fund&requestId=${requestId}`);
+        } else if (notification.metadata?.action === 'open_pet_unsubscriptions' || notification.metadata?.petUnsubscriptionId) {
+            setActiveFilter('pet-unsubscriptions');
+            router.push('/admin/dashboard?tab=pet-unsubscriptions');
         } else if (ambassadorId) {
             setActiveFilter('ambassadors' as any);
             setAmbassadorInitialTab(notification.metadata?.notification_kind === 'ambassador_chat' ? 'chat' : undefined);

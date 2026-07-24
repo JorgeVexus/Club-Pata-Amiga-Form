@@ -116,7 +116,6 @@ async function deactivatePet(memberId: string, petId: string, petNum: number, re
     const { error } = await supabase
         .from('pets')
         .update({
-            status: 'unsubscribed',
             is_active: false,
             memberstack_slot: petNum,
             unsubscribed_reason: reason,
