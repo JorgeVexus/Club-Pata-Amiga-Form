@@ -3928,6 +3928,69 @@
         .pata-v2-notification-detail-card p { margin:14px auto 0; max-width:38ch; font-size:14px; line-height:1.55; overflow-wrap:anywhere; }
         .pata-v2-notification-detail-card time { display:block; margin-top:12px; color:#918B80; font-size:11px; }
         .pata-v2-notification-detail-close { min-height:44px; margin-top:24px; padding:0 28px; border:0; border-radius:999px; background:#21BCAF; color:white; font:800 13px/1 'Outfit',sans-serif; cursor:pointer; }
+        .pata-v2-pet-detail-modal { position:fixed; inset:0; z-index:10010; overflow:auto; padding:24px; background:rgba(21,63,59,.34); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-family:'Outfit',sans-serif; color:var(--v2-body); }
+        .pata-v2-pet-detail-panel { position:relative; width:min(1120px,100%); margin:0 auto; overflow:hidden; border:1px solid #E6DFD3; border-radius:24px; background:#FBF9F4; box-shadow:0 28px 80px rgba(30,83,80,.22); animation:pataV2PanelIn .22s ease-out; }
+        .pata-v2-pet-detail-body { display:grid; grid-template-columns:minmax(300px,.92fr) minmax(0,1.08fr); min-height:min(760px,calc(100dvh - 48px)); }
+        .pata-v2-pet-detail-hero { display:flex; flex-direction:column; gap:14px; padding:22px; background:#F1EDE4; border-right:1px solid #E6DFD3; }
+        .pata-v2-pet-detail-main-photo { position:relative; min-height:440px; overflow:hidden; border-radius:22px; background:#E5F5F2; }
+        .pata-v2-pet-detail-main-photo img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .45s ease; }
+        .pata-v2-pet-detail-main-photo:hover img { transform:scale(1.025); }
+        .pata-v2-pet-detail-status { position:absolute; top:16px; left:16px; display:inline-flex; align-items:center; gap:6px; max-width:calc(100% - 32px); padding:8px 13px; border-radius:999px; border:1px solid rgba(255,255,255,.72); background:rgba(255,255,255,.9); color:#174F4C; box-shadow:0 10px 24px rgba(30,83,80,.12); font:900 10.5px/1 'Outfit',sans-serif; letter-spacing:.035em; text-transform:uppercase; backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); }
+        .pata-v2-pet-detail-thumbs { display:flex; gap:10px; overflow-x:auto; padding:2px 2px 8px; scrollbar-width:none; }
+        .pata-v2-pet-detail-thumbs::-webkit-scrollbar { display:none; }
+        .pata-v2-pet-detail-thumb { width:68px; height:68px; flex:0 0 auto; overflow:hidden; border:1px solid #E6DFD3; border-radius:14px; background:white; cursor:pointer; transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease; }
+        .pata-v2-pet-detail-thumb:hover { transform:translateY(-1px); border-color:#21BCAF; box-shadow:0 8px 18px rgba(30,83,80,.11); }
+        .pata-v2-pet-detail-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+        .pata-v2-pet-detail-support { padding:18px; border-radius:18px; background:#fff; box-shadow:0 5px 18px rgba(38,62,58,.055); }
+        .pata-v2-pet-detail-support strong { display:block; color:var(--v2-ink); font:400 22px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-pet-detail-support p { margin:8px 0 0; color:#62736F; font-size:13px; line-height:1.45; }
+        .pata-v2-pet-detail-progress { height:9px; overflow:hidden; margin-top:14px; border-radius:999px; background:#ECE9E1; }
+        .pata-v2-pet-detail-progress span { display:block; height:100%; border-radius:inherit; background:var(--v2-teal); }
+        .pata-v2-pet-detail-progress-row { display:flex; justify-content:space-between; gap:12px; margin-top:8px; color:#7C8783; font-size:11px; font-weight:800; }
+        .pata-v2-pet-detail-progress-row b { color:#087E75; }
+        .pata-v2-pet-detail-content { position:relative; overflow:auto; max-height:calc(100dvh - 48px); padding:30px; background:#fff; }
+        .pata-v2-pet-detail-close { position:absolute; top:20px; right:20px; width:42px; height:42px; display:grid; place-items:center; border:1px solid #E6DFD3; border-radius:50%; background:#F8F5EE; color:#174F4C; font:900 22px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,background .2s ease; z-index:2; }
+        .pata-v2-pet-detail-close:hover { transform:rotate(4deg); background:#E7F6F4; }
+        .pata-v2-pet-detail-tags { display:flex; gap:8px; flex-wrap:wrap; max-width:calc(100% - 54px); margin-bottom:16px; }
+        .pata-v2-pet-detail-tag { display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:999px; background:#EAF8F6; color:#087E75; font:900 10.5px/1 'Outfit',sans-serif; letter-spacing:.025em; text-transform:uppercase; }
+        .pata-v2-pet-detail-tag.is-muted { background:#F3F0E9; color:#6A7773; }
+        .pata-v2-pet-detail-name { margin:0; color:var(--v2-ink); font:400 clamp(34px,4vw,54px)/.96 'Fraiche','Outfit',sans-serif; text-wrap:balance; }
+        .pata-v2-pet-detail-breed { margin:10px 0 22px; color:#087E75; font-size:16px; font-weight:800; }
+        .pata-v2-pet-detail-summary { display:grid; gap:16px; margin-top:20px; }
+        .pata-v2-pet-detail-card { padding:20px; border:1px solid #ECE7DD; border-radius:18px; background:#FBF9F4; box-shadow:none; }
+        .pata-v2-pet-detail-card-title { margin:0 0 14px; color:var(--v2-ink); font:400 23px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-pet-detail-modal .pata-info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+        .pata-v2-pet-detail-modal .pata-info-item { min-width:0; display:flex; gap:10px; align-items:center; padding:12px; border:1px solid #EFE9DF; border-radius:14px; background:white; box-shadow:none; }
+        .pata-v2-pet-detail-modal .pata-info-icon-wrap { width:34px; height:34px; flex:0 0 auto; display:grid; place-items:center; border-radius:11px; background:#EAF8F6; }
+        .pata-v2-pet-detail-modal .pata-info-icon-wrap img { width:19px; height:19px; object-fit:contain; }
+        .pata-v2-pet-detail-modal .pata-info-label { display:block; color:#8A9692; font-size:10px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; }
+        .pata-v2-pet-detail-modal .pata-info-value { display:block; margin-top:2px; color:#243F3B; font-size:13px; font-weight:800; line-height:1.25; overflow-wrap:anywhere; }
+        .pata-v2-pet-detail-modal .pata-mobile-accordion { display:none; }
+        .pata-v2-pet-detail-modal .pata-editorial-container, .pata-v2-pet-detail-modal .pata-editorial-body, .pata-v2-pet-detail-modal .pata-editorial-left, .pata-v2-pet-detail-modal .pata-editorial-right, .pata-v2-pet-detail-modal .pata-editorial-main-img-box, .pata-v2-pet-detail-modal .pata-info-card { width:auto!important; max-width:none!important; margin:0!important; border:0!important; border-radius:0!important; background:transparent!important; box-shadow:none!important; padding:0!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-panel { width:min(1120px,100%)!important; max-width:100%!important; margin:0 auto!important; border:1px solid #E6DFD3!important; border-radius:24px!important; background:#FBF9F4!important; box-shadow:0 28px 80px rgba(30,83,80,.22)!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-body { display:grid!important; grid-template-columns:minmax(300px,.92fr) minmax(0,1.08fr)!important; min-height:min(760px,calc(100dvh - 48px))!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-hero { display:flex!important; flex-direction:column!important; gap:14px!important; padding:22px!important; background:#F1EDE4!important; border-right:1px solid #E6DFD3!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-main-photo { position:relative!important; min-height:440px!important; overflow:hidden!important; border-radius:22px!important; background:#E5F5F2!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-status { position:absolute!important; top:16px!important; left:16px!important; padding:8px 13px!important; border:1px solid rgba(255,255,255,.72)!important; border-radius:999px!important; background:rgba(255,255,255,.9)!important; box-shadow:0 10px 24px rgba(30,83,80,.12)!important; }
+        .pata-v2-pet-detail-modal .pata-v2-pet-detail-card { margin-top:20px!important; padding:20px!important; border:1px solid #ECE7DD!important; border-radius:18px!important; background:#FBF9F4!important; box-shadow:none!important; }
+        .pata-v2-pet-detail-modal .pata-btn { border:0!important; border-radius:999px!important; box-shadow:none!important; font-family:'Outfit',sans-serif!important; }
+        .pata-v2-pet-detail-modal .pata-btn:hover, .pata-v2-pet-detail-primary-action:hover { transform:translateY(-1px); filter:brightness(.98); }
+        .pata-v2-pet-detail-modal .pata-btn-unsubscribe { width:100%; min-height:46px; border:0; border-radius:999px; background:#F7EDEB; color:#A33B35; font:900 13px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,background .2s ease; }
+        .pata-v2-pet-detail-modal .pata-btn-unsubscribe:hover { transform:translateY(-1px); background:#FCE2DE; }
+        .pata-v2-pet-detail-note { margin-top:18px; padding:16px; border-radius:16px; background:#F8F5EE; color:#60716D; font-size:12px; line-height:1.45; text-align:center; }
+        .pata-v2-pet-detail-note strong { display:block; margin-bottom:4px; color:#174F4C; font-size:13px; }
+        .pata-v2-pet-detail-primary-action { width:100%; min-height:50px; border:0; border-radius:999px; background:var(--v2-orange); color:white; font:900 14px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,filter .2s ease; }
+        .pata-v2-pet-detail-chat { margin-top:24px; }
+        @media (max-width: 820px) {
+            .pata-v2-pet-detail-modal { padding:12px; align-items:flex-end; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-panel { border-radius:24px 24px 18px 18px!important; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-body { grid-template-columns:1fr!important; min-height:0!important; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-hero { border-right:0!important; border-bottom:1px solid #E6DFD3!important; padding:16px!important; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-main-photo { min-height:260px!important; }
+            .pata-v2-pet-detail-content { max-height:none; padding:24px 18px 28px; }
+            .pata-v2-pet-detail-modal .pata-info-grid { grid-template-columns:1fr; }
+            .pata-v2-pet-detail-tags { max-width:calc(100% - 48px); }
+        }
         .pata-v2-vet-view { min-height:calc(100dvh - 80px); display:flex; flex-direction:column; }
         .pata-v2-vet-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:16px; }
         .pata-v2-vet-disclaimer { align-self:center; max-width:360px; margin:0 auto 12px; padding:9px 18px; border-radius:999px; background:#EEEAE1; color:#758078; font-size:10px; font-weight:700; text-align:center; }
@@ -5355,7 +5418,7 @@
                 { type:'funeral_expense_receipt', categories:'death', title:'Comprobante de gastos funerarios', note:'JPG, PNG o PDF' }
             ].map(doc => `<label class="pata-v2-document-card" data-document-type="${doc.type}" data-categories="${doc.categories}"><input type="file" accept="image/*,.pdf" data-doc-input="${doc.type}"><span class="pata-v2-document-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h7l4 4v14H7zM14 3v5h4M9.5 12h6M9.5 15h6M9.5 18h4"/></svg></span><strong>${doc.title}</strong><small data-file-label>${doc.note}</small></label>`).join('');
             const bankOptions = CLABE_BANK_OPTIONS.map(bank => `<option value="${this.escapeHtml(bank)}">${this.escapeHtml(bank)}</option>`).join('');
-            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">Solicita tu reintegro</h1><p class="pata-v2-subtitle">Acude a tu veterinario de confianza, envíanos tus comprobantes y daremos seguimiento a tu solicitud.</p></header><div class="pata-v2-support-options">${supportCards}</div><form id="pata-v2-reimbursement-form" class="pata-v2-form-card"><input type="hidden" name="benefitType" value="${initialCategory}"><input type="hidden" name="petId" value="${this.escapeHtml(String(eligible[0]?.id || ''))}"><input type="hidden" name="requestType" value="reimbursement"><div class="pata-v2-form-group"><span class="pata-v2-form-label">¿Para quién es el reintegro?</span><div class="pata-v2-pet-options">${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Monto del apoyo solicitado<input name="requestedAmount" type="number" min="1" required placeholder="$ Monto en MXN"></label><label class="pata-v2-field">¿Cuánto pagaste en total? <small>(opcional)</small><input name="totalPaidAmount" type="number" min="0" placeholder="$ Total de la factura"></label><label class="pata-v2-field">¿En qué fecha ocurrió?<input name="incidentDate" type="date" required></label></div><label class="pata-v2-field">Cuéntanos qué ocurrió<textarea name="caseDescription" required></textarea></label><div class="pata-v2-form-group"><span class="pata-v2-form-label">Documentos para tu solicitud</span><div class="pata-v2-document-grid">${documents}</div></div><div class="pata-v2-form-group"><span class="pata-v2-form-label">Datos para tu transferencia</span><div class="pata-v2-field-grid"><label class="pata-v2-field">Cuenta para tu transferencia (CLABE)<input name="bankClabe" inputmode="numeric" minlength="18" maxlength="18" pattern="[0-9]{18}" required placeholder="18 dígitos"><small class="pata-v2-field-help" data-clabe-help>Escribe los 18 dígitos; sugeriremos el banco.</small></label><label class="pata-v2-field">Banco<select name="bankName" required><option value="">Selecciona tu banco</option>${bankOptions}</select><small class="pata-v2-field-help">Puedes cambiar la sugerencia si es necesario.</small></label><label class="pata-v2-field pata-v2-field--wide">Nombre del titular de la cuenta<input name="bankHolder" autocomplete="name" required></label></div></div><div class="pata-v2-notice" data-insufficient-balance-notice hidden></div><div id="pata-v2-reimbursement-error"></div><button class="pata-v2-submit" type="submit">Enviar solicitud</button></form></section>`;
+            return `<section class="pata-v2-reimbursements"><button class="pata-v2-back" type="button" onclick="window.pataWidget.showReimbursementsV2()">← Volver a reintegros</button><header><h1 class="pata-v2-title">Solicita tu reintegro</h1><p class="pata-v2-subtitle">Acude a tu veterinario de confianza, envíanos tus comprobantes y daremos seguimiento a tu solicitud.</p></header><div class="pata-v2-support-options">${supportCards}</div><form id="pata-v2-reimbursement-form" class="pata-v2-form-card"><p class="pata-v2-notice">Revisaremos que tu peludo cumpla con el periodo de espera y que tengas saldo disponible.</p><input type="hidden" name="benefitType" value="${initialCategory}"><input type="hidden" name="petId" value="${this.escapeHtml(String(eligible[0]?.id || ''))}"><input type="hidden" name="requestType" value="reimbursement"><div class="pata-v2-form-group"><span class="pata-v2-form-label">¿Para quién es el reintegro?</span><div class="pata-v2-pet-options">${petCards || '<p class="pata-v2-empty">No hay mascotas disponibles.</p>'}</div></div><div class="pata-v2-field-grid"><label class="pata-v2-field">Monto del apoyo solicitado<input name="requestedAmount" type="number" min="1" required placeholder="$ Monto en MXN"></label><label class="pata-v2-field">¿Cuánto pagaste en total? <small>(opcional)</small><input name="totalPaidAmount" type="number" min="0" placeholder="$ Total de la factura"></label><label class="pata-v2-field">¿En qué fecha ocurrió?<input name="incidentDate" type="date" required></label></div><label class="pata-v2-field">Cuéntanos qué ocurrió<textarea name="caseDescription" required></textarea></label><div class="pata-v2-form-group"><span class="pata-v2-form-label">Documentos para tu solicitud</span><div class="pata-v2-document-grid">${documents}</div></div><div class="pata-v2-form-group"><span class="pata-v2-form-label">Datos para tu transferencia</span><div class="pata-v2-field-grid"><label class="pata-v2-field">Cuenta para tu transferencia (CLABE)<input name="bankClabe" inputmode="numeric" minlength="18" maxlength="18" pattern="[0-9]{18}" required placeholder="18 dígitos"><small class="pata-v2-field-help" data-clabe-help>Escribe los 18 dígitos; sugeriremos el banco.</small></label><label class="pata-v2-field">Banco<select name="bankName" required><option value="">Selecciona tu banco</option>${bankOptions}</select><small class="pata-v2-field-help">Puedes cambiar la sugerencia si es necesario.</small></label><label class="pata-v2-field pata-v2-field--wide">Nombre del titular de la cuenta<input name="bankHolder" autocomplete="name" required></label></div></div><div class="pata-v2-notice" data-insufficient-balance-notice hidden></div><div id="pata-v2-reimbursement-error"></div><button class="pata-v2-submit" type="submit">Enviar solicitud</button></form></section>`;
         }
 
         renderV2ReimbursementDetailView() {
@@ -7524,14 +7587,13 @@
                 `;
             }).join('');
 
-            // Distinctive Editorial Layout
             return `
-                <div class="pata-modal-overlay show" id="pata-pet-details-modal" role="dialog" aria-modal="true" aria-labelledby="pata-editorial-name">
-                    <div class="pata-editorial-container">
-                        <div class="pata-editorial-body">
+                <div class="pata-modal-overlay show pata-v2-pet-detail-modal" id="pata-pet-details-modal" role="dialog" aria-modal="true" aria-labelledby="pata-editorial-name">
+                    <div class="pata-editorial-container pata-v2-pet-detail-panel">
+                        <div class="pata-editorial-body pata-v2-pet-detail-body">
                             
                             <!-- Left Section: Visual Identity -->
-                            <div class="pata-editorial-left">
+                            <div class="pata-editorial-left pata-v2-pet-detail-hero">
                                 <!-- 📸 Mobile Carousel -->
                                 <div class="pata-photo-carousel">
                                     ${photos.map((url, i) => `
@@ -7542,15 +7604,15 @@
                                 </div>
 
                                 <!-- Desktop Main Image -->
-                                <div class="pata-editorial-main-img-box ${pet.is_active === false ? 'pata-grayscale' : ''}">
+                                <div class="pata-editorial-main-img-box pata-v2-pet-detail-main-photo ${pet.is_active === false ? 'pata-grayscale' : ''}">
                                     <img src="${photos[0]}" id="pata-main-gallery-img" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;" loading="lazy">
-                                    <div class="pata-status-badge-floating" style="position: absolute; top: 20px; left: 20px; background: ${status.bg}; color: ${status.text}; border: 3px solid #000; padding: 10px 24px; border-radius: 50px; font-weight: 950; font-size: 12px; text-transform: uppercase; box-shadow: 4px 4px 0 rgba(0,0,0,0.1);">
+                                    <div class="pata-status-badge-floating pata-v2-pet-detail-status" style="color: ${status.text};">
                                         ${status.icon} ${status.label}
                                     </div>
                                 </div>
                                 
                                 <!-- Desktop Thumbnails -->
-                                <div style="display: flex; gap: 14px; overflow-x: auto; padding: 10px 5px; scrollbar-width: none;" class="pata-no-scrollbar">
+                                <div class="pata-no-scrollbar pata-v2-pet-detail-thumbs">
                                     ${photos.map((url, i) => `
                                         <div onclick="document.getElementById('pata-main-gallery-img').src='${url}'" style="width: 75px; height: 75px; border-radius: 18px; border: var(--pata-border-thin); overflow: hidden; cursor: pointer; flex-shrink: 0; background: #fff; transition: all 0.2s; box-shadow: 4px 4px 0 rgba(0,0,0,0.05);">
                                             <img src="${url}" style="width: 100%; height: 100%; object-fit: cover;" loading="lazy" alt="Foto ${i + 1}">
@@ -7585,34 +7647,34 @@
                             </div>
 
                             <!-- Right Section: Fact Sheet -->
-                            <div class="pata-editorial-right">
-                                <button class="pata-modal-close" id="pata-close-details" aria-label="Cerrar expediente" style="position: absolute; top: 30px; right: 30px; background: #000; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 24px; font-weight: 900; cursor: pointer; display: flex; align-items: center; justify-content: center; color: #fff; transition: transform 0.3s; z-index: 10;">&times;</button>
+                            <div class="pata-editorial-right pata-v2-pet-detail-content">
+                                <button class="pata-v2-pet-detail-close" id="pata-close-details" aria-label="Cerrar expediente">&times;</button>
                                 
-                                <div style="display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;">
-                                    <div class="pata-editorial-status-badge" style="background: ${status.bg}; color: ${status.text}; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                <div class="pata-v2-pet-detail-tags">
+                                    <div class="pata-editorial-status-badge pata-v2-pet-detail-tag" style="background: ${status.bg}; color: ${status.text};">
                                          ${status.label.toUpperCase()}
                                     </div>
                                     ${pet.is_senior || this.isSenior(pet) ? `
-                                        <div style="background: #F3E5F5; color: #7B1FA2; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(123, 31, 162, 0.1);">
+                                        <div class="pata-v2-pet-detail-tag is-muted">
                                             👑 SENIOR
                                         </div>
                                     ` : ''}
                                     ${pet.is_adopted ? `
-                                        <div style="background: #E0F7FA; color: #006064; border: var(--pata-border-thin); padding: 6px 16px; border-radius: 50px; font-size: 11px; font-weight: 950; box-shadow: 3px 3px 0 rgba(0,0,0,0.05);">
+                                        <div class="pata-v2-pet-detail-tag is-muted">
                                             🏠 ADOPTADO
                                         </div>
                                     ` : ''}
                                 </div>
 
-                                <h2 class="pata-editorial-name" id="pata-editorial-name">${pet.name}</h2>
-                                <p style="font-size: 20px; font-weight: 800; color: var(--pata-primary); margin-bottom: 30px; display: flex; align-items: center; gap: 10px; border-bottom: var(--pata-border-thick); padding-bottom: 15px; width: fit-content;">
+                                <h2 class="pata-editorial-name pata-v2-pet-detail-name" id="pata-editorial-name">${this.escapeHtml(pet.name || 'Mi peludo')}</h2>
+                                <p class="pata-v2-pet-detail-breed">
                                     ${pet.breed || pet.pet_breed || 'Mestizo de Corazón'}
                                 </p>
 
                                 ${this.renderModalActionButtons(pet)}
 
                                 <!-- Desktop Info Grid -->
-                                <div class="pata-info-card">
+                                <div class="pata-info-card pata-v2-pet-detail-card pata-v2-pet-detail-summary">
                                     <h3 class="pata-info-card-title">Información General</h3>
                                     <div class="pata-info-grid">
                                         ${infoGridHtml}
@@ -7631,14 +7693,14 @@
                                 </details>
 
                                 ${pet.adoption_story ? `
-                                    <div style="margin-top: 30px; background: #F1F8E9; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                    <div class="pata-v2-pet-detail-card" style="margin-top: 20px; background: #F1F8E9;">
                                         <div style="font-size: 11px; font-weight: 950; color: #2E7D32; text-transform: uppercase; margin-bottom: 8px;">📜 Historia de Adopción</div>
                                         <p style="font-size: 15px; color: #333; line-height: 1.6; margin: 0; font-weight: 600;">${pet.adoption_story}</p>
                                     </div>
                                 ` : ''}
 
                                 ${this.isSenior(pet) ? `
-                                    <div style="background: #E1F5FE; border: var(--pata-border-thin); padding: 25px; border-radius: 30px; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
+                                    <div class="pata-v2-pet-detail-card" style="background: #E1F5FE; margin-top: 16px;">
                                         <div style="font-size: 11px; font-weight: 950; color: #01579B; text-transform: uppercase; margin-bottom: 8px;">Expediente Salud Senior</div>
                                         ${pet.vet_certificate_url ?
                         `<a href="${pet.vet_certificate_url}" target="_blank" style="color: #000; font-weight: 950; text-decoration: none; font-size: 16px; display: flex; align-items: center; gap: 10px;">
@@ -7651,7 +7713,7 @@
 
                                 <!-- 🗑️ Solicitar Baja Section -->
                                 ${pet.is_active !== false && pet.unsubscription_request_status !== 'pending' ? `
-                                    <div style="margin-top: 30px; border-top: 1px dashed #ddd; padding-top: 20px;">
+                                    <div class="pata-v2-pet-detail-card" style="margin-top: 20px;">
                                         <button class="pata-btn-unsubscribe" onclick="window.pataWidget.handlePetUnsubscribe('${pet.id}', ${petIndex}, '${this.escapeHtml(pet.name)}')">
                                             <span>👋</span> Solicitar baja de este peludito
                                         </button>
@@ -7660,29 +7722,29 @@
                                         </p>
                                     </div>
                                 ` : pet.unsubscription_request_status === 'pending' ? `
-                                    <div style="margin-top:30px;background:#FFF7E8;border:1px solid #F0D8A8;padding:20px;border-radius:20px;text-align:center;">
+                                    <div class="pata-v2-pet-detail-note" style="background:#FFF7E8;color:#8A5A12;">
                                         <span style="font-size:24px;display:block;margin-bottom:10px;">⏳</span>
                                         <p style="font-size:14px;font-weight:800;color:#8A5A12;margin:0 0 5px;">Baja solicitada</p>
                                         <p style="font-size:12px;color:#8A6A35;margin:0;">El equipo está revisando tu solicitud. Este espacio seguirá ocupado hasta que sea aprobada.</p>
                                     </div>
                                 ` : `
-                                    <div style="margin-top: 30px; background: #f8f9fa; border: 2px solid #ddd; padding: 20px; border-radius: 20px; text-align: center;">
+                                    <div class="pata-v2-pet-detail-note">
                                         <span style="font-size: 24px; display: block; margin-bottom: 10px;">📉</span>
                                         <p style="font-size: 14px; font-weight: 700; color: #666; margin: 0;">Esta mascota ya no se encuentra activa en la manada.</p>
                                     </div>
                                 `}
 
                                 <!-- 🆕 Chat Interface Container -->
-                                <div id="pata-chat-root" style="margin-top: 40px;">
+                                <div id="pata-chat-root" class="pata-v2-pet-detail-chat">
                                     <div class="pata-chat-loading">
                                         <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
                                         Cargando historial de comunicación...
                                     </div>
                                 </div>
 
-                                <div style="margin-top: 50px;">
-                                    <button id="pata-close-details-btn" class="pata-btn" aria-label="Cerrar expediente y volver" style="background: #FE8F15; color: #000; border: var(--pata-border-thick); width: 100%; font-size: 18px; padding: 20px; border-radius: 50px; font-weight: 950;">
-                                        Cerrar Expediente
+                                <div style="margin-top: 24px;">
+                                    <button id="pata-close-details-btn" class="pata-v2-pet-detail-primary-action" aria-label="Cerrar expediente y volver">
+                                        Cerrar expediente
                                     </button>
                                 </div>
                             </div>

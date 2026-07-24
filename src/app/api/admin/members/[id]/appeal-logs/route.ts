@@ -65,6 +65,7 @@ export async function GET(
                 ...log,
                 admin_name: adminName,
                 formatted_date: new Date(log.created_at).toLocaleString('es-MX', {
+                    timeZone: 'America/Mexico_City',
                     dateStyle: 'medium',
                     timeStyle: 'short'
                 })
