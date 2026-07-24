@@ -3928,7 +3928,7 @@
         .pata-v2-notification-detail-card p { margin:14px auto 0; max-width:38ch; font-size:14px; line-height:1.55; overflow-wrap:anywhere; }
         .pata-v2-notification-detail-card time { display:block; margin-top:12px; color:#918B80; font-size:11px; }
         .pata-v2-notification-detail-close { min-height:44px; margin-top:24px; padding:0 28px; border:0; border-radius:999px; background:#21BCAF; color:white; font:800 13px/1 'Outfit',sans-serif; cursor:pointer; }
-        .pata-v2-pet-detail-modal { position:fixed; inset:0; z-index:10010; overflow:auto; padding:24px; background:rgba(21,63,59,.34); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-family:'Outfit',sans-serif; color:var(--v2-body); }
+        .pata-v2-pet-detail-modal { --v2-orange:#FE8F15; --v2-teal:#21BCAF; --v2-ink:#174F4C; --v2-body:#405B56; position:fixed; inset:0; z-index:10010; overflow:auto; padding:24px; background:rgba(21,63,59,.34); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); font-family:'Outfit',sans-serif; color:var(--v2-body); }
         .pata-v2-pet-detail-panel { position:relative; width:min(1120px,100%); margin:0 auto; overflow:hidden; border:1px solid #E6DFD3; border-radius:24px; background:#FBF9F4; box-shadow:0 28px 80px rgba(30,83,80,.22); animation:pataV2PanelIn .22s ease-out; }
         .pata-v2-pet-detail-body { display:grid; grid-template-columns:minmax(300px,.92fr) minmax(0,1.08fr); min-height:min(760px,calc(100dvh - 48px)); }
         .pata-v2-pet-detail-hero { display:flex; flex-direction:column; gap:14px; padding:22px; background:#F1EDE4; border-right:1px solid #E6DFD3; }
@@ -3948,6 +3948,9 @@
         .pata-v2-pet-detail-progress span { display:block; height:100%; border-radius:inherit; background:var(--v2-teal); }
         .pata-v2-pet-detail-progress-row { display:flex; justify-content:space-between; gap:12px; margin-top:8px; color:#7C8783; font-size:11px; font-weight:800; }
         .pata-v2-pet-detail-progress-row b { color:#087E75; }
+        .pata-v2-pet-detail-waiting { margin-top:4px; padding:18px; border:1px solid #E6DFD3; border-radius:18px; background:#fff; box-shadow:0 5px 18px rgba(38,62,58,.055); }
+        .pata-v2-pet-detail-waiting-title { margin:0; color:#087E75; font:400 22px/1 'Fraiche','Outfit',sans-serif; }
+        .pata-v2-pet-detail-waiting-copy { margin:10px 0 0; padding:13px 14px; border-radius:13px; background:#F4F8F6; color:#405B56; font-size:12.5px; font-weight:600; line-height:1.5; }
         .pata-v2-pet-detail-content { position:relative; overflow:auto; max-height:calc(100dvh - 48px); padding:30px; background:#fff; }
         .pata-v2-pet-detail-close { position:absolute; top:20px; right:20px; width:42px; height:42px; display:grid; place-items:center; border:1px solid #E6DFD3; border-radius:50%; background:#F8F5EE; color:#174F4C; font:900 22px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,background .2s ease; z-index:2; }
         .pata-v2-pet-detail-close:hover { transform:rotate(4deg); background:#E7F6F4; }
@@ -3981,15 +3984,37 @@
         .pata-v2-pet-detail-note strong { display:block; margin-bottom:4px; color:#174F4C; font-size:13px; }
         .pata-v2-pet-detail-primary-action { width:100%; min-height:50px; border:0; border-radius:999px; background:var(--v2-orange); color:white; font:900 14px/1 'Outfit',sans-serif; cursor:pointer; transition:transform .2s ease,filter .2s ease; }
         .pata-v2-pet-detail-chat { margin-top:24px; }
+        .pata-v2-pet-detail-chat-card { margin-top:0; }
+        .pata-v2-pet-detail-modal .pata-chat-container { min-height:0; margin:0; overflow:hidden; border:1px solid #E6DFD3; border-radius:18px; background:#FBF9F4; box-shadow:none; }
+        .pata-v2-pet-detail-modal .pata-chat-header { padding:17px 18px; border:0; border-bottom:1px solid #E6DFD3; background:#EAF8F6; color:#174F4C; font:400 22px/1 'Fraiche','Outfit',sans-serif; letter-spacing:0; text-transform:none; }
+        .pata-v2-pet-detail-modal .pata-chat-messages { gap:10px; padding:16px; background:#FBF9F4; }
+        .pata-v2-pet-detail-modal .pata-chat-bubble { max-width:92%; padding:12px 14px; border:1px solid #E5DFD4; border-radius:14px; background:#fff; color:#334D48; box-shadow:none; font-size:13px; font-weight:600; line-height:1.5; }
+        .pata-v2-pet-detail-modal .pata-chat-bubble.admin { border-bottom-left-radius:5px; }
+        .pata-v2-pet-detail-modal .pata-chat-bubble.user { border-color:#B8E7E2; border-bottom-right-radius:5px; background:#EAF8F6; color:#174F4C; }
+        .pata-v2-pet-detail-modal .pata-chat-bubble.system { align-self:center; max-width:100%; border:0; background:#F3F0E9; color:#697872; text-align:center; }
+        .pata-v2-pet-detail-modal .pata-chat-request { border-color:#F2D3AE; background:#FFF7EC; }
+        .pata-v2-pet-detail-modal .pata-chat-meta { display:block; margin-top:6px; color:#88938F; font-size:10px; font-weight:700; }
+        .pata-v2-pet-detail-modal .pata-chat-input-area { padding:12px!important; border:0!important; border-top:1px solid #E6DFD3!important; background:#fff!important; }
+        .pata-v2-pet-detail-modal .pata-chat-input { min-width:0; border:1px solid #DCD7CC!important; border-radius:13px!important; background:#FBF9F4; color:#243F3B; box-shadow:none; }
+        .pata-v2-pet-detail-modal .pata-chat-btn, .pata-v2-pet-detail-modal .pata-chat-send { flex:0 0 42px; width:42px!important; height:42px!important; border:0!important; box-shadow:none!important; }
+        .pata-v2-pet-detail-modal .pata-action-btn { border:1px solid #F2D3AE!important; border-radius:12px!important; background:#FFF!important; color:#9A5712!important; box-shadow:none!important; }
+        .pata-v2-pet-detail-modal .pata-chat-readonly { padding:16px; border-top:1px solid #E6DFD3; background:#F8F5EE; color:#697872; font-size:12px; font-weight:700; line-height:1.45; text-align:center; }
+        .pata-v2-pet-detail-modal .pata-chat-empty { padding:18px; color:#697872; text-align:center; }
         @media (max-width: 820px) {
-            .pata-v2-pet-detail-modal { padding:12px; align-items:flex-end; }
-            .pata-v2-pet-detail-modal .pata-v2-pet-detail-panel { border-radius:24px 24px 18px 18px!important; }
+            .pata-v2-pet-detail-modal { padding:12px; align-items:flex-end; overflow:hidden; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-panel { max-height:calc(100dvh - 24px)!important; overflow-y:auto!important; overflow-x:hidden!important; border-radius:24px 24px 18px 18px!important; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; }
             .pata-v2-pet-detail-modal .pata-v2-pet-detail-body { grid-template-columns:1fr!important; min-height:0!important; }
             .pata-v2-pet-detail-modal .pata-v2-pet-detail-hero { border-right:0!important; border-bottom:1px solid #E6DFD3!important; padding:16px!important; }
-            .pata-v2-pet-detail-modal .pata-v2-pet-detail-main-photo { min-height:260px!important; }
-            .pata-v2-pet-detail-content { max-height:none; padding:24px 18px 28px; }
+            .pata-v2-pet-detail-modal .pata-photo-carousel { display:none!important; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-main-photo { display:block!important; min-height:0!important; height:auto!important; aspect-ratio:4 / 3; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-thumbs { display:flex!important; }
+            .pata-v2-pet-detail-content { overflow:visible; max-height:none; padding:24px 18px 28px; }
             .pata-v2-pet-detail-modal .pata-info-grid { grid-template-columns:1fr; }
+            .pata-v2-pet-detail-modal .pata-v2-pet-detail-summary { display:block!important; }
             .pata-v2-pet-detail-tags { max-width:calc(100% - 48px); }
+            .pata-v2-pet-detail-modal .pata-chat-bubble { max-width:100%; }
+            .pata-v2-pet-detail-modal .pata-chat-input-area { align-items:center!important; gap:8px!important; }
+            .pata-v2-pet-detail-modal .pata-chat-input { min-height:44px!important; padding:10px 12px!important; }
         }
         .pata-v2-vet-view { min-height:calc(100dvh - 80px); display:flex; flex-direction:column; }
         .pata-v2-vet-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:16px; }
@@ -7174,7 +7199,7 @@
                     messageContent = messageContent.replace(/\n/g, '<br><br>');
 
                     return `
-                        <div class="pata-chat-bubble admin" style="background:linear-gradient(135deg,#FFF8E1,#FFF3E0);border:2px solid #FE8F15;">
+                        <div class="pata-chat-bubble admin pata-chat-request">
                             <div style="font-weight:900;font-size:13px;margin-bottom:8px;color:#FE8F15;">📋 Solicitud de Información</div>
                             <div style="font-size:13px;margin-bottom:12px;">${messageContent}</div>
                             <br>
@@ -7257,7 +7282,7 @@
                             </button>
                         </div>
                     ` : `
-                        <div style="padding: 20px; background: #F8F9FA; border-top: 4px solid #000; text-align: center; font-size: 13px; font-weight: 800; color: #666; line-height: 1.4;">
+                        <div class="pata-chat-readonly">
                             El canal de comunicación se activará si nuestro equipo requiere información adicional o si tu solicitud cambia de estado.
                         </div>
                     `}
@@ -7623,23 +7648,23 @@
                                 ${pet.status === 'approved' ? (() => {
                                     if (carencia.daysRemaining <= 0) {
                                         return `
-                                        <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05); text-align: center;">
-                                            <h3 style="color: var(--pata-primary); font-family: var(--font-heading); margin-bottom: 10px; font-size: 1.2rem;">Apoyo Económico Activado</h3>
-                                            <p style="margin-bottom: 15px; font-family: var(--font-body); color: var(--pata-text-dark); font-size: 14px;"><strong>${pet.name}</strong> ya puede acceder al apoyo económico.</p>
-                                            <a href="https://www.pataamiga.mx/miembros/tu-manada" style="display: block; background: var(--pata-btn-primary, #FE8F15); color: #000; border: 2px solid #000; border-radius: 50px; text-decoration: none; font-family: var(--font-heading); text-align: center; font-size: 14px; font-weight: bold; padding: 12px 0; box-shadow: 4px 4px 0 rgba(0,0,0,1);">Utiliza tus beneficios</a>
+                                        <div class="pata-v2-pet-detail-waiting">
+                                            <h3 class="pata-v2-pet-detail-waiting-title">Apoyo económico activado</h3>
+                                            <p class="pata-v2-pet-detail-waiting-copy"><strong>${pet.name}</strong> ya puede acceder al apoyo económico.</p>
+                                            <a class="pata-v2-pet-detail-primary-action" href="https://www.pataamiga.mx/miembros/tu-manada" style="display:flex;align-items:center;justify-content:center;margin-top:14px;text-decoration:none;">Utiliza tus beneficios</a>
                                         </div>
                                         `;
                                     }
                                     return `
-                                    <div style="background: #FFF; border: var(--pata-border-thick); border-radius: 30px; padding: 25px; margin-top: 10px; box-shadow: 8px 8px 0 rgba(0,0,0,0.05);">
-                                        <div style="font-size: 14px; font-weight: 950; color: var(--pata-primary); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 1px;">Estatus de tiempo de espera</div>
-                                        <p class="pata-carencia-explanation" style="margin-bottom: 16px;">${this.getCarenciaExplanation(pet)}</p>
-                                        <div style="height: 20px; background: #F0F0F0; border-radius: 15px; border: var(--pata-border-thin); overflow: hidden; position: relative;">
-                                            <div style="width: ${carencia.percentage}%; height: 100%; background: #9fd406; border-right: var(--pata-border-thin);"></div>
+                                    <div class="pata-v2-pet-detail-waiting">
+                                        <h3 class="pata-v2-pet-detail-waiting-title">Tiempo de espera</h3>
+                                        <p class="pata-v2-pet-detail-waiting-copy">${this.getCarenciaExplanation(pet)}</p>
+                                        <div class="pata-v2-pet-detail-progress" role="progressbar" aria-label="Avance del tiempo de espera" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${carencia.percentage}">
+                                            <span style="width:${carencia.percentage}%"></span>
                                         </div>
-                                        <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 900; margin-top: 12px; color: #000;">
+                                        <div class="pata-v2-pet-detail-progress-row">
                                             <span>Día ${Math.floor((carencia.totalDays * carencia.percentage) / 100)}</span>
-                                            <span style="color: var(--pata-primary);">Faltan ${carencia.daysRemaining} días</span>
+                                            <b>Faltan ${carencia.daysRemaining} días</b>
                                         </div>
                                     </div>
                                     `;
@@ -7680,17 +7705,6 @@
                                         ${infoGridHtml}
                                     </div>
                                 </div>
-
-                                <!-- 📂 Mobile Accordion -->
-                                <details class="pata-mobile-accordion">
-                                    <summary>Ver todos los detalles</summary>
-                                    <div class="pata-info-card" style="margin-top: 16px; margin-bottom: 0;">
-                                        <h3 class="pata-info-card-title">Información General</h3>
-                                        <div class="pata-info-grid">
-                                            ${infoGridHtml}
-                                        </div>
-                                    </div>
-                                </details>
 
                                 ${pet.adoption_story ? `
                                     <div class="pata-v2-pet-detail-card" style="margin-top: 20px; background: #F1F8E9;">
@@ -7735,7 +7749,7 @@
                                 `}
 
                                 <!-- 🆕 Chat Interface Container -->
-                                <div id="pata-chat-root" class="pata-v2-pet-detail-chat">
+                                <div id="pata-chat-root" class="pata-v2-pet-detail-chat pata-v2-pet-detail-chat-card">
                                     <div class="pata-chat-loading">
                                         <span style="font-size: 24px; animation: pataSpin 1.5s linear infinite;">⏳</span>
                                         Cargando historial de comunicación...
@@ -8035,15 +8049,6 @@
                             if (ev.target.id === 'pata-pet-details-modal') close();
                         };
 
-                        // 📂 Mobile Accordion Manual Toggle (Fix for certain browsers)
-                        const summary = modalOverlay.querySelector('.pata-mobile-accordion summary');
-                        const details = modalOverlay.querySelector('.pata-mobile-accordion');
-                        if (summary && details) {
-                            summary.onclick = (ev) => {
-                                // Let native happen but ensure it's not blocked
-                                console.log('Summary clicked');
-                            };
-                        }
                     }
                 }
             };

@@ -23,3 +23,11 @@ Modernizar el modal que se abre desde "Ver expediente" en las cards de mascotas 
 
 - El widget público mezcla estilos legacy y v2; por eso el rediseño se encapsula bajo `pata-v2-pet-detail-modal`.
 - El chat y las acciones dependen de ids existentes; no se renombran.
+
+## Ajuste responsive posterior
+
+- Sustituir el acordeón móvil duplicado por la ficha general completa y siempre visible.
+- Hacer desplazable el panel completo en móvil con una altura máxima basada en `100dvh`.
+- Mostrar una sola galería responsive para evitar que las reglas legacy oculten información.
+- Modernizar las tarjetas de tiempo de espera e historial de comunicación bajo el mismo lenguaje V2.
+- Mantener los ids y eventos del chat, carga de archivos, acciones solicitadas y cierre del expediente.

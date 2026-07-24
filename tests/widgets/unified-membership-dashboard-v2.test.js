@@ -93,6 +93,21 @@ test('pet expediente modal uses the Dashboard V2 visual language', () => {
   assert.doesNotMatch(source, /id="pata-close-details"[^>]*style="[^"]*background:\s*#000/);
 });
 
+test('pet expediente keeps all information visible on mobile with V2 waiting and communication cards', () => {
+  assert.match(source, /\.pata-v2-pet-detail-modal\s*\{[^}]*--v2-orange:\s*#FE8F15/);
+  assert.match(source, /pata-v2-pet-detail-waiting/);
+  assert.match(source, /pata-v2-pet-detail-waiting-copy/);
+  assert.match(source, /pata-v2-pet-detail-chat-card/);
+  assert.match(source, /pata-v2-pet-detail-modal \.pata-chat-container/);
+  assert.match(source, /max-height:calc\(100dvh - 24px\)/);
+  assert.match(source, /overflow-y:auto!important/);
+  assert.doesNotMatch(
+    source,
+    /\.pata-v2-pet-detail-modal \.pata-v2-pet-detail-summary\s*\{[^}]*display:none/
+  );
+  assert.doesNotMatch(source, /<details class="pata-mobile-accordion">/);
+});
+
 test('Fondo Solidario is integrated as internal reimbursement views', () => {
   assert.match(source, /showReimbursementsV2\(\)/);
   assert.match(source, /showNewReimbursementV2\(\)/);
