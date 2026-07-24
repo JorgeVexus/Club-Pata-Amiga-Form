@@ -5,6 +5,7 @@
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         dashboardUrl: window.PATA_AMIGA_CONFIG?.dashboardUrl || 'https://www.pataamiga.mx/miembros/dashboard',
+        homeUrl: window.PATA_AMIGA_CONFIG?.homeUrl || 'https://www.pataamiga.mx/',
         myPackUrl: window.PATA_AMIGA_CONFIG?.myPackUrl || 'https://www.pataamiga.mx/pets/pet-waiting-period',
         profileUrl: window.PATA_AMIGA_CONFIG?.profileUrl || 'https://www.pataamiga.mx/miembros/perfil',
         settingsUrl: window.PATA_AMIGA_CONFIG?.settingsUrl || 'https://www.pataamiga.mx/miembros/configuracion',
@@ -12,6 +13,7 @@
     };
 
     const ICONS = {
+        back: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>',
         user: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
         gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1z"/></svg>',
         logout: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 17l5-5-5-5M15 12H3M21 3v18h-6"/></svg>'
@@ -108,11 +110,41 @@
             return this.role;
         }
 
+        resolveDashboardUrl(role = this.role, roleData = {}) {
+            const dashboards = window.PATA_AMIGA_CONFIG?.dashboards || {};
+            const defaults = {
+                member: CONFIG.myPackUrl,
+                ambassador: 'https://www.pataamiga.mx/red-pata-amiga/perfil-centros-del-bienestar',
+                admin: 'https://app.pataamiga.mx/admin/dashboard',
+                wellness_center: 'https://www.pataamiga.mx/red-pata-amiga/perfil-centros-del-bienestar',
+                incomplete_profile: 'https://www.pataamiga.mx/miembros/completar-perfil',
+                payment_processing: 'https://app.pataamiga.mx/payment-processing'
+            };
+
+            switch (role) {
+                case 'admin':
+                    return dashboards.admin || defaults.admin;
+                case 'ambassador':
+                    return dashboards.ambassador || defaults.ambassador;
+                case 'wellness_center':
+                case 'wellness-center':
+                    return dashboards.wellness_center || defaults.wellness_center;
+                case 'incomplete_profile':
+                    return roleData.redirectUrl || defaults.incomplete_profile;
+                case 'payment_processing':
+                    return defaults.payment_processing;
+                case 'pending_payment':
+                case 'member':
+                default:
+                    return dashboards.member || defaults.member;
+            }
+        }
+
         render() {
             if (!this.root) return;
             const unread = this.items.filter(item => !item.is_read).length;
             this.root.innerHTML = `<nav class="pata-account-navbar" aria-label="Navegación de cuenta">
-                <a class="pata-account-logo" href="${CONFIG.dashboardUrl}" aria-label="Ir al dashboard"><img src="${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga"></a>
+                <a class="pata-account-logo" href="${CONFIG.homeUrl}" aria-label="Ir a Pata Amiga"><img src="${CONFIG.apiUrl}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga"></a>
                 <div class="pata-account-nav-actions">
                     ${this.role === 'member' ? `<a class="pata-account-my-pack-link" href="${CONFIG.myPackUrl}">Mi manada</a>` : ''}
                     <div class="pata-account-notifications">
@@ -121,7 +153,7 @@
                     </div>
                     <div class="pata-account-menu-wrap">
                         <button class="pata-account-icon-button" type="button" data-action="menu" aria-label="Abrir menú de cuenta" aria-expanded="${this.menuOpen}"><span class="pata-account-hamburger" aria-hidden="true"><span></span><span></span><span></span></span></button>
-                        ${this.menuOpen ? `<div class="pata-account-menu" role="menu"><a href="${CONFIG.profileUrl}" role="menuitem">${ICONS.user}Perfil</a><a href="${CONFIG.settingsUrl}" role="menuitem">${ICONS.gear}Ajustes</a><button type="button" data-action="logout" role="menuitem">${ICONS.logout}Cerrar sesión</button></div>` : ''}
+                        ${this.menuOpen ? `<div class="pata-account-menu" role="menu"><button type="button" data-action="silent-dashboard" role="menuitem">${ICONS.back}Volver al perfil</button><a href="${CONFIG.profileUrl}" role="menuitem">${ICONS.user}Perfil</a><a href="${CONFIG.settingsUrl}" role="menuitem">${ICONS.gear}Ajustes</a><button type="button" data-action="logout" role="menuitem">${ICONS.logout}Cerrar sesión</button></div>` : ''}
                     </div>
                 </div>
             </nav>`;
@@ -136,6 +168,7 @@
         bind() {
             this.root.querySelector('[data-action="notifications"]')?.addEventListener('click', event => { event.stopPropagation(); this.notificationsOpen = !this.notificationsOpen; this.menuOpen = false; this.render(); if (this.notificationsOpen && !this.loading && !this.items.length) this.loadNotifications(); });
             this.root.querySelector('[data-action="menu"]')?.addEventListener('click', event => { event.stopPropagation(); this.menuOpen = !this.menuOpen; this.notificationsOpen = false; this.render(); });
+            this.root.querySelector('[data-action="silent-dashboard"]')?.addEventListener('click', event => { event.preventDefault(); this.silentDashboardRedirect(); });
             this.root.querySelector('[data-action="logout"]')?.addEventListener('click', () => this.logout());
             this.root.querySelector('[data-action="read-all"]')?.addEventListener('click', event => { event.stopPropagation(); this.markAllRead(); });
             this.root.querySelectorAll('[data-notification-id]').forEach(button => button.addEventListener('click', () => this.openNotification(button.dataset.notificationId)));
@@ -168,6 +201,24 @@
         }
 
         closePopovers() { if (!this.menuOpen && !this.notificationsOpen) return; this.menuOpen = false; this.notificationsOpen = false; this.render(); }
+
+        async silentDashboardRedirect() {
+            let roleData = {};
+            if (this.member?.id) {
+                try {
+                    const response = await fetch(`${CONFIG.apiUrl}/api/auth/check-role`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ memberstackId: this.member.id })
+                    });
+                    roleData = await response.json();
+                    if (response.ok && roleData.success) this.role = roleData.role;
+                } catch {
+                    roleData = {};
+                }
+            }
+            window.location.href = this.resolveDashboardUrl(this.role, roleData);
+        }
 
         async logout() { await window.$memberstackDom?.logout(); window.location.href = CONFIG.logoutUrl; }
     }

@@ -920,6 +920,12 @@
             "warningMessage": "⚠️ Los Pomerania pueden tener Luxación patelar, Legg-Calvé-Perthes, Estenosis subaórtica, Megaesófago, Hipotiroidismo, Amiloidosis renal. No cubrimos problemas genéticos ni hereditarios."
         },
         {
+            "name": "French poodle",
+            "hasGeneticIssues": false,
+            "maxAge": 9,
+            "size": "Pequeño"
+        },
+        {
             "name": "Poodle (Caniche) Toy",
             "hasGeneticIssues": true,
             "maxAge": 10,

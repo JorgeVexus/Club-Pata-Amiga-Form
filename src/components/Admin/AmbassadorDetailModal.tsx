@@ -637,6 +637,7 @@ export default function AmbassadorDetailModal({
                                             <p className={styles.chatBubbleText}>{msg.message}</p>
                                             <span className={styles.chatBubbleTime}>
                                                 {new Date(msg.created_at).toLocaleString('es-MX', {
+                                                    timeZone: 'America/Mexico_City',
                                                     day: '2-digit',
                                                     month: 'short',
                                                     hour: '2-digit',

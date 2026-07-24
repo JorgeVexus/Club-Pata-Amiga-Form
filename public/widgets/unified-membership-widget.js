@@ -5769,7 +5769,13 @@
             if (minutes < 1) return 'Ahora';
             if (minutes < 60) return `${minutes} min`;
             if (minutes < 1440) return `${Math.floor(minutes / 60)} h`;
-            return `${Math.floor(minutes / 1440)} d`;
+            return new Intl.DateTimeFormat('es-MX', {
+                timeZone: 'America/Mexico_City',
+                day: '2-digit',
+                month: 'short',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).format(new Date(value));
         }
 
         renderV2NotificationBell() {

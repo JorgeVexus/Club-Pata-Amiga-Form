@@ -8,6 +8,7 @@
     const CONFIG = {
         apiUrl: window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx',
         maxPets: 3,
+        logoUrl: `${window.PATA_AMIGA_CONFIG?.apiUrl || 'https://app.pataamiga.mx'}/widgets/home%20v2%20images/logo-light-bg.svg`,
         placeholderDog: 'https://cdn.prod.website-files.com/6929d5e779839f5517dc2ded/693991ad1e9e5d0b490f9020_animated-dog-image-0929.png',
         statusColors: {
             approved: { bg: '#E8F5E9', text: '#2E7D32', label: 'APROBADA', icon: '✅' },
@@ -719,11 +720,12 @@
         .pata-autocomplete-suggestion:hover, .pata-breed-suggestion:hover { background: var(--pata-primary-light); }
         
         .pata-breed-warning {
-            background: #FFF5F5; color: #C53030; padding: 14px;
-            border-radius: 18px; font-size: 11px; font-weight: 700;
-            margin-top: 12px; border: 1.5px solid #FEB2B2;
-            line-height: 1.4;
+            background: #FFF8EE; color: #6F4A1B; padding: 16px;
+            border-radius: 16px; font-size: 12px; font-weight: 600;
+            margin-top: 12px; border: 1px solid #F4D8AA;
+            line-height: 1.5;
         }
+        .pata-breed-warning strong { display:block; margin-bottom:5px; color:#1E5350; font-size:13px; }
 
         /* Referral Validation States */
         .pata-form-input.valid { border-color: #38A169; background: #F0FFF4; }
@@ -788,6 +790,9 @@
             text-transform:none!important;
             text-wrap:balance;
         }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-brand { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:0 48px 24px 0; padding-bottom:18px; border-bottom:1px solid var(--add-v2-line); }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-brand img { width:96px; height:auto; display:block; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-brand span { color:#81908C; font:800 11px/1 'Outfit',sans-serif; letter-spacing:.05em; text-transform:uppercase; }
         #pata-add-modal.pata-add-modal-v2 .pata-step-indicator { justify-content:flex-start; gap:7px; margin:0 0 30px; }
         #pata-add-modal.pata-add-modal-v2 .pata-step-dot { width:38px; height:5px; border:0; border-radius:999px; background:#E9E5DD; }
         #pata-add-modal.pata-add-modal-v2 .pata-step-dot.active { width:38px; height:5px; border:0; border-radius:999px; background:var(--add-v2-teal); }
@@ -2078,6 +2083,7 @@
             const d = this.addFormData;
             container.innerHTML = `
                 <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()" aria-label="Cerrar formulario">&times;</button>
+                <div class="pata-add-v2-brand"><img src="${CONFIG.logoUrl}" alt="Pata Amiga"><span>Nueva integrante</span></div>
                 <h2 style="text-align:center; font-weight:900; font-size:28px; margin:0 0 20px 0; color:#1A1A1A; text-transform: lowercase;">🐾 Nueva mascota</h2>
                 
                 <div class="pata-step-indicator" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">
@@ -2184,6 +2190,7 @@
 
             container.innerHTML = `
                 <button style="position:absolute; top:15px; right:15px; border:none; background:#f0f0f0; width:40px; height:40px; border-radius:50%; font-size:22px; cursor:pointer; z-index:10;" onclick="this.closest('.pata-modal-overlay').remove()" aria-label="Cerrar formulario">&times;</button>
+                <div class="pata-add-v2-brand"><img src="${CONFIG.logoUrl}" alt="Pata Amiga"><span>Perfil de mascota</span></div>
                 <h2 id="${stepId}" style="text-align:center; font-weight:900; font-size:28px; margin:0 0 20px 0; color:#1A1A1A; text-transform: lowercase;">Datos de ${d.name}</h2>
                 
                 <div class="pata-step-indicator" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
@@ -2486,11 +2493,20 @@
                     const displayName = item.innerText.trim();
                     input.value = displayName; this.addFormData.breed = displayName;
                     suggestions.classList.remove('active');
-                    if (item.dataset.warning) { warning.innerHTML = item.dataset.warning; warning.style.display = 'block'; }
+                    if (item.dataset.warning) { warning.innerHTML = this.formatBreedWarningV2(displayName, item.dataset.warning); warning.style.display = 'block'; }
                     else warning.style.display = 'none';
                 }
             };
             document.addEventListener('click', (e) => { if (!input.contains(e.target)) suggestions.classList.remove('active'); });
+        }
+
+        formatBreedWarningV2(breedName, warningMessage) {
+            const raw = String(warningMessage || '').replace(/⚠️/g, '').trim();
+            const match = raw.match(/pueden tener\s+(.+?)\.\s*No cubrimos/i);
+            const conditions = match ? match[1].trim() : raw.replace(/No cubrimos problemas genéticos ni hereditarios\.?/i, '').trim();
+            const safeBreed = this.escapeHtml(breedName || 'esta raza');
+            const safeConditions = this.escapeHtml(conditions || 'algunas condiciones hereditarias');
+            return `<strong>Información importante sobre ${safeBreed}</strong>Sabemos que, como muchas otras razas, los ${safeBreed} pueden tener mayor predisposición a desarrollar algunas condiciones de salud, como ${safeConditions}. En Pata Amiga te acompañamos con claridad: los problemas genéticos o hereditarios no forman parte de la cobertura.`;
         }
 
         async setupColorAutocomplete(inputId, suggestionsId, category) {

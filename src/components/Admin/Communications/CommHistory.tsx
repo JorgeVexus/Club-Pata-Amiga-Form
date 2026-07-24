@@ -79,6 +79,7 @@ export default function CommHistory({ adminName, isSuperAdmin, audience = 'gener
                             <tr key={log.id}>
                                 <td className={styles.date}>
                                     {new Date(log.created_at).toLocaleString('es-MX', {
+                                        timeZone: 'America/Mexico_City',
                                         day: '2-digit',
                                         month: 'short',
                                         hour: '2-digit',

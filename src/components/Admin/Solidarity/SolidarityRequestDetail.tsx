@@ -518,7 +518,11 @@ export default function SolidarityRequestDetail({ requestId, onClose, adminMembe
                                         ))}
                                     </div>
                                     <span className={styles.timestamp}>
-                                        {new Date(m.created_at).toLocaleTimeString()}
+                                        {new Date(m.created_at).toLocaleTimeString('es-MX', {
+                                            timeZone: 'America/Mexico_City',
+                                            hour: '2-digit',
+                                            minute: '2-digit'
+                                        })}
                                     </span>
                                 </div>
                             ))}
