@@ -6585,6 +6585,28 @@
             });
         }
 
+        setPetUnsubscribeSubmitting(isSubmitting) {
+            const existing = document.getElementById('pata-pet-unsubscribe-loader');
+            if (!isSubmitting) {
+                if (existing) existing.remove();
+                return;
+            }
+            if (existing) return;
+
+            const loader = document.createElement('div');
+            loader.id = 'pata-pet-unsubscribe-loader';
+            loader.className = 'pata-modal-overlay show';
+            loader.style.zIndex = '1000001';
+            loader.innerHTML = `
+                <div class="pata-modal" style="max-width: 360px; text-align: center; padding: 36px;">
+                    <div style="font-size: 38px; margin-bottom: 14px;">...</div>
+                    <h2 style="font-family: 'Fraiche', sans-serif; font-size: 26px; margin: 0 0 8px; color: #000;">procesando baja</h2>
+                    <p style="margin: 0; color: #4A5568; font-weight: 700;">Estamos enviando tu solicitud para revisión.</p>
+                </div>
+            `;
+            document.body.appendChild(loader);
+        }
+
         renderAlertBanners(pet) {
             const isSeniorPet = this.isSenior(pet);
             const hasPhoto1 = !!(pet.photo_url || pet.primary_photo_url || pet.pet_photo_url);
@@ -8446,7 +8468,7 @@
             if (!reason) return;
             const confirm = await this.showUnsubscribeConfirm(petName);
             if (!confirm) return;
-            this.showGlobalLoader('Procesando baja...');
+            this.setPetUnsubscribeSubmitting(true);
             try {
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/unsubscribe`, {
                     method: 'POST',
@@ -8458,7 +8480,7 @@
                     alert(data.status === 'pending' ? `La solicitud de baja de ${petName} quedó en revisión.` : `La baja de ${petName} se ha procesado correctamente.`);
                     window.location.reload();
                 } else alert('Error: ' + (data.error || 'Inténtalo más tarde.'));
-            } catch (err) { alert('Ocurrió un error inesperado.'); } finally { this.hideGlobalLoaders(); }
+            } catch (err) { alert('Ocurrió un error inesperado.'); } finally { this.setPetUnsubscribeSubmitting(false); }
         }
 
         showUnsubscribeReasons(petName) {
