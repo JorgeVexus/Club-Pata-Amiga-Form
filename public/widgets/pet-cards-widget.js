@@ -845,6 +845,50 @@
         #pata-add-modal.pata-add-modal-v2 .pata-info-box.error { background:#FFF0EF; color:#A33B35; }
         #pata-add-modal.pata-add-modal-v2 .pata-upload-box { border:1px dashed #8EDAD3!important; border-radius:16px!important; background:#F2FAF9!important; box-shadow:none!important; }
         #pata-add-modal.pata-add-modal-v2 .pata-upload-box:hover { border-color:var(--add-v2-teal)!important; background:#E9F8F6!important; transform:translateY(-1px); }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-upload-heading { margin-bottom:6px!important; font-size:18px!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-upload-help { margin:0 0 18px; color:var(--add-v2-body); font-size:13px; font-weight:600; line-height:1.45; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; margin-bottom:20px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-slot {
+            position:relative;
+            min-width:0;
+            aspect-ratio:1;
+            overflow:hidden;
+            display:grid;
+            place-items:center;
+            border:1px dashed #8EDAD3!important;
+            border-radius:16px!important;
+            background:#F2FAF9!important;
+            box-shadow:none!important;
+            cursor:pointer;
+            transition:transform .2s ease,border-color .2s ease,background .2s ease;
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-slot:hover { border-color:var(--add-v2-teal)!important; background:#E8F7F5!important; transform:translateY(-2px); }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-slot:focus-within { outline:3px solid rgba(32,188,175,.16); border-color:var(--add-v2-teal)!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-upload-content { min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:7px; padding:10px; text-align:center; pointer-events:none; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-upload-icon {
+            width:42px;
+            height:42px;
+            display:grid;
+            place-items:center;
+            border:1px solid #CDEBE7;
+            border-radius:13px;
+            background:#fff;
+            color:var(--add-v2-teal-dark);
+            box-shadow:0 6px 16px rgba(30,83,80,.07);
+            font-size:22px;
+            font-variation-settings:'FILL' 0,'wght' 500;
+        }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-upload-label { color:#49615C; font-size:10px; font-weight:900; line-height:1.15; text-transform:uppercase; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-slot.has-file { border-style:solid!important; border-color:#B8DDD8!important; background:#E8F6F4!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-preview { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-status { position:absolute; inset:auto 7px 7px; padding:5px 7px; border-radius:8px; background:rgba(23,79,76,.88); color:#fff; font-size:9px; font-weight:900; line-height:1; text-align:center; backdrop-filter:blur(5px); }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-upload { min-height:180px; padding:24px!important; display:grid!important; place-items:center!important; text-align:center; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-content { width:min(100%,390px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; margin:auto; text-align:center; pointer-events:none; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-content .pata-add-v2-upload-icon { width:52px; height:52px; border-radius:16px; font-size:26px; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-title { margin:0; color:var(--add-v2-ink); font-size:14px; font-weight:800; line-height:1.3; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-copy { margin:0; max-width:42ch; color:#71807C; font-size:11.5px; font-weight:600; line-height:1.45; text-wrap:pretty; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-upload.has-file { border-style:solid!important; border-color:#9DDDD6!important; background:#E8F7F5!important; }
+        #pata-add-modal.pata-add-modal-v2 .pata-add-v2-loading { width:30px; height:30px; border:3px solid #D8EEEB; border-top-color:var(--add-v2-teal); border-radius:50%; animation:pataSpin .8s linear infinite; }
         #pata-add-modal.pata-add-modal-v2 .pata-btn-row { display:flex; gap:10px; margin-top:28px; }
         #pata-add-modal.pata-add-modal-v2 .pata-btn { min-height:50px; border:0!important; border-radius:999px; box-shadow:none; font:900 14px 'Outfit',sans-serif; transition:transform .2s ease,filter .2s ease; }
         #pata-add-modal.pata-add-modal-v2 .pata-btn:hover { transform:translateY(-1px); filter:brightness(.98); }
@@ -861,6 +905,8 @@
             #pata-add-modal.pata-add-modal-v2 .pata-form-row { display:grid; grid-template-columns:1fr; gap:0; }
             #pata-add-modal.pata-add-modal-v2 .pata-age-row { display:grid; grid-template-columns:minmax(0,1fr); }
             #pata-add-modal.pata-add-modal-v2 .pata-unit-toggle { width:100%; min-width:0; }
+            #pata-add-modal.pata-add-modal-v2 .pata-add-v2-photo-grid { grid-template-columns:repeat(3,minmax(0,1fr)); }
+            #pata-add-modal.pata-add-modal-v2 .pata-add-v2-vet-upload { min-height:170px; padding:20px 16px!important; }
             #pata-add-modal.pata-add-modal-v2 .pata-btn-row { flex-direction:column-reverse; }
         }
         .pata-referral-msg.success { color: #2F855A; }
@@ -2260,16 +2306,16 @@
                 </div>
 
                 <div class="pata-form-group">
-                    <label class="pata-form-label" style="font-weight: 900; font-size: 18px; margin-bottom: 5px;">Álbum de fotos</label>
-                    <p style="font-size: 13px; color: #666; margin-bottom: 20px; font-weight:600;">Sube hasta 5 fotos para su perfil. <strong>Tienes 15 días para hacerlo.</strong></p>
+                    <label class="pata-form-label pata-add-v2-upload-heading">Álbum de fotos</label>
+                    <p class="pata-add-v2-upload-help">Sube hasta 5 fotos para su perfil. <strong>Tienes 15 días para hacerlo.</strong></p>
                     
-                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 12px; margin-bottom: 20px;">
+                    <div class="pata-add-v2-photo-grid">
                         ${[1,2,3,4,5].map(num => `
-                            <div class="pata-upload-box small" id="photo-box-${num}" style="position: relative; overflow: hidden; height: 110px; border-radius: 20px; border: var(--pata-border-thin); border-style: dashed; display:flex; align-items:center; justify-content:center; cursor:pointer;">
+                            <div class="pata-upload-box small pata-add-v2-photo-slot" id="photo-box-${num}">
                                 <input type="file" accept="image/*" class="pata-photo-input" data-num="${num}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;" aria-label="Subir foto ${num === 1 ? 'principal' : num}">
-                                <div class="pata-upload-content" style="text-align: center; padding: 10px;">
-                                    <span class="pata-upload-icon" style="font-size: 24px; display: block; margin-bottom: 4px;">📷</span>
-                                    <span style="font-size: 10px; font-weight: 900; text-transform: uppercase;">${num === 1 ? 'Principal *' : 'Foto ' + num}</span>
+                                <div class="pata-upload-content pata-add-v2-upload-content">
+                                    <span class="material-symbols-outlined pata-add-v2-upload-icon" aria-hidden="true">add_a_photo</span>
+                                    <span class="pata-add-v2-upload-label">${num === 1 ? 'Principal *' : 'Foto ' + num}</span>
                                 </div>
                             </div>
                         `).join('')}
@@ -2315,12 +2361,12 @@
                 ${isSenior ? `
                 <div class="pata-form-group">
                     <label class="pata-form-label" for="add-vet">Sobre su salud (Senior 10+ años)</label>
-                    <div class="pata-upload-box" id="vet-box" style="border: var(--pata-border-thin); border-style: dashed; border-radius: 25px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; background: #FAFAFA; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; gap: 10px;">
+                    <div class="pata-upload-box pata-add-v2-vet-upload ${this.uploadedVetUrl ? 'has-file' : ''}" id="vet-box">
                         <input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2" aria-label="Subir certificado médico">
-                        <div id="vet-preview-wrap">
-                            ${this.uploadedVetUrl ? '<span class="pata-upload-icon" style="font-size:32px;">✅</span>' : '<span class="pata-upload-icon" style="font-size:32px;">📄</span>'}
-                            <p class="pata-upload-text" style="font-size: 13px; font-weight: 700; color: #4A5568; margin: 0;">${this.uploadedVetUrl ? '✓ Información lista' : 'Subir información de salud'}</p>
-                            <p class="pata-upload-subtext" style="font-weight:600; font-size: 11px; color: #718096; margin: 0;">Como es un peludito senior (10+ años), necesitamos conocer su estado de salud actual. 🐾💙</p>
+                        <div class="pata-add-v2-vet-content" id="vet-preview-wrap">
+                            <span class="material-symbols-outlined pata-add-v2-upload-icon" aria-hidden="true">${this.uploadedVetUrl ? 'check_circle' : 'description'}</span>
+                            <p class="pata-upload-text pata-add-v2-vet-title">${this.uploadedVetUrl ? 'Información lista' : 'Subir información de salud'}</p>
+                            <p class="pata-upload-subtext pata-add-v2-vet-copy">${this.uploadedVetUrl ? 'Haz clic para cambiar el archivo.' : 'Como es un peludito senior (10+ años), necesitamos conocer su estado de salud actual.'}</p>
                         </div>
                     </div>
                 </div>` : ''}
@@ -2415,7 +2461,7 @@
                     const num = input.dataset.num;
                     const box = document.getElementById(`photo-box-${num}`);
                     const originalContent = box.innerHTML;
-                    box.innerHTML = '<div style="width:24px; height:24px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; position: absolute; top: 50%; left: 50%; margin: -12px 0 0 -12px;"></div>';
+                    box.innerHTML = '<div class="pata-add-v2-loading" aria-label="Subiendo foto"></div>';
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.addFormData.photos = this.addFormData.photos || {};
@@ -2432,7 +2478,7 @@
                         
                         if (targetBox) {
                             targetBox.classList.add('has-file');
-                            targetBox.innerHTML = `<input type="file" accept="image/*" class="pata-photo-input" data-num="${targetNum}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index: 2;"><img src="${url}" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0;"><div style="position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.6); color: #fff; font-size: 9px; padding: 4px; text-align: center; font-weight: 800;">✓ LISTA</div>`;
+                            targetBox.innerHTML = `<input type="file" accept="image/*" class="pata-photo-input" data-num="${targetNum}" style="position:absolute; inset:0; opacity:0; cursor:pointer; z-index:2;" aria-label="Cambiar foto ${targetNum === '1' ? 'principal' : targetNum}"><img class="pata-add-v2-photo-preview" src="${url}" alt="Vista previa de la foto"><div class="pata-add-v2-photo-status">Lista</div>`;
                         }
                         
                         // Si se promovió, restauramos el box original para que no parezca que tiene foto ahí
@@ -2451,12 +2497,12 @@
                     if (!file) return;
                     const box = document.getElementById('vet-box');
                     const originalContent = box.innerHTML;
-                    box.innerHTML = '<div style="width:30px; height:30px; border:3px solid #eee; border-top-color:#15BEB2; border-radius:50%; animation:pataSpin 0.8s linear infinite; margin:20px auto;"></div>';
+                    box.innerHTML = '<div class="pata-add-v2-loading" aria-label="Subiendo certificado"></div>';
                     try {
                         const url = await this.uploadNewPetPhoto(file);
                         this.uploadedVetUrl = url;
                         box.classList.add('has-file');
-                        box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute; inset:0; opacity:0; cursor:pointer;" /><span class="pata-upload-icon">✅</span><p class="pata-upload-text">✓ Información lista</p><p class="pata-upload-subtext">Haz clic para cambiar</p>`;
+                        box.innerHTML = `<input type="file" accept=".pdf,image/*" id="add-vet" style="position:absolute;inset:0;opacity:0;cursor:pointer;z-index:2;" aria-label="Cambiar certificado médico"><div class="pata-add-v2-vet-content"><span class="material-symbols-outlined pata-add-v2-upload-icon" aria-hidden="true">check_circle</span><p class="pata-upload-text pata-add-v2-vet-title">Información lista</p><p class="pata-upload-subtext pata-add-v2-vet-copy">Haz clic para cambiar el archivo.</p></div>`;
                         this.setupFileUploads();
                     } catch(err) { alert('Error subiendo certificado'); box.innerHTML = originalContent; this.setupFileUploads(); }
                 };

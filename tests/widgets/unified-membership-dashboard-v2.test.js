@@ -81,6 +81,30 @@ test('new pet modal uses the Dashboard V2 visual treatment without changing its 
   assert.match(petCardsSource, /#pata-save-btn/);
 });
 
+test('new pet photo and medical certificate uploads use centered V2 controls', () => {
+  assert.match(petCardsSource, /pata-add-v2-photo-grid/);
+  assert.match(petCardsSource, /pata-add-v2-photo-slot/);
+  assert.match(petCardsSource, /pata-add-v2-upload-icon/);
+  assert.match(petCardsSource, /pata-add-v2-vet-upload/);
+  assert.match(petCardsSource, /pata-add-v2-vet-content/);
+  assert.match(
+    petCardsSource,
+    /#pata-add-modal\.pata-add-modal-v2 \.pata-add-v2-vet-content\s*\{[^}]*align-items:center/
+  );
+  assert.doesNotMatch(
+    petCardsSource,
+    /<span class="pata-upload-icon"[^>]*>📷<\/span>/
+  );
+  assert.doesNotMatch(
+    petCardsSource,
+    /id="vet-preview-wrap"[\s\S]{0,300}<span class="pata-upload-icon"[^>]*>📄<\/span>/
+  );
+  assert.doesNotMatch(
+    petCardsSource,
+    /id="photo-box-\$\{num\}"[^>]*border:\s*var\(--pata-border-thin\)/
+  );
+});
+
 test('pet expediente modal uses the Dashboard V2 visual language', () => {
   assert.match(source, /pata-v2-pet-detail-modal/);
   assert.match(source, /pata-v2-pet-detail-panel/);
