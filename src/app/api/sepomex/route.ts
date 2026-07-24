@@ -20,6 +20,9 @@ interface SepomexResponse {
     error: boolean;
     code_error: number;
     error_message: string | null;
+    // true si estos datos vienen del fallback de Zippopotam, donde "municipio" en
+    // realidad es el nombre de una colonia (Zippopotam no distingue ambos campos).
+    fromZippopotamFallback?: boolean;
     response: {
         cp: string;
         asentamiento: string[];
@@ -92,6 +95,7 @@ async function querySepomex(cp: string): Promise<SepomexResponse | null> {
                     error: false,
                     code_error: 0,
                     error_message: null,
+                    fromZippopotamFallback: true,
                     response: {
                         cp: zipData['post code'],
                         asentamiento: places.map((p: any) => p['place name']),
@@ -121,6 +125,11 @@ async function saveToCache(cp: string, data: any) {
         data,
         timestamp: Date.now()
     });
+
+    // No persistir en Supabase el resultado del fallback de Zippopotam: su campo
+    // "municipio" en realidad es una colonia, y guardarlo aquí lo dejaría envenenado
+    // como si fuera el municipio real para futuras consultas de ese mismo CP.
+    if (data.fromZippopotamFallback) return;
 
     if (!supabaseAdmin) return;
 
@@ -245,7 +254,8 @@ export async function GET(request: NextRequest) {
                 state: sepomexData.response.estado,
                 municipality: sepomexData.response.municipio,
                 city: sepomexData.response.ciudad,
-                colonies: sepomexData.response.asentamiento
+                colonies: sepomexData.response.asentamiento,
+                fromZippopotamFallback: sepomexData.fromZippopotamFallback === true
             },
             fromCache: false
         });

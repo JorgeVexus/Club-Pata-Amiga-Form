@@ -277,12 +277,16 @@ export default function Step4CompleteProfile({ data, member, onNext, showToast }
                                   finalState.toLowerCase().includes('mexico city');
                     
                     let finalCity = localAlcaldia || googleData?.city;
-                    
+
                     if (!finalCity || (isCDMX && !localAlcaldia && (
-                        finalCity.toLowerCase().includes('ciudad de méxico') || 
+                        finalCity.toLowerCase().includes('ciudad de méxico') ||
                         finalCity.toLowerCase().includes('mexico city')
                     ))) {
-                        finalCity = sepomexData?.municipality || finalCity || current.city;
+                        // OJO: sepomexData.municipality NO es confiable para CDMX cuando viene del
+                        // fallback de Zippopotam (api/sepomex/route.ts), ya que ese fallback en realidad
+                        // devuelve una colonia en ese campo. Para CDMX solo se usa si no es fallback.
+                        const municipalityIsTrustworthy = !isCDMX || sepomexData?.fromZippopotamFallback !== true;
+                        finalCity = (municipalityIsTrustworthy ? sepomexData?.municipality : null) || finalCity || current.city;
                     }
 
                     return {
