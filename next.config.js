@@ -17,6 +17,20 @@ const nextConfig = {
         formats: ['image/avif', 'image/webp'],
     },
 
+    async headers() {
+        return [
+            {
+                source: '/widgets/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=0, must-revalidate',
+                    },
+                ],
+            },
+        ]
+    },
+
     // Configuración para embed en Webflow
     async rewrites() {
         return [

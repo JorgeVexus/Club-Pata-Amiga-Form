@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const source = readFileSync('public/widgets/unified-membership-widget.js', 'utf8');
+const nextConfigSource = readFileSync('next.config.js', 'utf8');
 const renderChatStart = source.indexOf('renderChatInterface(logs, petId, status)');
 const renderChatEnd = source.indexOf('async fetchAndRenderChat(petId)', renderChatStart);
 
@@ -14,6 +15,12 @@ assert.match(
   renderChatSource,
   /dateStr[\s\S]*toLocaleString\('es-MX',\s*\{[\s\S]*timeZone:\s*'America\/Mexico_City'/,
   'pet communication history must format log timestamps in CDMX timezone'
+);
+
+assert.match(
+  nextConfigSource,
+  /source:\s*['"]\/widgets\/:path\*['"][\s\S]*Cache-Control['"][\s\S]*max-age=0[\s\S]*must-revalidate/,
+  'public widgets must revalidate immediately so timezone fixes are not hidden by stale browser cache'
 );
 
 console.log('unified chat timezone check passed');
