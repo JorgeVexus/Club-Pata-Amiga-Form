@@ -340,9 +340,10 @@
         render() {
             const container = document.getElementById('pata-profile');
             if (!container) return;
+            const showMembership = !this.isWellnessCenter && !!this.user;
             container.innerHTML = `<div class="ppa-widget">
                 ${this.renderSection1()}
-                ${this.isWellnessCenter ? '' : this.renderSection2()}
+                ${showMembership ? this.renderSection2() : ''}
                 ${this.renderSection3()}
             </div>`;
             this.bindEvents();
@@ -382,14 +383,22 @@
                 </div>`;
             }
 
+            const isAmbassadorOnly = !this.user && !!this.ambassador;
+            const a = this.ambassador || {};
             const u = this.user || {};
-            const name = [u.first_name, u.last_name, u.mother_last_name].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario';
-            const since = u.registration_date ? 'Miembro desde ' + this.getMonthYear(u.registration_date) : 'Bienvenido';
-            const email = this.member?.auth?.email || u.email || '—';
-            const phone = u.phone || '—';
-            const addr = this.buildAddress(u);
-            const birth = fmtBirth(u.birth_date);
-            const photoBase = u.avatar_url || CONFIG.placeholderAvatar;
+            const name = isAmbassadorOnly
+                ? [a.first_name, a.paternal_surname, a.maternal_surname].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario'
+                : [u.first_name, u.last_name, u.mother_last_name].filter(Boolean).join(' ') || this.member?.auth?.email?.split('@')[0] || 'Usuario';
+            const since = isAmbassadorOnly
+                ? (a.created_at ? 'Embajador desde ' + this.getMonthYear(a.created_at) : 'Bienvenido')
+                : (u.registration_date ? 'Miembro desde ' + this.getMonthYear(u.registration_date) : 'Bienvenido');
+            const email = this.member?.auth?.email || (isAmbassadorOnly ? a.email : u.email) || '—';
+            const phone = (isAmbassadorOnly ? a.phone : u.phone) || '—';
+            const addr = isAmbassadorOnly
+                ? this.buildAddress({ colony: a.neighborhood, city: a.city, state: a.state, postal_code: a.postal_code })
+                : this.buildAddress(u);
+            const birth = fmtBirth(isAmbassadorOnly ? a.birth_date : u.birth_date);
+            const photoBase = (isAmbassadorOnly ? a.profile_photo_url : u.avatar_url) || CONFIG.placeholderAvatar;
             const photo = photoBase.includes('supabase.co') ? `${photoBase}?t=${new Date().getTime()}` : photoBase;
 
             return `<div class="ppa-card">
@@ -556,20 +565,25 @@
             }
 
             const isAmbassador = !!this.ambassador;
+            const isMember = !!this.user;
             const petCount = this.pets.length;
             const ambSection = isAmbassador ? this.renderAmbassadorView() : '';
 
             // El id 'pata-amiga-manada-widget' es el que busca pet-cards-widget.js
             // Se expone directamente para que el retry loop lo encuentre inmediatamente
-            return `<div class="ppa-card">
-                <div class="ppa-pata-float">🐾</div>
-                <h2 class="ppa-section-title">roles en pata amiga</h2>
-                ${ambSection}
+            const memberSection = isMember ? `
                 <div class="ppa-role-meta">
                     <p class="ppa-role-type">Miembro del club</p>
                     <p class="ppa-role-count">${petCount} peludo${petCount !== 1 ? 's' : ''} registrado${petCount !== 1 ? 's' : ''}</p>
                 </div>
                 <div id="pata-amiga-manada-widget"></div>
+            ` : '';
+
+            return `<div class="ppa-card">
+                <div class="ppa-pata-float">🐾</div>
+                <h2 class="ppa-section-title">roles en pata amiga</h2>
+                ${ambSection}
+                ${memberSection}
             </div>`;
         }
 
