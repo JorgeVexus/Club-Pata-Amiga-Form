@@ -43,10 +43,10 @@ export async function POST(
         if (!ambassador.can_change_referral_code) {
             const { error: notificationError } = await supabase.from('notifications').insert({
                 user_id: 'admin',
-                type: 'ambassador_code_change_request',
+                type: 'account',
                 title: 'Solicitud de cambio de código',
                 message: `${ambassador.first_name || 'Un embajador'} solicitó autorización para cambiar su código.`,
-                data: { ambassador_id: ambassador.id, notification_kind: 'ambassador_code_change_request' },
+                metadata: { ambassador_id: ambassador.id, notification_kind: 'ambassador_code_change_request' },
                 is_read: false,
             });
             // No bloqueamos la respuesta al embajador si falla la notificación interna:

@@ -77,10 +77,10 @@ export async function POST(
         // 3. Notificación interna para administradores (no bloqueante)
         const { error: notificationError } = await supabase.from('notifications').insert({
             user_id: 'admin',
-            type: 'ambassador_reactivation',
+            type: 'account',
             title: 'Embajador reactivó su cuenta',
             message: `${ambassador.first_name || 'Un embajador'} reactivó su cuenta de embajador.`,
-            data: { ambassador_id: id },
+            metadata: { ambassador_id: id },
             is_read: false
         });
         if (notificationError) {

@@ -636,6 +636,34 @@ function buildAmbassadorBaseHtml(params: { title: string; greeting: string; cont
 // ----------------------------------------------------
 const AMBASSADOR_TEMPLATES: Template[] = [
     {
+        id: 'ambassador-application-received',
+        name: 'Solicitud Recibida',
+        icon: '📨',
+        description: 'Confirma al aspirante que su solicitud para ser Embajador fue recibida y está en revisión.',
+        defaultSubject: 'Recibimos tu solicitud para ser Embajador 🐾',
+        defaultRecipient: 'aspirante@pataamiga.mx',
+        params: [
+            { key: 'name', label: 'Nombre del Aspirante', type: 'text', defaultValue: 'Ana María' }
+        ],
+        render: ({ name }) => {
+            const content = `
+                <p>Gracias por tu interés en convertirte en <strong>Embajador de Club Pata Amiga</strong>. ¡Ya recibimos tu solicitud! 🎉</p>
+
+                <div class="highlight-box">
+                    <p style="margin: 0;"><strong>¿Qué sigue?</strong><br>
+                    Nuestro equipo revisará tu solicitud. En cuanto sea aprobada te enviaremos un correo con el siguiente paso para elegir tu código de embajador único.</p>
+                </div>
+
+                <p style="color: #718096; font-size: 14px;">El proceso de revisión suele tomar unos días hábiles. No necesitas hacer nada más por ahora, te avisaremos en cuanto tengamos una respuesta.</p>
+            `;
+            return buildAmbassadorBaseHtml({
+                title: 'Solicitud recibida',
+                greeting: `¡Hola ${name}!`,
+                content
+            });
+        }
+    },
+    {
         id: 'ambassador-approval',
         name: 'Aprobación de Embajador',
         icon: '🎯',

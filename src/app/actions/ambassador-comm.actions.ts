@@ -255,6 +255,44 @@ ${footer || "---\nClub Pata Amiga 🐾\nhttps://www.pataamiga.mx"}`;
 }
 
 /**
+ * Notifica al aspirante que su solicitud para ser Embajador fue recibida
+ * y está en proceso de revisión.
+ */
+export async function notifyAmbassadorApplicationReceived(params: {
+    userId: string;
+    email: string;
+    name: string;
+}) {
+    const { userId, email, name } = params;
+
+    const subject = 'Recibimos tu solicitud para ser Embajador 🐾';
+
+    const emailContent = createEmailTemplate({
+        title: 'Solicitud recibida',
+        greeting: `¡Hola ${name}!`,
+        content: `
+            <p>Gracias por tu interés en convertirte en <strong>Embajador de Club Pata Amiga</strong>. ¡Ya recibimos tu solicitud! 🎉</p>
+
+            <div class="highlight-box">
+                <p style="margin: 0;"><strong>¿Qué sigue?</strong><br>
+                Nuestro equipo revisará tu solicitud. En cuanto sea aprobada te enviaremos un correo con el siguiente paso para elegir tu código de embajador único.</p>
+            </div>
+
+            <p style="color: #718096; font-size: 14px;">El proceso de revisión suele tomar unos días hábiles. No necesitas hacer nada más por ahora, te avisaremos en cuanto tengamos una respuesta.</p>
+        `,
+    });
+
+    return await sendAdminEmail({
+        userId,
+        to: email,
+        subject,
+        content: emailContent.text,
+        html: emailContent.html,
+        metadata: { type: 'ambassador_application_received' }
+    });
+}
+
+/**
  * Notifica al embajador que su cuenta ha sido aprobada
  * Incluye link para elegir el código de referido
  */

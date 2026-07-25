@@ -62,6 +62,7 @@ export default function AmbassadorDetailModal({
     const [chatInput, setChatInput] = useState('');
     const [chatLoading, setChatLoading] = useState(false);
     const [sendingChat, setSendingChat] = useState(false);
+    const [enablingCodeChange, setEnablingCodeChange] = useState(false);
     const chatMessagesRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -208,6 +209,35 @@ export default function AmbassadorDetailModal({
         } else {
             const err = await response.json().catch(() => ({}));
             throw new Error(err.error || 'No se pudo rechazar la solicitud');
+        }
+    };
+
+    const handleEnableCodeChange = async () => {
+        if (!confirm('¿Habilitar a este embajador para que cambie su código de referido? Solo podrá hacerlo una vez.')) return;
+
+        setEnablingCodeChange(true);
+        try {
+            const response = await adminFetch(`/api/admin/ambassadors/${ambassador.id}/enable-code-change`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sendEmail: true })
+            });
+
+            const data = await response.json();
+            if (response.ok && data.success) {
+                alert(data.data?.email_sent
+                    ? 'Cambio de código habilitado. Le enviamos un email al embajador con el link para elegir su nuevo código.'
+                    : 'Cambio de código habilitado, pero no se pudo enviar el email. Compártele el link manualmente.');
+                loadDetails();
+                onRefresh();
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo habilitar el cambio de código'));
+            }
+        } catch (error) {
+            console.error('Error enabling code change:', error);
+            alert('Error de conexión al habilitar el cambio de código');
+        } finally {
+            setEnablingCodeChange(false);
         }
     };
 
@@ -434,6 +464,33 @@ export default function AmbassadorDetailModal({
                                     </div>
                                 )}
                             </div>
+
+                            {amb.status === 'approved' && (
+                                <div className={styles.section}>
+                                    <h4>🔑 Código de referido</h4>
+                                    <div className={styles.infoRow}>
+                                        <span>Código actual:</span>
+                                        <span>{amb.referral_code || 'Aún no elegido'}</span>
+                                    </div>
+                                    {amb.referral_code_changed_at ? (
+                                        <div className={`${styles.codeChangeStatus} ${styles.done}`}>
+                                            ✅ Ya cambió su código el {formatDate(amb.referral_code_changed_at)}. No puede volver a cambiarlo.
+                                        </div>
+                                    ) : amb.can_change_referral_code ? (
+                                        <div className={styles.codeChangeStatus}>
+                                            🔓 Cambio habilitado. Está pendiente de que el embajador elija su nuevo código.
+                                        </div>
+                                    ) : (
+                                        <button
+                                            className={styles.btnCodeChange}
+                                            onClick={handleEnableCodeChange}
+                                            disabled={enablingCodeChange}
+                                        >
+                                            {enablingCodeChange ? 'Habilitando...' : '🔓 Habilitar cambio de código'}
+                                        </button>
+                                    )}
+                                </div>
+                            )}
 
                             <div className={styles.section}>
                                 <h4>📍 Dirección</h4>

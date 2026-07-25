@@ -410,12 +410,24 @@ export async function POST(request: NextRequest) {
         // Crear notificación para admin
         await supabase.from('notifications').insert({
             user_id: 'admin',
-            type: 'new_ambassador',
+            type: 'account',
             title: 'Nueva solicitud de embajador',
             message: `${body.first_name} ${body.paternal_surname} quiere ser embajador`,
-            data: { ambassador_id: ambassador.id },
+            metadata: { ambassador_id: ambassador.id },
             is_read: false
         });
+
+        // Enviar confirmación al aspirante de que su solicitud fue recibida (no bloqueante)
+        try {
+            const { notifyAmbassadorApplicationReceived } = await import('@/app/actions/ambassador-comm.actions');
+            await notifyAmbassadorApplicationReceived({
+                userId: linkedMemberstackId || ambassador.id,
+                email: ambassador.email,
+                name: ambassador.first_name
+            });
+        } catch (emailError) {
+            console.error('❌ Error enviando email de solicitud recibida:', emailError);
+        }
 
         return NextResponse.json({
             success: true,

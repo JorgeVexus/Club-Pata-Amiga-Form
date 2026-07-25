@@ -440,6 +440,45 @@
     color: #666;
 }
 
+/* Código de referido */
+.codeChangeStatus {
+    margin-top: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #eef7ff;
+    color: #1a5aa8;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.codeChangeStatus.done {
+    background: #eefbf1;
+    color: #15803d;
+}
+
+.btnCodeChange {
+    margin-top: 10px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #00BBB4;
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btnCodeChange:hover {
+    transform: translateY(-2px);
+}
+
+.btnCodeChange:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
 /* Referral Actions */
 .referralActions {
     display: flex;

@@ -91,10 +91,10 @@ export async function POST(
         // 5. Crear notificación interna para administradores
         await supabase.from('notifications').insert({
             user_id: 'admin',
-            type: 'ambassador_cancellation',
+            type: 'account',
             title: 'Embajador dado de baja voluntaria',
             message: `${ambassador.first_name} ${ambassador.paternal_surname} se ha dado de baja del programa.`,
-            data: { ambassador_id: id },
+            metadata: { ambassador_id: id },
             is_read: false
         });
 
