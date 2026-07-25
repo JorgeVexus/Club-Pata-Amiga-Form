@@ -2107,106 +2107,142 @@
             line-height: 1.4;
         }
 
-        /* Welcome Modal */
+        /* Welcome Modal (estetica v2 embajadores) */
         .amb-welcome-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            inset: 0;
+            background: rgba(23, 77, 73, 0.55);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(6px);
+            padding: 20px;
+            box-sizing: border-box;
             opacity: 0;
-            animation: ambFadeIn 0.3s ease forwards;
+            animation: ambFadeIn 0.25s ease forwards;
         }
 
         .amb-welcome-modal {
-            background: white;
-            border-radius: 30px;
-            padding: 40px;
-            max-width: 550px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            background: #F8F5EE;
+            border-radius: 26px;
+            max-width: 440px;
+            width: 100%;
+            max-height: 88vh;
+            box-shadow: 0 24px 60px rgba(23, 77, 73, 0.28);
+            overflow: hidden;
             position: relative;
-            transform: translateY(-20px);
-            animation: ambSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            transform: translateY(16px);
+            animation: ambSlideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
             font-family: 'Outfit', sans-serif;
             box-sizing: border-box;
         }
 
+        .amb-welcome-scroll {
+            overflow-y: auto;
+            padding: 32px 28px 8px;
+        }
+
         .amb-welcome-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
+            font-size: 2.6rem;
+            line-height: 1;
+            margin-bottom: 10px;
         }
 
         .amb-welcome-title {
             font-family: 'Fraiche', 'Outfit', sans-serif;
-            font-size: 28px;
-            color: #333;
-            margin: 0 0 15px 0;
-            line-height: 1.3;
+            font-size: 26px;
+            color: #174D49;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
         }
 
-        .amb-welcome-text {
-            color: #555;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            text-align: left;
+        .amb-welcome-sub {
+            color: #49615D;
+            font-size: 13.5px;
+            line-height: 1.5;
+            margin: 0 0 14px 0;
         }
 
-        .amb-welcome-text p {
-            margin: 0 0 15px 0;
-        }
-
-        .amb-welcome-list {
-            margin: 0 0 20px 0;
-            padding-left: 0;
-            list-style: none;
-        }
-
-        .amb-welcome-list li {
-            position: relative;
-            padding-left: 25px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-            color: #444;
+        .amb-welcome-thanks {
+            margin: 14px 0 0;
+            font-size: 12px;
+            color: #7B8985;
+            text-align: center;
             line-height: 1.4;
         }
 
-        .amb-welcome-list li::before {
-            content: "🐾";
-            position: absolute;
-            left: 0;
-            top: 2px;
-            font-size: 1rem;
+        .amb-welcome-list {
+            margin: 0 0 8px 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .amb-welcome-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(30, 83, 80, .05);
+        }
+
+        .amb-welcome-list li span {
+            flex: none;
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background: #EAF8F6;
+            font-size: 14px;
+        }
+
+        .amb-welcome-list li div {
+            font-size: 12.5px;
+            line-height: 1.4;
+            color: #3E5854;
+        }
+
+        .amb-welcome-list li strong {
+            color: #174D49;
+        }
+
+        .amb-welcome-foot {
+            padding: 16px 28px 24px;
         }
 
         .amb-welcome-btn {
-            background: #FE8F15;
-            color: white;
-            border: 2px solid #000000;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-family: 'Fraiche', sans-serif;
-            font-size: 1.1rem;
+            width: 100%;
+            background: #A9DD28;
+            color: #174D49;
+            border: 0;
+            padding: 15px;
+            border-radius: 999px;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 18px;
             font-weight: 700;
             cursor: pointer;
-            width: 100%;
             box-sizing: border-box;
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 10px rgba(254, 143, 21, 0.2);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 8px 18px rgba(169, 221, 40, .35);
         }
 
         .amb-welcome-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(254, 143, 21, 0.3);
-            background: #e57f10;
+            box-shadow: 0 10px 22px rgba(169, 221, 40, .45);
+        }
+
+        @media (max-width: 480px) {
+            .amb-welcome-modal { max-height: 92vh; border-radius: 22px; }
+            .amb-welcome-scroll { padding: 26px 20px 6px; }
+            .amb-welcome-title { font-size: 22px; }
+            .amb-welcome-foot { padding: 14px 20px 20px; }
         }
 
         @keyframes ambFadeIn {
@@ -4130,22 +4166,22 @@
         
         overlay.innerHTML = `
             <div class="amb-welcome-modal" onclick="event.stopPropagation()">
-                <div class="amb-welcome-icon">🎉</div>
-                <h2 class="amb-welcome-title">¡Felicidades! Tu cuenta de Embajador ha sido aprobada</h2>
-                <div class="amb-welcome-text">
-                    <p>¡Ya eres parte oficial de la manada de Pata Amiga! 🐾</p>
-                    <p>A partir de este momento, tu código de referido está activo. Desde este panel podrás:</p>
+                <div class="amb-welcome-scroll">
+                    <div class="amb-welcome-icon">🎉</div>
+                    <h2 class="amb-welcome-title">¡Felicidades! Tu cuenta de Embajador ha sido aprobada</h2>
+                    <p class="amb-welcome-sub">¡Ya eres parte oficial de la manada de Pata Amiga! 🐾</p>
+                    <p class="amb-welcome-sub">A partir de este momento, tu código de referido está activo. Desde este panel podrás:</p>
                     <ul class="amb-welcome-list">
-                        <li><strong>Compartir tu código único</strong> para invitar a más familias.</li>
-                        <li><strong>Recibir una comisión del 10%</strong> por cada membresía aprobada que use tu referido.</li>
-                        <li><strong>Dar seguimiento en tiempo real</strong> a tus referidos, comisiones acumuladas y pagos mensuales.</li>
-                        <li><strong>Descargar materiales de difusión</strong> listos para compartir con tus amigos o en redes sociales.</li>
+                        <li><span>🐾</span><div><strong>Compartir tu código único</strong> para invitar a más familias.</div></li>
+                        <li><span>🐾</span><div><strong>Recibir una comisión del 10%</strong> por cada membresía aprobada que use tu referido.</div></li>
+                        <li><span>🐾</span><div><strong>Dar seguimiento en tiempo real</strong> a tus referidos, comisiones acumuladas y pagos mensuales.</div></li>
+                        <li><span>🐾</span><div><strong>Descargar materiales de difusión</strong> listos para compartir con tus amigos o en redes sociales.</div></li>
                     </ul>
-                    <p style="margin-top: 10px; font-size: 0.85rem; color: #777; text-align: center;">
-                        ¡Gracias por sumar tu voz para que más peludos y sus familias estén protegidos!
-                    </p>
+                    <p class="amb-welcome-thanks">¡Gracias por sumar tu voz para que más peludos y sus familias estén protegidos!</p>
                 </div>
-                <button id="btn-welcome-close" class="amb-welcome-btn">Comenzar ahora</button>
+                <div class="amb-welcome-foot">
+                    <button id="btn-welcome-close" class="amb-welcome-btn">Comenzar ahora</button>
+                </div>
             </div>
         `;
 
