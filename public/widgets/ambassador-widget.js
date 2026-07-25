@@ -2245,6 +2245,126 @@
             .amb-welcome-foot { padding: 14px 20px 20px; }
         }
 
+        /* Salida de la manada (cancelar cuenta de embajador) — misma estetica v2 */
+        .amb-exit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(23, 77, 73, 0.55);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(6px);
+            padding: 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            animation: ambFadeIn 0.25s ease forwards;
+        }
+
+        .amb-exit-modal {
+            background: #F8F5EE;
+            border-radius: 24px;
+            padding: 32px 28px;
+            max-width: 420px;
+            width: 100%;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 24px 60px rgba(23, 77, 73, 0.28);
+            text-align: center;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+            transform: translateY(16px);
+            animation: ambSlideUp 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .amb-exit-icon {
+            font-size: 2.4rem;
+            margin-bottom: 10px;
+        }
+
+        .amb-exit-title {
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 24px;
+            color: #174D49;
+            margin: 0 0 12px;
+            line-height: 1.2;
+        }
+
+        .amb-exit-text {
+            color: #49615D;
+            font-size: 13.5px;
+            line-height: 1.55;
+            margin: 0 0 22px;
+        }
+
+        .amb-exit-text strong {
+            color: #174D49;
+        }
+
+        .amb-exit-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .amb-exit-btn-danger {
+            width: 100%;
+            background: #E0426B;
+            color: #fff;
+            border: 0;
+            padding: 14px;
+            border-radius: 999px;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(224, 66, 107, .3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .amb-exit-btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(224, 66, 107, .4);
+        }
+
+        .amb-exit-btn-secondary {
+            width: 100%;
+            background: transparent;
+            color: #49615D;
+            border: 1px solid #DED7CB;
+            padding: 12px;
+            border-radius: 999px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .amb-exit-btn-secondary:hover {
+            border-color: #174D49;
+            color: #174D49;
+        }
+
+        .amb-exit-btn-primary {
+            width: 100%;
+            background: #A9DD28;
+            color: #174D49;
+            border: 0;
+            padding: 14px;
+            border-radius: 999px;
+            font-family: 'Fraiche', 'Outfit', sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 8px 18px rgba(169, 221, 40, .35);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .amb-exit-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px rgba(169, 221, 40, .45);
+        }
+
         @keyframes ambFadeIn {
             to { opacity: 1; }
         }
@@ -2607,6 +2727,19 @@
         .amb-chat-bubble{background:var(--amb-teal)!important;box-shadow:0 12px 30px rgba(30,83,80,.25)!important}.amb-chat-modal{border-radius:22px!important;border:1px solid var(--amb-line)!important;box-shadow:0 24px 65px rgba(30,83,80,.2)!important}.amb-chat-header{background:#205C58!important}
         @media(max-width:760px){.amb-v2-shell{padding:20px 14px calc(96px + env(safe-area-inset-bottom))}.amb-v2-top{align-items:flex-start}.amb-v2-user strong{display:none}.amb-v2-tabs{display:none}.amb-v2-hero-grid,.amb-v2-account-grid{grid-template-columns:1fr}.amb-v2-stat-grid{grid-template-columns:1fr 1fr}.amb-v2-material-grid{grid-template-columns:1fr}.amb-v2-table-head{display:none}.amb-v2-referral{grid-template-columns:1fr auto;gap:8px}.amb-v2-referral>*:nth-child(2){display:none}.amb-v2-referral>*:nth-child(4){grid-column:2;grid-row:1}.amb-v2-membership{align-items:flex-start;flex-direction:column}.amb-v2-membership a{width:100%;box-sizing:border-box;text-align:center}.amb-v2-detail-grid{grid-template-columns:1fr}.amb-v2-code-card{min-height:250px}.amb-v2-mobile-tabbar{position:fixed;inset-inline:0;bottom:0;z-index:10000;display:flex;align-items:flex-start;justify-content:space-around;gap:2px;padding:10px 6px max(10px,env(safe-area-inset-bottom));border-top:1px solid var(--amb-line);background:rgba(255,255,255,.97);box-shadow:0 -6px 22px rgba(30,83,80,.08);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}.amb-v2-mobile-tab{min-width:0;flex:1;min-height:49px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:4px 2px;border:0;background:transparent;color:#71807C;font:700 9.5px/1.1 'Outfit',sans-serif;text-align:center;text-decoration:none;cursor:pointer}.amb-v2-mobile-tab-icon{font-size:18px;line-height:1}.amb-v2-mobile-tab.is-active{background:transparent;border-color:transparent;color:var(--amb-teal);font-weight:900}}
         @media(prefers-reduced-motion:reduce){.amb-v2-shell *{scroll-behavior:auto!important;transition:none!important}}
+        .amb-v2-nocode-card{max-width:520px;margin:40px auto;padding:44px 36px;border-radius:26px;background:#fff;box-shadow:0 12px 34px rgba(30,83,80,.1);text-align:center}
+        .amb-v2-nocode-icon{font-size:44px;display:block;margin-bottom:14px}
+        .amb-v2-nocode-card h1{margin:0 0 10px;font:400 26px/1.25 'Fraiche','Outfit',sans-serif;color:var(--amb-ink)}
+        .amb-v2-nocode-card p{margin:0 0 20px;color:#5C6D69;font-size:14px;line-height:1.55}
+        .amb-v2-nocode-note{padding:12px 16px;border-radius:14px;background:#F3F7E4;color:#5A7A0E;font-size:12.5px;line-height:1.5;margin-bottom:24px}
+        .amb-v2-nocode-actions{display:flex;flex-direction:column;gap:10px}
+        .amb-v2-nocode-actions .amb-v2-primary{width:100%;min-height:48px;font-size:14.5px}
+        .amb-v2-nocode-outline{width:100%;min-height:44px;border:1px solid var(--amb-line);background:#fff;color:#087B74;border-radius:999px;font:800 13px 'Outfit',sans-serif;cursor:pointer}
+        .amb-v2-nocode-outline:hover{border-color:var(--amb-teal);background:#F0FEFC}
+        .amb-v2-nocode-card--wide{max-width:640px}
+        .amb-v2-nocode-card .amb-v2-stat-grid{margin-bottom:24px;text-align:left}
+        .amb-v2-nocode-card .amb-v2-stat{background:#FAF8F3}
+        @media(max-width:600px){.amb-v2-nocode-card{margin:24px 16px;padding:32px 22px}.amb-v2-nocode-card h1{font-size:22px}}
     `;
 
     // ============================================
@@ -2836,6 +2969,52 @@
     function renderAmbassadorV2Account(ambassador) {const name=[ambassador.first_name,ambassador.paternal_surname,ambassador.maternal_surname].filter(Boolean).join(' ')||'Embajador';const clabe=String(ambassador.clabe||'');return `<div class="amb-v2-page"><header class="amb-v2-page-head"><h1>Mi cuenta</h1><p>Administra tu perfil, datos de pago y código de embajador.</p></header><div class="amb-v2-account-grid"><section class="amb-v2-card"><div class="amb-v2-profile"><img src="${escapeHtml(ambassador.profile_photo_url||DEFAULT_AVATAR_PLACEHOLDER)}" alt="Foto de ${escapeHtml(name)}"><div><strong>${escapeHtml(name)}</strong><span>${escapeHtml(ambassador.email||'')}</span></div></div><div class="amb-v2-detail-grid"><div class="amb-v2-detail"><span>Teléfono</span><strong>${escapeHtml(ambassador.phone||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>RFC</span><strong>${escapeHtml(ambassador.rfc||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>Ciudad</span><strong>${escapeHtml(ambassador.city||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>Red principal</span><strong>${escapeHtml(ambassador.instagram||ambassador.facebook||ambassador.tiktok||'Sin registrar')}</strong></div></div><div class="amb-v2-account-actions"><button type="button" onclick="window.editAmbassadorProfile()">Editar información</button><button type="button" onclick="window.requestCodeChange('${escapeHtml(String(ambassador.id))}')">Solicitar cambio de código</button></div></section><aside class="amb-v2-card"><h2 class="amb-v2-title">Datos de pago</h2><div class="amb-v2-detail-grid"><div class="amb-v2-detail"><span>Banco</span><strong>${escapeHtml(ambassador.bank_name||'Sin registrar')}</strong></div><div class="amb-v2-detail"><span>CLABE</span><strong>${clabe?'•••• '+escapeHtml(clabe.slice(-4)):'Sin registrar'}</strong></div></div><div class="amb-v2-account-actions"><button type="button" onclick="window.addPaymentMethod()">${clabe?'Editar datos bancarios':'Agregar CLABE'}</button><button type="button" onclick="window.viewPaymentHistory()">Ver cortes mensuales</button><button class="amb-v2-danger" type="button" onclick="window.cancelAmbassadorRequest('${escapeHtml(String(ambassador.id))}')">Cancelar cuenta de embajador</button></div></aside></div><section class="amb-v2-card"><h2 class="amb-v2-title">Cuenta y sesión</h2><div class="amb-v2-account-actions"><a href="${CONFIG.PROFILE_URL}">Ver mi perfil</a><a href="${CONFIG.SETTINGS_URL}">Ajustes de cuenta</a><button class="amb-v2-danger" type="button" onclick="window.logoutAmbassador()">Cerrar sesión</button></div></section></div>`;}
     window.setAmbassadorV2View=function(view){const allowed=['summary','metrics','materials','account'];ambassadorV2View=allowed.includes(view)?view:'summary';document.querySelectorAll('.amb-v2-view').forEach(section=>{section.hidden=section.dataset.view!==ambassadorV2View;});document.querySelectorAll('.amb-v2-tab').forEach(tab=>{const active=tab.dataset.view===ambassadorV2View;tab.classList.toggle('is-active',active);tab.setAttribute('aria-selected',String(active));});window.scrollTo({top:0,behavior:'smooth'});};
     window.logoutAmbassador=async function(){try{if(window.$memberstackDom)await window.$memberstackDom.logout();}catch(e){}window.location.href=CONFIG.LOGOUT_URL;};
+    function ambassadorHasActiveCode(a){return !!(a && a.referral_code && a.referral_code_status === 'active' && !String(a.referral_code).startsWith('TMP'));}
+    function renderApprovedNoCodeV2(ambassador){
+        const name = ambassador.first_name || 'Embajador';
+        return `<div class="amb-v2-shell"><div class="amb-v2-wrap">
+            <header class="amb-v2-top">
+                <a class="amb-v2-brand" href="https://www.pataamiga.mx/" aria-label="Ir a Pata Amiga">
+                    <img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga">
+                    <span class="amb-v2-badge">EMBAJADOR</span>
+                </a>
+            </header>
+            <section class="amb-v2-nocode-card">
+                <span class="amb-v2-nocode-icon">🎉</span>
+                <h1>¡Felicidades, ${escapeHtml(name)}! Ya eres Embajador Pata Amiga</h1>
+                <p>Antes de compartir con tu manada, elige tu código único de referido. Es el último paso para activar tu panel.</p>
+                <div class="amb-v2-nocode-note">📧 Te enviamos un email con el link para elegirlo. Si no lo encuentras, usa el botón de abajo.</div>
+                <div class="amb-v2-nocode-actions">
+                    <button class="amb-v2-primary" type="button" onclick="window.generateCodeLink('${escapeHtml(String(ambassador.id))}', event)">Elegir mi código ahora</button>
+                    <button class="amb-v2-nocode-outline" type="button" onclick="window.requestNewCodeEmail('${escapeHtml(String(ambassador.id))}')">Reenviar email</button>
+                </div>
+            </section>
+        </div></div>`;
+    }
+    function renderCancelledV2(ambassador){
+        const name = ambassador.first_name || 'Embajador';
+        return `<div class="amb-v2-shell"><div class="amb-v2-wrap">
+            <header class="amb-v2-top">
+                <a class="amb-v2-brand" href="https://www.pataamiga.mx/" aria-label="Ir a Pata Amiga">
+                    <img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga">
+                    <span class="amb-v2-badge">EMBAJADOR</span>
+                </a>
+            </header>
+            <section class="amb-v2-nocode-card amb-v2-nocode-card--wide">
+                <span class="amb-v2-nocode-icon">💤</span>
+                <h1>Tu cuenta de embajador está en pausa</h1>
+                <p>Hola ${escapeHtml(name)}, diste de baja tu cuenta de Embajador Pata Amiga. Tu código de referido dejó de estar activo, pero conservamos tu historial y comisiones.</p>
+                <div class="amb-v2-stat-grid">
+                    <article class="amb-v2-stat"><span>TOTAL REFERIDOS</span><strong>${Number(ambassador.total_referrals ?? 0)}</strong></article>
+                    <article class="amb-v2-stat"><span>APROBADOS</span><strong>${Number(ambassador.approved_referrals ?? 0)}</strong></article>
+                    <article class="amb-v2-stat"><span>TOTAL HISTÓRICO</span><strong>${ambassadorV2Money(ambassador.total_earnings)}</strong></article>
+                </div>
+                <div class="amb-v2-nocode-actions">
+                    <button class="amb-v2-primary" type="button" onclick="window.reactivateAmbassador('${escapeHtml(String(ambassador.id))}')">Reactivar mi cuenta</button>
+                </div>
+            </section>
+        </div></div>`;
+    }
     function renderApproved(ambassador,materials){materials=materials||[];const name=ambassador.first_name||'Embajador';return `<div class="amb-v2-shell"><div class="amb-v2-wrap"><header class="amb-v2-top"><a class="amb-v2-brand" href="https://www.pataamiga.mx/" aria-label="Ir a Pata Amiga"><img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga"><span class="amb-v2-badge">EMBAJADOR</span></a><div class="amb-v2-user"><span class="amb-v2-avatar">${escapeHtml(name.charAt(0).toUpperCase())}</span><strong>${escapeHtml(name)}</strong></div></header><nav class="amb-v2-tabs" role="tablist"><button class="amb-v2-tab is-active" data-view="summary" role="tab" aria-selected="true" onclick="window.setAmbassadorV2View('summary')">🏠 Resumen</button><button class="amb-v2-tab" data-view="metrics" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('metrics')">📈 Métricas</button><button class="amb-v2-tab" data-view="materials" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('materials')">🖼️ Materiales</button><button class="amb-v2-tab" data-view="account" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('account')">⚙️ Mi cuenta</button></nav><main><section class="amb-v2-view" data-view="summary">${renderAmbassadorV2Summary(ambassador)}</section><section class="amb-v2-view" data-view="metrics" hidden>${renderAmbassadorV2Metrics(ambassador)}</section><section class="amb-v2-view" data-view="materials" hidden>${renderAmbassadorV2Materials(materials)}</section><section class="amb-v2-view" data-view="account" hidden>${renderAmbassadorV2Account(ambassador)}</section></main></div><nav class="amb-v2-mobile-tabbar" role="tablist" aria-label="Navegación móvil de embajador"><button class="amb-v2-tab amb-v2-mobile-tab is-active" data-view="summary" role="tab" aria-selected="true" onclick="window.setAmbassadorV2View('summary')"><span class="amb-v2-mobile-tab-icon">🏠</span><span>Resumen</span></button><button class="amb-v2-tab amb-v2-mobile-tab" data-view="metrics" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('metrics')"><span class="amb-v2-mobile-tab-icon">📈</span><span>Métricas</span></button><button class="amb-v2-tab amb-v2-mobile-tab" data-view="materials" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('materials')"><span class="amb-v2-mobile-tab-icon">🖼️</span><span>Materiales</span></button><button class="amb-v2-tab amb-v2-mobile-tab" data-view="account" role="tab" aria-selected="false" onclick="window.setAmbassadorV2View('account')"><span class="amb-v2-mobile-tab-icon">⚙️</span><span>Mi cuenta</span></button></nav></div>`;}
 
     function renderApprovedLegacy(ambassador, materials) {
@@ -3353,8 +3532,8 @@
         }
     };
 
-    window.generateCodeLink = async function (ambassadorId) {
-        const btn = event.target;
+    window.generateCodeLink = async function (ambassadorId, evt) {
+        const btn = (evt || event).target;
         const originalText = btn.textContent;
         btn.textContent = '⏳ Generando link...';
         btn.disabled = true;
@@ -3432,10 +3611,42 @@
         }
     };
 
+    function showAmbassadorExitModal({ title, text, actions, icon, confirmLabel, confirmClass }) {
+        return new Promise(resolve => {
+            const overlay = document.createElement('div');
+            overlay.className = 'amb-exit-overlay';
+            overlay.innerHTML = `
+                <div class="amb-exit-modal" onclick="event.stopPropagation()">
+                    <div class="amb-exit-icon">${icon || (actions ? '👋' : '✅')}</div>
+                    <h2 class="amb-exit-title">${title}</h2>
+                    <p class="amb-exit-text">${text}</p>
+                    <div class="amb-exit-actions">
+                        ${actions ? `
+                            <button type="button" class="${confirmClass || 'amb-exit-btn-danger'}" id="amb-exit-confirm">${confirmLabel || 'Sí, salir de la manada'}</button>
+                            <button type="button" class="amb-exit-btn-secondary" id="amb-exit-cancel">Cancelar</button>
+                        ` : `
+                            <button type="button" class="amb-exit-btn-secondary" id="amb-exit-ok">Entendido</button>
+                        `}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            const close = value => { overlay.remove(); resolve(value); };
+            overlay.addEventListener('click', () => close(false));
+            overlay.querySelector('#amb-exit-confirm')?.addEventListener('click', () => close(true));
+            overlay.querySelector('#amb-exit-cancel')?.addEventListener('click', () => close(false));
+            overlay.querySelector('#amb-exit-ok')?.addEventListener('click', () => close(true));
+        });
+    }
+
     window.cancelAmbassadorRequest = async function (ambassadorId) {
-        if (!confirm('¿Deseas cancelar tu solicitud de embajador?\n\nEsta acción no se puede deshacer.')) {
-            return;
-        }
+        const confirmed = await showAmbassadorExitModal({
+            title: 'salir de la manada como embajador',
+            text: 'Estás por cancelar tu cuenta de Embajador Pata Amiga. Perderás acceso a tu panel, tu código de referido dejará de estar activo y no podrás generar nuevas comisiones. <strong>Esta acción no se puede deshacer.</strong>',
+            actions: true
+        });
+        if (!confirmed) return;
 
         try {
             const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/cancel`, {
@@ -3446,14 +3657,63 @@
             const data = await response.json();
 
             if (data.success) {
-                alert('✅ Tu solicitud ha sido cancelada.');
-                location.reload();
+                await showAmbassadorExitModal({
+                    title: 'listo, saliste de la manada',
+                    text: 'Tu cuenta de Embajador Pata Amiga ha sido cancelada. Gracias por haber sido parte del programa. Puedes reactivarla cuando quieras volviendo a iniciar sesión.'
+                });
+                window.logoutAmbassador();
             } else {
-                alert('❌ ' + (data.error || 'No se pudo cancelar la solicitud'));
+                await showAmbassadorExitModal({
+                    title: 'no pudimos procesar tu salida',
+                    text: data.error || 'No se pudo cancelar tu cuenta de embajador. Intenta de nuevo o contacta a soporte.'
+                });
             }
         } catch (error) {
             console.error('Error cancelando:', error);
-            alert('❌ Hubo un error. Por favor intenta más tarde.');
+            await showAmbassadorExitModal({
+                title: 'no pudimos procesar tu salida',
+                text: 'Hubo un error de conexión. Por favor intenta de nuevo más tarde.'
+            });
+        }
+    };
+
+    window.reactivateAmbassador = async function (ambassadorId) {
+        const confirmed = await showAmbassadorExitModal({
+            title: 'reactivar tu cuenta de embajador',
+            text: 'Vas a reactivar tu cuenta de Embajador Pata Amiga. Tu código de referido volverá a estar activo y podrás seguir generando comisiones.',
+            actions: true,
+            icon: '🐾',
+            confirmLabel: 'Sí, reactivar',
+            confirmClass: 'amb-exit-btn-primary'
+        });
+        if (!confirmed) return;
+
+        try {
+            const response = await ambassadorApiFetch(`${CONFIG.API_BASE_URL}/api/ambassadors/${ambassadorId}/reactivate`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                await showAmbassadorExitModal({
+                    title: 'bienvenido de vuelta a la manada',
+                    text: 'Tu cuenta de Embajador Pata Amiga fue reactivada. Tu código de referido ya está activo de nuevo.'
+                });
+                location.reload();
+            } else {
+                await showAmbassadorExitModal({
+                    title: 'no pudimos reactivar tu cuenta',
+                    text: data.error || 'Intenta de nuevo o contacta a soporte.'
+                });
+            }
+        } catch (error) {
+            console.error('Error reactivando:', error);
+            await showAmbassadorExitModal({
+                title: 'no pudimos reactivar tu cuenta',
+                text: 'Hubo un error de conexión. Por favor intenta de nuevo más tarde.'
+            });
         }
     };
 
@@ -4274,7 +4534,9 @@
         } else if (ambassador.status === 'rejected') {
             content = renderRejected(ambassador, memberId);
         } else if (ambassador.status === 'approved') {
-            content = renderApproved(ambassador, materials);
+            content = ambassadorHasActiveCode(ambassador) ? renderApproved(ambassador, materials) : renderApprovedNoCodeV2(ambassador);
+        } else if (ambassador.status === 'cancelled') {
+            content = renderCancelledV2(ambassador);
         } else if (ambassador.status === 'suspended') {
             content = `
                 <div class="ambassador-rejected-card">
@@ -4287,7 +4549,7 @@
             `;
         }
 
-        container.classList.toggle('ambassador-widget-v2-host', Boolean(ambassador && ambassador.status === 'approved'));
+        container.classList.toggle('ambassador-widget-v2-host', Boolean(ambassador && (ambassador.status === 'approved' || ambassador.status === 'cancelled')));
 
         container.innerHTML = `
             <div class="ambassador-widget-container">
@@ -4297,15 +4559,15 @@
             </div>
         `;
 
-        // Mostrar modal de bienvenida si el embajador está aprobado y welcome_shown es falso
-        if (ambassador && ambassador.status === 'approved' && !ambassador.welcome_shown) {
+        // Mostrar modal de bienvenida si el embajador está aprobado, ya eligió su código y welcome_shown es falso
+        if (ambassador && ambassador.status === 'approved' && ambassadorHasActiveCode(ambassador) && !ambassador.welcome_shown) {
             setTimeout(function() {
                 showAmbassadorWelcomeModal(ambassador);
             }, 300);
         }
 
-        // Burbuja de chat con administración (solo embajadores aprobados)
-        if (ambassador && ambassador.status === 'approved') {
+        // Burbuja de chat con administración y tabs (solo embajadores aprobados con código activo)
+        if (ambassador && ambassador.status === 'approved' && ambassadorHasActiveCode(ambassador)) {
             window.setAmbassadorV2View(ambassadorV2View);
             initAmbassadorChatRealtime(ambassador);
         }

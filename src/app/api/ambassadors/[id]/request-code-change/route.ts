@@ -46,15 +46,13 @@ export async function POST(
                 type: 'ambassador_code_change_request',
                 title: 'Solicitud de cambio de código',
                 message: `${ambassador.first_name || 'Un embajador'} solicitó autorización para cambiar su código.`,
-                metadata: { ambassador_id: ambassador.id, notification_kind: 'ambassador_code_change_request' },
+                data: { ambassador_id: ambassador.id, notification_kind: 'ambassador_code_change_request' },
                 is_read: false,
             });
+            // No bloqueamos la respuesta al embajador si falla la notificación interna:
+            // la solicitud igual queda registrada y el admin puede habilitarla manualmente.
             if (notificationError) {
                 console.error('[AmbassadorCodeChange] Error creating admin notification:', notificationError);
-                return NextResponse.json(
-                    { success: false, error: 'No se pudo enviar la solicitud a administración' },
-                    { status: 500, headers: corsHeaders() }
-                );
             }
             return NextResponse.json({
                 success: true,
