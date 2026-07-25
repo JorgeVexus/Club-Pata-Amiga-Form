@@ -701,15 +701,17 @@
                     <button class="ppa-cancel-modal-x" id="ppa-cancel-step1-close">x</button>
                     <h2 class="ppa-cancel-title">cancelar membresia</h2>
                     <p class="ppa-cancel-subtitle">
-                        Estas por proceder a la cancelacion de tu membresia Pata Amiga y despedirte de la manada.
+                        Estas por proceder a la cancelacion de tu membresia Pata Amiga y con ello despedirte de la manada.
                         <br><br>
-                        <strong>Recuerda que no hay reembolsos</strong> de acuerdo con los terminos y condiciones.
+                        Recuerda que no hay reembolsos de acuerdo con el apartado 16 de los terminos y condiciones.
+                        <br><br>
+                        ¿Deseas continuar?
                         <br>
                         <button type="button" class="ppa-cancel-link-inline" id="ppa-terms-link">Ver terminos y condiciones</button>
                     </p>
                     <div class="ppa-cancel-actions">
-                        <button class="ppa-cancel-btn-secondary" id="ppa-cancel-step1-back">volver</button>
-                        <button class="ppa-cancel-btn-primary" id="ppa-cancel-step1-continue">si, continuar</button>
+                        <button class="ppa-cancel-btn-secondary" id="ppa-cancel-step1-back">cancelar</button>
+                        <button class="ppa-cancel-btn-primary" id="ppa-cancel-step1-continue">si, deseo continuar</button>
                     </div>
                 `);
 
@@ -733,7 +735,7 @@
                 ];
                 const overlay = this.createCancelModal(`
                     <button class="ppa-cancel-modal-x" id="ppa-cancel-step2-close">x</button>
-                    <h2 class="ppa-cancel-title">cuentanos por que</h2>
+                    <h2 class="ppa-cancel-title">cuentanos por que te vas de pata amiga</h2>
                     <p class="ppa-cancel-subtitle">Tu retroalimentacion nos ayuda a mejorar Pata Amiga.</p>
                     <div class="ppa-cancel-options" id="ppa-cancel-options">
                         ${reasons.map(reason => `
