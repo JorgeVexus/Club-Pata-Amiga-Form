@@ -16,6 +16,7 @@ const SERVICES_OPTIONS = [
 interface Props {
     center: WellnessCenter;
     onUpdate?: (updated: WellnessCenter) => void;
+    onSaved?: (updated: WellnessCenter) => void;
 }
 
 
@@ -206,7 +207,7 @@ function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: Bran
     );
 }
 
-export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
+export default function WellnessComplementaryForm({ center, onUpdate, onSaved }: Props) {
     const primaryLocation = center.locations?.find(location => location.is_primary);
     const [formData, setFormData] = useState({
         legal_name: center.name || '',
@@ -480,6 +481,8 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
                 body: JSON.stringify({
                     memberstack_id: center.memberstack_id,
                     ...profileData,
+                    lat: formData.lat === '' ? null : Number(formData.lat),
+                    lng: formData.lng === '' ? null : Number(formData.lng),
                     name: legal_name.trim() || center.name,
                     locations: compiledLocations
                 })
@@ -488,7 +491,7 @@ export default function WellnessComplementaryForm({ center, onUpdate }: Props) {
             const data = await response.json();
             if (data.success) {
                 setMessage({ text: '¡Información actualizada correctamente!', type: 'success' });
-                onUpdate?.(data.data);
+                onSaved?.(data.data);
             } else {
                 setMessage({ text: data.error || 'Error al actualizar', type: 'error' });
             }

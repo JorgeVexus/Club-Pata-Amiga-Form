@@ -102,10 +102,16 @@ export async function POST(request: NextRequest) {
             'bank_holder'
         ];
 
+        const NUMERIC_COLUMNS = ['lat', 'lng'];
+
         const filteredUpdateData: any = {};
         for (const key of Object.keys(updateData)) {
             if (VALID_COLUMNS.includes(key)) {
-                filteredUpdateData[key] = updateData[key];
+                let value = updateData[key];
+                if (NUMERIC_COLUMNS.includes(key) && value === '') {
+                    value = null;
+                }
+                filteredUpdateData[key] = value;
             }
         }
 

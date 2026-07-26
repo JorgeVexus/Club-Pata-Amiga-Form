@@ -206,6 +206,9 @@ export default function WellnessForm({ onSuccess }: Props) {
                         center={registeredCenter}
                         onUpdate={(updated) => {
                             setRegisteredCenter(updated);
+                        }}
+                        onSaved={(updated) => {
+                            setRegisteredCenter(updated);
                             setView('complementary-success');
                         }}
                     />
