@@ -18,6 +18,14 @@
         DEBUG: Boolean(runtimeConfig.DEBUG)
     };
 
+    // Interruptor temporal: el proyecto de Google Cloud dueno de la API key aun no
+    // tiene billing habilitado, lo que hace que Google muestre un dialogo de error
+    // visible a los usuarios ("Esta pagina no puede cargar Google Maps
+    // correctamente"). Mientras eso no se resuelva, no se intenta cargar el script
+    // y el campo de direccion queda como texto libre sin autocompletado. Volver a
+    // poner en true cuando se active el billing.
+    const GOOGLE_PLACES_ENABLED = false;
+
     // Carga perezosa y compartida del script de Google Maps. Se usa una promesa
     // global (window.__pataAmigaGoogleMapsPromise) para que, sin importar cuantos
     // formularios llamen a esto, el script solo se inyecte una vez por pagina.
@@ -51,6 +59,9 @@
     function ensureGoogleMapsLoaded(callback) {
         if (window.google && window.google.maps && window.google.maps.places) {
             callback();
+            return;
+        }
+        if (!GOOGLE_PLACES_ENABLED) {
             return;
         }
         if (!window.__pataAmigaGoogleMapsPromise) {

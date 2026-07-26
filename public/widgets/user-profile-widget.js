@@ -10,6 +10,14 @@
         placeholderAvatar: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22%3E%3Ccircle cx=%2248%22 cy=%2248%22 r=%2248%22 fill=%22%237DD8D5%22/%3E%3Ccircle cx=%2248%22 cy=%2236%22 r=%2216%22 fill=%22white%22/%3E%3Cellipse cx=%2248%22 cy=%2278%22 rx=%2226%22 ry=%2218%22 fill=%22white%22/%3E%3C/svg%3E'
     };
 
+    // Interruptor temporal: el proyecto de Google Cloud dueno de la API key aun no
+    // tiene billing habilitado, lo que hace que Google muestre un dialogo de error
+    // visible a los usuarios ("Esta pagina no puede cargar Google Maps
+    // correctamente"). Mientras eso no se resuelva, no se intenta cargar el script
+    // y el campo de direccion queda como texto libre sin autocompletado. Volver a
+    // poner en true cuando se active el billing.
+    const GOOGLE_PLACES_ENABLED = false;
+
     // Carga perezosa y compartida del script de Google Maps (misma promesa
     // global que usa wellness-center-widget.js, para no inyectar el script dos veces).
     //
@@ -42,6 +50,9 @@
     function ensureGoogleMapsLoaded(callback) {
         if (window.google && window.google.maps && window.google.maps.places) {
             callback();
+            return;
+        }
+        if (!GOOGLE_PLACES_ENABLED) {
             return;
         }
         if (!window.__pataAmigaGoogleMapsPromise) {
