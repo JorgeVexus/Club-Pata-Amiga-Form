@@ -19,6 +19,20 @@ interface Props {
     onSaved?: (updated: WellnessCenter) => void;
 }
 
+// Reintenta una vez si la primera llamada falla por red o por un cold-start del
+// backend (respuesta lenta/incompleta), en vez de mostrar un error de conexión
+// que se resuelve solo con reintentar manualmente.
+async function fetchJsonWithRetry(url: string, options: RequestInit, retries = 1): Promise<any> {
+    try {
+        const response = await fetch(url, options);
+        return await response.json();
+    } catch (err) {
+        if (retries <= 0) throw err;
+        await new Promise(resolve => setTimeout(resolve, 800));
+        return fetchJsonWithRetry(url, options, retries - 1);
+    }
+}
+
 
 const DEFAULT_LOGO_PLACEHOLDER = `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
     <svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
@@ -182,12 +196,24 @@ function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: Bran
                 {(location.photo_urls || []).length > 0 ? (
                     <div className={styles.locationPhotoGrid}>
                         {(location.photo_urls || []).map((url, photoIndex) => (
-                            <img
-                                key={`${url}-${photoIndex}`}
-                                src={url}
-                                alt={`Foto de sucursal ${index + 1}`}
-                                className={styles.locationPhotoThumb}
-                            />
+                            <div key={`${url}-${photoIndex}`} className={styles.locationPhotoItem}>
+                                <img
+                                    src={url}
+                                    alt={`Foto de sucursal ${index + 1}`}
+                                    className={styles.locationPhotoThumb}
+                                />
+                                <button
+                                    type="button"
+                                    className={styles.locationPhotoRemove}
+                                    title="Eliminar foto"
+                                    onClick={() => onChange({
+                                        ...location,
+                                        photo_urls: (location.photo_urls || []).filter((_, i) => i !== photoIndex)
+                                    })}
+                                >
+                                    &times;
+                                </button>
+                            </div>
                         ))}
                     </div>
                 ) : (
@@ -481,7 +507,7 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
 
         try {
             const { legal_name, ...profileData } = formData;
-            const response = await fetch('/api/wellness/update', {
+            const data = await fetchJsonWithRetry('/api/wellness/update', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -494,7 +520,6 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                 })
             });
 
-            const data = await response.json();
             if (data.success) {
                 setMessage({ text: '¡Información actualizada correctamente!', type: 'success' });
                 onSaved?.(data.data);
@@ -658,12 +683,24 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                     {formData.location_photo_urls.length > 0 ? (
                         <div className={styles.locationPhotoGrid}>
                             {formData.location_photo_urls.map((url, photoIndex) => (
-                                <img
-                                    key={`${url}-${photoIndex}`}
-                                    src={url}
-                                    alt="Foto de sucursal principal"
-                                    className={styles.locationPhotoThumb}
-                                />
+                                <div key={`${url}-${photoIndex}`} className={styles.locationPhotoItem}>
+                                    <img
+                                        src={url}
+                                        alt="Foto de sucursal principal"
+                                        className={styles.locationPhotoThumb}
+                                    />
+                                    <button
+                                        type="button"
+                                        className={styles.locationPhotoRemove}
+                                        title="Eliminar foto"
+                                        onClick={() => setFormData(prev => ({
+                                            ...prev,
+                                            location_photo_urls: prev.location_photo_urls.filter((_, i) => i !== photoIndex)
+                                        }))}
+                                    >
+                                        &times;
+                                    </button>
+                                </div>
                             ))}
                         </div>
                     ) : (

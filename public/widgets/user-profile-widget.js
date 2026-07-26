@@ -78,6 +78,20 @@
         window.__pataAmigaGoogleMapsPromise.then(callback).catch(err => console.error('❌ Google Maps:', err));
     }
 
+    // Reintenta una vez si la primera llamada falla por red o por un cold-start
+    // del backend, en vez de mostrarle al usuario un error que se resuelve solo
+    // al reintentar manualmente.
+    async function fetchJsonWithRetry(url, options, retries = 1) {
+        try {
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (err) {
+            if (retries <= 0) throw err;
+            await new Promise(r => setTimeout(r, 800));
+            return fetchJsonWithRetry(url, options, retries - 1);
+        }
+    }
+
     const MONTHS = ['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const fmtDate = d => { 
         if(!d || d === 'null' || d === 'undefined') return '—'; 
@@ -1318,11 +1332,11 @@
             };
 
             try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/wellness/update`, {
+                const res = await fetchJsonWithRetry(`${CONFIG.apiUrl}/api/wellness/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
-                }).then(r => r.json());
+                });
 
                 if (res.success) {
                     this.wellnessCenter = { ...this.wellnessCenter, ...payload };

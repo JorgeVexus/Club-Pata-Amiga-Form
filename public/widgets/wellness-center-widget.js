@@ -87,6 +87,21 @@
         window.__pataAmigaGoogleMapsPromise.then(callback).catch(err => console.error('❌ Google Maps:', err));
     }
 
+    // Reintenta una vez si la primera llamada falla por red o por un cold-start
+    // del backend (respuesta lenta/incompleta que revienta el JSON.parse), en vez
+    // de mostrarle al usuario un "Error de conexion" que se resuelve solo al
+    // reintentar manualmente.
+    async function fetchJsonWithRetry(url, options, retries = 1) {
+        try {
+            const response = await fetch(url, options);
+            return await response.json();
+        } catch (err) {
+            if (retries <= 0) throw err;
+            await new Promise(r => setTimeout(r, 800));
+            return fetchJsonWithRetry(url, options, retries - 1);
+        }
+    }
+
     const INSTAGRAM_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
     const FACEBOOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`;
     const TIKTOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>`;
@@ -369,6 +384,34 @@
             border-radius: 12px;
             border: 1px solid #CBD5E1;
             background: #F8FAFC;
+            display: block;
+        }
+
+        .wc-location-photo-item {
+            position: relative;
+        }
+
+        .wc-location-photo-remove {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #EF4444;
+            color: #FFFFFF;
+            border: 2px solid #FFFFFF;
+            font-size: 14px;
+            line-height: 1;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .wc-location-photo-remove:hover {
+            background: #DC2626;
         }
 
         .wc-location-photo-help {
@@ -960,7 +1003,12 @@
 
         return `
             <div class="wc-location-photo-grid">
-                ${photoUrls.map(url => `<img src="${url}" class="wc-location-photo-thumb" alt="Foto de sucursal">`).join('')}
+                ${photoUrls.map((url, index) => `
+                    <div class="wc-location-photo-item">
+                        <img src="${url}" class="wc-location-photo-thumb" alt="Foto de sucursal">
+                        <button type="button" class="wc-location-photo-remove" data-remove-photo="${index}" title="Eliminar foto">&times;</button>
+                    </div>
+                `).join('')}
             </div>
         `;
     }
@@ -1996,6 +2044,27 @@
 
             input.dataset.bound = 'true';
         });
+
+        // Delegado: cubre tambien los paneles de sucursales agregadas despues
+        // (no hace falta volver a enlazar cada vez que se agrega una sucursal).
+        if (!root.dataset.photoRemoveBound) {
+            root.addEventListener('click', (event) => {
+                const removeBtn = event.target.closest('[data-remove-photo]');
+                if (!removeBtn) return;
+
+                const panel = removeBtn.closest('.wc-location-photos-panel');
+                const hiddenInput = panel?.querySelector('input[type="hidden"]');
+                const preview = panel?.querySelector('[data-location-photo-preview]');
+                if (!hiddenInput) return;
+
+                const index = parseInt(removeBtn.dataset.removePhoto, 10);
+                const urls = parsePhotoUrls(hiddenInput.value || '');
+                urls.splice(index, 1);
+                hiddenInput.value = serializePhotoUrls(urls);
+                if (preview) preview.innerHTML = renderPhotoPreview(urls);
+            });
+            root.dataset.photoRemoveBound = 'true';
+        }
     }
 
     function bindEditProfileForm(root, center, options = {}) {
@@ -2213,12 +2282,11 @@
             btn.innerText = 'Guardando...';
 
             try {
-                const response = await fetch(`${CONFIG.API_BASE_URL}/api/wellness/update`, {
+                const result = await fetchJsonWithRetry(`${CONFIG.API_BASE_URL}/api/wellness/update`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(updateData)
                 });
-                const result = await response.json();
                 if (result.success) {
                     alert('Perfil actualizado con éxito');
                     onSuccess();
