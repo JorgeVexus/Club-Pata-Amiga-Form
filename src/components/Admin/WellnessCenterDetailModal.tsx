@@ -242,23 +242,27 @@ export default function WellnessCenterDetailModal({ center, isOpen, onClose, onR
                                                 })}
                                             </div>
                                         )}
-                                        <p className={styles.address}>
-                                            {center.address || 'No se proporcionó dirección física.'}
-                                        </p>
-                                        {(center.lat && center.lng) && (
-                                            <div className={styles.coords}>
-                                                Coordenadas: {center.lat}, {center.lng}
-                                                <div style={{ marginTop: '10px' }}>
-                                                    <a 
-                                                        href={`https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}`}
-                                                        target="_blank"
-                                                        rel="noopener noreferrer"
-                                                        style={{ color: '#00BBB4', fontWeight: 600, textDecoration: 'underline' }}
-                                                    >
-                                                        📍 Ver en Google Maps
-                                                    </a>
-                                                </div>
-                                            </div>
+                                        {locations.length === 0 && (
+                                            <>
+                                                <p className={styles.address}>
+                                                    {center.address || 'No se proporcionó dirección física.'}
+                                                </p>
+                                                {(center.lat && center.lng) && (
+                                                    <div className={styles.coords}>
+                                                        Coordenadas: {center.lat}, {center.lng}
+                                                        <div style={{ marginTop: '10px' }}>
+                                                            <a
+                                                                href={`https://www.google.com/maps/search/?api=1&query=${center.lat},${center.lng}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                style={{ color: '#00BBB4', fontWeight: 600, textDecoration: 'underline' }}
+                                                            >
+                                                                📍 Ver en Google Maps
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                 </section>

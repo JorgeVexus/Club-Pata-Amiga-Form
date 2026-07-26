@@ -1063,19 +1063,23 @@
 
     function collectWellnessLocations(form) {
         const primaryAddress = form.querySelector('[name="address"]')?.value || '';
-        const primaryLat = form.querySelector('[name="lat"]')?.value || '';
-        const primaryLng = form.querySelector('[name="lng"]')?.value || '';
+        const primaryLat = normalizeLocationNumber(form.querySelector('[name="lat"]')?.value || '');
+        const primaryLng = normalizeLocationNumber(form.querySelector('[name="lng"]')?.value || '');
         const primaryPhone = form.querySelector('[name="phone"]')?.value || '';
         const primaryName = form.querySelector('[name="establishment_name"]')?.value || '';
         const primaryPhotoUrls = parsePhotoUrls(form.querySelector('[name="primary_photo_urls"]')?.value || '');
 
         const locations = [];
-        if (primaryAddress.trim()) {
+        // No depender solo de la direccion en texto: si ya hay coordenadas (por
+        // ejemplo via "Obtener mi ubicacion actual") o fotos, la sucursal principal
+        // sigue siendo valida aunque el campo de direccion este vacio.
+        const hasPrimaryData = primaryAddress.trim() || (primaryLat !== null && primaryLng !== null) || primaryPhotoUrls.length > 0;
+        if (hasPrimaryData) {
             locations.push({
                 name: primaryName.trim() || 'Sucursal principal',
                 address: primaryAddress.trim(),
-                lat: normalizeLocationNumber(primaryLat),
-                lng: normalizeLocationNumber(primaryLng),
+                lat: primaryLat,
+                lng: primaryLng,
                 phone: primaryPhone.trim() || null,
                 photo_urls: primaryPhotoUrls,
                 is_primary: true
@@ -1089,15 +1093,18 @@
 
         form.querySelectorAll('[data-location-row]').forEach((row, index) => {
             const address = row.querySelector('[name="location_address"]')?.value || '';
-            if (!address.trim()) return;
+            const lat = normalizeLocationNumber(row.querySelector('[name="location_lat"]')?.value || '');
+            const lng = normalizeLocationNumber(row.querySelector('[name="location_lng"]')?.value || '');
+            const photoUrls = parsePhotoUrls(row.querySelector('[name="location_photo_urls"]')?.value || '');
+            if (!address.trim() && (lat === null || lng === null) && photoUrls.length === 0) return;
 
             locations.push({
                 name: row.querySelector('[name="location_name"]')?.value?.trim() || `Sucursal ${index + 2}`,
                 address: address.trim(),
-                lat: normalizeLocationNumber(row.querySelector('[name="location_lat"]')?.value || ''),
-                lng: normalizeLocationNumber(row.querySelector('[name="location_lng"]')?.value || ''),
+                lat,
+                lng,
                 phone: row.querySelector('[name="location_phone"]')?.value?.trim() || null,
-                photo_urls: parsePhotoUrls(row.querySelector('[name="location_photo_urls"]')?.value || ''),
+                photo_urls: photoUrls,
                 is_primary: false
             });
         });

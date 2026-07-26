@@ -51,17 +51,28 @@ export const wellnessService = {
             .map((location, index) => ({
                 wellness_center_id: wellnessCenterId,
                 name: location.name?.trim() || null,
-                address: location.address?.trim(),
+                // La columna address es NOT NULL en la tabla; usar cadena vacia,
+                // no null, cuando la sucursal solo tiene coordenadas o fotos.
+                address: location.address?.trim() || '',
                 lat: typeof location.lat === 'number' ? location.lat : null,
                 lng: typeof location.lng === 'number' ? location.lng : null,
                 phone: location.phone?.trim() || null,
                 photo_urls: Array.isArray(location.photo_urls)
                     ? location.photo_urls.filter(url => typeof url === 'string' && url.trim()).map(url => url.trim())
                     : [],
-                is_primary: index === 0 ? true : Boolean(location.is_primary),
+                is_primary: Boolean(location.is_primary),
                 sort_order: index
             }))
-            .filter(location => location.address);
+            // Conservar la sucursal si tiene direccion, coordenadas o fotos: una
+            // sucursal solo con GPS/fotos (sin texto de direccion) sigue siendo valida.
+            .filter(location => location.address || (location.lat !== null && location.lng !== null) || location.photo_urls.length > 0);
+
+        // Si ninguna quedo marcada como principal (por ejemplo, la principal no
+        // tenia datos y se descarto), la primera sucursal restante toma ese lugar
+        // para que siempre haya una sucursal principal cuando existe al menos una.
+        if (normalized.length > 0 && !normalized.some(location => location.is_primary)) {
+            normalized[0].is_primary = true;
+        }
 
         const { error: deleteError } = await supabase
             .from('wellness_center_locations')

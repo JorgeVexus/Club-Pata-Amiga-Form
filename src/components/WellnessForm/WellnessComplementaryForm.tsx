@@ -445,14 +445,19 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
         }
 
         const compiledLocations: WellnessCenterLocation[] = [];
+        const primaryLat = formData.lat === '' ? null : Number(formData.lat);
+        const primaryLng = formData.lng === '' ? null : Number(formData.lng);
 
-        // 1. Agregar sucursal principal si hay dirección
-        if (formData.address.trim()) {
+        // 1. Agregar sucursal principal si hay dirección, coordenadas o fotos
+        // (no depender solo del texto de dirección: usar "mi ubicación actual"
+        // o subir una foto también debe conservar la sucursal principal).
+        const hasPrimaryData = formData.address.trim() || (primaryLat !== null && primaryLng !== null) || formData.location_photo_urls.length > 0;
+        if (hasPrimaryData) {
             compiledLocations.push({
                 name: formData.establishment_name.trim() || 'Sucursal principal',
                 address: formData.address.trim(),
-                lat: formData.lat === '' ? null : Number(formData.lat),
-                lng: formData.lng === '' ? null : Number(formData.lng),
+                lat: primaryLat,
+                lng: primaryLng,
                 phone: formData.phone.trim() || null,
                 photo_urls: formData.location_photo_urls,
                 is_primary: true
@@ -462,7 +467,8 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
         // 2. Agregar sucursales adicionales si se activó el switch
         if (hasBranches) {
             branches.forEach((branch, idx) => {
-                if (branch.address.trim()) {
+                const hasBranchData = branch.address.trim() || (branch.lat != null && branch.lng != null) || (branch.photo_urls || []).length > 0;
+                if (hasBranchData) {
                     compiledLocations.push({
                         ...branch,
                         name: branch.name?.trim() || `Sucursal ${idx + 2}`,
