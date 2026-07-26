@@ -18,6 +18,30 @@
         DEBUG: Boolean(runtimeConfig.DEBUG)
     };
 
+    // Carga perezosa y compartida del script de Google Places. Se usa una promesa
+    // global (window.__pataAmigaGoogleMapsPromise) para que, sin importar cuantos
+    // formularios llamen a esto, el script solo se inyecte una vez por pagina.
+    function ensureGoogleMapsLoaded(callback) {
+        if (window.google && window.google.maps && window.google.maps.places) {
+            callback();
+            return;
+        }
+        if (!window.__pataAmigaGoogleMapsPromise) {
+            window.__pataAmigaGoogleMapsPromise = fetch(`${CONFIG.API_BASE_URL}/api/config/maps-key`)
+                .then(r => r.json())
+                .then(data => new Promise((resolve, reject) => {
+                    if (!data.key) { reject(new Error('No hay Google Maps API key configurada')); return; }
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&language=es&loading=async`;
+                    script.async = true;
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('No se pudo cargar el script de Google Maps'));
+                    document.head.appendChild(script);
+                }));
+        }
+        window.__pataAmigaGoogleMapsPromise.then(callback).catch(err => console.error('❌ Google Maps:', err));
+    }
+
     const INSTAGRAM_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>`;
     const FACEBOOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>`;
     const TIKTOK_SVG = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path></svg>`;
@@ -2005,9 +2029,10 @@
                 });
             }
 
-            if (window.google && window.google.maps && window.google.maps.places) {
-                const addressInput = row.querySelector('.wc-location-address');
-                if (addressInput && !addressInput.dataset.autocompleteReady) {
+            const addressInput = row.querySelector('.wc-location-address');
+            if (addressInput && !addressInput.dataset.autocompleteReady) {
+                addressInput.dataset.autocompleteReady = 'true';
+                ensureGoogleMapsLoaded(() => {
                     const autocomplete = new google.maps.places.Autocomplete(addressInput);
                     autocomplete.addListener('place_changed', () => {
                         const place = autocomplete.getPlace();
@@ -2016,8 +2041,7 @@
                             row.querySelector('.wc-location-lng').value = place.geometry.location.lng().toFixed(8);
                         }
                     });
-                    addressInput.dataset.autocompleteReady = 'true';
-                }
+                });
             }
         };
 
@@ -2076,15 +2100,18 @@
             });
         }
 
-        if (window.google && window.google.maps && window.google.maps.places) {
-            const addressInput = root.querySelector('#wc-address-input');
-            const autocomplete = new google.maps.places.Autocomplete(addressInput);
-            autocomplete.addListener('place_changed', () => {
-                const place = autocomplete.getPlace();
-                if (place.geometry) {
-                    root.querySelector('#wc-lat').value = place.geometry.location.lat().toFixed(8);
-                    root.querySelector('#wc-lng').value = place.geometry.location.lng().toFixed(8);
-                }
+        const mainAddressInput = root.querySelector('#wc-address-input');
+        if (mainAddressInput && !mainAddressInput.dataset.autocompleteReady) {
+            mainAddressInput.dataset.autocompleteReady = 'true';
+            ensureGoogleMapsLoaded(() => {
+                const autocomplete = new google.maps.places.Autocomplete(mainAddressInput);
+                autocomplete.addListener('place_changed', () => {
+                    const place = autocomplete.getPlace();
+                    if (place.geometry) {
+                        root.querySelector('#wc-lat').value = place.geometry.location.lat().toFixed(8);
+                        root.querySelector('#wc-lng').value = place.geometry.location.lng().toFixed(8);
+                    }
+                });
             });
         }
 

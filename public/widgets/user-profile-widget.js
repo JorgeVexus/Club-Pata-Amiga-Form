@@ -10,6 +10,29 @@
         placeholderAvatar: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22%3E%3Ccircle cx=%2248%22 cy=%2248%22 r=%2248%22 fill=%22%237DD8D5%22/%3E%3Ccircle cx=%2248%22 cy=%2236%22 r=%2216%22 fill=%22white%22/%3E%3Cellipse cx=%2248%22 cy=%2278%22 rx=%2226%22 ry=%2218%22 fill=%22white%22/%3E%3C/svg%3E'
     };
 
+    // Carga perezosa y compartida del script de Google Places (misma promesa
+    // global que usa wellness-center-widget.js, para no inyectar el script dos veces).
+    function ensureGoogleMapsLoaded(callback) {
+        if (window.google && window.google.maps && window.google.maps.places) {
+            callback();
+            return;
+        }
+        if (!window.__pataAmigaGoogleMapsPromise) {
+            window.__pataAmigaGoogleMapsPromise = fetch(`${CONFIG.apiUrl}/api/config/maps-key`)
+                .then(r => r.json())
+                .then(data => new Promise((resolve, reject) => {
+                    if (!data.key) { reject(new Error('No hay Google Maps API key configurada')); return; }
+                    const script = document.createElement('script');
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&language=es&loading=async`;
+                    script.async = true;
+                    script.onload = resolve;
+                    script.onerror = () => reject(new Error('No se pudo cargar el script de Google Maps'));
+                    document.head.appendChild(script);
+                }));
+        }
+        window.__pataAmigaGoogleMapsPromise.then(callback).catch(err => console.error('❌ Google Maps:', err));
+    }
+
     const MONTHS = ['','enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     const fmtDate = d => { 
         if(!d || d === 'null' || d === 'undefined') return '—'; 
@@ -1002,6 +1025,8 @@
                         <div class="ppa-fg"><label class="ppa-fl">Correo electrónico (no editable)</label><input class="ppa-fi" value="${c.email||this.member?.auth?.email||''}" disabled /></div>
                         <div class="ppa-fg"><label class="ppa-fl">Teléfono de contacto</label><input class="ppa-fi" id="ef-phone" value="${c.phone||''}" placeholder="Ej: 5512345678" /></div>
                         <div class="ppa-fg"><label class="ppa-fl">Dirección principal</label><textarea class="ppa-fi" id="ef-address" style="min-height:80px;border-radius:20px;resize:vertical;" placeholder="Calle, número, colonia, CP y ciudad">${c.address||''}</textarea></div>
+                        <input type="hidden" id="ef-lat" value="${c.lat||''}">
+                        <input type="hidden" id="ef-lng" value="${c.lng||''}">
                         <button class="ppa-save-btn" id="ppa-save-btn">guardar cambios</button>
                         <p class="ppa-msg" id="ppa-save-msg"></p>
                     </div>`;
@@ -1011,6 +1036,19 @@
                 document.getElementById('ppa-modal-close').addEventListener('click', () => this.closeModal());
                 overlay.addEventListener('click', e => { if(e.target === overlay) this.closeModal(); });
                 document.getElementById('ppa-save-btn').addEventListener('click', () => this.saveWellnessProfile());
+
+                const addressInput = document.getElementById('ef-address');
+                ensureGoogleMapsLoaded(() => {
+                    const autocomplete = new google.maps.places.Autocomplete(addressInput);
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            addressInput.value = place.formatted_address || addressInput.value;
+                            document.getElementById('ef-lat').value = place.geometry.location.lat().toFixed(8);
+                            document.getElementById('ef-lng').value = place.geometry.location.lng().toFixed(8);
+                        }
+                    });
+                });
                 return;
             }
 
@@ -1223,11 +1261,15 @@
             msg.className = 'ppa-msg';
             msg.textContent = '';
 
+            const latValue = document.getElementById('ef-lat')?.value;
+            const lngValue = document.getElementById('ef-lng')?.value;
             const payload = {
                 memberstack_id: this.member.id,
                 establishment_name: document.getElementById('ef-name')?.value?.trim(),
                 phone: document.getElementById('ef-phone')?.value?.trim(),
                 address: document.getElementById('ef-address')?.value?.trim(),
+                lat: latValue ? Number(latValue) : null,
+                lng: lngValue ? Number(lngValue) : null,
             };
 
             try {
