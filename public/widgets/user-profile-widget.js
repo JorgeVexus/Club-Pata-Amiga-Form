@@ -10,8 +10,11 @@
         placeholderAvatar: 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 96 96%22%3E%3Ccircle cx=%2248%22 cy=%2248%22 r=%2248%22 fill=%22%237DD8D5%22/%3E%3Ccircle cx=%2248%22 cy=%2236%22 r=%2216%22 fill=%22white%22/%3E%3Cellipse cx=%2248%22 cy=%2278%22 rx=%2226%22 ry=%2218%22 fill=%22white%22/%3E%3C/svg%3E'
     };
 
-    // Carga perezosa y compartida del script de Google Places (misma promesa
+    // Carga perezosa y compartida del script de Google Maps (misma promesa
     // global que usa wellness-center-widget.js, para no inyectar el script dos veces).
+    // Con loading=async el evento onload del <script> dispara en cuanto el mini
+    // bootstrap esta listo, no cuando la libreria "places" termino de cargar, asi
+    // que hay que esperar explicitamente con google.maps.importLibrary('places').
     function ensureGoogleMapsLoaded(callback) {
         if (window.google && window.google.maps && window.google.maps.places) {
             callback();
@@ -22,13 +25,24 @@
                 .then(r => r.json())
                 .then(data => new Promise((resolve, reject) => {
                     if (!data.key) { reject(new Error('No hay Google Maps API key configurada')); return; }
+                    if (window.google && window.google.maps && typeof window.google.maps.importLibrary === 'function') {
+                        resolve();
+                        return;
+                    }
                     const script = document.createElement('script');
-                    script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&libraries=places&language=es&loading=async`;
+                    script.src = `https://maps.googleapis.com/maps/api/js?key=${data.key}&language=es&loading=async`;
                     script.async = true;
                     script.onload = resolve;
                     script.onerror = () => reject(new Error('No se pudo cargar el script de Google Maps'));
                     document.head.appendChild(script);
-                }));
+                }))
+                .then(() => {
+                    if (window.google && window.google.maps && typeof window.google.maps.importLibrary === 'function') {
+                        return window.google.maps.importLibrary('places');
+                    }
+                    if (window.google && window.google.maps && window.google.maps.places) return;
+                    throw new Error('Google Maps se cargo pero la libreria "places" no esta disponible');
+                });
         }
         window.__pataAmigaGoogleMapsPromise.then(callback).catch(err => console.error('❌ Google Maps:', err));
     }
