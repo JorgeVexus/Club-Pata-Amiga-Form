@@ -1005,7 +1005,7 @@
                 </div>
                 <div class="wc-form-group">
                     <label class="wc-label">Direccion completa</label>
-                    <textarea name="location_address" class="wc-input wc-location-address" style="min-height:70px;" placeholder="Calle, numero, colonia, CP y ciudad">${location.address || ''}</textarea>
+                    <input type="text" name="location_address" class="wc-input wc-location-address" value="${escapeHtml(location.address || '')}" placeholder="Calle, numero, colonia, CP y ciudad">
                 </div>
                 <div class="wc-input-row">
                     <div class="wc-form-group">
@@ -1330,7 +1330,7 @@
                 <h3 class="wc-section-title">Ubicación y Geolocalización</h3>
                 <div class="wc-form-group">
                     <label class="wc-label">Dirección Completa</label>
-                    <textarea name="address" id="wc-address-input" class="wc-input" style="min-height:80px;" placeholder="Calle, número, colonia, CP y ciudad">${center.address || ''}</textarea>
+                    <input type="text" name="address" id="wc-address-input" class="wc-input" value="${escapeHtml(center.address || '')}" placeholder="Calle, número, colonia, CP y ciudad">
                 </div>
 
                 <div class="wc-input-row">

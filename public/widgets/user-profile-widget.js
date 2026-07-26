@@ -1069,7 +1069,7 @@
                         <div class="ppa-fg"><label class="ppa-fl">Nombre del Establecimiento</label><input class="ppa-fi" id="ef-name" value="${c.establishment_name||c.name||''}" placeholder="Ej: Clínica Vet Pata Amiga" /></div>
                         <div class="ppa-fg"><label class="ppa-fl">Correo electrónico (no editable)</label><input class="ppa-fi" value="${c.email||this.member?.auth?.email||''}" disabled /></div>
                         <div class="ppa-fg"><label class="ppa-fl">Teléfono de contacto</label><input class="ppa-fi" id="ef-phone" value="${c.phone||''}" placeholder="Ej: 5512345678" /></div>
-                        <div class="ppa-fg"><label class="ppa-fl">Dirección principal</label><textarea class="ppa-fi" id="ef-address" style="min-height:80px;border-radius:20px;resize:vertical;" placeholder="Calle, número, colonia, CP y ciudad">${c.address||''}</textarea></div>
+                        <div class="ppa-fg"><label class="ppa-fl">Dirección principal</label><input class="ppa-fi" id="ef-address" style="border-radius:20px;" value="${this.escapeHtml(c.address||'')}" placeholder="Calle, número, colonia, CP y ciudad"></div>
                         <input type="hidden" id="ef-lat" value="${c.lat||''}">
                         <input type="hidden" id="ef-lng" value="${c.lng||''}">
                         <button class="ppa-save-btn" id="ppa-save-btn">guardar cambios</button>
