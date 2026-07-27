@@ -58,13 +58,13 @@ test('ambassador V2 preserves administrative chat behavior through APIs', () => 
   assert.match(source, /unreadOnly=true&for=ambassador/);
 });
 
-test('ambassador V2 mobile navigation fits all four tabs without horizontal overflow', () => {
+test('ambassador V2 mobile navigation exposes a fixed four-option tab bar', () => {
   assert.match(
     source,
-    /@media\(max-width:760px\).*?\.amb-v2-tabs\{[^}]*display:grid[^}]*grid-template-columns:repeat\(2,minmax\(0,1fr\)\)[^}]*overflow:visible[^}]*\}/s,
+    /@media\(max-width:760px\).*?\.amb-v2-tabs\{display:none\}.*?\.amb-v2-mobile-tabbar\{[^}]*position:fixed[^}]*display:flex[^}]*\}/s,
   );
   assert.match(
     source,
-    /@media\(max-width:760px\).*?\.amb-v2-tab\{[^}]*min-width:0[^}]*width:100%[^}]*padding:0 10px[^}]*\}/s,
+    /<nav class="amb-v2-mobile-tabbar"[^>]*>.*?data-view="summary".*?data-view="metrics".*?data-view="materials".*?data-view="account".*?<\/nav>/s,
   );
 });

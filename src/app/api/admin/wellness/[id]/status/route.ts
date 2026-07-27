@@ -1,11 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { resend, DEFAULT_FROM_EMAIL } from '@/lib/resend';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 export async function POST(
-    request: Request,
+    request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const admin = await getAdminUser(request);
+    if (!admin || ('isUnauthorized' in admin && admin.isUnauthorized)) {
+        return unauthorizedResponse();
+    }
+
     const { id } = await params;
     const { status, rejection_reason } = await request.json();
 

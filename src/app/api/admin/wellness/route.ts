@@ -1,7 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     const { searchParams } = new URL(request.url);
     const status = searchParams.get('status');
     const id = searchParams.get('id');

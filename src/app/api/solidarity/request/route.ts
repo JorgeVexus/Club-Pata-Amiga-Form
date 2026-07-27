@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 import { SOLIDARITY_LIMITS, getSolidarityAvailableAmount } from '@/utils/solidarity-balance';
 import { getPetCarenciaDate, getDaysUntilActive, isPetActive } from '@/utils/carencia.utils';
 import { getSolidarityCycle } from '@/utils/solidarity-cycle';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -64,6 +65,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400, headers: corsHeaders });
         }
 
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
+
         const normalizedBankClabe = sanitizeClabe(bankClabe);
         if (requestType === 'reimbursement' && (!bankName || !bankHolder)) {
             return NextResponse.json({ error: 'Banco y titular de la cuenta son obligatorios.' }, { status: 400, headers: corsHeaders });
@@ -80,7 +84,7 @@ export async function POST(request: NextRequest) {
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('id, first_name, last_name, first_payment_at, payment_completed_at, created_at')
-            .eq('memberstack_id', memberstackId)
+            .eq('id', auth.actor.supabaseUserId)
             .single();
 
         if (userError || !user) {
@@ -108,7 +112,7 @@ export async function POST(request: NextRequest) {
         const { data: referral } = await supabaseAdmin
             .from('referrals')
             .select('id')
-            .eq('referred_user_id', memberstackId)
+            .eq('referred_user_id', auth.actor.memberstackId)
             .maybeSingle();
 
         const hasAmbassadorCode = !!referral;

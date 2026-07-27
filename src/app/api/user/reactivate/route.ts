@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
+import { requireMemberActor } from '@/lib/member-auth';
 
 /**
  * POST /api/user/reactivate
@@ -17,6 +18,10 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
+        const authenticatedMemberstackId = auth.actor.memberstackId!;
+
         // Verificar configuración
         if (!process.env.STRIPE_SECRET_KEY) {
             return NextResponse.json(
@@ -33,7 +38,7 @@ export async function POST(request: NextRequest) {
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('stripe_customer_id, email')
-            .eq('memberstack_id', memberstackId)
+            .eq('memberstack_id', authenticatedMemberstackId)
             .maybeSingle();
 
         if (userError || !user) {
@@ -84,7 +89,7 @@ export async function POST(request: NextRequest) {
         // 4. Actualizar estado en Memberstack (approval_status = 'approved')
         if (process.env.MEMBERSTACK_SECRET_KEY) {
             try {
-                await fetch(`https://api.memberstack.com/v1/members/${memberstackId}`, {
+                await fetch(`https://api.memberstack.com/v1/members/${authenticatedMemberstackId}`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `Bearer ${process.env.MEMBERSTACK_SECRET_KEY}`,
@@ -113,7 +118,7 @@ export async function POST(request: NextRequest) {
                     cancel_at_period_end: false,
                     updated_at: new Date().toISOString(),
                 })
-                .eq('memberstack_id', memberstackId);
+                .eq('memberstack_id', authenticatedMemberstackId);
 
             // 5b. 🔴 BUG FIX: Tabla users — sin esto el usuario queda bloqueado en Supabase
             // aunque Memberstack lo tenga como 'approved'
@@ -123,7 +128,7 @@ export async function POST(request: NextRequest) {
                     approval_status: 'approved',
                     membership_status: 'active',
                 })
-                .eq('memberstack_id', memberstackId);
+                .eq('memberstack_id', authenticatedMemberstackId);
 
             if (userUpdateError) {
                 console.warn('⚠️ [REACTIVATE] Error sincronizando users en Supabase:', userUpdateError);

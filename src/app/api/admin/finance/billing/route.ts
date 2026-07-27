@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 // Inicializar cliente con Service Role para acceso administrativo
 const getServiceRoleClient = () => {
@@ -18,6 +19,9 @@ const getServiceRoleClient = () => {
 };
 
 export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     const supabase = getServiceRoleClient();
     
     if (!supabase) {
@@ -99,6 +103,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PATCH(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     const supabase = getServiceRoleClient();
     
     if (!supabase) {

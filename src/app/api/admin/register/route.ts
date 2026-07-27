@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
 
 // Define the secret code here or in env (better in env for production)
-const ADMIN_SECRET_CODE = process.env.ADMIN_SECRET_CODE || 'PATA_AMIGA_ADMIN_2025';
+const ADMIN_SECRET_CODE = process.env.ADMIN_SECRET_CODE;
 const MEMBERSTACK_ADMIN_KEY = process.env.MEMBERSTACK_ADMIN_SECRET_KEY;
 
 export async function POST(request: NextRequest) {
@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
         const { email, password, firstName, lastName, secretCode } = body;
 
         // 1. Validate Secret Code
-        if (secretCode !== ADMIN_SECRET_CODE) {
+        if (!ADMIN_SECRET_CODE || secretCode !== ADMIN_SECRET_CODE) {
             return NextResponse.json({ error: 'Código secreto inválido' }, { status: 403 });
         }
 

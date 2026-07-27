@@ -1353,10 +1353,12 @@
 
                 try {
                     const memberId = this.member.id;
+                    const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                     const response = await fetch(CONFIG.apiUrl + '/api/user/deactivate', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
+                            'Content-Type': 'application/json',
+                            Authorization: `Bearer ${token}`
                         },
                         body: JSON.stringify({ 
                             memberstackId: memberId,
@@ -1405,10 +1407,12 @@
 
             try {
                 const memberId = this.member.id;
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const response = await fetch(CONFIG.apiUrl + '/api/user/reactivate', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
                     },
                     body: JSON.stringify({ memberstackId: memberId })
                 });

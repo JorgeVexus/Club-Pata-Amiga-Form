@@ -1,9 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest } from 'next/server';
+import { verifyMemberstackRequest } from '@/lib/memberstack-token';
 
 /**
  * Utilidad para validar la autenticación de administrador en el servidor.
- * Verifica que el ID de Memberstack proporcionado tenga rol de admin en Supabase.
+ * Verifica el JWT de Memberstack y confirma el rol de admin en Supabase.
  */
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -15,10 +16,10 @@ const supabase = (supabaseUrl && supabaseServiceKey)
     : null;
 
 export async function getAdminUser(req: NextRequest) {
-    const memberstackId = req.headers.get('x-admin-memberstack-id');
+    const memberstackId = await verifyMemberstackRequest(req);
     
     if (!memberstackId) {
-        console.error('❌ AdminAuth: No se proporcionó x-admin-memberstack-id en los headers');
+        console.error('❌ AdminAuth: Sesión de Memberstack ausente o inválida');
         return null;
     }
 
@@ -46,7 +47,7 @@ export async function getAdminUser(req: NextRequest) {
         
         if (!isAdmin) {
             console.warn(`⚠️ AdminAuth Warning: Usuario ${user.email} intentó acceder sin rol admin (${user.role})`);
-            return { ...user, isUnauthorized: true, reason: 'Role mismatch' };
+            return null;
         }
 
         return user;

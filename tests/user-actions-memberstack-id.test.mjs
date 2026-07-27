@@ -7,7 +7,7 @@ const source = readFileSync(new URL('../src/app/actions/user.actions.ts', import
 test('getPetsByUserId resolves the real Memberstack id when called with a Supabase UUID', () => {
   assert.match(
     source,
-    /\.select\('id, memberstack_id, first_name, last_name, last_admin_response, action_required_fields, membership_status'\)/,
+    /\.select\('id, memberstack_id, first_name, last_name, last_admin_response, action_required_fields, membership_status, welcome_shown'\)/,
     'the primary user lookup must include memberstack_id',
   );
   assert.match(

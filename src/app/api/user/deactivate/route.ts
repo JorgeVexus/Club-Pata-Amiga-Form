@@ -4,6 +4,7 @@ import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { syncMembership, CRM_ACTIVE_TAG } from '@/services/crm.service';
 import { sendCancellationEmail } from '@/app/actions/comm.actions';
+import { requireMemberActor } from '@/lib/member-auth';
 import {
     calculateDaysRemaining,
     formatDateForStorage,
@@ -24,6 +25,10 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Memberstack ID requerido' }, { status: 400 });
         }
 
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
+        const authenticatedMemberstackId = auth.actor.memberstackId!;
+
         let cancellationInfo;
         try {
             cancellationInfo = normalizeCancellationRequest(body);
@@ -36,7 +41,7 @@ export async function POST(request: NextRequest) {
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
             .select('id, stripe_customer_id, email, crm_contact_id')
-            .eq('memberstack_id', memberstackId)
+            .eq('memberstack_id', authenticatedMemberstackId)
             .maybeSingle();
 
         if (userError) {
@@ -103,7 +108,7 @@ export async function POST(request: NextRequest) {
             .from('membership_cancellations')
             .insert({
                 user_id: user.id,
-                memberstack_id: memberstackId,
+                memberstack_id: authenticatedMemberstackId,
                 membership_end_date: cancellationRecord.membershipEndDate,
                 days_remaining_at_cancellation: cancellationRecord.daysRemaining,
                 cancellation_reason: cancellationInfo.reason,
@@ -134,7 +139,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Error cancelando membresia' }, { status: 500 });
         }
 
-        const msResult = await memberstackAdmin.updateMemberFields(memberstackId, {
+        const msResult = await memberstackAdmin.updateMemberFields(authenticatedMemberstackId, {
             'approval-status': 'cancelled',          // Webflow dashboard lo consume como 'cancelled'
             'rejection-reason': 'Membresia cancelada por el usuario (pendiente de vencimiento)',
             'membership-end-date': cancellationRecord.membershipEndDate,
@@ -174,7 +179,7 @@ export async function POST(request: NextRequest) {
                 } catch {}
 
                 await sendCancellationEmail({
-                    userId: memberstackId,
+                    userId: authenticatedMemberstackId,
                     email: user.email,
                     name: memberName,
                     endDate: friendlyEndDate

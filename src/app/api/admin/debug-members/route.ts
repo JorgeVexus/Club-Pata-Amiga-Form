@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 /**
  * GET /api/admin/debug-members
@@ -9,6 +10,9 @@ import { NextRequest, NextResponse } from 'next/server';
  * Muestra la respuesta RAW de Memberstack API incluyendo paginación.
  */
 export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     try {
         console.log('🔍 Debug: Obteniendo miembros de Memberstack...');
 

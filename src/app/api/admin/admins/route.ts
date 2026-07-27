@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     try {
         // Fetch all users with admin or super_admin role
         const { data: admins, error } = await supabase

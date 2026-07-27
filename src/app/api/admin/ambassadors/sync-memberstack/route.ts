@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,6 +30,11 @@ async function updateMemberstackField(memberId: string, customFields: Record<str
 
 export async function POST(request: NextRequest) {
     try {
+        const admin = await getAdminUser(request);
+        if (!admin || ('isUnauthorized' in admin && admin.isUnauthorized)) {
+            return unauthorizedResponse();
+        }
+
         // Fetch all approved ambassadors with a linked memberstack id
         const { data: ambassadors, error } = await supabase
             .from('ambassadors')

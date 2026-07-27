@@ -16,7 +16,7 @@ test('preserves wellness registration contracts', () => {
     assert.ok(form.includes("'form' | 'success' | 'complementary' | 'complementary-success'"));
     assert.ok(complementary.includes("fetch('/api/upload/wellness-logo'"));
     assert.ok(complementary.includes("fetch('/api/upload/wellness-location-photo'"));
-    assert.ok(complementary.includes("fetch('/api/wellness/update'"));
+    assert.ok(complementary.includes("fetchJsonWithRetry('/api/wellness/update'"));
 });
 
 test('uses the shared V2 registration shell', () => {

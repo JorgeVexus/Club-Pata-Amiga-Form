@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { verifyMemberstackRequest } from '@/lib/memberstack-token';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -49,31 +50,6 @@ function failure(status: number, error: string): AmbassadorAuthFailure {
     };
 }
 
-export async function verifyMemberstackRequest(request: NextRequest): Promise<string | null> {
-    const authorization = request.headers.get('authorization') || '';
-    const token = authorization.replace(/^Bearer\s+/i, '').trim();
-    const secretKey = process.env.MEMBERSTACK_ADMIN_SECRET_KEY || process.env.MEMBERSTACK_SECRET_KEY;
-    if (!token || !secretKey) return null;
-
-    try {
-        const response = await fetch('https://admin.memberstack.com/members/verify-token', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-API-KEY': secretKey,
-            },
-            body: JSON.stringify({ token }),
-            cache: 'no-store',
-        });
-        if (!response.ok) return null;
-        const payload = await response.json();
-        return payload?.id || payload?.data?.id || payload?.member?.id || null;
-    } catch (error) {
-        console.error('[AmbassadorAuth] Memberstack token verification failed:', error);
-        return null;
-    }
-}
-
 export async function getAuthenticatedAmbassador(
     request: NextRequest,
     expectedAmbassadorId?: string,
@@ -97,4 +73,8 @@ export async function getAuthenticatedAmbassador(
     return { ok: true, memberstackId, ambassador };
 }
 
-export { corsHeaders as ambassadorCorsHeaders, supabaseAdmin as ambassadorSupabaseAdmin };
+export {
+    corsHeaders as ambassadorCorsHeaders,
+    supabaseAdmin as ambassadorSupabaseAdmin,
+    verifyMemberstackRequest,
+};

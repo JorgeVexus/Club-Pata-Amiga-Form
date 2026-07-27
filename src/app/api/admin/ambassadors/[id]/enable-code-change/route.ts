@@ -7,6 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -31,6 +32,11 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const admin = await getAdminUser(request);
+        if (!admin || ('isUnauthorized' in admin && admin.isUnauthorized)) {
+            return unauthorizedResponse();
+        }
+
         const { id } = await params;
         const body = await request.json();
         const { sendEmail = true } = body;

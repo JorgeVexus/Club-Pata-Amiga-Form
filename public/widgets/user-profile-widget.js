@@ -929,9 +929,13 @@
 
         async executeCancellation(cancellationInfo, endDateInfo) {
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/deactivate`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         memberstackId: this.member.id,
                         reason: cancellationInfo.reason,

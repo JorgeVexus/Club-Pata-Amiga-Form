@@ -7,6 +7,7 @@
     'use strict';
 
     let currentCenter = null;
+    let currentMemberToken = '';
     let payments = [];
     let appointments = [];
 
@@ -914,7 +915,10 @@
         try {
             const response = await fetch(`${CONFIG.API_BASE_URL}/api/wellness/cancel`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${currentMemberToken}`
+                },
                 body: JSON.stringify({ memberstack_id: memberstackId, reason })
             });
             return await response.json();
@@ -2554,6 +2558,7 @@
             return;
         }
 
+        currentMemberToken = await Promise.resolve(window.$memberstackDom.getMemberCookie());
         const center = await fetchCenterData(memberResult.data.id);
         if (!center) {
             target.innerHTML = `<p style="text-align:center; padding:50px;">No encontramos un registro de aliado vinculado a esta cuenta.</p>`;

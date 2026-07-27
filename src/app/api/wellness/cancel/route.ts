@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
+import { requireWellnessActor } from '@/lib/wellness-auth';
 
 /**
  * API para cancelar la cuenta de un Centro de Bienestar (Protocolo de salida)
@@ -16,6 +17,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const auth = await requireWellnessActor(request, memberstack_id);
+        if (!auth.ok) return auth.response;
+
         // Actualizar estado a cancelled y guardar motivo
         const { data, error } = await supabaseAdmin
             .from('wellness_centers')
@@ -25,7 +29,7 @@ export async function POST(request: NextRequest) {
                 cancelled_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
             })
-            .eq('memberstack_id', memberstack_id)
+            .eq('id', auth.actor.wellnessCenterId)
             .select()
             .single();
 

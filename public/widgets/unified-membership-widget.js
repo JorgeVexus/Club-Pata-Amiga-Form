@@ -60,8 +60,11 @@
             this.fetch = fetchImpl;
         }
 
-        async request(path, options) {
-            const response = await this.fetch(`${this.apiUrl}${path}`, options);
+        async request(path, options = {}) {
+            const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+            const headers = new Headers(options.headers);
+            if (token) headers.set('Authorization', `Bearer ${token}`);
+            const response = await this.fetch(`${this.apiUrl}${path}`, { ...options, headers });
             const data = await response.json();
             if (!response.ok || data.error) throw new Error(data.error || 'No pudimos completar la solicitud.');
             return data;

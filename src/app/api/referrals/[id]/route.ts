@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,6 +25,11 @@ export async function PATCH(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const admin = await getAdminUser(request);
+        if (!admin || ('isUnauthorized' in admin && admin.isUnauthorized)) {
+            return unauthorizedResponse();
+        }
+
         const { id } = await params;
         const body = await request.json();
         const { commission_status, membership_amount, membership_plan } = body;

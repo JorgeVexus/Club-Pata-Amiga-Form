@@ -2,8 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { resolveSubscriptionPeriodEnd, toStripeTimestampIso } from '@/utils/stripe-subscription-period';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
     try {
         const { searchParams } = new URL(request.url);

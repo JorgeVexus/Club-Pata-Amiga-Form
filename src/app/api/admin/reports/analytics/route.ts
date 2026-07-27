@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import Stripe from 'stripe';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 // Configurar Supabase Admin (Bypass RLS para reportes)
 const supabaseAdmin = createClient(
@@ -10,6 +11,9 @@ const supabaseAdmin = createClient(
 );
 
 export async function GET(request: NextRequest) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     try {
         const { searchParams } = new URL(request.url);
         const metric = searchParams.get('metric') || 'all';

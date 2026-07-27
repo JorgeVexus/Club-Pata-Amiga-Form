@@ -16,8 +16,10 @@ test('widget authenticates dashboard requests with the active Memberstack JWT', 
 
 test('dashboard API verifies Memberstack and resolves ownership server-side', () => {
   const auth = read('src/lib/ambassador-auth.ts');
+  const tokenVerifier = read('src/lib/memberstack-token.ts');
   const dashboard = read('src/app/api/ambassadors/dashboard/route.ts');
-  assert.match(auth, /admin\.memberstack\.com\/members\/verify-token/);
+  assert.match(auth, /verifyMemberstackRequest/);
+  assert.match(tokenVerifier, /admin\.memberstack\.com\/members\/verify-token/);
   assert.match(auth, /linked_memberstack_id/);
   assert.match(dashboard, /getAuthenticatedAmbassador/);
   assert.doesNotMatch(dashboard, /searchParams\.get\(['"]memberstackId/);

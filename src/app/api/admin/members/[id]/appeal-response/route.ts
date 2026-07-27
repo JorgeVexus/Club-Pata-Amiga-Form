@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createServerNotification } from '@/app/actions/notification.actions';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 // Cliente Supabase con Service Role
 const supabaseAdmin = createClient(
@@ -20,6 +21,9 @@ export async function POST(
     request: NextRequest,
     { params }: { params: Promise<{ id: string }> }
 ) {
+    const admin = await getAdminUser(request);
+    if (!admin) return unauthorizedResponse();
+
     try {
         const { id: memberId } = await params;
         const { message, adminId, petId } = await request.json();

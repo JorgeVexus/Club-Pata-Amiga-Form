@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getAdminUser, unauthorizedResponse } from '@/lib/admin-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -12,6 +13,11 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     try {
+        const admin = await getAdminUser(request);
+        if (!admin || ('isUnauthorized' in admin && admin.isUnauthorized)) {
+            return unauthorizedResponse();
+        }
+
         const { id } = await params;
 
         const { data: solidarityRequest, error } = await supabaseAdmin
