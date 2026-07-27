@@ -1,7 +1,7 @@
 # Auditoría de magic links y cargas
 
 Fecha: 2026-07-26
-Estado: riesgos P0 corregidos localmente; endurecimiento integral de Storage pendiente.
+Estado: riesgos P0 y emisión no autenticada de magic tokens corregidos; endurecimiento integral de Storage pendiente.
 
 ## Flujo reconstruido
 
@@ -59,6 +59,8 @@ Corrección recomendada: la siguiente versión del token debe firmar un `petId` 
 
 `POST /api/auth/magic-token` acepta `memberstackId`, email y campos enviados por el navegador y crea un token de acceso de pago. Debe exigir sesión del mismo miembro antes de insertar.
 
+Estado: corregido localmente. La ruta exige el JWT Memberstack del mismo `memberstackId` antes de generar el token o escribir en Supabase.
+
 ## Diseño de corrección
 
 1. Crear un verificador de autorización dual que devuelva un `ActorContext` canónico.
@@ -81,6 +83,10 @@ No publicar una protección parcial que haga que la página valide correctamente
 - Ambos endpoints comprueban propietario y correspondencia entre índice firmado y `petId`.
 - La página propaga token y expiración a las cargas de foto y certificado.
 - Se añadieron pruebas negativas que primero reprodujeron los cuatro fallos.
+- `POST /api/auth/magic-token` autoriza al miembro mediante `requireMemberActor` antes de generar bytes aleatorios o insertar.
+- El widget unificado adjunta `Authorization: Bearer` usando su sesión Memberstack activa y conserva el fallback al registro normal cuando no hay sesión.
+- CORS admite el encabezado `Authorization` sin cambiar todavía el origen abierto, el esquema, la vigencia, el formato ni el consumo de tokens existentes.
+- Se añadió una prueba RED–GREEN específica para autorización, orden de operaciones, CORS y propagación del JWT.
 
 ## Pendiente deliberado
 
@@ -93,3 +99,5 @@ Los endpoints genéricos de Storage todavía tienen consumidores de registro, ad
 - foto y certificado desde magic link.
 
 Hasta completar ese lote, las mutaciones finales ya impiden asociar el archivo a otra mascota, pero persiste riesgo de archivos huérfanos y consumo abusivo de almacenamiento. Se recomienda aplicar rate limiting/WAF mientras se completa la migración.
+
+También permanecen como riesgos de menor alcance el origen CORS abierto y los campos auxiliares del magic token provenientes del cliente ya autenticado. Ninguno de ellos permite por sí solo emitir un token para otro `memberstackId`, pero deben eliminarse en la migración hacia datos canónicos del servidor.

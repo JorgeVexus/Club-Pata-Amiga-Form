@@ -13,6 +13,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireMemberActor } from '@/lib/member-auth';
 import crypto from 'crypto';
 
 // ─── CORS (peticiones desde Webflow / pataamiga.mx) ──────────────────────────
@@ -20,7 +21,7 @@ function corsHeaders() {
     return {
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
     };
 }
 
@@ -58,6 +59,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
                 { success: false, error: 'email válido es requerido' },
                 { status: 400, headers: corsHeaders() }
             );
+        }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) {
+            return auth.response;
         }
 
         console.log(`🔮 [MagicToken] Generando token para: ${email} (${memberstackId})`);

@@ -6412,17 +6412,33 @@
                                             }
 
                                             function generateAndRedirect(memberId, email, customFields) {
-                                                fetch('https://app.pataamiga.mx/api/auth/magic-token', {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({
-                                                        memberstackId: memberId,
-                                                        email: email,
-                                                        customFields: customFields || {}
+                                                var tokenPromise = window.$memberstackDom && window.$memberstackDom.getMemberCookie
+                                                    ? Promise.resolve(window.$memberstackDom.getMemberCookie())
+                                                    : Promise.resolve('');
+
+                                                tokenPromise
+                                                .then(function(token) {
+                                                    if (!token) {
+                                                        fallback(email);
+                                                        return null;
+                                                    }
+
+                                                    return fetch('https://app.pataamiga.mx/api/auth/magic-token', {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json',
+                                                            Authorization: 'Bearer ' + token
+                                                        },
+                                                        body: JSON.stringify({
+                                                            memberstackId: memberId,
+                                                            email: email,
+                                                            customFields: customFields || {}
+                                                        })
                                                     })
                                                 })
-                                                .then(function(res) { return res.json(); })
+                                                .then(function(res) { return res ? res.json() : null; })
                                                 .then(function(data) {
+                                                    if (!data) return;
                                                     if (data.success && data.token) {
                                                         var url = 'https://app.pataamiga.mx/registro'
                                                             + '?mt=' + encodeURIComponent(data.token)
