@@ -4354,9 +4354,10 @@
             btn.style.opacity = '0.7';
 
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         userId: this.member.id,
                         birthMonth,
@@ -7959,9 +7960,10 @@
 
                         submitBtn.innerText = 'Actualizando mascota...';
 
+                        const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                         const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                             body: JSON.stringify({
                                 userId: this.member.id,
                                 photo1Url: photo1Url,
@@ -8142,9 +8144,10 @@
                         if (photo1Url || photo2Url) {
                             submitBtn.innerText = 'Actualizando fotos...';
 
+                            const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                             const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                                 body: JSON.stringify({
                                     userId: this.member.id,
                                     photo1Url: photo1Url,
@@ -8332,9 +8335,10 @@
                         const message = document.getElementById('pata-update-message')?.value || '';
 
                         // Actualizar mascota
+                        const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                         const updateRes = await fetch(`${CONFIG.apiUrl}/api/user/pets/${pet.id}/update`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                             body: JSON.stringify({
                                 userId: this.member.id,
                                 photo1Url: photoUrls[0],

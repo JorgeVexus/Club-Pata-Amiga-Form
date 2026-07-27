@@ -1493,9 +1493,10 @@
             btn.style.opacity = '0.7';
 
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify(payload)
                 });
 
@@ -2000,9 +2001,10 @@
             btn.style.opacity = '0.7';
 
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         userId: this.member.id,
                         adoptionStory: content
@@ -2061,9 +2063,10 @@
             btn.style.opacity = '0.7';
 
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         userId: this.member.id,
                         birthMonth,
@@ -2662,7 +2665,8 @@
                         isSenior: isSenior, vetCertificateUrl: this.uploadedVetUrl, referralCode: d.isReferralValid ? d.referralCode : ''
                     }
                 };
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/add`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(payload) });
                 const data = await res.json();
                 if (data.success) {
                     alert('¡Mascota registrada! Revisaremos la información pronto.');
@@ -2738,7 +2742,8 @@
                 if (type === 'photo4') updateData.photo4Url = url;
                 if (type === 'photo5') updateData.photo5Url = url;
                 if (type === 'vet') updateData.vetCertificateUrl = url;
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updateData) });
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify(updateData) });
                 const data = await res.json();
                 if (data.success) {
                     container.innerHTML = `<span style="font-size:30px;">✅</span><p style="font-size:13px; font-weight:700; color:#2E7D32; margin:0;">¡Listo!</p>`;
@@ -2801,9 +2806,10 @@
                 if (photoType === 'photo4') updateData.photo4Url = null;
                 if (photoType === 'photo5') updateData.photo5Url = null;
 
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/pets/${petId}/update`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify(updateData)
                 });
                 const data = await res.json();

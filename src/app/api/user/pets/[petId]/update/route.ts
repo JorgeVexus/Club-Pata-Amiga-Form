@@ -12,6 +12,7 @@ import {
     buildPetUpdateNotificationMessage,
     getPetUpdateLabels,
 } from '@/utils/pet-update-notification';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -23,7 +24,7 @@ const supabaseAdmin = createClient(
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 // Handler para preflight requests
@@ -66,6 +67,9 @@ export async function POST(
             return NextResponse.json({ error: 'userId es obligatorio' }, { status: 400, headers: corsHeaders });
         }
 
+        const auth = await requireMemberActor(request, userId);
+        if (!auth.ok) return auth.response;
+
         // 1. Obtener datos de la mascota (sin join complejo inicialmente)
         console.log('🔍 Buscando mascota...');
         const { data: pet, error: petError } = await supabaseAdmin
@@ -96,6 +100,10 @@ export async function POST(
         if (ownerError || !owner) {
             console.error('❌ Error buscando dueño:', ownerError);
             return NextResponse.json({ error: 'Dueño de mascota no encontrado' }, { status: 404, headers: corsHeaders });
+        }
+
+        if (owner.id !== auth.actor.supabaseUserId) {
+            return NextResponse.json({ error: 'No tienes permiso para editar esta mascota' }, { status: 403, headers: corsHeaders });
         }
 
         const { data: unsubscriptions } = await supabaseAdmin

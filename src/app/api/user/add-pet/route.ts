@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { enrichPetsWithLifecycle, getActivePetCount } from '@/utils/pet-lifecycle';
 import { getMissingCompletePetFields } from '@/utils/pet-required-fields';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -21,7 +22,7 @@ const MAX_PETS = 3;
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 export async function OPTIONS() {
@@ -70,6 +71,9 @@ export async function POST(request: NextRequest) {
                 { status: 400, headers: corsHeaders }
             );
         }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
 
         const missingRequiredFields = getMissingCompletePetFields({
             name,
