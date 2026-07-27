@@ -750,7 +750,10 @@
 
         async loadPreferences() {
             try {
-                const response = await fetch(`${CONFIG.apiUrl}/api/user/preferences?memberstackId=${this.member.id}`);
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                const response = await fetch(`${CONFIG.apiUrl}/api/user/preferences?memberstackId=${this.member.id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 const data = await response.json();
                 if (data.success) {
                     this.preferences = data.preferences;
@@ -777,9 +780,13 @@
         async savePreference(key, value) {
             this.preferences[key] = value;
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 await fetch(`${CONFIG.apiUrl}/api/user/preferences`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`
+                    },
                     body: JSON.stringify({
                         memberstackId: this.member.id,
                         preferences: this.preferences

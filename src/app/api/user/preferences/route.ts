@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,6 +16,9 @@ export async function GET(request: NextRequest) {
         if (!memberstackId) {
             return NextResponse.json({ success: false, error: 'memberstackId is required' }, { status: 400 });
         }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
 
         const { data, error } = await supabaseAdmin
             .from('users')
@@ -40,6 +44,9 @@ export async function POST(request: NextRequest) {
         if (!memberstackId || !preferences) {
             return NextResponse.json({ success: false, error: 'memberstackId and preferences are required' }, { status: 400 });
         }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
 
         const { error } = await supabaseAdmin
             .from('users')

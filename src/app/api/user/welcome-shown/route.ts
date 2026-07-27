@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,6 +30,9 @@ export async function POST(request: NextRequest) {
                 { status: 400, headers: corsHeaders() }
             );
         }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
 
         const { data: updatedUser, error } = await supabaseAdmin
             .from('users')
