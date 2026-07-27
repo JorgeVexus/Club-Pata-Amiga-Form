@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
+import { requireMemberActor } from '@/lib/member-auth';
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,6 +15,9 @@ export async function POST(request: NextRequest) {
         }
 
         // Verificar configuración
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
+
         if (!isSupabaseAdminConfigured() || !supabaseAdmin) {
             console.error('❌ Supabase Admin not configured in /api/user/emergency');
             return NextResponse.json(

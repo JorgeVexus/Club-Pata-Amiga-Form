@@ -490,10 +490,11 @@
             });
         }
 
-        logEmergency() {
+        async logEmergency() {
+            const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
             fetch(CONFIG.apiUrl + '/api/user/emergency', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                 body: JSON.stringify({
                     memberstackId: this.member.id,
                     phoneNumber: '+525639545068'

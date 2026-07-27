@@ -1288,9 +1288,10 @@
                     if (planSuccess) planSuccess.style.display = 'none';
 
                     try {
+                        const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                         const response = await fetch(CONFIG.apiUrl + '/api/user/change-plan', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                             body: JSON.stringify({
                                 memberstackId: this.member.id,
                                 targetPlan: selectedPlan

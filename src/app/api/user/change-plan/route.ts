@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
 import { memberstackAdmin } from '@/services/memberstack-admin.service';
 import { createServerNotification } from '@/app/actions/notification.actions';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const PLAN_PRICE_IDS = {
     mensual: 'prc_mensual-452k30jah',
@@ -37,6 +38,9 @@ export async function POST(request: NextRequest) {
                 { status: 400 }
             );
         }
+
+        const auth = await requireMemberActor(request, memberstackId);
+        if (!auth.ok) return auth.response;
 
         const targetPlanInfo = PLAN_DETAILS[targetPlan];
         const targetPriceId = targetPlanInfo.priceId;
