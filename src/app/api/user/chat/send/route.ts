@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -26,15 +27,22 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Faltan datos obligatorios' }, { status: 400, headers: corsHeaders });
         }
 
+        const auth = await requireMemberActor(req, userId);
+        if (!auth.ok) return auth.response;
+
         // 1. Validar que la mascota existe y pertenece al usuario (opcional pero recomendado)
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, memberstack_slot')
+            .select('id, name, status, is_active, memberstack_slot, owner_id')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+        }
+
+        if (pet.owner_id !== auth.actor.supabaseUserId) {
+            return NextResponse.json({ error: 'No tienes acceso a esta mascota' }, { status: 403, headers: corsHeaders });
         }
 
         const { data: unsubscriptions } = await supabaseAdmin

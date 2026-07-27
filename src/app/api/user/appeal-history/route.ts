@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,7 +17,7 @@ const supabaseAdmin = createClient(
 const corsHeaders = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 };
 
 // Handle preflight OPTIONS request
@@ -33,6 +34,9 @@ export async function GET(request: NextRequest) {
         if (!memberId) {
             return NextResponse.json({ error: 'memberId es requerido' }, { status: 400, headers: corsHeaders });
         }
+
+        const auth = await requireMemberActor(request, memberId);
+        if (!auth.ok) return auth.response;
 
         // Construir query
         let query = supabaseAdmin

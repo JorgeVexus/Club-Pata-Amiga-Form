@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -39,6 +40,9 @@ export async function POST(request: NextRequest) {
                 error: 'Datos incompletos. Se requiere memberId, petId y appealMessage.'
             }, 400);
         }
+
+        const auth = await requireMemberActor(request, memberId);
+        if (!auth.ok) return auth.response;
 
         // 1. Obtener el usuario de Supabase por memberstack_id
         const { data: user, error: userError } = await supabaseAdmin

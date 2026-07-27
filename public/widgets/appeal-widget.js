@@ -361,9 +361,10 @@
                     btn.innerText = 'Enviando...';
 
                     try {
+                        const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                         const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
+                            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                             body: JSON.stringify({
                                 memberId: this.member.id,
                                 appealMessage: msg

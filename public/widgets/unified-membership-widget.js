@@ -7303,7 +7303,10 @@
             if (!root) return;
 
             try {
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`);
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
                 const data = await res.json();
 
                 if (!data.success) throw new Error(data.error);
@@ -7370,9 +7373,10 @@
                 const message = isImage ? `[Imagen adjunta](${fileUrl})` : `[Archivo adjunto](${fileUrl})`;
 
                 // Enviar mensaje con el link
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const chatRes = await fetch(`${CONFIG.apiUrl}/api/user/chat/send`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         userId: this.member.id,
                         petId: petId,
@@ -7406,9 +7410,10 @@
             btn.innerText = '...';
 
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/chat/send`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify({
                         userId: this.member.id,
                         petId: petId,
@@ -8100,9 +8105,10 @@
                         // 2. Enviar apelación
                         let res, data;
                         try {
+                            const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                             res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, {
                                 method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
+                                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                                 body: JSON.stringify({
                                     memberId: this.member.id,
                                     petId: petId,
@@ -8487,7 +8493,10 @@
 
             try {
                 console.log(`📡 Historial: Consultando para petId=${petId}, memberId=${this.member?.id}`);
-                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`);
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal-history?memberId=${this.member.id}&petId=${petId}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
 
                 if (!res.ok) {
                     throw new Error(`Error HTTP: ${res.status}`);

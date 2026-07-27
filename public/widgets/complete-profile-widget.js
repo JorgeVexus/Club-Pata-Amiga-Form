@@ -1149,9 +1149,10 @@
 
             this.setLoading(true);
             try {
+                const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
                 const res = await fetch(`${CONFIG.apiUrl}/api/user/update-profile`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
                     body: JSON.stringify(data)
                 }).then(r => r.json());
 

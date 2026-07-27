@@ -2705,7 +2705,8 @@
                 const msg = document.getElementById('pata-appeal-msg').value.trim();
                 btn.disabled = true; btn.innerText = 'Enviando...';
                 try {
-                    const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ memberId: this.member.id, petId, appealMessage: msg }) });
+                    const token = await Promise.resolve(window.$memberstackDom?.getMemberCookie?.() || '');
+                    const res = await fetch(`${CONFIG.apiUrl}/api/user/appeal`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }, body: JSON.stringify({ memberId: this.member.id, petId, appealMessage: msg }) });
                     const data = await res.json();
                     if (data.success) { alert('¡Apelación enviada!'); modal.remove(); this.init(); }
                     else { alert('Error: ' + data.error); btn.disabled = false; btn.innerText = 'Enviar Apelación'; }
