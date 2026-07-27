@@ -13,6 +13,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyUploadToken } from '@/utils/upload-token';
 import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -28,12 +29,19 @@ export async function POST(req: NextRequest) {
         }
 
         // Verificar autenticación: token del magic link
-        if (token && exp && petIndex) {
+        const hasCompleteMagicCredentials = Boolean(token && exp && petIndex);
+        const hasPartialMagicCredentials = Boolean(token || exp || petIndex) && !hasCompleteMagicCredentials;
+        if (hasPartialMagicCredentials) {
+            return NextResponse.json({ success: false, error: 'Credenciales de enlace incompletas' }, { status: 401 });
+        }
+        const sessionAuth = hasCompleteMagicCredentials ? null : await requireMemberActor(req, memberId);
+
+        if (hasCompleteMagicCredentials) {
             const isValid = verifyUploadToken(memberId, Number(petIndex), token, Number(exp));
             if (!isValid) {
                 return NextResponse.json({ success: false, error: 'Token inválido o expirado' }, { status: 401 });
             }
-        } else {
+        } else if (!sessionAuth?.ok) {
             return NextResponse.json({ success: false, error: 'Autenticación requerida' }, { status: 401 });
         }
 
@@ -70,11 +78,28 @@ export async function POST(req: NextRequest) {
             targetPetId = pets[idx].id;
         }
 
+        let canonicalPetId: string | null = null;
+        if (hasCompleteMagicCredentials) {
+            const { data: canonicalPets } = await supabaseAdmin
+                .from('pets')
+                .select('id')
+                .eq('owner_id', user.id)
+                .order('created_at', { ascending: true });
+            canonicalPetId = canonicalPets?.[Number(petIndex) - 1]?.id || null;
+            if (!canonicalPetId || targetPetId !== canonicalPetId) {
+                return NextResponse.json({ success: false, error: 'La mascota no corresponde al enlace' }, { status: 403 });
+            }
+        }
+
         const { data: targetPet } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active')
+            .select('id, name, status, is_active, owner_id')
             .eq('id', targetPetId)
             .single();
+
+        if (!targetPet || targetPet.owner_id !== user.id) {
+            return NextResponse.json({ success: false, error: 'No tienes acceso a esta mascota' }, { status: 403 });
+        }
 
         const { data: unsubscriptions } = await supabaseAdmin
             .from('pet_unsubscriptions')

@@ -337,6 +337,8 @@ function CompletarDocumentacionContent() {
                 photoFormData.append('file', photoFile);
                 photoFormData.append('petIndex', String(idx));
                 photoFormData.append('userId', authenticatedMemberId);
+                if (token) photoFormData.append('token', token);
+                if (exp) photoFormData.append('exp', exp);
 
                 const photoRes = await fetch('/api/upload/pet-photo', {
                     method: 'POST',
@@ -353,6 +355,8 @@ function CompletarDocumentacionContent() {
                 certFormData.append('file', certFile);
                 certFormData.append('petIndex', String(idx));
                 certFormData.append('memberId', authenticatedMemberId);
+                if (token) certFormData.append('token', token);
+                if (exp) certFormData.append('exp', exp);
 
                 const certRes = await fetch('/api/upload/vet-certificate', {
                     method: 'POST',

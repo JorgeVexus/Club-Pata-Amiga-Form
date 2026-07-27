@@ -14,6 +14,7 @@ import { createClient } from '@supabase/supabase-js';
 import { isUnsubscribedPetWithHistory } from '@/utils/pet-lifecycle';
 import { verifyUploadToken } from '@/utils/upload-token';
 import { buildFulfillRequestPetUpdate } from '@/utils/pet-info-request-status';
+import { requireMemberActor } from '@/lib/member-auth';
 
 const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -59,10 +60,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'No se recibió ningún archivo' }, { status: 400, headers: corsHeaders });
         }
 
-        if (token || exp || petIndex) {
+        const hasCompleteMagicCredentials = Boolean(token && exp && petIndex);
+        const hasPartialMagicCredentials = Boolean(token || exp || petIndex) && !hasCompleteMagicCredentials;
+        if (hasPartialMagicCredentials) {
+            return NextResponse.json({ error: 'Credenciales de enlace incompletas' }, { status: 401, headers: corsHeaders });
+        }
+        if (hasCompleteMagicCredentials) {
             if (!token || !exp || !petIndex || !verifyUploadToken(userId, Number(petIndex), token, Number(exp))) {
                 return NextResponse.json({ error: 'Token inválido o expirado' }, { status: 401, headers: corsHeaders });
             }
+        } else {
+            const auth = await requireMemberActor(req, userId);
+            if (!auth.ok) return auth.response;
         }
 
         const mapping = FIELD_MAP[requestType];
@@ -75,15 +84,42 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'El archivo excede el límite de 10MB' }, { status: 400, headers: corsHeaders });
         }
 
+        const { data: authorizedUser } = await supabaseAdmin
+            .from('users')
+            .select('id')
+            .eq('memberstack_id', userId)
+            .single();
+        const authorizedUserId = authorizedUser?.id;
+        if (!authorizedUserId) {
+            return NextResponse.json({ error: 'Usuario no encontrado' }, { status: 404, headers: corsHeaders });
+        }
+
         // Verificar que la mascota existe
         const { data: pet, error: petError } = await supabaseAdmin
             .from('pets')
-            .select('id, name, status, is_active, waiting_period_start, waiting_period_end')
+            .select('id, name, status, is_active, waiting_period_start, waiting_period_end, owner_id')
             .eq('id', petId)
             .single();
 
         if (petError || !pet) {
             return NextResponse.json({ error: 'Mascota no encontrada' }, { status: 404, headers: corsHeaders });
+        }
+
+        const targetPet = pet;
+        if (targetPet.owner_id !== authorizedUserId) {
+            return NextResponse.json({ error: 'No tienes acceso a esta mascota' }, { status: 403, headers: corsHeaders });
+        }
+
+        if (hasCompleteMagicCredentials) {
+            const { data: canonicalPets } = await supabaseAdmin
+                .from('pets')
+                .select('id')
+                .eq('owner_id', authorizedUserId)
+                .order('created_at', { ascending: true });
+            const canonicalPetId = canonicalPets?.[Number(petIndex) - 1]?.id;
+            if (!canonicalPetId || canonicalPetId !== petId) {
+                return NextResponse.json({ error: 'La mascota no corresponde al enlace' }, { status: 403, headers: corsHeaders });
+            }
         }
 
         const { data: unsubscriptions } = await supabaseAdmin

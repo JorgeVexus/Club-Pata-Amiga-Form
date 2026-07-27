@@ -17,7 +17,11 @@ import crypto from 'crypto';
 const TOKEN_EXPIRY_DAYS = 30;
 
 function getSecret(): string {
-    return process.env.CRON_SECRET || 'fallback-secret-dev';
+    const secret = process.env.CRON_SECRET;
+    if (!secret || secret.length < 24) {
+        throw new Error('CRON_SECRET must be configured with at least 24 characters');
+    }
+    return secret;
 }
 
 /**
