@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { adminFetch } from '@/utils/admin-fetch';
 import { useAdminSession } from '../Shell/useAdminSession';
 import PageContainer from '../ui/PageContainer';
@@ -10,8 +11,9 @@ import MemberDetailModal from '../MemberDetailModal';
 import RejectionModal from '../RejectionModal';
 import RejectionReasonModal from '../RejectionReasonModal';
 
-export default function MiembrosPage() {
+function MiembrosPageContent() {
     const session = useAdminSession();
+    const searchParams = useSearchParams();
 
     const [selectedMember, setSelectedMember] = useState<any>(null);
     const [selectedPetId, setSelectedPetId] = useState<string | null>(null);
@@ -35,6 +37,12 @@ export default function MiembrosPage() {
             alert('Error al cargar la información del miembro.');
         }
     };
+
+    useEffect(() => {
+        const memberId = searchParams.get('member');
+        if (memberId) fetchMemberDetails(memberId, setSelectedMember);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     if (session.isLoading) return null;
 
@@ -169,5 +177,13 @@ export default function MiembrosPage() {
                 rejectedAt={rejectionToView?.customFields?.['rejected-at'] || ''}
             />
         </PageContainer>
+    );
+}
+
+export default function MiembrosPage() {
+    return (
+        <Suspense fallback={null}>
+            <MiembrosPageContent />
+        </Suspense>
     );
 }

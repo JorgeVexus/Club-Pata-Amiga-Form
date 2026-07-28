@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { adminFetch } from '@/utils/admin-fetch';
 import PageContainer from '../ui/PageContainer';
 import PageHeader from '../ui/PageHeader';
@@ -8,7 +9,8 @@ import AmbassadorsTable from '../AmbassadorsTable';
 import AmbassadorDetailModal from '../AmbassadorDetailModal';
 import type { Ambassador } from '@/types/ambassador.types';
 
-export default function EmbajadoresPage() {
+function EmbajadoresPageContent() {
+    const searchParams = useSearchParams();
     const [selectedAmbassador, setSelectedAmbassador] = useState<Ambassador | null>(null);
     const [autoOpenReject, setAutoOpenReject] = useState(false);
     const [refreshKey, setRefreshKey] = useState(0);
@@ -22,6 +24,12 @@ export default function EmbajadoresPage() {
             console.error('❌ Error cargando embajador:', error);
         }
     };
+
+    useEffect(() => {
+        const ambassadorId = searchParams.get('ambassadorId');
+        if (ambassadorId) fetchAmbassadorDetails(ambassadorId);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
 
     return (
         <PageContainer>
@@ -54,5 +62,13 @@ export default function EmbajadoresPage() {
                 />
             )}
         </PageContainer>
+    );
+}
+
+export default function EmbajadoresPage() {
+    return (
+        <Suspense fallback={null}>
+            <EmbajadoresPageContent />
+        </Suspense>
     );
 }

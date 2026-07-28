@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { adminFetch } from '@/utils/admin-fetch';
 import PageContainer from '../ui/PageContainer';
 import PageHeader from '../ui/PageHeader';
@@ -37,8 +38,9 @@ const STATUS_TONE: Record<string, 'success' | 'error' | 'warning'> = {
     pending: 'warning',
 };
 
-export default function MascotasPage() {
-    const [activeFilter, setActiveFilter] = useState('pending');
+function MascotasPageContent() {
+    const searchParams = useSearchParams();
+    const [activeFilter, setActiveFilter] = useState(searchParams.get('filter') || 'pending');
     const [pets, setPets] = useState<PendingPet[]>([]);
     const [loading, setLoading] = useState(true);
     const [workingId, setWorkingId] = useState<string | null>(null);
@@ -154,5 +156,13 @@ export default function MascotasPage() {
                 </Card>
             )}
         </PageContainer>
+    );
+}
+
+export default function MascotasPage() {
+    return (
+        <Suspense fallback={null}>
+            <MascotasPageContent />
+        </Suspense>
     );
 }
