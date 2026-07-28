@@ -63,3 +63,5 @@ graphify-out/
 
 # Temporary clones
 temp-pata-amiga/
+
+supabase/.temp/
