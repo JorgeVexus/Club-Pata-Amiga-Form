@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import ReportesPage from '@/components/Admin/Pages/ReportesPage';
 
-export default function ReportesPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Reportes" />
-        </PageContainer>
-    );
+export default function AdminReportesPage() {
+    return <ReportesPage />;
 }

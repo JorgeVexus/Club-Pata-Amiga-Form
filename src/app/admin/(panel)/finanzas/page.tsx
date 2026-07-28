@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import FinanzasPage from '@/components/Admin/Pages/FinanzasPage';
 
-export default function FinanzasPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Finanzas" />
-        </PageContainer>
-    );
+export default function AdminFinanzasPage() {
+    return <FinanzasPage />;
 }
