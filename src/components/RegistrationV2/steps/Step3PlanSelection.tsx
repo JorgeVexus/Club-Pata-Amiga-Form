@@ -67,7 +67,7 @@ interface Step3PlanSelectionProps {
     isRecovery?: boolean;
 }
 
-const SHOW_AMBASSADOR_CODE = false;
+const SHOW_AMBASSADOR_CODE = true;
 
 export default function Step3PlanSelection({
     data,
@@ -99,7 +99,9 @@ export default function Step3PlanSelection({
     const [isValidating, setIsValidating] = useState(false);
     const [referralError, setReferralError] = useState('');
     const [ambassadorName, setAmbassadorName] = useState('');
-    const [isCodeValidated, setIsCodeValidated] = useState(false);
+    const [validatedReferralCode, setValidatedReferralCode] = useState('');
+    const referralCodeRef = useRef(referralCode);
+    const validationRequestIdRef = useRef(0);
 
     // Resumen de mascota
     const primaryPet = normalizePetBasicList(data?.petBasic)[0];
@@ -147,6 +149,7 @@ export default function Step3PlanSelection({
         const savedCode = member?.customFields?.['ambassador-code'];
         if (savedCode && !referralCode) {
             setReferralCode(savedCode);
+            referralCodeRef.current = savedCode.trim().toUpperCase();
         }
     }, [member]);
 
@@ -156,12 +159,12 @@ export default function Step3PlanSelection({
             if (referralCode.trim().length >= 3) {
                 validateCode(referralCode.trim());
             } else if (referralCode.trim().length > 0) {
-                setIsCodeValidated(false);
+                setValidatedReferralCode('');
                 setReferralError('El código debe tener al menos 3 caracteres');
             } else {
                 setReferralError('');
                 setAmbassadorName('');
-                setIsCodeValidated(false);
+                setValidatedReferralCode('');
                 if (member?.customFields?.['ambassador-code']) {
                     (window as any).$memberstackDom?.updateMember({
                         customFields: { 'ambassador-code': '' }
@@ -173,29 +176,37 @@ export default function Step3PlanSelection({
     }, [referralCode]);
 
     const validateCode = async (code: string) => {
+        const normalizedCode = code.toUpperCase();
+        const requestId = ++validationRequestIdRef.current;
         setIsValidating(true);
         setReferralError('');
         setAmbassadorName('');
-        setIsCodeValidated(false);
+        setValidatedReferralCode('');
         try {
-            const response = await fetch(`/api/referrals/validate-code?code=${code.toUpperCase()}`);
+            const response = await fetch(`/api/referrals/validate-code?code=${encodeURIComponent(normalizedCode)}`);
             const result = await response.json();
+            if (referralCodeRef.current !== normalizedCode) return;
+            if (validationRequestIdRef.current !== requestId) return;
             if (result.success && result.valid) {
                 setAmbassadorName(result.ambassador_name);
-                setIsCodeValidated(true);
+                setValidatedReferralCode(normalizedCode);
                 if ((window as any).$memberstackDom) {
                     (window as any).$memberstackDom.updateMember({
-                        customFields: { 'ambassador-code': code.toUpperCase() }
+                        customFields: { 'ambassador-code': normalizedCode }
                     });
                 }
             } else {
                 setReferralError(result.message || 'Ese código no es válido');
-                setIsCodeValidated(false);
+                setValidatedReferralCode('');
             }
         } catch (error) {
-            setReferralError('Error al validar el código');
+            if (referralCodeRef.current === normalizedCode && validationRequestIdRef.current === requestId) {
+                setReferralError('Error al validar el código');
+            }
         } finally {
-            setIsValidating(false);
+            if (validationRequestIdRef.current === requestId) {
+                setIsValidating(false);
+            }
         }
     };
 
@@ -240,7 +251,7 @@ export default function Step3PlanSelection({
             }
         } catch (e) {}
 
-        await onNext(selectedPlan, termsAccepted, isCodeValidated ? referralCode.toUpperCase() : undefined);
+        await onNext(selectedPlan, termsAccepted, validatedReferralCode || undefined);
         setIsProcessing(false);
     };
 
@@ -333,20 +344,25 @@ export default function Step3PlanSelection({
                         {/* Referral Section — temporalmente oculta sin eliminar su implementación */}
                         {SHOW_AMBASSADOR_CODE && (
                             <div className={styles.referralSection}>
-                            <label className={styles.referralLabel}>
+                            <label className={styles.referralLabel} htmlFor="ambassador-code">
                                 🎟️ ¿Tienes un código de Embajador?
                             </label>
                             <div className={styles.referralInputWrapper}>
                                 <input
+                                    id="ambassador-code"
                                     type="text"
-                                    className={`${styles.referralInput} ${isCodeValidated ? styles.inputValid : referralError ? styles.inputInvalid : ''}`}
+                                    className={`${styles.referralInput} ${validatedReferralCode ? styles.inputValid : referralError ? styles.inputInvalid : ''}`}
                                     placeholder="INGRESA TU CÓDIGO"
                                     value={referralCode}
                                     onChange={(e) => {
                                         const val = e.target.value.toUpperCase();
+                                        referralCodeRef.current = val.trim();
+                                        validationRequestIdRef.current += 1;
                                         setReferralCode(val);
                                         if (referralError) setReferralError('');
-                                        if (isCodeValidated) setIsCodeValidated(false);
+                                        setAmbassadorName('');
+                                        setValidatedReferralCode('');
+                                        setIsValidating(false);
                                     }}
                                     disabled={isProcessing}
                                 />
@@ -357,8 +373,8 @@ export default function Step3PlanSelection({
                                 )}
                             </div>
 
-                            {isCodeValidated && (
-                                <div className={styles.referralSuccess}>
+                            {validatedReferralCode && (
+                                <div className={styles.referralSuccess} role="status" aria-live="polite">
                                     <span>✨</span>
                                     <span>
                                         ¡Bienvenido a la manada de <strong>{ambassadorName}</strong>!
@@ -368,7 +384,7 @@ export default function Step3PlanSelection({
                                 </div>
                             )}
                             {referralError && (
-                                <span className={styles.referralError}>❌ {referralError}</span>
+                                <span className={styles.referralError} role="alert">❌ {referralError}</span>
                             )}
                             </div>
                         )}

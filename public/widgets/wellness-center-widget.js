@@ -874,7 +874,31 @@
             font-family: 'Outfit', sans-serif;
         }
         .wc-v2-sidebar { position:sticky; top:0; height:100dvh; display:flex; flex-direction:column; gap:20px; padding:24px 14px; border-right:1px solid var(--wc-v2-line); background:var(--wc-v2-white); }
-        .wc-v2-brand { padding:8px 12px 18px; color:var(--wc-v2-ink); font:400 23px/1 'Fraiche','Outfit',sans-serif; }
+        .wc-v2-brand {
+            min-width:0;
+            display:flex;
+            flex-direction:column;
+            align-items:flex-start;
+            gap:9px;
+            padding:8px 12px 18px;
+            color:var(--wc-v2-ink);
+        }
+        .wc-v2-brand img { display:block; width:148px; max-width:100%; height:auto; }
+        .wc-v2-brand-badge {
+            display:inline-flex;
+            align-items:center;
+            min-height:22px;
+            max-width:100%;
+            padding:4px 9px;
+            border-radius:999px;
+            background:var(--wc-v2-teal-soft);
+            color:var(--wc-v2-teal-deep);
+            font-size:9px;
+            font-weight:800;
+            letter-spacing:.08em;
+            line-height:1.2;
+            text-transform:uppercase;
+        }
         .wc-v2-nav { display:grid; gap:6px; }
         .wc-v2-nav-bottom { margin-top:auto; padding-top:14px; border-top:1px solid var(--wc-v2-line); }
         .wc-v2-nav-item { width:100%; min-height:43px; display:flex; align-items:center; gap:11px; padding:10px 14px; border:0; border-radius:13px; background:transparent; color:#405854; font:700 13px 'Outfit',sans-serif; text-align:left; cursor:pointer; }
@@ -888,6 +912,9 @@
         .wc-v2-account span { margin-top:3px; color:var(--wc-v2-muted); font-size:11px; }
         .wc-v2-main { min-width:0; padding:32px 36px 44px; background:var(--wc-v2-cream); }
         .wc-v2-mobile-nav { display:none; position:relative; }
+        .wc-v2-mobile-brand { min-width:0; display:flex; align-items:center; gap:9px; color:var(--wc-v2-ink); }
+        .wc-v2-mobile-brand img { display:block; width:108px; max-width:42vw; height:auto; flex:0 1 auto; }
+        .wc-v2-mobile-brand .wc-v2-brand-badge { min-width:0; flex:0 1 auto; font-size:8px; white-space:normal; }
         .wc-v2-mobile-account { position:relative; }
         .wc-v2-hamburger { width:40px; height:40px; display:grid; place-items:center; border:0; border-radius:50%; background:var(--wc-v2-teal-soft); color:var(--wc-v2-teal-deep); cursor:pointer; }
         .wc-v2-hamburger-lines { width:18px; display:grid; gap:3px; }
@@ -945,10 +972,14 @@
             .wc-v2-shell { display:block; }
             .wc-v2-sidebar { display:none; }
             .wc-v2-main { padding:0 18px 34px; }
-            .wc-v2-mobile-nav { min-height:66px; display:flex; align-items:center; justify-content:space-between; margin:0 -18px 24px; padding:10px 18px; border-bottom:1px solid var(--wc-v2-line); background:var(--wc-v2-white); }
-            .wc-v2-mobile-nav strong { color:var(--wc-v2-ink); font:400 20px 'Fraiche','Outfit',sans-serif; }
-            .wc-v2-mobile-nav span { color:var(--wc-v2-muted); font-size:11px; }
+            .wc-v2-mobile-nav { width:auto; min-height:66px; display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 -18px 24px; padding:10px 18px; border-bottom:1px solid var(--wc-v2-line); background:var(--wc-v2-white); overflow:visible; }
+            .wc-v2-mobile-account { flex:0 0 auto; }
             .wc-v2-kpi-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width: 390px) {
+            .wc-v2-mobile-brand { gap:6px; }
+            .wc-v2-mobile-brand img { width:92px; max-width:38vw; }
+            .wc-v2-mobile-brand .wc-v2-brand-badge { max-width:112px; padding-inline:7px; font-size:7px; letter-spacing:.05em; }
         }
     `;
 
@@ -959,7 +990,10 @@
             : [['Resumen', 'dashboard'], ['Citas', 'appointments'], ['Reintegros', 'payments']];
         return `
             <aside class="wc-v2-sidebar">
-                <div class="wc-v2-brand">Pata Amiga</div>
+                <div class="wc-v2-brand">
+                    <img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga">
+                    <span class="wc-v2-brand-badge">CENTRO DE BIENESTAR</span>
+                </div>
                 <nav class="wc-v2-nav" aria-label="Navegación del centro">
                     ${items.map(([label, view]) => locked
                         ? `<div class="wc-v2-nav-item${view === activeView ? ' is-active' : ''}">${label}</div>`
@@ -976,7 +1010,10 @@
     }
 
     function renderV2MobileNav(center) {
-        return `<div class="wc-v2-mobile-nav"><strong>Pata Amiga</strong><div class="wc-v2-mobile-account">
+        return `<div class="wc-v2-mobile-nav"><div class="wc-v2-mobile-brand">
+                <img src="${CONFIG.API_BASE_URL}/widgets/home%20v2%20images/logo-light-bg.svg" alt="Pata Amiga">
+                <span class="wc-v2-brand-badge">CENTRO DE BIENESTAR</span>
+            </div><div class="wc-v2-mobile-account">
                 <button type="button" class="wc-v2-hamburger" data-wc-toggle-account aria-label="Abrir menú de cuenta" aria-expanded="false"><span class="wc-v2-hamburger-lines" aria-hidden="true"><span></span><span></span><span></span></span></button>
                 <div class="wc-v2-mobile-account-menu" role="menu" hidden>
                     <button type="button" data-wc-account-action="profile" role="menuitem">Perfil</button>

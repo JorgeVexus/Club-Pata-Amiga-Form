@@ -455,7 +455,6 @@
             if (!pet.is_mixed_breed && !hasBreed) missing.push('breed');
             if (pet.is_mixed_breed === undefined || pet.is_mixed_breed === null) missing.push('breedType');
             if (!pet.coat_color || pet.coat_color.trim() === '') missing.push('coatColor');
-            if (!(pet.primary_photo_url || pet.photo_url)) missing.push('photo');
             if (pet.is_senior && !pet.vet_certificate_url) missing.push('vetCert');
             return missing;
         }
