@@ -245,15 +245,20 @@ function BranchCard({
                         ))}
                     </div>
                 ) : (
-                    <p className={styles.photoHelp}>Agrega fotos del exterior, recepciÃ³n o Ã¡reas principales.</p>
+                    <p className={styles.photoHelp}>Agrega fotos del exterior, recepción o áreas principales.</p>
                 )}
             </div>
-            <div className={styles.branchQuestion}>
-                <label className={styles.branchTitle}>
-                    ¿Esta sucursal cuenta con los mismos servicios y beneficios que la sucursal principal?
-                </label>
-                <div className={styles.branchToggleOptions}>
-                    <label>
+            <section className={styles.branchDetailsSection}>
+                <div className={styles.branchDetailsHeader}>
+                    <div>
+                        <span className={styles.branchDetailsKicker}>Servicios de esta sucursal</span>
+                        <label className={styles.branchTitle}>
+                            ¿Cuenta con los mismos servicios que la sucursal principal?
+                        </label>
+                        <p className={styles.branchHelp}>Si eliges “Sí”, usaremos automáticamente el catálogo de la sucursal principal.</p>
+                    </div>
+                    <div className={styles.choiceGroup}>
+                    <label className={`${styles.choiceOption} ${inheritsServices ? styles.choiceSelected : ''}`}>
                         <input
                             type="radio"
                             checked={inheritsServices}
@@ -266,7 +271,7 @@ function BranchCard({
                             })}
                         /> Sí
                     </label>
-                    <label>
+                    <label className={`${styles.choiceOption} ${!inheritsServices ? styles.choiceSelected : ''}`}>
                         <input
                             type="radio"
                             checked={!inheritsServices}
@@ -274,11 +279,12 @@ function BranchCard({
                         /> No
                     </label>
                 </div>
-            </div>
+                </div>
             {!inheritsServices && (
-                <>
-                    <div className={styles.field}>
-                        <label>Servicios ofrecidos en esta sucursal</label>
+                    <div className={styles.branchCustomFields}>
+                        <div className={styles.field}>
+                        <label>Selecciona los servicios disponibles</label>
+                        <p className={styles.branchHelp}>Marca únicamente los servicios que se ofrecen físicamente en esta ubicación.</p>
                         <div className={styles.servicesGrid}>
                             {SERVICES_OPTIONS.map(service => (
                                 <button
@@ -292,11 +298,20 @@ function BranchCard({
                             ))}
                         </div>
                     </div>
-                    <div className={styles.branchQuestion}>
-                        <label className={styles.branchTitle}>Beneficio para miembros</label>
-                        <div className={styles.branchToggleOptions}>
-                            <label><input type="radio" checked={inheritsPromotion} onChange={() => onChange({ ...location, promotion_details: primaryPromotionDetails, inherits_promotion: true })} /> Usar el mismo</label>
-                            <label><input type="radio" checked={!inheritsPromotion} onChange={() => onChange({ ...location, inherits_promotion: false })} /> Usar uno diferente</label>
+                    </div>
+            )}
+            </section>
+            {!inheritsServices && (
+                <section className={styles.branchDetailsSection}>
+                    <div className={styles.branchDetailsHeader}>
+                        <div>
+                            <span className={styles.branchDetailsKicker}>Beneficio para miembros</span>
+                            <label className={styles.branchTitle}>¿Aplicar el beneficio de la sucursal principal?</label>
+                            <p className={styles.branchHelp}>Puedes conservar la promoción principal o definir una exclusiva para esta sucursal.</p>
+                        </div>
+                        <div className={styles.choiceGroup}>
+                            <label className={`${styles.choiceOption} ${inheritsPromotion ? styles.choiceSelected : ''}`}><input type="radio" checked={inheritsPromotion} onChange={() => onChange({ ...location, promotion_details: primaryPromotionDetails, inherits_promotion: true })} /> Usar el mismo</label>
+                            <label className={`${styles.choiceOption} ${!inheritsPromotion ? styles.choiceSelected : ''}`}><input type="radio" checked={!inheritsPromotion} onChange={() => onChange({ ...location, inherits_promotion: false })} /> Usar uno diferente</label>
                         </div>
                     </div>
                     {!inheritsPromotion && (
@@ -308,15 +323,20 @@ function BranchCard({
                             />
                         </div>
                     )}
-                </>
+                </section>
             )}
-            <div className={styles.branchQuestion}>
-                <label className={styles.branchTitle}>Redes sociales y sitio web</label>
-                <div className={styles.branchToggleOptions}>
-                    <label><input type="radio" checked={inheritsSocialLinks} onChange={() => onChange({ ...location, social_links: primarySocialLinks, inherits_social_links: true })} /> Usar los mismos</label>
-                    <label><input type="radio" checked={!inheritsSocialLinks} onChange={() => onChange({ ...location, inherits_social_links: false })} /> Usar diferentes</label>
+            <section className={styles.branchDetailsSection}>
+                <div className={styles.branchDetailsHeader}>
+                    <div>
+                        <span className={styles.branchDetailsKicker}>Presencia digital</span>
+                        <label className={styles.branchTitle}>¿Usar las mismas redes y sitio web?</label>
+                        <p className={styles.branchHelp}>Puedes reutilizar los canales principales o registrar enlaces específicos de esta sucursal.</p>
+                    </div>
+                    <div className={styles.choiceGroup}>
+                        <label className={`${styles.choiceOption} ${inheritsSocialLinks ? styles.choiceSelected : ''}`}><input type="radio" checked={inheritsSocialLinks} onChange={() => onChange({ ...location, social_links: primarySocialLinks, inherits_social_links: true })} /> Usar los mismos</label>
+                        <label className={`${styles.choiceOption} ${!inheritsSocialLinks ? styles.choiceSelected : ''}`}><input type="radio" checked={!inheritsSocialLinks} onChange={() => onChange({ ...location, inherits_social_links: false })} /> Usar diferentes</label>
+                    </div>
                 </div>
-            </div>
             {!inheritsSocialLinks && (
                 <div className={styles.socialGrid}>
                     {(['instagram', 'facebook', 'tiktok', 'website'] as const).map(network => (
@@ -334,6 +354,7 @@ function BranchCard({
                     ))}
                 </div>
             )}
+            </section>
             <button 
                 type="button" 
                 className={styles.secondaryButtonSmall} 
@@ -531,7 +552,7 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
         onNext: (urls: string[]) => void
     ) => {
         if (!file.type.startsWith('image/')) {
-            alert('Solo se aceptan imÃ¡genes');
+            alert('Solo se aceptan imágenes');
             return;
         }
         if (file.size > 5 * 1024 * 1024) {
@@ -557,7 +578,7 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                 setMessage({ text: 'Error al subir foto: ' + result.error, type: 'error' });
             }
         } catch {
-            setMessage({ text: 'Error de conexiÃ³n al subir foto', type: 'error' });
+            setMessage({ text: 'Error de conexión al subir foto', type: 'error' });
         }
     };
 
@@ -739,7 +760,7 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                 </div>
 
                 <div className={styles.field}>
-                    <label>RazÃ³n social / Nombre</label>
+                    <label>Razón social / Nombre</label>
                     <input
                         type="text"
                         value={formData.legal_name}
@@ -806,7 +827,7 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                         maxLength={18}
                         value={formData.bank_clabe}
                         onChange={e => setFormData({...formData, bank_clabe: e.target.value.replace(/\D/g, '').slice(0, 18)})}
-                        placeholder="18 dÃ­gitos"
+                        placeholder="18 dígitos"
                     />
                 </div>
             </div>

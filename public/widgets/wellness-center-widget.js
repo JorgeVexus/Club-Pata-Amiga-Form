@@ -19,7 +19,7 @@
         LOGOUT_REDIRECT_URL: runtimeConfig.logoutRedirectUrl || 'https://www.pataamiga.mx/',
         DEBUG: Boolean(runtimeConfig.DEBUG)
     };
-    const WELLNESS_SERVICE_OPTIONS = ['Tienda', 'ClÃ­nica veterinaria', 'Hospital Veterinario', 'Hotel', 'Paseador de perros', 'Funeraria'];
+    const WELLNESS_SERVICE_OPTIONS = ['Tienda', 'Clínica veterinaria', 'Hospital Veterinario', 'Hotel', 'Paseador de perros', 'Funeraria'];
 
     // Interruptor temporal: el proyecto de Google Cloud dueno de la API key aun no
     // tiene billing habilitado, lo que hace que Google muestre un dialogo de error
@@ -688,10 +688,168 @@
             color: #fff;
         }
 
+        .wc-v2-branch-section {
+            margin-top: 14px;
+            padding: 18px;
+            border: 1px solid var(--wc-v2-line, #ECE7DD);
+            border-radius: 16px;
+            background: var(--wc-v2-cream, #F8F5EE);
+            box-shadow: 0 5px 16px rgba(30, 93, 87, 0.045);
+        }
+
+        .wc-v2-branch-section-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .wc-v2-branch-kicker {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--wc-v2-teal-deep, #1E5D57);
+            font: 800 0.68rem/1.2 Outfit, sans-serif;
+            letter-spacing: 0.09em;
+            text-transform: uppercase;
+        }
+
+        .wc-v2-branch-section .wc-label {
+            margin: 0;
+            color: var(--wc-v2-ink, #153F3B);
+            font-size: 0.92rem;
+            line-height: 1.45;
+            text-wrap: pretty;
+        }
+
+        .wc-v2-branch-help {
+            max-width: 62ch;
+            margin: 5px 0 0;
+            color: var(--wc-v2-body, #4E6865);
+            font-size: 0.78rem;
+            line-height: 1.45;
+        }
+
+        .wc-v2-choice-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px;
+            border: 1px solid var(--wc-v2-line, #ECE7DD);
+            border-radius: 14px;
+            background: var(--wc-v2-white, #FFFFFF);
+        }
+
+        .wc-v2-choice {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 7px 12px;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: var(--wc-v2-body, #4E6865);
+            font: 700 0.78rem/1.2 Outfit, sans-serif;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+
+        .wc-v2-choice:hover {
+            background: #F2F8F6;
+            color: var(--wc-v2-teal-deep, #1E5D57);
+        }
+
+        .wc-v2-choice:active {
+            transform: scale(0.98);
+        }
+
+        .wc-v2-choice.is-selected {
+            border-color: rgba(33, 188, 175, 0.34);
+            background: var(--wc-v2-teal-soft, #E5F5F2);
+            color: #087B72;
+            box-shadow: 0 3px 10px rgba(33, 188, 175, 0.08);
+        }
+
+        .wc-v2-choice input {
+            width: 15px;
+            height: 15px;
+            margin: 0;
+            accent-color: var(--wc-v2-teal, #21BCAF);
+        }
+
+        .wc-v2-choice:has(input:focus-visible) {
+            outline: 3px solid rgba(33, 188, 175, 0.22);
+            outline-offset: 2px;
+        }
+
+        .wc-v2-branch-custom-fields {
+            margin-top: 17px;
+            padding-top: 16px;
+            border-top: 1px solid var(--wc-v2-line, #ECE7DD);
+        }
+
+        .wc-v2-branch-section .wc-services-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .wc-v2-branch-section .wc-location-service-badge {
+            border-color: #C9DAD7;
+            background: #FFFFFF;
+            color: var(--wc-v2-ink, #153F3B);
+            box-shadow: none;
+            transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+
+        .wc-v2-branch-section .wc-location-service-badge:hover {
+            border-color: var(--wc-v2-teal, #21BCAF);
+            transform: translateY(-1px);
+        }
+
+        .wc-v2-branch-section .wc-location-service-badge:focus-visible {
+            outline: 3px solid rgba(33, 188, 175, 0.22);
+            outline-offset: 2px;
+        }
+
+        .wc-v2-branch-section .wc-location-service-badge.active {
+            border-color: var(--wc-v2-teal-deep, #1E5D57);
+            background: var(--wc-v2-teal, #21BCAF);
+            color: #FFFFFF;
+        }
+
         @media (max-width: 768px) {
             .wc-branch-question {
                 align-items: flex-start;
                 flex-direction: column;
+            }
+
+            .wc-v2-branch-section {
+                padding: 15px;
+            }
+
+            .wc-v2-branch-section-head {
+                grid-template-columns: 1fr;
+                gap: 13px;
+            }
+
+            .wc-v2-choice-group {
+                width: 100%;
+            }
+
+            .wc-v2-choice {
+                flex: 1;
+                justify-content: center;
+                white-space: normal;
+                text-align: center;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .wc-v2-choice,
+            .wc-v2-branch-section .wc-location-service-badge {
+                transition: none;
             }
         }
 
@@ -1040,7 +1198,7 @@
     function renderPhotoPreview(urls) {
         const photoUrls = Array.isArray(urls) ? urls : [];
         if (photoUrls.length === 0) {
-            return '<p class="wc-location-photo-help">Agrega fotos del exterior, recepcion o areas principales.</p>';
+            return '<p class="wc-location-photo-help">Agrega fotos del exterior, recepción o áreas principales.</p>';
         }
 
         return `
@@ -1097,13 +1255,13 @@
                         <input type="text" name="location_name" class="wc-input" value="${location.name || ''}" placeholder="Ej: Sucursal Roma Norte">
                     </div>
                     <div class="wc-form-group">
-                        <label class="wc-label">Telefono de sucursal</label>
+                        <label class="wc-label">Teléfono de sucursal</label>
                         <input type="tel" name="location_phone" class="wc-input" value="${location.phone || ''}" placeholder="Ej: 5512345678">
                     </div>
                 </div>
                 <div class="wc-form-group">
-                    <label class="wc-label">Direccion completa</label>
-                    <input type="text" name="location_address" class="wc-input wc-location-address" value="${escapeHtml(location.address || '')}" placeholder="Calle, numero, colonia, CP y ciudad">
+                    <label class="wc-label">Dirección completa</label>
+                    <input type="text" name="location_address" class="wc-input wc-location-address" value="${escapeHtml(location.address || '')}" placeholder="Calle, número, colonia, CP y ciudad">
                 </div>
                 <div class="wc-input-row">
                     <div class="wc-form-group">
@@ -1116,7 +1274,7 @@
                     </div>
                 </div>
                 <div class="wc-branch-actions">
-                    <button type="button" class="wc-btn wc-branch-location-btn" data-get-branch-location>Usar mi ubicacion actual</button>
+                    <button type="button" class="wc-btn wc-branch-location-btn" data-get-branch-location>Usar mi ubicación actual</button>
                 </div>
                 <div class="wc-location-photos-panel">
                     <div class="wc-location-photos-header">
@@ -1129,42 +1287,58 @@
                     <input type="hidden" name="location_photo_urls" value="${serializePhotoUrls(photoUrls)}">
                     <div data-location-photo-preview>${renderPhotoPreview(photoUrls)}</div>
                 </div>
-                <div class="wc-branch-question">
-                    <div>
-                        <label class="wc-label">Â¿Esta sucursal cuenta con los mismos servicios y beneficios que la sucursal principal?</label>
+                <section class="wc-v2-branch-section">
+                    <div class="wc-v2-branch-section-head">
+                        <div>
+                            <span class="wc-v2-branch-kicker">Servicios de esta sucursal</span>
+                            <label class="wc-label">¿Cuenta con los mismos servicios que la sucursal principal?</label>
+                            <p class="wc-v2-branch-help">Si eliges “Sí”, usaremos automáticamente el catálogo de la sucursal principal.</p>
+                        </div>
+                        <div class="wc-v2-choice-group" data-branch-details-toggle>
+                            <label class="wc-v2-choice ${inheritsServices ? 'is-selected' : ''}"><input type="radio" name="location_same_services_benefits_${branchKey}" value="yes" ${inheritsServices ? 'checked' : ''}> Sí</label>
+                            <label class="wc-v2-choice ${inheritsServices ? '' : 'is-selected'}"><input type="radio" name="location_same_services_benefits_${branchKey}" value="no" ${inheritsServices ? '' : 'checked'}> No</label>
+                        </div>
                     </div>
-                    <div class="wc-branch-toggle-options" data-branch-details-toggle>
-                        <label><input type="radio" name="location_same_services_benefits_${branchKey}" value="yes" ${inheritsServices ? 'checked' : ''}> SÃ­</label>
-                        <label><input type="radio" name="location_same_services_benefits_${branchKey}" value="no" ${inheritsServices ? '' : 'checked'}> No</label>
-                    </div>
-                </div>
-                <div data-location-custom-details style="${inheritsServices ? 'display:none;' : ''}">
-                    <div class="wc-form-group">
-                        <label class="wc-label">Servicios ofrecidos en esta sucursal</label>
+                    <div data-location-custom-details style="${inheritsServices ? 'display:none;' : ''}">
+                        <div class="wc-form-group wc-v2-branch-custom-fields">
+                            <label class="wc-label">Selecciona los servicios disponibles</label>
+                            <p class="wc-v2-branch-help">Marca únicamente los servicios que se ofrecen físicamente en esta ubicación.</p>
                         <div class="wc-services-grid" data-location-services data-field="location_services">
                             ${renderLocationServiceButtons(services)}
                         </div>
                     </div>
-                    <div class="wc-branch-question">
-                        <label class="wc-label">Beneficio para miembros</label>
-                        <div class="wc-branch-toggle-options" data-location-promotion-toggle>
-                            <label><input type="radio" name="location_inherits_promotion_${branchKey}" value="yes" ${inheritsPromotion ? 'checked' : ''}> Usar el mismo</label>
-                            <label><input type="radio" name="location_inherits_promotion_${branchKey}" value="no" ${inheritsPromotion ? '' : 'checked'}> Usar uno diferente</label>
+                    </div>
+                </section>
+                <section class="wc-v2-branch-section" data-location-custom-details-benefit style="${inheritsServices ? 'display:none;' : ''}">
+                    <div class="wc-v2-branch-section-head">
+                        <div>
+                            <span class="wc-v2-branch-kicker">Beneficio para miembros</span>
+                            <label class="wc-label">¿Aplicar el beneficio de la sucursal principal?</label>
+                            <p class="wc-v2-branch-help">Puedes conservar la promoción principal o definir una exclusiva para esta sucursal.</p>
+                        </div>
+                        <div class="wc-v2-choice-group" data-location-promotion-toggle>
+                            <label class="wc-v2-choice ${inheritsPromotion ? 'is-selected' : ''}"><input type="radio" name="location_inherits_promotion_${branchKey}" value="yes" ${inheritsPromotion ? 'checked' : ''}> Usar el mismo</label>
+                            <label class="wc-v2-choice ${inheritsPromotion ? '' : 'is-selected'}"><input type="radio" name="location_inherits_promotion_${branchKey}" value="no" ${inheritsPromotion ? '' : 'checked'}> Usar uno diferente</label>
                         </div>
                     </div>
                     <div class="wc-form-group" data-location-promotion-field style="${inheritsPromotion ? 'display:none;' : ''}">
                         <label class="wc-label">Describe el beneficio de esta sucursal</label>
                         <textarea name="location_promotion_details" class="wc-input" style="min-height:90px;">${escapeHtml(location.promotion_details || '')}</textarea>
                     </div>
-                </div>
-                <div class="wc-branch-question">
-                    <label class="wc-label">Redes sociales y sitio web</label>
-                    <div class="wc-branch-toggle-options" data-location-social-toggle>
-                        <label><input type="radio" name="location_inherits_social_links_${branchKey}" value="yes" ${inheritsSocialLinks ? 'checked' : ''}> Usar los mismos</label>
-                        <label><input type="radio" name="location_inherits_social_links_${branchKey}" value="no" ${inheritsSocialLinks ? '' : 'checked'}> Usar diferentes</label>
+                </section>
+                <section class="wc-v2-branch-section">
+                    <div class="wc-v2-branch-section-head">
+                        <div>
+                            <span class="wc-v2-branch-kicker">Presencia digital</span>
+                            <label class="wc-label">¿Usar las mismas redes y sitio web?</label>
+                            <p class="wc-v2-branch-help">Puedes reutilizar los canales principales o registrar enlaces específicos de esta sucursal.</p>
+                        </div>
+                        <div class="wc-v2-choice-group" data-location-social-toggle>
+                            <label class="wc-v2-choice ${inheritsSocialLinks ? 'is-selected' : ''}"><input type="radio" name="location_inherits_social_links_${branchKey}" value="yes" ${inheritsSocialLinks ? 'checked' : ''}> Usar los mismos</label>
+                            <label class="wc-v2-choice ${inheritsSocialLinks ? '' : 'is-selected'}"><input type="radio" name="location_inherits_social_links_${branchKey}" value="no" ${inheritsSocialLinks ? '' : 'checked'}> Usar diferentes</label>
+                        </div>
                     </div>
-                </div>
-                <div data-location-social-fields style="${inheritsSocialLinks ? 'display:none;' : ''}">
+                    <div data-location-social-fields style="${inheritsSocialLinks ? 'display:none;' : ''}">
                     <div class="wc-input-row">
                         <div class="wc-form-group"><label class="wc-label">Instagram</label><input type="url" name="location_social_instagram" class="wc-input" value="${escapeHtml(social.instagram || '')}"></div>
                         <div class="wc-form-group"><label class="wc-label">Facebook</label><input type="url" name="location_social_facebook" class="wc-input" value="${escapeHtml(social.facebook || '')}"></div>
@@ -1173,7 +1347,8 @@
                         <div class="wc-form-group"><label class="wc-label">TikTok</label><input type="url" name="location_social_tiktok" class="wc-input" value="${escapeHtml(social.tiktok || '')}"></div>
                         <div class="wc-form-group"><label class="wc-label">Sitio web</label><input type="url" name="location_social_website" class="wc-input" value="${escapeHtml(social.website || '')}"></div>
                     </div>
-                </div>
+                    </div>
+                </section>
             </div>
         `;
     }
@@ -1186,12 +1361,12 @@
             <div class="wc-branches-panel" data-branches-panel>
                 <div class="wc-branch-question">
                     <div>
-                        <label class="wc-label" style="margin-bottom:4px;">¿Tu negocio cuenta con mas de una sucursal?</label>
+                        <label class="wc-label" style="margin-bottom:4px;">¿Tu negocio cuenta con más de una sucursal?</label>
                         <p style="margin:0; color:#718096; font-size:0.9rem;">Los beneficios y servicios se toman del centro principal.</p>
                     </div>
                     <div class="wc-branch-toggle-options" data-branch-toggle>
                         <label><input type="radio" name="has_branches" value="no" ${hasBranches ? '' : 'checked'}> No</label>
-                        <label><input type="radio" name="has_branches" value="yes" ${hasBranches ? 'checked' : ''}> Si</label>
+                        <label><input type="radio" name="has_branches" value="yes" ${hasBranches ? 'checked' : ''}> Sí</label>
                     </div>
                 </div>
                 <div data-branches-editor style="${hasBranches ? '' : 'display:none;'}">
@@ -2278,6 +2453,8 @@
                 const inheritsServices = row.querySelector('[name^="location_same_services_benefits_"]:checked')?.value !== 'no';
                 const customDetails = row.querySelector('[data-location-custom-details]');
                 if (customDetails) customDetails.style.display = inheritsServices ? 'none' : '';
+                const benefitDetails = row.querySelector('[data-location-custom-details-benefit]');
+                if (benefitDetails) benefitDetails.style.display = inheritsServices ? 'none' : '';
 
                 const inheritsPromotion = row.querySelector('[name^="location_inherits_promotion_"]:checked')?.value !== 'no';
                 const promotionField = row.querySelector('[data-location-promotion-field]');
@@ -2286,6 +2463,11 @@
                 const inheritsSocialLinks = row.querySelector('[name^="location_inherits_social_links_"]:checked')?.value !== 'no';
                 const socialFields = row.querySelector('[data-location-social-fields]');
                 if (socialFields) socialFields.style.display = inheritsSocialLinks ? 'none' : '';
+
+                row.querySelectorAll('.wc-v2-choice').forEach(choice => {
+                    const input = choice.querySelector('input');
+                    choice.classList.toggle('is-selected', Boolean(input?.checked));
+                });
             };
 
             row.querySelectorAll(

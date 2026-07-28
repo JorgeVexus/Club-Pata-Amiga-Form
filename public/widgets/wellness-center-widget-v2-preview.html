@@ -34,6 +34,7 @@
     };
     window.$memberstackDom = {
       getCurrentMember: async () => ({ data: { id: 'preview-member' } }),
+      getMemberCookie: async () => 'preview-token',
       logout: async () => { document.documentElement.dataset.previewLogout = 'complete'; }
     };
     const center = {
@@ -43,7 +44,11 @@
       services:['Consulta general','Estética','Vacunación'], promotion_details:'15% de descuento en consulta general.',
       rejection_reason:'El comprobante de domicilio no coincide con la dirección principal registrada.',
       welcome_shown:true, logo_url:'', social_links:{instagram:'https://instagram.com/'},
-      bank_name:'BBVA', bank_clabe:'012180001234567890', payments:[], appointments:[], locations:[]
+      bank_name:'BBVA', bank_clabe:'012180001234567890', payments:[], appointments:[],
+      locations:[
+        {id:'preview-primary',name:'VetCare Roma',address:'Av. Álvaro Obregón 120, Roma Norte',lat:19.4194,lng:-99.1606,phone:'55 5555 0101',photo_urls:[],services:['Clínica veterinaria'],promotion_details:'15% de descuento en consulta general.',social_links:{instagram:'https://instagram.com/'},is_primary:true},
+        {id:'preview-branch',name:'VetCare Condesa',address:'Av. Tamaulipas 45, Condesa',lat:19.4112,lng:-99.1742,phone:'55 5555 0102',photo_urls:[],services:['Tienda','Hospital Veterinario'],promotion_details:'10% de descuento en hospitalización.',social_links:{website:'https://example.com/'},inherits_services:false,inherits_promotion:false,inherits_social_links:false,is_primary:false}
+      ]
     };
     const nativeFetch = window.fetch.bind(window);
     window.fetch = async (input, options={}) => {
