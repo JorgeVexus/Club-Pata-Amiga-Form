@@ -13,16 +13,13 @@
  * (`admin.updateUserById`) y marcamos `legacy_password_migrated = true` -
  * la siguiente vez ya entra 100% nativo por Supabase.
  *
- * IMPORTANTE: `verifyMemberstackPassword` llama al endpoint de login del
- * REST API de Memberstack usado por su SDK de cliente. No pude confirmar el
- * endpoint exacto contra la documentacion oficial en esta sesion (las
- * herramientas de busqueda web no estaban disponibles) - antes de depender
- * de este puente en produccion, confirmar contra
- * https://developers.memberstack.com/rest-api que la URL/metodo/payload de
- * abajo siguen siendo correctos (o pedirle al equipo de Memberstack /
- * revisar el Network tab del login viejo). Falla cerrado: cualquier error
- * de red o respuesta inesperada se trata como password invalida, nunca
- * como valida.
+ * `verifyMemberstackPassword` llama a `POST client.memberstack.com/auth/login`
+ * (confirmado en vivo contra el proyecto real de Memberstack de este
+ * cliente: un intento con credenciales invalidas devuelve
+ * {"code":"invalid-credentials", ...} con el mensaje de error personalizado
+ * de esta cuenta, no un 404 generico). Falla cerrado: cualquier error de
+ * red o respuesta inesperada se trata como password invalida, nunca como
+ * valida.
  */
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -31,7 +28,7 @@ const MEMBERSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_MEMBERSTACK_PUBLIC_KEY;
 async function verifyMemberstackPassword(email: string, password: string): Promise<boolean> {
   if (!MEMBERSTACK_PUBLIC_KEY) return false;
   try {
-    const res = await fetch("https://client.memberstack.com/member/login", {
+    const res = await fetch("https://client.memberstack.com/auth/login", {
       method: "POST",
       headers: {
         "content-type": "application/json",

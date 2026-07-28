@@ -1,5 +1,29 @@
 # Gaps y pendientes tras la migración a pata-amiga
 
+## ⚠️ Incidente de producción (2026-07-28) y cambio de arquitectura
+
+El sitio viejo en producción (`app.pataamiga.mx` / `club-pata-amiga-form.vercel.app`,
+un deploy de Vercel separado de este repo) consulta **la misma base de
+datos Supabase** (`hjvhntxjkuuobgfslzlf`). Mover las tablas viejas en
+conflicto de nombre a un schema `legacy` rompió esa producción en vivo
+(`column pets.owner_id does not exist`). Se revirtió de inmediato: las
+tablas originales volvieron a `public`, y las tablas nuevas de pata-amiga
+ya migradas (443 usuarios/293 mascotas) se movieron a un schema
+`pata_amiga_new` dentro de ese mismo proyecto (quedan ahí, listas para el
+cutover real, sin afectar producción).
+
+**A partir de este punto, el desarrollo de la migración continúa en un
+proyecto Supabase de staging separado**: `pata-amiga-staging`
+(ref `dpsdopbwnxgwowzehotj`). Las 26 migraciones + bridge ya están
+aplicadas ahí (schema `public` limpio, sin colisiones). `.env.local` ya
+apunta a staging. **El día del cutover real** (cuando se dé de baja el
+sitio viejo) hay que: 1) crear el esquema pata-amiga en producción tal
+cual está en staging, 2) mover los 443 usuarios/293 mascotas que quedaron
+parqueados en `pata_amiga_new` del proyecto de producción a `public` (o
+re-correr el backfill ahí), 3) hacer el deploy del código nuevo. No usar
+el proyecto de producción para seguir desarrollando mientras el sitio
+viejo siga vivo.
+
 Este documento se generó durante la migración del proyecto anterior
 (Memberstack + esquema `users`/`pets`) hacia el codebase de
 `Chepiztrike/pata-amiga`. Lista lo que quedó pendiente o requiere decisión,
