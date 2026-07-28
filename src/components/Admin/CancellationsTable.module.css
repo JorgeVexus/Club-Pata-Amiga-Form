@@ -124,6 +124,36 @@
     font-weight: 800;
 }
 
+.clickableRow {
+    cursor: pointer;
+}
+
+.clickableRow:hover {
+    background: #f9fafb;
+}
+
+.billingYes {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: #eff6dc;
+    color: #5a7a18;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.billingNo {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    padding: 6px 10px;
+    background: #fff4e3;
+    color: #c77414;
+    font-size: 12px;
+    font-weight: 800;
+}
+
 .empty,
 .loading {
     padding: 30px;

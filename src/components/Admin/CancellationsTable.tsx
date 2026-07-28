@@ -19,6 +19,12 @@ interface Cancellation {
     comments: string | null;
     days_remaining_at_cancellation: number;
     subscription_interval: string | null;
+    has_billing_info: boolean;
+}
+
+interface CancellationsTableProps {
+    /** Si se pasa, cada fila se vuelve clickeable y abre el detalle del miembro. */
+    onViewMember?: (memberstackId: string) => void;
 }
 
 interface CancellationStats {
@@ -46,7 +52,7 @@ function formatDate(value: string) {
     });
 }
 
-export default function CancellationsTable() {
+export default function CancellationsTable({ onViewMember }: CancellationsTableProps) {
     const [cancellations, setCancellations] = useState<Cancellation[]>([]);
     const [stats, setStats] = useState<CancellationStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -54,11 +60,12 @@ export default function CancellationsTable() {
         reason: '',
         startDate: '',
         endDate: '',
+        billing: '',
     });
 
     useEffect(() => {
         loadCancellations();
-    }, [filters.reason, filters.startDate, filters.endDate]);
+    }, [filters.reason, filters.startDate, filters.endDate, filters.billing]);
 
     useEffect(() => {
         loadStats();
@@ -81,6 +88,7 @@ export default function CancellationsTable() {
             if (filters.reason) params.set('reason', filters.reason);
             if (filters.startDate) params.set('startDate', filters.startDate);
             if (filters.endDate) params.set('endDate', filters.endDate);
+            if (filters.billing) params.set('billing', filters.billing);
 
             const response = await adminFetch(`/api/admin/cancellations?${params.toString()}`);
             const data = await response.json();
@@ -142,6 +150,15 @@ export default function CancellationsTable() {
                             value={filters.endDate}
                             onChange={event => setFilters(prev => ({ ...prev, endDate: event.target.value }))}
                         />
+                        <select
+                            className={styles.select}
+                            value={filters.billing}
+                            onChange={event => setFilters(prev => ({ ...prev, billing: event.target.value }))}
+                        >
+                            <option value="">Facturación: todas</option>
+                            <option value="yes">Con datos de facturación</option>
+                            <option value="no">Sin datos de facturación</option>
+                        </select>
                     </div>
                 </div>
 
@@ -160,13 +177,18 @@ export default function CancellationsTable() {
                                     <th>Comentarios</th>
                                     <th>Dias restantes</th>
                                     <th>Fin membresia</th>
+                                    <th>Facturación</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {cancellations.map(item => {
                                     const fullName = `${item.user.first_name || ''} ${item.user.last_name || ''}`.trim() || 'Sin nombre';
                                     return (
-                                        <tr key={item.id}>
+                                        <tr
+                                            key={item.id}
+                                            className={onViewMember ? styles.clickableRow : undefined}
+                                            onClick={onViewMember ? () => onViewMember(item.memberstack_id) : undefined}
+                                        >
                                             <td>
                                                 <div className={styles.memberName}>{fullName}</div>
                                                 <div className={styles.muted}>{item.user.email || item.memberstack_id}</div>
@@ -183,6 +205,13 @@ export default function CancellationsTable() {
                                             <td>{item.comments || <span className={styles.muted}>Sin comentarios</span>}</td>
                                             <td>{item.days_remaining_at_cancellation} dias</td>
                                             <td>{formatDate(item.membership_end_date)}</td>
+                                            <td>
+                                                {item.has_billing_info ? (
+                                                    <span className={styles.billingYes}>Completa</span>
+                                                ) : (
+                                                    <span className={styles.billingNo}>Pendiente</span>
+                                                )}
+                                            </td>
                                         </tr>
                                     );
                                 })}

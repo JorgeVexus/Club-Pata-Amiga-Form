@@ -21,11 +21,14 @@ export async function GET(request: NextRequest) {
         const startDate = searchParams.get('startDate');
         const endDate = searchParams.get('endDate');
 
+        const billingFilter = searchParams.get('billing'); // 'yes' | 'no'
+
         let query = supabaseAdmin
             .from('membership_cancellations')
             .select(`
                 id,
                 memberstack_id,
+                user_id,
                 cancellation_date,
                 membership_end_date,
                 days_remaining_at_cancellation,
@@ -64,7 +67,22 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ success: false, error: 'Error cargando cancelaciones' }, { status: 500 });
         }
 
-        const cancellations = (data || []).map((item: any) => ({
+        // 🆕 Cruce con billing_details para saber quién llenó sus datos de facturación
+        const userIds = (data || []).map((item: any) => item.user_id).filter(Boolean);
+        let billedUserIds = new Set<string>();
+        if (userIds.length > 0) {
+            const { data: billingRows, error: billingError } = await supabaseAdmin
+                .from('billing_details')
+                .select('user_id')
+                .in('user_id', userIds);
+            if (billingError) {
+                console.error('[ADMIN-CANCELLATIONS] Error cruzando billing_details:', billingError);
+            } else {
+                billedUserIds = new Set((billingRows || []).map((row: any) => row.user_id));
+            }
+        }
+
+        let cancellations = (data || []).map((item: any) => ({
             id: item.id,
             memberstack_id: item.memberstack_id,
             user: {
@@ -79,7 +97,14 @@ export async function GET(request: NextRequest) {
             comments: item.comments,
             days_remaining_at_cancellation: item.days_remaining_at_cancellation || 0,
             subscription_interval: item.subscription_interval,
+            has_billing_info: billedUserIds.has(item.user_id),
         }));
+
+        if (billingFilter === 'yes') {
+            cancellations = cancellations.filter((item) => item.has_billing_info);
+        } else if (billingFilter === 'no') {
+            cancellations = cancellations.filter((item) => !item.has_billing_info);
+        }
 
         return NextResponse.json({
             success: true,
