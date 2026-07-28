@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import EmbajadoresPage from '@/components/Admin/Pages/EmbajadoresPage';
 
-export default function EmbajadoresPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Embajadores" />
-        </PageContainer>
-    );
+export default function AdminEmbajadoresPage() {
+    return <EmbajadoresPage />;
 }

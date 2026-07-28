@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import CentrosPage from '@/components/Admin/Pages/CentrosPage';
 
-export default function CentrosPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Centros" />
-        </PageContainer>
-    );
+export default function AdminCentrosPage() {
+    return <CentrosPage />;
 }

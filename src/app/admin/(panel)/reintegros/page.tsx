@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import ReintegrosPage from '@/components/Admin/Pages/ReintegrosPage';
 
-export default function ReintegrosPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Reintegros" />
-        </PageContainer>
-    );
+export default function AdminReintegrosPage() {
+    return <ReintegrosPage />;
 }
