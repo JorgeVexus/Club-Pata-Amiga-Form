@@ -529,6 +529,12 @@ export default function MemberDetailModal({ isOpen, onClose, member, onApprove, 
         return status === 'active' || status === 'trialing';
     });
     const isMemberApprovedByPayment = hasActiveMembershipPlan && fields['approval-status'] !== 'rejected';
+    // 🆕 Si la membresía ya está cancelada (en Stripe o marcada como tal), no tiene caso
+    // ofrecer aprobar/rechazar la solicitud — solo confunde al admin.
+    const isMembershipCancelled =
+        stripeDetails?.subscription?.cancel_at_period_end === true ||
+        fields['approval-status'] === 'cancelled' ||
+        fields['approval-status'] === 'pending_cancellation';
 
     // 🆕 Lógica reforzada para detectar extranjeros
     const nationalityValue = (supabaseUser?.nationality || fields['nationality'] || '').toLowerCase();
@@ -1670,7 +1676,7 @@ return (
                 </div>
 
                 <div className={styles.footer}>
-                    {fields['approval-status'] !== 'approved' && !isMemberApprovedByPayment && (
+                    {fields['approval-status'] !== 'approved' && !isMemberApprovedByPayment && !isMembershipCancelled && (
                         <>
                             <button
                                 className={`${styles.actionButton} ${styles.approveButton}`}
