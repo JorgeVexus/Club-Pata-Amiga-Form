@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import ComunicadosPage from '@/components/Admin/Pages/ComunicadosPage';
 
-export default function ComunicadosPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Comunicados" />
-        </PageContainer>
-    );
+export default function AdminComunicadosPage() {
+    return <ComunicadosPage />;
 }

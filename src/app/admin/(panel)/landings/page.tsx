@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import LandingsPage from '@/components/Admin/Pages/LandingsPage';
 
-export default function LandingsPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Landings" />
-        </PageContainer>
-    );
+export default function AdminLandingsPage() {
+    return <LandingsPage />;
 }
