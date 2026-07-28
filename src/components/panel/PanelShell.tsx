@@ -1,0 +1,93 @@
+import Image from "next/image";
+import Link from "next/link";
+import { LogoutButton } from "@/components/app/LogoutButton";
+import { ProfileMenu } from "@/components/panel/ProfileMenu";
+import { PORTALS, type Portal } from "@/lib/permissions";
+import type { PanelSession } from "@/lib/panel-guard";
+
+/**
+ * Cascarón compartido por el panel de administración (/admin) y el portal de
+ * ventas (/ventas): barra lateral en escritorio, barra superior con chips en
+ * móvil, y el menú de perfil con el conmutador de portales.
+ *
+ * Es la pieza que hace real el principio de "fuente única, dos superficies":
+ * una sola estructura, dos menús. Lo que se arregle aquí se arregla en los dos.
+ */
+export function PanelShell({
+  portal,
+  session,
+  nav,
+  navMobile,
+  children,
+}: {
+  portal: Portal;
+  session: PanelSession;
+  /** Menú de escritorio (barra lateral). */
+  nav: React.ReactNode;
+  /** Menú móvil (chips horizontales bajo la barra superior). */
+  navMobile: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  const meta = PORTALS[portal];
+
+  return (
+    <div className="grid min-h-dvh grid-cols-1 bg-cream md:grid-cols-[224px_1fr]">
+      {/* Barra superior móvil: logo + perfil + nav horizontal con badges */}
+      <header className="sticky top-0 z-30 flex flex-col bg-teal-dark md:hidden">
+        <div className="flex items-center justify-between gap-2 px-4 pb-1.5 pt-3">
+          <Link href={meta.href} className="flex-none">
+            <Image
+              src="/brand/logo-on-dark.svg"
+              alt="Pata Amiga"
+              width={96}
+              height={34}
+              className="h-8 w-auto"
+              priority
+            />
+          </Link>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="truncate text-[10px] font-extrabold tracking-[.1em] text-white/50">
+              {meta.label}
+            </span>
+            <ProfileMenu
+              displayName={session.displayName}
+              roleLabel={session.roleLabel}
+              portals={session.portals}
+              current={portal}
+              compact
+            />
+          </div>
+        </div>
+        {navMobile}
+      </header>
+
+      <aside className="sticky top-0 hidden h-dvh flex-col gap-1 bg-teal-dark px-4 py-[22px] md:flex">
+        <Link href={meta.href} className="mb-1.5 ml-2 self-start">
+          <Image
+            src="/brand/logo-on-dark.svg"
+            alt="Pata Amiga"
+            width={113}
+            height={40}
+            className="h-10 w-auto"
+            priority
+          />
+        </Link>
+        <span className="mb-2.5 ml-2 text-[10.5px] font-extrabold tracking-[.1em] text-white/50">
+          {meta.label}
+        </span>
+        {nav}
+        <div className="mt-auto">
+          <LogoutButton variant="admin" />
+        </div>
+        <ProfileMenu
+          displayName={session.displayName}
+          roleLabel={session.roleLabel}
+          portals={session.portals}
+          current={portal}
+        />
+      </aside>
+
+      <main>{children}</main>
+    </div>
+  );
+}

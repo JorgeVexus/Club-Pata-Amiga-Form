@@ -1,270 +1,60 @@
-/**
- * API Endpoint para consulta de códigos postales con cache
- * Versión con query parameter (más confiable que dynamic routes en dev)
- * Uso: /api/sepomex?cp=01000
- */
-
-import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-// Cliente de Supabase con service role (solo si hay credenciales)
-const supabaseAdmin = (supabaseUrl && supabaseServiceKey)
-    ? createClient(supabaseUrl, supabaseServiceKey)
-    : null;
-
-// Interface de respuesta SEPOMEX
-interface SepomexResponse {
-    error: boolean;
-    code_error: number;
-    error_message: string | null;
-    // true si estos datos vienen del fallback de Zippopotam, donde "municipio" en
-    // realidad es el nombre de una colonia (Zippopotam no distingue ambos campos).
-    fromZippopotamFallback?: boolean;
-    response: {
-        cp: string;
-        asentamiento: string[];
-        tipo_asentamiento: string;
-        municipio: string;
-        estado: string;
-        ciudad: string;
-        pais: string;
-    };
-}
-
-// Cache en memoria
-const memoryCache = new Map<string, {
-    data: any;
-    timestamp: number;
-}>();
-
-const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 horas
+import { NextResponse } from "next/server";
 
 /**
- * Consulta SEPOMEX directamente con Fallback a Zippopotam
+ * CP lookup → state, city, colonias. Tries the Sepomex mirror first (has
+ * municipio + full colonia list), then zippopotam (colonias + state only).
+ * The form degrades to manual entry when both are down. TODO: import the
+ * Sepomex catalog into our own table before launch.
  */
-async function querySepomex(cp: string): Promise<SepomexResponse | null> {
-    // 1. Intentar SEPOMEX (Primario - Oficial)
-    const officialUrls = [
-        `https://api-sepomex.datos.gob.mx/v1/codigo_postal/${cp}`,
-        `http://api-sepomex.datos.gob.mx/v1/codigo_postal/${cp}` // Fallback a HTTP por problemas de SSL
-    ];
 
-    for (const url of officialUrls) {
-        try {
-            console.log(`🌐 Probando SEPOMEX oficial (${url.startsWith('https') ? 'HTTPS' : 'HTTP'}): ${cp}`);
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3500);
-
-            const response = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
-
-            if (response.ok) {
-                const data = await response.json();
-                if (data && !data.error) {
-                    console.log(`✅ Datos obtenidos de SEPOMEX oficial para CP: ${cp}`);
-                    return data;
-                }
-            }
-        } catch (error) {
-            console.warn(`⚠️ SEPOMEX (${url.split(':')[0]}) falló:`, error);
-        }
-    }
-
-    // 2. Fallback a Zippopotam (Muy estable pero datos simplificados)
-    try {
-        console.log(`🔄 Intentando fallback Zippopotam para CP: ${cp}`);
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 4000);
-
-        const zipResponse = await fetch(`https://api.zippopotam.us/mx/${cp}`, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (zipResponse.ok) {
-            const zipData = await zipResponse.json();
-            const places = zipData.places || [];
-
-            if (places.length > 0) {
-                console.log(`✅ Datos obtenidos de Zippopotam para CP: ${cp} (${places.length} asentamientos)`);
-
-                // NOTA: Zippopotam MX no separa municipio de colonia confiablemente.
-                // Usualmente el primer 'place name' es una colonia.
-                return {
-                    error: false,
-                    code_error: 0,
-                    error_message: null,
-                    fromZippopotamFallback: true,
-                    response: {
-                        cp: zipData['post code'],
-                        asentamiento: places.map((p: any) => p['place name']),
-                        tipo_asentamiento: 'Colonia',
-                        // Si hay muchos lugares, el municipio suele ser constante pero Zippo no lo da.
-                        // Usamos el primer lugar como placeholder, pero marcamos que debe revisarse en el cliente.
-                        municipio: places[0]['place name'],
-                        estado: places[0]['state'],
-                        ciudad: places[0]['state'],
-                        pais: 'México'
-                    }
-                };
-            }
-        }
-    } catch (error) {
-        console.error('❌ Fallback Zippopotam también falló:', error);
-    }
-
-    return null;
+async function fromSepomexMirror(cp: string) {
+  const res = await fetch(
+    `https://sepomex.icalialabs.com/api/v1/zip_codes?zip_code=${cp}`,
+    { next: { revalidate: 86400 }, signal: AbortSignal.timeout(4000) },
+  );
+  if (!res.ok) throw new Error(`sepomex ${res.status}`);
+  const data = await res.json();
+  const rows: { d_estado: string; d_mnpio: string; d_asenta: string }[] =
+    data.zip_codes ?? [];
+  if (!rows.length) return null;
+  return {
+    found: true,
+    state: rows[0].d_estado,
+    city: rows[0].d_mnpio,
+    colonies: rows.map((r) => r.d_asenta),
+  };
 }
 
-/**
- * Guarda en cache
- */
-async function saveToCache(cp: string, data: any) {
-    memoryCache.set(cp, {
-        data,
-        timestamp: Date.now()
-    });
-
-    // No persistir en Supabase el resultado del fallback de Zippopotam: su campo
-    // "municipio" en realidad es una colonia, y guardarlo aquí lo dejaría envenenado
-    // como si fuera el municipio real para futuras consultas de ese mismo CP.
-    if (data.fromZippopotamFallback) return;
-
-    if (!supabaseAdmin) return;
-
-    try {
-        const colonies = data.response.asentamiento || [];
-        for (const colony of colonies) {
-            await supabaseAdmin
-                .from('catalog_sepomex')
-                .upsert({
-                    cp: cp,
-                    colony: colony,
-                    municipality: data.response.municipio,
-                    state: data.response.estado,
-                    state_code: '',
-                    city: data.response.ciudad,
-                    last_updated: new Date().toISOString()
-                }, { onConflict: 'cp,colony' });
-        }
-    } catch (error) {
-        console.error('Error guardando en cache:', error);
-    }
+async function fromZippopotam(cp: string) {
+  const res = await fetch(`https://api.zippopotam.us/mx/${cp}`, {
+    next: { revalidate: 86400 },
+    signal: AbortSignal.timeout(4000),
+  });
+  if (!res.ok) throw new Error(`zippopotam ${res.status}`);
+  const data = await res.json();
+  const places: { "place name": string; state: string }[] = data.places ?? [];
+  if (!places.length) return null;
+  return {
+    found: true,
+    state: places[0].state,
+    city: "",
+    colonies: places.map((p) => p["place name"]),
+  };
 }
 
-/**
- * Obtiene del cache
- */
-async function getFromCache(cp: string): Promise<any | null> {
-    const memoryHit = memoryCache.get(cp);
-    if (memoryHit && (Date.now() - memoryHit.timestamp) < CACHE_TTL) {
-        return memoryHit.data;
-    }
+export async function GET(request: Request) {
+  const cp = new URL(request.url).searchParams.get("cp");
+  if (!cp || !/^\d{5}$/.test(cp)) {
+    return NextResponse.json({ error: "CP inválido" }, { status: 400 });
+  }
 
-    if (!supabaseAdmin) return null;
-
+  for (const source of [fromSepomexMirror, fromZippopotam]) {
     try {
-        const { data, error } = await supabaseAdmin
-            .from('catalog_sepomex')
-            .select('*')
-            .eq('cp', cp)
-            .limit(1);
-
-        if (error || !data || data.length === 0) return null;
-
-        const colonies = await supabaseAdmin
-            .from('catalog_sepomex')
-            .select('colony')
-            .eq('cp', cp);
-
-        const colonyNames = colonies.data?.map(c => c.colony) || [data[0].colony];
-
-        const response = {
-            error: false,
-            code_error: 0,
-            error_message: null,
-            response: {
-                cp: data[0].cp,
-                asentamiento: colonyNames,
-                tipo_asentamiento: '',
-                municipio: data[0].municipality,
-                estado: data[0].state,
-                ciudad: data[0].city || data[0].municipality,
-                pais: 'México'
-            }
-        };
-
-        memoryCache.set(cp, { data: response, timestamp: Date.now() });
-        return response;
-    } catch (error) {
-        return null;
+      const result = await source(cp);
+      if (result) return NextResponse.json(result);
+    } catch {
+      // try the next source
     }
-}
-
-export async function GET(request: NextRequest) {
-    console.log('📍 SEPOMEX API (query) called');
-
-    try {
-        const { searchParams } = new URL(request.url);
-        const cp = searchParams.get('cp');
-
-        console.log('📮 CP received:', cp);
-
-        if (!cp || !/^\d{5}$/.test(cp)) {
-            return NextResponse.json(
-                { success: false, error: 'Código postal inválido. Debe tener 5 dígitos.' },
-                { status: 400 }
-            );
-        }
-
-        // 1. Intentar cache
-        const cached = await getFromCache(cp);
-        if (cached) {
-            return NextResponse.json({
-                success: true,
-                data: {
-                    cp: cached.response.cp,
-                    state: cached.response.estado,
-                    municipality: cached.response.municipio,
-                    city: cached.response.ciudad,
-                    colonies: cached.response.asentamiento
-                },
-                fromCache: true
-            });
-        }
-
-        // 2. Consultar SEPOMEX
-        console.log('🌐 Consultando SEPOMEX:', cp);
-        const sepomexData = await querySepomex(cp);
-
-        if (!sepomexData || sepomexData.error) {
-            return NextResponse.json(
-                { success: false, error: 'Código postal no encontrado' },
-                { status: 404 }
-            );
-        }
-
-        await saveToCache(cp, sepomexData);
-
-        return NextResponse.json({
-            success: true,
-            data: {
-                cp: sepomexData.response.cp,
-                state: sepomexData.response.estado,
-                municipality: sepomexData.response.municipio,
-                city: sepomexData.response.ciudad,
-                colonies: sepomexData.response.asentamiento,
-                fromZippopotamFallback: sepomexData.fromZippopotamFallback === true
-            },
-            fromCache: false
-        });
-
-    } catch (error: any) {
-        console.error('Error en endpoint SEPOMEX:', error);
-        return NextResponse.json(
-            { success: false, error: 'Error interno del servidor' },
-            { status: 500 }
-        );
-    }
+  }
+  return NextResponse.json({ found: false, degraded: true });
 }

@@ -1,0 +1,295 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { WELLNESS_SERVICES, type WellnessService } from "@/lib/constants";
+import { PublicHeader } from "@/components/public/PublicHeader";
+import { WelcomeOnce } from "@/components/app/WelcomeOnce";
+import { CenterInfoCard } from "./CenterInfoCard";
+import { PromotionsCard, type PromotionRow } from "./PromotionsCard";
+import { ChangePasswordCard } from "@/components/app/ChangePasswordCard";
+import { LogoutButton } from "@/components/app/LogoutButton";
+import { ProfileMenu, type DashboardEntry } from "@/components/app/ProfileMenu";
+import { AppealButton } from "@/components/app/AppealButton";
+import { APPEAL_MAX_PER_SUBJECT } from "@/lib/constants";
+
+export const metadata = { title: "Dashboard de centro aliado · Club Pata Amiga" };
+
+function StatusScreen({
+  name,
+  status,
+  reason,
+}: {
+  name: string;
+  status: "pending" | "rejected";
+  reason: string | null;
+}) {
+  return (
+    <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-4 rounded-[20px] bg-white p-8 text-center shadow-[0_2px_12px_rgba(30,83,80,.06)]">
+      <span className="text-[42px]" aria-hidden>
+        {status === "pending" ? "⏳" : "💌"}
+      </span>
+      <h1 className="font-display text-[24px] text-ink-title">
+        {status === "pending"
+          ? `La solicitud de ${name} está en revisión`
+          : "Tu solicitud no fue aprobada"}
+      </h1>
+      <p className="text-sm leading-relaxed text-ink-secondary">
+        {status === "pending"
+          ? "El comité está revisando tu solicitud de centro aliado. Te avisaremos por correo en cuanto haya resolución."
+          : (reason ??
+            "El comité no pudo aprobar tu solicitud en esta ocasión. Puedes escribirnos si crees que hay un error.")}
+      </p>
+      <Link href="/" className="font-semibold text-teal-deep hover:underline">
+        Volver al inicio
+      </Link>
+    </div>
+  );
+}
+
+export default async function CentroDashboardPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/iniciar-sesion?next=/centro");
+
+  const admin = createAdminClient();
+  const CENTER_COLS =
+    "id, name, contact_name, email, phone, website, logo_url, services, member_benefit, status, rejection_reason";
+  let { data: centerRows } = await admin
+    .from("wellness_centers")
+    .select(CENTER_COLS)
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false });
+
+  // Solicitud enviada sin sesión (user_id null) con el correo de esta cuenta:
+  // se liga aquí para que el centro vea su dashboard al iniciar sesión
+  if (!centerRows?.length && user.email) {
+    const { data: byEmail } = await admin
+      .from("wellness_centers")
+      .select(CENTER_COLS)
+      .is("user_id", null)
+      .eq("email", user.email.toLowerCase())
+      .order("created_at", { ascending: false });
+    if (byEmail?.length) {
+      await admin
+        .from("wellness_centers")
+        .update({ user_id: user.id })
+        .in(
+          "id",
+          byEmail.map((c) => c.id),
+        );
+      centerRows = byEmail;
+    }
+  }
+
+  // Un centro aprobado siempre gana sobre solicitudes más nuevas
+  const center =
+    centerRows?.find((c) => c.status === "approved") ?? centerRows?.[0];
+
+  if (!center) redirect("/centros/registro");
+
+  // ¿El dueño del centro también es miembro? Decide el link al panel de
+  // miembro o la invitación a unirse con un plan.
+  const [{ data: memberProfile }, { data: activeSub }] = await Promise.all([
+    admin
+      .from("profiles")
+      .select("member_since")
+      .eq("id", user.id)
+      .maybeSingle(),
+    admin
+      .from("subscriptions")
+      .select("id")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .maybeSingle(),
+  ]);
+  const isMember = Boolean(activeSub);
+  const wasMember = Boolean(memberProfile?.member_since);
+
+  // Otros paneles de esta cuenta (cambio estilo Instagram desde el avatar)
+  const { data: ambassadorRows } = await admin
+    .from("ambassadors")
+    .select("id")
+    .eq("user_id", user.id)
+    .eq("status", "approved")
+    .limit(1);
+  const menuEntries: DashboardEntry[] = [
+    ...(isMember
+      ? [{ href: "/app", icon: "🐾", label: "Panel de miembro" }]
+      : []),
+    ...(ambassadorRows?.length
+      ? [{ href: "/embajador", icon: "🤝", label: "Panel de embajador" }]
+      : []),
+  ];
+
+  const header = (
+    <PublicHeader
+      badge="CENTRO ALIADO"
+      rightSlot={
+        <div className="flex items-center gap-3">
+          <span className="hidden text-[13.5px] font-bold text-ink-title sm:inline">
+            {center.name}
+          </span>
+          <ProfileMenu
+            initial={center.name.charAt(0).toUpperCase()}
+            entries={menuEntries}
+          />
+        </div>
+      }
+    />
+  );
+
+  if (center.status !== "approved") {
+    // Centros rechazados pueden apelar (máx. 2, como miembros) — 16-jul
+    const { data: centerAppeals } = await admin
+      .from("appeals")
+      .select("id, folio, status")
+      .eq("center_id", center.id);
+    const pendingAppeal = (centerAppeals ?? []).find(
+      (a) => a.status === "pending",
+    );
+    return (
+      <div className="min-h-dvh bg-cream">
+        {header}
+        <div className="flex flex-col items-center gap-4 px-5 py-12">
+          <StatusScreen
+            name={center.name}
+            status={center.status as "pending" | "rejected"}
+            reason={center.rejection_reason}
+          />
+          {center.status === "rejected" &&
+            (pendingAppeal ? (
+              <span className="rounded-full bg-info-bg px-3 py-1 text-[11px] font-extrabold tracking-[.04em] text-info-text">
+                APELACIÓN {pendingAppeal.folio} EN REVISIÓN
+              </span>
+            ) : (centerAppeals ?? []).length < APPEAL_MAX_PER_SUBJECT ? (
+              <div className="w-full max-w-[520px]">
+                <AppealButton
+                  centerId={center.id}
+                  subjectLabel={`la solicitud de ${center.name}`}
+                />
+              </div>
+            ) : null)}
+        </div>
+      </div>
+    );
+  }
+
+  const [{ data: promotions }, { data: locations }] = await Promise.all([
+    admin
+      .from("center_promotions")
+      .select("id, title, description, discount_label, valid_until, is_active")
+      .eq("center_id", center.id)
+      .order("created_at", { ascending: false }),
+    admin
+      .from("wellness_center_locations")
+      .select("id, address, colony, city, state, postal_code, phone")
+      .eq("center_id", center.id)
+      .order("created_at", { ascending: true }),
+  ]);
+
+  return (
+    <div className="min-h-dvh bg-cream">
+      {header}
+      <div className="mx-auto flex w-full max-w-[980px] flex-col gap-5 px-5 py-7 sm:px-8">
+        {/* Dueño sin plan activo: invitación a unirse (o reactivar) como miembro */}
+        {!isMember && (
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[18px] bg-teal-deep px-5 py-4 text-white shadow-[0_2px_10px_rgba(30,83,80,.12)]">
+            <div className="flex min-w-0 flex-col">
+              <span className="font-display text-[17px]">
+                Tú también puedes cuidar a tu manada 🐾
+              </span>
+              <span className="text-[12.5px] opacity-90">
+                {wasMember
+                  ? "Tu membresía no está activa. Reactívala para volver a cuidar a tus peludos."
+                  : "Tu cuenta de centro aliado aún no tiene membresía. Únete y registra hasta 3 mascotas."}
+              </span>
+            </div>
+            <Link
+              href={wasMember ? "/app/cuenta" : "/registro/peludo"}
+              className="flex-none rounded-full bg-white px-4 py-2 text-[12.5px] font-bold text-teal-deep transition-opacity hover:opacity-90"
+            >
+              {wasMember ? "Reactivar mi membresía" : "Quiero mi membresía"}
+            </Link>
+          </div>
+        )}
+
+        <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
+          <div className="flex flex-col gap-4">
+            <CenterInfoCard
+              initialLogoUrl={center.logo_url}
+              initialBenefit={center.member_benefit}
+              initialPhone={center.phone}
+              initialWebsite={center.website}
+            />
+            <PromotionsCard promotions={(promotions ?? []) as PromotionRow[]} />
+          </div>
+
+          <div className="flex flex-col gap-4">
+            {/* Servicios y ubicaciones: los cambia el comité para cuidar el directorio */}
+            <div className="flex flex-col gap-3 rounded-[20px] bg-white p-5 shadow-[var(--shadow-card)]">
+              <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
+                TUS SERVICIOS
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {(center.services ?? []).map((s: string) => {
+                  const svc = WELLNESS_SERVICES[s as WellnessService];
+                  return (
+                    <span
+                      key={s}
+                      className="rounded-full bg-info-bg px-3 py-1.5 text-xs font-bold text-info-text"
+                    >
+                      {svc ? `${svc.emoji} ${svc.label}` : s}
+                    </span>
+                  );
+                })}
+              </div>
+              <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
+                TUS UBICACIONES
+              </span>
+              {(locations ?? []).map((l) => (
+                <div
+                  key={l.id}
+                  className="flex flex-col rounded-[12px] border-[1.5px] border-border-input px-3.5 py-2.5 text-[12.5px] text-ink-body"
+                >
+                  <span className="font-semibold text-ink-title">
+                    {l.address}
+                  </span>
+                  <span className="text-ink-tertiary">
+                    {[l.colony, l.city, l.state, l.postal_code]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </span>
+                  {l.phone && <span className="text-ink-tertiary">📞 {l.phone}</span>}
+                </div>
+              ))}
+              <span className="text-xs text-ink-tertiary">
+                ¿Cambió algún servicio o dirección? Escríbenos y el comité lo
+                actualiza para cuidar el directorio.
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Ajustes de la cuenta del centro */}
+        <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
+          <ChangePasswordCard />
+          <div className="flex lg:justify-end">
+            <LogoutButton variant="button" />
+          </div>
+        </div>
+      </div>
+
+      {/* Bienvenida (una sola vez tras la aprobación) */}
+      <WelcomeOnce
+        storageKey={`pa_welcome_centro_${center.id}`}
+        emoji="🎉"
+        title={`¡${center.name} ya es parte de la red!`}
+        message="Tu centro ya aparece en el directorio de centros aliados. Completa tu ficha, publica promociones y los miembros las verán al instante."
+        cta="Completar mi ficha"
+      />
+    </div>
+  );
+}

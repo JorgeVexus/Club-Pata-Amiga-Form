@@ -1,31 +1,23 @@
-import nextVitals from 'eslint-config-next/core-web-vitals';
-import nextTypescript from 'eslint-config-next/typescript';
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
+import nextTs from "eslint-config-next/typescript";
 
-const config = [
+const eslintConfig = defineConfig([
   ...nextVitals,
-  ...nextTypescript,
-  {
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/no-require-imports': 'off',
-      '@typescript-eslint/no-this-alias': 'off',
-      'prefer-const': 'warn',
-      'react-hooks/immutability': 'warn',
-      'react-hooks/preserve-manual-memoization': 'warn',
-      'react-hooks/set-state-in-effect': 'warn',
-      'react/no-unescaped-entities': 'warn'
-    }
-  },
-  {
-    ignores: [
-      '.next/**',
-      'out/**',
-      'build/**',
-      'temp-pata-amiga/**',
-      'next-env.d.ts',
-      'login code extracted/**'
-    ]
-  }
-];
+  ...nextTs,
+  // Override default ignores of eslint-config-next.
+  globalIgnores([
+    // Default ignores of eslint-config-next:
+    ".next/**",
+    "out/**",
+    "build/**",
+    "next-env.d.ts",
+    // Legacy artifacts from the pre-migration (Memberstack-era) codebase.
+    "temp-pata-amiga/**",
+    "tests/**",
+    "*.js",
+    "test-memberstack-api.ts",
+  ]),
+]);
 
-export default config;
+export default eslintConfig;

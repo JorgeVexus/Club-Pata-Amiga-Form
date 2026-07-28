@@ -1,0 +1,135 @@
+"use client";
+
+import { useState } from "react";
+import { BANK_OPTIONS, bankFromClabe } from "@/lib/banks";
+import { savePaymentData } from "./actions";
+
+/**
+ * Datos de pago del embajador (banco + CLABE), al estilo del paso bancario
+ * del sistema anterior. Necesarios para recibir el corte mensual por SPEI.
+ */
+export function PaymentDataCard({
+  initialBank,
+  initialClabe,
+  initialHolder,
+}: {
+  initialBank: string | null;
+  initialClabe: string | null;
+  initialHolder: string | null;
+}) {
+  const [editing, setEditing] = useState(!initialClabe);
+  const [bank, setBank] = useState(initialBank ?? "");
+  const [clabe, setClabe] = useState(initialClabe ?? "");
+  const [holder, setHolder] = useState(initialHolder ?? "");
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
+
+  const detected = clabe.length >= 3 ? bankFromClabe(clabe) : null;
+
+  const submit = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const result = await savePaymentData(bank, clabe, holder);
+      if (result.error) setError(result.error);
+      else {
+        if (result.bankName) setBank(result.bankName);
+        setEditing(false);
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3 rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+      <div className="flex items-center justify-between">
+        <span className="font-display text-lg text-ink-title">
+          Datos de pago
+        </span>
+        {!editing && (
+          <button
+            type="button"
+            onClick={() => setEditing(true)}
+            className="text-[12px] font-bold text-teal-deep hover:underline"
+          >
+            Editar
+          </button>
+        )}
+      </div>
+
+      {!editing ? (
+        <div className="flex flex-col gap-1 text-[13px] text-ink-body">
+          <span>
+            <strong className="text-ink-title">{bank || "Banco"}</strong> ·
+            CLABE ····{clabe.slice(-4)}
+          </span>
+          {holder && <span>Titular: {holder}</span>}
+          <span className="text-xs text-success-text">
+            ✓ Lista para recibir tu corte mensual por SPEI
+          </span>
+        </div>
+      ) : (
+        <form
+          className="flex flex-col gap-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            submit();
+          }}
+        >
+          <p className="text-[12.5px] leading-relaxed text-ink-secondary">
+            Tus comisiones se pagan por transferencia (SPEI) el día 5.
+            Necesitamos tu CLABE de 18 dígitos.
+          </p>
+          <input
+            value={clabe}
+            onChange={(e) =>
+              setClabe(e.target.value.replace(/\D/g, "").slice(0, 18))
+            }
+            placeholder="CLABE interbancaria (18 dígitos)"
+            inputMode="numeric"
+            className="h-11 rounded-[12px] border-[1.5px] border-border-input px-3.5 text-sm tracking-wider text-ink-title outline-none focus:border-teal"
+          />
+          {detected && (
+            <span className="text-xs font-semibold text-info-text">
+              Banco detectado: {detected}
+            </span>
+          )}
+          <input
+            value={holder}
+            onChange={(e) => setHolder(e.target.value)}
+            placeholder="Nombre del titular de la cuenta"
+            className="h-11 rounded-[12px] border-[1.5px] border-border-input px-3.5 text-sm text-ink-title outline-none focus:border-teal"
+          />
+          <select
+            value={bank || detected || ""}
+            onChange={(e) => setBank(e.target.value)}
+            className="h-11 appearance-none rounded-[12px] border-[1.5px] border-border-input bg-white px-3.5 text-sm text-ink-title outline-none focus:border-teal"
+          >
+            <option value="">Selecciona tu banco</option>
+            {BANK_OPTIONS.map((b) => (
+              <option key={b} value={b}>
+                {b}
+              </option>
+            ))}
+            {detected && !BANK_OPTIONS.includes(detected as never) && (
+              <option value={detected}>{detected}</option>
+            )}
+          </select>
+          {error && (
+            <span className="text-xs font-semibold text-error-text">
+              {error}
+            </span>
+          )}
+          <button
+            type="submit"
+            disabled={busy || clabe.length !== 18 || !holder.trim()}
+            className="grid h-10 place-items-center rounded-full bg-teal text-[13px] font-bold text-white transition-colors hover:bg-teal-deep disabled:opacity-50"
+          >
+            {busy ? "Guardando…" : "Guardar datos de pago"}
+          </button>
+        </form>
+      )}
+    </div>
+  );
+}

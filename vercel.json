@@ -1,8 +1,16 @@
 {
-    "crons": [
-        {
-            "path": "/api/cron/missing-info-followup",
-            "schedule": "0 16 * * *"
-        }
-    ]
+  "crons": [
+    {
+      "path": "/api/cron/cumpleanos",
+      "schedule": "0 15 * * *"
+    },
+    {
+      "path": "/api/cron/carritos",
+      "schedule": "0 16 * * *"
+    },
+    {
+      "path": "/api/cron/mensajes",
+      "schedule": "*/10 * * * *"
+    }
+  ]
 }

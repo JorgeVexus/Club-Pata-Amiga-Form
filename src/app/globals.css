@@ -1,376 +1,90 @@
+@import "tailwindcss";
+
+/* Design tokens — Dirección A "Manada fresca" (see handoff README) */
 :root {
-    /* Colores principales */
-    --color-primary: #15BEB2; /* Club Turquoise */
-    --color-primary-light: #7DD8D5;
-    --color-action-orange: #FE8F15;
-    --color-action-orange-deep: #FF8400;
-    --color-lime: #9FD406;
-    --color-yellow: #FEBD01;
-    --color-pink: #FE0063;
-    --color-white: #FFFFFF;
-    --color-black: #181C1C;
-    --color-text-dark: #2D3748;
-    --color-text-light: #718096;
-    --color-error: #E53E3E;
-    --color-success: #38A169;
-
-    /* Opacidades */
-    --opacity-60: 0.6;
-    --opacity-80: 0.8;
-
-    /* Border radius */
-    --radius-input: 50px;
-    --radius-container: 50px;
-
-    /* Espaciado */
-    --spacing-xs: 0.5rem;
-    --spacing-sm: 0.75rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-
-    /* Fuentes */
-    --font-heading: 'Fraiche', sans-serif;
-    --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    --font-family: var(--font-body);
-    /* Para compatibilidad con código existente */
-
-    /* Sombras */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-
-    /* Animaciones */
-    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
-    --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
-    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --background: #faf7f1;
+  --foreground: #3d524f;
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+@theme {
+  /* Backgrounds */
+  --color-cream: #faf7f1;
+  --color-cream-light: #fdf9ef;
+
+  /* Brand */
+  --color-teal: #1cbcad;
+  --color-teal-deep: #0e8377; /* hover / links */
+  --color-teal-dark: #1e5350; /* titles, admin sidebar, footer */
+
+  /* Accents */
+  --color-orange: #f7941d; /* warning / waiting */
+  --color-pink: #f23d6d; /* promo badges / urgency */
+  --color-lime: #a6ce39; /* accent on dark teal */
+  --color-yellow: #ffc20e;
+
+  /* State pairs (bg / text) */
+  --color-success-bg: #eff6dc;
+  --color-success-text: #5a7a18;
+  --color-warning-bg: #fff4e3;
+  --color-warning-text: #c77414;
+  --color-error-bg: #fdecf1;
+  --color-error-text: #c22a56;
+  --color-info-bg: #e9f7f5;
+  --color-info-text: #0e8377;
+
+  /* Text */
+  --color-ink-title: #1e5350;
+  --color-ink-body: #3d524f;
+  --color-ink-secondary: #6b7c79;
+  --color-ink-tertiary: #8a9490;
+  --color-ink-placeholder: #a9a294;
+
+  /* Borders */
+  --color-border-input: #e4dfd3; /* 1.5px */
+  --color-border-divider: #eee9dd;
+
+  /* Typography */
+  --font-display: var(--font-fraiche); /* titles, weight 400 */
+  --font-sans: var(--font-outfit);
+
+  /* Radii */
+  --radius-input: 12px;
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+
+  /* Shadows */
+  --shadow-card: 0 2px 12px rgba(30, 83, 80, 0.06);
 }
 
-html,
 body {
-    font-family: var(--font-family);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    color: var(--color-text-dark);
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    min-height: 100vh;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-outfit), system-ui, sans-serif;
 }
 
-/* Estilos base para inputs */
-input,
-select,
-textarea {
-    font-family: var(--font-family);
-    font-size: 1rem;
-    border: none;
-    outline: none;
-    transition: all 0.3s ease;
+/* Organic blob shape used over colored backgrounds (~10-15% white alpha) */
+.blob {
+  border-radius: 47% 53% 61% 39% / 52% 46% 54% 48%;
 }
 
-input:focus,
-select:focus,
-textarea:focus {
-    box-shadow: 0 0 0 3px rgba(125, 216, 213, 0.3);
+/* Benefits marquee: the track holds the list twice, so -50% loops seamlessly */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
-
-/* Estilos para labels */
-label {
-    font-weight: 500;
-    color: var(--color-text-dark);
-    margin-bottom: var(--spacing-xs);
-    display: block;
+/* La banda SIEMPRE se mueve (decisión de marca) — sin excepción por
+   "reducir movimiento": es lenta y de bajo contraste de movimiento. */
+.marquee-track {
+  animation: marquee 40s linear infinite;
 }
-
-/* Texto de ayuda */
-.help-text {
-    font-size: 0.875rem;
-    color: var(--color-text-light);
-    margin-top: var(--spacing-xs);
-    font-style: italic;
-}
-
-/* Mensajes de error */
-.error-text {
-    font-size: 0.875rem;
-    color: var(--color-error);
-    margin-top: var(--spacing-xs);
-    font-weight: 500;
-}
-
-/* Headings use Fraiche */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-heading);
-}
-
-/* Botones - Estilos Globales Estandarizados */
-button {
-    font-family: var(--font-heading);
-    font-weight: 300;
-    /* Fraiche Light para mejor legibilidad */
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 10px 18px;
-    border-radius: 50px;
-    border: 2px solid #000000;
-    font-size: 1rem;
-    color: #000000;
-}
-
-/* Botón Principal (Siguiente/Enviar) */
-button[type="submit"],
-button.btn-primary,
-button.nextButton,
-.nextButton {
-    background: #FE8F15;
-    color: #000000;
-}
-
-button[type="submit"]:hover,
-button.btn-primary:hover,
-button.nextButton:hover,
-.nextButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(254, 143, 21, 0.3);
-}
-
-/* Botón Secundario (Anterior/Cancelar) */
-button[type="button"],
-button.btn-secondary,
-button.previousButton,
-button.cancelButton,
-.previousButton,
-.cancelButton {
-    background: #00BBB4;
-    color: #000000;
-}
-
-button[type="button"]:hover,
-button.btn-secondary:hover,
-button.previousButton:hover,
-button.cancelButton:hover,
-.previousButton:hover,
-.cancelButton:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 187, 180, 0.3);
-}
-
-/* Botón Deshabilitado */
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none !important;
-    box-shadow: none !important;
-}
-
-
-/* Animaciones de Error */
-@keyframes shake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    10%,
-    30%,
-    50%,
-    70%,
-    90% {
-        transform: translateX(-4px);
-    }
-
-    20%,
-    40%,
-    60%,
-    80% {
-        transform: translateX(4px);
-    }
-}
-
-@keyframes pulse-error {
-    0% {
-        box-shadow: 0 0 0 0 rgba(229, 62, 62, 0.4);
-    }
-
-    70% {
-        box-shadow: 0 0 0 6px rgba(229, 62, 62, 0);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 rgba(229, 62, 62, 0);
-    }
-}
-
-.input-error {
-    border: 2px solid var(--color-error) !important;
-    animation: shake 0.5s cubic-bezier(.36, .07, .19, .97) both;
-}
-
-.input-error:focus {
-    box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.2) !important;
-    animation: pulse-error 2s infinite;
-}
-
-button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* Utilidades */
-.container {
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: var(--spacing-xl);
-}
-
-.text-center {
-    text-align: center;
-}
-
-.mb-sm {
-    margin-bottom: var(--spacing-sm);
-}
-
-.mb-md {
-    margin-bottom: var(--spacing-md);
-}
-
-.mb-lg {
-    margin-bottom: var(--spacing-lg);
-}
-
-.mb-xl {
-    margin-bottom: var(--spacing-xl);
-}
-
-.mt-sm {
-    margin-top: var(--spacing-sm);
-}
-
-.mt-md {
-    margin-top: var(--spacing-md);
-}
-
-.mt-lg {
-    margin-top: var(--spacing-lg);
-}
-
-.mt-xl {
-    margin-top: var(--spacing-xl);
-}
-
-/* Animaciones */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-.fade-in {
-    animation: fadeIn 0.5s ease-out;
-}
-
-.slide-in {
-    animation: slideIn 0.5s ease-out;
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-    .container {
-        padding: var(--spacing-md);
-    }
-
-    :root {
-        --spacing-xl: 1.5rem;
-        --spacing-2xl: 2rem;
-    }
-}
-
-/* Scrollbar personalizado */
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-::-webkit-scrollbar-thumb {
-    background: var(--color-primary);
-    border-radius: 5px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #6bc7c4;
-}
-
-/* Google Places Autocomplete Styles */
-.pac-logo::after {
-    display: none;
-}
-
-.pac-container {
-    border-radius: 15px;
-    border: 2px solid var(--color-primary);
-    box-shadow: var(--shadow-lg);
-    margin-top: 5px;
-    font-family: var(--font-family);
-    z-index: 10000;
-}
-
-.pac-item {
-    padding: 10px 15px;
-    cursor: pointer;
-    border-bottom: 1px solid rgba(125, 216, 213, 0.2);
-    transition: background-color 0.2s ease;
-}
-
-.pac-item:hover {
-    background-color: rgba(125, 216, 213, 0.1);
-}
-
-.pac-item-query {
-    font-size: 0.95rem;
-    color: var(--color-text-dark);
-    font-weight: 600;
-}
-
-.pac-matched {
-    font-weight: 700;
-    color: var(--color-primary);
-}
-
-.pac-icon {
-    display: none;
+/* Pausa al pasar el cursor — solo en dispositivos con puntero real; en
+   táctiles el "hover" se queda pegado tras un tap y congela la banda */
+@media (hover: hover) and (pointer: fine) {
+  .marquee-track:hover {
+    animation-play-state: paused;
+  }
 }
