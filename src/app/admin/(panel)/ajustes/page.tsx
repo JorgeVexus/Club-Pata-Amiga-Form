@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import AjustesPage from '@/components/Admin/Pages/AjustesPage';
 
-export default function AjustesPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Ajustes" />
-        </PageContainer>
-    );
+export default function AdminAjustesPage() {
+    return <AjustesPage />;
 }

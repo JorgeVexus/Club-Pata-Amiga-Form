@@ -1,10 +1,5 @@
-import PageContainer from '@/components/Admin/ui/PageContainer';
-import AdminComingSoon from '@/components/Admin/ui/AdminComingSoon';
+import ApelacionesPage from '@/components/Admin/Pages/ApelacionesPage';
 
-export default function ApelacionesPage() {
-    return (
-        <PageContainer>
-            <AdminComingSoon title="Apelaciones" />
-        </PageContainer>
-    );
+export default function AdminApelacionesPage() {
+    return <ApelacionesPage />;
 }
