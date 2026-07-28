@@ -1,0 +1,80 @@
+.kpiGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+@media (min-width: 1024px) {
+    .kpiGrid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.growthGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+@media (min-width: 768px) {
+    .growthGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (min-width: 1280px) {
+    .growthGrid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+}
+
+.chartsGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 1024px) {
+    .chartsGrid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.queueGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+}
+
+@media (min-width: 1024px) {
+    .queueGrid {
+        grid-template-columns: 1.5fr 1fr;
+    }
+}
+
+.cardTitle {
+    font-family: var(--panel-font-display);
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--panel-ink-title);
+    margin: 0;
+}
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.viewAll {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--panel-teal-deep);
+    text-decoration: none;
+}
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: var(--panel-ink-tertiary);
+}

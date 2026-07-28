@@ -1,0 +1,27 @@
+.header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.title {
+    font-family: var(--panel-font-display);
+    font-weight: 400;
+    font-size: 26px;
+    color: var(--panel-ink-title);
+    margin: 0;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.subtitle {
+    font-size: 13px;
+    color: var(--panel-ink-tertiary);
+    margin: 0;
+}

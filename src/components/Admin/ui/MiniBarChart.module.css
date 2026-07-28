@@ -1,0 +1,36 @@
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #fff;
+    border-radius: var(--panel-radius-card);
+    padding: 20px;
+    box-shadow: var(--panel-shadow-card);
+}
+
+.title {
+    font-family: var(--panel-font-display);
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--panel-ink-title);
+    margin: 0;
+}
+
+.bar {
+    transition: opacity 0.15s;
+}
+
+.bar:hover {
+    opacity: 0.85;
+}
+
+.label {
+    font-size: 10.5px;
+    fill: var(--panel-ink-tertiary);
+}
+
+.value {
+    font-size: 10.5px;
+    font-weight: 700;
+    fill: var(--panel-ink-title);
+}

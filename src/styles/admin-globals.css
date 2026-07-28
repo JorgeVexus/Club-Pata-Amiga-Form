@@ -53,4 +53,45 @@
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
+
+    /* --- Panel v2: tokens visuales tomados del repo de referencia (pata-amiga) --- */
+    --panel-cream: #faf7f1;
+    --panel-cream-light: #fdf9ef;
+
+    --panel-teal: #1cbcad;
+    --panel-teal-deep: #0e8377;
+    --panel-teal-dark: #1e5350;
+
+    --panel-orange: #f7941d;
+    --panel-pink: #f23d6d;
+    --panel-lime: #a6ce39;
+    --panel-yellow: #ffc20e;
+
+    --panel-success-bg: #eff6dc;
+    --panel-success-text: #5a7a18;
+    --panel-warning-bg: #fff4e3;
+    --panel-warning-text: #c77414;
+    --panel-error-bg: #fdecf1;
+    --panel-error-text: #c22a56;
+    --panel-info-bg: #e9f7f5;
+    --panel-info-text: #0e8377;
+
+    --panel-ink-title: #1e5350;
+    --panel-ink-body: #3d524f;
+    --panel-ink-secondary: #6b7c79;
+    --panel-ink-tertiary: #8a9490;
+    --panel-ink-placeholder: #a9a294;
+
+    --panel-border-input: #e4dfd3;
+    --panel-border-divider: #eee9dd;
+
+    --panel-font-display: var(--font-heading);
+    --panel-font-body: var(--font-body);
+
+    --panel-radius-input: 12px;
+    --panel-radius-card: 16px;
+    --panel-radius-card-lg: 20px;
+
+    --panel-shadow-card: 0 2px 10px rgba(30, 83, 80, 0.05);
+    --panel-shadow-dropdown: 0 12px 40px rgba(30, 83, 80, 0.18);
 }

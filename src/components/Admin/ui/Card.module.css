@@ -1,0 +1,17 @@
+.card {
+    background: #fff;
+    border-radius: var(--panel-radius-card);
+    box-shadow: var(--panel-shadow-card);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.cardLg {
+    border-radius: var(--panel-radius-card-lg);
+}
+
+.cardNoPadding {
+    padding: 0;
+}
