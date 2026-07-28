@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { resolveLoginDestination } from "./actions";
+import { resolveLoginDestination, attemptLegacyBridgeLogin } from "./actions";
 import { TextField } from "@/components/ui/Field";
 import { GoogleIcon } from "@/components/ui/GoogleIcon";
 import { Button } from "@/components/ui/Button";
@@ -31,8 +31,15 @@ function LoginForm() {
       password,
     });
     if (signInError) {
-      setError("Correo o contraseña incorrectos.");
-      setLoading(false);
+      // Puede ser un miembro legacy (Memberstack) que aún no migra su
+      // password a Supabase Auth: intentamos el puente antes de rendirnos.
+      const bridged = await attemptLegacyBridgeLogin(email.trim().toLowerCase(), password);
+      if (!bridged.success) {
+        setError("Correo o contraseña incorrectos.");
+        setLoading(false);
+        return;
+      }
+      window.location.assign(bridged.destination ?? "/app");
       return;
     }
     // Sin ?next explícito, el rol y estado deciden el destino:
