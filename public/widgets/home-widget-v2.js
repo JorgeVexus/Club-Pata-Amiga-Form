@@ -1940,9 +1940,9 @@
                             
                             <div class="pata-v2-footer-links-col">
                                 <span class="pata-v2-footer-links-title">COMUNIDAD</span>
-                                <a href="https://www.pataamiga.mx/centros" class="pata-v2-footer-link">Centros aliados</a>
-                                <a href="https://www.pataamiga.mx/centros/registro" class="pata-v2-footer-link">Quiero ser centro aliado</a>
-                                <a href="https://www.pataamiga.mx/embajadores/dashboard" class="pata-v2-footer-link">Quiero ser embajador</a>
+                                <a href="https://app.pataamiga.mx/bienestar/registro" class="pata-v2-footer-link">Centros aliados</a>
+                                <a href="https://app.pataamiga.mx/bienestar/registro" class="pata-v2-footer-link">Quiero ser centro aliado</a>
+                                <a href="https://app.pataamiga.mx/embajadores/registro" class="pata-v2-footer-link">Quiero ser embajador</a>
                             </div>
                         </div>
 
