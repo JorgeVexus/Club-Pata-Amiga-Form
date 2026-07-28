@@ -1,8 +1,27 @@
 import { supabaseAdmin } from '@/lib/supabase';
-import { WellnessCenter, WellnessCenterAppointment, WellnessCenterPayment, WellnessCenterLocation } from '@/types/wellness.types';
+import { WellnessCenter, WellnessCenterAppointment, WellnessCenterPayment, WellnessCenterLocation, SocialLinks } from '@/types/wellness.types';
 
 // Usar el cliente administrativo centralizado
 const supabase = supabaseAdmin;
+
+function sanitizeWellnessSocialLinks(links?: SocialLinks): SocialLinks {
+    const allowedEntries = [
+        ['instagram', links?.instagram],
+        ['facebook', links?.facebook],
+        ['tiktok', links?.tiktok],
+        ['website', links?.website]
+    ] as const;
+
+    return Object.fromEntries(
+        allowedEntries
+            .filter(([, value]) => typeof value === 'string' && value.trim())
+            .map(([key, value]) => [key, value?.trim()])
+    ) as SocialLinks;
+}
+
+function hasWellnessSocialLinks(links?: SocialLinks): boolean {
+    return Object.values(links || {}).some(value => typeof value === 'string' && value.trim());
+}
 
 export const wellnessService = {
     /**
@@ -60,6 +79,14 @@ export const wellnessService = {
                 photo_urls: Array.isArray(location.photo_urls)
                     ? location.photo_urls.filter(url => typeof url === 'string' && url.trim()).map(url => url.trim())
                     : [],
+                services: Array.isArray(location.services)
+                    ? location.services.filter(service => typeof service === 'string' && service.trim()).map(service => service.trim())
+                    : [],
+                promotion_details: location.promotion_details?.trim() || null,
+                social_links: sanitizeWellnessSocialLinks(location.social_links),
+                inherits_services: location.inherits_services !== false,
+                inherits_promotion: location.inherits_promotion !== false,
+                inherits_social_links: location.inherits_social_links !== false,
                 is_primary: Boolean(location.is_primary),
                 sort_order: index
             }))
@@ -196,9 +223,11 @@ export const wellnessService = {
                     photo_urls: location.photo_urls || [],
                     lat: location.lat,
                     lng: location.lng,
-                    services: center.services,
-                    promotion_details: center.promotion_details,
-                    social_links: center.social_links,
+                    services: location.services?.length ? location.services : center.services,
+                    promotion_details: location.promotion_details || center.promotion_details,
+                    social_links: hasWellnessSocialLinks(location.social_links)
+                        ? location.social_links
+                        : center.social_links,
                     is_primary: location.is_primary
                 }));
 

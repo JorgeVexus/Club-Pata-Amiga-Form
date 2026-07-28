@@ -10,6 +10,7 @@
     let currentMemberToken = '';
     let payments = [];
     let appointments = [];
+    let branchEditorSequence = 0;
 
     const runtimeConfig = window.PATA_AMIGA_CONFIG || {};
     const CONFIG = {
@@ -18,6 +19,7 @@
         LOGOUT_REDIRECT_URL: runtimeConfig.logoutRedirectUrl || 'https://www.pataamiga.mx/',
         DEBUG: Boolean(runtimeConfig.DEBUG)
     };
+    const WELLNESS_SERVICE_OPTIONS = ['Tienda', 'ClÃ­nica veterinaria', 'Hospital Veterinario', 'Hotel', 'Paseador de perros', 'Funeraria'];
 
     // Interruptor temporal: el proyecto de Google Cloud dueno de la API key aun no
     // tiene billing habilitado, lo que hace que Google muestre un dialogo de error
@@ -671,6 +673,21 @@
             margin: 10px 0 0 0;
         }
 
+        .wc-location-service-badge {
+            border: 2px solid #000;
+            border-radius: 50px;
+            padding: 7px 14px;
+            background: #F1F5F9;
+            color: #1E293B;
+            font: 700 0.9rem Outfit, sans-serif;
+            cursor: pointer;
+        }
+
+        .wc-location-service-badge.active {
+            background: #00BBB4;
+            color: #fff;
+        }
+
         @media (max-width: 768px) {
             .wc-branch-question {
                 align-items: flex-start;
@@ -999,6 +1016,27 @@
         return (Array.isArray(urls) ? urls : []).filter(Boolean).join('|');
     }
 
+    function getWellnessSocialLinksFromForm(form, prefix = 'social_') {
+        return {
+            instagram: form.querySelector(`[name="${prefix}instagram"]`)?.value?.trim() || '',
+            facebook: form.querySelector(`[name="${prefix}facebook"]`)?.value?.trim() || '',
+            tiktok: form.querySelector(`[name="${prefix}tiktok"]`)?.value?.trim() || '',
+            website: form.querySelector(`[name="${prefix}website"]`)?.value?.trim() || ''
+        };
+    }
+
+    function hasAtLeastOneWellnessSocial(links) {
+        return Object.values(links || {}).some(value => typeof value === 'string' && value.trim());
+    }
+
+    function renderLocationServiceButtons(services = []) {
+        return WELLNESS_SERVICE_OPTIONS.map(service => `
+            <button type="button"
+                class="wc-service-badge wc-location-service-badge ${services.includes(service) ? 'active' : ''}"
+                data-location-service="${escapeHtml(service)}">${escapeHtml(service)}</button>
+        `).join('');
+    }
+
     function renderPhotoPreview(urls) {
         const photoUrls = Array.isArray(urls) ? urls : [];
         if (photoUrls.length === 0) {
@@ -1036,8 +1074,16 @@
         }
     }
 
-    function renderBranchCard(location = {}, index = 0) {
+    function renderBranchCard(location = {}, index = 0, center = {}) {
         const photoUrls = Array.isArray(location.photo_urls) ? location.photo_urls : [];
+        const branchKey = location.id || `new-${++branchEditorSequence}`;
+        const inheritsServices = location.inherits_services !== false;
+        const inheritsPromotion = location.inherits_promotion !== false;
+        const inheritsSocialLinks = location.inherits_social_links !== false;
+        const services = Array.isArray(location.services) && location.services.length
+            ? location.services
+            : (center.services || []);
+        const social = location.social_links || center.social_links || {};
 
         return `
             <div class="wc-branch-card" data-location-row>
@@ -1083,6 +1129,51 @@
                     <input type="hidden" name="location_photo_urls" value="${serializePhotoUrls(photoUrls)}">
                     <div data-location-photo-preview>${renderPhotoPreview(photoUrls)}</div>
                 </div>
+                <div class="wc-branch-question">
+                    <div>
+                        <label class="wc-label">Â¿Esta sucursal cuenta con los mismos servicios y beneficios que la sucursal principal?</label>
+                    </div>
+                    <div class="wc-branch-toggle-options" data-branch-details-toggle>
+                        <label><input type="radio" name="location_same_services_benefits_${branchKey}" value="yes" ${inheritsServices ? 'checked' : ''}> SÃ­</label>
+                        <label><input type="radio" name="location_same_services_benefits_${branchKey}" value="no" ${inheritsServices ? '' : 'checked'}> No</label>
+                    </div>
+                </div>
+                <div data-location-custom-details style="${inheritsServices ? 'display:none;' : ''}">
+                    <div class="wc-form-group">
+                        <label class="wc-label">Servicios ofrecidos en esta sucursal</label>
+                        <div class="wc-services-grid" data-location-services data-field="location_services">
+                            ${renderLocationServiceButtons(services)}
+                        </div>
+                    </div>
+                    <div class="wc-branch-question">
+                        <label class="wc-label">Beneficio para miembros</label>
+                        <div class="wc-branch-toggle-options" data-location-promotion-toggle>
+                            <label><input type="radio" name="location_inherits_promotion_${branchKey}" value="yes" ${inheritsPromotion ? 'checked' : ''}> Usar el mismo</label>
+                            <label><input type="radio" name="location_inherits_promotion_${branchKey}" value="no" ${inheritsPromotion ? '' : 'checked'}> Usar uno diferente</label>
+                        </div>
+                    </div>
+                    <div class="wc-form-group" data-location-promotion-field style="${inheritsPromotion ? 'display:none;' : ''}">
+                        <label class="wc-label">Describe el beneficio de esta sucursal</label>
+                        <textarea name="location_promotion_details" class="wc-input" style="min-height:90px;">${escapeHtml(location.promotion_details || '')}</textarea>
+                    </div>
+                </div>
+                <div class="wc-branch-question">
+                    <label class="wc-label">Redes sociales y sitio web</label>
+                    <div class="wc-branch-toggle-options" data-location-social-toggle>
+                        <label><input type="radio" name="location_inherits_social_links_${branchKey}" value="yes" ${inheritsSocialLinks ? 'checked' : ''}> Usar los mismos</label>
+                        <label><input type="radio" name="location_inherits_social_links_${branchKey}" value="no" ${inheritsSocialLinks ? '' : 'checked'}> Usar diferentes</label>
+                    </div>
+                </div>
+                <div data-location-social-fields style="${inheritsSocialLinks ? 'display:none;' : ''}">
+                    <div class="wc-input-row">
+                        <div class="wc-form-group"><label class="wc-label">Instagram</label><input type="url" name="location_social_instagram" class="wc-input" value="${escapeHtml(social.instagram || '')}"></div>
+                        <div class="wc-form-group"><label class="wc-label">Facebook</label><input type="url" name="location_social_facebook" class="wc-input" value="${escapeHtml(social.facebook || '')}"></div>
+                    </div>
+                    <div class="wc-input-row">
+                        <div class="wc-form-group"><label class="wc-label">TikTok</label><input type="url" name="location_social_tiktok" class="wc-input" value="${escapeHtml(social.tiktok || '')}"></div>
+                        <div class="wc-form-group"><label class="wc-label">Sitio web</label><input type="url" name="location_social_website" class="wc-input" value="${escapeHtml(social.website || '')}"></div>
+                    </div>
+                </div>
             </div>
         `;
     }
@@ -1105,7 +1196,7 @@
                 </div>
                 <div data-branches-editor style="${hasBranches ? '' : 'display:none;'}">
                     <div data-locations-list>
-                        ${branches.length > 0 ? branches.map(renderBranchCard).join('') : '<p class="wc-branches-empty">Agrega las sucursales adicionales que quieras registrar.</p>'}
+                        ${branches.length > 0 ? branches.map((branch, index) => renderBranchCard(branch, index, center)).join('') : '<p class="wc-branches-empty">Agrega las sucursales adicionales que quieras registrar.</p>'}
                     </div>
                     <button type="button" id="btn-add-location" class="wc-btn wc-btn-secondary" style="width:100%; margin-top:14px;">+ Agregar sucursal</button>
                 </div>
@@ -1120,6 +1211,9 @@
         const primaryPhone = form.querySelector('[name="phone"]')?.value || '';
         const primaryName = form.querySelector('[name="establishment_name"]')?.value || '';
         const primaryPhotoUrls = parsePhotoUrls(form.querySelector('[name="primary_photo_urls"]')?.value || '');
+        const primaryServices = Array.from(form.querySelectorAll('.wc-main-service-badge.active')).map(button => button.dataset.service);
+        const primaryPromotion = form.querySelector('[name="promotion_details"]')?.value?.trim() || '';
+        const primarySocialLinks = getWellnessSocialLinksFromForm(form);
 
         const locations = [];
         // No depender solo de la direccion en texto: si ya hay coordenadas (por
@@ -1134,6 +1228,12 @@
                 lng: primaryLng,
                 phone: primaryPhone.trim() || null,
                 photo_urls: primaryPhotoUrls,
+                services: primaryServices,
+                promotion_details: primaryPromotion,
+                social_links: primarySocialLinks,
+                inherits_services: false,
+                inherits_promotion: false,
+                inherits_social_links: false,
                 is_primary: true
             });
         }
@@ -1148,6 +1248,19 @@
             const lat = normalizeLocationNumber(row.querySelector('[name="location_lat"]')?.value || '');
             const lng = normalizeLocationNumber(row.querySelector('[name="location_lng"]')?.value || '');
             const photoUrls = parsePhotoUrls(row.querySelector('[name="location_photo_urls"]')?.value || '');
+            const inheritsServices = row.querySelector('[name^="location_same_services_benefits_"]:checked')?.value !== 'no';
+            const inheritsPromotion = inheritsServices
+                || row.querySelector('[name^="location_inherits_promotion_"]:checked')?.value !== 'no';
+            const inheritsSocialLinks = row.querySelector('[name^="location_inherits_social_links_"]:checked')?.value !== 'no';
+            const branchServices = inheritsServices
+                ? primaryServices
+                : Array.from(row.querySelectorAll('.wc-location-service-badge.active')).map(button => button.dataset.locationService);
+            const branchPromotion = inheritsPromotion
+                ? primaryPromotion
+                : row.querySelector('[name="location_promotion_details"]')?.value?.trim() || '';
+            const branchSocialLinks = inheritsSocialLinks
+                ? primarySocialLinks
+                : getWellnessSocialLinksFromForm(row, 'location_social_');
             if (!address.trim() && (lat === null || lng === null) && photoUrls.length === 0) return;
 
             locations.push({
@@ -1157,11 +1270,45 @@
                 lng,
                 phone: row.querySelector('[name="location_phone"]')?.value?.trim() || null,
                 photo_urls: photoUrls,
+                services: branchServices,
+                promotion_details: branchPromotion,
+                social_links: branchSocialLinks,
+                inherits_services: inheritsServices,
+                inherits_promotion: inheritsPromotion,
+                inherits_social_links: inheritsSocialLinks,
                 is_primary: false
             });
         });
 
         return locations;
+    }
+
+    function validateWellnessProfileForm(form) {
+        if (!hasAtLeastOneWellnessSocial(getWellnessSocialLinksFromForm(form))) {
+            return 'Agrega al menos una red social o el sitio web de la sucursal principal.';
+        }
+
+        if (form.querySelector('[name="has_branches"]:checked')?.value !== 'yes') return '';
+
+        const rows = Array.from(form.querySelectorAll('[data-location-row]'));
+        for (let index = 0; index < rows.length; index += 1) {
+            const row = rows[index];
+            const label = row.querySelector('[name="location_name"]')?.value?.trim() || `Sucursal adicional ${index + 1}`;
+            const inheritsServices = row.querySelector('[name^="location_same_services_benefits_"]:checked')?.value !== 'no';
+            if (!inheritsServices && row.querySelectorAll('.wc-location-service-badge.active').length === 0) {
+                return `Selecciona al menos un servicio para ${label}.`;
+            }
+            const inheritsPromotion = inheritsServices
+                || row.querySelector('[name^="location_inherits_promotion_"]:checked')?.value !== 'no';
+            if (!inheritsPromotion && !row.querySelector('[name="location_promotion_details"]')?.value?.trim()) {
+                return `Describe el beneficio ofrecido en ${label}.`;
+            }
+            const inheritsSocialLinks = row.querySelector('[name^="location_inherits_social_links_"]:checked')?.value !== 'no';
+            if (!inheritsSocialLinks && !hasAtLeastOneWellnessSocial(getWellnessSocialLinksFromForm(row, 'location_social_'))) {
+                return `Agrega al menos una red social o sitio web para ${label}.`;
+            }
+        }
+        return '';
     }
 
     function bindWellnessBranchEditor(form) {
@@ -1354,7 +1501,7 @@
                         ${['Tienda', 'Clínica veterinaria', 'Hospital Veterinario', 'Hotel', 'Paseador de perros', 'Funeraria'].map(service => {
                             const isActive = center.services && center.services.includes(service);
                             return `
-                                <button type="button" class="wc-service-badge ${isActive ? 'active' : ''}" data-service="${service}" style="
+                                <button type="button" class="wc-service-badge wc-main-service-badge ${isActive ? 'active' : ''}" data-service="${service}" style="
                                     background: ${isActive ? '#00BBB4' : '#F1F5F9'};
                                     color: ${isActive ? '#FFFFFF' : '#1E293B'};
                                     border: 2px solid #000;
@@ -2127,6 +2274,24 @@
         const bindBranchRow = (row) => {
             const removeButton = row.querySelector('[data-remove-location]');
             const branchLocationButton = row.querySelector('[data-get-branch-location]');
+            const refreshConditionalFields = () => {
+                const inheritsServices = row.querySelector('[name^="location_same_services_benefits_"]:checked')?.value !== 'no';
+                const customDetails = row.querySelector('[data-location-custom-details]');
+                if (customDetails) customDetails.style.display = inheritsServices ? 'none' : '';
+
+                const inheritsPromotion = row.querySelector('[name^="location_inherits_promotion_"]:checked')?.value !== 'no';
+                const promotionField = row.querySelector('[data-location-promotion-field]');
+                if (promotionField) promotionField.style.display = inheritsPromotion ? 'none' : '';
+
+                const inheritsSocialLinks = row.querySelector('[name^="location_inherits_social_links_"]:checked')?.value !== 'no';
+                const socialFields = row.querySelector('[data-location-social-fields]');
+                if (socialFields) socialFields.style.display = inheritsSocialLinks ? 'none' : '';
+            };
+
+            row.querySelectorAll(
+                '[name^="location_same_services_benefits_"], [name^="location_inherits_promotion_"], [name^="location_inherits_social_links_"]'
+            ).forEach(input => input.addEventListener('change', refreshConditionalFields));
+            refreshConditionalFields();
 
             if (removeButton) {
                 removeButton.addEventListener('click', () => {
@@ -2188,7 +2353,7 @@
                 if (empty) empty.remove();
 
                 const index = locationsList.querySelectorAll('[data-location-row]').length;
-                locationsList.insertAdjacentHTML('beforeend', renderBranchCard({}, index));
+                locationsList.insertAdjacentHTML('beforeend', renderBranchCard({}, index, center));
                 const newRow = locationsList.querySelector('[data-location-row]:last-child');
                 if (newRow) bindBranchRow(newRow);
                 bindLocationPhotoInputs(root, center, submitText);
@@ -2250,6 +2415,11 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const validationError = validateWellnessProfileForm(form);
+            if (validationError) {
+                alert(validationError);
+                return;
+            }
             const formData = new FormData(e.target);
 
             const rawClabe = formData.get('bank_clabe') || '';
@@ -2264,7 +2434,7 @@
                 name: formData.get('name'),
                 establishment_name: formData.get('establishment_name'),
                 phone: formData.get('phone'),
-                services: Array.from(root.querySelectorAll('.wc-service-badge.active')).map(b => b.getAttribute('data-service')),
+                services: Array.from(form.querySelectorAll('.wc-main-service-badge.active')).map(b => b.getAttribute('data-service')),
                 bank_name: formData.get('bank_name'),
                 bank_clabe: String(formData.get('bank_clabe') || '').replace(/\D/g, '').slice(0, 18),
                 bank_holder: formData.get('bank_holder'),

@@ -63,6 +63,12 @@ export interface WellnessCenterLocation {
     lng?: number | null;
     phone?: string | null;
     photo_urls?: string[];
+    services?: string[];
+    promotion_details?: string | null;
+    social_links?: SocialLinks;
+    inherits_services?: boolean;
+    inherits_promotion?: boolean;
+    inherits_social_links?: boolean;
     is_primary?: boolean;
     sort_order?: number;
     created_at?: string;

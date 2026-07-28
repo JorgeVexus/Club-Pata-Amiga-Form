@@ -188,8 +188,13 @@ export default function WellnessCenterDetailModal({ center, isOpen, onClose, onR
                                         {locations.length > 0 && (
                                             <div className={styles.locationsList}>
                                                 <h4 className={styles.locationsHeading}>Sucursales registradas</h4>
-                                                {locations.map((location, index) => {
-                                                    const locationPhotos = location.photo_urls || [];
+                                                 {locations.map((location, index) => {
+                                                     const locationPhotos = location.photo_urls || [];
+                                                     const locationServices = location.services?.length ? location.services : center.services;
+                                                     const locationPromotion = location.promotion_details || center.promotion_details;
+                                                     const locationSocial = Object.values(location.social_links || {}).some(Boolean)
+                                                         ? (location.social_links || {})
+                                                         : social;
 
                                                     return (
                                                         <div key={location.id || `${location.address}-${index}`} className={styles.locationCard}>
@@ -219,10 +224,31 @@ export default function WellnessCenterDetailModal({ center, isOpen, onClose, onR
                                                                 </div>
                                                             )}
                                                             <p className={styles.address}>{location.address}</p>
-                                                            {location.phone && (
-                                                                <p className={styles.locationMeta}>Telefono: {location.phone}</p>
-                                                            )}
-                                                            {(location.lat && location.lng) && (
+                                                             {location.phone && (
+                                                                 <p className={styles.locationMeta}>Telefono: {location.phone}</p>
+                                                             )}
+                                                             <div className={styles.servicesContainer}>
+                                                                 {locationServices.map(service => (
+                                                                     <span key={service} className={styles.serviceTag}>{service}</span>
+                                                                 ))}
+                                                             </div>
+                                                             {locationPromotion && (
+                                                                 <div className={styles.promotionBox}>{locationPromotion}</div>
+                                                             )}
+                                                             <div className={styles.socialGrid}>
+                                                                 {Object.entries(locationSocial).filter(([, value]) => Boolean(value)).map(([network, value]) => (
+                                                                     <a
+                                                                         key={network}
+                                                                         className={styles.linkValue}
+                                                                         href={String(value)}
+                                                                         target="_blank"
+                                                                         rel="noopener noreferrer"
+                                                                     >
+                                                                         {network === 'website' ? 'Sitio web' : network}
+                                                                     </a>
+                                                                 ))}
+                                                             </div>
+                                                             {(location.lat && location.lng) && (
                                                                 <div className={styles.coords}>
                                                                     Coordenadas: {location.lat}, {location.lng}
                                                                     <div style={{ marginTop: '10px' }}>

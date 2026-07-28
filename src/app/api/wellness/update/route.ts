@@ -1,10 +1,42 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin, isSupabaseAdminConfigured } from '@/lib/supabase';
-import { WellnessCenterLocation } from '@/types/wellness.types';
+import { SocialLinks, WellnessCenterLocation } from '@/types/wellness.types';
 import { wellnessService } from '@/services/wellness.service';
 
 // Usar el cliente administrativo centralizado
 const supabaseAdminClient = supabaseAdmin;
+
+function hasWellnessDigitalChannel(links?: SocialLinks): boolean {
+    return Object.values(links || {}).some(value => typeof value === 'string' && value.trim());
+}
+
+function validateWellnessLocationDetails(
+    socialLinks: SocialLinks | undefined,
+    locations: WellnessCenterLocation[] | undefined
+): string | null {
+    if (socialLinks && !hasWellnessDigitalChannel(socialLinks)) {
+        return 'Agrega al menos una red social o sitio web para la sucursal principal';
+    }
+
+    if (!Array.isArray(locations)) return null;
+
+    for (let index = 0; index < locations.length; index += 1) {
+        const location = locations[index];
+        const label = location.is_primary
+            ? 'la sucursal principal'
+            : (location.name?.trim() || `la sucursal adicional ${index + 1}`);
+        if (!Array.isArray(location.services) || location.services.filter(Boolean).length === 0) {
+            return `Selecciona al menos un servicio para ${label}`;
+        }
+        if (location.inherits_promotion === false && !location.promotion_details?.trim()) {
+            return `Describe el beneficio ofrecido en ${label}`;
+        }
+        if (!hasWellnessDigitalChannel(location.social_links)) {
+            return `Agrega al menos una red social o sitio web para ${label}`;
+        }
+    }
+    return null;
+}
 
 export async function POST(request: NextRequest) {
     // Verificar configuración
@@ -42,6 +74,17 @@ export async function POST(request: NextRequest) {
         if (!memberstack_id) {
             return NextResponse.json(
                 { success: false, error: 'Memberstack ID es requerido' },
+                { status: 400 }
+            );
+        }
+
+        const detailsValidationError = validateWellnessLocationDetails(
+            updateData.social_links as SocialLinks | undefined,
+            Array.isArray(locations) ? locations as WellnessCenterLocation[] : undefined
+        );
+        if (detailsValidationError) {
+            return NextResponse.json(
+                { success: false, error: detailsValidationError },
                 { status: 400 }
             );
         }

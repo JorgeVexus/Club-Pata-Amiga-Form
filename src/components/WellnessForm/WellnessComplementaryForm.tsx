@@ -13,6 +13,10 @@ const SERVICES_OPTIONS = [
     'Funeraria'
 ];
 
+function hasAtLeastOneSocial(links?: SocialLinks): boolean {
+    return Object.values(links || {}).some(value => typeof value === 'string' && value.trim());
+}
+
 interface Props {
     center: WellnessCenter;
     onUpdate?: (updated: WellnessCenter) => void;
@@ -51,6 +55,9 @@ interface BranchCardProps {
     location: WellnessCenterLocation;
     onChange: (updated: WellnessCenterLocation) => void;
     onRemove: () => void;
+    primaryServices: string[];
+    primaryPromotionDetails: string;
+    primarySocialLinks: SocialLinks;
     onPhotoUpload: (
         file: File,
         locationKey: string,
@@ -59,7 +66,16 @@ interface BranchCardProps {
     ) => Promise<void>;
 }
 
-function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: BranchCardProps) {
+function BranchCard({
+    index,
+    location,
+    onChange,
+    onRemove,
+    onPhotoUpload,
+    primaryServices,
+    primaryPromotionDetails,
+    primarySocialLinks
+}: BranchCardProps) {
     const addressInputRef = useRef<HTMLInputElement>(null);
     const [isGettingLocation, setIsGettingLocation] = useState(false);
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -115,6 +131,18 @@ function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: Bran
             onChange({ ...location, photo_urls: urls });
         });
         setIsUploadingPhoto(false);
+    };
+
+    const inheritsServices = location.inherits_services !== false;
+    const inheritsPromotion = location.inherits_promotion !== false;
+    const inheritsSocialLinks = location.inherits_social_links !== false;
+    const locationServices = location.services?.length ? location.services : primaryServices;
+    const locationSocialLinks = location.social_links || primarySocialLinks;
+    const toggleLocationService = (service: string) => {
+        const nextServices = locationServices.includes(service)
+            ? locationServices.filter(item => item !== service)
+            : [...locationServices, service];
+        onChange({ ...location, services: nextServices });
     };
 
     return (
@@ -220,6 +248,92 @@ function BranchCard({ index, location, onChange, onRemove, onPhotoUpload }: Bran
                     <p className={styles.photoHelp}>Agrega fotos del exterior, recepciÃ³n o Ã¡reas principales.</p>
                 )}
             </div>
+            <div className={styles.branchQuestion}>
+                <label className={styles.branchTitle}>
+                    ¿Esta sucursal cuenta con los mismos servicios y beneficios que la sucursal principal?
+                </label>
+                <div className={styles.branchToggleOptions}>
+                    <label>
+                        <input
+                            type="radio"
+                            checked={inheritsServices}
+                            onChange={() => onChange({
+                                ...location,
+                                services: primaryServices,
+                                promotion_details: primaryPromotionDetails,
+                                inherits_services: true,
+                                inherits_promotion: true
+                            })}
+                        /> Sí
+                    </label>
+                    <label>
+                        <input
+                            type="radio"
+                            checked={!inheritsServices}
+                            onChange={() => onChange({ ...location, inherits_services: false })}
+                        /> No
+                    </label>
+                </div>
+            </div>
+            {!inheritsServices && (
+                <>
+                    <div className={styles.field}>
+                        <label>Servicios ofrecidos en esta sucursal</label>
+                        <div className={styles.servicesGrid}>
+                            {SERVICES_OPTIONS.map(service => (
+                                <button
+                                    key={service}
+                                    type="button"
+                                    className={`${styles.serviceBadge} ${locationServices.includes(service) ? styles.active : ''}`}
+                                    onClick={() => toggleLocationService(service)}
+                                >
+                                    {service}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                    <div className={styles.branchQuestion}>
+                        <label className={styles.branchTitle}>Beneficio para miembros</label>
+                        <div className={styles.branchToggleOptions}>
+                            <label><input type="radio" checked={inheritsPromotion} onChange={() => onChange({ ...location, promotion_details: primaryPromotionDetails, inherits_promotion: true })} /> Usar el mismo</label>
+                            <label><input type="radio" checked={!inheritsPromotion} onChange={() => onChange({ ...location, inherits_promotion: false })} /> Usar uno diferente</label>
+                        </div>
+                    </div>
+                    {!inheritsPromotion && (
+                        <div className={styles.field}>
+                            <label>Describe el beneficio de esta sucursal</label>
+                            <textarea
+                                value={location.promotion_details || ''}
+                                onChange={event => onChange({ ...location, promotion_details: event.target.value })}
+                            />
+                        </div>
+                    )}
+                </>
+            )}
+            <div className={styles.branchQuestion}>
+                <label className={styles.branchTitle}>Redes sociales y sitio web</label>
+                <div className={styles.branchToggleOptions}>
+                    <label><input type="radio" checked={inheritsSocialLinks} onChange={() => onChange({ ...location, social_links: primarySocialLinks, inherits_social_links: true })} /> Usar los mismos</label>
+                    <label><input type="radio" checked={!inheritsSocialLinks} onChange={() => onChange({ ...location, inherits_social_links: false })} /> Usar diferentes</label>
+                </div>
+            </div>
+            {!inheritsSocialLinks && (
+                <div className={styles.socialGrid}>
+                    {(['instagram', 'facebook', 'tiktok', 'website'] as const).map(network => (
+                        <div className={styles.field} key={network}>
+                            <label>{network === 'website' ? 'Sitio web' : network[0].toUpperCase() + network.slice(1)}</label>
+                            <input
+                                type="url"
+                                value={locationSocialLinks[network] || ''}
+                                onChange={event => onChange({
+                                    ...location,
+                                    social_links: { ...locationSocialLinks, [network]: event.target.value }
+                                })}
+                            />
+                        </div>
+                    ))}
+                </div>
+            )}
             <button 
                 type="button" 
                 className={styles.secondaryButtonSmall} 
@@ -469,6 +583,33 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
             setIsSubmitting(false);
             return;
         }
+        if (!hasAtLeastOneSocial(formData.social_links)) {
+            setMessage({ text: 'Agrega al menos una red social o el sitio web de la sucursal principal.', type: 'error' });
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (hasBranches) {
+            for (let index = 0; index < branches.length; index += 1) {
+                const branch = branches[index];
+                const branchLabel = branch.name?.trim() || `Sucursal adicional ${index + 1}`;
+                if (branch.inherits_services === false && !branch.services?.length) {
+                    setMessage({ text: `Selecciona al menos un servicio para ${branchLabel}.`, type: 'error' });
+                    setIsSubmitting(false);
+                    return;
+                }
+                if (branch.inherits_services === false && branch.inherits_promotion === false && !branch.promotion_details?.trim()) {
+                    setMessage({ text: `Describe el beneficio ofrecido en ${branchLabel}.`, type: 'error' });
+                    setIsSubmitting(false);
+                    return;
+                }
+                if (branch.inherits_social_links === false && !hasAtLeastOneSocial(branch.social_links)) {
+                    setMessage({ text: `Agrega al menos una red social o sitio web para ${branchLabel}.`, type: 'error' });
+                    setIsSubmitting(false);
+                    return;
+                }
+            }
+        }
 
         const compiledLocations: WellnessCenterLocation[] = [];
         const primaryLat = formData.lat === '' ? null : Number(formData.lat);
@@ -486,6 +627,12 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                 lng: primaryLng,
                 phone: formData.phone.trim() || null,
                 photo_urls: formData.location_photo_urls,
+                services: formData.services,
+                promotion_details: formData.promotion_details.trim(),
+                social_links: formData.social_links,
+                inherits_services: false,
+                inherits_promotion: false,
+                inherits_social_links: false,
                 is_primary: true
             });
         }
@@ -495,10 +642,21 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
             branches.forEach((branch, idx) => {
                 const hasBranchData = branch.address.trim() || (branch.lat != null && branch.lng != null) || (branch.photo_urls || []).length > 0;
                 if (hasBranchData) {
+                    const inheritsServices = branch.inherits_services !== false;
+                    const inheritsPromotion = inheritsServices || branch.inherits_promotion !== false;
+                    const inheritsSocialLinks = branch.inherits_social_links !== false;
                     compiledLocations.push({
                         ...branch,
                         name: branch.name?.trim() || `Sucursal ${idx + 2}`,
                         address: branch.address.trim(),
+                        services: inheritsServices ? formData.services : (branch.services || []),
+                        promotion_details: inheritsPromotion
+                            ? formData.promotion_details.trim()
+                            : branch.promotion_details?.trim() || '',
+                        social_links: inheritsSocialLinks ? formData.social_links : (branch.social_links || {}),
+                        inherits_services: inheritsServices,
+                        inherits_promotion: inheritsPromotion,
+                        inherits_social_links: inheritsSocialLinks,
                         is_primary: false
                     });
                 }
@@ -790,6 +948,9 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                                             setBranches(branches.filter((_, idx) => idx !== index));
                                         }}
                                         onPhotoUpload={handleLocationPhotoUpload}
+                                        primaryServices={formData.services}
+                                        primaryPromotionDetails={formData.promotion_details}
+                                        primarySocialLinks={formData.social_links}
                                     />
                                 ))
                             ) : (
@@ -810,6 +971,12 @@ export default function WellnessComplementaryForm({ center, onUpdate, onSaved }:
                                         lng: null,
                                         phone: null,
                                         photo_urls: [],
+                                        services: formData.services,
+                                        promotion_details: formData.promotion_details,
+                                        social_links: formData.social_links,
+                                        inherits_services: true,
+                                        inherits_promotion: true,
+                                        inherits_social_links: true,
                                         is_primary: false
                                     }
                                 ]);
