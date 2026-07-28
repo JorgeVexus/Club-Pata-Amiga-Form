@@ -1,0 +1,1035 @@
+'use client';
+
+import React, { useState, useEffect } from 'react';
+import styles from './RequestsTable.module.css';
+import { adminFetch } from '@/utils/admin-fetch';
+
+interface MemberRequest {
+    id: string;
+    name: string;
+    email: string;
+    submittedAt: string;
+    status: 'pending' | 'approved' | 'rejected' | 'appealed' | 'suspended' | 'action_required';
+    infoStatus?: 'complete' | 'incomplete' | 'requested';
+    petCount?: number;
+    pendingPetCount?: number;
+    paymentStatus?: string;
+    registrationIssue?: 'paid_without_pets' | 'paid_without_complete_pet_rows' | null;
+    type: 'member' | 'ambassador' | 'wellness-center';
+    roles: ('member' | 'ambassador' | 'wellness-center')[];
+    // 🔴 Campos de cancelación pendiente (Stripe cancel_at_period_end)
+    isCancelled?: boolean;
+    membershipEndDate?: string | null;
+}
+
+interface AppealedPet {
+    petId: string;
+    petName: string;
+    petType: string;
+    petStatus: string;
+    petBreed: string;
+    petPhotoUrl?: string;
+    petAdminNotes?: string;
+    ownerId: string;
+    ownerName: string;
+    ownerEmail: string;
+    appealMessage: string;
+    appealedAt: string;
+    createdAt: string;
+}
+
+interface RequestsTableProps {
+    filter: 'all' | 'recents' | 'oldest' | 'approved' | 'rejected' | 'all';
+    requestType?: 'all' | 'member' | 'ambassador' | 'wellness-center' | 'solidarity-fund' | 'appeals' | 'all-members' | 'terminate-users';
+    onViewDetails: (id: string, type?: 'member' | 'ambassador' | 'appeal' | 'wellness-center', extraId?: string) => void;
+    onViewRejectionReason?: (id: string) => void;
+    onApprove: (id: string, type?: 'member' | 'ambassador' | 'wellness-center') => void;
+    onReject: (id: string, type?: 'member' | 'ambassador' | 'wellness-center') => void;
+    onDelete?: (id: string, type: 'member' | 'ambassador' | 'wellness-center') => void;
+    onBulkDelete?: (ids: string[], type: 'member' | 'ambassador' | 'wellness-center') => void;
+    onTerminate?: (member: MemberRequest) => void;
+    mode?: 'default' | 'termination';
+    isSuperAdmin?: boolean;
+    refreshKey?: number;
+}
+
+export default function RequestsTable({ 
+    filter, 
+    requestType = 'all', 
+    onViewDetails, 
+    onViewRejectionReason, 
+    onApprove, 
+    onReject, 
+    onDelete,
+    onBulkDelete,
+    onTerminate,
+    mode = 'default',
+    isSuperAdmin = false,
+    refreshKey
+}: RequestsTableProps) {
+
+    const [requests, setRequests] = useState<MemberRequest[]>([]);
+    const [appealedPets, setAppealedPets] = useState<AppealedPet[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    const [sortFilter, setSortFilter] = useState<'recents' | 'oldest' | 'approved' | 'rejected' | 'all'>('all');
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [infoFilter, setInfoFilter] = useState<'all' | 'complete' | 'incomplete' | 'requested'>('all');
+    const [paymentFilter, setPaymentFilter] = useState<'all' | 'active' | 'past_due' | 'unpaid' | 'canceled' | 'none'>('all');
+    const [issueFilter, setIssueFilter] = useState<'all' | 'pet_recovery'>('all');
+    const [appealDateFilter, setAppealDateFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
+    
+    const [stats, setStats] = useState({
+        total: 0,
+        pending: 0,
+        approved: 0,
+        rejected: 0
+    });
+    
+    // Checkbox selection
+    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+    const [searchEmail, setSearchEmail] = useState('');
+    const [isSearching, setIsSearching] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
+
+    async function performSearch(email: string) {
+        try {
+            setIsSearching(true);
+            setHasSearched(true);
+            setLoading(true);
+            const res = await adminFetch(`/api/admin/members/search?email=${encodeURIComponent(email)}`);
+            const data = await res.json();
+            if (data.success && data.members) {
+                setRequests(data.members);
+            } else {
+                setRequests([]);
+            }
+        } catch (err) {
+            console.error('Error in database search:', err);
+        } finally {
+            setIsSearching(false);
+            setLoading(false);
+        }
+    }
+
+    async function handleDatabaseSearch(e?: React.FormEvent) {
+        if (e) e.preventDefault();
+        if (!searchEmail.trim()) {
+            alert('Por favor, ingresa un correo para buscar.');
+            return;
+        }
+        performSearch(searchEmail.trim());
+    }
+
+    useEffect(() => {
+        if (requestType === 'all-members') {
+            if (hasSearched && searchEmail.trim()) {
+                performSearch(searchEmail.trim());
+            } else {
+                setRequests([]);
+                setLoading(false);
+            }
+        } else {
+            loadRequests();
+        }
+    }, [sortFilter, requestType, infoFilter, paymentFilter, issueFilter, refreshKey]);
+
+    useEffect(() => {
+        if (requestType === 'all-members') {
+            setStats({ total: 0, pending: 0, approved: 0, rejected: 0 });
+            return;
+        }
+        loadStats();
+    }, [requestType, refreshKey]);
+
+    async function loadStats() {
+        if (requestType === 'appeals' || requestType === 'solidarity-fund' || requestType === 'terminate-users') {
+            return;
+        }
+
+        try {
+            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'ambassador' || requestType === 'wellness-center') {
+                const fetchMember = requestType === 'all' || requestType === 'member' || requestType === 'all-members';
+                const fetchAmbassador = requestType === 'all' || requestType === 'ambassador';
+                const fetchWellness = requestType === 'all' || requestType === 'wellness-center';
+                const isAllMembers = requestType === 'all-members';
+                const baseMember = `/api/admin/members?limit=1${isAllMembers ? '&paidOnly=false' : ''}`;
+
+                const statuses = ['all', 'pending', 'approved', 'rejected'] as const;
+                const results = await Promise.all(statuses.map(async (status) => {
+                    let count = 0;
+                    if (fetchMember) {
+                        const res = await adminFetch(`${baseMember}&status=${status}`);
+                        const data = await res.json();
+                        count += (data.count || 0);
+                    }
+                    if (fetchAmbassador) {
+                        const statusParam = status === 'all' ? '' : `&status=${status}`;
+                        const res = await adminFetch(`/api/ambassadors?limit=1${statusParam}`);
+                        const data = await res.json();
+                        count += (data.total || 0);
+                    }
+                    // Wellness center logic can be added here when API is ready
+                    return { status, count };
+                }));
+
+                setStats({
+                    total: results.find(r => r.status === 'all')?.count || 0,
+                    pending: results.find(r => r.status === 'pending')?.count || 0,
+                    approved: results.find(r => r.status === 'approved')?.count || 0,
+                    rejected: results.find(r => r.status === 'rejected')?.count || 0
+                });
+            } else if (requestType === 'wellness-center') {
+                setStats({ total: 0, pending: 0, approved: 0, rejected: 0 });
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            const target = event.target as HTMLElement;
+            if (!target.closest(`.${styles.filterDropdown}`)) {
+                setIsDropdownOpen(false);
+            }
+        }
+
+        if (isDropdownOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+            return () => document.removeEventListener('mousedown', handleClickOutside);
+        }
+    }, [isDropdownOpen]);
+
+    async function loadRequests() {
+        try {
+            setLoading(true);
+
+            if (requestType === 'appeals') {
+                const response = await adminFetch('/api/admin/pets/appealed');
+                const data = await response.json();
+                if (data.success && data.pets) {
+                    setAppealedPets(data.pets);
+                    setRequests([]);
+                }
+                setLoading(false);
+                return;
+            }
+
+            // --- Lógica combinada para Miembros y Embajadores ---
+
+            let statusParam = 'pending';
+            if (sortFilter === 'approved') statusParam = 'approved';
+            if (sortFilter === 'rejected') statusParam = 'rejected';
+            if (sortFilter === 'all' || requestType === 'all-members') statusParam = 'all';
+
+            const promises = [];
+
+            if (requestType === 'all' || requestType === 'member' || requestType === 'all-members' || requestType === 'terminate-users') {
+                // Solo cargamos miembros (el filtro por pago se hace localmente abajo)
+                const memberStatusParam = requestType === 'member' ? 'all' : statusParam;
+                promises.push(
+                    adminFetch(`/api/admin/members?status=${memberStatusParam}${requestType === 'all-members' ? '&paidOnly=false' : ''}&includeCancelled=true`)
+                        .then(res => res.json())
+                        .then(data => ({ type: 'member', data }))
+                );
+            }
+
+            if (requestType === 'all' || requestType === 'ambassador' || requestType === 'terminate-users') {
+                promises.push(
+                    adminFetch(`/api/ambassadors?status=${statusParam}&limit=100`)
+                        .then(res => res.json())
+                        .then(data => ({ type: 'ambassador', data }))
+                );
+            }
+
+            // Placeholder para centros de bienestar en el futuro
+            if (requestType === 'wellness-center' || (requestType === 'terminate-users' && false)) {
+                // promises.push(fetch('/api/admin/wellness-centers')...)
+            }
+
+            const results = await Promise.all(promises);
+            let combinedRequests: MemberRequest[] = [];
+            const ambassadorEmails = new Set<string>();
+            const memberPetCounts = new Map<string, number>();
+
+            const ambassadorResult = results.find(r => r.type === 'ambassador');
+            const ambassadorData = ambassadorResult?.data?.data || [];
+
+            const memberResult = results.find(r => r.type === 'member');
+            const memberData = memberResult?.data?.members || [];
+
+            // Populate Sets for cross-referencing
+            ambassadorData.forEach((a: any) => { if (a.email) ambassadorEmails.add(a.email.toLowerCase()); });
+
+            const allowedMembers = isSuperAdmin
+                ? memberData
+                : memberData.filter((m: any) => m.customFields?.['approval-status'] !== 'appealed');
+
+            // Populate memberPetCounts
+            allowedMembers.forEach((m: any) => {
+                if (m?.auth?.email) {
+                    const email = m.auth.email.toLowerCase();
+                    let count = 0;
+                    for (let i = 1; i <= 3; i++) {
+                        if (m.customFields?.[`pet-${i}-name`]) count++;
+                    }
+                    memberPetCounts.set(email, count);
+                }
+            });
+
+            // 1. Process Ambassadors
+            ambassadorData.forEach((amb: any) => {
+                const email = amb.email?.toLowerCase();
+                const roles: ('member' | 'ambassador')[] = ['ambassador'];
+
+                // Check pet count for member role
+                const petCount = memberPetCounts.get(email) || 0;
+                if (email && petCount > 0) roles.push('member');
+
+                if (mode === 'termination' && amb.status !== 'approved') return;
+
+                combinedRequests.push({
+                    id: amb.id,
+                    name: `${amb.first_name} ${amb.paternal_surname}`,
+                    email: amb.email,
+                    submittedAt: amb.created_at,
+                    status: amb.status,
+                    petCount: 0,
+                    pendingPetCount: 0,
+                    infoStatus: 'complete',
+                    paymentStatus: 'none',
+                    type: 'ambassador',
+                    roles: roles
+                });
+            });
+
+            // 2. Process Members
+            allowedMembers.forEach((member: any) => {
+                const email = member?.auth?.email?.toLowerCase();
+                
+                // Priorizar nombre de Memberstack, pero si no está, usar el enriquecido de Supabase
+                const msName = `${member.customFields?.['first-name'] || ''} ${member.customFields?.['paternal-last-name'] || ''}`.trim();
+                const supabaseName = `${member.supabaseFirstName || ''} ${member.supabaseLastName || ''}`.trim();
+                const name = msName || supabaseName;
+                
+                const isNameless = !name;
+                const hasActivePlan = member.planConnections?.some((p: any) =>
+                    p.status?.toLowerCase() === 'active' || p.status?.toLowerCase() === 'trialing'
+                );
+                const isPaid = hasActivePlan;
+
+                if ((requestType === 'member' || requestType === 'all' || mode === 'termination') && !isPaid) {
+                    // Solo mostrar miembros que YA PAGARON (tienen plan activo) en vistas normales y en Baja de Usuarios
+                    return;
+                }
+                
+                // En 'all-members', mostramos todos sin excepcion (pero requestType mantendrá el nombre)
+
+                // Deduplicate Shell Users
+                if (email && ambassadorEmails.has(email) && isNameless) {
+                    return;
+                }
+
+                // Calculate pet count: prefer API value (Supabase), fallback to local map (Legacy Memberstack)
+                const petCount = member.petCount !== undefined ? member.petCount : (memberPetCounts.get(email!) || 0);
+
+                const roles: ('member' | 'ambassador' | 'wellness-center')[] = [];
+                if (petCount > 0) roles.push('member'); // Only if has pets
+                if (email && ambassadorEmails.has(email)) roles.push('ambassador');
+                const rawApprovalStatus = member.customFields?.['approval-status'] || 'pending';
+                const memberReviewStatus = isPaid && rawApprovalStatus !== 'rejected' ? 'approved' : rawApprovalStatus;
+
+                combinedRequests.push({
+                    id: member.id,
+                    name: name || 'Sin nombre',
+                    email: member?.auth?.email || 'Sin email',
+                    submittedAt: member.customFields?.['submitted-at'] || member.createdAt || new Date().toISOString(),
+                    status: memberReviewStatus,
+                    petCount: petCount,
+                    pendingPetCount: member.pendingPetCount || 0,
+                    infoStatus: member.infoStatus || 'complete',
+                    paymentStatus: member.paymentStatus || 'none',
+                    registrationIssue: member.registrationIssue || null,
+                    type: 'member',
+                    roles: roles,
+                    // 🔴 Cancelación pendiente — viene de la detección de cancel_at_period_end en Stripe
+                    isCancelled: member.isCancelled || false,
+                    membershipEndDate: member.membershipEndDate || null,
+                });
+            });
+
+            // Sort
+            combinedRequests.sort((a, b) => {
+                const dateA = new Date(a.submittedAt).getTime();
+                const dateB = new Date(b.submittedAt).getTime();
+                return sortFilter === 'oldest' ? dateA - dateB : dateB - dateA;
+            });
+
+            setRequests(combinedRequests);
+
+        } catch (error) {
+            console.error('Error loading requests:', error);
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const filteredRequests = requests
+        .filter(req => {
+            if (requestType === 'appeals') return req.status === 'appealed';
+            return true;
+        })
+        .filter(req => {
+            if (searchQuery) {
+                const query = searchQuery.toLowerCase();
+                return (
+                    req.name.toLowerCase().includes(query) ||
+                    req.email.toLowerCase().includes(query) ||
+                    req.id.toLowerCase().includes(query)
+                );
+            }
+            return true;
+        })
+        .filter(req => {
+            if (sortFilter === 'approved') return req.status === 'approved';
+            if (sortFilter === 'rejected') return req.status === 'rejected';
+            if (sortFilter === 'recents' || sortFilter === 'oldest') {
+                if (requestType === 'member') return req.status === 'pending' || (req.pendingPetCount || 0) > 0;
+                return req.status === 'pending';
+            }
+            return true;
+        })
+        .filter(req => {
+            if (infoFilter === 'all') return true;
+            return req.infoStatus === infoFilter;
+        })
+        .filter(req => {
+            if (issueFilter === 'all') return true;
+            return req.registrationIssue === 'paid_without_pets' || req.registrationIssue === 'paid_without_complete_pet_rows';
+        })
+        .filter(req => {
+            if (paymentFilter === 'all') return true;
+            if (paymentFilter === 'active') return req.paymentStatus === 'active' || req.paymentStatus === 'trialing';
+            if (paymentFilter === 'past_due') return req.paymentStatus === 'past_due' || req.paymentStatus === 'unpaid';
+            return req.paymentStatus === paymentFilter;
+        });
+
+    function getInitials(name: string): string {
+        const parts = name.split(' ');
+        if (parts.length >= 2) {
+            return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+        }
+        return name.substring(0, 2).toUpperCase();
+    }
+
+    function formatDate(dateString: string): string {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('es-MX', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    function getStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            pending: 'Pendiente',
+            approved: 'Aprobado',
+            rejected: 'Rechazado',
+            appealed: 'Apelado',
+            suspended: 'Suspendido',
+            action_required: 'Acción Requerida'
+        };
+        return labels[status] || status;
+    }
+
+    function getInfoStatusLabel(status: string): string {
+        const labels: Record<string, string> = {
+            complete: 'Información Completa',
+            incomplete: 'Información Faltante',
+            requested: 'Información Solicitada'
+        };
+        return labels[status] || status;
+    }
+    
+    function getPaymentStatusLabel(status: string, type: string): string {
+        if (type === 'ambassador') return 'N/A';
+        
+        const labels: Record<string, string> = {
+            active: 'Activo',
+            trialing: 'En prueba',
+            past_due: 'Moroso',
+            unpaid: 'Impago',
+            canceled: 'Cancelado',
+            cancelled: 'Cancelado',
+            incomplete: 'Pendiente',
+            none: 'Sin Plan'
+        };
+        return labels[status] || 'Sin Plan';
+    }
+
+    function getFilterLabel(filter: string): string {
+        const labels: Record<string, string> = {
+            recents: 'Pendientes (Recientes)',
+            oldest: 'Pendientes (Antiguos)',
+            approved: 'Aprobados',
+            rejected: 'Rechazados',
+            all: 'Todas'
+        };
+        return labels[filter] || filter;
+    }
+
+    const renderRoleBadges = (roles: ('member' | 'ambassador' | 'wellness-center')[]) => {
+        return (
+            <div style={{ display: 'inline-flex', gap: '4px', marginLeft: '8px', verticalAlign: 'middle' }}>
+                {roles.includes('member') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#F3E5F5',
+                        color: '#7B1FA2',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        MIEMBRO
+                    </span>
+                )}
+                {roles.includes('ambassador') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#E0F7FA',
+                        color: '#006064',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        EMBAJADOR
+                    </span>
+                )}
+                {roles.includes('wellness-center') && (
+                    <span style={{
+                        fontSize: '0.65em',
+                        background: '#E8F5E9',
+                        color: '#1B5E20',
+                        padding: '2px 6px',
+                        borderRadius: '10px',
+                        fontWeight: 600
+                    }}>
+                        CENTRO
+                    </span>
+                )}
+            </div>
+        );
+    };
+
+    if (loading) {
+        return (
+            <div className={styles.requestsSection}>
+                <div className={styles.emptyState}>
+                    <div className={styles.emptyIcon}>⏳</div>
+                    <div className={styles.emptyText}>Cargando solicitudes...</div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className={styles.requestsContainer}>
+            {/* Stats Grid */}
+            {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all') && (
+                <div className={styles.statsGrid}>
+                    <div className={styles.statCard}>
+                        <div className={styles.statIcon}>🎯</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.total}</div>
+                            <div className={styles.statLabel}>
+                                {requestType === 'ambassador' ? 'Total Embajadores' : 
+                                 requestType === 'wellness-center' ? 'Total Centros' : 
+                                 requestType === 'all' ? 'Total Solicitudes' : 'Total Miembros'}
+                            </div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statPending}`}>
+                        <div className={styles.statIcon}>⏳</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.pending}</div>
+                            <div className={styles.statLabel}>Solicitudes Pendientes</div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statApproved}`}>
+                        <div className={styles.statIcon}>✅</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.approved}</div>
+                            <div className={styles.statLabel}>Solicitudes Activas</div>
+                        </div>
+                    </div>
+                    <div className={`${styles.statCard} ${styles.statRejected}`}>
+                        <div className={styles.statIcon}>❌</div>
+                        <div className={styles.statInfo}>
+                            <div className={styles.statValue}>{stats.rejected}</div>
+                            <div className={styles.statLabel}>Solicitudes Rechazadas</div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className={styles.requestsSection}>
+                <div className={styles.requestsHeader}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                        <h2 className={styles.requestsTitle}>
+                            {requestType === 'ambassador' ? 'Gestión de Embajadores' : 
+                             requestType === 'wellness-center' ? 'Gestión de Centros de Bienestar' : 
+                             requestType === 'appeals' ? 'Gestión de Apelaciones' : 
+                             requestType === 'terminate-users' ? 'Baja de Usuarios' : 
+                             requestType === 'all-members' ? 'Buscador de Usuarios (Base de Datos)' : 'Gestión de Miembros'}
+                        </h2>
+                        {selectedIds.size > 0 && (
+                            <button 
+                                className={styles.rejectButton} 
+                                style={{ margin: 0, padding: '8px 16px', borderRadius: '50px' }}
+                                onClick={() => {
+                                    const firstSelected = requests.find(r => selectedIds.has(r.id));
+                                    onBulkDelete?.(Array.from(selectedIds), firstSelected?.type || 'member');
+                                }}
+                            >
+                                🗑️ Eliminar Seleccionados ({selectedIds.size})
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Tab Filters (Standardized) */}
+                    {(requestType === 'member' || requestType === 'ambassador' || requestType === 'wellness-center' || requestType === 'all') && (
+                        <div className={styles.tabFilters}>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'all' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('all')}
+                            >
+                                Todos <span className={styles.tabBadge}>{stats.total}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${(sortFilter === 'recents' || sortFilter === 'oldest' || (sortFilter !== 'approved' && sortFilter !== 'rejected' && sortFilter !== 'all')) ? styles.active : ''}`}
+                                onClick={() => setSortFilter('recents')}
+                            >
+                                Pendientes <span className={styles.tabBadge}>{stats.pending}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'approved' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('approved')}
+                            >
+                                Activos <span className={styles.tabBadge}>{stats.approved}</span>
+                            </button>
+                            <button
+                                className={`${styles.tabBtn} ${sortFilter === 'rejected' ? styles.active : ''}`}
+                                onClick={() => setSortFilter('rejected')}
+                            >
+                                Rechazados <span className={styles.tabBadge}>{stats.rejected}</span>
+                            </button>
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.requestsControls}>
+                    {requestType === 'all-members' ? (
+                        <form onSubmit={handleDatabaseSearch} style={{ display: 'flex', gap: '8px', flex: 1, maxWidth: '500px' }}>
+                            <div className={styles.searchBox} style={{ margin: 0, flex: 1 }}>
+                                <span className={styles.searchIcon}>🔍</span>
+                                <input
+                                    type="email"
+                                    className={styles.searchInput}
+                                    placeholder="Buscar por correo en la base de datos..."
+                                    value={searchEmail}
+                                    onChange={(e) => setSearchEmail(e.target.value)}
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className={styles.viewButton}
+                                style={{
+                                    margin: 0,
+                                    padding: '0 20px',
+                                    borderRadius: '50px',
+                                    background: 'var(--color-primary, #7DD8D5)',
+                                    color: '#000',
+                                    border: '2px solid #000',
+                                    fontWeight: 'bold',
+                                    cursor: 'pointer'
+                                }}
+                                disabled={isSearching}
+                            >
+                                {isSearching ? 'Buscando...' : 'Buscar'}
+                            </button>
+                        </form>
+                    ) : (
+                        <div className={styles.searchBox}>
+                            <span className={styles.searchIcon}>🔍</span>
+                            <input
+                                type="text"
+                                className={styles.searchInput}
+                                placeholder="Buscar..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                            />
+                        </div>
+                    )}
+
+                    {/* Secondary Filters for Members and General view */}
+                    {(requestType === 'member' || requestType === 'all') && (
+                        <div className={styles.filterDropdown}>
+                            <button
+                                className={`${styles.dropdownButton} ${isDropdownOpen ? styles.open : ''}`}
+                                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                            >
+                                <span>
+                                    <span className={styles.filterLabel}>Filtros Extra:</span>
+                                    {issueFilter !== 'all' ? 'Mascotas por recuperar' : infoFilter !== 'all' ? 'Info' : paymentFilter !== 'all' ? 'Pago' : 'Seleccionar'}
+                                </span>
+                                <span className={styles.dropdownArrow}>▼</span>
+                            </button>
+                            <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.open : ''}`}>
+                                <div className={styles.dropdownSectionTitle}>Estado de Información</div>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'all' && issueFilter === 'all' ? styles.selected : ''}`} onClick={() => { setInfoFilter('all'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Todos</button>
+                                <button className={`${styles.dropdownOption} ${issueFilter === 'pet_recovery' ? styles.selected : ''}`} onClick={() => { setIssueFilter('pet_recovery'); setInfoFilter('all'); setPaymentFilter('all'); setIsDropdownOpen(false); }}>Mascotas por recuperar</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'complete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('complete'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Completa</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'incomplete' ? styles.selected : ''}`} onClick={() => { setInfoFilter('incomplete'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Incompleta</button>
+                                <button className={`${styles.dropdownOption} ${infoFilter === 'requested' ? styles.selected : ''}`} onClick={() => { setInfoFilter('requested'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Solicitada</button>
+                                
+                                <div className={styles.dropdownDivider}></div>
+                                <div className={styles.dropdownSectionTitle}>Estado de Pago</div>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'all' && issueFilter === 'all' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('all'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Todos</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'active' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('active'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Activo</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'past_due' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('past_due'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Moroso</button>
+                                <button className={`${styles.dropdownOption} ${paymentFilter === 'canceled' ? styles.selected : ''}`} onClick={() => { setPaymentFilter('canceled'); setIssueFilter('all'); setIsDropdownOpen(false); }}>Cancelado</button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {requestType === 'appeals' ? (
+                <>
+                    <div style={{ marginBottom: '16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                        <span style={{ fontSize: '13px', color: '#666', alignSelf: 'center' }}>Filtrar por:</span>
+                        {(['all', 'today', 'week', 'month'] as const).map(filter => (
+                            <button
+                                key={filter}
+                                onClick={() => setAppealDateFilter(filter)}
+                                style={{
+                                    padding: '6px 12px',
+                                    borderRadius: '20px',
+                                    border: appealDateFilter === filter ? '2px solid #7B1FA2' : '1px solid #ddd',
+                                    background: appealDateFilter === filter ? '#F3E5F5' : '#fff',
+                                    color: appealDateFilter === filter ? '#7B1FA2' : '#666',
+                                    fontSize: '12px',
+                                    fontWeight: appealDateFilter === filter ? 600 : 400,
+                                    cursor: 'pointer',
+                                    transition: '0.2s'
+                                }}
+                            >
+                                {filter === 'all' && 'Todos'}
+                                {filter === 'today' && 'Hoy'}
+                                {filter === 'week' && 'Esta semana'}
+                                {filter === 'month' && 'Este mes'}
+                            </button>
+                        ))}
+                    </div>
+
+                    {appealedPets.length === 0 ? (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>📋</div>
+                            <div className={styles.emptyText}>No hay apelaciones pendientes</div>
+                            <div className={styles.emptySubtext}>Las nuevas apelaciones aparecerán aquí</div>
+                        </div>
+                    ) : (
+                        <div className={styles.tableWrapper}>
+                            <table className={styles.table}>
+                                <thead className={styles.tableHeader}>
+                                    <tr>
+                                        <th>Mascota</th>
+                                        <th>Dueño</th>
+                                        <th>Mensaje de Apelación</th>
+                                        <th>Fecha</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody className={styles.tableBody}>
+                                    {appealedPets.map((pet) => (
+                                        <tr key={pet.petId}>
+                                            <td data-label="Mascota">
+                                                <div className={styles.memberInfo}>
+                                                    <div className={styles.memberAvatar} style={{ background: pet.petType === 'Gato' ? '#F3E5F5' : '#E3F2FD' }}>
+                                                        {pet.petType === 'Gato' ? '🐱' : '🐕'}
+                                                    </div>
+                                                    <div className={styles.memberDetails}>
+                                                        <div className={styles.memberName}>{pet.petName}</div>
+                                                        <div className={styles.memberEmail}>{pet.petBreed || pet.petType}</div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td data-label="Dueño">
+                                                <div className={styles.memberDetails}>
+                                                    <div className={styles.memberName}>{pet.ownerName}</div>
+                                                    <div className={styles.memberEmail}>{pet.ownerEmail}</div>
+                                                </div>
+                                            </td>
+                                            <td data-label="Mensaje" style={{ maxWidth: '200px' }}>
+                                                <span style={{ fontSize: '0.85rem', color: '#666', fontStyle: 'italic' }}>
+                                                    "{pet.appealMessage?.substring(0, 50) || 'Sin mensaje'}{pet.appealMessage?.length > 50 ? '...' : ''}"
+                                                </span>
+                                            </td>
+                                            <td data-label="Fecha">
+                                                {pet.appealedAt ? new Date(pet.appealedAt).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A'}
+                                            </td>
+                                            <td data-label="Acciones">
+                                                <div className={styles.actionButtons}>
+                                                    <button
+                                                        className={styles.viewButton}
+                                                        onClick={() => onViewDetails(pet.ownerId, 'appeal', pet.petId)}
+                                                    >
+                                                        Ver Detalles
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </>
+            ) : filteredRequests.length === 0 ? (
+                requestType === 'all-members' ? (
+                    !hasSearched ? (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>🔍</div>
+                            <div className={styles.emptyText}>Buscador de usuarios</div>
+                            <div className={styles.emptySubtext}>
+                                Ingresa un correo electrónico arriba y presiona Buscar para encontrar un miembro en la base de datos.
+                            </div>
+                        </div>
+                    ) : (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>🤷‍♂️</div>
+                            <div className={styles.emptyText}>No se encontraron resultados</div>
+                            <div className={styles.emptySubtext}>
+                                No se encontró ningún usuario con el correo "{searchEmail}" (excluyendo administradores).
+                            </div>
+                        </div>
+                    )
+                ) : (
+                    <div className={styles.emptyState}>
+                        <div className={styles.emptyIcon}>📋</div>
+                        <div className={styles.emptyText}>No hay solicitudes</div>
+                        <div className={styles.emptySubtext}>
+                            {searchQuery ? 'Intenta con otro término de búsqueda' : 'Las nuevas solicitudes aparecerán aquí'}
+                        </div>
+                    </div>
+                )
+            ) : (
+                <div className={styles.tableWrapper}>
+                    <table className={styles.table}>
+                        <thead className={styles.tableHeader}>
+                            <tr>
+                                {requestType === 'all-members' && (
+                                    <th style={{ width: '40px' }}>
+                                        <input 
+                                            type="checkbox" 
+                                            checked={selectedIds.size === filteredRequests.length && filteredRequests.length > 0}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedIds(new Set(filteredRequests.map(r => r.id)));
+                                                } else {
+                                                    setSelectedIds(new Set());
+                                                }
+                                            }}
+                                        />
+                                    </th>
+                                )}
+                                <th>Usuario / Rol</th>
+                                <th>Fecha de Solicitud</th>
+                                <th>Info Extra</th>
+                                <th>Estado Pago</th>
+                                <th>Estado Info</th>
+                                <th>Estado Solicitud</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className={styles.tableBody}>
+                            {filteredRequests.map((request) => (
+                                <tr key={request.id}>
+                                    {requestType === 'all-members' && (
+                                        <td data-label="Seleccionar">
+                                            <input 
+                                                type="checkbox" 
+                                                checked={selectedIds.has(request.id)}
+                                                onChange={(e) => {
+                                                    const newSelected = new Set(selectedIds);
+                                                    if (e.target.checked) newSelected.add(request.id);
+                                                    else newSelected.delete(request.id);
+                                                    setSelectedIds(newSelected);
+                                                }}
+                                            />
+                                        </td>
+                                    )}
+                                    <td data-label="Usuario">
+                                        <div className={styles.memberInfo}>
+                                            <div className={styles.memberAvatar} style={{
+                                                background: request.type === 'ambassador' ? '#E0F7FA' : '#F3E5F5',
+                                                color: request.type === 'ambassador' ? '#006064' : '#7B1FA2'
+                                            }}>
+                                                {request.type === 'ambassador' ? '🎯' : getInitials(request.name)}
+                                            </div>
+                                            <div className={styles.memberDetails}>
+                                                <div className={styles.memberName}>
+                                                    {request.name}
+                                                    {renderRoleBadges(request.roles)}
+                                                </div>
+                                                <div className={styles.memberEmail}>{request.email}</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td data-label="Fecha">{formatDate(request.submittedAt)}</td>
+                                    <td data-label="Info Extra">
+                                        {request.type === 'member' ? (
+                                            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                                                <span>🐶 {request.petCount || 0} Mascotas</span>
+                                                {request.registrationIssue === 'paid_without_pets' && (
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        color: '#B91C1C',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        Pago sin mascotas
+                                                    </span>
+                                                )}
+                                                {request.registrationIssue === 'paid_without_complete_pet_rows' && (
+                                                    <span style={{
+                                                        fontSize: '0.75rem',
+                                                        color: '#92400E',
+                                                        fontWeight: 700
+                                                    }}>
+                                                        Mascota por recuperar
+                                                    </span>
+                                                )}
+                                                {request.status === 'approved' && request.pendingPetCount! > 0 && (
+                                                    <span style={{ 
+                                                        fontSize: '0.75rem', 
+                                                        color: '#FE8F15', 
+                                                        fontWeight: 600,
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        gap: '4px'
+                                                    }}>
+                                                        ⚠️ {request.pendingPetCount} por revisar
+                                                    </span>
+                                                )}
+                                            </div>
+                                        ) : (
+                                            <span>-</span>
+                                        )}
+                                    </td>
+                                    <td data-label="Estado Pago">
+                                        {request.isCancelled && request.membershipEndDate ? (
+                                            // Cancelación pendiente: mostramos badge especial con fecha de vencimiento
+                                            <span
+                                                className={`${styles.paymentStatusBadge} ${styles.canceled}`}
+                                                title={`Cobertura hasta: ${new Date(request.membershipEndDate).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}`}
+                                            >
+                                                🔴 Cancelado
+                                                <span style={{
+                                                    display: 'block',
+                                                    fontSize: '0.72em',
+                                                    fontWeight: 400,
+                                                    marginTop: '2px',
+                                                    opacity: 0.85,
+                                                    letterSpacing: 0
+                                                }}>
+                                                    hasta {new Date(request.membershipEndDate).toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                                </span>
+                                            </span>
+                                        ) : (
+                                            <span className={`${styles.paymentStatusBadge} ${styles[request.paymentStatus || 'none']}`}>
+                                                {getPaymentStatusLabel(request.paymentStatus || 'none', request.type)}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td data-label="Estado Info">
+                                        <span className={`${styles.infoStatusBadge} ${styles[request.infoStatus || 'complete']}`}>
+                                            {getInfoStatusLabel(request.infoStatus || 'complete')}
+                                        </span>
+                                    </td>
+                                    <td data-label="Estado Solicitud">
+                                        <span className={`${styles.statusBadge} ${styles[request.status]}`}>
+                                            <span className={styles.statusDot}></span>
+                                            {getStatusLabel(request.status)}
+                                        </span>
+                                    </td>
+                                    <td data-label="Acciones">
+                                        <div className={styles.actionButtons}>
+                                            <button
+                                                className={styles.viewButton}
+                                                onClick={() => onViewDetails(request.id, request.type)}
+                                            >
+                                                Ver Detalles
+                                            </button>
+                                            
+                                            {(requestType === 'all-members' || mode === 'termination') && (
+                                                <>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        style={{ border: 'none', background: '#fff3cd', color: '#856404' }}
+                                                        onClick={() => onTerminate?.(request)}
+                                                    >
+                                                        🚫 Baja Políticas
+                                                    </button>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        style={{ border: 'none', background: '#fee2e2', color: '#dc2626' }}
+                                                        onClick={() => onDelete?.(request.id, request.type)}
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </>
+                                            )}
+    
+                                            {request.status === 'rejected' && (
+                                                <button
+                                                    className={styles.rejectButton}
+                                                    onClick={() => onViewRejectionReason?.(request.id)}
+                                                    style={{ fontSize: '0.8rem', padding: '4px 8px' }}
+                                                >
+                                                    Motivo
+                                                </button>
+                                            )}
+                                            {request.status === 'pending' && requestType !== 'all-members' && (
+                                                <>
+                                                    <button
+                                                        className={styles.approveButton}
+                                                        onClick={() => onApprove(request.id, request.type)}
+                                                    >
+                                                        Aprobar
+                                                    </button>
+                                                    <button
+                                                        className={styles.rejectButton}
+                                                        onClick={() => onReject(request.id, request.type)}
+                                                    >
+                                                        Rechazar
+                                                    </button>
+                                                </>
+                                            )}
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+            </div>
+        </div>
+    );
+}

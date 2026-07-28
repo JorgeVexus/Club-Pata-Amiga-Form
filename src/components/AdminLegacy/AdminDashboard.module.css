@@ -1,0 +1,328 @@
+/* Reset básico para el dashboard */
+.admin-dashboard * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-dashboard {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    color: #111827;
+    background-color: #fffce7;
+    min-height: 100vh;
+}
+
+/* Dashboard Layout */
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background: #fffce7;
+}
+
+.dashboardContent {
+    display: flex;
+    flex: 1;
+}
+
+.mainContent {
+    flex: 1;
+    padding: var(--spacing-xl);
+    min-height: 100vh;
+    min-width: 0;
+    overflow-x: auto;
+}
+
+/* Header */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+}
+
+.headerLeft {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.pageTitle {
+    font-size: 2rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--gray-900);
+}
+
+.pageDate {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    text-transform: capitalize;
+}
+
+.headerRight {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.adminBadge {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    background: var(--brand-yellow);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+}
+
+.adminIcon {
+    width: 40px;
+    height: 40px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.adminInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+}
+
+.adminName {
+    font-size: 0.875rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--gray-900);
+}
+
+.adminRole {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .sidebar {
+        width: 240px;
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboardContent {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+    .mainContent {
+        padding: var(--spacing-md);
+    }
+
+    .header {
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .pageTitle {
+        font-size: 1.5rem;
+    }
+
+    .adminBadge {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .pageTitle {
+        font-size: 1.25rem;
+    }
+}
+
+/* Sidebar Overlay */
+.sidebarOverlay {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .sidebarOverlay {
+        display: block;
+    }
+}
+.activitySection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+@media (max-width: 1024px) {
+    .activitySection {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Admin V2 shell */
+.dashboard{min-height:100dvh;background:#f8f5ee;color:#365853;font-family:var(--font-body,'Outfit'),sans-serif}
+.dashboardContent{min-height:100dvh}
+.mainContent{padding:0 28px 48px;overflow-x:hidden;background:#f8f5ee}
+.header{align-items:center;margin:8px 0 22px}
+.pageTitle{margin:0;color:#174d49;font-family:var(--font-heading,'Fraiche'),sans-serif;font-size:clamp(25px,3vw,34px);font-weight:400;line-height:1}
+.pageDate{margin-top:7px;color:#71817d;font-size:12px}
+.adminBadge{border:1px solid #e6dfd3;background:#fff;box-shadow:0 6px 18px rgba(45,73,69,.05)}
+.adminIcon{background:#e7f5f3}
+@media(max-width:768px){.mainContent{padding:0 14px 32px}.header{margin-top:14px}}
+
+/* Visual bridge for legacy operational modules. It is intentionally scoped so
+   existing component behavior, modal contracts and semantic action colors stay intact. */
+.moduleCanvas {
+    display: grid;
+    min-width: 0;
+    gap: 18px;
+    color: #365853;
+    --admin-v2-ink: #174d49;
+    --admin-v2-muted: #71817d;
+    --admin-v2-border: #e6dfd3;
+    --admin-v2-accent: #21bcaf;
+    --admin-v2-surface: #ffffff;
+}
+
+.moduleCanvas > :global(*) {
+    min-width: 0;
+}
+
+.moduleCanvas :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    color: #365853;
+    background: var(--admin-v2-surface);
+}
+
+.moduleCanvas :global(th) {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--admin-v2-border);
+    color: #87928f;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .045em;
+    text-align: left;
+    text-transform: uppercase;
+}
+
+.moduleCanvas :global(td) {
+    padding: 14px;
+    border-bottom: 1px solid #eee8df;
+    color: #365853;
+}
+
+.moduleCanvas :global(tbody tr:last-child td) {
+    border-bottom: 0;
+}
+
+.moduleCanvas :global(tbody tr) {
+    transition: background-color 160ms ease;
+}
+
+.moduleCanvas :global(tbody tr:hover) {
+    background: #fbfaf6;
+}
+
+.moduleCanvas :global(input),
+.moduleCanvas :global(select),
+.moduleCanvas :global(textarea) {
+    max-width: 100%;
+    border: 1px solid var(--admin-v2-border);
+    border-radius: 12px;
+    background: #fff;
+    color: #365853;
+    font: inherit;
+}
+
+.moduleCanvas :global(input:focus),
+.moduleCanvas :global(select:focus),
+.moduleCanvas :global(textarea:focus) {
+    border-color: var(--admin-v2-accent);
+    outline: 3px solid rgba(33, 188, 175, .14);
+}
+
+.moduleCanvas :global(button) {
+    border-color: transparent !important;
+    font-family: var(--font-body,'Outfit'), sans-serif !important;
+    transition: transform 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+/* Retire the previous brutalist treatment without changing component markup or handlers. */
+.moduleCanvas :global(div),
+.moduleCanvas :global(section),
+.moduleCanvas :global(article),
+.moduleCanvas :global(button),
+.moduleCanvas :global(input),
+.moduleCanvas :global(select),
+.moduleCanvas :global(textarea) {
+    border-width: 1px !important;
+    box-shadow: none !important;
+}
+
+.moduleCanvas :global([class*="container"]),
+.moduleCanvas :global([class*="requestsSection"]),
+.moduleCanvas :global([class*="statCard"]),
+.moduleCanvas :global([class*="summaryCard"]),
+.moduleCanvas :global([class*="reportCard"]),
+.moduleCanvas :global([class*="panel"]) {
+    border: 1px solid var(--admin-v2-border) !important;
+    border-radius: 18px !important;
+    background: var(--admin-v2-surface);
+    box-shadow: 0 8px 24px rgba(45, 73, 69, .05) !important;
+}
+
+.moduleCanvas :global([class*="statCard"]) {
+    min-height: 116px;
+    padding: 18px !important;
+}
+
+.moduleCanvas :global([class*="statValue"]),
+.moduleCanvas :global([class*="amount"]) {
+    color: var(--admin-v2-ink) !important;
+    font-variant-numeric: tabular-nums;
+}
+
+.moduleCanvas :global([class*="title"]),
+.moduleCanvas :global([class*="Title"]) {
+    color: var(--admin-v2-ink);
+}
+
+.moduleCanvas :global(button:hover) {
+    box-shadow: 0 5px 14px rgba(45, 73, 69, .1) !important;
+    transform: translateY(-1px);
+}
+
+.moduleCanvas :global(button:active) {
+    box-shadow: none !important;
+    transform: translateY(0) scale(.98);
+}
+
+.moduleCanvas :global(button:focus-visible),
+.moduleCanvas :global(a:focus-visible) {
+    outline: 3px solid rgba(33, 188, 175, .28);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .moduleCanvas {
+        gap: 14px;
+    }
+
+    .moduleCanvas :global(table) {
+        font-size: 13px;
+    }
+
+    .moduleCanvas :global(th),
+    .moduleCanvas :global(td) {
+        padding: 11px 10px;
+    }
+}

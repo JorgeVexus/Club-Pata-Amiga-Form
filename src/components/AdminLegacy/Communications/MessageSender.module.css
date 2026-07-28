@@ -1,0 +1,394 @@
+.container {
+    padding: 20px 0;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.configSection {
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+}
+
+.formGroup label {
+    font-weight: 700;
+    color: #333;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.input,
+.select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.input:focus,
+.select:focus {
+    outline: none;
+    border-color: #00BBB4;
+}
+
+/* Búsqueda de usuarios */
+.results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-top: 5px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    overflow: hidden;
+}
+
+.resultItem {
+    padding: 12px 15px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    transition: background 0.2s;
+}
+
+.resultItem:hover {
+    background: #f0fdfc;
+}
+
+.resultItem small {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.selectedInfo {
+    background: #e6f7f7;
+    padding: 12px 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #00BBB4;
+}
+
+.selectedInfo button {
+    background: none;
+    border: none;
+    color: #fe4b5b;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+/* Modos de envío */
+.modeToggle {
+    display: flex;
+    background: #f0f0f0;
+    padding: 4px;
+    border-radius: 12px;
+}
+
+.modeBtn {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: transparent;
+    color: #666;
+    transition: all 0.2s;
+}
+
+.activeMode {
+    background: white;
+    color: #00BBB4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Acciones */
+.actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.emailBtn,
+.waBtn {
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.emailBtn {
+    background-color: #00BBB4;
+    color: white;
+}
+
+.emailBtn:hover:not(:disabled) {
+    background-color: #009c96;
+}
+
+.waBtn {
+    background-color: #25D366;
+    color: white;
+}
+
+.waBtn:hover:not(:disabled) {
+    background-color: #1ebe57;
+}
+
+.emailBtn:disabled,
+.waBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(1);
+}
+
+/* Preview Section */
+.previewSection {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 16px;
+    border: 1px dashed #ccc;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.previewHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.previewHeader label {
+    font-weight: 700;
+    color: #666;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.toggleGroup {
+    display: flex;
+    background: #eee;
+    padding: 3px;
+    border-radius: 8px;
+    gap: 2px;
+}
+
+.toggleBtn {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: none;
+    background: transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #666;
+}
+
+.toggleBtn.active {
+    background: white;
+    color: #00BBB4;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.previewCard {
+    background: white;
+    padding: 0;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    min-height: 450px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.previewSubject {
+    padding: 15px 25px;
+    border-bottom: 1px solid #eee;
+    color: #333;
+    background: #fdfdfd;
+}
+
+.previewBody {
+    padding: 25px;
+    line-height: 1.6;
+    color: #444;
+    white-space: pre-wrap;
+    flex: 1;
+}
+
+.htmlPreviewFrame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    flex: 1;
+}
+
+.noPreview {
+    padding: 40px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+
+/* Placeholder Centros de Bienestar */
+.placeholderBox {
+    padding: 40px 20px;
+    text-align: center;
+    background: #f0f7f7;
+    border-radius: 16px;
+    border: 2px dashed #00BBB4;
+}
+
+.placeholderBox h3 {
+    margin-top: 0;
+    color: #00BBB4;
+}
+
+.soonBadge {
+    display: inline-block;
+    background: #FE8F15;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-top: 15px;
+    text-transform: uppercase;
+}
+
+.emptyHint {
+    font-size: 0.85rem;
+    color: #FE4B5B;
+    margin-top: 10px;
+    font-style: italic;
+}
+
+/* Termination Flow */
+.terminationWarning {
+    margin-top: 20px;
+    padding: 20px;
+    background: #fff5f5;
+    border: 1px solid #feb2b2;
+    border-radius: 16px;
+}
+
+.deleteBtn {
+    width: 100%;
+    padding: 14px;
+    background: #c53030;
+    color: white;
+    border: 1px solid #e5bcbc;
+    border-radius: 50px;
+    fontWeight: bold;
+    cursor: pointer;
+    font-family: 'Fraiche', sans-serif;
+    margin-top: 15px;
+    transition: all 0.2s;
+}
+
+.deleteBtn:hover:not(:disabled) {
+    background: #9b2c2c;
+    transform: scale(0.98);
+}
+
+.loading {
+    padding: 50px;
+    text-align: center;
+    font-weight: 600;
+    color: #00BBB4;
+}
+
+/* Preview Estilo Push */
+.pushPreview {
+    margin: 25px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 15px;
+    padding: 15px;
+    border-left: 4px solid #00BBB4;
+}
+
+.pushHeader {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.pushIcon {
+    font-size: 1rem;
+}
+
+.pushAppName {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+}
+
+.pushTime {
+    font-size: 0.7rem;
+    color: #999;
+    margin-left: auto;
+}
+
+.pushTitle {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.pushMessage {
+    font-size: 0.9rem;
+    color: #555;
+    line-height: 1.4;
+}
+
+/* Admin V2 */
+.container{padding:0;font-family:var(--font-body,'Outfit'),sans-serif}.grid{grid-template-columns:minmax(0,1.15fr) minmax(320px,.85fr);gap:18px;align-items:stretch}.configSection,.previewSection{padding:22px;border:1px solid #e6dfd3;border-radius:18px;background:#fff;box-shadow:0 8px 24px rgba(45,73,69,.045)}.configSection{gap:22px}.formGroup label{color:#365853;font-size:11px;letter-spacing:.035em}.input,.select{min-height:44px;border-color:#e2dbcf;border-radius:12px;color:#365853;font-family:inherit}.input:focus,.select:focus{border-color:#21bcaf;box-shadow:0 0 0 3px rgba(33,188,175,.14)}.modeToggle,.toggleGroup{background:#eee9df}.activeMode,.toggleBtn.active{color:#087b74;box-shadow:none}.emailBtn,.waBtn{min-height:46px;border-radius:12px;font-family:inherit}.emailBtn{background:#21bcaf}.waBtn{background:#1f8f68}.previewSection{background:#fbfaf6;border-style:solid}.previewHeader label{color:#365853}.previewCard{border:1px solid #eee8df;box-shadow:none}.previewSubject{color:#174d49;background:#fff}.noPreview{color:#82908c}.results{border-color:#e6dfd3;box-shadow:0 12px 28px rgba(45,73,69,.1)}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.previewCard{min-height:340px}}
+@media(max-width:560px){.configSection,.previewSection{padding:16px}.actions{grid-template-columns:1fr}}
