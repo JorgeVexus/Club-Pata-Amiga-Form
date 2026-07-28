@@ -7,7 +7,7 @@ const supabaseAdmin = createClient(
     process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-const REASONS = ['no_longer_needed', 'price_too_high', 'found_alternative', 'service_issues', 'other'];
+const REASONS = ['no_longer_needed', 'price_too_high', 'found_alternative', 'service_issues', 'other', 'stripe_direct'];
 
 export async function GET(request: NextRequest) {
     try {
@@ -20,42 +20,50 @@ export async function GET(request: NextRequest) {
         const thirtyDaysAgo = new Date(now);
         thirtyDaysAgo.setDate(now.getDate() - 30);
 
-        const [
-            totalResult,
-            sevenResult,
-            thirtyResult,
-            rowsResult,
-        ] = await Promise.all([
-            supabaseAdmin.from('membership_cancellations').select('*', { count: 'exact', head: true }),
-            supabaseAdmin.from('membership_cancellations').select('*', { count: 'exact', head: true }).gte('cancellation_date', sevenDaysAgo.toISOString()),
-            supabaseAdmin.from('membership_cancellations').select('*', { count: 'exact', head: true }).gte('cancellation_date', thirtyDaysAgo.toISOString()),
-            supabaseAdmin.from('membership_cancellations').select('cancellation_reason, days_remaining_at_cancellation'),
-        ]);
+        const { data: rows, error } = await supabaseAdmin
+            .from('membership_cancellations')
+            .select('user_id, memberstack_id, cancellation_date, cancellation_reason, days_remaining_at_cancellation')
+            .order('cancellation_date', { ascending: false })
+            .limit(2000);
 
-        const firstError = totalResult.error || sevenResult.error || thirtyResult.error || rowsResult.error;
-        if (firstError) {
-            console.error('[ADMIN-CANCELLATIONS-STATS] Error:', firstError);
+        if (error) {
+            console.error('[ADMIN-CANCELLATIONS-STATS] Error:', error);
             return NextResponse.json({ success: false, error: 'Error cargando estadisticas' }, { status: 500 });
         }
 
-        const byReason = Object.fromEntries(REASONS.map(reason => [reason, 0]));
+        // 🆕 Deduplicar por cliente (misma causa que en /api/admin/cancellations:
+        // el flujo de cancelación puede insertar más de una fila por evento).
+        const seen = new Set<string>();
+        const deduped = (rows || []).filter((row: any) => {
+            const key = row.user_id || row.memberstack_id;
+            if (!key || seen.has(key)) return false;
+            seen.add(key);
+            return true;
+        });
+
+        const byReason = Object.fromEntries(REASONS.map((reason) => [reason, 0]));
         let daysTotal = 0;
         let daysCount = 0;
+        let last7 = 0;
+        let last30 = 0;
 
-        for (const row of rowsResult.data || []) {
+        for (const row of deduped) {
             if (row.cancellation_reason in byReason) byReason[row.cancellation_reason] += 1;
             if (typeof row.days_remaining_at_cancellation === 'number') {
                 daysTotal += row.days_remaining_at_cancellation;
                 daysCount += 1;
             }
+            const date = row.cancellation_date ? new Date(row.cancellation_date) : null;
+            if (date && date >= sevenDaysAgo) last7 += 1;
+            if (date && date >= thirtyDaysAgo) last30 += 1;
         }
 
         return NextResponse.json({
             success: true,
             stats: {
-                total_cancellations: totalResult.count || 0,
-                last_7_days: sevenResult.count || 0,
-                last_30_days: thirtyResult.count || 0,
+                total_cancellations: deduped.length,
+                last_7_days: last7,
+                last_30_days: last30,
                 by_reason: byReason,
                 avg_days_remaining: daysCount > 0 ? Math.round(daysTotal / daysCount) : 0,
             },

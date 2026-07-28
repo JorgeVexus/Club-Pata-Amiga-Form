@@ -41,6 +41,7 @@ const REASON_LABELS: Record<string, string> = {
     found_alternative: 'Encontro alternativa',
     service_issues: 'Problemas con el servicio',
     other: 'Otro',
+    stripe_direct: 'Cancelada en Stripe',
 };
 
 function formatDate(value: string) {

@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
         const { data: user, error: userError } = await supabaseAdmin
             .from('users')
-            .select('id, stripe_customer_id, email, crm_contact_id')
+            .select('id, stripe_customer_id, email, crm_contact_id, approval_status')
             .eq('memberstack_id', authenticatedMemberstackId)
             .maybeSingle();
 
@@ -51,6 +51,29 @@ export async function POST(request: NextRequest) {
 
         if (!user) {
             return NextResponse.json({ success: false, error: 'Usuario no encontrado' }, { status: 404 });
+        }
+
+        // 🔒 Idempotencia: si ya se procesó una cancelación para este usuario
+        // (doble clic, reintento del navegador, etc.), no volver a insertar
+        // otra fila de auditoría ni repetir las acciones en Stripe/CRM/email.
+        if (user.approval_status === 'pending_cancellation' || user.approval_status === 'cancelled') {
+            const { data: existingCancellation } = await supabaseAdmin
+                .from('membership_cancellations')
+                .select('membership_end_date, days_remaining_at_cancellation')
+                .eq('user_id', user.id)
+                .order('cancellation_date', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+
+            console.log(`[DEACTIVATE] Cancelacion ya registrada para ${memberstackId}, evitando duplicado.`);
+            return NextResponse.json({
+                success: true,
+                message: 'Membresia cancelada correctamente',
+                cancellation: {
+                    endDate: existingCancellation?.membership_end_date || null,
+                    daysRemaining: existingCancellation?.days_remaining_at_cancellation || 0,
+                },
+            });
         }
 
         let cancellationRecord = {
