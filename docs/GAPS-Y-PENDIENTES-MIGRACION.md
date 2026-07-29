@@ -58,6 +58,12 @@ para el otro dev y para continuar el trabajo en próximas sesiones.
   `"You're in test mode, but tried to login with a live account."`. Ya
   está corregido en `.env.local` de este entorno de trabajo; el otro dev
   debe usar la misma key live al configurar su propio `.env.local`.
+- **✅ Roles de admin migrados**: el backfill original no mapeaba
+  `users.role` (admin/super_admin) — los 4 admins reales de producción
+  habrían quedado como "member" tras migrar. Corregido en
+  `scripts/backfill-legacy-users.ts` y ya arreglado también en los datos
+  de staging. Verificado: login de un admin real rutea a `/admin` con
+  las métricas reales completas.
 
 ## Datos que no se migraron automáticamente
 
