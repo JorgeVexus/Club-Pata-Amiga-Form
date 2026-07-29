@@ -29,28 +29,30 @@ Este documento se generó durante la migración del proyecto anterior
 `Chepiztrike/pata-amiga`. Lista lo que quedó pendiente o requiere decisión,
 para el otro dev y para continuar el trabajo en próximas sesiones.
 
-## Bug encontrado en pata-amiga (no introducido por esta migración)
+## Bug encontrado en pata-amiga (no introducido por esta migración) — ✅ corregido
 
-- **`src/lib/supabase/middleware.ts`**: la protección de rutas usa
-  `path.startsWith("/embajador")`, lo cual también bloquea `/embajadores`
+- **`src/lib/supabase/middleware.ts`**: la protección de rutas usaba
+  `path.startsWith("/embajador")`, lo cual también bloqueaba `/embajadores`
   (la página pública del programa de embajadores) porque
-  `"/embajadores".startsWith("/embajador")` es `true`. Un visitante no
-  logueado que entra a `/embajadores` es redirigido a `/iniciar-sesion`
-  cuando debería ver la landing pública. Fix sugerido: comparar
-  `path === "/embajador" || path.startsWith("/embajador/")`.
+  `"/embajadores".startsWith("/embajador")` es `true`. **Corregido**:
+  ahora compara `path === "/embajador" || path.startsWith("/embajador/")`.
+  Verificado con curl: `/embajador` → 307 a login, `/embajadores` → 200.
 
-## Puente de autenticación legacy (Memberstack -> Supabase Auth)
+## Puente de autenticación legacy (Memberstack -> Supabase Auth) — ✅ endpoint confirmado
 
 - `src/lib/legacy-auth-bridge.ts` llama a
-  `https://client.memberstack.com/member/login` para validar la password
-  vieja. **No se pudo confirmar este endpoint contra la documentación
-  oficial de Memberstack en esta sesión** (las herramientas de búsqueda web
-  fallaron). Antes de confiar en este puente en producción: probar con una
-  cuenta legacy real y, si falla, revisar
-  https://developers.memberstack.com/rest-api o el Network tab del login
-  viejo para confirmar el endpoint/payload correctos.
+  `POST https://client.memberstack.com/auth/login` (no `/member/login`,
+  que daba 404). **Confirmado en vivo** contra el proyecto real de
+  Memberstack de este cliente: un intento con credenciales inválidas
+  devuelve `{"code":"invalid-credentials", ...}` con el mensaje de error
+  personalizado de esta cuenta (no un 404 genérico).
 - Una vez migrado un usuario (`legacy_password_migrated = true`), ya no se
   vuelve a validar contra Memberstack — solo Supabase Auth nativo.
+- Pendiente: probar el puente con una cuenta legacy real (password
+  correcta) contra el proyecto de producción el día del cutover — en esta
+  sesión solo se verificó que el flujo no truena y usa el endpoint
+  correcto (con password incorrecta responde bien "credenciales
+  inválidas").
 
 ## Datos que no se migraron automáticamente (quedaron en el schema `legacy`)
 
@@ -85,11 +87,13 @@ confirmar caso por caso):
 - **`emergency_logs` (botón de pánico)**: pata-amiga tiene la tabla
   (`emergency_logs`) pero no se confirmó que exista la UI/endpoint
   correspondiente en el portal de miembro (`/app`).
-- **Autoservicio de miembro**: cambio de plan, actualizar método de pago,
-  desactivar/reactivar membresía, fecha fin de cancelación — nuestro repo
-  tenía endpoints dedicados (`/api/user/change-plan`, `/payment-method`,
-  `/deactivate`, `/reactivate`, `/cancellation-end-date`). No se confirmó
-  equivalente en `/app/cuenta` de pata-amiga.
+- **Autoservicio de miembro** — ✅ confirmado en `/app/cuenta`: cambiar de
+  plan (mensual↔anual), cancelar membresía (con motivo, programada a fin
+  de período pagado) y reactivar («reingreso») están implementados y se
+  probaron de punta a punta en staging: cancelar → «Cancelación
+  programada» + botón «Reactivar» → reactivar → vuelve a «Membresía
+  activa». Sigue pendiente: actualizar método de pago (no se vio un botón
+  dedicado, revisar si se maneja desde el Customer Portal de Stripe).
 - **Rutas de embajador más finas**: mensajes, reenvío de código, cambio de
   código, generación de link de invitación, re-upload de documentos. El
   portal `/embajador` de pata-amiga existe pero no se confirmó cobertura
@@ -101,20 +105,35 @@ confirmar caso por caso):
   seed-breeds, skip-payment): probablemente no necesarias en producción,
   se listan solo por completitud.
 
-## Variables de entorno nuevas sin valor real todavía
+## Variables de entorno
 
-`.env.local` ya tiene las variables declaradas (vacías) pero **sin
-credenciales reales**: `STRIPE_SECRET_KEY` y relacionadas (el proyecto
-anterior no tenía Stripe configurado en este `.env.local` en absoluto),
-`ANTHROPIC_API_KEY` (usa `LLM_PROVIDER=mock` mientras tanto),
-`META_*`/`WHATSAPP_*`. Sin Stripe real no se pudo probar el flujo de pago
-end-to-end en esta sesión.
+- **Stripe** — ✅ configurado con keys de TEST reales de la cuenta de
+  Stripe del cliente (misma cuenta que producción, modo test) y Price IDs
+  reales: mensual `price_1TyKalRo5UnjPDWxCoYVG3ds` ($159 MXN/mes), anual
+  `price_1TyKcoRo5UnjPDWxvXGiHctG` ($1,699 MXN/año). Flujo completo
+  probado en staging: checkout → pago con tarjeta de prueba → webhook →
+  `profiles.membership_status = active` + fila en `subscriptions`
+  correcta. Para desarrollo local hace falta correr
+  `stripe listen --forward-to localhost:3000/api/stripe/webhook` (Stripe
+  CLI) y poner el `whsec_...` que genera en `STRIPE_WEBHOOK_SECRET`.
+- **Pendientes sin valor real**: `ANTHROPIC_API_KEY` (usa
+  `LLM_PROVIDER=mock` mientras tanto), `META_*`/`WHATSAPP_*`.
 
 ## Estado de la base de datos
 
-- Proyecto Supabase real (`hjvhntxjkuuobgfslzlf`): las 26 migraciones de
-  pata-amiga + columnas puente (`memberstack_id`,
-  `legacy_password_migrated`) ya están aplicadas.
-- Las tablas legacy en conflicto de nombre viven ahora en el schema
-  `legacy` (no en `public`), intactas — nada se borró.
-- 443/450 usuarios y 293/327 mascotas migrados a `public.profiles`/`public.pets`.
+- **Producción real** (`hjvhntxjkuuobgfslzlf`): intacta, sirviendo el
+  sitio viejo con su esquema original en `public`. Los 443 usuarios/293
+  mascotas ya migrados están parqueados en el schema `pata_amiga_new` de
+  ese mismo proyecto, listos para el cutover (ver incidente arriba).
+- **Staging** (`pata-amiga-staging`, ref `dpsdopbwnxgwowzehotj`): las 26
+  migraciones de pata-amiga + columnas puente (`memberstack_id`,
+  `legacy_password_migrated`) aplicadas limpio. Aquí es donde se sigue
+  desarrollando y probando (`.env.local` apunta aquí). Contiene datos de
+  prueba (cuentas `*-staging@example.com`, `test-embajador@example.com`,
+  `test-centro@example.com`, `admin-staging@example.com`), no datos
+  reales de miembros.
+- Portales verificados de punta a punta en staging: registro, login,
+  pago Stripe, cambio de plan, cancelación, reingreso, login de
+  embajador (dashboard con código/comisiones), login de centro aliado
+  (dashboard propio), panel admin (métricas, cola de aprobaciones,
+  listado de miembros).
