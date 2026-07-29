@@ -62,6 +62,12 @@ type OldUser = {
   utm_medium: string | null;
   utm_campaign: string | null;
   coupon_code: string | null;
+  role: string | null;
+};
+
+const ROLE_MAP: Record<string, string> = {
+  admin: "admin",
+  super_admin: "super_admin",
 };
 
 const MEMBERSHIP_STATUS_MAP: Record<string, string> = {
@@ -149,7 +155,7 @@ async function main() {
         street_address: u.address,
         membership_status: mappedStatus,
         member_since: u.created_at,
-        role: "member",
+        role: ROLE_MAP[u.role ?? ""] ?? "member",
         memberstack_id: u.memberstack_id,
         legacy_password_migrated: false,
         ambassador_code_used: u.ambassador_code,
