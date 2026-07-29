@@ -1,5 +1,17 @@
 # Gaps y pendientes tras la migración a pata-amiga
 
+## Imágenes de la landing (`site_assets`)
+
+Tabla vacía por diseño (se llena desde `Admin → Sitio web`, no hardcodeada
+— ver `src/lib/site.ts`). Se sembraron los slots `landing-hero` y
+`landing-planes` en staging con las fotos reales que ya existían en el
+repo (`public/widgets/home v2 images/*.webp`, del sitio anterior) para
+que la landing no se vea con placeholders. `landing-como-funciona` y
+`landing-red` se dejaron vacíos a propósito (tienen fallback de diseño,
+no había foto/collage equivalente disponible en el repo). Esto es solo
+el valor inicial — se puede reemplazar en cualquier momento desde el
+panel admin, no quedó bloqueado ni hardcodeado.
+
 ## Preview de staging en Vercel
 
 - URL: https://club-pata-amiga-form-pwbkdir3p-jorge-vexus-projects.vercel.app
