@@ -54,18 +54,27 @@ para el otro dev y para continuar el trabajo en próximas sesiones.
   correcto (con password incorrecta responde bien "credenciales
   inválidas").
 
-## Datos que no se migraron automáticamente (quedaron en el schema `legacy`)
+## Datos que no se migraron automáticamente
 
-- **7 cuentas con email duplicado** entre múltiples registros legacy
-  (`cipatli.martinez@pataamiga.mx` x3, `cipatli.martinez@rabadoub.com.mx`
-  x2, `asahi00@gmail.com` x2, `asahi01@gmail.com` x2, más 1 usuario sin
-  email) no tienen `auth.users`/`profiles` — Supabase Auth exige email
-  único. Parecen cuentas de prueba del equipo, pero requieren revisión
-  manual antes de decidir qué hacer (fusionar, descartar, o crear con un
-  email alternativo).
+- **✅ Staging es ya un espejo completo de los datos reales**: 441/450
+  usuarios, 294/326 mascotas, 45/45 ambassadors y 13/13 wellness centers
+  (con cuenta de acceso ligada) — ver
+  `scripts/backfill-legacy-users.ts` (ahora soporta migrar entre dos
+  proyectos Supabase distintos vía `SOURCE_SUPABASE_URL`/
+  `SOURCE_SERVICE_ROLE_KEY`), `scripts/migrate-legacy-pets-to-staging.mjs`
+  y `scripts/link-wellness-center-accounts.mjs`.
+- **9 cuentas con email duplicado/identidad repetida** entre múltiples
+  registros legacy (`cipatli.martinez@pataamiga.mx` x3,
+  `cipatli.martinez@rabadoub.com.mx` x2, `asahi00@gmail.com` x2,
+  `asahi01@gmail.com` x2, `asahizv5@gmail.com`, `rebecasaj26@icloud.com`
+  — estos dos últimos porque la misma persona tiene cuenta de miembro Y de
+  embajador con IDs distintos sin vincular —, más 1 usuario sin email) no
+  tienen `profiles` propio — Supabase Auth exige email único. Requieren
+  revisión manual (fusionar identidades o descartar duplicados de
+  prueba). Sus mascotas (11) tampoco se migraron por la misma razón.
 - **21 mascotas sin `pet_type` reconocible** (ni "dog" ni "cat") no se
-  migraron a `public.pets` porque `species` es `NOT NULL` en el esquema
-  nuevo. Siguen en `legacy.pets`, requieren asignarles especie manualmente.
+  migraron porque `species` es `NOT NULL` en el esquema nuevo. Requieren
+  asignarles especie manualmente antes de migrar.
 - **Ambassadors y wellness_centers** — ✅ migrados a staging (45/45
   ambassadors, 14/14 wellness_centers, ver
   `scripts/migrate-legacy-ambassadors-centers.mjs`). Un centro con status
@@ -147,12 +156,16 @@ confirmar caso por caso):
   mascotas ya migrados están parqueados en el schema `pata_amiga_new` de
   ese mismo proyecto, listos para el cutover (ver incidente arriba).
 - **Staging** (`pata-amiga-staging`, ref `dpsdopbwnxgwowzehotj`): las 26
-  migraciones de pata-amiga + columnas puente (`memberstack_id`,
-  `legacy_password_migrated`) aplicadas limpio. Aquí es donde se sigue
-  desarrollando y probando (`.env.local` apunta aquí). Contiene datos de
-  prueba (cuentas `*-staging@example.com`, `test-embajador@example.com`,
-  `test-centro@example.com`, `admin-staging@example.com`), no datos
-  reales de miembros.
+  migraciones de pata-amiga + columnas puente aplicadas limpio. Aquí es
+  donde se sigue desarrollando y probando (`.env.local` apunta aquí).
+  **Ya contiene los datos reales migrados** (441 miembros, 294 mascotas,
+  45 ambassadors, 13 wellness centers con cuenta ligada) además de las
+  cuentas de prueba creadas durante el desarrollo
+  (`*-staging@example.com`, `test-embajador@example.com`,
+  `test-centro@example.com`, `admin-staging@example.com`,
+  `test-ambassador-bridge@example.com`). Cualquier miembro/embajador/
+  centro real ya puede iniciar sesión localmente con su password real
+  (vía el puente legacy) o, si ya migró antes, con la que haya elegido.
 - Portales verificados de punta a punta en staging: registro, login,
   pago Stripe, cambio de plan, cancelación, reingreso, login de
   embajador (dashboard con código/comisiones), login de centro aliado
