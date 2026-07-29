@@ -14,8 +14,14 @@
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "crypto";
 
+// SOURCE_* opcionales: si se dan, se lee de un proyecto distinto al de
+// escritura (p.ej. exportar de produccion hacia staging) sin tocar
+// .env.local. Si no, lee y escribe en el mismo proyecto (comportamiento
+// original).
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+const SOURCE_URL = process.env.SOURCE_SUPABASE_URL ?? SUPABASE_URL;
+const SOURCE_KEY = process.env.SOURCE_SERVICE_ROLE_KEY ?? SERVICE_ROLE_KEY;
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
   console.error("Faltan NEXT_PUBLIC_SUPABASE_URL / SUPABASE_SERVICE_ROLE_KEY en el entorno.");
@@ -23,6 +29,9 @@ if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
 }
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+  auth: { autoRefreshToken: false, persistSession: false },
+});
+const source = createClient(SOURCE_URL, SOURCE_KEY, {
   auth: { autoRefreshToken: false, persistSession: false },
 });
 
@@ -67,7 +76,7 @@ async function fetchAll<T>(table: string): Promise<T[]> {
   const rows: T[] = [];
   const pageSize = 500;
   for (let from = 0; ; from += pageSize) {
-    const { data, error } = await supabase
+    const { data, error } = await source
       .from(table)
       .select("*")
       .range(from, from + pageSize - 1);
