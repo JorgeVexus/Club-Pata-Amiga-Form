@@ -1,5 +1,14 @@
 # Gaps y pendientes tras la migración a pata-amiga
 
+## ⚠️ Cron de mensajes en Vercel Hobby (temporal)
+
+`vercel.json` → `/api/cron/mensajes` está en `"0 17 * * *"` (1 vez al día)
+en vez de `"*/10 * * * *"` (cada 10 min, como lo diseñó pata-amiga) porque
+el plan Hobby de Vercel solo permite crons diarios. **Cuando se actualice
+a Vercel Pro, volver a `*/10 * * * *`** para que los mensajes programados
+del CRM de ventas salgan con precisión de minutos en vez de una vez al
+día. Ver `src/app/api/cron/mensajes/route.ts` para el detalle del cron.
+
 ## ⚠️ Incidente de producción (2026-07-28) y cambio de arquitectura
 
 El sitio viejo en producción (`app.pataamiga.mx` / `club-pata-amiga-form.vercel.app`,

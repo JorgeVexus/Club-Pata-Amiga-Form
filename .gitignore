@@ -65,3 +65,5 @@ graphify-out/
 temp-pata-amiga/
 
 supabase/.temp/
+
+.vercel
