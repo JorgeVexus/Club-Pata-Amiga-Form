@@ -20,8 +20,16 @@
  * de esta cuenta, no un 404 generico). Falla cerrado: cualquier error de
  * red o respuesta inesperada se trata como password invalida, nunca como
  * valida.
+ *
+ * Los embajadores legacy que nunca fueron miembros (sin `memberstack_id`)
+ * tenian su propio password_hash (bcrypt) en la tabla `ambassadors` del
+ * proyecto anterior - no pasaban por Memberstack. Ese hash se preservo en
+ * `profiles.legacy_ambassador_password_hash` durante la migracion
+ * (scripts/migrate-legacy-ambassadors-centers.mjs) y se valida localmente
+ * con bcrypt en vez de llamar a una API externa.
  */
 import { createAdminClient } from "@/lib/supabase/admin";
+import bcrypt from "bcryptjs";
 
 const MEMBERSTACK_PUBLIC_KEY = process.env.NEXT_PUBLIC_MEMBERSTACK_PUBLIC_KEY;
 
@@ -60,18 +68,20 @@ export async function tryLegacyPasswordMigration(
 
   const { data: profile } = await admin
     .from("profiles")
-    .select("id, memberstack_id, legacy_password_migrated")
+    .select("id, memberstack_id, legacy_password_migrated, legacy_ambassador_password_hash")
     .eq("email", email.trim().toLowerCase())
     .maybeSingle();
 
-  if (!profile?.memberstack_id) {
+  if (!profile || (!profile.memberstack_id && !profile.legacy_ambassador_password_hash)) {
     return { migrated: false, reason: "no-legacy-account" };
   }
   if (profile.legacy_password_migrated) {
     return { migrated: false, reason: "already-migrated" };
   }
 
-  const valid = await verifyMemberstackPassword(email, password);
+  const valid = profile.memberstack_id
+    ? await verifyMemberstackPassword(email, password)
+    : await bcrypt.compare(password, profile.legacy_ambassador_password_hash!);
   if (!valid) {
     return { migrated: false, reason: "invalid-password" };
   }
@@ -81,7 +91,10 @@ export async function tryLegacyPasswordMigration(
     return { migrated: false, reason: "invalid-password" };
   }
 
-  await admin.from("profiles").update({ legacy_password_migrated: true }).eq("id", profile.id);
+  await admin
+    .from("profiles")
+    .update({ legacy_password_migrated: true, legacy_ambassador_password_hash: null })
+    .eq("id", profile.id);
 
   return { migrated: true };
 }
