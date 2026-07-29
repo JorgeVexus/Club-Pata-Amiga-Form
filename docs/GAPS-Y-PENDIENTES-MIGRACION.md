@@ -48,11 +48,16 @@ para el otro dev y para continuar el trabajo en próximas sesiones.
   personalizado de esta cuenta (no un 404 genérico).
 - Una vez migrado un usuario (`legacy_password_migrated = true`), ya no se
   vuelve a validar contra Memberstack — solo Supabase Auth nativo.
-- Pendiente: probar el puente con una cuenta legacy real (password
-  correcta) contra el proyecto de producción el día del cutover — en esta
-  sesión solo se verificó que el flujo no truena y usa el endpoint
-  correcto (con password incorrecta responde bien "credenciales
-  inválidas").
+- **✅ Probado con una cuenta real de producción**
+  (`clubpataamiga@gbtravel.com.mx`, miembro "Lucero"): login exitoso con
+  su password real, sus 3 mascotas reales (Felipe/Felix/Fido) aparecen
+  con su estado correcto, `legacy_password_migrated` quedó en `true`.
+  **Importante**: `NEXT_PUBLIC_MEMBERSTACK_PUBLIC_KEY` debe ser la key en
+  **modo Live** de Memberstack (prefijo `pk_...`, sin `_sb_`) — la de
+  sandbox (`pk_sb_...`) rechaza cuentas reales con
+  `"You're in test mode, but tried to login with a live account."`. Ya
+  está corregido en `.env.local` de este entorno de trabajo; el otro dev
+  debe usar la misma key live al configurar su propio `.env.local`.
 
 ## Datos que no se migraron automáticamente
 
