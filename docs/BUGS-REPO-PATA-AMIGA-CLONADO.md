@@ -1,4 +1,4 @@
-# Bugs encontrados en el repo original (Chepiztrike/pata-amiga)
+# Bugs encontrados en el repo Chepiztrike/pata-amiga (el que clonamos para la migración)
 
 Este documento es solo para el otro dev — lista lo que se encontró en
 **su** código (no en nuestra migración), verificado corriendo `npm run
