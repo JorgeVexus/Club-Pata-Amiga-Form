@@ -66,11 +66,19 @@ para el otro dev y para continuar el trabajo en próximas sesiones.
 - **21 mascotas sin `pet_type` reconocible** (ni "dog" ni "cat") no se
   migraron a `public.pets` porque `species` es `NOT NULL` en el esquema
   nuevo. Siguen en `legacy.pets`, requieren asignarles especie manualmente.
-- **Ambassadors y wellness_centers legacy** (schema `legacy.ambassadors`,
-  `legacy.wellness_centers`) **todavía no se migraron** a las tablas nuevas
-  `public.ambassadors`/`public.wellness_centers` — solo se migraron
-  usuarios y mascotas. Falta escribir el mapeo (columnas ya identificadas
-  en el plan de migración) y correrlo, igual que se hizo con pets.
+- **Ambassadors y wellness_centers** — ✅ migrados a staging (45/45
+  ambassadors, 14/14 wellness_centers, ver
+  `scripts/migrate-legacy-ambassadors-centers.mjs`). Un centro con status
+  legacy `"appealed"` (sin equivalente en el enum `wellness_status` nuevo,
+  que solo tiene pending/approved/rejected) se mapeó a `pending`. Probado
+  con datos reales: login de embajador migrado con password bcrypt
+  legacy, aprobación desde el panel admin. Pendiente: correr el mismo
+  script contra producción el día del cutover (hoy solo escribió en
+  staging).
+- Los datos bancarios de wellness_centers (`bank_name`/`bank_clabe`/
+  `bank_holder`) **no se migraron** porque esas columnas no existen en el
+  `wellness_centers` nuevo de pata-amiga (sí existen en `ambassadors`).
+  Si se siguen necesitando, hay que agregarlas.
 - El resto de tablas movidas a `legacy` (`notifications`, `referrals`,
   `campaign_leads`, `emergency_logs`, `legal_documents`,
   `newsletter_subscribers`, `site_assets`, `site_settings`,
@@ -104,6 +112,19 @@ confirmar caso por caso):
 - **Herramientas admin de bajo nivel** (bulk-delete, migrate-payment-status,
   seed-breeds, skip-payment): probablemente no necesarias en producción,
   se listan solo por completitud.
+
+## CRM de ventas, canales y cron — estado
+
+- **`/ventas` (CRM)**: carga sin errores, pero el propio equipo lo marca
+  como "portal en construcción · fase 0" — es esperado, no es un gap
+  nuestro.
+- **Cron jobs** (`/api/cron/cumpleanos`, `/api/cron/carritos`,
+  `/api/cron/mensajes`): probados con `CRON_SECRET`, responden 200 sin
+  errores (0 resultados porque no hay datos que califiquen en staging).
+- **Canales (Meta/WhatsApp) y asistente IA**: no probados — requieren
+  `META_*`/`WHATSAPP_*` y `ANTHROPIC_API_KEY` reales, que no tenemos
+  todavía. El asistente funciona en modo mock (`LLM_PROVIDER=mock`) sin
+  key real.
 
 ## Variables de entorno
 
