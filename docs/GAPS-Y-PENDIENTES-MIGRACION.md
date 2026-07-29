@@ -1,5 +1,29 @@
 # Gaps y pendientes tras la migración a pata-amiga
 
+## Preview de staging en Vercel
+
+- URL: https://club-pata-amiga-form-pwbkdir3p-jorge-vexus-projects.vercel.app
+  (alias estable: https://club-pata-amiga-form-jorge-3511-jorge-vexus-projects.vercel.app)
+  — apunta al proyecto Supabase `pata-amiga-staging`, **no** a producción.
+  Verificado con una cuenta que solo existe en staging.
+- Las env vars de este preview están puestas en Vercel scoped al git
+  branch `staging` (Preview → staging), sin tocar Production. Ver
+  `vercel env ls preview staging`.
+- **Deployment Protection (SSO) se desactivó** para este proyecto
+  (`ssoProtection: null` vía API) para poder probar sin necesitar sesión
+  de Vercel — antes bloqueaba hasta las rutas API. Si se quiere reactivar
+  luego (ej. antes de invitar gente externa a probar), es una decisión de
+  seguridad del equipo, no algo que revertí automáticamente.
+- **git push a `origin/staging` no dispara un deploy automático** en este
+  proyecto (se probó y no ocurrió) — hay que correr `vercel deploy`
+  manualmente (o revisar en el dashboard de Vercel si la integración de
+  GitHub está conectada a esa rama).
+- El deploy debe hacerse con la rama local `staging` como checkout activo
+  (`git checkout staging`) para que Vercel asocie el build con las env
+  vars scoped a esa rama — deployar desde `migracion/pata-amiga`
+  directamente NO usa esas variables (se probó: cae en las variables
+  generales de Preview, que comparten Supabase con producción).
+
 ## ⚠️ Cron de mensajes en Vercel Hobby (temporal)
 
 `vercel.json` → `/api/cron/mensajes` está en `"0 17 * * *"` (1 vez al día)
