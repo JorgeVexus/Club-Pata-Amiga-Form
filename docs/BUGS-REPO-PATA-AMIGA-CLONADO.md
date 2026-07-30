@@ -1,5 +1,19 @@
 # Bugs encontrados en el repo Chepiztrike/pata-amiga (el que clonamos para la migración)
 
+## ✅ Todo corregido (actualización 2026-07-29)
+
+El equipo de pata-amiga ya corrigió los 11 errores + 1 bug funcional de
+abajo (ver `docs/fixes-reporte-coder.md` de su repo para el detalle de
+cada arreglo) y de paso encontraron y arreglaron 2 bugs más por su
+cuenta: `/admin/conversaciones` truena con canales sin mapear (ej.
+`email`) y las campanas de notificaciones se salían de la pantalla en
+móvil. También agregaron `.github/workflows/lint.yml` para que esto no
+se vuelva a acumular sin ruido. Ya integramos esta actualización en
+nuestro repo (rama `migracion/pata-amiga`) — este documento se deja
+como referencia histórica de lo que se reportó originalmente.
+
+---
+
 Este documento es solo para el otro dev — lista lo que se encontró en
 **su** código (no en nuestra migración), verificado corriendo `npm run
 lint` directo sobre un clon limpio del repo, sin ningún cambio nuestro.
