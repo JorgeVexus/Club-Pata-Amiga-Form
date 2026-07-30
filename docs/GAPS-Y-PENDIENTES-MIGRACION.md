@@ -1,5 +1,27 @@
 # Gaps y pendientes tras la migración a pata-amiga
 
+## Actualización 2026-07-29: 34 commits de pata-amiga integrados
+
+El equipo subió 34 commits nuevos (portal de ventas F3-F10: calendario de
+contenido, newsletter con agentes IA, planes/cupones versionados,
+migración de cohortes, tableros/reportes, agente demo) y corrigió todo
+lo de `docs/BUGS-REPO-PATA-AMIGA-CLONADO.md` (ver ahí el detalle) más 2
+bugs que encontraron solos. Ya integrado en `migracion/pata-amiga` y
+desplegado a staging.
+
+- 10 migraciones nuevas (27-36) aplicadas a staging.
+- Reaplicadas nuestras adiciones (`legacy-auth-bridge.ts`, columnas
+  puente) sobre el `src/` actualizado — su `middleware.ts` ya no
+  necesita nuestro parche, trae su propio fix (mejor, generalizado).
+- `bcryptjs` se perdió al pisar `package.json` con el de upstream — 
+  reinstalado.
+- **4 crons nuevos venían sub-diarios** (mensajes/escalaciones/
+  publicaciones/boletín cada 5-15 min) — Hobby solo permite 2 crons
+  diarios en total (el equipo ya lo documenta en `docs/PRODUCCION.md` de
+  su repo, mismo límite que ya conocíamos). Para el deploy de staging
+  dejé solo `cumpleanos`/`carritos` activos en `vercel.json`; los demás
+  siguen probándose a mano con `CRON_SECRET` hasta subir a Vercel Pro.
+
 ## Imágenes de la landing (`site_assets`)
 
 Tabla vacía por diseño (se llena desde `Admin → Sitio web`, no hardcodeada
@@ -14,7 +36,7 @@ panel admin, no quedó bloqueado ni hardcodeado.
 
 ## Preview de staging en Vercel
 
-- URL: https://club-pata-amiga-form-pwbkdir3p-jorge-vexus-projects.vercel.app
+- URL (última actualizada 2026-07-29): https://club-pata-amiga-form-in9r352c5-jorge-vexus-projects.vercel.app
   (alias estable: https://club-pata-amiga-form-jorge-3511-jorge-vexus-projects.vercel.app)
   — apunta al proyecto Supabase `pata-amiga-staging`, **no** a producción.
   Verificado con una cuenta que solo existe en staging.
