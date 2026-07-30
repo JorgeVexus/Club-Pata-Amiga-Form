@@ -1,4 +1,11 @@
-import type { AgentParams, ChatMessage, LLMProvider, VetContext } from "./types";
+import type {
+  AgentParams,
+  ChatMessage,
+  JsonParams,
+  JsonResult,
+  LLMProvider,
+  VetContext,
+} from "./types";
 import { REIMBURSEMENT_CAPS_MXN } from "@/lib/constants";
 
 /**
@@ -110,5 +117,24 @@ export class MockProvider implements LLMProvider {
       `(LLM_PROVIDER=anthropic) respondería cualquier duda sobre Club Pata Amiga — ` +
       `planes, reintegros, períodos de espera y más. 🐾`
     );
+  }
+
+  /**
+   * En modo demostración devuelve el ejemplo que trae la petición, con cero
+   * tokens. Así el circuito del boletín (investigar → redactar → revisar →
+   * aprobar → enviar) se puede recorrer entero sin ANTHROPIC_API_KEY, que es
+   * justo lo que la spec pide mientras el cliente entrega su llave.
+   *
+   * Marca `demo: true` para que la pantalla lo diga en lugar de hacer pasar un
+   * ejemplo por trabajo del modelo.
+   */
+  async completeJson<T>(params: JsonParams): Promise<JsonResult<T>> {
+    return {
+      data: params.demo as T,
+      model: "demo",
+      tokensIn: 0,
+      tokensOut: 0,
+      demo: true,
+    };
   }
 }

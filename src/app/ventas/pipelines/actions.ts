@@ -6,15 +6,87 @@ import { requireCapability } from "@/lib/panel-guard";
 import { emitEvent } from "@/lib/crm/events";
 import {
   ensureOpportunity,
+  getDefaultPipeline,
   moveStage,
   type StageKey,
 } from "@/lib/crm/opportunities";
+import { armarTarjeta, tarjetasDeEtapa } from "@/lib/crm/tarjetas";
 
 /**
  * Acciones del tablero de oportunidades. Todo movimiento hecho por una persona
  * fija la tarjeta (`stage_locked_by`) para que ninguna automatización la
  * regrese después.
  */
+
+/**
+ * La siguiente página de tarjetas de una columna.
+ *
+ * Cada columna abre con las primeras 50 (`TOPE_POR_ETAPA`); esto trae las que
+ * siguen sin recargar la pantalla. Arma las tarjetas con la MISMA función que la
+ * pantalla, así que las dos muestran lo mismo.
+ */
+export async function masTarjetas(
+  stageId: string,
+  desde: number,
+  soloMias: boolean,
+) {
+  // Leer, no editar: la tarjeta lleva el nombre del contacto, así que la puerta
+  // es la misma que para ver contactos.
+  const session = await requireCapability("contactos.ver");
+  const admin = createAdminClient();
+
+  const pipeline = await getDefaultPipeline(admin);
+  if (!pipeline.stages.some((s) => s.id === stageId))
+    return { error: "Esa etapa no existe." };
+
+  const filas = await tarjetasDeEtapa(admin, {
+    pipelineId: pipeline.id,
+    stageId,
+    // "Solo mías" se respeta también aquí: si no, el "ver más" traería tarjetas
+    // de otras personas a una vista filtrada.
+    ownerId: soloMias ? session.userId : null,
+    desde,
+  });
+
+  const contactIds = [...new Set(filas.map((f) => f.contact_id))];
+  const conversacionesPorContacto = new Map<string, number>();
+  if (contactIds.length > 0) {
+    const { data: convs } = await admin
+      .from("channel_conversations")
+      .select("contact_id")
+      .in("contact_id", contactIds);
+    for (const c of convs ?? [])
+      if (c.contact_id)
+        conversacionesPorContacto.set(
+          c.contact_id,
+          (conversacionesPorContacto.get(c.contact_id) ?? 0) + 1,
+        );
+  }
+
+  const { data: equipoCat } = await admin
+    .from("profiles")
+    .select("id, first_name, email")
+    .in("role", ["ventas", "gerente_ventas", "admin", "super_admin"]);
+  const nombrePorId = new Map(
+    (equipoCat ?? []).map((m) => [
+      m.id,
+      m.first_name || m.email?.split("@")[0] || "Equipo",
+    ]),
+  );
+
+  return {
+    ok: true as const,
+    tarjetas: filas.map((f) =>
+      armarTarjeta(f, {
+        staleDaysPorEtapa: new Map(
+          pipeline.stages.map((s) => [s.id, s.stale_days]),
+        ),
+        nombrePorId,
+        conversacionesPorContacto,
+      }),
+    ),
+  };
+}
 
 function revalidar(contactId?: string) {
   revalidatePath("/ventas/pipelines");

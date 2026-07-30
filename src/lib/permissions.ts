@@ -50,9 +50,45 @@ const CAPABILITIES = {
   /** Crear/editar pipelines y etapas. */
   "pipelines.administrar": ["gerente_ventas", "admin", "super_admin"],
 
+  // --- Membresías y cupones (sección 3) -----------------------------------
+  /**
+   * Crear versiones de plan, publicarlas en Stripe y administrar cupones.
+   * Cambiar un beneficio VINCULANTE exige además ser super admin y pasar por
+   * la compuerta legal — eso lo revisa la server action, no esta matriz.
+   */
+  "membresias.administrar": ["gerente_ventas", "admin", "super_admin"],
+
   // --- Aprobaciones (secciones 4 y 5) -------------------------------------
   "contenido.aprobar": ["gerente_ventas", "admin", "super_admin"],
   "boletin.aprobar": ["gerente_ventas", "admin", "super_admin"],
+
+  // --- Boletín (sección 5) -------------------------------------------------
+  /** Crear temas, escribir el brief, correr los agentes, editar bloques, probar. */
+  "boletin.redactar": ["ventas", "gerente_ventas", "admin", "super_admin"],
+  /** Programar el envío. Ventas redacta y prueba, pero no dispara. */
+  "boletin.programar": ["gerente_ventas", "admin", "super_admin"],
+  /**
+   * Confirmar la revisión veterinaria de un tema de salud. Va a
+   * administración, no a ventas: es el mismo criterio que rige al bot.
+   */
+  "boletin.revision_vet": ["admin", "super_admin"],
+  /** Editar las plantillas de marca del boletín. */
+  "boletin.plantillas": ["gerente_ventas", "super_admin"],
+
+  // --- Calendario de contenido (sección 4) --------------------------------
+  /** Redactar, editar borradores y enviar a revisión. */
+  "contenido.redactar": ["ventas", "gerente_ventas", "admin", "super_admin"],
+  /**
+   * Conectar cuentas de redes. Va al gerente y al super admin (no a `admin`):
+   * son tokens de las cuentas públicas de la marca.
+   */
+  "canales.administrar": ["gerente_ventas", "super_admin"],
+  /**
+   * Pasar por encima de las validaciones SALTABLES (límites del canal,
+   * reclamos de salud, activos faltantes), dejando constancia.
+   * La de terminología no está aquí porque no la salta nadie.
+   */
+  "contenido.saltar_validaciones": ["super_admin"],
 
   // --- Equipo y tableros (sección 7) --------------------------------------
   /** Ver los números de todo el equipo, no solo los propios. */

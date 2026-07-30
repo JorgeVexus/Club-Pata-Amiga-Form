@@ -12,7 +12,7 @@ import {
 export type Conversation = {
   id: string;
   /** "portal" = chat con el asistente dentro del área de miembros (solo lectura) */
-  channel: "facebook" | "instagram" | "whatsapp" | "portal";
+  channel: string;
   kind: "social" | "portal";
   display_name: string | null;
   external_user_id: string;
@@ -45,7 +45,7 @@ type Message = {
 
 /** Colores de marca de cada canal para identificarlos de un vistazo. */
 const CHANNEL_META: Record<
-  Conversation["channel"],
+  string,
   { label: string; badgeCls: string; chipCls: string }
 > = {
   facebook: {
@@ -68,15 +68,40 @@ const CHANNEL_META: Record<
     badgeCls: "bg-teal text-white",
     chipCls: "border-teal text-teal-deep",
   },
+  email: {
+    label: "Correo",
+    badgeCls: "bg-ink-title text-white",
+    chipCls: "border-ink-title text-ink-title",
+  },
+  vet: {
+    label: "Veterinario",
+    badgeCls: "bg-orange text-white",
+    chipCls: "border-orange text-orange",
+  },
 };
 
+/**
+ * Datos del canal, con respaldo. Un canal que todavía no esté en el mapa NO
+ * debe tumbar la bandeja: antes, `CHANNEL_META[canal].badgeCls` reventaba la
+ * página entera en cuanto aparecía uno nuevo (pasó con "email").
+ */
+function metaCanal(channel: string) {
+  return (
+    CHANNEL_META[channel] ?? {
+      label: channel,
+      badgeCls: "bg-ink-tertiary text-white",
+      chipCls: "border-border-input text-ink-secondary",
+    }
+  );
+}
+
 /** Pastilla de canal (lista y encabezado del hilo). */
-function ChannelBadge({ channel }: { channel: Conversation["channel"] }) {
+function ChannelBadge({ channel }: { channel: string }) {
   return (
     <span
-      className={`inline-flex flex-none items-center rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide ${CHANNEL_META[channel].badgeCls}`}
+      className={`inline-flex flex-none items-center rounded-full px-2 py-0.5 text-[9.5px] font-extrabold uppercase tracking-wide ${metaCanal(channel).badgeCls}`}
     >
-      {CHANNEL_META[channel].label}
+      {metaCanal(channel).label}
     </span>
   );
 }
@@ -105,7 +130,10 @@ export function InboxClient({ initial }: { initial: Conversation[] }) {
   const [sending, setSending] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const supabase = useRef(createClient()).current;
+  // `useState(createClient)` crea el cliente UNA sola vez, en forma diferida.
+  // Con `useRef(createClient())` se creaba uno en cada render y se tiraban
+  // todos menos el primero.
+  const [supabase] = useState(createClient);
 
   const selected = conversations.find((c) => c.id === selectedId) ?? null;
 
@@ -316,9 +344,9 @@ export function InboxClient({ initial }: { initial: Conversation[] }) {
                 className="h-9 w-full rounded-[10px] border-[1.5px] border-border-input bg-white px-2 text-[12.5px] font-semibold text-ink-title outline-none focus:border-teal"
               >
                 <option value="all">Canal: todos ({conversations.length})</option>
-                {(["facebook", "instagram", "whatsapp", "portal"] as const).map((ch) => (
+                {Object.keys(CHANNEL_META).map((ch) => (
                   <option key={ch} value={ch}>
-                    {CHANNEL_META[ch].label} (
+                    {metaCanal(ch).label} (
                     {conversations.filter((c) => c.channel === ch).length})
                   </option>
                 ))}
@@ -385,7 +413,7 @@ export function InboxClient({ initial }: { initial: Conversation[] }) {
                       </span>
                     )}
                     <span className="truncate text-xs text-ink-tertiary">
-                      {c.preview ?? CHANNEL_META[c.channel].label}
+                      {c.preview ?? metaCanal(c.channel).label}
                     </span>
                   </span>
                 </button>

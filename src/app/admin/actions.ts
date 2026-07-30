@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMxn } from "@/lib/format";
+import { hoyEnMexico } from "@/lib/zona-horaria";
 import {
   MATERIAL_SLOTS,
   ASSISTANT_PROMPT_KEY,
@@ -841,7 +842,9 @@ export async function bypassWaitingPeriod(petId: string) {
     .from("pets")
     .update({
       waiting_period_bypassed: true,
-      waiting_period_end_date: new Date().toISOString().slice(0, 10),
+      // Hoy en México: forzar el fin de la espera no puede dejar una fecha de
+      // mañana solo porque se hizo después de las 6 de la tarde.
+      waiting_period_end_date: hoyEnMexico(),
     })
     .eq("id", petId);
   revalidatePath("/admin");

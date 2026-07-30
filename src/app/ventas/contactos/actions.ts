@@ -21,21 +21,6 @@ function revalidar(contactId?: string) {
   revalidatePath("/ventas");
 }
 
-/** Nombre legible del contacto, para los textos de la bitácora. */
-async function etiquetaContacto(
-  admin: ReturnType<typeof createAdminClient>,
-  contactId: string,
-) {
-  const { data } = await admin
-    .from("contacts")
-    .select("first_name, last_name")
-    .eq("id", contactId)
-    .single();
-  return (
-    [data?.first_name, data?.last_name].filter(Boolean).join(" ") || "el contacto"
-  );
-}
-
 // ------------------------------------------------------------- propietario --
 
 export async function asignarPropietario(

@@ -28,6 +28,10 @@ export type EventKind =
   | "mascota_aprobada"
   | "reintegro_solicitado"
   | "reintegro_resuelto"
+  /** El miembro subió o bajó de plan (sección 3, punto 6.3). */
+  | "plan_cambiado"
+  /** Un super admin lo movió a otra versión del plan (sección 3, punto 4.1). */
+  | "beneficios_migrados"
   // CRM
   | "contacto_creado"
   | "etapa_movida"

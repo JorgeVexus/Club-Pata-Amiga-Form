@@ -417,6 +417,28 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
 <p>Si crees que hay un error o quieres actualizar la información, responde a este correo.</p>`),
   },
   {
+    key: "plan_migrado",
+    name: "Cambio de beneficios de la membresía",
+    description:
+      "Cuando un super admin migra a un miembro a otra versión de su plan (Ventas → Membresías → Migrar cohorte). Nunca hay migración silenciosa: este correo es parte de la acción.",
+    variables: {
+      firstName: "Nombre del miembro",
+      cambiosHtml:
+        "Lista <ul> con cada beneficio que cambió, del valor anterior al nuevo",
+    },
+    sample: {
+      firstName: "Cipatli",
+      cambiosHtml:
+        "<ul><li><strong>Tope anual — gastos veterinarios</strong>: $3,000 MXN → $4,000 MXN</li></ul>",
+    },
+    subject: "Actualizamos los beneficios de tu membresía 🐾",
+    html: WRAP(`<h2 style="color:#1E5350">Hola {{firstName}}, tu membresía cambió</h2>
+<p>Actualizamos los beneficios de tu membresía de Club Pata Amiga. Esto es lo que cambió:</p>
+{{cambiosHtml}}
+<p>No tienes que hacer nada: el cambio ya está aplicado en tu cuenta y lo puedes ver en cualquier momento desde tu panel.</p>
+<p>Si tienes dudas, respóndenos este correo y con gusto te explicamos.</p>`),
+  },
+  {
     key: "birthday_member",
     name: "Cumpleaños del miembro",
     description:

@@ -67,29 +67,53 @@ export async function previsualizar(
   return { ok: true, analisis };
 }
 
-/** Paso 3: escribir. Usa la misma resolución de contactos que los webhooks. */
+/**
+ * Cuántas filas escribe cada llamada.
+ *
+ * La importación va por lotes porque cada fila son varias consultas (resolver
+ * identidades, etiquetas, tarjeta) y el histórico completo se pasaría del
+ * tiempo límite de una acción de servidor. De paso, la pantalla puede mostrar
+ * el avance en lugar de quedarse pensando cinco minutos, y si algo truena se
+ * sabe exactamente en qué fila.
+ *
+ * Sin `export`: un archivo "use server" solo puede exportar funciones async, y
+ * ni `tsc` ni el lint lo atrapan — truena hasta el build.
+ */
+const TAMANO_LOTE = 50;
+
+/** Paso 3: escribir un lote. Usa la misma resolución que los webhooks. */
 export async function confirmarImportacion(
   texto: string,
   mapeo: Mapeo,
   fuente: string,
+  opciones: { colocarEnPipeline?: boolean } = {},
+  desde = 0,
 ) {
   const { userId } = await requireCapability("contactos.editar");
 
   const filas = leerCsv(texto);
   if (filas.length < 2) return { error: "El archivo no tiene datos." };
   const datos = filas.slice(1, 1 + MAX_FILAS);
+  const lote = datos.slice(desde, desde + TAMANO_LOTE);
+  if (lote.length === 0) return { error: "No quedan filas por importar." };
 
   const admin = createAdminClient();
   const resultado = await importar(
     admin,
-    aplicarMapeo(datos, mapeo),
+    aplicarMapeo(lote, mapeo),
     userId,
     fuente.trim() || "importación",
+    opciones,
   );
 
-  revalidatePath("/ventas/contactos");
-  revalidatePath("/ventas");
-  return { ok: true as const, resultado };
+  const siguiente = desde + lote.length;
+  const termino = siguiente >= datos.length;
+  if (termino) {
+    revalidatePath("/ventas/contactos");
+    revalidatePath("/ventas/pipelines");
+    revalidatePath("/ventas");
+  }
+  return { ok: true as const, resultado, siguiente, total: datos.length, termino };
 }
 
 // ------------------------------------------------------------- duplicados --

@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { tiempoRelativo } from "@/lib/dates";
+import { useAhora } from "@/lib/hooks";
 
 export type NotificationItem = {
   id: string;
@@ -24,6 +26,7 @@ export function NotificationsBell({
   const [items, setItems] = useState(initial);
   const [open, setOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const ahora = useAhora();
   const unread = items.filter((n) => !n.read).length;
 
   useEffect(() => {
@@ -49,13 +52,7 @@ export function NotificationsBell({
     }
   };
 
-  const timeAgo = (iso: string) => {
-    const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
-    if (mins < 60) return `hace ${Math.max(mins, 1)} min`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `hace ${hrs} h`;
-    return `hace ${Math.floor(hrs / 24)} d`;
-  };
+  const timeAgo = (iso: string) => tiempoRelativo(iso, ahora);
 
   return (
     <div ref={panelRef} className="relative">
@@ -73,8 +70,14 @@ export function NotificationsBell({
         )}
       </button>
 
+      {/*
+        En móvil el panel de 320px anclado a la derecha se salía unos pixeles
+        por la izquierda de la pantalla. Abajo de `sm` se fija a los bordes de
+        la ventana (así queda completo sin importar dónde caiga la campana); de
+        `sm` para arriba se comporta igual que antes.
+      */}
       {open && (
-        <div className="absolute right-0 top-[52px] z-40 flex w-[320px] flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_12px_40px_rgba(30,83,80,.18)]">
+        <div className="absolute right-0 top-[52px] z-40 flex w-[320px] flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_12px_40px_rgba(30,83,80,.18)] max-sm:fixed max-sm:inset-x-4 max-sm:top-[62px] max-sm:w-auto">
           <span className="border-b border-border-divider px-4 py-3 text-[13px] font-bold text-ink-title">
             Notificaciones
           </span>

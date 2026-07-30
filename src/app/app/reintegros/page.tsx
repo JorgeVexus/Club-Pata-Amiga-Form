@@ -5,6 +5,7 @@ import {
   REIMBURSEMENT_CATEGORY_LABELS,
   REIMBURSEMENT_SLA_HOURS,
 } from "@/lib/constants";
+import { beneficiosDe, topesDe } from "@/lib/plans/resolve";
 import {
   calculateBalances,
   startOfCurrentYear,
@@ -39,7 +40,7 @@ export default async function ReintegrosPage({
   } = await supabase.auth.getUser();
   if (!user) redirect("/iniciar-sesion?next=/app/reintegros");
 
-  const [{ data: rows }, { data: yearRows }] = await Promise.all([
+  const [{ data: rows }, { data: yearRows }, { data: sub }] = await Promise.all([
     supabase
       .from("reimbursements")
       .select(
@@ -53,9 +54,22 @@ export default async function ReintegrosPage({
       .select("category, amount_requested, amount_approved, status")
       .eq("user_id", user.id)
       .gte("created_at", startOfCurrentYear()),
+    // Los topes salen de lo que ESTE miembro contrató, no de una constante
+    // global: si el plan cambia después, su saldo no se mueve.
+    supabase
+      .from("subscriptions")
+      .select("benefits_snapshot")
+      .eq("user_id", user.id)
+      .in("status", ["active", "past_due"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
-  const balances = calculateBalances(yearRows ?? []);
+  const beneficios = beneficiosDe(
+    sub?.benefits_snapshot as Record<string, unknown> | null,
+  );
+  const balances = calculateBalances(yearRows ?? [], topesDe(beneficios));
   const year = new Date().getFullYear();
 
   return (

@@ -9,6 +9,7 @@
  * 4. Adoptado/rescatado de raza                                     → 150 días
  * 5. Caso estándar                                                  → 180 días
  */
+import { diaEnMexicoMasDias } from "@/lib/zona-horaria";
 
 export const MIXED_BREED_NAMES = ["Mestizo", "Doméstico", "Mestizo (doméstico)"];
 
@@ -18,21 +19,50 @@ export function isMixedBreedName(breed: string | null | undefined): boolean {
   return MIXED_BREED_NAMES.some((m) => m.toLowerCase() === b);
 }
 
-export function petWaitingPeriodDays(opts: {
-  isAdopted: boolean;
-  breed: string | null | undefined;
-  hasReferralCode?: boolean;
-  isReplacement?: boolean;
-}): number {
-  if (opts.isReplacement) return 180;
-  if (opts.hasReferralCode) return 90;
-  if (opts.isAdopted) return isMixedBreedName(opts.breed) ? 120 : 150;
-  return 180;
+/**
+ * Días de espera de una mascota.
+ *
+ * `benefits` es OPCIONAL: sin él aplica exactamente los días de siempre. Quien
+ * tiene el snapshot del miembro (motor de beneficios, sección 3) pasa los suyos
+ * y esa persona se rige por lo que contrató, aunque el plan haya cambiado
+ * después.
+ */
+export type WaitingPeriodBenefits = {
+  espera_mascota_estandar_dias?: number;
+  espera_mascota_adoptada_raza_dias?: number;
+  espera_mascota_adoptada_mestizo_dias?: number;
+  espera_mascota_con_embajador_dias?: number;
+  espera_mascota_reemplazo_dias?: number;
+};
+
+export function petWaitingPeriodDays(
+  opts: {
+    isAdopted: boolean;
+    breed: string | null | undefined;
+    hasReferralCode?: boolean;
+    isReplacement?: boolean;
+  },
+  benefits: WaitingPeriodBenefits = {},
+): number {
+  const estandar = benefits.espera_mascota_estandar_dias ?? 180;
+  if (opts.isReplacement) return benefits.espera_mascota_reemplazo_dias ?? 180;
+  if (opts.hasReferralCode)
+    return benefits.espera_mascota_con_embajador_dias ?? 90;
+  if (opts.isAdopted)
+    return isMixedBreedName(opts.breed)
+      ? (benefits.espera_mascota_adoptada_mestizo_dias ?? 120)
+      : (benefits.espera_mascota_adoptada_raza_dias ?? 150);
+  return estandar;
 }
 
-/** Fecha fin (yyyy-mm-dd) contando desde hoy. */
+/**
+ * Fecha fin (yyyy-mm-dd) contando desde hoy **en hora de México**.
+ *
+ * Antes salía del reloj del proceso: en Vercel (UTC) quien se registraba
+ * después de las 6 de la tarde recibía un día extra de espera, porque para el
+ * servidor ya era mañana. Es la fecha que decide desde cuándo procede un
+ * reintegro, así que un día importa.
+ */
 export function waitingPeriodEndDate(days: number): string {
-  const end = new Date();
-  end.setDate(end.getDate() + days);
-  return end.toISOString().slice(0, 10);
+  return diaEnMexicoMasDias(days);
 }

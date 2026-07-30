@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { tiempoRelativo } from "@/lib/dates";
+import { useAhora, useValorLocal } from "@/lib/hooks";
 
 export type BellEvent = {
   id: string;
@@ -27,12 +29,15 @@ export function Bell({
   seenKey?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [seenAt, setSeenAt] = useState<string | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+  const ahora = useAhora();
 
-  useEffect(() => {
-    setSeenAt(window.localStorage.getItem(seenKey));
-  }, [seenKey]);
+  // Lo guardado de antes (otra visita, otra pestaña) y lo que acabo de ver en
+  // esta pantalla. Van por separado porque el evento `storage` no avisa de los
+  // cambios de la propia pestaña.
+  const vistoGuardado = useValorLocal(seenKey);
+  const [vistoAhora, setVistoAhora] = useState<string | null>(null);
+  const seenAt = vistoAhora ?? vistoGuardado;
 
   useEffect(() => {
     if (!open) return;
@@ -53,17 +58,11 @@ export function Bell({
     if (next) {
       const now = new Date().toISOString();
       window.localStorage.setItem(seenKey, now);
-      setSeenAt(now);
+      setVistoAhora(now);
     }
   };
 
-  const timeAgo = (iso: string) => {
-    const mins = Math.floor((Date.now() - new Date(iso).getTime()) / 60_000);
-    if (mins < 60) return `hace ${Math.max(mins, 1)} min`;
-    const hrs = Math.floor(mins / 60);
-    if (hrs < 24) return `hace ${hrs} h`;
-    return `hace ${Math.floor(hrs / 24)} d`;
-  };
+  const timeAgo = (iso: string) => tiempoRelativo(iso, ahora);
 
   return (
     <div ref={panelRef} className="relative">
@@ -81,8 +80,15 @@ export function Bell({
         )}
       </button>
 
+      {/*
+        En móvil la campana vive a la IZQUIERDA del encabezado, así que el
+        panel anclado a la derecha se salía casi entero de la pantalla (en x
+        negativa). Abajo de `sm` se fija a los bordes de la ventana, así queda
+        completo sin importar dónde caiga la campana; de `sm` para arriba se
+        comporta igual que antes. Misma solución que en NotificationsBell.
+      */}
       {open && (
-        <div className="absolute right-0 top-[50px] z-40 flex w-[340px] flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_12px_40px_rgba(30,83,80,.18)]">
+        <div className="absolute right-0 top-[50px] z-40 flex w-[340px] flex-col overflow-hidden rounded-[16px] bg-white shadow-[0_12px_40px_rgba(30,83,80,.18)] max-sm:fixed max-sm:inset-x-4 max-sm:top-[60px] max-sm:w-auto">
           <span className="border-b border-border-divider px-4 py-3 text-[13px] font-bold text-ink-title">
             Actividad reciente
           </span>

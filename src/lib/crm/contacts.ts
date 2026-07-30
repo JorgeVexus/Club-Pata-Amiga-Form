@@ -57,6 +57,18 @@ export type ResolveContactInput = {
   state?: string | null;
   source?: string | null;
   contactType?: ContactType;
+  /**
+   * Cuándo llegó realmente esta persona, si no es ahora. Solo lo usa la
+   * importación del histórico: sin esto, traer el CRM anterior haría que el
+   * tablero reportara cientos de prospectos nuevos el día de la importación y
+   * dejara los meses anteriores en cero.
+   *
+   * SOLO aplica al crear. A un contacto que ya existe no se le mueve la fecha
+   * de alta: la nuestra es la buena, y reescribirla cambiaría números ya
+   * reportados.
+   */
+  createdAt?: string | null;
+  lastActivityAt?: string | null;
   /** Vínculos con la plataforma; se escriben solo si están vacíos. */
   links?: {
     profileId?: string | null;
@@ -221,7 +233,10 @@ export async function resolveContact(
         campaign_lead_id: input.links?.campaignLeadId ?? null,
         ambassador_id: input.links?.ambassadorId ?? null,
         center_id: input.links?.centerId ?? null,
-        last_activity_at: new Date().toISOString(),
+        // `created_at` tiene default now(): solo se manda cuando el histórico
+        // trae una fecha real, para no escribir "ahora" dos veces.
+        ...(input.createdAt ? { created_at: input.createdAt } : {}),
+        last_activity_at: input.lastActivityAt ?? new Date().toISOString(),
       })
       .select("id")
       .single();

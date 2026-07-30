@@ -3,6 +3,7 @@ import { getAdminRole } from "@/lib/admin-guard";
 import { formatDateEs } from "@/lib/dates";
 import { formatMxn } from "@/lib/format";
 import { AMBASSADOR_PAYOUT_DAY } from "@/lib/constants";
+import { inicioDelMes } from "@/lib/zona-horaria";
 import {
   DetailModal,
   DetailItem,
@@ -58,9 +59,9 @@ export default async function AdminEmbajadoresPage({
   const pending = rows.filter((a) => a.status === "pending");
   const approved = rows.filter((a) => a.status === "approved");
 
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  // Medianoche de México: las comisiones del mes se cortan con el calendario del
+  // negocio, no con el del servidor.
+  const monthStart = inicioDelMes();
 
   const stats = (a: Row) => {
     const payable = a.referrals.filter(

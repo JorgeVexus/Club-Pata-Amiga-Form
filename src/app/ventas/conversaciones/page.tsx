@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requirePortal } from "@/lib/panel-guard";
 import { uno } from "@/lib/crm/embed";
+import { haceDias } from "@/lib/dates";
 import {
   ListaConversaciones,
   type FilaHilo,
@@ -79,10 +80,7 @@ export default async function ConversacionesPage({
   if (filtro === "destacadas")
     consulta = consulta.contains("starred_by", [session.userId]);
   if (filtro === "recientes")
-    consulta = consulta.gte(
-      "last_message_at",
-      new Date(Date.now() - 7 * 86_400_000).toISOString(),
-    );
+    consulta = consulta.gte("last_message_at", haceDias(7));
 
   const { data: hilos } = await consulta;
   const idsHilos = (hilos ?? []).map((h) => h.id);

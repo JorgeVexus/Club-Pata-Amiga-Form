@@ -3,9 +3,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { REIMBURSEMENT_CATEGORY_LABELS, REIMBURSEMENT_SLA_HOURS } from "@/lib/constants";
 import { formatMxn, hoursSince } from "@/lib/format";
+import { haceDias } from "@/lib/dates";
+import { inicioDelMes } from "@/lib/zona-horaria";
 import { ReportButton } from "./ReportButton";
 import { Bell } from "@/components/panel/Bell";
 import { MiniBarChart } from "@/components/panel/MiniBarChart";
+import { BloqueVentas } from "@/components/panel/tablero/BloqueVentas";
 
 function urgencyChip(hours: number) {
   if (hours >= 48) return "bg-error-bg text-error-text";
@@ -26,9 +29,10 @@ export default async function AdminHome() {
   const adminName = me?.first_name || me?.email?.split("@")[0] || "";
 
   const admin = createAdminClient();
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  // "Este mes" arranca a la medianoche de México, no a la del proceso: en Vercel
+  // (UTC) el mes empezaba a las 6 de la tarde del último día del mes anterior y
+  // metía esas horas en el conteo.
+  const monthStart = inicioDelMes();
   const sixMonthsStart = new Date(monthStart);
   sixMonthsStart.setMonth(sixMonthsStart.getMonth() - 5);
 
@@ -133,10 +137,7 @@ export default async function AdminHome() {
       admin
         .from("error_logs")
         .select("id, context, message, created_at", { count: "exact" })
-        .gte(
-          "created_at",
-          new Date(Date.now() - 7 * 86_400_000).toISOString(),
-        )
+        .gte("created_at", haceDias(7))
         .order("created_at", { ascending: false })
         .limit(3),
       // Series de 6 meses para las gráficas
@@ -446,6 +447,10 @@ export default async function AdminHome() {
           format={(v) => formatMxn(v)}
         />
       </div>
+
+      {/* Ventas: las mismas métricas del portal, con el mismo código. Si un
+          número cambia allá, cambia aquí. */}
+      <BloqueVentas />
 
       {/* Crecimiento y comunidad — cada tarjeta lleva a su sección */}
       <div className="grid grid-cols-2 gap-3.5 md:grid-cols-3 xl:grid-cols-6">

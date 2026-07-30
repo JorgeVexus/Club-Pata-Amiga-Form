@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/carritos",
       "schedule": "0 16 * * *"
-    },
-    {
-      "path": "/api/cron/mensajes",
-      "schedule": "0 17 * * *"
     }
   ]
 }

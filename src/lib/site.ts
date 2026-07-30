@@ -176,7 +176,12 @@ export const NOTIFY_EVENTS = [
   {
     key: "notify_reports",
     label: "Reporte de métricas",
-    hint: "Destinatarios del botón «Enviar reporte» del panel.",
+    hint: "Destinatarios del botón «Enviar reporte», tanto del panel como del tablero de ventas.",
+  },
+  {
+    key: "reporte_ventas_recurrente",
+    label: "Reporte de ventas automático",
+    hint: "Escribe «semanal» (llega los lunes con los últimos 30 días), «mensual» (el día 1, con el mes pasado) o «no». Va a los mismos destinatarios de arriba.",
   },
 ] as const;
 

@@ -6,6 +6,7 @@ import {
   completarTarea,
   crearTarea,
 } from "@/app/ventas/contactos/actions";
+import { estaVencida } from "@/lib/dates";
 
 export type TareaAbierta = {
   id: string;
@@ -24,11 +25,21 @@ export function NotasYTareas({
   tareas,
   equipo,
   puedeEditar,
+  ahora,
 }: {
   contactId: string;
   tareas: TareaAbierta[];
   equipo: { id: string; nombre: string }[];
   puedeEditar: boolean;
+  /**
+   * Reloj del servidor, en milisegundos, para marcar tareas vencidas.
+   *
+   * Viene por prop a propósito: esta lista SÍ se pinta en el HTML del
+   * servidor, así que si el navegador usara su propio `Date.now()` el
+   * servidor y el cliente podrían no coincidir (desajuste de hidratación).
+   * Con un solo reloj, que viaja en el HTML, las dos partes pintan igual.
+   */
+  ahora: number;
 }) {
   const [nota, setNota] = useState("");
   const [titulo, setTitulo] = useState("");
@@ -44,8 +55,7 @@ export function NotasYTareas({
       setTimeout(() => setAviso(null), 3500);
     });
 
-  const vencida = (iso: string | null) =>
-    !!iso && new Date(iso).getTime() < Date.now();
+  const vencida = (iso: string | null) => estaVencida(iso, ahora);
 
   return (
     <div className="flex flex-col gap-4 rounded-[16px] bg-white p-[18px] shadow-[0_2px_10px_rgba(30,83,80,.05)]">

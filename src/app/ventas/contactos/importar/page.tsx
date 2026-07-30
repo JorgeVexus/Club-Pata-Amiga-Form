@@ -8,7 +8,28 @@ import {
   previsualizar,
   type LecturaCsv,
 } from "./actions";
-import { CAMPOS_IMPORTABLES, type Analisis, type Mapeo } from "@/lib/crm/import";
+import {
+  CAMPOS_IMPORTABLES,
+  type Analisis,
+  type Mapeo,
+  type ResultadoImportacion,
+} from "@/lib/crm/import";
+// El día de una fecha se lee en hora de México, no en la del navegador: cortar
+// el ISO a 10 caracteres da el día UTC y corre las fechas de la tarde al
+// siguiente.
+import { diaEnMexico } from "@/lib/tableros/rango";
+
+/** Nombre legible de cada etapa, para la vista previa del pipeline. */
+const ETAPA_TEXTO: Record<string, string> = {
+  nuevo_prospecto: "Nuevo prospecto",
+  solicitud_llamada: "Solicitud de llamada",
+  registro_iniciado: "Registro iniciado",
+  carrito_abandonado: "Carrito abandonado",
+  pago_procesado: "Pago procesado",
+  miembro_activo: "Miembro activo",
+  miembro_inactivo: "Miembro inactivo",
+  perdido: "Perdido",
+};
 
 const VEREDICTO_TEXTO: Record<string, { label: string; clase: string }> = {
   nuevo: { label: "Contacto nuevo", clase: "bg-lime/25 text-ink-title" },
@@ -42,14 +63,12 @@ export default function ImportarPage() {
   const [mapeo, setMapeo] = useState<Mapeo>({});
   const [analisis, setAnalisis] = useState<Analisis | null>(null);
   const [fuente, setFuente] = useState("lynsales");
-  const [resultado, setResultado] = useState<{
-    creados: number;
-    unidos: number;
-    omitidos: number;
-    paraRevisar: number;
-    etiquetasAplicadas: number;
-    errores: string[];
-  } | null>(null);
+  const [colocarEnPipeline, setColocarEnPipeline] = useState(true);
+  const [resultado, setResultado] = useState<ResultadoImportacion | null>(null);
+  /** Avance de la escritura por lotes: filas hechas de cuántas. */
+  const [avance, setAvance] = useState<{ hechas: number; total: number } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
   const [pendiente, startTransition] = useTransition();
 
@@ -254,6 +273,54 @@ export default function ImportarPage() {
             )}
           </div>
 
+          {/* Fechas de alta: lo que decide si el tablero cuenta el histórico
+              en su mes o todo el día de la importación. */}
+          {analisis.fechas.con > 0 && (
+            <p className="rounded-[10px] bg-cream p-3 text-[12px] leading-relaxed text-ink-body">
+              <strong>{analisis.fechas.con}</strong> filas traen su fecha de alta
+              original y se va a respetar (de{" "}
+              {diaEnMexico(new Date(analisis.fechas.desde!))} a{" "}
+              {diaEnMexico(new Date(analisis.fechas.hasta!))}).
+              {analisis.fechas.sin > 0 && (
+                <>
+                  {" "}
+                  Las otras <strong>{analisis.fechas.sin}</strong> quedan con la
+                  fecha de hoy.
+                </>
+              )}
+            </p>
+          )}
+
+          <label className="flex items-start gap-2.5 rounded-[10px] border-[1.5px] border-border-input p-3">
+            <input
+              type="checkbox"
+              checked={colocarEnPipeline}
+              onChange={(e) => setColocarEnPipeline(e.target.checked)}
+              className="mt-0.5 h-4 w-4 accent-teal"
+            />
+            <span className="flex flex-col gap-1">
+              <span className="text-[13px] font-bold text-ink-title">
+                Colocar en el pipeline según las etiquetas
+              </span>
+              <span className="text-[11.5px] leading-relaxed text-ink-tertiary">
+                Crea la tarjeta de cada contacto en la etapa que le corresponde.
+                Quien ya tenga tarjeta no recibe otra.
+              </span>
+              {colocarEnPipeline && analisis.porEtapa.length > 0 && (
+                <span className="mt-0.5 flex flex-wrap gap-1.5">
+                  {analisis.porEtapa.map((e) => (
+                    <span
+                      key={e.etapa}
+                      className="rounded-full bg-cream px-2 py-0.5 text-[11px] font-semibold text-ink-secondary"
+                    >
+                      {ETAPA_TEXTO[e.etapa] ?? e.etapa}: {e.cuantas}
+                    </span>
+                  ))}
+                </span>
+              )}
+            </span>
+          </label>
+
           <label className="flex flex-col gap-1">
             <span className="text-[10.5px] font-extrabold tracking-[.05em] text-ink-tertiary">
               FUENTE DE CONTACTO (para las filas que no la traigan)
@@ -265,21 +332,67 @@ export default function ImportarPage() {
             />
           </label>
 
-          <button
-            type="button"
-            disabled={pendiente}
-            onClick={() =>
-              startTransition(async () => {
-                setError(null);
-                const res = await confirmarImportacion(texto, mapeo, fuente);
-                if ("error" in res) setError(res.error ?? "No se pudo importar.");
-                else setResultado(res.resultado);
-              })
-            }
-            className="self-start rounded-full bg-teal px-5 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-teal-deep disabled:opacity-50"
-          >
-            {pendiente ? "Importando…" : "Importar de verdad"}
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={pendiente}
+              onClick={() =>
+                startTransition(async () => {
+                  setError(null);
+                  // Se escribe por lotes: una sola llamada con el histórico
+                  // completo se pasa del tiempo límite de la acción.
+                  const total: ResultadoImportacion = {
+                    creados: 0,
+                    unidos: 0,
+                    omitidos: 0,
+                    paraRevisar: 0,
+                    etiquetasAplicadas: 0,
+                    tarjetasCreadas: 0,
+                    fechasRespetadas: 0,
+                    errores: [],
+                  };
+                  let desde = 0;
+                  for (;;) {
+                    const res = await confirmarImportacion(
+                      texto,
+                      mapeo,
+                      fuente,
+                      { colocarEnPipeline },
+                      desde,
+                    );
+                    if ("error" in res) {
+                      setError(res.error ?? "No se pudo importar.");
+                      // Lo ya escrito se muestra igual: es lo que hay en la base.
+                      if (desde > 0) setResultado(total);
+                      setAvance(null);
+                      return;
+                    }
+                    total.creados += res.resultado.creados;
+                    total.unidos += res.resultado.unidos;
+                    total.omitidos += res.resultado.omitidos;
+                    total.paraRevisar += res.resultado.paraRevisar;
+                    total.etiquetasAplicadas += res.resultado.etiquetasAplicadas;
+                    total.tarjetasCreadas += res.resultado.tarjetasCreadas;
+                    total.fechasRespetadas += res.resultado.fechasRespetadas;
+                    total.errores.push(...res.resultado.errores);
+                    desde = res.siguiente;
+                    setAvance({ hechas: desde, total: res.total });
+                    if (res.termino) break;
+                  }
+                  setAvance(null);
+                  setResultado(total);
+                })
+              }
+              className="rounded-full bg-teal px-5 py-2.5 text-[13px] font-bold text-white transition-colors hover:bg-teal-deep disabled:opacity-50"
+            >
+              {pendiente ? "Importando…" : "Importar de verdad"}
+            </button>
+            {avance && (
+              <span className="text-[12px] font-semibold text-ink-secondary">
+                {avance.hechas} de {avance.total} filas
+              </span>
+            )}
+          </div>
         </div>
       )}
 
@@ -287,13 +400,15 @@ export default function ImportarPage() {
       {resultado && (
         <div className="flex flex-col gap-2.5 rounded-[16px] bg-white p-[18px] shadow-[0_2px_10px_rgba(30,83,80,.05)]">
           <h2 className="text-[15px] font-bold text-ink-title">4. Listo</h2>
-          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-5">
+          <div className="grid grid-cols-2 gap-2.5 md:grid-cols-4">
             {[
               ["Creados", resultado.creados],
               ["Unidos a existentes", resultado.unidos],
               ["Para revisar", resultado.paraRevisar],
-              ["Omitidos", resultado.omitidos],
+              ["Omitidos (sin correo ni teléfono)", resultado.omitidos],
               ["Etiquetas aplicadas", resultado.etiquetasAplicadas],
+              ["Tarjetas en el pipeline", resultado.tarjetasCreadas],
+              ["Con su fecha original", resultado.fechasRespetadas],
             ].map(([label, n]) => (
               <div key={String(label)} className="flex flex-col rounded-[12px] bg-cream p-3">
                 <span className="font-display text-[22px] text-ink-title">{n}</span>

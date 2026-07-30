@@ -1,5 +1,8 @@
 # Portal de ventas — índice del plan
 
+> **¿Retomando el trabajo?** Empieza por [HANDOFF.md](HANDOFF.md): qué quedó
+> construido, qué sigue y con qué criterios se ha trabajado.
+
 Plan completo del portal de ventas (CRM que reemplaza las funciones que el equipo
 usa hoy en LynSales / GoHighLevel). **Todo esto es propuesta: nada está construido
 todavía.**
@@ -35,10 +38,11 @@ Antes de empezar se guardó el estado actual de la plataforma:
 `F0` cimientos ✅ → `F1` contactos y pipelines ✅ (F1a datos · F1b interfaz de
 contactos · F1c tablero kanban · F1d eventos de plataforma · F1e importación de
 CSV y fusión de duplicados) →
-`F2` conversaciones (F2a triaje y hilo ✅ · F2b correo entrante ·
-F2c plantillas, adjuntos y ventana de WhatsApp · F2d gobierno de los agentes) →
-`F3` membresías → `F4` calendario → `F5` newsletter → `F6` agente demo →
-`F7` tableros.
+`F2` conversaciones ✅ (F2a triaje y hilo · F2b correo entrante · F2c plantillas,
+adjuntos y ventana de WhatsApp · F2d gobierno de los agentes) →
+`F3` membresías (F3a motor de beneficios ✅ · F3b planes, Stripe y compuerta
+legal ✅ · F3c migrar cohortes y cupones) → `F4` calendario → `F5` newsletter →
+`F6` agente demo → `F7` tableros.
 
 F1 se construye en cuatro entregas verificables en lugar de una sola, porque es
 la fase más grande del plan.

@@ -350,6 +350,7 @@ export default async function FichaContactoPage({
             }))}
             equipo={equipo}
             puedeEditar={session.can["contactos.editar"]}
+            ahora={new Date().getTime()}
           />
 
           {/* Línea de tiempo — el sumidero único de emitEvent */}

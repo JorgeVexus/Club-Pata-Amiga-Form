@@ -7,11 +7,20 @@ import { reportError } from "@/lib/alerts";
 import { AMBASSADOR_COMMISSION_MXN, WAITING_PERIOD_DAYS } from "@/lib/constants";
 import { petWaitingPeriodDays } from "@/lib/waiting-period";
 import { crmEventoDeUsuario, marcarComoMiembro } from "@/lib/crm/sync";
+import {
+  beneficiosDeVersion,
+  esperasDe,
+  tomarSnapshot,
+} from "@/lib/plans/resolve";
+import { diaEnMexicoMasDias } from "@/lib/zona-horaria";
 
+/**
+ * Fecha a `days` días de hoy, en hora de México. Este webhook corre en Vercel
+ * (UTC), donde "hoy" empieza a las 6 de la tarde del día anterior: con el reloj
+ * del proceso, un pago de las 8 de la noche fechaba todo un día adelante.
+ */
 function addDays(days: number): string {
-  const d = new Date();
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
+  return diaEnMexicoMasDias(days);
 }
 
 async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
@@ -19,7 +28,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   if (!userId) return;
   const supabase = createAdminClient();
 
-  // 1. Member is ACTIVE immediately on payment (waiting period: 90 days)
+  // 0. Beneficios de la versión contratada. Sin versión (o si algo falla) son
+  //    los valores por omisión, que son las reglas de siempre.
+  const beneficios = await beneficiosDeVersion(
+    supabase,
+    session.metadata?.plan_version_id,
+  );
+
+  // 1. Member is ACTIVE immediately on payment
   const { data: profile } = await supabase
     .from("profiles")
     .select("email, first_name, waiting_period_end_date")
@@ -33,7 +49,12 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       member_since: new Date().toISOString(),
       ...(profile?.waiting_period_end_date
         ? {}
-        : { waiting_period_end_date: addDays(WAITING_PERIOD_DAYS.member) }),
+        : {
+            waiting_period_end_date: addDays(
+              Number(beneficios.espera_contratante_dias) ||
+                WAITING_PERIOD_DAYS.member,
+            ),
+          }),
       ...(session.metadata?.ambassador_code
         ? { ambassador_code_used: session.metadata.ambassador_code }
         : {}),
@@ -52,11 +73,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   const petDays = new Map<string, number>();
   for (const pet of pets ?? []) {
-    const days = petWaitingPeriodDays({
-      isAdopted: pet.is_adopted,
-      breed: pet.breed,
-      hasReferralCode: hasReferral,
-    });
+    const days = petWaitingPeriodDays(
+      {
+        isAdopted: pet.is_adopted,
+        breed: pet.breed,
+        hasReferralCode: hasReferral,
+      },
+      esperasDe(beneficios),
+    );
     petDays.set(pet.id, days);
     await supabase
       .from("pets")
@@ -64,7 +88,9 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
       .eq("id", pet.id);
   }
 
-  // 3. Record the subscription
+  // 3. Record the subscription.
+  //    `plan_version_id` viaja en la metadata del checkout para que el webhook
+  //    NUNCA tenga que adivinar de qué versión fue un pago.
   const { data: subRow } = await supabase
     .from("subscriptions")
     .upsert(
@@ -81,6 +107,14 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
     )
     .select("id")
     .single();
+
+  // 3b. Foto de los beneficios: a partir de aquí este miembro se rige por SU
+  //     copia, no por lo que diga el plan después (grandfathering).
+  if (subRow?.id)
+    await tomarSnapshot(supabase, {
+      subscriptionId: subRow.id,
+      planVersionId: session.metadata?.plan_version_id ?? null,
+    });
 
   // 4. Referral for the ambassador — commission fixed at signup, paid at the
   // monthly cut (día 5 del mes siguiente)
@@ -99,10 +133,13 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
             ambassador_id: ambassador.id,
             referred_user_id: userId,
             subscription_id: subRow?.id ?? null,
+            // La comisión también sale del plan contratado.
             commission_amount:
               session.metadata?.plan === "annual"
-                ? AMBASSADOR_COMMISSION_MXN.annual
-                : AMBASSADOR_COMMISSION_MXN.monthly,
+                ? Number(beneficios.comision_embajador_anual_mxn) ||
+                  AMBASSADOR_COMMISSION_MXN.annual
+                : Number(beneficios.comision_embajador_mensual_mxn) ||
+                  AMBASSADOR_COMMISSION_MXN.monthly,
             status: "pending",
           },
           { onConflict: "referred_user_id", ignoreDuplicates: true },

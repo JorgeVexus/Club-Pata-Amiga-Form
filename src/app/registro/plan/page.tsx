@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { RegistroHeader } from "@/components/registro/Header";
 import { BenefitsMarquee } from "@/components/landing/BenefitsMarquee";
 import { PlanSelector } from "./PlanSelector";
+import { DemoAgenteWidget } from "@/components/app/DemoAgenteWidget";
+import { mostrarAgenteDemo } from "@/lib/demo-agent";
 
 export default async function PlanPage({
   searchParams,
@@ -33,6 +35,8 @@ export default async function PlanPage({
     .limit(1);
 
   const petName = pets?.[0]?.name ?? "tu peludo";
+  // Aquí es donde más ayuda: está decidiendo si paga (sección 6, punto 3).
+  const demo = await mostrarAgenteDemo(user.id);
 
   return (
     <div className="flex min-h-dvh flex-col bg-cream">
@@ -46,6 +50,7 @@ export default async function PlanPage({
           <PlanSelector petName={petName} initialCode={codigo} />
         </div>
       </div>
+      {demo && <DemoAgenteWidget />}
     </div>
   );
 }

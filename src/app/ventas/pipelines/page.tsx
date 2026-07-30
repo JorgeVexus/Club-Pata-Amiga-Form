@@ -1,11 +1,16 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requirePortal } from "@/lib/panel-guard";
-import { uno } from "@/lib/crm/embed";
-import { estancada, getDefaultPipeline } from "@/lib/crm/opportunities";
+import { getDefaultPipeline } from "@/lib/crm/opportunities";
+import {
+  armarTarjeta,
+  resumenPorEtapa,
+  tarjetasDeEtapa,
+} from "@/lib/crm/tarjetas";
 import {
   Tablero,
   type Etapa,
   type Tarjeta,
+  type TotalEtapa,
 } from "@/components/panel/pipelines/Tablero";
 
 export const metadata = { title: "Pipelines · Portal de ventas" };
@@ -21,24 +26,22 @@ export default async function PipelinesPage({
 
   const pipeline = await getDefaultPipeline(admin);
   const soloMios = params.propietario === "mios";
+  const ownerId = soloMios ? session.userId : null;
+  const staleDaysPorEtapa = new Map(
+    pipeline.stages.map((s) => [s.id, s.stale_days]),
+  );
 
-  const [{ data: oportunidades }, { data: motivos }, { data: equipoCat }] =
+  // Cada columna trae su primera página; los totales van aparte porque el
+  // encabezado no puede decir "50 oportunidades" cuando hay 169. Antes esto era
+  // una sola consulta sin tope y la pantalla tardaba 9 segundos con el
+  // histórico dentro.
+  const [resumen, { data: motivos }, { data: equipoCat }, filasPorEtapa] =
     await Promise.all([
-      (() => {
-        let q = admin
-          .from("opportunities")
-          .select(
-            `id, title, value_cents, value_is_estimate, status, stage_id, owner_id,
-             stage_entered_at, stage_locked_by, contact_id,
-             pipeline_stages(key, name),
-             lost_reasons(name),
-             contacts(first_name, last_name, notes_count, tasks_open_count)`,
-          )
-          .eq("pipeline_id", pipeline.id)
-          .order("stage_entered_at", { ascending: true });
-        if (soloMios) q = q.eq("owner_id", session.userId);
-        return q;
-      })(),
+      resumenPorEtapa(admin, {
+        pipelineId: pipeline.id,
+        ownerId,
+        staleDaysPorEtapa,
+      }),
       admin
         .from("lost_reasons")
         .select("id, name")
@@ -49,7 +52,17 @@ export default async function PipelinesPage({
         .select("id, first_name, email, role")
         .in("role", ["ventas", "gerente_ventas", "admin", "super_admin"])
         .order("first_name"),
+      Promise.all(
+        pipeline.stages.map((s) =>
+          tarjetasDeEtapa(admin, {
+            pipelineId: pipeline.id,
+            stageId: s.id,
+            ownerId,
+          }),
+        ),
+      ),
     ]);
+  const oportunidades = filasPorEtapa.flat();
 
   const equipo = (equipoCat ?? []).map((m) => ({
     id: m.id,
@@ -82,51 +95,34 @@ export default async function PipelinesPage({
     esGanada: s.is_won,
     esPerdida: s.is_lost,
   }));
-  const staleDaysPorId = new Map(pipeline.stages.map((s) => [s.id, s.stale_days]));
+  const tarjetas: Tarjeta[] = oportunidades.map((o) =>
+    armarTarjeta(o, {
+      staleDaysPorEtapa,
+      nombrePorId,
+      conversacionesPorContacto,
+    }),
+  );
 
-  const tarjetas: Tarjeta[] = (oportunidades ?? []).map((o) => {
-    const etapa = uno(o.pipeline_stages);
-    const contacto = uno(o.contacts);
-    const motivo = uno(o.lost_reasons);
-    const nombre =
-      [contacto?.first_name, contacto?.last_name].filter(Boolean).join(" ") ||
-      "Sin nombre";
-    const propietario = o.owner_id ? nombrePorId.get(o.owner_id) ?? null : null;
-
-    return {
-      id: o.id,
-      stageKey: etapa?.key ?? "",
-      titulo: o.title,
-      contactId: o.contact_id,
-      contacto: nombre,
-      valorPesos: o.value_cents / 100,
-      esEstimado: o.value_is_estimate,
-      propietario,
-      propietarioInicial: propietario
-        ? propietario.charAt(0).toUpperCase()
-        : null,
-      fijadaPor: o.stage_locked_by
-        ? nombrePorId.get(o.stage_locked_by) ?? "el equipo"
-        : null,
-      estancada: estancada(
-        o.stage_entered_at,
-        staleDaysPorId.get(o.stage_id) ?? null,
-      ),
-      diasEnEtapa: Math.max(
-        0,
-        Math.floor(
-          (Date.now() - new Date(o.stage_entered_at).getTime()) / 86_400_000,
-        ),
-      ),
-      conversaciones: conversacionesPorContacto.get(o.contact_id) ?? 0,
-      notas: contacto?.notes_count ?? 0,
-      tareas: contacto?.tasks_open_count ?? 0,
-      motivoPerdida: motivo?.name ?? null,
+  // Los totales del encabezado y de cada columna salen del resumen, NO de las
+  // tarjetas cargadas: si no, dirían "50" donde hay 169.
+  const totales: Record<string, TotalEtapa> = {};
+  for (const s of pipeline.stages) {
+    const r = resumen.get(s.id);
+    totales[s.key] = {
+      cuantas: r?.cuantas ?? 0,
+      valorPesos: (r?.centavos ?? 0) / 100,
+      estancadas: r?.estancadas ?? 0,
     };
-  });
-
-  const totalPesos = tarjetas.reduce((s, t) => s + t.valorPesos, 0);
-  const estancadas = tarjetas.filter((t) => t.estancada).length;
+  }
+  const totalOportunidades = Object.values(totales).reduce(
+    (s, t) => s + t.cuantas,
+    0,
+  );
+  const totalPesos = Object.values(totales).reduce((s, t) => s + t.valorPesos, 0);
+  const estancadas = Object.values(totales).reduce(
+    (s, t) => s + t.estancadas,
+    0,
+  );
 
   return (
     <div className="flex flex-col gap-4 px-5 py-6 md:px-[30px] md:py-[26px]">
@@ -136,7 +132,7 @@ export default async function PipelinesPage({
             {pipeline.name}
           </h1>
           <span className="rounded-full bg-white px-3 py-1 text-[12px] font-bold text-ink-secondary shadow-[0_1px_5px_rgba(30,83,80,.06)]">
-            {tarjetas.length} oportunidades · $
+            {totalOportunidades} oportunidades · $
             {totalPesos.toLocaleString("es-MX", { maximumFractionDigits: 0 })} MXN
           </span>
           {estancadas > 0 && (
@@ -162,6 +158,8 @@ export default async function PipelinesPage({
       <Tablero
         etapas={etapas}
         tarjetas={tarjetas}
+        totales={totales}
+        soloMios={soloMios}
         motivos={motivos ?? []}
         equipo={equipo}
         puedeEditar={session.can["oportunidades.editar"]}

@@ -52,6 +52,40 @@ export function waitingProgress(
   return { total, elapsed, done: elapsed >= total, pct: (elapsed / total) * 100 };
 }
 
+/**
+ * ISO de hace `dias` días. Para filtrar "lo de la última semana" en consultas
+ * a Supabase: `.gte("created_at", haceDias(7))`.
+ */
+export function haceDias(dias: number): string {
+  return new Date(Date.now() - dias * MS_PER_DAY).toISOString();
+}
+
+/** Días completos transcurridos desde `iso`. Nunca negativo. */
+export function diasDesde(iso: string, ahora: number = Date.now()): number {
+  return Math.max(0, Math.floor((ahora - new Date(iso).getTime()) / MS_PER_DAY));
+}
+
+/**
+ * "hace 5 min" · "hace 3 h" · "hace 2 d".
+ *
+ * `ahora` se recibe en vez de leerlo aquí: llamar `Date.now()` dentro del
+ * render de un componente de cliente deja la hora congelada entre re-renders
+ * y puede desajustar la hidratación. En cliente, `ahora` sale de `useAhora()`.
+ * Esta función vivía duplicada carácter por carácter en las dos campanas.
+ */
+export function tiempoRelativo(iso: string, ahora: number): string {
+  const mins = Math.floor((ahora - new Date(iso).getTime()) / 60_000);
+  if (mins < 60) return `hace ${Math.max(mins, 1)} min`;
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return `hace ${hrs} h`;
+  return `hace ${Math.floor(hrs / 24)} d`;
+}
+
+/** ¿Ya se pasó la fecha? (tareas vencidas). `null` nunca está vencido. */
+export function estaVencida(iso: string | null, ahora: number): boolean {
+  return !!iso && new Date(iso).getTime() < ahora;
+}
+
 /** Renewal date: subscription period end, or member_since + plan interval. */
 export function renewalDate(
   periodEnd: string | null,

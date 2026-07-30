@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireCapability } from "@/lib/panel-guard";
 import { uno } from "@/lib/crm/embed";
+import { hoyEnMexico } from "@/lib/zona-horaria";
 
 /**
  * Exporta los contactos a CSV con los filtros aplicados.
@@ -103,7 +104,9 @@ export async function GET(request: Request) {
     );
   }
 
-  const hoy = new Date().toISOString().slice(0, 10);
+  // Hoy en México, para que el archivo no se llame con la fecha de mañana
+  // cuando alguien lo baja por la noche.
+  const hoy = hoyEnMexico();
   // BOM para que Excel en Windows abra los acentos bien.
   return new Response("﻿" + lineas.join("\r\n"), {
     headers: {

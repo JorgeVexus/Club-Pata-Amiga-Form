@@ -6,6 +6,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { sendTemplatedEmail } from "@/lib/email/send";
 import { bankFromClabe, isValidClabe } from "@/lib/banks";
+import { versionVigente } from "@/lib/plans/versiones";
+import { reemplazarSnapshot } from "@/lib/plans/resolve";
 
 const PRICE_BY_PLAN: Record<"monthly" | "annual", string | undefined> = {
   monthly: process.env.STRIPE_PRICE_MONTHLY,
@@ -22,7 +24,7 @@ async function getOwnSubscription() {
   const admin = createAdminClient();
   const { data: sub } = await admin
     .from("subscriptions")
-    .select("id, stripe_subscription_id, plan")
+    .select("id, stripe_subscription_id, plan, plan_version_id")
     .eq("user_id", user.id)
     .eq("status", "active")
     .not("stripe_subscription_id", "is", null)
@@ -37,11 +39,24 @@ async function getOwnSubscription() {
  *   invoices the difference immediately.
  * - Downgrade to monthly: applies now with no refund; the already-paid
  *   period stays covered and the next renewal bills monthly.
+ *
+ * Sección 3, punto 6.3: además de prorratear, el snapshot de beneficios se
+ * actualiza EN ESE MOMENTO, con el antes y el después escritos en la línea de
+ * tiempo del contacto. Es el único caso en que la foto de un miembro cambia
+ * sin que intervenga un super admin — y se justifica porque lo pidió la propia
+ * persona al cambiarse de plan.
  */
 export async function switchPlan(target: "monthly" | "annual") {
   const { userId, sub, admin } = await getOwnSubscription();
   if (sub.plan === target) return { ok: true as const };
-  const price = PRICE_BY_PLAN[target];
+
+  // La versión publicada manda; la variable de entorno queda de respaldo
+  // mientras el plan no esté publicado en Stripe (mismo criterio que el
+  // checkout, para que subir de plan y darse de alta no usen precios
+  // distintos).
+  const intervalo = target === "annual" ? "year" : "month";
+  const version = await versionVigente(admin, intervalo);
+  const price = version?.stripe_price_id ?? PRICE_BY_PLAN[target];
   if (!price) throw new Error("Plan inválido");
 
   const stripe = getStripe();
@@ -70,6 +85,19 @@ export async function switchPlan(target: "monthly" | "annual") {
         : null,
     })
     .eq("id", sub.id);
+
+  // La foto de beneficios se mueve con el plan, no después. Si el plan nuevo
+  // no tiene versión publicada, el snapshot se queda como estaba: mejor
+  // conservar lo que la persona ya tenía que dejarlo indefinido.
+  if (version) {
+    await reemplazarSnapshot(admin, {
+      subscriptionId: sub.id,
+      userId,
+      planVersionId: version.id,
+      kind: "plan_cambiado",
+      motivo: `Cambió al plan ${target === "annual" ? "Anual" : "Mensual"} (v${version.version})`,
+    });
+  }
 
   await admin.from("notifications").insert({
     user_id: userId,

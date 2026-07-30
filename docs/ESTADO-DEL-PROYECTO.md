@@ -4,12 +4,43 @@
 > Plataforma nueva (Next.js + Supabase + Stripe) que reemplaza Webflow + Memberstack + widgets.
 > Todo lo listado corre hoy en el ambiente de desarrollo con cuentas de PRUEBA (sin dinero real).
 
-> **Etapa en curso (26-jul-2026): portal de ventas.** El plan completo —8 secciones,
-> propuesta pendiente de aprobación— vive en [`docs/portal-ventas/`](portal-ventas/README.md).
+> **Etapa en curso (28-jul-2026): portal de ventas.** El plan completo (8 secciones)
+> vive en [`docs/portal-ventas/`](portal-ventas/README.md), y
+> [`HANDOFF.md`](portal-ventas/HANDOFF.md) dice exactamente dónde nos quedamos.
+> Construido: cimientos, contactos y pipelines, bandeja de conversaciones con
+> correo y gobierno de los agentes, la sección de membresías completa (planes
+> versionados en Stripe, cupones, cambio de plan y migración de cohortes), el
+> calendario de contenido con su circuito de aprobación y su publicador, y el
+> boletín con sus dos agentes, sus tres compuertas, su envío por lotes y la
+> baja sin sesión, el agente demo para cuentas sin membresía (apagado por
+> omisión) y los tableros con su embudo, sus reportes y su exportación.
+> **Las 7 secciones del plan están construidas** y el **histórico de LynSales ya
+> está importado** (452 contactos de las 995 filas del export: las 543 sin correo
+> ni teléfono se descartan por acuerdo con el cliente, y cada contacto entró con
+> su fecha de alta real, no con la de la importación). Lo que queda: verificar
+> los agentes con la llave de IA conectada y el checklist de producción.
 > Punto de retorno del estado anterior: etiqueta `v1.0-plataforma-base` (commit `cdf68e7`)
 > más el volcado de la base y de Storage en `006_Pata_Amiga/backups/2026-07-26-checkpoint-v1.0/`.
-> Lo urgente del cliente: exportar de LynSales el CSV de contactos y oportunidades
-> (esa cuenta muestra aviso de método de pago faltante).
+
+> **Lote de arreglos (29-jul-2026, commit `99ffcf0`).** Se atendió el reporte del
+> programador del cliente: la landing pública `/embajadores` estaba detrás del
+> guard del portal privado, y había 12 errores de lint acumulados. Todo
+> corregido de raíz (cero `eslint-disable`), el árbol quedó en 0 errores y 0
+> advertencias, y se agregó una reja de CI (lint + tipos) porque Next 16 dejó de
+> correr ESLint dentro de `next build` — que es justo por lo que se acumularon
+> sin que nadie los viera. Al verificar salieron dos más que nadie había
+> reportado: `/admin/conversaciones` tronaba con error 500 y dejaba la bandeja
+> entera caída (el canal `email` no estaba en el mapa de canales), y los paneles
+> de las dos campanas se salían de la pantalla en móvil. Detalle en
+> [`docs/fixes-reporte-coder.md`](fixes-reporte-coder.md).
+
+> ⚠️ **Staging está congelado desde el 27-jul 19:41 (commit `58cf99a`).** La
+> cuenta de Vercel está en Hobby, que permite 2 tareas programadas diarias, y
+> `vercel.json` declara 5 (tres cada pocos minutos): Vercel rechaza el
+> despliegue. Decisión tomada: **no se recortan los crones** — son
+> funcionalidad viva y el plan sube a Pro para producción. Todo lo de F2c en
+> adelante corre en local pero **no** está en
+> https://pata-amiga-one.vercel.app. Ver [`docs/PRODUCCION.md`](PRODUCCION.md).
 
 ---
 

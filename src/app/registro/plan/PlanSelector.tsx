@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Stepper } from "@/components/registro/Stepper";
+import { useValorLocal } from "@/lib/hooks";
 
 type Plan = "monthly" | "annual";
 
@@ -19,44 +20,50 @@ export function PlanSelector({
   initialCode?: string;
 }) {
   const [selected, setSelected] = useState<Plan>("annual");
-  const [code, setCode] = useState(initialCode ?? "");
-  const [codeStatus, setCodeStatus] = useState<
-    "idle" | "checking" | "valid" | "invalid"
-  >("idle");
   const [loading, setLoading] = useState<Plan | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // Prefill from share link (?codigo=) — via prop or stashed at /registro
+  // El código de embajador puede llegar por el enlace (?codigo=) o quedar
+  // guardado en /registro. Se lee DURANTE el render con `useValorLocal`, no
+  // con un efecto que hace `setState`, y lo que la persona escriba encima va
+  // aparte: así el prellenado no pelea con lo que está tecleando.
+  const guardado = useValorLocal("pa_ambassador_code");
+  const codigoPrellenado = initialCode?.trim() || guardado?.trim() || "";
+  const [codeEscrito, setCodeEscrito] = useState<string | null>(null);
+  const code = codeEscrito ?? codigoPrellenado;
+
+  const [estadoRevisado, setEstadoRevisado] = useState<
+    "idle" | "checking" | "valid" | "invalid" | null
+  >(null);
+  // Mientras no se haya revisado el prellenado, la pantalla dice "verificando".
+  const codeStatus = estadoRevisado ?? (codigoPrellenado ? "checking" : "idle");
+
+  // Revisa el código prellenado. El `setState` va solo dentro de la respuesta
+  // asíncrona: hacerlo de forma síncrona aquí encadena renders de más.
   useEffect(() => {
-    const stashed =
-      initialCode?.trim() ||
-      window.localStorage.getItem("pa_ambassador_code") ||
-      "";
-    if (!stashed) return;
-    setCode(stashed);
-    setCodeStatus("checking");
-    let cancelled = false;
-    fetch(`/api/referrals/validate?code=${encodeURIComponent(stashed)}`)
+    if (!codigoPrellenado) return;
+    let cancelado = false;
+    fetch(`/api/referrals/validate?code=${encodeURIComponent(codigoPrellenado)}`)
       .then((r) => r.json())
       .then(({ valid }) => {
-        if (!cancelled) setCodeStatus(valid ? "valid" : "invalid");
+        if (!cancelado) setEstadoRevisado(valid ? "valid" : "invalid");
       })
       .catch(() => {
-        if (!cancelled) setCodeStatus("idle");
+        if (!cancelado) setEstadoRevisado("idle");
       });
     return () => {
-      cancelled = true;
+      cancelado = true;
     };
-  }, [initialCode]);
+  }, [codigoPrellenado]);
 
   async function applyCode() {
     if (!code.trim()) return;
-    setCodeStatus("checking");
+    setEstadoRevisado("checking");
     const res = await fetch(
       `/api/referrals/validate?code=${encodeURIComponent(code.trim())}`,
     );
     const { valid } = await res.json();
-    setCodeStatus(valid ? "valid" : "invalid");
+    setEstadoRevisado(valid ? "valid" : "invalid");
   }
 
   async function checkout(plan: Plan) {
@@ -211,8 +218,8 @@ export function PlanSelector({
           <input
             value={code}
             onChange={(e) => {
-              setCode(e.target.value.toUpperCase());
-              setCodeStatus("idle");
+              setCodeEscrito(e.target.value.toUpperCase());
+              setEstadoRevisado("idle");
             }}
             placeholder="CÓDIGO"
             className="h-[46px] w-full rounded-[12px] border-[1.5px] border-dashed border-[#C9C3B4] bg-white px-3.5 text-sm tracking-[.1em] text-ink-title placeholder:text-ink-placeholder outline-none focus:border-solid focus:border-teal sm:w-[220px]"

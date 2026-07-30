@@ -49,12 +49,20 @@ export function EmailTemplatesEditor({
   const [openCat, setOpenCat] = useState<string | null>(
     () => TEMPLATE_CATEGORY[templates[0]?.key ?? ""] ?? null,
   );
-  const draft = selected
-    ? (drafts[selected.key] ?? {
-        subject: selected.subject,
-        html: selected.html,
-      })
-    : null;
+  // El borrador va en su propio useMemo: sin él, cuando todavía no hay cambios
+  // guardados se creaba un objeto nuevo en CADA render, y eso hacía que el
+  // useMemo de la vista previa de abajo se recalculara siempre (o sea, no
+  // memorizaba nada).
+  const draft = useMemo(
+    () =>
+      selected
+        ? (drafts[selected.key] ?? {
+            subject: selected.subject,
+            html: selected.html,
+          })
+        : null,
+    [selected, drafts],
+  );
 
   const preview = useMemo(() => {
     if (!selected || !draft) return { subject: "", html: "" };

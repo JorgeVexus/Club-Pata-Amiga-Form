@@ -2,6 +2,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ASSISTANT_PROMPT_KEY, SALES_PROMPT_KEY } from "@/lib/site";
 import { updateSiteSettings } from "@/app/admin/actions";
 import { formatDateEs } from "@/lib/dates";
+import { hoyEnMexico } from "@/lib/zona-horaria";
 import { InboxClient, type Conversation } from "./InboxClient";
 import { createPromo, deletePromo, togglePromo } from "./actions";
 
@@ -107,7 +108,9 @@ export default async function AdminConversacionesPage() {
   ].sort((a, b) => b.last_message_at.localeCompare(a.last_message_at));
 
   const settingByKey = Object.fromEntries((settings ?? []).map((s) => [s.key, s.value]));
-  const today = new Date().toISOString().slice(0, 10);
+  // Hoy en México: el estado que ve el admin tiene que ser el mismo que decide
+  // si el agente ofrece la promo (lib/llm/promos.ts).
+  const today = hoyEnMexico();
   const promoStatus = (p: { active: boolean; starts_on: string; ends_on: string | null }) =>
     !p.active
       ? { label: "Pausada", cls: "bg-cream text-ink-tertiary" }

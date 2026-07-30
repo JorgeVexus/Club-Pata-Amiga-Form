@@ -273,7 +273,6 @@ export default async function Home() {
         <div className="mx-auto grid max-w-[980px] items-center gap-10 lg:grid-cols-[1fr_1.2fr]">
           <div className="hidden lg:block">
             {assets["landing-como-funciona"] ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={assets["landing-como-funciona"]}
                 alt="Así funciona el reintegro en Pata Amiga"
@@ -360,7 +359,6 @@ export default async function Home() {
           </div>
           {assets["landing-red"] ? (
             // Collage con fondo transparente — sin marco ni sombra
-            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={assets["landing-red"]}
               alt="Mascotas de la red Pata Amiga"

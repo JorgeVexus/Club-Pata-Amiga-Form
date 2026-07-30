@@ -6,6 +6,8 @@ import { SidebarLinks, TabBar } from "@/components/app/NavLinks";
 import { LogoutButton } from "@/components/app/LogoutButton";
 import { EmergencyButton } from "@/components/app/EmergencyButton";
 import { AsistenteWidget } from "@/components/app/AsistenteWidget";
+import { DemoAgenteWidget } from "@/components/app/DemoAgenteWidget";
+import { mostrarAgenteDemo } from "@/lib/demo-agent";
 import { ProfileMenu, type DashboardEntry } from "@/components/app/ProfileMenu";
 import {
   NotificationsBell,
@@ -23,6 +25,10 @@ export default async function AppLayout({
     data: { user },
   } = await supabase.auth.getUser();
   if (!user) redirect("/iniciar-sesion?next=/app");
+
+  // ¿Le toca la versión de demostración del asistente? Se decide aquí, en el
+  // servidor, no en el navegador.
+  const demo = await mostrarAgenteDemo(user.id);
 
   const [{ data: profile }, { data: sub }, { data: ambassadorRows }, { data: centerRows }] =
     await Promise.all([
@@ -160,8 +166,10 @@ export default async function AppLayout({
       <main className="pb-24 md:pb-0">{children}</main>
       {/* Botón de emergencia — solo miembros con membresía activa */}
       {sub && <EmergencyButton phone={settings.emergency_phone ?? ""} />}
-      {/* Asistente IA de soporte — para toda cuenta autenticada */}
-      <AsistenteWidget />
+      {/* El asistente real para quien tiene plan; la versión de demostración
+          para quien creó su cuenta y todavía no paga (sección 6). Nunca los
+          dos: son agentes distintos, no el mismo con menos alcance. */}
+      {demo ? <DemoAgenteWidget /> : <AsistenteWidget />}
       <TabBar ambassador={showAmbassadorLink} center={showCenterLink} />
     </div>
   );

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { requireAdminRoute } from "@/lib/admin-guard";
 import { bankFromClabe, csvCell } from "@/lib/banks";
+import { inicioDelMes } from "@/lib/zona-horaria";
 
 /**
  * Layout bancario (CSV) para dispersar los reintegros aprobados del mes:
@@ -11,9 +12,9 @@ export async function GET() {
   const ctx = await requireAdminRoute();
   if (!ctx) return NextResponse.json({ error: "Sin permisos" }, { status: 403 });
 
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  // El corte del mes es el mexicano: este CSV se sube al banco y define a quién
+  // se le paga, así que no puede depender de dónde corrió el proceso.
+  const monthStart = inicioDelMes();
 
   const { data } = await ctx.admin
     .from("reimbursements")

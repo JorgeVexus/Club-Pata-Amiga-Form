@@ -146,7 +146,13 @@ export function Hilo({
   const abierta = ventanaAbierta(cabeza.canal, cabeza.ultimoEntrante);
   const bloqueado = !interna && !abierta;
 
-  let diaAnterior = "";
+  // Dónde va cada separador de día. Se calcula ANTES del JSX (comparando cada
+  // pieza con la anterior) en vez de ir arrastrando una variable dentro del
+  // `.map`: reasignar durante el render deja el resultado a merced de cuántas
+  // veces React decida re-renderizar.
+  const abreDia = piezas.map(
+    (p, i) => i === 0 || diaDe(p.cuando) !== diaDe(piezas[i - 1].cuando),
+  );
 
   return (
     <div className="flex min-h-0 flex-1 flex-col">
@@ -282,10 +288,8 @@ export function Hilo({
             Sin mensajes todavía.
           </p>
         )}
-        {piezas.map((p) => {
-          const dia = diaDe(p.cuando);
-          const nuevoDia = dia !== diaAnterior;
-          diaAnterior = dia;
+        {piezas.map((p, i) => {
+          const nuevoDia = abreDia[i];
 
           return (
             <div key={`${p.tipo}-${p.id}`}>

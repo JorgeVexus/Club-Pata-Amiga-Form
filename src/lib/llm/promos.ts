@@ -1,4 +1,5 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { hoyEnMexico } from "@/lib/zona-horaria";
 
 /**
  * Promociones vigentes para inyectar en el prompt de un agente. Vigente =
@@ -9,7 +10,9 @@ export async function fetchActivePromosText(
   audience: "support" | "sales",
 ): Promise<string | undefined> {
   const admin = createAdminClient();
-  const today = new Date().toISOString().slice(0, 10);
+  // Hoy en México: el agente no debe dejar de ofrecer una promo que vence hoy
+  // porque para el servidor (UTC) ya es mañana.
+  const today = hoyEnMexico();
   const { data: promos } = await admin
     .from("agent_promos")
     .select("title, content")

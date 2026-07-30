@@ -1,5 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk";
-import type { AgentParams, ChatMessage, LLMProvider, VetContext } from "./types";
+import type {
+  AgentParams,
+  ChatMessage,
+  JsonParams,
+  JsonResult,
+  LLMProvider,
+  VetContext,
+} from "./types";
 import { buildSystemPrompt } from "./system-prompt";
 
 /**
@@ -110,5 +117,42 @@ export class AnthropicProvider implements LLMProvider {
     }
 
     return FALLBACK_REPLY;
+  }
+
+  /**
+   * Salida estructurada. Se consigue con una herramienta cuyo esquema ES la
+   * forma de la respuesta, y obligando al modelo a usarla (`tool_choice`).
+   * Es más fiable que pedir "devuélveme JSON" en el prompt: el modelo no puede
+   * responder otra cosa.
+   */
+  async completeJson<T>(params: JsonParams): Promise<JsonResult<T>> {
+    const response = await this.client.messages.create({
+      model: MODEL,
+      max_tokens: params.maxTokens ?? 4096,
+      system: [
+        { type: "text", text: params.system, cache_control: { type: "ephemeral" } },
+      ],
+      tools: [
+        {
+          name: "entregar",
+          description: "Entrega el resultado con la forma pedida.",
+          input_schema: params.schema as Anthropic.Tool.InputSchema,
+        },
+      ],
+      tool_choice: { type: "tool", name: "entregar" },
+      messages: [{ role: "user", content: params.prompt }],
+    });
+
+    const bloque = response.content.find((b) => b.type === "tool_use");
+    if (!bloque || bloque.type !== "tool_use")
+      throw new Error("El modelo no devolvió el resultado con la forma pedida.");
+
+    return {
+      data: bloque.input as T,
+      model: MODEL,
+      tokensIn: response.usage.input_tokens,
+      tokensOut: response.usage.output_tokens,
+      demo: false,
+    };
   }
 }

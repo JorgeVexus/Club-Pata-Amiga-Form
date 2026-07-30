@@ -33,14 +33,21 @@ function amountForBalance(row: BalanceRow): number {
   return Number.isFinite(amount) && amount > 0 ? amount : 0;
 }
 
+/**
+ * Los topes son un parámetro OPCIONAL: sin él usa los de siempre, así que el
+ * comportamiento no cambia. Quien tiene a la mano el snapshot del miembro (el
+ * motor de beneficios de la sección 3) pasa los suyos y ese miembro se rige por
+ * lo que contrató.
+ */
 export function calculateBalances(
   rows: BalanceRow[],
+  caps: Record<ReimbursementCategory, number> = REIMBURSEMENT_CAPS_MXN,
 ): Record<ReimbursementCategory, CategoryBalance> {
   const result = {} as Record<ReimbursementCategory, CategoryBalance>;
   for (const category of Object.keys(
     REIMBURSEMENT_CAPS_MXN,
   ) as ReimbursementCategory[]) {
-    const limit = REIMBURSEMENT_CAPS_MXN[category];
+    const limit = caps[category] ?? REIMBURSEMENT_CAPS_MXN[category];
     const used = rows
       .filter((r) => r.category === category)
       .reduce((sum, r) => sum + amountForBalance(r), 0);

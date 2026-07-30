@@ -22,9 +22,10 @@ const ITEMS: {
   { href: "/ventas/pipelines", icon: "🎯", label: "Pipelines" },
   { href: "/ventas/conversaciones", icon: "📨", label: "Conversaciones" },
   { href: "/ventas/plantillas", icon: "📄", label: "Plantillas" },
-  { href: "/ventas/membresias", icon: "💳", label: "Membresías", soon: "F3" },
-  { href: "/ventas/calendario", icon: "🗓️", label: "Calendario", soon: "F4" },
-  { href: "/ventas/newsletter", icon: "📰", label: "Boletín", soon: "F5" },
+  { href: "/ventas/ia", icon: "✨", label: "Agentes IA" },
+  { href: "/ventas/membresias", icon: "💳", label: "Membresías" },
+  { href: "/ventas/calendario", icon: "🗓️", label: "Calendario" },
+  { href: "/ventas/newsletter", icon: "📰", label: "Boletín" },
 ];
 
 function itemClasses(active: boolean) {

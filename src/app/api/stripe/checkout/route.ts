@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { crmEventoDeUsuario } from "@/lib/crm/sync";
+import { versionVigente } from "@/lib/plans/versiones";
 
 const PRICE_BY_PLAN: Record<string, string | undefined> = {
   monthly: process.env.STRIPE_PRICE_MONTHLY,
@@ -19,7 +20,18 @@ export async function POST(request: Request) {
   }
 
   const { plan, ambassadorCode } = await request.json();
-  const price = PRICE_BY_PLAN[plan];
+  if (!PRICE_BY_PLAN[plan] && plan !== "monthly" && plan !== "annual") {
+    return NextResponse.json({ error: "Plan inválido" }, { status: 400 });
+  }
+
+  // La versión publicada manda sobre la variable de entorno. Si todavía no hay
+  // versión con precio en Stripe (o falla la consulta), se usa el precio de
+  // siempre: el cobro nunca se queda sin funcionar por el motor de planes.
+  const versionPublicada = await versionVigente(
+    createAdminClient(),
+    plan === "annual" ? "year" : "month",
+  );
+  const price = versionPublicada?.stripe_price_id ?? PRICE_BY_PLAN[plan];
   if (!price) {
     return NextResponse.json({ error: "Plan inválido" }, { status: 400 });
   }
@@ -66,10 +78,17 @@ export async function POST(request: Request) {
     metadata: {
       user_id: user.id,
       plan,
+      // Viaja la versión para que el webhook NUNCA tenga que adivinar de qué
+      // versión fue este pago al tomar la foto de beneficios.
+      ...(versionPublicada ? { plan_version_id: versionPublicada.id } : {}),
       ...(validCode ? { ambassador_code: validCode } : {}),
     },
     subscription_data: {
-      metadata: { user_id: user.id, plan },
+      metadata: {
+        user_id: user.id,
+        plan,
+        ...(versionPublicada ? { plan_version_id: versionPublicada.id } : {}),
+      },
     },
   });
 

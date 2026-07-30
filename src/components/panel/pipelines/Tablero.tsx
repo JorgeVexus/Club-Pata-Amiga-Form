@@ -5,6 +5,7 @@ import { useState, useTransition } from "react";
 import {
   devolverAutomatico,
   loteOportunidades,
+  masTarjetas,
   moverEtapa,
 } from "@/app/ventas/pipelines/actions";
 
@@ -37,6 +38,19 @@ export type Tarjeta = {
   motivoPerdida: string | null;
 };
 
+/**
+ * Los totales REALES de una etapa, que no salen de las tarjetas cargadas.
+ *
+ * Cada columna abre con las primeras 50: sin esto el encabezado diría "50
+ * oportunidades" donde hay 169, y el aviso de estancadas contaría solo las
+ * visibles. Los números que decide el equipo tienen que ser los de la base.
+ */
+export type TotalEtapa = {
+  cuantas: number;
+  valorPesos: number;
+  estancadas: number;
+};
+
 /** Los colores de etapa se guardan como llave del tema, no como clase. */
 const PUNTO: Record<string, string> = {
   teal: "bg-teal",
@@ -54,12 +68,16 @@ const pesos = (n: number) =>
 export function Tablero({
   etapas,
   tarjetas,
+  totales,
+  soloMios,
   motivos,
   equipo,
   puedeEditar,
 }: {
   etapas: Etapa[];
   tarjetas: Tarjeta[];
+  totales: Record<string, TotalEtapa>;
+  soloMios: boolean;
   motivos: { id: string; name: string }[];
   equipo: { id: string; nombre: string }[];
   puedeEditar: boolean;
@@ -82,9 +100,60 @@ export function Tablero({
     setTimeout(() => setAviso(null), 4000);
   };
 
-  const porEtapa = (key: string) => tarjetas.filter((t) => t.stageKey === key);
-  const suma = (key: string) =>
-    porEtapa(key).reduce((s, t) => s + t.valorPesos, 0);
+  /**
+   * Las páginas extra que trajo "ver más", por llave de etapa. Se van al mover
+   * una tarjeta (la pantalla se recarga) y eso está bien: después de un
+   * movimiento lo importante es ver el tablero al día, no dónde iba uno leyendo.
+   */
+  const [extras, setExtras] = useState<Record<string, Tarjeta[]>>({});
+  const [trayendo, setTrayendo] = useState<string | null>(null);
+
+  const porEtapa = (key: string) => [
+    ...tarjetas.filter((t) => t.stageKey === key),
+    ...(extras[key] ?? []),
+  ];
+  const total = (key: string): TotalEtapa =>
+    totales[key] ?? { cuantas: 0, valorPesos: 0, estancadas: 0 };
+
+  const verMas = async (e: Etapa) => {
+    setTrayendo(e.key);
+    const res = await masTarjetas(e.id, porEtapa(e.key).length, soloMios);
+    setTrayendo(null);
+    if ("error" in res) {
+      decir(res.error ?? "No se pudieron traer más tarjetas.");
+      return;
+    }
+    setExtras((x) => ({ ...x, [e.key]: [...(x[e.key] ?? []), ...res.tarjetas] }));
+  };
+
+  /** Todas las tarjetas cargadas, sin importar la etapa (la usa la lista). */
+  const todas = [...tarjetas, ...Object.values(extras).flat()];
+  const faltantes = etapas.reduce(
+    (s, e) => s + Math.max(0, total(e.key).cuantas - porEtapa(e.key).length),
+    0,
+  );
+
+  /** La siguiente página de cada etapa que tenga pendientes, de un jalón. */
+  const verMasTodas = async () => {
+    const conPendientes = etapas.filter(
+      (e) => total(e.key).cuantas > porEtapa(e.key).length,
+    );
+    setTrayendo("lista");
+    const paginas = await Promise.all(
+      conPendientes.map(async (e) => ({
+        key: e.key,
+        res: await masTarjetas(e.id, porEtapa(e.key).length, soloMios),
+      })),
+    );
+    setTrayendo(null);
+    setExtras((x) => {
+      const siguiente = { ...x };
+      for (const { key, res } of paginas)
+        if ("tarjetas" in res && res.tarjetas)
+          siguiente[key] = [...(siguiente[key] ?? []), ...res.tarjetas];
+      return siguiente;
+    });
+  };
 
   const mover = (ids: string[], stageKey: string, lostReasonId?: string) => {
     const destino = etapas.find((e) => e.key === stageKey);
@@ -230,8 +299,29 @@ export function Tablero({
     );
   };
 
+  /**
+   * "Ver más" al pie de la columna, solo si quedan tarjetas por traer. Dice
+   * cuántas faltan para que nadie tenga que adivinar si ya vio todo.
+   */
+  const botonVerMas = (e: Etapa) => {
+    const faltan = total(e.key).cuantas - porEtapa(e.key).length;
+    if (faltan <= 0) return null;
+    return (
+      <button
+        type="button"
+        disabled={trayendo === e.key}
+        onClick={() => verMas(e)}
+        className="rounded-[10px] border-[1.5px] border-border-input bg-white px-3 py-2 text-[11.5px] font-bold text-teal-deep transition-colors hover:border-teal disabled:opacity-50"
+      >
+        {trayendo === e.key ? "Trayendo…" : `Ver más (${faltan})`}
+      </button>
+    );
+  };
+
   const encabezado = (e: Etapa) => {
-    const n = porEtapa(e.key).length;
+    const t = total(e.key);
+    const n = t.cuantas;
+    const cargadas = porEtapa(e.key).length;
     const colapsada = colapsadas.includes(e.key);
     return (
       <div className="flex items-center justify-between gap-2 border-b border-border-divider px-3 py-2.5">
@@ -246,7 +336,8 @@ export function Tablero({
             </span>
           </span>
           <span className="text-[10.5px] text-ink-tertiary">
-            {n} oportunidad{n === 1 ? "" : "es"} · {pesos(suma(e.key))} MXN
+            {n} oportunidad{n === 1 ? "" : "es"} · {pesos(t.valorPesos)} MXN
+            {cargadas < n && ` · mostrando ${cargadas}`}
           </span>
         </span>
         <button
@@ -419,6 +510,7 @@ export function Tablero({
                             Vacía
                           </span>
                         )}
+                        {botonVerMas(e)}
                       </div>
                     </>
                   )}
@@ -442,13 +534,13 @@ export function Tablero({
                   }`}
                 >
                   <span className={`size-[6px] rounded-full ${PUNTO[e.color] ?? "bg-teal"}`} />
-                  {e.name} ({porEtapa(e.key).length})
+                  {e.name} ({total(e.key).cuantas})
                 </button>
               ))}
             </div>
             <div className="rounded-[14px] bg-cream/70 p-2">
               <span className="block px-1 pb-2 text-[11px] font-bold text-ink-tertiary">
-                {pesos(suma(movilEtapa))} MXN en esta etapa
+                {pesos(total(movilEtapa).valorPesos)} MXN en esta etapa
               </span>
               <div className="flex flex-col gap-2">
                 {porEtapa(movilEtapa).map(tarjeta)}
@@ -457,6 +549,10 @@ export function Tablero({
                     Vacía
                   </span>
                 )}
+                {(() => {
+                  const e = etapas.find((x) => x.key === movilEtapa);
+                  return e ? botonVerMas(e) : null;
+                })()}
               </div>
             </div>
           </div>
@@ -479,7 +575,7 @@ export function Tablero({
               </tr>
             </thead>
             <tbody>
-              {tarjetas.map((t) => {
+              {todas.map((t) => {
                 const e = etapas.find((s) => s.key === t.stageKey);
                 return (
                   <tr
@@ -545,10 +641,27 @@ export function Tablero({
               })}
             </tbody>
           </table>
-          {tarjetas.length === 0 && (
+          {todas.length === 0 && (
             <p className="px-5 py-12 text-center text-[13.5px] text-ink-secondary">
               No hay oportunidades todavía.
             </p>
+          )}
+          {/* La lista es para trabajar en volumen, así que aquí "ver más" trae
+              la siguiente página de TODAS las etapas que tengan pendientes. */}
+          {faltantes > 0 && (
+            <div className="flex items-center justify-between gap-3 border-t border-border-divider px-5 py-3">
+              <span className="text-[11.5px] text-ink-tertiary">
+                Mostrando {todas.length} de {todas.length + faltantes}
+              </span>
+              <button
+                type="button"
+                disabled={trayendo !== null}
+                onClick={verMasTodas}
+                className="rounded-full border-[1.5px] border-border-input bg-white px-4 py-2 text-[12px] font-bold text-teal-deep transition-colors hover:border-teal disabled:opacity-50"
+              >
+                {trayendo ? "Trayendo…" : `Ver más (${faltantes})`}
+              </button>
+            </div>
           )}
         </div>
       )}

@@ -61,6 +61,17 @@ export type EnsureOpportunityInput = {
   ownerId?: string | null;
   actorId?: string | null;
   actorLabel?: string | null;
+  /**
+   * Cuándo nació la tarjeta, si no es ahora. El embudo del tablero cuenta
+   * `opportunities.created_at`, así que el histórico importado tiene que
+   * traerla o las tendencias de los meses anteriores salen vacías y todo el
+   * volumen aparece el día de la importación.
+   *
+   * Mueve también `stage_entered_at`, que es de donde salen "días en etapa" y
+   * el aviso de estancada: sin eso, 169 carritos abandonados en mayo entrarían
+   * al tablero como recién llegados y tardarían 14 días en levantar la mano.
+   */
+  createdAt?: string | null;
 };
 
 /** Plantillas de título por etapa — el equipo lee así el tablero hoy en LynSales. */
@@ -139,6 +150,13 @@ export async function ensureOpportunity(
       owner_id: input.ownerId ?? null,
       source: input.source ?? null,
       status,
+      ...(input.createdAt
+        ? {
+            created_at: input.createdAt,
+            stage_entered_at: input.createdAt,
+            updated_at: input.createdAt,
+          }
+        : {}),
     })
     .select("id")
     .single();

@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { formatMxn } from "@/lib/format";
+import { inicioDelMes } from "@/lib/zona-horaria";
 import { DetailModal, DetailItem } from "@/components/panel/DetailModal";
 
 type PaymentRow = {
@@ -32,9 +33,9 @@ export default async function AdminFinanzasPage() {
   const isSuper = myProfile?.role === "super_admin";
 
   const admin = createAdminClient();
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
+  // Medianoche de México (ver lib/zona-horaria): con la del proceso, el mes
+  // arrancaba a las 6 de la tarde del día anterior en Vercel.
+  const monthStart = inicioDelMes();
 
   const [subsQ, monthReimbs, payableReferrals] = await Promise.all([
     admin.from("subscriptions").select("plan, amount").eq("status", "active"),

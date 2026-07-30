@@ -14,6 +14,11 @@ import { resolveContact } from "@/lib/crm/contacts";
 import { splitFullName } from "@/lib/crm/normalize";
 import { emitEvent } from "@/lib/crm/events";
 import { ensureOpportunity } from "@/lib/crm/opportunities";
+import {
+  escalarConversacion,
+  puedeResponderIA,
+  registrarUso,
+} from "@/lib/llm/gobierno";
 
 const HISTORY_LIMIT = 20;
 
@@ -213,14 +218,42 @@ async function handleIncoming(msg: IncomingMessage) {
     });
   }
 
-  // Red de seguridad: señales de molestia/humano/legal marcan la conversación
-  // y avisan al equipo (una sola vez), responda la IA o no
+  // Red de seguridad: señales de molestia/humano/legal escalan la conversación
+  // (motivo visible, IA apagada y asignada a quien está de guardia).
+  let escaladoAhora = false;
   if (!conv.needs_attention && ESCALATION_SIGNALS.test(msg.text)) {
     await flagForAttention(admin, conv.id, msg, "señales en el mensaje");
+    escaladoAhora = true;
   }
 
-  // IA pausada por el equipo → solo guardar; el humano responde desde la bandeja
-  if (conv.human_takeover) return;
+  // ¿Puede responder la IA? La persona manda sobre el hilo, el hilo sobre el
+  // canal, y encima están los topes de gasto y de ritmo. Cuando no puede, se
+  // escala a una persona en lugar de dejar al cliente hablando solo.
+  //
+  // `escaladoAhora` importa: `conv` se leyó ANTES de escalar, así que su
+  // `human_takeover` está viejo. Sin esto, el mismo mensaje que pide un humano
+  // ("quiero hablar con una persona") recibía además una respuesta de la IA.
+  const veredicto = await puedeResponderIA(admin, {
+    canal: msg.channel,
+    conversationId: conv.id,
+    humanTakeover: conv.human_takeover || escaladoAhora,
+  });
+  if (!veredicto.puede) {
+    if (veredicto.avisar) {
+      await escalarConversacion(admin, {
+        conversationId: conv.id,
+        motivo: veredicto.motivo,
+      });
+      await notifyTeam(
+        "notify_channel_attention",
+        `La IA dejó de responder en ${msg.channel}`,
+        `<p>${veredicto.motivo}.</p>
+         <p>La conversación${msg.displayName ? ` con <b>${msg.displayName}</b>` : ""} quedó marcada para atención del equipo.</p>
+         <p>Último mensaje: «${msg.text.slice(0, 200)}»</p>`,
+      );
+    }
+    return;
+  }
 
   // Historial reciente para dar contexto al agente
   const { data: historyRows } = await admin
@@ -262,6 +295,20 @@ async function handleIncoming(msg: IncomingMessage) {
     maxTokens: 512, // chat de redes: respuestas cortas
   });
 
+  // Constancia del consumo: qué modelo contestó y cuánto costó. Alimenta los
+  // topes y el tablero de la IA.
+  await registrarUso(admin, {
+    agent: "ventas",
+    channel: msg.channel,
+    conversationId: conv.id,
+    model: process.env.LLM_MODEL ?? process.env.LLM_PROVIDER ?? "demo",
+    tokensIn: Math.ceil(
+      history.reduce((s, h) => s + h.content.length, 0) / 4,
+    ),
+    tokensOut: Math.ceil(reply.length / 4),
+    tools: ["clasificar_conversacion"],
+  });
+
   await admin.from("channel_messages").insert({
     conversation_id: conv.id,
     direction: "out",
@@ -285,10 +332,16 @@ async function flagForAttention(
   msg: IncomingMessage,
   reason: string,
 ) {
-  await admin
-    .from("channel_conversations")
-    .update({ needs_attention: true })
-    .eq("id", conversationId);
+  // Deja el motivo a la vista, apaga la IA y se la asigna a quien está de
+  // guardia: escalar a "todos" es la forma más segura de que no la tome nadie.
+  const { asignadaA } = await escalarConversacion(admin, {
+    conversationId,
+    motivo: reason,
+  });
+  if (!asignadaA)
+    console.warn(
+      "[ia] escalación sin persona de guardia configurada (Portal de ventas → IA)",
+    );
   // Destinatarios configurables en /admin/sitio → Notificaciones
   await notifyTeam(
     "notify_channel_attention",

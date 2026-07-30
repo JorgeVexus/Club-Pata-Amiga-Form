@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { hoyEnMexico } from "@/lib/zona-horaria";
 import type { CenterCardData } from "@/components/centros/CentersExplorer";
 
 /** Approved wellness centers with locations and live promotions (public RLS read). */
@@ -12,7 +13,9 @@ export async function fetchApprovedCenters(): Promise<CenterCardData[]> {
     .eq("status", "approved")
     .order("created_at", { ascending: true });
 
-  const today = new Date().toISOString().slice(0, 10);
+  // Hoy en México: una promoción que vence hoy no debe desaparecer 6 horas
+  // antes porque el servidor ya cambió de día.
+  const today = hoyEnMexico();
 
   return (data ?? []).map((c) => ({
     id: c.id,

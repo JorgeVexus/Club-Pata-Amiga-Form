@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { waitingProgress } from "@/lib/dates";
+import { beneficiosDe, topesDe } from "@/lib/plans/resolve";
 import {
   calculateBalances,
   startOfCurrentYear,
@@ -15,8 +16,13 @@ export default async function NuevaSolicitudPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/iniciar-sesion?next=/app/reintegros/nueva");
 
-  const [{ data: profile }, { data: pets }, { data: lastReq }, { data: yearRows }] =
-    await Promise.all([
+  const [
+    { data: profile },
+    { data: pets },
+    { data: lastReq },
+    { data: yearRows },
+    { data: sub },
+  ] = await Promise.all([
       supabase
         .from("profiles")
         .select("membership_status, profile_completed, clabe, first_name, last_name")
@@ -43,6 +49,15 @@ export default async function NuevaSolicitudPage() {
         .select("category, amount_requested, amount_approved, status")
         .eq("user_id", user.id)
         .gte("created_at", startOfCurrentYear()),
+      // Topes del plan que contrató este miembro (grandfathering)
+      supabase
+        .from("subscriptions")
+        .select("benefits_snapshot")
+        .eq("user_id", user.id)
+        .in("status", ["active", "past_due"])
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle(),
     ]);
 
   if (profile?.membership_status !== "active") redirect("/app");
@@ -97,7 +112,12 @@ export default async function NuevaSolicitudPage() {
         holderName={[profile?.first_name, profile?.last_name]
           .filter(Boolean)
           .join(" ")}
-        balances={calculateBalances(yearRows ?? [])}
+        balances={calculateBalances(
+          yearRows ?? [],
+          topesDe(
+            beneficiosDe(sub?.benefits_snapshot as Record<string, unknown> | null),
+          ),
+        )}
         blocked={!profile.profile_completed}
       />
     </div>
