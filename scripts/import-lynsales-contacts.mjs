@@ -19,7 +19,10 @@ import {
 } from "../src/lib/crm/import.ts";
 
 const CSV_PATH = "C:/Users/Jorge Cerna/Downloads/Export_Contacts_undefined_Jul_2026_12_16_PM.csv";
-const ACTOR_ID = "a6d8e388-5fa4-43a8-8e0d-da41bb941215"; // admin-staging@example.com
+// ACTOR_ID debe ser un profile.id que exista en el proyecto destino (falla
+// silenciosamente el registro de actividad si no, sin tumbar el import de
+// contactos). Pasar via env ACTOR_ID en vez de hardcodear un proyecto.
+const ACTOR_ID = process.env.ACTOR_ID || "a6d8e388-5fa4-43a8-8e0d-da41bb941215";
 const APPLY = process.argv.includes("--apply");
 
 const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
