@@ -1,0 +1,54 @@
+-- Limpieza de tablas/tipos huerfanos del primer intento de migracion
+-- (antes del incidente). Todas confirmadas vacias (0 filas, salvo
+-- pipelines con 1 fila default) y nunca usadas en produccion real.
+drop table if exists public.agent_promos cascade;
+drop table if exists public.ai_usage cascade;
+drop table if exists public.appeals cascade;
+drop table if exists public.assistant_conversations cascade;
+drop table if exists public.assistant_messages cascade;
+drop table if exists public.campaign_leads cascade;
+drop table if exists public.cancellations cascade;
+drop table if exists public.center_promotions cascade;
+drop table if exists public.channel_conversations cascade;
+drop table if exists public.channel_messages cascade;
+drop table if exists public.contact_activities cascade;
+drop table if exists public.contact_followers cascade;
+drop table if exists public.contact_identities cascade;
+drop table if exists public.contact_tags cascade;
+drop table if exists public.contacts cascade;
+drop table if exists public.conversation_reads cascade;
+drop table if exists public.custom_field_defs cascade;
+drop table if exists public.documents cascade;
+drop table if exists public.email_accounts cascade;
+drop table if exists public.email_templates cascade;
+drop table if exists public.error_logs cascade;
+drop table if exists public.legal_acceptances cascade;
+drop table if exists public.lost_reasons cascade;
+drop table if exists public.message_feedback cascade;
+drop table if exists public.message_templates cascade;
+drop table if exists public.newsletter_subscribers cascade;
+drop table if exists public.opportunities cascade;
+drop table if exists public.pet_messages cascade;
+drop table if exists public.pipeline_stages cascade;
+drop table if exists public.pipelines cascade;
+drop table if exists public.reimbursement_messages cascade;
+drop table if exists public.reimbursements cascade;
+drop table if exists public.saved_views cascade;
+drop table if exists public.site_assets cascade;
+drop table if exists public.subscriptions cascade;
+drop table if exists public.tags cascade;
+drop table if exists public.tasks cascade;
+drop table if exists public.vet_conversations cascade;
+drop table if exists public.vet_messages cascade;
+drop table if exists public.whatsapp_templates cascade;
+
+drop type if exists public.membership_status cascade;
+drop type if exists public.user_role cascade;
+drop type if exists public.pet_species cascade;
+drop type if exists public.pet_approval_status cascade;
+drop type if exists public.reimbursement_category cascade;
+drop type if exists public.reimbursement_status cascade;
+drop type if exists public.appeal_status cascade;
+drop type if exists public.ambassador_status cascade;
+drop type if exists public.wellness_status cascade;
+drop type if exists public.document_type cascade;
