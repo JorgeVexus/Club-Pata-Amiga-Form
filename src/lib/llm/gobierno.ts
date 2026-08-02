@@ -1,4 +1,5 @@
 import type { createAdminClient } from "@/lib/supabase/admin";
+import { costoEnCentavos, preciosDe } from "@/lib/newsletter/costos";
 import { inicioDelDia } from "@/lib/zona-horaria";
 
 type Admin = ReturnType<typeof createAdminClient>;
@@ -255,6 +256,18 @@ export async function registrarUso(
   },
 ): Promise<void> {
   try {
+    // Si nadie calculó el costo, se calcula aquí con los precios DECLARADOS en
+    // Ajustes de IA: el tope diario suma cost_cents, y una fila en cero es una
+    // corrida invisible para la compuerta.
+    let costCents = uso.costCents;
+    if (costCents == null) {
+      const ajustes = await leerAjustesIA(admin);
+      costCents = costoEnCentavos(
+        uso.tokensIn ?? 0,
+        uso.tokensOut ?? 0,
+        preciosDe(ajustes),
+      );
+    }
     await admin.from("ai_usage").insert({
       agent: uso.agent,
       channel: uso.channel ?? null,
@@ -264,7 +277,7 @@ export async function registrarUso(
       model: uso.model,
       tokens_in: uso.tokensIn ?? 0,
       tokens_out: uso.tokensOut ?? 0,
-      cost_cents: uso.costCents ?? 0,
+      cost_cents: costCents,
       tools: uso.tools ?? [],
       error: uso.error ?? null,
     });
