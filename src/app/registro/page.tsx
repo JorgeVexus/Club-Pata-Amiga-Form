@@ -41,7 +41,14 @@ export default function RegistroPage() {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: cleanEmail,
       password,
-      options: { data: { phone: `+52${phone}` } },
+      options: {
+        data: { phone: `+52${phone}` },
+        // La liga del correo de confirmación abre en pestaña nueva: aterriza
+        // en una página de marca que invita a cerrarla (el registro sigue solo
+        // en la pestaña original). Requiere la URL en la lista de redirecciones
+        // permitidas de Supabase Auth.
+        emailRedirectTo: `${window.location.origin}/registro/confirmado`,
+      },
     });
     if (signUpError) {
       setError(
