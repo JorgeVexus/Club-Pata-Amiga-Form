@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PetCard, type PetRow } from "@/components/app/PetCard";
 import { WelcomeOnce } from "@/components/app/WelcomeOnce";
+import { CompleteProfileNudge } from "@/components/app/CompleteProfileNudge";
 import { markWelcomeShown } from "./actions";
 import { NotificationsBell } from "@/components/app/NotificationsBell";
 import { MAX_ACTIVE_PETS } from "@/lib/constants";
@@ -18,7 +19,9 @@ export default async function AppHome() {
   const [{ data: profile }, { data: sub }, { data: pets }, { data: notifications }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("first_name, email, membership_status, member_since, profile_completed, welcome_shown")
+      .select(
+        "first_name, email, membership_status, member_since, profile_completed, welcome_shown, curp, birth_date, nationality, street, postal_code, phone",
+      )
       .eq("id", user.id)
       .single(),
     supabase
@@ -105,6 +108,22 @@ export default async function AppHome() {
           cta={profile.profile_completed ? "Explorar mi cuenta" : "¡Entendido!"}
         />
       )}
+      {/* Perfil incompleto (migrados incluidos): guía al primer login
+          (Pablo, 5-ago). No se encima con la bienvenida de membresía nueva. */}
+      {profile &&
+        !profile.profile_completed &&
+        !(profile.membership_status === "active" && !profile.welcome_shown) && (
+          <CompleteProfileNudge
+            userId={user.id}
+            missing={[
+              !profile.curp && "CURP",
+              !profile.birth_date && "fecha de nacimiento",
+              !profile.nationality && "nacionalidad",
+              !(profile.street && profile.postal_code) && "domicilio",
+              !profile.phone && "teléfono",
+            ].filter((x): x is string => Boolean(x))}
+          />
+        )}
       {/* Greeting */}
       <div className="flex items-center justify-between">
         <div>

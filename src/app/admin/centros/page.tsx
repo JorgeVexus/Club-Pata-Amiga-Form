@@ -89,9 +89,17 @@ export default async function AdminCentrosPage({
 
   return (
     <div className="flex flex-col gap-5 px-5 py-6 md:px-[30px] md:py-[26px]">
-      <h1 className="font-display text-[26px] text-ink-title">
-        Centros de bienestar
-      </h1>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h1 className="font-display text-[26px] text-ink-title">
+          Centros de bienestar
+        </h1>
+        <a
+          href="/admin/centros/pagos"
+          className="grid h-9 place-items-center rounded-full border-[1.5px] border-teal px-4 text-xs font-bold text-teal-deep transition-colors hover:bg-teal hover:text-white"
+        >
+          💸 Pagos a centros →
+        </a>
+      </div>
       <FilterChips
         basePath="/admin/centros"
         current={estado}

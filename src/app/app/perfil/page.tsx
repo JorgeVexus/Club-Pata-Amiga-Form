@@ -13,7 +13,7 @@ export default async function PerfilPage() {
     supabase
       .from("profiles")
       .select(
-        "first_name, last_name, mother_last_name, phone, curp, postal_code, state, city, colony, street, number_ext, number_int",
+        "first_name, last_name, mother_last_name, phone, curp, birth_date, nationality, postal_code, state, city, colony, street, number_ext, number_int",
       )
       .eq("id", user.id)
       .single(),

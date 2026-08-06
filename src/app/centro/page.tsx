@@ -182,18 +182,37 @@ export default async function CentroDashboardPage() {
     );
   }
 
-  const [{ data: promotions }, { data: locations }] = await Promise.all([
-    admin
-      .from("center_promotions")
-      .select("id, title, description, discount_label, valid_until, is_active")
-      .eq("center_id", center.id)
-      .order("created_at", { ascending: false }),
-    admin
-      .from("wellness_center_locations")
-      .select("id, address, colony, city, state, postal_code, phone")
-      .eq("center_id", center.id)
-      .order("created_at", { ascending: true }),
-  ]);
+  const [{ data: promotions }, { data: locations }, { data: pagos }] =
+    await Promise.all([
+      admin
+        .from("center_promotions")
+        .select("id, title, description, discount_label, valid_until, is_active")
+        .eq("center_id", center.id)
+        .order("created_at", { ascending: false }),
+      admin
+        .from("wellness_center_locations")
+        .select("id, address, colony, city, state, postal_code, phone")
+        .eq("center_id", center.id)
+        .order("created_at", { ascending: true }),
+      // Pagos directos de Pata Amiga a este centro (equipo, 5-ago)
+      admin
+        .from("center_payments")
+        .select("id, concept, amount, notes, paid_at")
+        .eq("center_id", center.id)
+        .order("paid_at", { ascending: false })
+        .limit(50),
+    ]);
+
+  const CONCEPTO: Record<string, string> = {
+    vacunas: "Vacunas",
+    emergencia_medica: "Emergencia médica",
+    fallecimiento: "Fallecimiento",
+    otro: "Otro",
+  };
+  const totalPagos = (pagos ?? []).reduce(
+    (s, p) => s + Number(p.amount ?? 0),
+    0,
+  );
 
   return (
     <div className="min-h-dvh bg-cream">
@@ -243,6 +262,47 @@ export default async function CentroDashboardPage() {
                 (center.social_links ?? null) as Record<string, string> | null
               }
             />
+
+            {/* Pagos recibidos de Pata Amiga (equipo, 5-ago) */}
+            <div className="flex flex-col gap-2.5 rounded-[20px] bg-white p-5 shadow-[var(--shadow-card)]">
+              <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
+                PAGOS DE PATA AMIGA
+              </span>
+              <span className="text-[12px] text-ink-tertiary">
+                Pagos directos por servicios a miembros (vacunas, emergencias,
+                fallecimiento). Total recibido:{" "}
+                <strong className="text-ink-title">
+                  ${totalPagos.toLocaleString("es-MX")} MXN
+                </strong>
+              </span>
+              {(pagos ?? []).length > 0 ? (
+                (pagos ?? []).map((p) => (
+                  <div
+                    key={p.id}
+                    className="flex items-center gap-2 border-b border-[#F2EEE4] py-2 text-[12.5px] text-ink-body last:border-0"
+                  >
+                    <span className="flex-1">
+                      {CONCEPTO[p.concept] ?? p.concept}
+                      {p.notes ? (
+                        <span className="block text-[11px] text-ink-tertiary">
+                          {p.notes}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="font-bold text-ink-title">
+                      ${Number(p.amount).toLocaleString("es-MX")} MXN
+                    </span>
+                    <span className="text-[11px] text-ink-tertiary">
+                      {p.paid_at}
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <span className="text-[12.5px] text-ink-secondary">
+                  Aún sin pagos registrados.
+                </span>
+              )}
+            </div>
           </div>
         </div>
 

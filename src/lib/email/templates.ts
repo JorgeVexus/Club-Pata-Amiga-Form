@@ -287,6 +287,26 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
 <p>Si crees que hay un error, responde a este correo y lo revisamos.</p>`),
   },
   {
+    key: "profile_incomplete_reminder",
+    name: "Recordatorio de datos faltantes",
+    description:
+      "Recordatorio periódico a miembros con el perfil incompleto: sin esos datos no se habilitan los reintegros. Se envía desde Comunicados → Envíos (o el cron semanal).",
+    variables: {
+      firstName: "Nombre del miembro",
+      missingList: "Lista de lo que falta (CURP, INE, etc.)",
+    },
+    sample: {
+      firstName: "Cipatli",
+      missingList: "fecha de nacimiento · nacionalidad · identificación (INE)",
+    },
+    subject: "Te falta poco para habilitar tus reintegros 🐾",
+    html: WRAP(`<h2 style="color:#1E5350">Hola, {{firstName}}</h2>
+<p>Tu membresía de Club Pata Amiga está activa, pero aún nos faltan algunos datos para habilitar tus reintegros:</p>
+<p style="background:#FDF3E0;border-radius:12px;padding:12px 16px"><strong>{{missingList}}</strong></p>
+<p>Completa tu perfil en un par de minutos y tu manada queda protegida al 100%.</p>
+<p><a href="https://www.pataamiga.mx/app/perfil" style="display:inline-block;background:#1CBCAD;color:#fff;border-radius:999px;padding:12px 26px;font-weight:700;text-decoration:none">Completar mi perfil</a></p>`),
+  },
+  {
     key: "ambassador_deactivated",
     name: "Baja de embajador (por el comité)",
     description:
@@ -521,6 +541,7 @@ export const TEMPLATE_CATEGORY: Record<string, EmailCategoryId> = {
   welcome: "membresia",
   cancellation: "membresia",
   account_deactivated: "membresia",
+  profile_incomplete_reminder: "membresia",
   reimbursement_approved: "reintegros",
   reimbursement_rejected: "reintegros",
   pet_approved: "mascotas",

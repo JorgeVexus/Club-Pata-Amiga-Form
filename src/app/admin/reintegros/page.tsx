@@ -46,13 +46,23 @@ export default async function AdminReintegrosPage({
     <div className="flex flex-col gap-5 px-5 py-6 md:px-[30px] md:py-[26px]">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h1 className="font-display text-[26px] text-ink-title">Reintegros</h1>
-        <a
-          href="/api/admin/layouts/reintegros"
-          title="CSV con CLABE, beneficiario y monto de los reintegros aprobados del mes — para dispersión masiva (SPEI) en el portal del banco"
-          className="grid h-9 place-items-center rounded-full border-[1.5px] border-teal px-4 text-xs font-bold text-teal-deep transition-colors hover:bg-teal hover:text-white"
-        >
-          ⬇ Layout bancario del mes (CSV)
-        </a>
+        <div className="flex flex-wrap gap-2">
+          {/* Cuando hay centros, el gasto sale como pago directo, no como
+              reintegro — acceso pedido por el equipo (5-ago). */}
+          <Link
+            href="/admin/centros/pagos"
+            className="grid h-9 place-items-center rounded-full border-[1.5px] border-teal px-4 text-xs font-bold text-teal-deep transition-colors hover:bg-teal hover:text-white"
+          >
+            🏥 Pagos a centros de bienestar →
+          </Link>
+          <a
+            href="/api/admin/layouts/reintegros"
+            title="CSV con CLABE, beneficiario y monto de los reintegros aprobados del mes — para dispersión masiva (SPEI) en el portal del banco"
+            className="grid h-9 place-items-center rounded-full border-[1.5px] border-teal px-4 text-xs font-bold text-teal-deep transition-colors hover:bg-teal hover:text-white"
+          >
+            ⬇ Layout bancario del mes (CSV)
+          </a>
+        </div>
       </div>
       <FilterChips
         basePath="/admin/reintegros"

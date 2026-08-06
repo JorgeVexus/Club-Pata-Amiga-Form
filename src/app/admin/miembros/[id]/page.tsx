@@ -5,9 +5,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { DeactivateAccountPanel } from "./DeactivateAccountPanel";
 import { formatDateEs } from "@/lib/dates";
 import { formatMxn } from "@/lib/format";
+import { curpCoincide } from "@/lib/curp";
 import { REIMBURSEMENT_CATEGORY_LABELS } from "@/lib/constants";
 import { PetThreadPanel } from "./PetThreadPanel";
 import { PetResolveButtons } from "../../mascotas/PetResolveButtons";
+import { EditMemberButton, EditPetButton } from "./EditPanels";
 
 const STATUS_CHIP: Record<string, { text: string; cls: string }> = {
   active: { text: "ACTIVO", cls: "bg-success-bg text-success-text" },
@@ -47,7 +49,7 @@ export default async function AdminMiembroDetailPage({
       admin
         .from("profiles")
         .select(
-          "id, first_name, last_name, mother_last_name, email, phone, curp, birth_date, membership_status, member_since, waiting_period_end_date, postal_code, state, city, colony, street_address, ambassador_code_used, cfdi_requested, rfc, razon_social, regimen_fiscal, uso_cfdi, cp_fiscal, created_at, bank_name, clabe, profile_completed",
+          "id, first_name, last_name, mother_last_name, email, phone, curp, birth_date, nationality, membership_status, member_since, waiting_period_end_date, postal_code, state, city, colony, street, number_ext, number_int, street_address, ambassador_code_used, cfdi_requested, rfc, razon_social, regimen_fiscal, uso_cfdi, cp_fiscal, created_at, bank_name, clabe, profile_completed",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -150,13 +152,35 @@ export default async function AdminMiembroDetailPage({
             </a>
             {m.phone ? ` · 📞 ${m.phone}` : ""}
           </span>
-          <span>CURP: {m.curp ?? "—"}</span>
+          <span className="flex flex-wrap items-center gap-2">
+            CURP: {m.curp ?? "—"}
+            {/* Bandera del cruce CURP ↔ datos (Pablo, 5-ago: marca, no bloquea) */}
+            {(() => {
+              const cruce = m.curp
+                ? curpCoincide(m.curp, {
+                    nombres: m.first_name,
+                    apellidoPaterno: m.last_name,
+                    apellidoMaterno: m.mother_last_name,
+                    birthDate: m.birth_date,
+                  })
+                : null;
+              return cruce && !cruce.coincide ? (
+                <span
+                  title={`No coincide con ${cruce.discrepancias.join(", ")}`}
+                  className="rounded-full bg-warning-bg px-2 py-[3px] text-[10px] font-extrabold text-warning-text"
+                >
+                  ⚠ NO CUADRA CON {cruce.discrepancias.join(" · ").toUpperCase()}
+                </span>
+              ) : null;
+            })()}
+          </span>
           <span>
             Fecha de nacimiento:{" "}
             {m.birth_date
               ? formatDateEs(new Date(m.birth_date + "T12:00:00"))
               : "—"}
           </span>
+          <span>Nacionalidad: {m.nationality ?? "—"}</span>
           <span>Domicilio: {address || "—"}</span>
           <span>Registro: {formatDateEs(new Date(m.created_at))}</span>
           {ineDocs.length > 0 && (
@@ -177,12 +201,35 @@ export default async function AdminMiembroDetailPage({
               )}
             </span>
           )}
+          {/* Edición por teléfono — solo super admin (equipo, 5-ago) */}
+          {isSuper && (
+            <EditMemberButton
+              userId={m.id}
+              initial={{
+                first_name: m.first_name,
+                last_name: m.last_name,
+                mother_last_name: m.mother_last_name,
+                phone: m.phone,
+                birth_date: m.birth_date,
+                nationality: m.nationality,
+                curp: m.curp,
+                street: m.street,
+                number_ext: m.number_ext,
+                number_int: m.number_int,
+                colony: m.colony,
+                city: m.city,
+                state: m.state,
+                postal_code: m.postal_code,
+              }}
+            />
+          )}
           {!m.profile_completed && (
             <span className="rounded-[10px] bg-warning-bg px-3 py-2 text-[12px] text-warning-text">
               Falta:{" "}
               {[
                 !m.curp && "CURP",
                 !m.birth_date && "fecha de nacimiento",
+                !m.nationality && "nacionalidad",
                 !address && "domicilio",
                 !m.phone && "teléfono",
                 ineDocs.length < 2 && "identificación (INE)",
@@ -382,6 +429,21 @@ export default async function AdminMiembroDetailPage({
                   {/* Resolver desde el expediente, sin ir a Mascotas (equipo, 5-ago) */}
                   {p.is_active && p.approval_status === "pending" && (
                     <PetResolveButtons petId={p.id} />
+                  )}
+                  {isSuper && (
+                    <EditPetButton
+                      petId={p.id}
+                      initial={{
+                        name: p.name,
+                        breed: p.breed,
+                        sex: p.sex,
+                        age_years: p.age_years,
+                        age_months: p.age_months,
+                        coat_color: p.coat_color,
+                        eye_color: p.eye_color,
+                        nose_color: p.nose_color,
+                      }}
+                    />
                   )}
                 </span>
               </div>

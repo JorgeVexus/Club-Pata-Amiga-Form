@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { TextField } from "@/components/ui/Field";
 import { Button } from "@/components/ui/Button";
 
-import { validateCurp } from "@/lib/curp";
+import { validateCurp, curpCoincide } from "@/lib/curp";
 
 type Initial = {
   first_name?: string | null;
@@ -14,6 +14,8 @@ type Initial = {
   mother_last_name?: string | null;
   phone?: string | null;
   curp?: string | null;
+  birth_date?: string | null;
+  nationality?: string | null;
   postal_code?: string | null;
   state?: string | null;
   city?: string | null;
@@ -22,26 +24,6 @@ type Initial = {
   number_ext?: string | null;
   number_int?: string | null;
 };
-
-function joinName(i: Initial) {
-  return [i.first_name, i.last_name, i.mother_last_name]
-    .filter(Boolean)
-    .join(" ");
-}
-
-/** MX convention: the last two tokens are apellidos, the rest is nombre(s). */
-function splitName(full: string) {
-  const parts = full.trim().split(/\s+/);
-  if (parts.length <= 1)
-    return { first_name: full.trim() || null, last_name: null, mother_last_name: null };
-  if (parts.length === 2)
-    return { first_name: parts[0], last_name: parts[1], mother_last_name: null };
-  return {
-    first_name: parts.slice(0, -2).join(" "),
-    last_name: parts[parts.length - 2],
-    mother_last_name: parts[parts.length - 1],
-  };
-}
 
 function IneUpload({
   side,
@@ -132,7 +114,15 @@ export function ProfileForm({
   ineBack: string | null;
 }) {
   const router = useRouter();
-  const [fullName, setFullName] = useState(joinName(initial));
+  // Nombre desglosado (equipo, 5-ago): nombres, apellido paterno y materno
+  // en campos propios — antes era un solo "Nombre completo".
+  const [firstName, setFirstName] = useState(initial.first_name ?? "");
+  const [lastName, setLastName] = useState(initial.last_name ?? "");
+  const [motherLastName, setMotherLastName] = useState(
+    initial.mother_last_name ?? "",
+  );
+  const [birthDate, setBirthDate] = useState(initial.birth_date ?? "");
+  const [nationality, setNationality] = useState(initial.nationality ?? "");
   const [phone, setPhone] = useState(initial.phone ?? "");
   const [curp, setCurp] = useState(initial.curp ?? "");
   const [cp, setCp] = useState(initial.postal_code ?? "");
@@ -151,6 +141,15 @@ export function ProfileForm({
   const [message, setMessage] = useState<string | null>(null);
 
   const curpValid = validateCurp(curp).isValid;
+  // Cruce CURP ↔ datos: SOLO MARCA, no bloquea (decisión de Pablo, 5-ago)
+  const cruceCurp = curpValid
+    ? curpCoincide(curp, {
+        nombres: firstName,
+        apellidoPaterno: lastName,
+        apellidoMaterno: motherLastName,
+        birthDate: birthDate || null,
+      })
+    : null;
 
   // Sepomex lookup when a full CP is typed
   useEffect(() => {
@@ -172,14 +171,17 @@ export function ProfileForm({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cp]);
 
+  // Nacionalidad y fecha de nacimiento son obligatorias para el 100%
+  // (decisión de Pablo, 5-ago). OJO con los Boolean(): sin ellos, un string
+  // en el && produce Number("Av...") = NaN (hallazgo del equipo).
   const completion =
-    20 * Number(fullName.trim().length > 0) +
-    20 * Number(curpValid) +
-    // OJO: sin Boolean(), `colony && street` devuelve el string y Number("Av...")
-    // da NaN — el porcentaje entero se mostraba como "NaN%" (hallazgo del equipo).
+    15 * Number(firstName.trim().length > 0 && lastName.trim().length > 0) +
+    15 * Number(curpValid) +
+    10 * Number(/^\d{4}-\d{2}-\d{2}$/.test(birthDate)) +
+    10 * Number(nationality.trim().length > 0) +
     20 * Number(Boolean(cp.length === 5 && colony && street)) +
-    20 * Number(Boolean(frontFile)) +
-    20 * Number(Boolean(backFile));
+    15 * Number(Boolean(frontFile)) +
+    15 * Number(Boolean(backFile));
 
   async function save(finalize: boolean) {
     setSaving(true);
@@ -188,7 +190,11 @@ export function ProfileForm({
     const { error } = await supabase
       .from("profiles")
       .update({
-        ...splitName(fullName),
+        first_name: firstName.trim() || null,
+        last_name: lastName.trim() || null,
+        mother_last_name: motherLastName.trim() || null,
+        birth_date: /^\d{4}-\d{2}-\d{2}$/.test(birthDate) ? birthDate : null,
+        nationality: nationality.trim() || null,
         phone: phone || null,
         curp: curp ? curp.toUpperCase() : null,
         postal_code: cp || null,
@@ -253,14 +259,42 @@ export function ProfileForm({
         <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
           TUS DATOS
         </span>
+        <TextField
+          label="Nombre(s)"
+          placeholder="Como aparece en tu identificación"
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+          autoComplete="given-name"
+        />
         <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
           <TextField
-            label="Nombre completo"
-            placeholder="Nombre y apellidos"
-            value={fullName}
-            onChange={(e) => setFullName(e.target.value)}
-            autoComplete="name"
+            label="Apellido paterno"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            autoComplete="family-name"
           />
+          <TextField
+            label="Apellido materno"
+            value={motherLastName}
+            onChange={(e) => setMotherLastName(e.target.value)}
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
+          <TextField
+            label="Fecha de nacimiento"
+            type="date"
+            value={birthDate}
+            onChange={(e) => setBirthDate(e.target.value)}
+            autoComplete="bday"
+          />
+          <TextField
+            label="Nacionalidad"
+            placeholder="Mexicana"
+            value={nationality}
+            onChange={(e) => setNationality(e.target.value)}
+          />
+        </div>
+        <div className="grid grid-cols-1 gap-3.5 md:grid-cols-2">
           <TextField
             label="Teléfono"
             type="tel"
@@ -269,31 +303,39 @@ export function ProfileForm({
             onChange={(e) => setPhone(e.target.value)}
             autoComplete="tel"
           />
+          <TextField
+            label="CURP"
+            placeholder="18 caracteres"
+            value={curp}
+            maxLength={18}
+            onChange={(e) => setCurp(e.target.value.toUpperCase())}
+            style={{ letterSpacing: ".06em" }}
+            rightSlot={
+              curp.length > 0 ? (
+                curpValid ? (
+                  <span className="text-sm text-success-text">✓</span>
+                ) : (
+                  <span className="text-xs text-error-text">
+                    {curp.length}/18
+                  </span>
+                )
+              ) : undefined
+            }
+            hint={
+              curp.length > 0 && !curpValid
+                ? "Revisa el formato de tu CURP."
+                : undefined
+            }
+          />
         </div>
-        <TextField
-          label="CURP"
-          placeholder="18 caracteres"
-          value={curp}
-          maxLength={18}
-          onChange={(e) => setCurp(e.target.value.toUpperCase())}
-          style={{ letterSpacing: ".06em" }}
-          rightSlot={
-            curp.length > 0 ? (
-              curpValid ? (
-                <span className="text-sm text-success-text">✓</span>
-              ) : (
-                <span className="text-xs text-error-text">
-                  {curp.length}/18
-                </span>
-              )
-            ) : undefined
-          }
-          hint={
-            curp.length > 0 && !curpValid
-              ? "Revisa el formato de tu CURP."
-              : undefined
-          }
-        />
+        {/* El cruce CURP ↔ datos solo avisa, nunca bloquea (Pablo, 5-ago) */}
+        {cruceCurp && !cruceCurp.coincide && (
+          <div className="rounded-[12px] bg-warning-bg px-4 py-3 text-[12.5px] leading-normal text-warning-text">
+            ⚠ Tu CURP no parece coincidir con{" "}
+            {cruceCurp.discrepancias.join(" ni con ")}. Revísalos por favor —
+            si están bien así, puedes continuar sin problema.
+          </div>
+        )}
       </section>
 
       <section className="flex flex-col gap-4 rounded-[20px] bg-white p-5 shadow-[var(--shadow-card)] md:p-[26px]">

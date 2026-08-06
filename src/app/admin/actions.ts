@@ -15,6 +15,7 @@ import {
 } from "@/lib/site";
 import { CAMPAIGN_COUPON_KEYS, CAMPAIGN_PDF_SLOTS } from "@/lib/landings";
 import { getResend, EMAIL_FROM } from "@/lib/resend";
+import { notifyTeam } from "@/lib/alerts";
 import { sendTemplatedEmail } from "@/lib/email/send";
 import { getStripe } from "@/lib/stripe";
 import { getTemplateDef } from "@/lib/email/templates";
@@ -274,6 +275,274 @@ export async function resolveAmbassador(
 
   revalidatePath("/admin");
   revalidatePath("/admin/embajadores");
+}
+
+/** Audiencias de los envíos dirigidos (equipo, 5-ago). */
+export type EmailAudience =
+  | "miembros_activos"
+  | "miembros_inactivos"
+  | "perfil_incompleto"
+  | "con_factura"
+  | "embajadores"
+  | "centros"
+  | "lista";
+
+async function resolveAudience(
+  admin: ReturnType<typeof createAdminClient>,
+  audience: EmailAudience,
+  lista?: string,
+): Promise<string[]> {
+  if (audience === "lista") {
+    return [
+      ...new Set(
+        (lista ?? "")
+          .split(/[\s,;]+/)
+          .map((e) => e.trim().toLowerCase())
+          .filter((e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)),
+      ),
+    ];
+  }
+  if (audience === "embajadores") {
+    const { data } = await admin
+      .from("ambassadors")
+      .select("email")
+      .eq("status", "approved");
+    return [...new Set((data ?? []).map((a) => a.email).filter(Boolean))];
+  }
+  if (audience === "centros") {
+    const { data } = await admin
+      .from("wellness_centers")
+      .select("email")
+      .eq("status", "approved");
+    return [
+      ...new Set(
+        (data ?? []).map((c) => c.email).filter((e): e is string => Boolean(e)),
+      ),
+    ];
+  }
+  let q = admin.from("profiles").select("email").eq("role", "member");
+  if (audience === "miembros_activos") q = q.eq("membership_status", "active");
+  if (audience === "miembros_inactivos")
+    q = q.neq("membership_status", "active");
+  if (audience === "perfil_incompleto")
+    q = q.eq("membership_status", "active").eq("profile_completed", false);
+  if (audience === "con_factura")
+    q = q.eq("membership_status", "active").eq("cfdi_requested", true);
+  const { data } = await q.limit(2000);
+  return [
+    ...new Set(
+      (data ?? []).map((p) => p.email).filter((e): e is string => Boolean(e)),
+    ),
+  ];
+}
+
+/**
+ * Envío extraordinario con HTML libre a una audiencia elegida (equipo,
+ * 5-ago). SOLO el super admin puede disparar el envío (decisión de Pablo).
+ * La reja CORREOS_PERMITIDOS aplica sola en ambientes de prueba.
+ */
+export async function sendExtraordinaryEmail(input: {
+  subject: string;
+  html: string;
+  audience: EmailAudience;
+  lista?: string;
+}) {
+  const { admin } = await requireAdmin(true);
+  const subject = input.subject?.trim();
+  const html = input.html?.trim();
+  if (!subject || subject.length < 3) return { error: "Escribe el asunto." };
+  if (!html || html.length < 20)
+    return { error: "Pega el HTML del correo (mínimo unas líneas)." };
+
+  const recipients = await resolveAudience(admin, input.audience, input.lista);
+  if (recipients.length === 0)
+    return { error: "La audiencia elegida no tiene destinatarios." };
+
+  const resend = getResend();
+  let enviados = 0;
+  for (const to of recipients) {
+    try {
+      const { error } = await resend.emails.send({
+        from: EMAIL_FROM,
+        to,
+        subject,
+        html,
+      });
+      if (!error) enviados++;
+    } catch {
+      // seguir con el resto
+    }
+  }
+
+  await notifyTeam(
+    "notify_comunicados",
+    "Envío extraordinario realizado ✉️",
+    `<h2 style="color:#1E5350">Envío extraordinario</h2>
+     <p><strong>Asunto:</strong> ${subject}</p>
+     <p><strong>Audiencia:</strong> ${input.audience} · <strong>Enviados:</strong> ${enviados} de ${recipients.length}</p>`,
+  );
+
+  return { ok: true as const, enviados, total: recipients.length };
+}
+
+/**
+ * Recordatorios de datos faltantes — botón "enviar ahora" (equipo, 5-ago).
+ * SOLO super admin; el cron /api/cron/documentos hará el envío periódico.
+ */
+export async function sendMissingDocsReminders() {
+  const { admin } = await requireAdmin(true);
+  const { enviarRecordatoriosDatosFaltantes } = await import(
+    "@/lib/email/recordatorios"
+  );
+  const result = await enviarRecordatoriosDatosFaltantes(admin);
+  return { ok: true as const, ...result };
+}
+
+/**
+ * Registrar un pago directo a un centro de bienestar (equipo, 5-ago).
+ * Etapa manual: el SPEI se hace fuera; aquí queda el registro y el centro
+ * lo ve en su portal.
+ */
+export async function registerCenterPayment(input: {
+  centerId: string;
+  concept: string;
+  amount: string;
+  paidAt?: string;
+  notes?: string;
+}) {
+  const { admin, adminId } = await requireAdmin();
+  const amount = Number(input.amount);
+  if (!Number.isFinite(amount) || amount <= 0)
+    return { error: "Revisa el monto." };
+  const CONCEPTS = ["vacunas", "emergencia_medica", "fallecimiento", "otro"];
+  if (!CONCEPTS.includes(input.concept))
+    return { error: "Elige el concepto del pago." };
+  const paidAt = input.paidAt?.trim();
+  if (paidAt && !/^\d{4}-\d{2}-\d{2}$/.test(paidAt))
+    return { error: "Revisa la fecha del pago." };
+
+  const { error } = await admin.from("center_payments").insert({
+    center_id: input.centerId,
+    concept: input.concept,
+    amount,
+    notes: input.notes?.trim() || null,
+    ...(paidAt ? { paid_at: paidAt } : {}),
+    created_by: adminId,
+  });
+  if (error) return { error: "No pudimos registrar el pago." };
+
+  revalidatePath("/admin/centros/pagos");
+  revalidatePath("/centro");
+  return { ok: true as const };
+}
+
+/**
+ * Edición de datos del miembro por el SUPER ADMIN (equipo, 5-ago): el caso
+ * son personas mayores que llaman por teléfono y no pueden hacerlo solas.
+ */
+export async function updateMemberByAdmin(
+  userId: string,
+  fields: {
+    first_name?: string;
+    last_name?: string;
+    mother_last_name?: string;
+    phone?: string;
+    birth_date?: string;
+    nationality?: string;
+    curp?: string;
+    street?: string;
+    number_ext?: string;
+    number_int?: string;
+    colony?: string;
+    city?: string;
+    state?: string;
+    postal_code?: string;
+  },
+) {
+  const { admin } = await requireAdmin(true);
+
+  const t = (v?: string) => (v?.trim() ? v.trim() : null);
+  const street = t(fields.street);
+  const numExt = t(fields.number_ext);
+  const numInt = t(fields.number_int);
+  const birth = t(fields.birth_date);
+  if (birth && !/^\d{4}-\d{2}-\d{2}$/.test(birth))
+    return { error: "Revisa la fecha de nacimiento." };
+
+  const { error } = await admin
+    .from("profiles")
+    .update({
+      first_name: t(fields.first_name),
+      last_name: t(fields.last_name),
+      mother_last_name: t(fields.mother_last_name),
+      phone: t(fields.phone),
+      birth_date: birth,
+      nationality: t(fields.nationality),
+      curp: t(fields.curp)?.toUpperCase() ?? null,
+      street,
+      number_ext: numExt,
+      number_int: numInt,
+      colony: t(fields.colony),
+      city: t(fields.city),
+      state: t(fields.state),
+      postal_code: t(fields.postal_code),
+      street_address:
+        [street, numExt && `#${numExt}`, numInt && `Int. ${numInt}`]
+          .filter(Boolean)
+          .join(" ") || null,
+    })
+    .eq("id", userId);
+  if (error) return { error: "No pudimos guardar los cambios." };
+
+  revalidatePath(`/admin/miembros/${userId}`);
+  revalidatePath("/admin/miembros");
+  return { ok: true as const };
+}
+
+/** Edición de una mascota por el SUPER ADMIN (equipo, 5-ago). */
+export async function updatePetByAdmin(
+  petId: string,
+  fields: {
+    name?: string;
+    breed?: string;
+    sex?: string;
+    age_years?: string;
+    age_months?: string;
+    coat_color?: string;
+    eye_color?: string;
+    nose_color?: string;
+  },
+) {
+  const { admin } = await requireAdmin(true);
+  const t = (v?: string) => (v?.trim() ? v.trim() : null);
+  const num = (v?: string) => {
+    const n = Number(v);
+    return v?.trim() && Number.isFinite(n) && n >= 0 ? n : null;
+  };
+
+  const name = t(fields.name);
+  if (!name) return { error: "La mascota necesita nombre." };
+
+  const { data: pet, error } = await admin
+    .from("pets")
+    .update({
+      name,
+      breed: t(fields.breed),
+      sex: fields.sex === "male" || fields.sex === "female" ? fields.sex : null,
+      age_years: num(fields.age_years),
+      age_months: num(fields.age_months),
+      coat_color: t(fields.coat_color),
+      eye_color: t(fields.eye_color),
+      nose_color: t(fields.nose_color),
+    })
+    .eq("id", petId)
+    .select("user_id")
+    .single();
+  if (error || !pet) return { error: "No pudimos guardar los cambios." };
+
+  revalidatePath(`/admin/miembros/${pet.user_id}`);
+  revalidatePath("/admin/mascotas");
+  return { ok: true as const };
 }
 
 /**
