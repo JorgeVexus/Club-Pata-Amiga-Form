@@ -15,6 +15,10 @@ export type AmbassadorApplicationInput = {
   state: string;
   city: string;
   isAdult: boolean;
+  /** yyyy-mm-dd — lo captura el propio solicitante (equipo, 5-ago) */
+  birthDate?: string;
+  /** Por qué quiere ser embajador (equipo, 5-ago) */
+  motivation?: string;
 };
 
 /** Solicitud pública de embajador → cola de revisión del comité (CURP, 18+). */
@@ -78,6 +82,7 @@ export async function registerAmbassador(input: AmbassadorApplicationInput) {
     }
   }
 
+  const birthDate = input.birthDate?.trim();
   const { error } = await admin.from("ambassadors").insert({
     user_id: user?.id ?? null,
     first_name: firstName,
@@ -87,6 +92,9 @@ export async function registerAmbassador(input: AmbassadorApplicationInput) {
     curp,
     state: input.state?.trim() || null,
     city: input.city?.trim() || null,
+    birth_date:
+      birthDate && /^\d{4}-\d{2}-\d{2}$/.test(birthDate) ? birthDate : null,
+    motivation: input.motivation?.trim() || null,
     status: "pending",
   });
   if (error)

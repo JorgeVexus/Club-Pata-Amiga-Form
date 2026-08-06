@@ -72,6 +72,7 @@ export default async function CuentaPage() {
           plan={(sub.plan as "monthly" | "annual") ?? "monthly"}
           cancelAtPeriodEnd={sub.cancel_at_period_end}
           renewsLabel={renews ? formatDateEs(renews) : null}
+          periodEndIso={renews ? renews.toISOString() : null}
         />
       ) : (
         <section className="flex flex-col items-start gap-3 rounded-[20px] bg-warning-bg p-5 md:p-[26px]">

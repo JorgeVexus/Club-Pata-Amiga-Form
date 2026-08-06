@@ -15,6 +15,9 @@ export function AmbassadorForm() {
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [isAdult, setIsAdult] = useState(false);
+  // Fecha de nacimiento y motivación (equipo, 5-ago)
+  const [birthDate, setBirthDate] = useState("");
+  const [motivation, setMotivation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState(false);
@@ -32,6 +35,8 @@ export function AmbassadorForm() {
         state,
         city,
         isAdult,
+        birthDate,
+        motivation,
       });
       if (result.error) setError(result.error);
       else setDone(true);
@@ -121,6 +126,18 @@ export function AmbassadorForm() {
           onChange={(e) => setCity(e.target.value)}
         />
       </div>
+      <TextField
+        label="Fecha de nacimiento"
+        type="date"
+        value={birthDate}
+        onChange={(e) => setBirthDate(e.target.value)}
+      />
+      <TextField
+        label="¿Por qué quieres ser embajador?"
+        value={motivation}
+        onChange={(e) => setMotivation(e.target.value)}
+        placeholder="Cuéntanos tu motivación en una o dos líneas"
+      />
       <label className="flex items-start gap-2.5 text-[13px] leading-snug text-ink-secondary">
         <input
           type="checkbox"

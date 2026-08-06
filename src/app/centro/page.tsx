@@ -2,12 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { WELLNESS_SERVICES, type WellnessService } from "@/lib/constants";
 import { PublicHeader } from "@/components/public/PublicHeader";
 import { WelcomeOnce } from "@/components/app/WelcomeOnce";
 import { CenterInfoCard } from "./CenterInfoCard";
 import { PromotionsCard, type PromotionRow } from "./PromotionsCard";
 import { ChangePasswordCard } from "@/components/app/ChangePasswordCard";
+import { ServiciosCard, type LocationRow } from "./ServiciosCard";
+import { RedesCard } from "./RedesCard";
+import { BajaVoluntariaCard } from "./BajaVoluntariaCard";
 import { ProfileMenu, type DashboardEntry } from "@/components/app/ProfileMenu";
 import { AppealButton } from "@/components/app/AppealButton";
 import { APPEAL_MAX_PER_SUBJECT } from "@/lib/constants";
@@ -20,24 +22,28 @@ function StatusScreen({
   reason,
 }: {
   name: string;
-  status: "pending" | "rejected";
+  status: "pending" | "rejected" | "deactivated";
   reason: string | null;
 }) {
   return (
     <div className="mx-auto flex w-full max-w-[520px] flex-col items-center gap-4 rounded-[20px] bg-white p-8 text-center shadow-[0_2px_12px_rgba(30,83,80,.06)]">
       <span className="text-[42px]" aria-hidden>
-        {status === "pending" ? "⏳" : "💌"}
+        {status === "pending" ? "⏳" : status === "deactivated" ? "🕊️" : "💌"}
       </span>
       <h1 className="font-display text-[24px] text-ink-title">
         {status === "pending"
           ? `La solicitud de ${name} está en revisión`
-          : "Tu solicitud no fue aprobada"}
+          : status === "deactivated"
+            ? `${name} está dado de baja`
+            : "Tu solicitud no fue aprobada"}
       </h1>
       <p className="text-sm leading-relaxed text-ink-secondary">
         {status === "pending"
           ? "El comité está revisando tu solicitud de centro aliado. Te avisaremos por correo en cuanto haya resolución."
-          : (reason ??
-            "El comité no pudo aprobar tu solicitud en esta ocasión. Puedes escribirnos si crees que hay un error.")}
+          : status === "deactivated"
+            ? "Tu centro ya no aparece en el directorio de centros aliados. Si quieres volver a la red, escríbenos o envía una nueva solicitud — con gusto te recibimos de vuelta. 💚"
+            : (reason ??
+              "El comité no pudo aprobar tu solicitud en esta ocasión. Puedes escribirnos si crees que hay un error.")}
       </p>
       <Link href="/" className="font-semibold text-teal-deep hover:underline">
         Volver al inicio
@@ -55,7 +61,7 @@ export default async function CentroDashboardPage() {
 
   const admin = createAdminClient();
   const CENTER_COLS =
-    "id, name, contact_name, email, phone, website, logo_url, services, member_benefit, status, rejection_reason";
+    "id, name, contact_name, email, phone, website, logo_url, services, member_benefit, status, rejection_reason, social_links";
   let { data: centerRows } = await admin
     .from("wellness_centers")
     .select(CENTER_COLS)
@@ -155,7 +161,7 @@ export default async function CentroDashboardPage() {
         <div className="flex flex-col items-center gap-4 px-5 py-12">
           <StatusScreen
             name={center.name}
-            status={center.status as "pending" | "rejected"}
+            status={center.status as "pending" | "rejected" | "deactivated"}
             reason={center.rejection_reason}
           />
           {center.status === "rejected" &&
@@ -227,48 +233,16 @@ export default async function CentroDashboardPage() {
           </div>
 
           <div className="flex flex-col gap-4">
-            {/* Servicios y ubicaciones: los cambia el comité para cuidar el directorio */}
-            <div className="flex flex-col gap-3 rounded-[20px] bg-white p-5 shadow-[var(--shadow-card)]">
-              <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
-                TUS SERVICIOS
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {(center.services ?? []).map((s: string) => {
-                  const svc = WELLNESS_SERVICES[s as WellnessService];
-                  return (
-                    <span
-                      key={s}
-                      className="rounded-full bg-info-bg px-3 py-1.5 text-xs font-bold text-info-text"
-                    >
-                      {svc ? `${svc.emoji} ${svc.label}` : s}
-                    </span>
-                  );
-                })}
-              </div>
-              <span className="text-[13px] font-extrabold tracking-[.06em] text-teal-deep">
-                TUS UBICACIONES
-              </span>
-              {(locations ?? []).map((l) => (
-                <div
-                  key={l.id}
-                  className="flex flex-col rounded-[12px] border-[1.5px] border-border-input px-3.5 py-2.5 text-[12.5px] text-ink-body"
-                >
-                  <span className="font-semibold text-ink-title">
-                    {l.address}
-                  </span>
-                  <span className="text-ink-tertiary">
-                    {[l.colony, l.city, l.state, l.postal_code]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </span>
-                  {l.phone && <span className="text-ink-tertiary">📞 {l.phone}</span>}
-                </div>
-              ))}
-              <span className="text-xs text-ink-tertiary">
-                ¿Cambió algún servicio o dirección? Escríbenos y el comité lo
-                actualiza para cuidar el directorio.
-              </span>
-            </div>
+            {/* Servicios y ubicaciones editables por el centro (equipo, 5-ago) */}
+            <ServiciosCard
+              initialServices={center.services ?? []}
+              locations={(locations ?? []) as LocationRow[]}
+            />
+            <RedesCard
+              initial={
+                (center.social_links ?? null) as Record<string, string> | null
+              }
+            />
           </div>
         </div>
 
@@ -276,6 +250,7 @@ export default async function CentroDashboardPage() {
             menú del encabezado — aquí estaba duplicado (hallazgo del equipo). */}
         <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
           <ChangePasswordCard />
+          <BajaVoluntariaCard centerName={center.name} />
         </div>
       </div>
 

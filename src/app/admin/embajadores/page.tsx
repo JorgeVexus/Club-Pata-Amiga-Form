@@ -459,6 +459,14 @@ export default async function AdminEmbajadoresPage({
                       </div>
                     </SensitiveBlock>
 
+                    {/* Tablero dinámico por embajador (equipo, 5-ago) */}
+                    <a
+                      href={`/admin/embajadores/${a.id}`}
+                      className="self-start text-[13px] font-bold text-teal-deep hover:underline"
+                    >
+                      📊 Ver tablero de referidos y pagos →
+                    </a>
+
                     {isSuper && (
                       <div className="border-t border-border-divider pt-3">
                         <AmbassadorDeactivateButton

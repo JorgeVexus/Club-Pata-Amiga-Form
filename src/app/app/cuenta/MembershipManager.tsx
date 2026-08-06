@@ -14,19 +14,35 @@ const CANCEL_REASONS = [
   "Otro motivo",
 ];
 
+/** Lo que se pierde al cancelar — popup de retención (equipo, 5-ago). */
+const BENEFITS_LOST = [
+  "💬 Orientación veterinaria 24/7 para tu manada",
+  "🐾 Reintegros: hasta $3,000 MXN en gastos veterinarios, $2,000 por fallecimiento y $300 en vacunas",
+  "📍 Beneficios y promociones en la red de centros aliados",
+  "👨‍👩‍👧 Protección de hasta 3 mascotas con una sola membresía",
+  "⏳ El período de espera ya avanzado — si vuelves después, empieza de nuevo",
+];
+
 export function MembershipManager({
   plan,
   cancelAtPeriodEnd,
   renewsLabel,
+  periodEndIso,
 }: {
   plan: "monthly" | "annual";
   cancelAtPeriodEnd: boolean;
   renewsLabel: string | null;
+  periodEndIso?: string | null;
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [confirmSwitch, setConfirmSwitch] = useState(false);
+  const [benefitsOpen, setBenefitsOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
+  const [farewellOpen, setFarewellOpen] = useState(false);
+  // Días de protección restantes; se calcula al confirmar la cancelación
+  // (Date.now() no puede vivir en el render).
+  const [remainingDays, setRemainingDays] = useState<number | null>(null);
   const [reason, setReason] = useState("");
   const [comments, setComments] = useState("");
   const [message, setMessage] = useState<string | null>(null);
@@ -184,7 +200,7 @@ export function MembershipManager({
                 </p>
                 <button
                   type="button"
-                  onClick={() => setCancelOpen(true)}
+                  onClick={() => setBenefitsOpen(true)}
                   className="grid h-10 flex-none place-items-center rounded-full border-[1.5px] border-border-input px-5 text-[13px] font-semibold text-ink-secondary transition-colors hover:border-error-text hover:text-error-text"
                 >
                   Cancelar…
@@ -222,12 +238,34 @@ export function MembershipManager({
                   <button
                     type="button"
                     disabled={pending || !reason}
-                    onClick={() =>
-                      run(
-                        () => cancelMembership(reason, comments.trim()),
-                        "Tu cancelación quedó programada. Tu manada sigue protegida hasta el fin del período.",
-                      )
-                    }
+                    onClick={() => {
+                      setError(null);
+                      startTransition(async () => {
+                        try {
+                          await cancelMembership(reason, comments.trim());
+                          setCancelOpen(false);
+                          // Despedida con los días restantes (equipo, 5-ago)
+                          setRemainingDays(
+                            periodEndIso
+                              ? Math.max(
+                                  0,
+                                  Math.ceil(
+                                    (new Date(periodEndIso).getTime() -
+                                      Date.now()) /
+                                      86_400_000,
+                                  ),
+                                )
+                              : null,
+                          );
+                          setFarewellOpen(true);
+                          router.refresh();
+                        } catch {
+                          setError(
+                            "No pudimos completar el cambio. Intenta de nuevo.",
+                          );
+                        }
+                      });
+                    }}
                     className="grid h-11 place-items-center rounded-full bg-error-text px-5 text-[13px] font-bold text-white disabled:opacity-50"
                   >
                     {pending ? "Cancelando…" : "Confirmar cancelación"}
@@ -245,6 +283,98 @@ export function MembershipManager({
             )}
           </section>
         </>
+      )}
+
+      {/* Popup 1 — lo que pierdes al cancelar (retención; equipo, 5-ago) */}
+      {benefitsOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink-title/40 p-4"
+          onClick={() => setBenefitsOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-label="Antes de cancelar"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-[460px] rounded-[20px] bg-white p-6 shadow-[0_12px_40px_rgba(30,83,80,.25)]"
+          >
+            <h3 className="font-display text-[20px] text-ink-title">
+              Antes de irte… esto es lo que tu manada perdería 🐾
+            </h3>
+            <ul className="mt-3 flex flex-col gap-2.5">
+              {BENEFITS_LOST.map((b) => (
+                <li key={b} className="text-[13.5px] leading-normal text-ink-body">
+                  {b}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-5 flex flex-col gap-2.5">
+              <button
+                type="button"
+                onClick={() => setBenefitsOpen(false)}
+                className="grid h-12 place-items-center rounded-full bg-teal text-[14px] font-bold text-white transition-colors hover:bg-teal-deep"
+              >
+                Conservar mi membresía 💚
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setBenefitsOpen(false);
+                  setCancelOpen(true);
+                }}
+                className="grid h-11 place-items-center rounded-full text-[13px] font-semibold text-ink-tertiary transition-colors hover:text-error-text"
+              >
+                Quiero cancelar de todos modos
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Popup 2 — despedida con los días restantes (equipo, 5-ago) */}
+      {farewellOpen && (
+        <div
+          className="fixed inset-0 z-50 grid place-items-center bg-ink-title/40 p-4"
+          onClick={() => setFarewellOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-label="Cancelación programada"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-[440px] rounded-[20px] bg-white p-6 text-center shadow-[0_12px_40px_rgba(30,83,80,.25)]"
+          >
+            <span className="text-[40px]" aria-hidden>
+              💔🐾
+            </span>
+            <h3 className="mt-2 font-display text-[20px] text-ink-title">
+              Te vamos a extrañar
+            </h3>
+            <p className="mt-2 text-[13.5px] leading-relaxed text-ink-body">
+              Tu cancelación quedó programada.
+              {remainingDays != null && remainingDays > 0 ? (
+                <>
+                  {" "}
+                  Tu manada sigue protegida{" "}
+                  <strong>
+                    {remainingDays} día{remainingDays === 1 ? "" : "s"} más
+                  </strong>
+                  {renewsLabel ? ` (hasta el ${renewsLabel})` : ""}, con todos
+                  tus beneficios.
+                </>
+              ) : (
+                <> Tu protección sigue hasta el fin de tu período pagado.</>
+              )}{" "}
+              Si cambias de opinión antes de esa fecha, puedes reactivarla aquí
+              mismo y todo sigue igual. 💚
+            </p>
+            <button
+              type="button"
+              onClick={() => setFarewellOpen(false)}
+              className="mt-5 grid h-11 w-full place-items-center rounded-full bg-teal text-[13.5px] font-bold text-white transition-colors hover:bg-teal-deep"
+            >
+              Entendido
+            </button>
+          </div>
+        </div>
       )}
     </>
   );
