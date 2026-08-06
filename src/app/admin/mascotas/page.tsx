@@ -21,19 +21,40 @@ export default async function AdminMascotasPage({
   const isSuper = (await getAdminRole()) === "super_admin";
   // Por omisión las más recientes arriba (petición del equipo, 5-ago).
   const masAntiguas = orden === "antiguas";
-  const { data: pets } = await admin
-    .from("pets")
-    .select(
-      "id, name, species, breed, sex, coat_color, eye_color, nose_color, is_adopted, adoption_story, age_years, age_months, birth_date, is_senior, vet_certificate_url, photo_url, gallery_photos, approval_status, approval_notes, waiting_period_end_date, waiting_period_bypassed, created_at, user_id, profiles!user_id(first_name, last_name, email, phone, member_since, membership_status, curp, birth_date, street, number_ext, number_int, colony, postal_code, city, state, bank_name, clabe, rfc)",
-    )
-    .eq("is_active", true)
-    .order("created_at", { ascending: masAntiguas });
+  // Tabs extra del super admin: "bajas" (mascotas dadas de baja) y
+  // "apelacion" (mascotas con apelación presentada) — equipo, 5-ago.
+  const verBajas = estado === "bajas";
+  const verApelaciones = estado === "apelacion";
+  const [{ data: pets }, { data: petAppeals }] = await Promise.all([
+    admin
+      .from("pets")
+      .select(
+        "id, name, species, breed, sex, coat_color, eye_color, nose_color, is_adopted, adoption_story, age_years, age_months, birth_date, is_senior, vet_certificate_url, photo_url, gallery_photos, approval_status, approval_notes, waiting_period_end_date, waiting_period_bypassed, created_at, user_id, deactivation_reason, profiles!user_id(first_name, last_name, email, phone, member_since, membership_status, curp, birth_date, street, number_ext, number_int, colony, postal_code, city, state, bank_name, clabe, rfc)",
+      )
+      .eq("is_active", !verBajas)
+      .order("created_at", { ascending: masAntiguas }),
+    admin
+      .from("appeals")
+      .select("id, folio, status, pet_id")
+      .not("pet_id", "is", null),
+  ]);
 
-  const all = (pets ?? []).filter(
-    (p) => !estado || p.approval_status === estado,
+  const apeladasPorMascota = new Map<string, { folio: string; status: string }>();
+  for (const a of petAppeals ?? [])
+    if (a.pet_id && !apeladasPorMascota.has(a.pet_id))
+      apeladasPorMascota.set(a.pet_id, { folio: a.folio, status: a.status });
+
+  const all = (pets ?? []).filter((p) =>
+    verBajas
+      ? true
+      : verApelaciones
+        ? apeladasPorMascota.has(p.id)
+        : !estado || p.approval_status === estado,
   );
-  const pending = all.filter((p) => p.approval_status === "pending");
-  const resolved = all.filter((p) => p.approval_status !== "pending");
+  const pending = all.filter(
+    (p) => p.approval_status === "pending" && !verBajas && !verApelaciones,
+  );
+  const resolved = all.filter((p) => !pending.includes(p));
 
   type OwnerProfile = {
     first_name?: string | null;
@@ -99,6 +120,12 @@ export default async function AdminMascotasPage({
             { value: "pending", label: "En revisión" },
             { value: "approved", label: "Aprobadas" },
             { value: "rejected", label: "Denegadas" },
+            ...(isSuper
+              ? [
+                  { value: "apelacion", label: "⚖️ Apelaciones" },
+                  { value: "bajas", label: "🕊️ Bajas" },
+                ]
+              : []),
           ]}
         />
         <FilterChips
@@ -240,16 +267,29 @@ export default async function AdminMascotasPage({
             }
           />
         ))}
-        {pending.length === 0 && (
+        {pending.length === 0 && !verBajas && !verApelaciones && (
           <div className="rounded-[18px] bg-white p-6 text-sm text-ink-secondary shadow-[0_2px_10px_rgba(30,83,80,.05)]">
             Sin mascotas pendientes de revisión. 🎉
+          </div>
+        )}
+        {(verBajas || verApelaciones) && resolved.length === 0 && (
+          <div className="rounded-[18px] bg-white p-6 text-sm text-ink-secondary shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+            {verBajas
+              ? "Sin mascotas dadas de baja."
+              : "Sin mascotas con apelación."}
           </div>
         )}
       </div>
 
       {resolved.length > 0 && (
         <>
-          <h2 className="font-display text-lg text-ink-title">Resueltas</h2>
+          <h2 className="font-display text-lg text-ink-title">
+            {verBajas
+              ? "Dadas de baja"
+              : verApelaciones
+                ? "Con apelación"
+                : "Resueltas"}
+          </h2>
           <div className="flex flex-col rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
             {resolved.map((p) => {
               const prof = profOf(p.profiles);
@@ -267,14 +307,25 @@ export default async function AdminMascotasPage({
                         <strong className="text-ink-title">{p.name}</strong>
                         {p.breed ? ` · ${p.breed}` : ""} · {memberName(p.profiles)}
                       </span>
+                      {apeladasPorMascota.has(p.id) && (
+                        <span className="rounded-full bg-info-bg px-2.5 py-1 text-[10.5px] font-extrabold text-info-text">
+                          ⚖️ {apeladasPorMascota.get(p.id)!.folio}
+                        </span>
+                      )}
                       <span
                         className={`rounded-full px-2.5 py-1 text-[10.5px] font-extrabold ${
-                          p.approval_status === "approved"
-                            ? "bg-success-bg text-success-text"
-                            : "bg-error-bg text-error-text"
+                          verBajas
+                            ? "bg-cream text-ink-tertiary"
+                            : p.approval_status === "approved"
+                              ? "bg-success-bg text-success-text"
+                              : "bg-error-bg text-error-text"
                         }`}
                       >
-                        {p.approval_status === "approved" ? "APROBADA" : "DENEGADA"}
+                        {verBajas
+                          ? `🕊️ BAJA${p.deactivation_reason ? ` · ${p.deactivation_reason}` : ""}`
+                          : p.approval_status === "approved"
+                            ? "APROBADA"
+                            : "DENEGADA"}
                       </span>
                     </div>
                   }

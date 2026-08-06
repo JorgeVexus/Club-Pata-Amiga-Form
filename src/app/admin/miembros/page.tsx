@@ -17,9 +17,9 @@ const STATUS_CHIP: Record<string, { text: string; cls: string }> = {
 export default async function AdminMiembrosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; factura?: string }>;
+  searchParams: Promise<{ q?: string; factura?: string; estado?: string }>;
 }) {
-  const { q, factura } = await searchParams;
+  const { q, factura, estado } = await searchParams;
   const query = q?.trim() ?? "";
   const admin = createAdminClient();
 
@@ -50,7 +50,7 @@ export default async function AdminMiembrosPage({
   let membersQuery = admin
     .from("profiles")
     .select(
-      "id, first_name, last_name, email, phone, membership_status, member_since, created_at, cfdi_requested, pets!user_id(id), subscriptions(plan, status)",
+      "id, first_name, last_name, email, phone, membership_status, member_since, created_at, cfdi_requested, profile_completed, pets!user_id(id), subscriptions(plan, status)",
     )
     .eq("role", "member")
     .order("created_at", { ascending: false })
@@ -68,14 +68,33 @@ export default async function AdminMiembrosPage({
     membersQuery = membersQuery.or(orParts.join(","));
   }
 
-  const { data: membersRaw } = await membersQuery;
-  // Filtro y estadística de solicitantes de factura (equipo, 5-ago)
-  const members = (membersRaw ?? []).filter((m) =>
-    factura === "si"
-      ? m.cfdi_requested
-      : factura === "no"
-        ? !m.cfdi_requested
-        : true,
+  // Totales reales de toda la base (no solo la página visible) — equipo, 5-ago
+  const [{ data: membersRaw }, activosQ, inactivosQ] = await Promise.all([
+    membersQuery,
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "member")
+      .eq("membership_status", "active"),
+    admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "member")
+      .neq("membership_status", "active"),
+  ]);
+  // Filtros de estatus y factura + estadística de solicitantes (equipo, 5-ago)
+  const members = (membersRaw ?? []).filter(
+    (m) =>
+      (factura === "si"
+        ? m.cfdi_requested
+        : factura === "no"
+          ? !m.cfdi_requested
+          : true) &&
+      (estado === "activos"
+        ? m.membership_status === "active"
+        : estado === "inactivos"
+          ? m.membership_status !== "active"
+          : true),
   );
   const conFactura = (membersRaw ?? []).filter((m) => m.cfdi_requested).length;
 
@@ -96,7 +115,14 @@ export default async function AdminMiembrosPage({
           <p className="text-sm text-ink-secondary">
             {members.length} resultado{members.length === 1 ? "" : "s"}
             {query ? ` para “${query}”` : " (más recientes)"} ·{" "}
-            {conFactura} solicita{conFactura === 1 ? "" : "n"} factura
+            <strong className="text-success-text">
+              {activosQ.count ?? 0} activos
+            </strong>{" "}
+            ·{" "}
+            <strong className="text-ink-secondary">
+              {inactivosQ.count ?? 0} inactivos
+            </strong>{" "}
+            · {conFactura} solicita{conFactura === 1 ? "" : "n"} factura
           </p>
         </div>
         <form action="/admin/miembros" className="flex items-center gap-2">
@@ -115,24 +141,38 @@ export default async function AdminMiembrosPage({
         </form>
       </div>
 
-      <FilterChips
-        basePath="/admin/miembros"
-        current={factura}
-        param="factura"
-        keep={{ q: query || undefined }}
-        allLabel="Todos"
-        options={[
-          { value: "si", label: "Solicitan factura" },
-          { value: "no", label: "Sin factura" },
-        ]}
-      />
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+        <FilterChips
+          basePath="/admin/miembros"
+          current={estado}
+          keep={{ q: query || undefined, factura }}
+          allLabel="Todos"
+          options={[
+            { value: "activos", label: "Activos" },
+            { value: "inactivos", label: "Inactivos" },
+          ]}
+        />
+        <FilterChips
+          basePath="/admin/miembros"
+          current={factura}
+          param="factura"
+          keep={{ q: query || undefined, estado }}
+          allLabel="Con y sin factura"
+          options={[
+            { value: "si", label: "Solicitan factura" },
+            { value: "no", label: "Sin factura" },
+          ]}
+        />
+      </div>
 
       <div className="flex flex-col overflow-x-auto rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
-        <div className="grid min-w-[800px] grid-cols-[1fr_110px_90px_130px_80px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] pb-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
+        <div className="grid min-w-[1000px] grid-cols-[1fr_100px_80px_120px_120px_90px_70px_80px] gap-2 border-b-[1.5px] border-[#F2EEE4] pb-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
           <span>MIEMBRO</span>
           <span>ESTATUS</span>
           <span>PLAN</span>
+          <span>SOLICITUD</span>
           <span>MIEMBRO DESDE</span>
+          <span>PERFIL</span>
           <span>FACTURA</span>
           <span>MASCOTAS</span>
         </div>
@@ -143,7 +183,7 @@ export default async function AdminMiembrosPage({
             <Link
               key={m.id}
               href={`/admin/miembros/${m.id}`}
-              className="grid min-w-[800px] grid-cols-[1fr_110px_90px_130px_80px_90px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors last:border-0 hover:bg-cream"
+              className="grid min-w-[1000px] grid-cols-[1fr_100px_80px_120px_120px_90px_70px_80px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors last:border-0 hover:bg-cream"
             >
               <span className="min-w-0">
                 <strong className="text-ink-title">
@@ -160,10 +200,20 @@ export default async function AdminMiembrosPage({
                 {chip.text}
               </span>
               <span>{planOf(m.subscriptions ?? [])}</span>
+              <span>{formatDateEs(new Date(m.created_at))}</span>
               <span>
                 {m.member_since
                   ? formatDateEs(new Date(m.member_since))
                   : "—"}
+              </span>
+              <span
+                className={`justify-self-start rounded-full px-2 py-[3px] text-[10px] font-extrabold ${
+                  m.profile_completed
+                    ? "bg-success-bg text-success-text"
+                    : "bg-warning-bg text-warning-text"
+                }`}
+              >
+                {m.profile_completed ? "COMPLETO" : "INCOMPLETO"}
               </span>
               <span>{m.cfdi_requested ? "Sí 🧾" : "No"}</span>
               <span>{(m.pets ?? []).length} 🐾</span>

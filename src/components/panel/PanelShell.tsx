@@ -75,8 +75,10 @@ export function PanelShell({
         <span className="mb-2.5 ml-2 text-[10.5px] font-extrabold tracking-[.1em] text-white/50">
           {meta.label}
         </span>
-        {nav}
-        <div className="mt-auto">
+        {/* El menú scrollea solo (min-h-0): con ventanas bajas se encimaba con
+            el pie y quedaba inusable (hallazgo del equipo, 5-ago). */}
+        <div className="min-h-0 flex-1 overflow-y-auto">{nav}</div>
+        <div className="mt-2">
           <LogoutButton variant="admin" />
         </div>
         <ProfileMenu
@@ -87,7 +89,9 @@ export function PanelShell({
         />
       </aside>
 
-      <main>{children}</main>
+      {/* min-w-0: sin esto las tablas anchas empujan la retícula y el menú
+          lateral se encima con el contenido al achicar la ventana. */}
+      <main className="min-w-0">{children}</main>
     </div>
   );
 }

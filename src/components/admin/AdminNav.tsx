@@ -34,6 +34,7 @@ export function AdminNav({
   // Marketing (Landings/Comunicados/Sitio web) va agrupado al final.
   const items = [
     { href: "/admin", icon: "📊", label: "Resumen" },
+    { href: "/admin/notificaciones", icon: "🔔", label: "Notificaciones" },
     { href: "/admin/mascotas", icon: "🐾", label: "Mascotas", badge: petsPending, badgeCls: "bg-orange" },
     { href: "/admin/reintegros", icon: "💚", label: "Reintegros", badge: reimbursementsPending, badgeCls: "bg-pink" },
     { href: "/admin/embajadores", icon: "🤝", label: "Embajadores", badge: ambassadorsPending, badgeCls: "bg-white/20" },
@@ -132,6 +133,7 @@ export function AdminNavMobile(props: {
   const pathname = usePathname();
   const items = [
     { href: "/admin", icon: "📊", label: "Resumen", badge: 0 },
+    { href: "/admin/notificaciones", icon: "🔔", label: "Notificaciones", badge: 0 },
     { href: "/admin/mascotas", icon: "🐾", label: "Mascotas", badge: props.petsPending },
     { href: "/admin/reintegros", icon: "💚", label: "Reintegros", badge: props.reimbursementsPending },
     { href: "/admin/embajadores", icon: "🤝", label: "Embajadores", badge: props.ambassadorsPending },

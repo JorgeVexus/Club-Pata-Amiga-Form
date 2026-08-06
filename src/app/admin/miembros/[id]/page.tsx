@@ -47,7 +47,7 @@ export default async function AdminMiembroDetailPage({
       admin
         .from("profiles")
         .select(
-          "id, first_name, last_name, mother_last_name, email, phone, curp, birth_date, membership_status, member_since, waiting_period_end_date, postal_code, state, city, colony, street_address, ambassador_code_used, cfdi_requested, rfc, razon_social, regimen_fiscal, uso_cfdi, cp_fiscal, created_at, bank_name, clabe",
+          "id, first_name, last_name, mother_last_name, email, phone, curp, birth_date, membership_status, member_since, waiting_period_end_date, postal_code, state, city, colony, street_address, ambassador_code_used, cfdi_requested, rfc, razon_social, regimen_fiscal, uso_cfdi, cp_fiscal, created_at, bank_name, clabe, profile_completed",
         )
         .eq("id", id)
         .maybeSingle(),
@@ -75,6 +75,13 @@ export default async function AdminMiembroDetailPage({
         .eq("status", "active")
         .maybeSingle(),
     ]);
+
+  // Historial de cancelaciones con su motivo (equipo, 5-ago)
+  const { data: cancelaciones } = await admin
+    .from("cancellations")
+    .select("id, reason, survey, created_at")
+    .eq("user_id", id)
+    .order("created_at", { ascending: false });
 
   if (!m) notFound();
 
@@ -118,11 +125,23 @@ export default async function AdminMiembroDetailPage({
         </span>
       </div>
 
+      {/* Contacto y Membresía separados en tarjetas propias, Registro y
+          Miembro desde en líneas aparte, y banco/plan/código en su tarjeta
+          (reestructura pedida por el equipo, 5-ago). */}
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* Contacto y membresía */}
+        {/* Contacto */}
         <div className="flex flex-col gap-2 rounded-[18px] bg-white p-5 text-[13px] text-ink-body shadow-[0_2px_10px_rgba(30,83,80,.05)]">
-          <span className="text-[11px] font-extrabold tracking-[.06em] text-teal-deep">
-            CONTACTO Y MEMBRESÍA
+          <span className="flex items-center justify-between text-[11px] font-extrabold tracking-[.06em] text-teal-deep">
+            CONTACTO
+            <span
+              className={`rounded-full px-2 py-[3px] text-[10px] font-extrabold ${
+                m.profile_completed
+                  ? "bg-success-bg text-success-text"
+                  : "bg-warning-bg text-warning-text"
+              }`}
+            >
+              PERFIL {m.profile_completed ? "COMPLETO" : "INCOMPLETO"}
+            </span>
           </span>
           <span>
             ✉️{" "}
@@ -132,31 +151,14 @@ export default async function AdminMiembroDetailPage({
             {m.phone ? ` · 📞 ${m.phone}` : ""}
           </span>
           <span>CURP: {m.curp ?? "—"}</span>
-          <span>Domicilio: {address || "—"}</span>
           <span>
-            Miembro desde:{" "}
-            {m.member_since ? formatDateEs(new Date(m.member_since)) : "—"} ·
-            Registro: {formatDateEs(new Date(m.created_at))}
-          </span>
-          <span>
-            Período de espera (contratante):{" "}
-            {m.waiting_period_end_date
-              ? `termina el ${formatDateEs(m.waiting_period_end_date)}`
+            Fecha de nacimiento:{" "}
+            {m.birth_date
+              ? formatDateEs(new Date(m.birth_date + "T12:00:00"))
               : "—"}
           </span>
-          <span>
-            Plan:{" "}
-            {sub
-              ? `${sub.plan === "annual" ? "Anual" : "Mensual"} · ${formatMxn(Number(sub.amount ?? 0))} MXN${sub.cancel_at_period_end ? " · CANCELA AL CORTE" : ""}`
-              : "sin suscripción activa"}
-          </span>
-          {m.ambassador_code_used && (
-            <span>Código de embajador usado: {m.ambassador_code_used}</span>
-          )}
-          <span>
-            Banco: {m.bank_name ?? "—"}
-            {m.clabe ? ` · CLABE ····${String(m.clabe).slice(-4)}` : ""}
-          </span>
+          <span>Domicilio: {address || "—"}</span>
+          <span>Registro: {formatDateEs(new Date(m.created_at))}</span>
           {ineDocs.length > 0 && (
             <span className="flex flex-wrap items-center gap-2">
               Identificación:
@@ -175,6 +177,86 @@ export default async function AdminMiembroDetailPage({
               )}
             </span>
           )}
+          {!m.profile_completed && (
+            <span className="rounded-[10px] bg-warning-bg px-3 py-2 text-[12px] text-warning-text">
+              Falta:{" "}
+              {[
+                !m.curp && "CURP",
+                !m.birth_date && "fecha de nacimiento",
+                !address && "domicilio",
+                !m.phone && "teléfono",
+                ineDocs.length < 2 && "identificación (INE)",
+              ]
+                .filter(Boolean)
+                .join(" · ") || "revisar el perfil"}
+            </span>
+          )}
+        </div>
+
+        {/* Membresía */}
+        <div className="flex flex-col gap-2 rounded-[18px] bg-white p-5 text-[13px] text-ink-body shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+          <span className="text-[11px] font-extrabold tracking-[.06em] text-teal-deep">
+            MEMBRESÍA
+          </span>
+          <span>
+            Miembro desde:{" "}
+            {m.member_since ? formatDateEs(new Date(m.member_since)) : "—"}
+          </span>
+          <span>
+            Plan:{" "}
+            {sub
+              ? `${sub.plan === "annual" ? "Anual" : "Mensual"} · ${formatMxn(Number(sub.amount ?? 0))} MXN${sub.cancel_at_period_end ? " · CANCELA AL CORTE" : ""}`
+              : "sin suscripción activa"}
+          </span>
+          {sub?.current_period_end && (
+            <span>
+              Próximo cobro:{" "}
+              {formatDateEs(new Date(sub.current_period_end))}
+            </span>
+          )}
+          <span>
+            Período de espera (contratante):{" "}
+            {m.waiting_period_end_date
+              ? `termina el ${formatDateEs(m.waiting_period_end_date)}`
+              : "—"}
+          </span>
+        </div>
+
+        {/* Cancelaciones con motivo (equipo, 5-ago) */}
+        {(cancelaciones ?? []).length > 0 && (
+          <div className="flex flex-col gap-2 rounded-[18px] bg-white p-5 text-[13px] text-ink-body shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+            <span className="text-[11px] font-extrabold tracking-[.06em] text-error-text">
+              CANCELACIONES ({(cancelaciones ?? []).length})
+            </span>
+            {(cancelaciones ?? []).map((c) => {
+              const survey = (c.survey ?? {}) as { motivo?: string };
+              return (
+                <span key={c.id}>
+                  {formatDateEs(new Date(c.created_at))} ·{" "}
+                  {c.reason === "baja_por_comite"
+                    ? "Baja por el comité"
+                    : c.reason === "baja_voluntaria"
+                      ? "Baja voluntaria"
+                      : c.reason}
+                  {survey.motivo ? ` — «${survey.motivo}»` : ""}
+                </span>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Banco, plan de pago y código */}
+        <div className="flex flex-col gap-2 rounded-[18px] bg-white p-5 text-[13px] text-ink-body shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+          <span className="text-[11px] font-extrabold tracking-[.06em] text-teal-deep">
+            DATOS BANCARIOS Y CÓDIGO
+          </span>
+          <span>
+            Banco: {m.bank_name ?? "—"}
+            {m.clabe ? ` · CLABE ····${String(m.clabe).slice(-4)}` : ""}
+          </span>
+          <span>
+            Código de embajador usado: {m.ambassador_code_used ?? "—"}
+          </span>
         </div>
 
         {/* Fiscal */}

@@ -1,9 +1,11 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getAdminRole } from "@/lib/admin-guard";
 import { formatDateEs } from "@/lib/dates";
 import { WELLNESS_SERVICES, type WellnessService } from "@/lib/constants";
 import { DetailModal, DetailItem } from "@/components/panel/DetailModal";
 import { FilterChips } from "@/components/panel/FilterChips";
 import { CenterReviewRow } from "./CenterReviewRow";
+import { CenterResolveButtons } from "./CenterResolveButtons";
 
 type Row = {
   id: string;
@@ -12,6 +14,7 @@ type Row = {
   email: string | null;
   phone: string | null;
   website: string | null;
+  logo_url: string | null;
   services: string[];
   member_benefit: string | null;
   status: string;
@@ -50,18 +53,39 @@ export default async function AdminCentrosPage({
 }) {
   const { estado } = await searchParams;
   const admin = createAdminClient();
-  const { data } = await admin
-    .from("wellness_centers")
-    .select(
-      "id, name, contact_name, email, phone, website, services, member_benefit, status, rejection_reason, created_at, wellness_center_locations(address, colony, city, state, postal_code), center_promotions(title, discount_label, is_active, valid_until)",
-    )
-    .order("created_at", { ascending: true });
+  const isSuper = (await getAdminRole()) === "super_admin";
+  const [{ data }, { data: centerAppeals }] = await Promise.all([
+    admin
+      .from("wellness_centers")
+      .select(
+        "id, name, contact_name, email, phone, website, logo_url, services, member_benefit, status, rejection_reason, created_at, wellness_center_locations(address, colony, city, state, postal_code), center_promotions(title, discount_label, is_active, valid_until)",
+      )
+      .order("created_at", { ascending: true }),
+    admin
+      .from("appeals")
+      .select("id, folio, status, center_id")
+      .not("center_id", "is", null),
+  ]);
 
-  const rows = ((data ?? []) as Row[]).filter(
-    (c) => !estado || c.status === estado,
+  // Tabs extra del super admin: apelaciones y bajas (equipo, 5-ago)
+  const apeladosPorCentro = new Map<string, { folio: string; status: string }>();
+  for (const a of centerAppeals ?? [])
+    if (a.center_id && !apeladosPorCentro.has(a.center_id))
+      apeladosPorCentro.set(a.center_id, { folio: a.folio, status: a.status });
+
+  const verApelaciones = estado === "apelacion";
+  const verBajas = estado === "bajas";
+  const rows = ((data ?? []) as Row[]).filter((c) =>
+    verApelaciones
+      ? apeladosPorCentro.has(c.id)
+      : verBajas
+        ? c.status === "deactivated"
+        : !estado || c.status === estado,
   );
-  const pending = rows.filter((c) => c.status === "pending");
-  const resolved = rows.filter((c) => c.status !== "pending");
+  const pending = rows.filter(
+    (c) => c.status === "pending" && !verApelaciones && !verBajas,
+  );
+  const resolved = rows.filter((c) => !pending.includes(c));
 
   return (
     <div className="flex flex-col gap-5 px-5 py-6 md:px-[30px] md:py-[26px]">
@@ -76,12 +100,20 @@ export default async function AdminCentrosPage({
           { value: "pending", label: "Pendientes" },
           { value: "approved", label: "Aprobados" },
           { value: "rejected", label: "Rechazados" },
+          ...(isSuper
+            ? [
+                { value: "apelacion", label: "⚖️ Apelaciones" },
+                { value: "bajas", label: "🕊️ Bajas" },
+              ]
+            : []),
         ]}
       />
 
-      <h2 className="font-display text-lg text-ink-title">
-        Solicitudes por revisar
-      </h2>
+      {!verApelaciones && !verBajas && (
+        <h2 className="font-display text-lg text-ink-title">
+          Solicitudes por revisar
+        </h2>
+      )}
       <div className="flex flex-col gap-2.5">
         {pending.map((c) => (
           <CenterReviewRow
@@ -100,11 +132,33 @@ export default async function AdminCentrosPage({
             detailSlot={
               <DetailModal title={`Solicitud de ${c.name}`}>
                 <div className="flex flex-col gap-3">
+                  {c.logo_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={c.logo_url}
+                      alt={c.name}
+                      className="h-[140px] w-full rounded-[14px] object-cover"
+                    />
+                  )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
                     <DetailItem label="CENTRO" value={c.name} />
                     <DetailItem label="CONTACTO" value={c.contact_name} />
                     <DetailItem label="CORREO" value={c.email} />
                     <DetailItem label="TELÉFONO" value={c.phone} />
+                    <DetailItem
+                      label="SITIO WEB"
+                      value={
+                        c.website ? (
+                          <a
+                            href={c.website}
+                            target="_blank"
+                            className="font-bold text-teal-deep hover:underline"
+                          >
+                            {c.website} ↗
+                          </a>
+                        ) : null
+                      }
+                    />
                     <DetailItem
                       label="SERVICIOS"
                       value={serviceLabels(c.services ?? [])}
@@ -128,21 +182,38 @@ export default async function AdminCentrosPage({
                       </span>
                     ))}
                   </div>
+                  {/* Resolver sin salir del popup (equipo, 5-ago) */}
+                  <div className="border-t border-border-divider pt-3">
+                    <CenterResolveButtons centerId={c.id} />
+                  </div>
                 </div>
               </DetailModal>
             }
           />
         ))}
-        {pending.length === 0 && (
+        {pending.length === 0 && !verApelaciones && !verBajas && (
           <div className="rounded-[18px] bg-white p-6 text-sm text-ink-secondary shadow-[0_2px_10px_rgba(30,83,80,.05)]">
             Sin solicitudes pendientes. 🎉
+          </div>
+        )}
+        {(verApelaciones || verBajas) && resolved.length === 0 && (
+          <div className="rounded-[18px] bg-white p-6 text-sm text-ink-secondary shadow-[0_2px_10px_rgba(30,83,80,.05)]">
+            {verBajas
+              ? "Sin centros dados de baja."
+              : "Sin centros con apelación."}
           </div>
         )}
       </div>
 
       {resolved.length > 0 && (
         <>
-          <h2 className="font-display text-lg text-ink-title">Resueltos</h2>
+          <h2 className="font-display text-lg text-ink-title">
+            {verBajas
+              ? "Dados de baja"
+              : verApelaciones
+                ? "Con apelación"
+                : "Resueltos"}
+          </h2>
           <div className="flex flex-col rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
             {resolved.map((c) => (
               <DetailModal
@@ -162,19 +233,42 @@ export default async function AdminCentrosPage({
                         </span>
                       ) : null}
                     </span>
+                    {apeladosPorCentro.has(c.id) && (
+                      <span className="rounded-full bg-info-bg px-2.5 py-1 text-[10.5px] font-extrabold text-info-text">
+                        ⚖️ {apeladosPorCentro.get(c.id)!.folio}
+                      </span>
+                    )}
                     <span
                       className={`rounded-full px-2.5 py-1 text-[10.5px] font-extrabold ${
                         c.status === "approved"
                           ? "bg-success-bg text-success-text"
-                          : "bg-error-bg text-error-text"
+                          : c.status === "deactivated"
+                            ? "bg-cream text-ink-tertiary"
+                            : c.status === "pending"
+                              ? "bg-warning-bg text-warning-text"
+                              : "bg-error-bg text-error-text"
                       }`}
                     >
-                      {c.status === "approved" ? "APROBADO" : "RECHAZADO"}
+                      {c.status === "approved"
+                        ? "APROBADO"
+                        : c.status === "deactivated"
+                          ? "🕊️ BAJA"
+                          : c.status === "pending"
+                            ? "PENDIENTE"
+                            : "RECHAZADO"}
                     </span>
                   </div>
                 }
               >
                 <div className="flex flex-col gap-4">
+                  {c.logo_url && (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={c.logo_url}
+                      alt={c.name}
+                      className="h-[140px] w-full rounded-[14px] object-cover"
+                    />
+                  )}
                   <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
                     <DetailItem label="CONTACTO" value={c.contact_name} />
                     <DetailItem label="CORREO" value={c.email} />
