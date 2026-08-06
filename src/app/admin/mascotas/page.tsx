@@ -9,22 +9,25 @@ import {
 } from "@/components/panel/DetailModal";
 import { FilterChips } from "@/components/panel/FilterChips";
 import { PetReviewRow } from "./PetReviewRow";
+import { PetResolveButtons } from "./PetResolveButtons";
 
 export default async function AdminMascotasPage({
   searchParams,
 }: {
-  searchParams: Promise<{ estado?: string }>;
+  searchParams: Promise<{ estado?: string; orden?: string }>;
 }) {
-  const { estado } = await searchParams;
+  const { estado, orden } = await searchParams;
   const admin = createAdminClient();
   const isSuper = (await getAdminRole()) === "super_admin";
+  // Por omisión las más recientes arriba (petición del equipo, 5-ago).
+  const masAntiguas = orden === "antiguas";
   const { data: pets } = await admin
     .from("pets")
     .select(
       "id, name, species, breed, sex, coat_color, eye_color, nose_color, is_adopted, adoption_story, age_years, age_months, birth_date, is_senior, vet_certificate_url, photo_url, gallery_photos, approval_status, approval_notes, waiting_period_end_date, waiting_period_bypassed, created_at, user_id, profiles!user_id(first_name, last_name, email, phone, member_since, membership_status, curp, birth_date, street, number_ext, number_int, colony, postal_code, city, state, bank_name, clabe, rfc)",
     )
     .eq("is_active", true)
-    .order("created_at", { ascending: true });
+    .order("created_at", { ascending: masAntiguas });
 
   const all = (pets ?? []).filter(
     (p) => !estado || p.approval_status === estado,
@@ -87,15 +90,26 @@ export default async function AdminMascotasPage({
       <h1 className="font-display text-[26px] text-ink-title">
         Mascotas por aprobar
       </h1>
-      <FilterChips
-        basePath="/admin/mascotas"
-        current={estado}
-        options={[
-          { value: "pending", label: "En revisión" },
-          { value: "approved", label: "Aprobadas" },
-          { value: "rejected", label: "Denegadas" },
-        ]}
-      />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <FilterChips
+          basePath="/admin/mascotas"
+          current={estado}
+          keep={{ orden }}
+          options={[
+            { value: "pending", label: "En revisión" },
+            { value: "approved", label: "Aprobadas" },
+            { value: "rejected", label: "Denegadas" },
+          ]}
+        />
+        <FilterChips
+          basePath="/admin/mascotas"
+          current={orden}
+          param="orden"
+          keep={{ estado }}
+          allLabel="Más recientes"
+          options={[{ value: "antiguas", label: "Más antiguas" }]}
+        />
+      </div>
       <div className="flex flex-col gap-2.5">
         {pending.map((p) => (
           <PetReviewRow
@@ -118,6 +132,21 @@ export default async function AdminMascotasPage({
               <DetailModal title={`Ficha de ${p.name}`}>
                 {/* Toda la información de la mascota y su dueño (patrón del sitio vivo) */}
                 <div className="flex flex-col gap-4">
+                  {/* Faltantes visibles de un vistazo (petición del equipo, 5-ago) */}
+                  {(!p.photo_url || (p.is_senior && !p.vet_certificate_url)) && (
+                    <div className="flex flex-wrap gap-2">
+                      {p.is_senior && !p.vet_certificate_url && (
+                        <span className="rounded-full bg-warning-bg px-3 py-1.5 text-[11.5px] font-bold text-warning-text">
+                          ⚠ Falta certificado veterinario (senior 10+)
+                        </span>
+                      )}
+                      {!p.photo_url && (
+                        <span className="rounded-full bg-warning-bg px-3 py-1.5 text-[11.5px] font-bold text-warning-text">
+                          ⚠ Falta foto
+                        </span>
+                      )}
+                    </div>
+                  )}
                   {p.photo_url && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -201,6 +230,10 @@ export default async function AdminMascotasPage({
                     >
                       Ver expediente completo del miembro →
                     </Link>
+                  </div>
+                  {/* Resolver sin salir del popup (petición del equipo, 5-ago) */}
+                  <div className="border-t border-border-divider pt-3">
+                    <PetResolveButtons petId={p.id} />
                   </div>
                 </div>
               </DetailModal>

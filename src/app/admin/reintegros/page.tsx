@@ -16,9 +16,9 @@ const STATUS_LABEL: Record<string, string> = {
 export default async function AdminReintegrosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ estado?: string }>;
+  searchParams: Promise<{ estado?: string; tipo?: string }>;
 }) {
-  const { estado } = await searchParams;
+  const { estado, tipo } = await searchParams;
   const admin = createAdminClient();
   const { data: rowsRaw } = await admin
     .from("reimbursements")
@@ -27,7 +27,9 @@ export default async function AdminReintegrosPage({
     )
     .order("created_at", { ascending: false })
     .limit(100);
-  const rows = (rowsRaw ?? []).filter((r) => !estado || r.status === estado);
+  const rows = (rowsRaw ?? []).filter(
+    (r) => (!estado || r.status === estado) && (!tipo || r.category === tipo),
+  );
 
   const memberName = (p: unknown) => {
     const prof = (Array.isArray(p) ? p[0] : p) as {
@@ -55,6 +57,7 @@ export default async function AdminReintegrosPage({
       <FilterChips
         basePath="/admin/reintegros"
         current={estado}
+        keep={{ tipo }}
         allLabel="Todos"
         options={[
           { value: "pending", label: "Pendientes" },
@@ -64,10 +67,23 @@ export default async function AdminReintegrosPage({
           { value: "paid", label: "Pagados" },
         ]}
       />
+      {/* Filtro por tipo de gasto (petición del equipo, 5-ago) */}
+      <FilterChips
+        basePath="/admin/reintegros"
+        current={tipo}
+        param="tipo"
+        keep={{ estado }}
+        allLabel="Todos los tipos"
+        options={Object.entries(REIMBURSEMENT_CATEGORY_LABELS).map(
+          ([value, label]) => ({ value, label }),
+        )}
+      />
       <div className="flex flex-col overflow-x-auto rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
-        <div className="grid min-w-[700px] grid-cols-[80px_1fr_120px_100px_100px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] py-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
+        {/* Miembro y mascota en columnas separadas (petición del equipo, 5-ago) */}
+        <div className="grid min-w-[820px] grid-cols-[80px_1fr_140px_120px_100px_100px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] py-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
           <span>FOLIO</span>
-          <span>MIEMBRO / MASCOTA</span>
+          <span>MIEMBRO</span>
+          <span>MASCOTA</span>
           <span>TIPO</span>
           <span>MONTO</span>
           <span>ESTADO</span>
@@ -83,12 +99,12 @@ export default async function AdminReintegrosPage({
             <Link
               key={r.id}
               href={`/admin/reintegros/${r.id}`}
-              className="grid min-w-[700px] grid-cols-[80px_1fr_120px_100px_100px_90px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors hover:bg-cream"
+              className="grid min-w-[820px] grid-cols-[80px_1fr_140px_120px_100px_100px_90px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors hover:bg-cream"
             >
               <span className="font-bold text-teal-deep">{r.folio}</span>
+              <span>{memberName(r.profiles)}</span>
               <span>
-                {memberName(r.profiles)} · {pet?.name}{" "}
-                {pet?.species === "dog" ? "🐕" : "🐈"}
+                {pet?.name} {pet?.species === "dog" ? "🐕" : "🐈"}
               </span>
               <span>
                 {REIMBURSEMENT_CATEGORY_LABELS[

@@ -7,6 +7,7 @@ import { formatDateEs } from "@/lib/dates";
 import { formatMxn } from "@/lib/format";
 import { REIMBURSEMENT_CATEGORY_LABELS } from "@/lib/constants";
 import { PetThreadPanel } from "./PetThreadPanel";
+import { PetResolveButtons } from "../../mascotas/PetResolveButtons";
 
 const STATUS_CHIP: Record<string, { text: string; cls: string }> = {
   active: { text: "ACTIVO", cls: "bg-success-bg text-success-text" },
@@ -292,8 +293,14 @@ export default async function AdminMiembroDetailPage({
                     </span>
                   )}
                 </span>
-                <span className={`rounded-full px-2.5 py-[3px] text-[10.5px] font-extrabold ${pchip.cls}`}>
-                  {!p.is_active ? "🕊️ BAJA" : pchip.text}
+                <span className="flex flex-none flex-col items-end gap-2">
+                  <span className={`rounded-full px-2.5 py-[3px] text-[10.5px] font-extrabold ${pchip.cls}`}>
+                    {!p.is_active ? "🕊️ BAJA" : pchip.text}
+                  </span>
+                  {/* Resolver desde el expediente, sin ir a Mascotas (equipo, 5-ago) */}
+                  {p.is_active && p.approval_status === "pending" && (
+                    <PetResolveButtons petId={p.id} />
+                  )}
                 </span>
               </div>
               <PetThreadPanel

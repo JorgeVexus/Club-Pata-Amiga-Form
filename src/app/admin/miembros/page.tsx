@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatDateEs } from "@/lib/dates";
+import { FilterChips } from "@/components/panel/FilterChips";
 
 const STATUS_CHIP: Record<string, { text: string; cls: string }> = {
   active: { text: "ACTIVO", cls: "bg-success-bg text-success-text" },
@@ -16,9 +17,9 @@ const STATUS_CHIP: Record<string, { text: string; cls: string }> = {
 export default async function AdminMiembrosPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; factura?: string }>;
 }) {
-  const { q } = await searchParams;
+  const { q, factura } = await searchParams;
   const query = q?.trim() ?? "";
   const admin = createAdminClient();
 
@@ -49,7 +50,7 @@ export default async function AdminMiembrosPage({
   let membersQuery = admin
     .from("profiles")
     .select(
-      "id, first_name, last_name, email, phone, membership_status, member_since, created_at, pets!user_id(id), subscriptions(plan, status)",
+      "id, first_name, last_name, email, phone, membership_status, member_since, created_at, cfdi_requested, pets!user_id(id), subscriptions(plan, status)",
     )
     .eq("role", "member")
     .order("created_at", { ascending: false })
@@ -67,7 +68,16 @@ export default async function AdminMiembrosPage({
     membersQuery = membersQuery.or(orParts.join(","));
   }
 
-  const { data: members } = await membersQuery;
+  const { data: membersRaw } = await membersQuery;
+  // Filtro y estadística de solicitantes de factura (equipo, 5-ago)
+  const members = (membersRaw ?? []).filter((m) =>
+    factura === "si"
+      ? m.cfdi_requested
+      : factura === "no"
+        ? !m.cfdi_requested
+        : true,
+  );
+  const conFactura = (membersRaw ?? []).filter((m) => m.cfdi_requested).length;
 
   const planOf = (subs: { plan: string | null; status: string | null }[]) => {
     const active = (subs ?? []).find((s) => s.status === "active");
@@ -84,8 +94,9 @@ export default async function AdminMiembrosPage({
         <div className="flex flex-col gap-1">
           <h1 className="font-display text-[26px] text-ink-title">Miembros</h1>
           <p className="text-sm text-ink-secondary">
-            {members?.length ?? 0} resultado{members?.length === 1 ? "" : "s"}
-            {query ? ` para “${query}”` : " (más recientes)"}
+            {members.length} resultado{members.length === 1 ? "" : "s"}
+            {query ? ` para “${query}”` : " (más recientes)"} ·{" "}
+            {conFactura} solicita{conFactura === 1 ? "" : "n"} factura
           </p>
         </div>
         <form action="/admin/miembros" className="flex items-center gap-2">
@@ -104,12 +115,25 @@ export default async function AdminMiembrosPage({
         </form>
       </div>
 
+      <FilterChips
+        basePath="/admin/miembros"
+        current={factura}
+        param="factura"
+        keep={{ q: query || undefined }}
+        allLabel="Todos"
+        options={[
+          { value: "si", label: "Solicitan factura" },
+          { value: "no", label: "Sin factura" },
+        ]}
+      />
+
       <div className="flex flex-col overflow-x-auto rounded-[18px] bg-white p-5 shadow-[0_2px_10px_rgba(30,83,80,.05)]">
-        <div className="grid min-w-[720px] grid-cols-[1fr_110px_90px_130px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] pb-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
+        <div className="grid min-w-[800px] grid-cols-[1fr_110px_90px_130px_80px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] pb-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
           <span>MIEMBRO</span>
           <span>ESTATUS</span>
           <span>PLAN</span>
           <span>MIEMBRO DESDE</span>
+          <span>FACTURA</span>
           <span>MASCOTAS</span>
         </div>
         {(members ?? []).map((m) => {
@@ -119,7 +143,7 @@ export default async function AdminMiembrosPage({
             <Link
               key={m.id}
               href={`/admin/miembros/${m.id}`}
-              className="grid min-w-[720px] grid-cols-[1fr_110px_90px_130px_90px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors last:border-0 hover:bg-cream"
+              className="grid min-w-[800px] grid-cols-[1fr_110px_90px_130px_80px_90px] items-center gap-2 border-b border-[#F2EEE4] py-[11px] text-[12.5px] text-ink-body transition-colors last:border-0 hover:bg-cream"
             >
               <span className="min-w-0">
                 <strong className="text-ink-title">
@@ -141,6 +165,7 @@ export default async function AdminMiembrosPage({
                   ? formatDateEs(new Date(m.member_since))
                   : "—"}
               </span>
+              <span>{m.cfdi_requested ? "Sí 🧾" : "No"}</span>
               <span>{(m.pets ?? []).length} 🐾</span>
             </Link>
           );
