@@ -60,6 +60,7 @@ export default async function AdminHome() {
     evAmb,
     evCenters,
     evLeads,
+    referrals6m,
   ] = await Promise.all([
       admin
         .from("profiles")
@@ -177,6 +178,11 @@ export default async function AdminHome() {
         .select("id, first_name, campaign, created_at")
         .order("created_at", { ascending: false })
         .limit(4),
+      // Referidos de embajadores, 6 meses (gráfica pedida por el equipo, 5-ago)
+      admin
+        .from("referrals")
+        .select("created_at")
+        .gte("created_at", sixMonthsStart.toISOString()),
     ]);
 
   const mrr = (subs.data ?? []).reduce((acc, s) => {
@@ -313,6 +319,12 @@ export default async function AdminHome() {
       .filter((r) => r.resolved_at && monthKeyOf(r.resolved_at) === m.key)
       .reduce((acc, r) => acc + Number(r.amount_approved ?? 0), 0),
   }));
+  const referralsSeries = monthKeys.map((m) => ({
+    label: m.label,
+    value: (referrals6m.data ?? []).filter(
+      (r) => monthKeyOf(r.created_at) === m.key,
+    ).length,
+  }));
 
   // ----- Actividad reciente (campana) -----
   const events = [
@@ -446,6 +458,11 @@ export default async function AdminHome() {
           data={reimbSeries}
           color="#F7941D"
           format={(v) => formatMxn(v)}
+        />
+        <MiniBarChart
+          title="Referidos de embajadores por mes"
+          data={referralsSeries}
+          color="#1E5350"
         />
       </div>
 

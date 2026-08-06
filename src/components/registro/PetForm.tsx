@@ -67,6 +67,9 @@ export function PetForm({ mode }: { mode: "registro" | "member" }) {
   const [story, setStory] = useState("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  // Certificado veterinario para seniors, subible desde el alta (equipo, 5-ago)
+  const [cert, setCert] = useState<File | null>(null);
+  const certRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -127,6 +130,19 @@ export function PetForm({ mode }: { mode: "registro" | "member" }) {
       }
     }
 
+    // Certificado del senior (mismo bucket que usa la ficha)
+    let certUrl: string | null = null;
+    if (cert && showsSeniorNote) {
+      const path = `${userId}/cert-${Date.now()}-${cert.name}`;
+      const { error: certError } = await supabase.storage
+        .from("pet-photos")
+        .upload(path, cert);
+      if (!certError) {
+        certUrl = supabase.storage.from("pet-photos").getPublicUrl(path)
+          .data.publicUrl;
+      }
+    }
+
     const isSenior = ageOption.years >= SENIOR_PET_AGE_YEARS;
     const petData = {
       user_id: userId,
@@ -143,6 +159,7 @@ export function PetForm({ mode }: { mode: "registro" | "member" }) {
       is_adopted: adopted,
       adoption_story: adopted ? story.trim() || null : null,
       ...(photoUrl ? { photo_url: photoUrl } : {}),
+      ...(certUrl ? { vet_certificate_url: certUrl } : {}),
     };
 
     if (mode === "member") {
@@ -373,10 +390,33 @@ export function PetForm({ mode }: { mode: "registro" | "member" }) {
         </div>
       )}
       {showsSeniorNote && (
-        <div className="rounded-[12px] bg-warning-bg px-4 py-3 text-[13px] leading-normal text-[#8A5A12]">
-          Como tu peludo tiene {SENIOR_PET_AGE_YEARS} años o más, te pediremos
-          un certificado veterinario en su ficha para conocer su estado de
-          salud. 🐾
+        <div className="flex flex-col gap-2.5 rounded-[12px] bg-warning-bg px-4 py-3 text-[13px] leading-normal text-[#8A5A12]">
+          <span>
+            Como tu peludo tiene {SENIOR_PET_AGE_YEARS} años o más, te pedimos
+            un certificado veterinario para conocer su estado de salud. Puedes
+            subirlo aquí mismo o después desde su ficha. 🐾
+          </span>
+          <input
+            ref={certRef}
+            type="file"
+            accept="image/*,.pdf"
+            className="hidden"
+            onChange={(e) => setCert(e.target.files?.[0] ?? null)}
+          />
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => certRef.current?.click()}
+              className="rounded-full border-[1.5px] border-[#8A5A12] px-4 py-1.5 text-[12.5px] font-bold text-[#8A5A12] transition-colors hover:bg-white/50"
+            >
+              {cert ? "Cambiar certificado" : "📄 Subir certificado ahora"}
+            </button>
+            {cert && (
+              <span className="text-[12px] font-semibold">
+                {cert.name} ✓
+              </span>
+            )}
+          </div>
         </div>
       )}
       {error && (

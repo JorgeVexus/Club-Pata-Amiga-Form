@@ -287,6 +287,25 @@ export const EMAIL_TEMPLATES: EmailTemplateDef[] = [
 <p>Si crees que hay un error, responde a este correo y lo revisamos.</p>`),
   },
   {
+    key: "ambassador_deactivated",
+    name: "Baja de embajador (por el comité)",
+    description:
+      "Cuando el super admin da de baja a un embajador: su código deja de generar comisiones nuevas.",
+    variables: {
+      firstName: "Nombre del embajador",
+      reason: "Motivo de la baja",
+    },
+    sample: {
+      firstName: "Paola",
+      reason: "Inactividad prolongada del programa de embajadores.",
+    },
+    subject: "Aviso sobre tu participación como embajador",
+    html: WRAP(`<h2 style="color:#1E5350">Hola, {{firstName}}</h2>
+<p>Te escribimos para informarte que tu participación como embajador de Club Pata Amiga fue dada de baja por el comité.</p>
+<p><strong>Motivo:</strong> {{reason}}</p>
+<p>Tu código de embajador deja de generar comisiones nuevas a partir de hoy. Si crees que hay un error o quieres compartir tu versión, responde a este correo y con gusto lo revisamos.</p>`),
+  },
+  {
     key: "campaign_gift",
     name: "Regalo de campaña (landings)",
     description:
@@ -513,6 +532,7 @@ export const TEMPLATE_CATEGORY: Record<string, EmailCategoryId> = {
   ambassador_received: "embajadores",
   ambassador_approved: "embajadores",
   ambassador_rejected: "embajadores",
+  ambassador_deactivated: "embajadores",
   center_received: "centros",
   center_approved: "centros",
   center_rejected: "centros",

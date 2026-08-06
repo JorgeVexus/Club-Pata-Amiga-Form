@@ -276,6 +276,41 @@ export async function resolveAmbassador(
   revalidatePath("/admin/embajadores");
 }
 
+/**
+ * Dar de baja a un embajador aprobado — SOLO super admin (equipo, 5-ago).
+ * El enum ya tenía 'canceled'; se usa para la baja y se guarda el rastro.
+ * Las comisiones ya generadas se quedan; el código deja de aparecer activo.
+ */
+export async function deactivateAmbassador(id: string, reason: string) {
+  const { admin } = await requireAdmin(true);
+  const motivo = reason?.trim();
+  if (!motivo) return { error: "Escribe el motivo de la baja." };
+
+  const { data: amb } = await admin
+    .from("ambassadors")
+    .select("id, first_name, email, status")
+    .eq("id", id)
+    .single();
+  if (!amb) return { error: "Embajador no encontrado." };
+
+  await admin
+    .from("ambassadors")
+    .update({
+      status: "canceled",
+      deactivated_at: new Date().toISOString(),
+      deactivation_reason: motivo,
+    })
+    .eq("id", id);
+
+  await sendTemplatedEmail("ambassador_deactivated", amb.email, {
+    firstName: amb.first_name,
+    reason: motivo,
+  });
+
+  revalidatePath("/admin/embajadores");
+  return { ok: true as const };
+}
+
 export async function resolveCenter(
   id: string,
   decision: { approve: true } | { approve: false; reason: string },
