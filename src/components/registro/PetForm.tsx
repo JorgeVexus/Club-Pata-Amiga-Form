@@ -297,12 +297,16 @@ export function PetForm({ mode }: { mode: "registro" | "member" }) {
       </div>
       {breedConditions && (
         <div className="rounded-[12px] bg-info-bg px-4 py-3 text-[13px] leading-relaxed text-info-text">
-          💙 Queremos lo mejor para tu {breed.trim()}. Como muchas razas,
-          estos peluditos tienen predisposición a ciertas condiciones de salud
-          (como {breedConditions}). En Pata Amiga somos 100% transparentes
-          contigo, por eso te contamos que nuestro plan está diseñado para
-          acompañarte ante imprevistos y accidentes, por lo que actualmente no
-          incluye reintegros por enfermedades genéticas o hereditarias.
+          💙 Sabemos que, como muchas otras razas, los {breed.trim()} pueden
+          tener mayor predisposición a desarrollar algunas condiciones de
+          salud, como {breedConditions}. En Pata Amiga creemos que la
+          confianza comienza con la transparencia. Por eso, es importante que
+          sepas que nuestra membresía está diseñada para acompañarte ante
+          imprevistos y accidentes. Actualmente, no contempla reintegros
+          relacionados con enfermedades genéticas o hereditarias. Nuestro
+          compromiso es brindarte claridad desde el primer día para que
+          siempre sepas cómo funciona tu membresía y puedas aprovecharla al
+          máximo.
         </div>
       )}
       <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2">

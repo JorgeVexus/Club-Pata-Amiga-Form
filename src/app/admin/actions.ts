@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMxn } from "@/lib/format";
-import { hoyEnMexico } from "@/lib/zona-horaria";
+import { hoyEnMexico, ZONA_MX } from "@/lib/zona-horaria";
 import {
   MATERIAL_SLOTS,
   ASSISTANT_PROMPT_KEY,
@@ -795,7 +795,7 @@ export async function sendReport(report: string) {
     await getResend().emails.send({
       from: EMAIL_FROM,
       to,
-      subject: `Reporte Club Pata Amiga · ${new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date())}`,
+      subject: `Reporte Club Pata Amiga · ${new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: ZONA_MX }).format(new Date())}`,
       html: `<div style="font-family:sans-serif;color:#3D524F;line-height:1.7;white-space:pre-line">${report
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")

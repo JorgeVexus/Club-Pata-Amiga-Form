@@ -8,7 +8,6 @@ import { WelcomeOnce } from "@/components/app/WelcomeOnce";
 import { CenterInfoCard } from "./CenterInfoCard";
 import { PromotionsCard, type PromotionRow } from "./PromotionsCard";
 import { ChangePasswordCard } from "@/components/app/ChangePasswordCard";
-import { LogoutButton } from "@/components/app/LogoutButton";
 import { ProfileMenu, type DashboardEntry } from "@/components/app/ProfileMenu";
 import { AppealButton } from "@/components/app/AppealButton";
 import { APPEAL_MAX_PER_SUBJECT } from "@/lib/constants";
@@ -273,12 +272,10 @@ export default async function CentroDashboardPage() {
           </div>
         </div>
 
-        {/* Ajustes de la cuenta del centro */}
+        {/* Ajustes de la cuenta del centro. El "Cerrar sesión" vive solo en el
+            menú del encabezado — aquí estaba duplicado (hallazgo del equipo). */}
         <div className="grid items-start gap-4 lg:grid-cols-[1.3fr_1fr]">
           <ChangePasswordCard />
-          <div className="flex lg:justify-end">
-            <LogoutButton variant="button" />
-          </div>
         </div>
       </div>
 

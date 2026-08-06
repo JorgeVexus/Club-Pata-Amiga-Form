@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { sendTemplatedEmail } from "@/lib/email/send";
+import { ZONA_MX } from "@/lib/zona-horaria";
 import { bankFromClabe, isValidClabe } from "@/lib/banks";
 import { versionVigente } from "@/lib/plans/versiones";
 import { reemplazarSnapshot } from "@/lib/plans/resolve";
@@ -148,7 +149,7 @@ export async function cancelMembership(reason: string, comments: string) {
     await sendTemplatedEmail("cancellation", profile.email, {
       firstName: profile.first_name ?? "",
       coverageEndLine: coverageEnd
-        ? `hasta el <strong>${coverageEnd.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric" })}</strong>`
+        ? `hasta el <strong>${coverageEnd.toLocaleDateString("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: ZONA_MX })}</strong>`
         : "hasta el fin de tu período pagado",
     });
   }

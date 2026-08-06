@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { REIMBURSEMENT_CATEGORY_LABELS, REIMBURSEMENT_SLA_HOURS } from "@/lib/constants";
 import { formatMxn, hoursSince } from "@/lib/format";
 import { haceDias } from "@/lib/dates";
-import { inicioDelMes } from "@/lib/zona-horaria";
+import { inicioDelMes, ZONA_MX } from "@/lib/zona-horaria";
 import { ReportButton } from "./ReportButton";
 import { Bell } from "@/components/panel/Bell";
 import { MiniBarChart } from "@/components/panel/MiniBarChart";
@@ -230,6 +230,7 @@ export default async function AdminHome() {
   const monthLabel = new Intl.DateTimeFormat("es-MX", {
     month: "long",
     year: "numeric",
+    timeZone: ZONA_MX,
   }).format(new Date());
 
   /** Métricas de crecimiento y comunidad (segunda fila). */
@@ -274,7 +275,7 @@ export default async function AdminHome() {
 
   /** Reporte compartible (WhatsApp/correo) con las métricas del día. */
   const report = [
-    `🐾 *Club Pata Amiga — Reporte* · ${new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric" }).format(new Date())}`,
+    `🐾 *Club Pata Amiga — Reporte* · ${new Intl.DateTimeFormat("es-MX", { day: "numeric", month: "long", year: "numeric", timeZone: ZONA_MX }).format(new Date())}`,
     "",
     `*Miembros activos:* ${(activeQ.count ?? 0).toLocaleString("es-MX")} (${(newMembersQ.count ?? 0).toLocaleString("es-MX")} altas en ${monthLabel})`,
     `*MRR:* ${formatMxn(Math.round(mrr))} MXN`,
@@ -293,7 +294,7 @@ export default async function AdminHome() {
     d.setMonth(d.getMonth() - i);
     monthKeys.push({
       key: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`,
-      label: new Intl.DateTimeFormat("es-MX", { month: "short" }).format(d),
+      label: new Intl.DateTimeFormat("es-MX", { month: "short", timeZone: ZONA_MX }).format(d),
     });
   }
   const monthKeyOf = (iso: string) => {
@@ -705,6 +706,7 @@ export default async function AdminHome() {
                 month: "short",
                 hour: "2-digit",
                 minute: "2-digit",
+                timeZone: ZONA_MX,
               }).format(new Date(e.created_at))}
             </span>
           </div>

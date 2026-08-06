@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { formatMxn } from "@/lib/format";
-import { inicioDelMes } from "@/lib/zona-horaria";
+import { inicioDelMes, ZONA_MX } from "@/lib/zona-horaria";
 import { DetailModal, DetailItem } from "@/components/panel/DetailModal";
 
 type PaymentRow = {
@@ -102,6 +102,7 @@ export default async function AdminFinanzasPage() {
 
   const monthLabel = new Intl.DateTimeFormat("es-MX", {
     month: "long",
+    timeZone: ZONA_MX,
   }).format(new Date());
 
   const monthlyMrr = subs
@@ -138,7 +139,7 @@ export default async function AdminFinanzasPage() {
     {
       label: `COBRADO EN ${monthLabel.toUpperCase()}`,
       value: stripeError ? "—" : formatMxn(monthCollected),
-      note: "facturas pagadas (Stripe)",
+      note: "comprobantes de pago (Stripe)",
       detail: (
         <div className="grid grid-cols-2 gap-x-4 gap-y-2.5">
           <DetailItem
@@ -147,7 +148,7 @@ export default async function AdminFinanzasPage() {
           />
           <DetailItem
             label="FUENTE"
-            value="Facturas con estado 'pagada' en Stripe desde el día 1 del mes."
+            value="Comprobantes de pago con estado 'pagado' en Stripe desde el día 1 del mes."
           />
         </div>
       ),
@@ -271,7 +272,7 @@ export default async function AdminFinanzasPage() {
         ) : (
           <div className="flex flex-col overflow-x-auto">
             <div className="grid min-w-[640px] grid-cols-[130px_1fr_110px_120px_90px] gap-2 border-b-[1.5px] border-[#F2EEE4] pb-2 text-[10.5px] font-extrabold tracking-[.05em] text-ink-placeholder">
-              <span>FACTURA</span>
+              <span>COMPROBANTE</span>
               <span>CLIENTE</span>
               <span>MONTO</span>
               <span>FECHA</span>
@@ -302,6 +303,7 @@ export default async function AdminFinanzasPage() {
                   {new Intl.DateTimeFormat("es-MX", {
                     day: "numeric",
                     month: "short",
+                    timeZone: ZONA_MX,
                   }).format(p.created)}
                 </span>
                 <span className="justify-self-start rounded-full bg-success-bg px-2.5 py-[3px] text-[10.5px] font-extrabold text-success-text">

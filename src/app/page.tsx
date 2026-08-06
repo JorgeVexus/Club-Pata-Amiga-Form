@@ -290,7 +290,7 @@ export default async function Home() {
               {HOW_IT_WORKS.map((step, i) => (
                 <li key={step} className="flex items-center gap-4">
                   <span className="grid size-12 flex-none place-items-center rounded-full bg-teal-dark font-display text-[17px] text-white">
-                    0{i + 1}
+                    {i + 1}
                   </span>
                   <span className="text-[16px] font-semibold text-ink-body sm:text-[17px]">
                     {step}

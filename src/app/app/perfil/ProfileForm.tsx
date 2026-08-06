@@ -175,7 +175,9 @@ export function ProfileForm({
   const completion =
     20 * Number(fullName.trim().length > 0) +
     20 * Number(curpValid) +
-    20 * Number(cp.length === 5 && colony && street) +
+    // OJO: sin Boolean(), `colony && street` devuelve el string y Number("Av...")
+    // da NaN — el porcentaje entero se mostraba como "NaN%" (hallazgo del equipo).
+    20 * Number(Boolean(cp.length === 5 && colony && street)) +
     20 * Number(Boolean(frontFile)) +
     20 * Number(Boolean(backFile));
 

@@ -1,3 +1,5 @@
+import { ZONA_MX } from "@/lib/zona-horaria";
+
 const MS_PER_DAY = 86_400_000;
 
 /** Columnas de fecha pura: 2026-07-26 */
@@ -12,10 +14,14 @@ export function formatDateEs(date: Date | string): string {
       ? new Date(SOLO_FECHA.test(date) ? `${date}T12:00:00` : date)
       : date;
   if (Number.isNaN(value.getTime())) return "—";
+  // timeZone explícita: en Vercel el proceso corre en UTC y un alta de las
+  // 9pm del día 5 (hora CDMX) se mostraba como día 6 (hallazgo del equipo;
+  // misma familia que el barrido F10 de zona horaria).
   return new Intl.DateTimeFormat("es-MX", {
     day: "numeric",
     month: "long",
     year: "numeric",
+    timeZone: ZONA_MX,
   }).format(value);
 }
 
