@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import Script from "next/script";
 import { PLANS } from "@/lib/constants";
 import { COMPANY_LINE, LEGAL_DOCS, fetchSiteAssets, fetchSiteSettings } from "@/lib/site";
+import { createClient } from "@/lib/supabase/server";
 import { Faq } from "@/components/landing/Faq";
 import { NewsletterForm } from "@/components/landing/NewsletterForm";
 import { BenefitsMarquee } from "@/components/landing/BenefitsMarquee";
@@ -69,9 +71,11 @@ function AssetOrPlaceholder({
 }
 
 export default async function Home() {
-  const [assets, settings] = await Promise.all([
+  const supabase = await createClient();
+  const [assets, settings, { data: { user } }] = await Promise.all([
     fetchSiteAssets(),
     fetchSiteSettings(),
+    supabase.auth.getUser(),
   ]);
   const socials = [
     { network: "instagram", label: "Instagram", href: settings.social_instagram },
@@ -483,6 +487,16 @@ export default async function Home() {
           <p className="text-xs text-white/55">{COMPANY_LINE}</p>
         </div>
       </footer>
+
+      {/* Chat de LeadConnector — solo para visitantes sin sesión iniciada */}
+      {!user && (
+        <Script
+          src="https://widgets.leadconnectorhq.com/loader.js"
+          data-resources-url="https://widgets.leadconnectorhq.com/chat-widget/loader.js"
+          data-widget-id="693851cd4ccc57754b45f85d"
+          strategy="lazyOnload"
+        />
+      )}
     </div>
   );
 }
