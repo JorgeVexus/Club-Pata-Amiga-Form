@@ -24,9 +24,16 @@ const FOOTER = `<p style="color:#6B7C79;font-size:13px">Club Pata Amiga · Prote
 const WRAP = (inner: string) =>
   `<div style="font-family:sans-serif;color:#3D524F;line-height:1.6">${inner}${FOOTER}</div>`;
 
-/** Logo hosteado para correos (los clientes de correo no soportan SVG). */
-const EMAIL_HEADER_IMG =
-  "https://iddzylyvuhkhuvinvbou.supabase.co/storage/v1/object/public/site-assets/email-header.png";
+/**
+ * Logo para correos (los clientes de correo no soportan SVG).
+ *
+ * Se sirve del propio sitio (`public/brand/`), NO del storage de Supabase:
+ * antes apuntaba al proyecto de desarrollo, así que pausar ese proyecto
+ * rompía el logo de correos que producción ya manda (hallazgo 7-ago).
+ * La URL es absoluta y del dominio de producción a propósito: las plantillas
+ * de Auth de Supabase son las mismas en staging y producción.
+ */
+const EMAIL_HEADER_IMG = "https://www.pataamiga.mx/brand/email-header.png";
 
 /**
  * Correo brandeado de la campaña de regalo — HTML apto para clientes de
